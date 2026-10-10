@@ -1,0 +1,46 @@
+# R129 — exact B570 PCI identity admission
+
+Date: 2026-10-10. Read-only inspection of installed headers and primary API documentation. No compiler, build, test, SYCL/device query, GPU command, profiler, inference, payload, Git, or active output was used. No source edit was made.
+
+## Recommendation
+
+Use the selected queue's Level Zero native device handle and query the Level Zero PCI-properties extension on that handle, once during process admission before any buffer allocation or probe submission. Compare typed fields; do not choose a device ordinal or enumerate the machine's GPUs. Also query core device properties on the same handle and require vendor `0x8086`, device `0xe20c`, and a root (non-subdevice) handle. Require PCI tuple `{domain=0,bus=5,device=0,function=0}`. Only then emit a flushed identity receipt and proceed.
+
+The installed oneAPI 2026.1 SYCL headers expose `backend::ext_oneapi_level_zero` native handles: `get_native<backend::ext_oneapi_level_zero>(device)` has return type `ze_device_handle_t`; the platform specialization maps to `ze_driver_handle_t`. Generic `get_native` checks the object's backend and throws `backend_mismatch` if it differs. Thus use the already selected `q.get_device()` and its platform, after the existing Level Zero backend check. Do not call `device::get_devices()` or `zeDriverGet` to find a matching ordinal.
+
+Minimal query sequence:
+
+1. From `q.get_device()`, obtain native `ze_device_handle_t`; from its platform obtain that Level Zero `ze_driver_handle_t`.
+2. Call `zeDeviceGetProperties` on that one device. Require success and check `vendorId==0x8086`, `deviceId==0xe20c`, and that `ZE_DEVICE_PROPERTY_FLAG_SUBDEVICE` is clear. Retain/report flags, name, and device id. The Level Zero header notes the device ID's little-endian representation; confirm the runtime's numeric value before relying on the expected literal.
+3. Check this driver advertises `ZE_PCI_PROPERTIES_EXT_NAME` at supported version 1.0 or later using `zeDriverGetExtensionProperties`. Resolve `zeDevicePciGetPropertiesExt` using `zeDriverGetExtensionFunctionAddress`; require success and a non-null function pointer. Invoke it only for the selected native device with an initialized `ze_pci_ext_properties_t`; require `ZE_RESULT_SUCCESS` and compare its integer BDF fields against `0000:05:00.0`.
+4. Before any probe stage, flush a receipt containing backend, vendor/device IDs, PCI tuple, device name, driver version, root/subdevice status, and that the identity assertion passed. If any query is unsupported, fails, returns malformed/missing data, identifies a subdevice, or mismatches, print a bounded refusal reason and exit nonzero before kernel submission. Do not fall back to name-only or ordinal selection.
+
+A shell-level selector is not the assertion: `ONEAPI_DEVICE_SELECTOR` and selector ordinals can filter/rank choices but do not pin a PCI BDF in the reviewed docs. A generic selector may choose a different GPU; the in-process identity check must refuse it. This query happens at startup and is written into the owner-captured output before work begins, so a later hang does not trigger another device enumeration or a diagnostic query against an active device.
+
+## Partition and tile handling
+
+Intel LLVM's `EnvironmentVariables.md` says Level Zero flat-device hierarchy affects exposure of Intel GPU tiles/CCSs as SYCL root devices and that the mapping depends on `ZE_FLAT_DEVICE_HIERARCHY`. Level Zero `ze_device_properties_t` exposes `ZE_DEVICE_PROPERTY_FLAG_SUBDEVICE` and `subdeviceId`. PCI properties identify a PCI BDF for the supplied device object; the public PCI extension docs do not promise a unique PCI BDF per tile. For this probe's intended whole B570 board, fail closed on a subdevice handle rather than assume a tile's BDF is a separate card identity. Record the hierarchy-related environment. If the current environment exposes only tile handles, owner should make an explicit startup configuration decision and rerun admission; the probe should not silently translate a tile ID to a physical card.
+
+The SYCL Intel device-info extension is a simpler alternate: installed headers declare `aspect::ext_intel_pci_address`, `ext::intel::info::device::pci_address` (string), and `ext::intel::info::device::device_id`; guard with `device.has(...)`, then catch query exceptions. The Unified Runtime spec describes PCI address as an optional null-terminated string but does not specify its serialization. For exact tuple assertion, the Level Zero typed BDF struct avoids relying on string formatting. Missing aspect/query or any exception must refuse, not substitute name/ordinal matching.
+
+## Failure semantics and limits
+
+The Level Zero headers enumerate explicit failures for extension discovery/function lookup and the PCI query, including `UNSUPPORTED_FEATURE`, `DEPENDENCY_UNAVAILABLE`, `INSUFFICIENT_PERMISSIONS`, `NOT_AVAILABLE`, `DEVICE_LOST`, and `DEVICE_REQUIRES_RESET`. Treat every non-success result or null function pointer as identity-unverified and refuse before work. Successful query proves which PCI function the selected runtime handle reports at admission; it does not prove the device will remain healthy later. Keep the runtime identity receipt alongside the process/session evidence. Do not use passive `/proc/<pid>/fdinfo`/DRM-node mapping as the primary check: it adds permission and runtime/fd mapping dependencies and may not establish the exact SYCL queue-to-device association.
+
+## Directly computed installed-header identities
+
+- `/opt/intel/oneapi/compiler/2026.1/include/sycl/ext/oneapi/backend/level_zero.hpp`: SHA-256 `30f86adea4a4be42714a6bef7b637b5a305afcb272cfcc31ad2547c6dd13de4b`.
+- `/opt/intel/oneapi/compiler/2026.1/include/sycl/backend.hpp`: `9cd1f90ee9e8847cad017c821a53a7ebf0b28590d0add44141b5e0234ce9b748`.
+- `/opt/intel/oneapi/compiler/2026.1/include/sycl/detail/backend_traits_level_zero.hpp`: `3307be81e73cdc1dd6149bac1a4b9e351f74641130aa6a4d720330f65c496711`.
+- `/opt/intel/oneapi/compiler/2026.1/include/sycl/info/ext_intel_device_traits.def`: `12254d7fe7d1a56aacc3f9379eb98665a7e3aa4587333c5bc8e59ef3cc5d39cf`.
+- `/opt/intel/oneapi/compiler/2026.1/include/sycl/info/aspects.def`: `1f815dddc65bf380ce6c5103db59fa9102c368f186b6bb66bb3b29ac16d2694d`.
+- `/usr/include/level_zero/ze_api.h`: `095a0eb442ae21946f29147c209f270b93dd0eb5b12a2d0c67e5f4138b533712`.
+- `/usr/include/level_zero/ze_ddi.h`: `c68e9bb4e725b1c8e75a63bcb6570cdfe3567269a3b2845eb4c9245839f47654`.
+
+## Primary references
+
+- Intel SYCL [Level Zero backend interoperability specification](https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/supported/sycl_ext_oneapi_backend_level_zero.md) documents the Level Zero backend/native interoperability.
+- Intel [Level Zero PCI Properties extension](https://oneapi-src.github.io/level-zero-spec/level-zero/latest/core/EXT_PCIProperties.html) defines the typed domain/bus/device/function BDF returned by `zeDevicePciGetPropertiesExt`.
+- Level Zero [Driver API](https://oneapi-src.github.io/level-zero-spec/level-zero/latest/core/api/apis/driver.html) documents driver extension enumeration and `zeDriverGetExtensionFunctionAddress`, including error results.
+- Intel LLVM [EnvironmentVariables.md](https://github.com/intel/llvm/blob/sycl/sycl/doc/EnvironmentVariables.md) describes selector filtering and `ZE_FLAT_DEVICE_HIERARCHY`'s tile/CCS mapping implications.
+- Intel [2026 release notes](https://www.intel.com/content/www/us/en/developer/articles/release-notes/oneapi-dpcpp/2026.html) note 2026.1's extension updates; the installed 2026.1 headers are the exact implementation declarations inspected here.

@@ -1,0 +1,37 @@
+# R130 — installed `native::exp` lowering provenance
+
+## Finding
+
+The installed frontend header establishes the source-level builtin choice, but it does not establish which algorithm or Xe instruction the installed driver JIT emits. The specific native-exp lowering, input range, error, and denormal behavior remain unproven for this installed compiler/IGC/driver combination. The precise missing evidence is the SPIR-V module for the affected kernel plus its matching JIT options and IGC output (vISA/ISA or equivalent lowering dump) produced by the installed runtime. No compiler, executable, runtime, GPU, or test was invoked for this investigation.
+
+## Installed chain and closed build receipt
+
+The closed CPU-only build record is `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-gate-factor-probe-20261010/bench/results/2026-10-10-gdn-gate-factor-probe-plan` (recorded revision `a0d25a1564dc32b4c8f8a9875b172ad44ea5063a`). Its compiler receipt identifies Intel DPC++ 2026.1.1 (`2026.1.1.20260724`), compiler path `/opt/intel/oneapi/compiler/2026.1/bin/compiler`, and the build flags `-O3 -DNDEBUG -std=c++20 -fsycl -fp-model=precise -fsycl-default-sub-group-size=32 -fsycl-device-code-split=per_kernel`; link options include `-fsycl -fsycl-device-code-split=per_kernel -Xsycl-target-backend=spir64 -cl-fp32-correctly-rounded-divide-sqrt`. The closed executable's direct dynamic imports include `libsycl.so.9`.
+
+Installed dpkg package identities recorded from package metadata:
+
+- `intel-oneapi-compiler-dpcpp-cpp` 2026.1.1-325, `intel-oneapi-compiler-dpcpp-cpp-runtime` 2026.1.1-325, and `intel-oneapi-compiler-dpcpp-cpp-common` 2026.1.1-325.
+- `intel-igc-core-2` and `intel-igc-opencl-2` 2.41.5; `libze-intel-gpu1` 26.31.39395.14; `libze1` 1.32.0-1; `libigdgmm12` 22.10.1.
+- Package ownership maps the SYCL headers to compiler-common, `libsycl.so.9.0.0` and `libsycl-jit.so.22.1` to compiler runtime, `/usr/local/lib/libigc.so.2.41.5+1788943183`, `libigdfcl` of the same release and `libopencl-clang2.so.22.1` to IGC packages, and `/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395` to the Intel GPU driver package. The Level Zero loader is `/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0`.
+
+Direct file hashes from the installed files identify the inspected artifacts: `native_math_functions.inc` `707ce2ffbce2fa271548534fc4ec13483a6b980de1352fb76c62f6b45988675c`; `sycl.hpp` `559aa856d25bcd3b0309740b5c19f6613134192c90b2028ff88bd4c68d73d516`; `libsycl.so.9.0.0` `d769a71f2c71530e59a5ba22831ec5a82edcde718076d2663772255498c8e053`; `libsycl-jit.so.22.1` `ab15f77f9974133aee6a67f633b7d9ab79505a248313ec070376508e44b916d0`; `libigc.so` `40badd8f1ee80ac844a8947f5e91e5654fbcd851caefe343b0e5ec4ce4d1b123`; `libigdfcl` `ece8bcd533a44cc1684c1f24eeeca3302e4d19307a806fad5f1b83171f9fc1c3`; `libopencl-clang2.so.22.1` `02ba9fb0f16b7f02c012095c46f8053c4bc20f9b5e3028eedff6dcfed94bfe`; `libze_intel_gpu.so.1.17.39395` `dfa844e5afd8e8f74bf5ce9da3ea2837706d9116bc8efeaed90efba5acaf7b1c`; loader `libze_loader.so.1.32.0` `b764efda507f173560fa6055d433dd5c76140180b4a7c532e1cea813cde67363`.
+
+## What the versioned source establishes
+
+The installed `sycl/detail/builtins/native_math_functions.inc` device-side macro implements `sycl::native::exp(x)` by calling `__spirv_ocl_native_exp(x)`. That is a frontend mapping to the OpenCL extended instruction in SPIR-V; it is not proof of later IGC algorithm selection or native machine code. The closed compiler build uses SPIR64 and embeds/loads SYCL device code, while the Level Zero driver and IGC are separate installed components. Intel's oneAPI guide describes runtime JIT from SPIR-V to device binary; IGC's VISA guide describes JIT finalization from virtual ISA to native GEN instructions. Those pipeline descriptions explain why an installed header or the host executable's imports alone cannot settle the final native sequence.
+
+I checked the exact IGC release lead: the installed IGC packages are 2.41.5 and Intel's public release list contains tag `v2.41.5` (release URL below). I did not find a version-pinned public implementation source for the final `native_exp` lowering or its flags in the checked source lead. The guessed `IGC/BiFModule/Implementation/Math/native_exp.cl` location is absent at that tag; the adjacent ordinary `exp.cl` implementation is not evidence for `native_exp`. Therefore I do not transfer an algorithm, input interval, error bound, or denormal policy from `exp`, a different IGC release, or an unpinned public compiler tree. Khronos specifies `native_exp` as OpenCL extended-instruction opcode 83 and leaves accuracy/input range implementation-defined; this describes the contract boundary, not this installation's implementation.
+
+Primary references:
+
+- Intel IGC v2.41.5 release/tag and package assets: https://github.com/intel/intel-graphics-compiler/releases/tag/v2.41.5
+- Intel DPC++/C++ Compiler 2026 release notes: https://www.intel.com/content/www/us/en/developer/articles/release-notes/oneapi-dpcpp/2026.html
+- Intel oneAPI Programming Guide (SPIR-V device JIT flow): https://cdrdv2-public.intel.com/848694/oneapi_programming-guide_2025.1-771723-848694.pdf
+- Intel IGC VISA introduction (runtime finalization to native GEN instructions): https://github.com/intel/intel-graphics-compiler/blob/master/documentation/visa/1_introduction.md (general pipeline documentation, not version-pinned lowering evidence)
+- Khronos OpenCL Extended Instruction Set Specification, `native_exp` opcode 83: https://registry.khronos.org/SPIR-V/specs/unified1/OpenCL.ExtendedInstructionSet.100.html
+
+## Bounded artifact needed to close the gap
+
+If the native-exp implementation question remains material, the minimum useful capture is one affected per-kernel device module and its matching driver-JIT record from the exact installation above: (1) the single kernel's SPIR-V/IL artifact; (2) the exact JIT options and compiler/driver/device identifiers; (3) the corresponding IGC vISA and, if available without broader capture, final ISA/lowering dump. A root-owned capture should be limited to 5 MiB total, excluding no required metadata; do not retain full API traces, repeated polling logs, raw timelines, unrelated kernels, or tensors. Record SHA-256 for each file, the installed package versions and library hashes above, the selected device and driver identity, and the capture command/tool version in a compact receipt. Retain it only until the specific lowering/range/denormal question is answered, then record the result and delete the raw files with a path/hash/reason manifest. No such capture was made here.
+
+This report makes no performance, mathematical-correctness, valid-domain, recurrence-equivalence, or model-reachability claim.
