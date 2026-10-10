@@ -1,0 +1,42 @@
+# R218 — copy-offload semantics and physical engine overlap
+
+Date: 2026-10-10 (Asia/Tokyo). Read-only evidence audit. Scope: `UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD=1`, the frozen prefill queue/copy path, and the minimum safe way to qualify compute/H2D overlap on the recorded B570 runtime. No source/runtime/environment change, build, test, inference, device/process query, GPU/profile run, Git operation, or cleanup was performed. Only this report was written.
+
+Frozen source: `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-prefill-phase-validity-20261010`, assigned HEAD `185fa78098bee4be01ac81ad4f791673d24246f3`. `sycl/src/prefill/prefill.cpp` SHA-256: `1a6598a158e0b11e79c7a9f93ba7e452e3c316f108e38a07ed88c88a04cc8b72`. No live implementation worktree was inspected.
+
+## Finding
+
+The documented intent of `UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD=1` is to keep copy operations on the engine behind the queue to which each copy was submitted; by default the L0 V2 adapter may offload copies submitted to any queue to dedicated copy engines. The control does not disable copies or their event dependencies. Since it is a development/debugging variable whose semantics can change, this is an Intel-documented behavior statement, not a stable production API guarantee.
+
+It is therefore plausible that disabling copy offload removes copy/compute overlap when a copy is submitted to a queue whose assigned engine is also used for compute. It is equally possible for an independent copy queue to be associated with a copy-capable or otherwise distinct engine and overlap compute. The setting and the existence of two logical queues do not tell us which case the installed runtime/driver uses on this B570. Do not infer either universal serialization or guaranteed overlap from the environment value alone.
+
+## What the frozen Strata path establishes
+
+`Prefill::init` binds `m.cs` to `strata::q_of(stream)` and rejects it unless it is in order (around lines 1051–1056). It creates a separate in-order queue `m.copy` with profiling enabled only when `STRATA_PREFILL_TRANSFER_TIMING` is present (around lines 1110–1113). The expert-copy path enqueues `queue::memcpy` to `m.stage_dev[sl]` on the copy queue. Sources include the expert blob and a host stager buffer, depending on the route (around lines 3415–3439 and 4694–4731). The copy completion event gates compute use of a filled stage slot, and the use event gates later slot reuse. These logical queue/event edges establish correctness ordering and potential scheduling freedom; source does not identify the Level Zero command-queue-group ordinal, physical engine index, or whether this driver runs the copy on a dedicated BCS engine, a CCS/compute engine, or another path.
+
+The two queues are created on the same selected device, but “separate SYCL queues” is not equivalent to “separate physical engines.” Even independent engine execution does not establish concurrent throughput: memory bandwidth, copy-engine capability, queue scheduling, host staging, command dependencies, and compute occupancy may constrain it.
+
+## Version and source confidence
+
+The closed hardware records available to the parent identify Intel DPC++/oneAPI 2026.1, Unified Runtime V2 adapter soname `libur_adapter_level_zero_v2.so.0.12.0`, and Intel compute-runtime/NEO package `26.31.39395.14`; the parent’s closed receipts also record `EnableDirectSubmission=0` and the copy-offload disable flag as the safety environment. I did not query the installed system or hardware. Earlier recorded package data identifies `libze-intel-gpu1 26.31.39395.14` and `libze1 1.32.0`.
+
+Intel’s official DPC++ environment-variable documentation directly defines the V2-only variable and warns that Level Zero adapter variables are for development/debugging and their semantics are subject to change. The current public docs are not pinned to the exact source revision used to build this installed UR 0.12.0 adapter. The installation’s matching adapter source commit was not identified in the closed receipts available here. Thus, the public description is strong guidance for intent, but I cannot assert byte-for-byte implementation identity or exact internal queue-selection branches for this binary.
+
+The Level Zero API models queue groups by capability flags and `numQueues` (physical engines in the group), while a command queue is created from a group ordinal and index. This is why the relevant identity for qualification is the actual engine/queue data observed at runtime, not a SYCL queue count. No B570 queue-group enumeration or engine mapping was performed in this audit.
+
+## Minimal safe qualification
+
+Keep the current V2 adapter, `UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD=1`, `EnableDirectSubmission=0`, binary, device, queue properties, copy source/destination allocation classes, and event topology unchanged. Do not run an offload A/B or alter the safety flags as part of this qualification.
+
+At a separately scheduled owner-run, use one short warmed qualification process with the smallest representative staged H2D and one representative prefill GEMM. First capture copy-only and GEMM-only controls, then the application’s actual overlap case: enqueue H2D for the next independent staging slot while GEMM consumes the already-filled current slot, preserving all existing copied/used waits. Include exact source/destination types (including the production pinned/stager route), byte count and GEMM shape. Verify correctness and drain/close normally. Keep profiling separate from accepted performance runs and account for its perturbation.
+
+Use PTI unitrace’s device timeline and Chrome kernel/device trace, retaining engine and queue fields (do not request the option that suppresses engine/queue data). Check that both the memcpy and the relevant GEMM/kernel operations are visible. Record queue/engine identifiers and their start/end timestamps. Report: (a) whether both operations actually overlap in device time, (b) whether they are on the same or distinct observed engine identity, (c) the overlap duration and fraction of each operation, (d) copy-only and GEMM-only versus concurrent throughput, and (e) full-request elapsed time. If the trace omits the memcpy, engine identity, dependencies, or part of multi-kernel GEMM work, report overlap/mapping as unknown and improve trace visibility before drawing a conclusion. Do not equate event timestamps or separate queue handles alone with physical engine mapping.
+
+This qualification answers whether overlap occurs under the current safe configuration. It does not establish that re-enabling offload is safe or faster; any future flag comparison needs separate authorization/scheduling and the established matched safety, correctness, normal-exit, fault and timing gates. Retain `UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD=1` and `EnableDirectSubmission=0` meanwhile.
+
+## Primary references
+
+- Intel DPC++ compiler documentation, Level Zero adapter debugging variables, including the V2-only copy-offload description and mutable/debug-only warning: https://intel.github.io/llvm/EnvironmentVariables.html#debugging-variables-for-level-zero-adapter
+- Level Zero specification, device command-queue group properties (`numQueues`) and compute/copy capability flags: https://oneapi-src.github.io/level-zero-spec/level-zero/latest/core/api/apis/device.html
+- Intel PTI-GPU `unitrace` README: device timeline, submission, Chrome device/kernel logging and engine/queue fields: https://github.com/intel/pti-gpu/blob/master/tools/unitrace/README.md
+- Prior frozen-source and retained-fault qualification (R79), useful context but not a measured overlap result: `/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/levelzero-v2-copy-offload-safe-overlap-round79.txt`.
