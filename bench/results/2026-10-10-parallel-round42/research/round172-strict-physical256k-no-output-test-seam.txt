@@ -1,0 +1,41 @@
+# R172 — strict physical 262144-token no-output lifecycle seam
+
+Read-only source review against `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-prefill-iq4nl-direct-20261010`, fixed commit `2ab09413117044d7499ac6acc6c12db404024f9d`. No source changes, build, runtime, device query, or Git operation was performed. This note develops the test seam; it does not claim the seam exists or that any 262144-token run has passed.
+
+## Existing boundary and why the seam must branch after the head
+
+`generate.cpp` currently rejects `max_new <= 0` and requires `tokens.size() <= max_context - max_new` (around 2352–2355). Physical session allocation and `session_init` receive `o.max_context` directly (around 3760–3775); that is the correct capacity authority. A strict test should keep both prompt length and configured context exactly 262144, and not count guard cells or reserve capacity as usable positions.
+
+The existing prompt split is suitable: `n_batched` is the prefix count (default `n_prompt - 1`), `prefill.run(..., n_batched, 0)` consumes the prefix, and the token loop begins at `pos_start=n_batched`. The ordinary loop performs `put_input`, `session_loop`/`session_token`, `run_head`, queue/fault checks, logits readback and validation for each input position. For the final prompt input at `pos == n_prompt-1`, the prediction becomes the first generated token; sampling currently happens before `produced` is incremented and the `max_new` break (around 12040–12135).
+
+Therefore the smallest meaningful no-output seam is a diagnostic-only run mode which still feeds the final prompt token through the existing full token/session/head path, then branches immediately after successful head completion and finite-logit validation, before `sample_tokens`, sampled-token readback, `produced.push_back`, or next-token bookkeeping. It must record that position `N-1` completed and drain the relevant queues before lifecycle snapshots. Simply setting `max_new=1` is not equivalent: it samples and creates output. Stopping after batched prefill also omits the final input position and its state update.
+
+Keep this mode opt-in and narrow: accept zero output only for the explicit no-output test mode, exact prompt length 262144, exact `max_context=262144`, and a validated split. Preserve ordinary validation and positive-output behavior in all other modes. Do not emulate the condition with `max_context=N+1`; the session must remain initialized at N.
+
+## Split controls
+
+Run the same complete 262144-token prompt in three arms, each with no output and the same initialized model/session conditions:
+
+* `262143 + 1`: batched prefix 262143, token loop consumes only position 262143. This matches the normal split and is the clean final-position control.
+* `262140 + 4`: prefix 262140, token loop consumes positions 262140–262143. This exercises a short but nontrivial token-loop tail. Existing `--prefill-until` logic honors only values `< n_prompt-1`, so 262140 is representable; 262143 currently collapses to the default and should be recorded explicitly as the default split.
+* `262144 + 0`: the strict arm is not a valid split: all N tokens must be consumed, with the final position processed by the token path. Use `262143 + 1` as the canonical physical-N execution, and label the strict requirement as `N consumed / 0 emitted`, not `N batched / 0 token-loop`.
+
+All arms must use byte-identical prompt token IDs. Compare final state snapshots across splits to establish split-path equivalence; separately compare repeated fresh-session runs for determinism. Do not reuse a session between arms unless the reset itself is the lifecycle under test and its full reset coverage is recorded.
+
+## Physical capacity, streaming and guard handling
+
+Session carve sizes are passed N, but there are multiple distinct capacities. QSA streaming reports resident cells (`n_slots*4`) versus configured `o.max_context`; pinned host KV stores the rest. Record the per-layer logical capacity, active/valid positions, mapped VMM bytes and host backing separately. Ensure the strict arm cannot write or accept position N. Add checked position receipts and canaries/guard validation at the end, including adjacent guard regions where the allocator exposes them; do not classify guard space as capacity.
+
+Elastic KV is a significant blocker to treating this as an exact allocation test without explicit accounting. `kvg_ensure` rounds growth to a configurable step and caps the target at `o.max_context` (around 6022–6025), while prompt setup requests `n_prompt + max_new + 64` in several paths (around 11738, 11782, 11855). At `max_new=0`, this still requests N+64, then caps at N. Per-token QSA growth checks include `p + T + 64` (around 11196). This can be safe if the logical cap remains N, but the test must prove that all writes stop below N and report allocated/padded/mapped capacity separately. For a strict boundary test, either disable elastic growth and exercise the fixed N session carve, or keep it enabled as a separately identified configuration and audit its target/cap receipts. Do not describe rounded or guard storage as 262144 usable cells.
+
+Vision paths also reserve/check an `o.max_context + 64` zone; reject multimodal/vision inputs for the minimal seam or explicitly account for those offsets and guards. The test prompt should be plain text to avoid this independent path.
+
+## Capture eligibility and lifecycle receipts
+
+Token graph capture is conditional on capture enabled, no token-graph disable flag, no layer/half dump, no native pack, no multi-GPU, and either no hit path or active residency hits (around 5766). `--no-capture` switches to `session_token`, has no CPU expert pool hook, and is incompatible with the pool unless paired with no-pool; it also disallows layer and half dumps (around 5183–5211). Consequently capture/no-capture are distinct execution configurations, not interchangeable validation switches. Run and label them separately if both matter. The strict seam must be placed outside capture recording/replay so it executes once per request after the final token's graph has completed; prove graph state is not reused across fresh lifecycles unless reuse is the test subject. Invalidate or reject incompatible capture/cache-release combinations already guarded by callbacks (around 11790–11800).
+
+For each arm record: source revision; mode and split; token-input count and exact last position; emitted token count (must be zero); sample-kernel/readback counters (must be zero); final logits validation outcome; queue-drain result; session and per-subsystem state hashes/snapshots (GDN, QSA KV/state/status, MTP, PLE history/window, and any other carved recurrent state); valid-position bitmap/high-water marks; cache/capture identity and hit/replay counts; physical/padded/mapped KV and session allocation figures; guard/canary status; and fresh initialization/reset evidence. The end receipt should fail closed if any output append/sample occurred, if the final consumed position differs from N-1, if any valid slot at N or higher exists, or if any state/canary check is missing.
+
+## Assessment
+
+The loop provides a clean test-only insertion point after full processing of the last prompt position and before sampling. The current positive-`max_new` validation and sampling are the only expected control-flow obstacles for the basic native path. Exact physical-capacity claims need additional proof because elastic KV uses growth rounding, guard slack, and separate streaming backing. Capture and no-capture modes must be treated as separate variants with their own fresh-session receipts. No source-level review can establish runtime correctness; the proposed receipts and boundary controls are prerequisites for claiming it.

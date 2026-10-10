@@ -1,0 +1,7 @@
+# Recurring parallel research, round 42
+
+R169–R172 were read fully and retained unchanged. Two distinct gpt-6-luna research streams ran while the root compiled and qualified the private IQ4_NL fixture on B570. Actual build/synthetic proof is committed at910874e2d7b3324ea33fafe0227abc1924635b4a. Model speed and strict physical262144 lifecycle remain untested.
+
+R169 source eligibility reaches shared layer-major run_impl. Its MMQ bypass discussion is conditional; this selected SYCL configuration links disabled stubs, as R171 confirms. R170 gives a supported completion/error-delivery boundary and host-task injection design, awaiting separate implementation and root testing. R171 admits no new external vector-store candidate because the current path already uses eight-half vector stores and the cited fused OpenCL GEMV does not establish transferable benefit. R172 proposes a private final-input/post-head no-output seam with exact context capacity and lifecycle controls; no implementation or full-context pass is claimed.
+
+The latest registry contains279 fully read Luna reports and past decisions. Repeat investigations with distinct actionable gaps; keep implementation separate and root-owned tests serialized. Two closed successful verbose logs were retired after their compact proof was pushed; byte/hash/deletion receipts are retained. No raw failure, small numerical transcript, fixture, binary or model was deleted.
