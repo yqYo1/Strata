@@ -1,0 +1,513 @@
+{
+  "active": false,
+  "complete": false,
+  "passed": false,
+  "started_utc": "2026-10-10T05:18:11.040905+00:00",
+  "controller_sha256": "300dc934bf89321cc929b2f18899192f45b697bc0941b659bf4760edfb0560c6",
+  "owner_sha256": "7df012ee4d9bd047a6094ccedb37fddb3d56d4b054d9fdf468534b0fb6e94e1f",
+  "source_head": "9e54ed18c0e374289293838b026e3e69b1c1fe70",
+  "build_receipt": {
+    "bytes": 103822,
+    "sha256": "4c57d5fc4d6e2361d8014ca1b0b788e7adbc0bea929da02156adb8c79f05fbea"
+  },
+  "binary": {
+    "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq4nl-event-receipt-20261010/build-sycl-iq4nl-event-receipt-v1/prefill_iq4nl_parity",
+    "bytes": 8062416,
+    "sha256": "154ad0288a165871f55bbb57b124a6d7df226b017d4ba1185da10ac2e17636f7"
+  },
+  "environment": {
+    "PATH": "/usr/bin:/bin",
+    "LANG": "C.UTF-8",
+    "LC_ALL": "C.UTF-8",
+    "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/compiler/2026.1/opt/compiler/lib:/opt/intel/oneapi/tcm/1.5/lib:/opt/intel/oneapi/umf/1.1/lib:/opt/intel/oneapi/tcm/1.5/env/../lib:/opt/intel/oneapi/tbb/2023.1/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/pti/1.1/lib:/opt/intel/oneapi/mpi/2021.18/opt/mpi/libfabric/lib:/opt/intel/oneapi/mpi/2021.18/lib:/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/ippcp/2026.0/lib/:/opt/intel/oneapi/ipp/2026.0/lib:/opt/intel/oneapi/dnnl/2026.0/lib:/opt/intel/oneapi/debugger/2026.1/opt/debugger/lib:/opt/intel/oneapi/compiler/2026.1/opt/compiler/lib:/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/ccl/2022.1/lib/:/usr/lib/x86_64-linux-gnu",
+    "ZEL_ENABLE_LOADER_LOGGING": "1",
+    "ZEL_LOADER_LOG_CONSOLE": "1",
+    "ZEL_LOADER_LOGGING_LEVEL": "trace",
+    "ZEL_LOADER_LOGGING_ENABLE_SUCCESS_PRINT": "1",
+    "ZE_ENABLE_VALIDATION_LAYER": "1",
+    "ZE_ENABLE_PARAMETER_VALIDATION": "1",
+    "UR_LOG_LOADER": "level:debug;flush:debug;output:stderr",
+    "UR_LOG_LEVEL_ZERO": "level:debug;flush:debug;output:stderr",
+    "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+    "STRATA_TRACE": "1",
+    "UR_ENABLE_LAYERS": "UR_LAYER_TRACING",
+    "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.1/lib/libur_adapter_level_zero_v2.so.0",
+    "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+    "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+    "SYCL_CACHE_PERSISTENT": "0",
+    "EnableDirectSubmission": "0"
+  },
+  "runtime_pins": {
+    "/opt/intel/oneapi/compiler/2026.1/lib/libsycl.so.9": {
+      "realpath": "/opt/intel/oneapi/compiler/2026.1/lib/libsycl.so.9.0.0",
+      "sha256": "d769a71f2c71530e59a5ba22831ec5a82edcde718076d2663772255498c8e053"
+    },
+    "/opt/intel/oneapi/compiler/2026.1/lib/libur_loader.so.0": {
+      "realpath": "/opt/intel/oneapi/compiler/2026.1/lib/libur_loader.so.0.12.0",
+      "sha256": "5338c03524f6d3fdd7d6067e5a3f84315e36e11fe1f526d5bbd02d0c88f82a32"
+    },
+    "/opt/intel/oneapi/compiler/2026.1/lib/libur_adapter_level_zero_v2.so.0": {
+      "realpath": "/opt/intel/oneapi/compiler/2026.1/lib/libur_adapter_level_zero_v2.so.0.12.0",
+      "sha256": "bfdc0f26bf88bd0bccd66fc25302a4b22559f8fe30e499be18529be3ed610e60"
+    },
+    "/usr/lib/x86_64-linux-gnu/libze_loader.so.1": {
+      "realpath": "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0",
+      "sha256": "b764efda507f173560fa6055d433dd5c76140180b4a7c532e1cea813cde67363"
+    },
+    "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1": {
+      "realpath": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395",
+      "sha256": "dfa844e5afd8e8f74bf5ce9da3ea2837706d9116bc8efeaed90efba5acaf7b1c"
+    }
+  },
+  "commands": [
+    {
+      "label": "journal-cursor",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "-n",
+        "0",
+        "--show-cursor",
+        "--no-pager"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T05:18:11.041607+00:00",
+      "wall_seconds": 5,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 346306,
+          "start_ticks": 29917015,
+          "sid": 346306,
+          "pgid": 346306
+        }
+      ],
+      "pid": 346306,
+      "direct_identity": {
+        "pid": 346306,
+        "state": "R",
+        "ppid": 346241,
+        "pgid": 346306,
+        "sid": 346306,
+        "start_ticks": 29917015,
+        "rss_bytes": 483328
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T05:18:11.199749+00:00",
+      "elapsed_seconds": 0.15758193604415283,
+      "logs": {
+        "journal-cursor.stdout": {
+          "bytes": 156,
+          "sha256": "82035557ff65c06147d3604afd99d6916492e0d52d64ef8ff63907a002f90fef"
+        },
+        "journal-cursor.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "dynamic-dependencies",
+      "argv": [
+        "/usr/bin/ldd",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq4nl-event-receipt-20261010/build-sycl-iq4nl-event-receipt-v1/prefill_iq4nl_parity"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/compiler/2026.1/opt/compiler/lib:/opt/intel/oneapi/tcm/1.5/lib:/opt/intel/oneapi/umf/1.1/lib:/opt/intel/oneapi/tcm/1.5/env/../lib:/opt/intel/oneapi/tbb/2023.1/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/pti/1.1/lib:/opt/intel/oneapi/mpi/2021.18/opt/mpi/libfabric/lib:/opt/intel/oneapi/mpi/2021.18/lib:/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/ippcp/2026.0/lib/:/opt/intel/oneapi/ipp/2026.0/lib:/opt/intel/oneapi/dnnl/2026.0/lib:/opt/intel/oneapi/debugger/2026.1/opt/debugger/lib:/opt/intel/oneapi/compiler/2026.1/opt/compiler/lib:/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/ccl/2022.1/lib/:/usr/lib/x86_64-linux-gnu",
+        "ZEL_ENABLE_LOADER_LOGGING": "1",
+        "ZEL_LOADER_LOG_CONSOLE": "1",
+        "ZEL_LOADER_LOGGING_LEVEL": "trace",
+        "ZEL_LOADER_LOGGING_ENABLE_SUCCESS_PRINT": "1",
+        "ZE_ENABLE_VALIDATION_LAYER": "1",
+        "ZE_ENABLE_PARAMETER_VALIDATION": "1",
+        "UR_LOG_LOADER": "level:debug;flush:debug;output:stderr",
+        "UR_LOG_LEVEL_ZERO": "level:debug;flush:debug;output:stderr",
+        "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+        "STRATA_TRACE": "1",
+        "UR_ENABLE_LAYERS": "UR_LAYER_TRACING",
+        "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.1/lib/libur_adapter_level_zero_v2.so.0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "EnableDirectSubmission": "0"
+      },
+      "started_utc": "2026-10-10T05:18:11.200777+00:00",
+      "wall_seconds": 20,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 346310,
+          "start_ticks": 29917031,
+          "sid": 346310,
+          "pgid": 346310
+        }
+      ],
+      "pid": 346310,
+      "direct_identity": {
+        "pid": 346310,
+        "state": "R",
+        "ppid": 346241,
+        "pgid": 346310,
+        "sid": 346310,
+        "start_ticks": 29917031,
+        "rss_bytes": 282624
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T05:18:11.364257+00:00",
+      "elapsed_seconds": 0.16276725695934147,
+      "logs": {
+        "dynamic-dependencies.stdout": {
+          "bytes": 1309,
+          "sha256": "6681cf56df0ff8388c8db5ea18ecd232de72b2de948f7f4cb80532dd26e2bc93"
+        },
+        "dynamic-dependencies.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "host-contract",
+      "argv": [
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq4nl-event-receipt-20261010/build-sycl-iq4nl-event-receipt-v1/prefill_iq4nl_parity",
+        "--host-only"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/compiler/2026.1/opt/compiler/lib:/opt/intel/oneapi/tcm/1.5/lib:/opt/intel/oneapi/umf/1.1/lib:/opt/intel/oneapi/tcm/1.5/env/../lib:/opt/intel/oneapi/tbb/2023.1/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/pti/1.1/lib:/opt/intel/oneapi/mpi/2021.18/opt/mpi/libfabric/lib:/opt/intel/oneapi/mpi/2021.18/lib:/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/ippcp/2026.0/lib/:/opt/intel/oneapi/ipp/2026.0/lib:/opt/intel/oneapi/dnnl/2026.0/lib:/opt/intel/oneapi/debugger/2026.1/opt/debugger/lib:/opt/intel/oneapi/compiler/2026.1/opt/compiler/lib:/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/ccl/2022.1/lib/:/usr/lib/x86_64-linux-gnu",
+        "ZEL_ENABLE_LOADER_LOGGING": "1",
+        "ZEL_LOADER_LOG_CONSOLE": "1",
+        "ZEL_LOADER_LOGGING_LEVEL": "trace",
+        "ZEL_LOADER_LOGGING_ENABLE_SUCCESS_PRINT": "1",
+        "ZE_ENABLE_VALIDATION_LAYER": "1",
+        "ZE_ENABLE_PARAMETER_VALIDATION": "1",
+        "UR_LOG_LOADER": "level:debug;flush:debug;output:stderr",
+        "UR_LOG_LEVEL_ZERO": "level:debug;flush:debug;output:stderr",
+        "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+        "STRATA_TRACE": "1",
+        "UR_ENABLE_LAYERS": "UR_LAYER_TRACING",
+        "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.1/lib/libur_adapter_level_zero_v2.so.0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "EnableDirectSubmission": "0"
+      },
+      "started_utc": "2026-10-10T05:18:11.714452+00:00",
+      "wall_seconds": 30,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 346337,
+          "start_ticks": 29917082,
+          "sid": 346337,
+          "pgid": 346337
+        }
+      ],
+      "pid": 346337,
+      "direct_identity": {
+        "pid": 346337,
+        "state": "R",
+        "ppid": 346241,
+        "pgid": 346337,
+        "sid": 346337,
+        "start_ticks": 29917082,
+        "rss_bytes": 131072
+      },
+      "peak_session_rss_bytes": 11239424,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T05:18:11.882240+00:00",
+      "elapsed_seconds": 0.16693920700345188,
+      "logs": {
+        "host-contract.stdout": {
+          "bytes": 74,
+          "sha256": "802b72287118837e39ecab907327f4e2d9a5b026b80ebd3a324a5bf824b57962"
+        },
+        "host-contract.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "iq4nl-probe",
+      "argv": [
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq4nl-event-receipt-20261010/build-sycl-iq4nl-event-receipt-v1/prefill_iq4nl_parity"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/compiler/2026.1/opt/compiler/lib:/opt/intel/oneapi/tcm/1.5/lib:/opt/intel/oneapi/umf/1.1/lib:/opt/intel/oneapi/tcm/1.5/env/../lib:/opt/intel/oneapi/tbb/2023.1/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/pti/1.1/lib:/opt/intel/oneapi/mpi/2021.18/opt/mpi/libfabric/lib:/opt/intel/oneapi/mpi/2021.18/lib:/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/ippcp/2026.0/lib/:/opt/intel/oneapi/ipp/2026.0/lib:/opt/intel/oneapi/dnnl/2026.0/lib:/opt/intel/oneapi/debugger/2026.1/opt/debugger/lib:/opt/intel/oneapi/compiler/2026.1/opt/compiler/lib:/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/ccl/2022.1/lib/:/usr/lib/x86_64-linux-gnu",
+        "ZEL_ENABLE_LOADER_LOGGING": "1",
+        "ZEL_LOADER_LOG_CONSOLE": "1",
+        "ZEL_LOADER_LOGGING_LEVEL": "trace",
+        "ZEL_LOADER_LOGGING_ENABLE_SUCCESS_PRINT": "1",
+        "ZE_ENABLE_VALIDATION_LAYER": "1",
+        "ZE_ENABLE_PARAMETER_VALIDATION": "1",
+        "UR_LOG_LOADER": "level:debug;flush:debug;output:stderr",
+        "UR_LOG_LEVEL_ZERO": "level:debug;flush:debug;output:stderr",
+        "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+        "STRATA_TRACE": "1",
+        "UR_ENABLE_LAYERS": "UR_LAYER_TRACING",
+        "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.1/lib/libur_adapter_level_zero_v2.so.0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "EnableDirectSubmission": "0"
+      },
+      "started_utc": "2026-10-10T05:18:11.885049+00:00",
+      "wall_seconds": 240,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 346346,
+          "start_ticks": 29917099,
+          "sid": 346346,
+          "pgid": 346346
+        }
+      ],
+      "pid": 346346,
+      "direct_identity": {
+        "pid": 346346,
+        "state": "R",
+        "ppid": 346241,
+        "pgid": 346346,
+        "sid": 346346,
+        "start_ticks": 29917099,
+        "rss_bytes": 131072
+      },
+      "peak_session_rss_bytes": 149598208,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T05:18:13.120283+00:00",
+      "elapsed_seconds": 1.2344595319591463,
+      "logs": {
+        "iq4nl-probe.stdout": {
+          "bytes": 42251,
+          "sha256": "199995cd498d4b0aa36d1e1c7d5e5bfb4ccc662419974c40feefa5d511dcac3c"
+        },
+        "iq4nl-probe.stderr": {
+          "bytes": 1475342,
+          "sha256": "c322ae190c4cf42d3d0e826571f5989ef05e737c8b24ac72e68ae67b56face80"
+        }
+      }
+    },
+    {
+      "label": "fault-observation-after-failure",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "--after-cursor=s=3ad31c4e321d43ad949846afdb43877a;i=c02d4ff;b=0a908c16e292429980ff082da39f4bb9;m=45a5f2280b;t=65d75954e0ec8;x=105937b8d1e8ea12",
+        "--no-pager",
+        "-o",
+        "short-monotonic"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T05:18:13.125319+00:00",
+      "wall_seconds": 5,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 346424,
+          "start_ticks": 29917223,
+          "sid": 346424,
+          "pgid": 346424
+        }
+      ],
+      "pid": 346424,
+      "direct_identity": {
+        "pid": 346424,
+        "state": "R",
+        "ppid": 346241,
+        "pgid": 346424,
+        "sid": 346424,
+        "start_ticks": 29917223,
+        "rss_bytes": 446464
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T05:18:13.292468+00:00",
+      "elapsed_seconds": 0.1664039859897457,
+      "logs": {
+        "fault-observation-after-failure.stdout": {
+          "bytes": 17,
+          "sha256": "19c4e28b2f54ea8f217db4e622b0a5c758efa7b77ce2dc0394b6d159568c0b2e"
+        },
+        "fault-observation-after-failure.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "GPU_runtime_launched": true,
+  "model_opened": false,
+  "adopted": false,
+  "performance_eligible": false,
+  "full_physical_KV_lifecycle": false,
+  "boot_id": "0a908c16-e292-4299-80ff-082da39f4bb9",
+  "scope": "Synthetic exact IQ4NL A/B, independent RNE and exact-event receipt qualification; no batched service/model/performance/fullKV/adoption",
+  "limits": {
+    "AS_each_bytes": 17179869184,
+    "RSS_session_sampled_bytes": 2147483648,
+    "CPU_each_seconds": [
+      120,
+      121
+    ],
+    "GPU_wall_seconds": 240,
+    "text_cap_bytes": 33554432,
+    "file_cap_each_bytes": 16777216
+  },
+  "devcoredump_before": false,
+  "kernel_cursor": "s=3ad31c4e321d43ad949846afdb43877a;i=c02d4ff;b=0a908c16e292429980ff082da39f4bb9;m=45a5f2280b;t=65d75954e0ec8;x=105937b8d1e8ea12",
+  "resolved_dependency_pins": {
+    "/usr/lib/x86_64-linux-gnu/libze_loader.so.1": {
+      "realpath": "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0",
+      "bytes": 777528,
+      "sha256": "b764efda507f173560fa6055d433dd5c76140180b4a7c532e1cea813cde67363"
+    },
+    "/usr/lib/x86_64-linux-gnu/libstdc++.so.6": {
+      "realpath": "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33",
+      "bytes": 2592224,
+      "sha256": "1fd75fe70354a416d75aef22bcae68c47bd25d20e2d0568c30b1a9838cf62f11"
+    },
+    "/usr/lib/x86_64-linux-gnu/libm.so.6": {
+      "realpath": "/usr/lib/x86_64-linux-gnu/libm.so.6",
+      "bytes": 952616,
+      "sha256": "fce00b6f25f459cf4ae0b7fae4257909a1a8a86f9149e7c029a5d617baf1ccd0"
+    },
+    "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1": {
+      "realpath": "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1",
+      "bytes": 183024,
+      "sha256": "d93224d2b0dab4247598be683adca02f5cf00586f99c187579cd7e92058fb7cb"
+    },
+    "/opt/intel/oneapi/compiler/2026.1/lib/libsycl.so.9": {
+      "realpath": "/opt/intel/oneapi/compiler/2026.1/lib/libsycl.so.9.0.0",
+      "bytes": 11686656,
+      "sha256": "d769a71f2c71530e59a5ba22831ec5a82edcde718076d2663772255498c8e053"
+    },
+    "/usr/lib/x86_64-linux-gnu/libc.so.6": {
+      "realpath": "/usr/lib/x86_64-linux-gnu/libc.so.6",
+      "bytes": 2129424,
+      "sha256": "3a15d66867d83762c7f2f1e37359cb8f6c5743edb369c65285cb0b1c4f7498bf"
+    },
+    "/lib64/ld-linux-x86-64.so.2": {
+      "realpath": "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+      "bytes": 236616,
+      "sha256": "c20a2dc8917c755f02b94049356320fe1f62ac7d9f8994731f807d9df39302da"
+    },
+    "/usr/lib/x86_64-linux-gnu/libdl.so.2": {
+      "realpath": "/usr/lib/x86_64-linux-gnu/libdl.so.2",
+      "bytes": 14408,
+      "sha256": "c2994527172cc23b7fb0f7d611b71e00a37da27af12c2e5e9e0dc1a742886c96"
+    },
+    "/opt/intel/oneapi/compiler/2026.1/lib/libur_loader.so.0": {
+      "realpath": "/opt/intel/oneapi/compiler/2026.1/lib/libur_loader.so.0.12.0",
+      "bytes": 25026736,
+      "sha256": "5338c03524f6d3fdd7d6067e5a3f84315e36e11fe1f526d5bbd02d0c88f82a32"
+    },
+    "/usr/lib/x86_64-linux-gnu/libpthread.so.0": {
+      "realpath": "/usr/lib/x86_64-linux-gnu/libpthread.so.0",
+      "bytes": 14408,
+      "sha256": "90491a21ce44efcf3bd4b65ec82501c091d7ebe7f8d9b341dd01d721001d9ecd"
+    },
+    "/usr/lib/x86_64-linux-gnu/librt.so.1": {
+      "realpath": "/usr/lib/x86_64-linux-gnu/librt.so.1",
+      "bytes": 14624,
+      "sha256": "6d072187d88e092e81561a44c03a4a41397319022c6d43519757cc051c576d82"
+    },
+    "/opt/intel/oneapi/compiler/2026.1/lib/libimf.so": {
+      "realpath": "/opt/intel/oneapi/compiler/2026.1/lib/libimf.so",
+      "bytes": 4865192,
+      "sha256": "67a4b6c27002f59f26c411f4ec384300d781365af19d6a2eb9f0dd94d2a0f470"
+    },
+    "/usr/lib/x86_64-linux-gnu/libz.so.1": {
+      "realpath": "/usr/lib/x86_64-linux-gnu/libz.so.1.3",
+      "bytes": 113000,
+      "sha256": "86200da370f20476a2507e9097a789b5ef97269b4ca8d5e164ad82dab9d99892"
+    },
+    "/opt/intel/oneapi/compiler/2026.1/lib/libsvml.so": {
+      "realpath": "/opt/intel/oneapi/compiler/2026.1/lib/libsvml.so",
+      "bytes": 28103240,
+      "sha256": "a6dbbc425c8270c3485e40ef0924ef38ed89ced4026056fd3f1f529774c4f86c"
+    },
+    "/opt/intel/oneapi/compiler/2026.1/lib/libirng.so": {
+      "realpath": "/opt/intel/oneapi/compiler/2026.1/lib/libirng.so",
+      "bytes": 1100272,
+      "sha256": "2cd4057ba6bcd9235685597098c3bdc9811e1de0a457f7a0a2aa47ce691995c7"
+    },
+    "/opt/intel/oneapi/compiler/2026.1/lib/libintlc.so.5": {
+      "realpath": "/opt/intel/oneapi/compiler/2026.1/lib/libintlc.so.5",
+      "bytes": 415824,
+      "sha256": "612ab119242ccda945de6eb354369b5bee6a158bc9724e4da5e466cb0ad630db"
+    }
+  },
+  "host_contract_passed": true,
+  "stdout_record_counts": {
+    "CASE": 84,
+    "CONSTRUCTOR": 20,
+    "CONSTRUCTOR_RESULT": 1,
+    "FP16_CONFIG": 1,
+    "HOST_PASS": 1,
+    "IDENTITY": 1,
+    "PASS": 1,
+    "RECEIPT": 168,
+    "RECEIPT_QUEUE": 1,
+    "STAGE": 341,
+    "TERMINAL": 1
+  },
+  "error": "AssertionError: missing/unexpected/unordered record",
+  "journal_status": "complete",
+  "visible_kernel_GPU_entries": [],
+  "devcoredump_after": false,
+  "finished_utc": "2026-10-10T05:18:14.210596+00:00"
+}
