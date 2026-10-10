@@ -1,0 +1,35 @@
+{
+  "created_utc": "2026-10-10T11:38:12.948375+00:00",
+  "scope": "Separate metadata/source reconciliation; original R248 and correction receipt remain unchanged.",
+  "prior_correction": {
+    "path": "residual-dimension-correction.json",
+    "bytes": 4736,
+    "sha256": "dbae3d393bd7a172872ecbc133dcb7aa3827d899fa4cda78f262d80e56154412"
+  },
+  "current_pack_census": {
+    "path": "bench/results/2026-10-10-current-native-pack-census/receipt.json",
+    "commit": "987bad55d75c7fef36152620fb9518bab9d9f94f",
+    "bytes": 78372,
+    "sha256": "902283e324b339127a9eb197954260ab606e32767b4e9acaf1d17e2463d31f84"
+  },
+  "layout_source": {
+    "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-prefill-service-events-20261010/include/strata/core/layout.hpp",
+    "bytes": 4392,
+    "sha256": "20afe27849aa28de7ec2f19fbf4be212240504008c643331eadbc10934821c0b"
+  },
+  "qsa_source": {
+    "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-prefill-service-events-20261010/include/strata/kernels/qsa.hpp",
+    "bytes": 25547,
+    "sha256": "87c02222284f842fcecb46a422b119af769c72c3914edc8da5b2ee782456dc74"
+  },
+  "corrected_QSA_heads": 2,
+  "corrected_QSA_head_dim": 256,
+  "prior_R248_QSA_heads": 4,
+  "prior_R248_QSA_head_dim": 128,
+  "explanation": "R248 transcribed the head decomposition incorrectly. Current header and source specify2heads*256; product512 matches prior4*128, so all quoted FP16KV byte totals and QSA subtotal bytes remain unchanged. Do not use prior decomposition for attention geometry or other workspace formulas.",
+  "current_MAXBLOB": 2662400,
+  "current_layer_cache_MAXBLOB_times512_bytes": 1363148800,
+  "GDN_recurrence_bytes": 113246208,
+  "GDN_convolution_history_bytes": 4423680,
+  "limitations": "Header/source metadata does not attest actual selected route, residency, free memory, graph/allocator peaks or full-context correctness. Current pack matches historical maximum size arithmetic but memory admission is still unmeasured."
+}

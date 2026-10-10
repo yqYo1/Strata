@@ -1,0 +1,73 @@
+# R249 — layer-major residual prefix: exact traffic, ownership, and admission gates
+
+Date: 2026-10-10 (Asia/Tokyo). Read-only audit of frozen source and committed arithmetic correction. This derives source behavior and a qualification plan; it is not a run, memory-fit claim, performance result, or candidate approval. No Git command, source edit, build, test, profile, inference, process/GPU/hardware query, model payload read, or cleanup was performed.
+
+## Finding
+
+`STRATA_PREFILL_LAYER_MAJOR_R_GPU` partitions the persistent inter-layer residual plane by complete prefill chunks. It does not make the residual plane smaller: it moves a prefix of rows from host `rows` into device backing. With `D=10,240` FP32 floats per position, every row occupies 40,960 bytes. With 48 model layers, there are 47 residual handoffs. For `G` effective GPU-prefix positions and `H=n-G` host positions:
+
+- Total backing extent remains `n * 40,960` bytes, split into `G * 40,960` device bytes and `H * 40,960` host bytes (except the optional first-chunk in-place reuse described below).
+- Each handoff copies the host suffix from device to host once and host to device once: `H * 40,960` bytes per direction per boundary. Across the 47 boundaries that is `47 * H * 40,960` bytes in each direction.
+- Ordinary mixed placement also copies the GPU prefix between `m.R` chunk scratch and persistent residual device rows in each direction. That is `47 * G * 40,960` bytes per direction of device-to-device traffic. Thus normal mixed placement moves the whole `n`-row plane per direction at every boundary; it changes where those bytes travel, not the total logical copy volume.
+- Only the special all-GPU in-place case avoids those residual row copies: chunk compute aliases `m.R` with the persistent GPU rows, so input and output already own the same chunk range. It reuses the existing `m.R` allocation for the first chunk and allocates the remaining GPU prefix. No in-place reuse is admitted for a mixed host/GPU split.
+
+This separates two candidate benefits. Loading each expert's packed weights once per layer and reusing that layer cache across chunks removes repeated weight loads relative to chunk-major order. It does not imply that residual copies overlap those loads or compute. The current layer-major code serializes the expert-load stage (wait for each staged blob/copy, then `m.copy->wait()` and `m.stager->finish()`) before the layer's `run_impl` chunks. Residual callbacks and uploads are explicitly waited. Any overlap claim needs event evidence from a new run; the source sequence itself does not support adding residual and weight time as concurrent work.
+
+## Source basis and effective-prefix rounding
+
+Frozen source: `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-prefill-service-events-20261010`, commit `495369cf4dc6e6da564095a1c26504dd3694e3f2`; `sycl/src/prefill/prefill.cpp` SHA-256 `f6cbc4acb9f84b19480a25892a2e6864896a3e3ab0f68ace3c3f51a788591f69`. The residual formulas below use the R248 geometry and the correction record, not newly measured pack metadata. The committed correction is `bench/results/2026-10-10-hardware-architecture-decisions/residual-dimension-correction.json`; it corrects `D` from the hidden expert width 2,560 to the four-stream residual width `N*HC = 10,240` and supersedes the earlier scenario numbers.
+
+The effective `G` selection in `run_layer_major` is:
+
+1. Parse the environment integer and clamp the request to `[0,n]`.
+2. Let `F` (`first_len`) be the configured first chunk if `0 < STRATA_PREFILL_FIRST < m.T` and `n > 2*STRATA_PREFILL_FIRST`; otherwise `F=min(m.T,n)`. The default configured first chunk is 256 only when the full expert cache is present; otherwise it is zero, which selects `F=min(m.T,n)`.
+3. If requested GPU tokens are less than `n`, round to a chunk boundary: requests below `F` become `G=0`; otherwise `G=F + floor((request-F)/m.T)*m.T`. A request exactly `n` bypasses rounding and sets `G=n`, including a final short tail. For any partial prefix, the residual host/device boundary is therefore a chunk boundary and a chunk never straddles stores.
+
+The actual `m.T`, `STRATA_PREFILL_FIRST`, cache state, and `n` must be recorded before calculating a requested prefix. An environment request alone is not the effective placement. The callback copies GPU rows with `device_residual` and host rows with `activation`; for each following layer `run_impl` uploads that same stored range back to `m.R`, then waits for the upload. The next layer overwrites the same persistent row interval only after consuming the prior contents. Layer boundaries also wait on compute/copy queues and finish the stager.
+
+## Exact transfer and backing formulas
+
+Let `B = D * sizeof(float) = 40,960 B/position`, `L=48`, and `E=L-1=47`. In non-in-place mode:
+
+| Quantity | Formula | Meaning |
+|---|---:|---|
+| Total residual extent | `n*B` | Host plus GPU backing; independent of placement |
+| Host backing | `(n-G)*B` | `std::vector<float> rows` |
+| GPU backing | `G*B` | `malloc_device` rows |
+| Host D2H payload | `E*(n-G)*B` | Each non-final layer writes host suffix rows |
+| Host H2D payload | `E*(n-G)*B` | Each later layer reloads host suffix rows |
+| Device D2D payload | `E*G*B` per direction | Persist GPU prefix to/from chunk scratch at every handoff |
+| All residual copy payload | `E*n*B` per direction | Host plus device lanes, absent all-GPU in-place |
+
+The corrected all-host scenario (`G=0`) therefore gives 1.25 GiB host backing and 63,082,332,160 B H2D plus the same D2H at 32,768 positions; at 262,144 it gives 10 GiB host backing and 504,658,657,280 B per direction. These are repeated copy payload totals implied by source boundaries, not unique bytes, measured bus traffic, or measured time. With a partial GPU prefix, replace `n` by `n-G` for host-link payload, while the device copy lane gets `G` rows per direction per edge. The total copy payload remains 126,164,664,320 B round-trip at 32K or 1,009,317,314,560 B at 256K in non-in-place mode.
+
+Examples, taking `G` as already rounded to a legal prefix:
+
+| `n` | `G` | Host backing | Host H2D payload | Host D2H payload | Device D2D payload, each direction | Total backing |
+|---:|---:|---:|---:|---:|---:|---:|
+| 32,768 | 0 | 1,342,177,280 B | 63,082,332,160 B | 63,082,332,160 B | 0 B | 1,342,177,280 B |
+| 32,768 | 8,192 | 1,006,632,960 B | 47,311,749,120 B | 47,311,749,120 B | 15,770,583,040 B | 1,342,177,280 B |
+| 262,144 | 0 | 10,737,418,240 B | 504,658,657,280 B | 504,658,657,280 B | 0 B | 10,737,418,240 B |
+| 262,144 | 32,768 | 9,395,240,960 B | 441,576,325,120 B | 441,576,325,120 B | 63,082,332,160 B | 10,737,418,240 B |
+
+The sample prefixes are arithmetic illustrations; they are not guaranteed reachable without matching the actual `F` and `m.T`. Every added legal GPU-prefix row saves 40,960 B of host backing and 1,925,120 B of host transfer in each direction across all 47 boundaries, while adding 40,960 B of GPU backing and ordinarily the same 1,925,120 B per direction of device-to-device traffic. It does not reduce total backing or total non-in-place copy payload.
+
+When `STRATA_PREFILL_LAYER_MAJOR_R_INPLACE` is enabled and `G=n`, source sets `reused_tokens=F`, maps those rows onto the pre-existing `restore.r` (`m.R`) scratch allocation, and allocates only `(n-F)*B` new device bytes. The total row-plane extent is still `n*B`; only the incremental device allocation falls by `F*B` because that scratch was already live. This optimization is unavailable for a partial prefix (`reused_tokens=0`) and does not eliminate QSA/session/workspace allocations. Verify the actual scratch capacity and non-alias assumptions for the active chunk shape before qualifying it.
+
+## What a larger GPU prefix can and cannot buy
+
+Increasing `G` can reduce pageable/host-USM host residual backing and the corresponding host-link copy count proportionally to `n-G`; it cannot reduce total residual rows. In the normal mixed mode it substitutes persistent GPU rows plus device-to-device copies, and raises device memory demand. At 256K, the existing all-GPU residual alone is 10 GiB, already 71,303,168 B beyond the cited 10,666,115,072 B total-device-capacity receipt before any other GPU allocations. Any partial `G` still competes with resident 6-GiB K/V, pooled indexer/RoPE, GDN, base/dense weights, layer expert cache, session/prefill scratch and runtime/graph allocations; free-at-allocation is needed, not total capacity. At 32K, the full residual is 1.25 GiB, but no current full-run free/peak receipt demonstrates that it fits alongside these live objects.
+
+The R248 source guard rejects `kv_mode != 0`, so current layer-major requires resident K/V even at 32K. No GPU-prefix change makes streamed-KV eligible. Host placement itself requires headroom for `H*B` plus the resident RAM expert arena/weights, PLE cache or mmap working set, allocator/page cache, and possible snapshot cache bytes. If cache snapshot mode is used, those saved bytes can overlap host residual storage; RAM restore mode avoids a second snapshot only when the complete resident arena exists. Record both device and host phase peaks.
+
+## Finite admission and numerical qualification
+
+Before any candidate timing, qualify one immutable source/binary/pack and the current call:
+
+1. Record `n`, `pos0`, `m.T`, `STRATA_PREFILL_FIRST`, requested and effective `G`, final-tail chunk schedule, `D`, `L`, and the exact allocation sizes. Confirm full single-GPU compact FP16/source route, `kv_mode=0` for every QSA state, no helper/peer path, and no PLE preload. A 262,144 context limit is not proof that `run_layer_major` received and consumed 262,144 positions.
+2. Capture phase-aligned free/total VRAM and host available/resident RAM before cache release, after each release hook, after `layer_cache`, after residual allocations, during full compute/graph capture, and during cache/MTP restore. Log actual `layer_cache.bytes()`, effective cache-release fraction/restore mode, all QSA and residual extents, GDN/QSA/PLE/MoE scratch, dense/base weights, graph/runtime, host arena/cache and snapshot overlap. Fail admission before inference if a required allocation cannot be established with margin; do not infer fit from the old streamed-KV failure or total-capacity arithmetic.
+3. On the same fixed source and input, first test deterministic fresh-reset 32,768-position complete lifecycle and the effective legal `G=0`, one partial rounded prefix, and `G=n` arms as separate placements. Compare layer-major with chunk-major using identical chunk schedule/math selectors. Then admit 262,144 only if current source memory receipts show a legal `G` with adequate host and device margin and the strict full-position lifecycle can run. Do not claim full 262K fit based on an isolated residual allocation.
+4. For each arm, verify positions consumed, output count, reset state hashes, per-boundary full residual bytes (`post_moe(layer,p0,T) == input(layer+1,p0,T)`), and saved final GDN/PLE/QSA K/V+indexer state. Preserve route, weights, chunk shapes and operation arguments. A first mismatch must stop promotion and be localized at the first residual handoff or state boundary; a faster return, final-state equality alone, or equal generated IDs does not qualify parity.
+5. Record source service events for activation copies and device residual copies, plus weight-copy events, and require completed event timelines before attributing overlap. Report bytes and timings by lane. The current source ordering establishes repeated layer-weight reuse, not concurrency of weight staging with layer compute or residual transfers.
+
+Until such a current-pack receipt and same-semantics numerical comparison exist, 32K is only conditionally testable and 262K mixed prefix is only a symbolic tradeoff. No actual fit, speedup, or adoption conclusion is supported by this audit.

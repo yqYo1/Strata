@@ -1,0 +1,35 @@
+{
+  "created_utc": "2026-10-10T11:38:12.948375+00:00",
+  "reports": [
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round249-mixed-residual-prefix-traffic-ownership-and-admission.txt",
+      "bytes": 11873,
+      "sha256": "0236a48d04056bddb6c43a5b6143512e8c3cbb0664f85516fcafa41ea609bddb",
+      "agent": "/root/research_bottleneck_evidence_audit_v203",
+      "model": "gpt-6-luna",
+      "scope": "Exact mixed residual prefix traffic, rounding and source ownership/admission",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round250-production-gpu-dequant-paired-format-and-oracle-contract.txt",
+      "bytes": 15970,
+      "sha256": "023ddf0d751413924ea58450008b9716b94a8df4984c21fc41e8443362148344",
+      "agent": "/root/research_native_iq4nl_esimd_k640_v202",
+      "model": "gpt-6-luna",
+      "scope": "Actual production GPU dequant role/domain/oracle/finite capacity control contract",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    }
+  ],
+  "corrections": {
+    "R249": "R249 conflates scratch-allocation reuse with execution aliasing. Only first-chunk allocation reuse requires G=n. Frozen source sets m.residual_inplace=inplace also for mixed G<n, then m.R aliases residual_gpu_row(c0) for GPU chunks; input==m.R and output==residual skip both D2D copies. Mixed in-place therefore eliminates GPU-prefix D2D copies too, while retaining existing scratch for host chunks and allocating all G GPU rows. Host suffix copies remain unchanged. No runtime numerical or fit qualification follows.",
+    "R250": "Source role/domain/shape recipe accepted, not a capacity result. Root current header census now pins actual seven pairs and all144role descriptors.14*7generic eligibility is broader than actual pack.7/25samples are a predeclared control choice, not an algorithmic requirement. Wrappers returnvoid: timing/marker bounds must not be mislabeled exclusive internal kernel service. New source-only Sol harness assigned; root owns all tests.",
+    "R248_metadata": "Current header/source KV2heads*256 corrects report4*128; byte product512 and all prior quoted KV totals remain unchanged. Reconciliation is separate from original immutable report/correction receipt."
+  },
+  "registry_identity": {
+    "bytes": 260009,
+    "sha256": "581fd7eab92506af21b45837fd0e36e3bd3404436a417d354d85d0324e1ab3c9"
+  },
+  "adopted": false
+}
