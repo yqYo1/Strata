@@ -1,0 +1,2134 @@
+{
+  "active": false,
+  "complete": true,
+  "passed": true,
+  "stage": "build",
+  "started_utc": "2026-10-10T12:12:36.197680+00:00",
+  "boot_id": "0a908c16-e292-4299-80ff-082da39f4bb9",
+  "controller": {
+    "bytes": 15931,
+    "sha256": "7a14ec48a95b493d30aead65b14b5623aa0f8ba7fd9a4e8491d61b457c8c28d3"
+  },
+  "parent_owner": {
+    "bytes": 24299,
+    "sha256": "7df012ee4d9bd047a6094ccedb37fddb3d56d4b054d9fdf468534b0fb6e94e1f"
+  },
+  "owner_adaptations": [
+    "AS128GiB for unchanged NativeRolePlan virtual54.8GB mapping",
+    "CPU600/601s"
+  ],
+  "limits": {
+    "AS_each": 137438953472,
+    "RSS_session_sampled": 2147483648,
+    "CPU_each": [
+      600,
+      601
+    ],
+    "wall_each": 600,
+    "text_each": 67108864
+  },
+  "commands": [
+    {
+      "label": "compile-precise-ggml.c",
+      "argv": [
+        "/opt/intel/oneapi/compiler/2026.1/bin/icx",
+        "-O3",
+        "-DNDEBUG",
+        "-std=gnu11",
+        "-fp-model=precise",
+        "-ffp-contract=off",
+        "-DGGML_SCHED_MAX_COPIES=4",
+        "-D_GNU_SOURCE",
+        "-D_XOPEN_SOURCE=600",
+        "-I/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned/ggml/src",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-native-role-plan-v0141-20261010/build-native-service-host-v1/ggml/src",
+        "-I/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned/ggml/include",
+        "-c",
+        "/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned/ggml/src/ggml.c",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gpu-iq-dequant-capacity-root-v3/build/ggml.c.o"
+      ],
+      "environment": {
+        "PATH": "/opt/intel/oneapi/vtune/2026.4/bin64:/opt/intel/oneapi/mpi/2021.18/bin:/opt/intel/oneapi/mkl/2026.1/bin:/opt/intel/oneapi/dev-utilities/2026.0/bin:/opt/intel/oneapi/debugger/2026.1/opt/debugger/bin:/opt/intel/oneapi/compiler/2026.1/bin:/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/opt/intel/oneapi/tcm/1.5/lib:/opt/intel/oneapi/umf/1.1/lib:/opt/intel/oneapi/tcm/1.5/env/../lib:/opt/intel/oneapi/tbb/2023.1/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/pti/1.1/lib:/opt/intel/oneapi/mpi/2021.18/opt/mpi/libfabric/lib:/opt/intel/oneapi/mpi/2021.18/lib:/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/ippcp/2026.0/lib/:/opt/intel/oneapi/ipp/2026.0/lib:/opt/intel/oneapi/dnnl/2026.0/lib:/opt/intel/oneapi/debugger/2026.1/opt/debugger/lib:/opt/intel/oneapi/compiler/2026.1/opt/compiler/lib:/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/ccl/2022.1/lib/",
+        "LIBRARY_PATH": "/opt/intel/oneapi/tcm/1.5/lib:/opt/intel/oneapi/umf/1.1/lib:/opt/intel/oneapi/tbb/2023.1/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/pti/1.1/lib:/opt/intel/oneapi/mpi/2021.18/lib:/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/ippcp/2026.0/lib/:/opt/intel/oneapi/ipp/2026.0/lib:/opt/intel/oneapi/dnnl/2026.0/lib:/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/ccl/2022.1/lib/",
+        "CPATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/dev-utilities/2026.0/include:/opt/intel/oneapi/ccl/2022.1/include",
+        "ONEAPI_ROOT": "/opt/intel/oneapi",
+        "CPLUS_INCLUDE_PATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/tbb/2023.1/env/../include:/opt/intel/oneapi/pti/1.1/include:/opt/intel/oneapi/mpi/2021.18/include:/opt/intel/oneapi/mkl/2026.1/include:/opt/intel/oneapi/ippcp/2026.0/include:/opt/intel/oneapi/ipp/2026.0/include:/opt/intel/oneapi/dpl/2022.13/include:/opt/intel/oneapi/dnnl/2026.0/include",
+        "C_INCLUDE_PATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/tbb/2023.1/env/../include:/opt/intel/oneapi/pti/1.1/include:/opt/intel/oneapi/mpi/2021.18/include:/opt/intel/oneapi/mkl/2026.1/include:/opt/intel/oneapi/ippcp/2026.0/include:/opt/intel/oneapi/ipp/2026.0/include:/opt/intel/oneapi/dnnl/2026.0/include",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1"
+      },
+      "started_utc": "2026-10-10T12:12:36.201833+00:00",
+      "wall_seconds": 600,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1898331,
+          "start_ticks": 32403531,
+          "sid": 1898331,
+          "pgid": 1898331
+        },
+        {
+          "pid": 1898332,
+          "start_ticks": 32403531,
+          "sid": 1898331,
+          "pgid": 1898331
+        }
+      ],
+      "pid": 1898331,
+      "direct_identity": {
+        "pid": 1898331,
+        "state": "R",
+        "ppid": 1898262,
+        "pgid": 1898331,
+        "sid": 1898331,
+        "start_ticks": 32403531,
+        "rss_bytes": 262144
+      },
+      "peak_session_rss_bytes": 122413056,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T12:12:37.803911+00:00",
+      "elapsed_seconds": 1.6018584599951282,
+      "logs": {
+        "compile-precise-ggml.c.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "compile-precise-ggml.c.stderr": {
+          "bytes": 100,
+          "sha256": "d720235cc5f018eed793562fc1e6e9a1614b8e601f40ea72690255926353c0cf"
+        }
+      }
+    },
+    {
+      "label": "compile-precise-ggml-quants.c",
+      "argv": [
+        "/opt/intel/oneapi/compiler/2026.1/bin/icx",
+        "-O3",
+        "-DNDEBUG",
+        "-std=gnu11",
+        "-fp-model=precise",
+        "-ffp-contract=off",
+        "-DGGML_SCHED_MAX_COPIES=4",
+        "-D_GNU_SOURCE",
+        "-D_XOPEN_SOURCE=600",
+        "-I/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned/ggml/src",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-native-role-plan-v0141-20261010/build-native-service-host-v1/ggml/src",
+        "-I/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned/ggml/include",
+        "-c",
+        "/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned/ggml/src/ggml-quants.c",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gpu-iq-dequant-capacity-root-v3/build/ggml-quants.c.o"
+      ],
+      "environment": {
+        "PATH": "/opt/intel/oneapi/vtune/2026.4/bin64:/opt/intel/oneapi/mpi/2021.18/bin:/opt/intel/oneapi/mkl/2026.1/bin:/opt/intel/oneapi/dev-utilities/2026.0/bin:/opt/intel/oneapi/debugger/2026.1/opt/debugger/bin:/opt/intel/oneapi/compiler/2026.1/bin:/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/opt/intel/oneapi/tcm/1.5/lib:/opt/intel/oneapi/umf/1.1/lib:/opt/intel/oneapi/tcm/1.5/env/../lib:/opt/intel/oneapi/tbb/2023.1/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/pti/1.1/lib:/opt/intel/oneapi/mpi/2021.18/opt/mpi/libfabric/lib:/opt/intel/oneapi/mpi/2021.18/lib:/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/ippcp/2026.0/lib/:/opt/intel/oneapi/ipp/2026.0/lib:/opt/intel/oneapi/dnnl/2026.0/lib:/opt/intel/oneapi/debugger/2026.1/opt/debugger/lib:/opt/intel/oneapi/compiler/2026.1/opt/compiler/lib:/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/ccl/2022.1/lib/",
+        "LIBRARY_PATH": "/opt/intel/oneapi/tcm/1.5/lib:/opt/intel/oneapi/umf/1.1/lib:/opt/intel/oneapi/tbb/2023.1/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/pti/1.1/lib:/opt/intel/oneapi/mpi/2021.18/lib:/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/ippcp/2026.0/lib/:/opt/intel/oneapi/ipp/2026.0/lib:/opt/intel/oneapi/dnnl/2026.0/lib:/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/ccl/2022.1/lib/",
+        "CPATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/dev-utilities/2026.0/include:/opt/intel/oneapi/ccl/2022.1/include",
+        "ONEAPI_ROOT": "/opt/intel/oneapi",
+        "CPLUS_INCLUDE_PATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/tbb/2023.1/env/../include:/opt/intel/oneapi/pti/1.1/include:/opt/intel/oneapi/mpi/2021.18/include:/opt/intel/oneapi/mkl/2026.1/include:/opt/intel/oneapi/ippcp/2026.0/include:/opt/intel/oneapi/ipp/2026.0/include:/opt/intel/oneapi/dpl/2022.13/include:/opt/intel/oneapi/dnnl/2026.0/include",
+        "C_INCLUDE_PATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/tbb/2023.1/env/../include:/opt/intel/oneapi/pti/1.1/include:/opt/intel/oneapi/mpi/2021.18/include:/opt/intel/oneapi/mkl/2026.1/include:/opt/intel/oneapi/ippcp/2026.0/include:/opt/intel/oneapi/ipp/2026.0/include:/opt/intel/oneapi/dnnl/2026.0/include",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1"
+      },
+      "started_utc": "2026-10-10T12:12:37.804827+00:00",
+      "wall_seconds": 600,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1898436,
+          "start_ticks": 32403691,
+          "sid": 1898436,
+          "pgid": 1898436
+        },
+        {
+          "pid": 1898437,
+          "start_ticks": 32403692,
+          "sid": 1898436,
+          "pgid": 1898436
+        }
+      ],
+      "pid": 1898436,
+      "direct_identity": {
+        "pid": 1898436,
+        "state": "R",
+        "ppid": 1898262,
+        "pgid": 1898436,
+        "sid": 1898436,
+        "start_ticks": 32403691,
+        "rss_bytes": 151552
+      },
+      "peak_session_rss_bytes": 139468800,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T12:12:45.040523+00:00",
+      "elapsed_seconds": 7.235388250031974,
+      "logs": {
+        "compile-precise-ggml-quants.c.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "compile-precise-ggml-quants.c.stderr": {
+          "bytes": 100,
+          "sha256": "d720235cc5f018eed793562fc1e6e9a1614b8e601f40ea72690255926353c0cf"
+        }
+      }
+    },
+    {
+      "label": "copy-base-archive",
+      "argv": [
+        "/usr/bin/cp",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-native-role-plan-v0141-20261010/build-native-service-host-v1/ggml/src/libggml-base.a",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gpu-iq-dequant-capacity-root-v3/build/libggml-base-precise.a"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T12:12:45.041117+00:00",
+      "wall_seconds": 30,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1898811,
+          "start_ticks": 32404415,
+          "sid": 1898811,
+          "pgid": 1898811
+        }
+      ],
+      "pid": 1898811,
+      "direct_identity": {
+        "pid": 1898811,
+        "state": "R",
+        "ppid": 1898262,
+        "pgid": 1898811,
+        "sid": 1898811,
+        "start_ticks": 32404415,
+        "rss_bytes": 286720
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T12:12:45.198495+00:00",
+      "elapsed_seconds": 0.1564269780064933,
+      "logs": {
+        "copy-base-archive.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "copy-base-archive.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "replace-reference-members",
+      "argv": [
+        "/usr/bin/ar",
+        "r",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gpu-iq-dequant-capacity-root-v3/build/libggml-base-precise.a",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gpu-iq-dequant-capacity-root-v3/build/ggml.c.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gpu-iq-dequant-capacity-root-v3/build/ggml-quants.c.o"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T12:12:45.199133+00:00",
+      "wall_seconds": 30,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1898815,
+          "start_ticks": 32404431,
+          "sid": 1898815,
+          "pgid": 1898815
+        }
+      ],
+      "pid": 1898815,
+      "direct_identity": {
+        "pid": 1898815,
+        "state": "R",
+        "ppid": 1898262,
+        "pgid": 1898815,
+        "sid": 1898815,
+        "start_ticks": 32404431,
+        "rss_bytes": 323584
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T12:12:45.363021+00:00",
+      "elapsed_seconds": 0.16358395403949544,
+      "logs": {
+        "replace-reference-members.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "replace-reference-members.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "compile-host-native_role_plan",
+      "argv": [
+        "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+        "-std=c++20",
+        "-O2",
+        "-fp-model=precise",
+        "-ffunction-sections",
+        "-fdata-sections",
+        "-DSTRATA_NATIVE_EXPERTS=1",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-native-service-capacity-20261010/include",
+        "-I/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned/ggml/include",
+        "-I/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned/ggml/src",
+        "-I/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned/ggml/src/ggml-cpu",
+        "-c",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-native-service-capacity-20261010/src/artifact/native_role_plan.cpp",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gpu-iq-dequant-capacity-root-v3/build/native_role_plan.o"
+      ],
+      "environment": {
+        "PATH": "/opt/intel/oneapi/vtune/2026.4/bin64:/opt/intel/oneapi/mpi/2021.18/bin:/opt/intel/oneapi/mkl/2026.1/bin:/opt/intel/oneapi/dev-utilities/2026.0/bin:/opt/intel/oneapi/debugger/2026.1/opt/debugger/bin:/opt/intel/oneapi/compiler/2026.1/bin:/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/opt/intel/oneapi/tcm/1.5/lib:/opt/intel/oneapi/umf/1.1/lib:/opt/intel/oneapi/tcm/1.5/env/../lib:/opt/intel/oneapi/tbb/2023.1/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/pti/1.1/lib:/opt/intel/oneapi/mpi/2021.18/opt/mpi/libfabric/lib:/opt/intel/oneapi/mpi/2021.18/lib:/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/ippcp/2026.0/lib/:/opt/intel/oneapi/ipp/2026.0/lib:/opt/intel/oneapi/dnnl/2026.0/lib:/opt/intel/oneapi/debugger/2026.1/opt/debugger/lib:/opt/intel/oneapi/compiler/2026.1/opt/compiler/lib:/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/ccl/2022.1/lib/",
+        "LIBRARY_PATH": "/opt/intel/oneapi/tcm/1.5/lib:/opt/intel/oneapi/umf/1.1/lib:/opt/intel/oneapi/tbb/2023.1/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/pti/1.1/lib:/opt/intel/oneapi/mpi/2021.18/lib:/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/ippcp/2026.0/lib/:/opt/intel/oneapi/ipp/2026.0/lib:/opt/intel/oneapi/dnnl/2026.0/lib:/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/ccl/2022.1/lib/",
+        "CPATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/dev-utilities/2026.0/include:/opt/intel/oneapi/ccl/2022.1/include",
+        "ONEAPI_ROOT": "/opt/intel/oneapi",
+        "CPLUS_INCLUDE_PATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/tbb/2023.1/env/../include:/opt/intel/oneapi/pti/1.1/include:/opt/intel/oneapi/mpi/2021.18/include:/opt/intel/oneapi/mkl/2026.1/include:/opt/intel/oneapi/ippcp/2026.0/include:/opt/intel/oneapi/ipp/2026.0/include:/opt/intel/oneapi/dpl/2022.13/include:/opt/intel/oneapi/dnnl/2026.0/include",
+        "C_INCLUDE_PATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/tbb/2023.1/env/../include:/opt/intel/oneapi/pti/1.1/include:/opt/intel/oneapi/mpi/2021.18/include:/opt/intel/oneapi/mkl/2026.1/include:/opt/intel/oneapi/ippcp/2026.0/include:/opt/intel/oneapi/ipp/2026.0/include:/opt/intel/oneapi/dnnl/2026.0/include",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1"
+      },
+      "started_utc": "2026-10-10T12:12:45.368092+00:00",
+      "wall_seconds": 600,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1898823,
+          "start_ticks": 32404448,
+          "sid": 1898823,
+          "pgid": 1898823
+        },
+        {
+          "pid": 1898825,
+          "start_ticks": 32404448,
+          "sid": 1898823,
+          "pgid": 1898823
+        }
+      ],
+      "pid": 1898823,
+      "direct_identity": {
+        "pid": 1898823,
+        "state": "R",
+        "ppid": 1898262,
+        "pgid": 1898823,
+        "sid": 1898823,
+        "start_ticks": 32404448,
+        "rss_bytes": 270336
+      },
+      "peak_session_rss_bytes": 122421248,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T12:12:46.704561+00:00",
+      "elapsed_seconds": 1.3359277039999142,
+      "logs": {
+        "compile-host-native_role_plan.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "compile-host-native_role_plan.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "compile-host-expert_layout",
+      "argv": [
+        "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+        "-std=c++20",
+        "-O2",
+        "-fp-model=precise",
+        "-ffunction-sections",
+        "-fdata-sections",
+        "-DSTRATA_NATIVE_EXPERTS=1",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-native-service-capacity-20261010/include",
+        "-I/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned/ggml/include",
+        "-I/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned/ggml/src",
+        "-I/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned/ggml/src/ggml-cpu",
+        "-c",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-native-service-capacity-20261010/src/kernels/cpu/expert_layout.cpp",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gpu-iq-dequant-capacity-root-v3/build/expert_layout.o"
+      ],
+      "environment": {
+        "PATH": "/opt/intel/oneapi/vtune/2026.4/bin64:/opt/intel/oneapi/mpi/2021.18/bin:/opt/intel/oneapi/mkl/2026.1/bin:/opt/intel/oneapi/dev-utilities/2026.0/bin:/opt/intel/oneapi/debugger/2026.1/opt/debugger/bin:/opt/intel/oneapi/compiler/2026.1/bin:/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/opt/intel/oneapi/tcm/1.5/lib:/opt/intel/oneapi/umf/1.1/lib:/opt/intel/oneapi/tcm/1.5/env/../lib:/opt/intel/oneapi/tbb/2023.1/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/pti/1.1/lib:/opt/intel/oneapi/mpi/2021.18/opt/mpi/libfabric/lib:/opt/intel/oneapi/mpi/2021.18/lib:/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/ippcp/2026.0/lib/:/opt/intel/oneapi/ipp/2026.0/lib:/opt/intel/oneapi/dnnl/2026.0/lib:/opt/intel/oneapi/debugger/2026.1/opt/debugger/lib:/opt/intel/oneapi/compiler/2026.1/opt/compiler/lib:/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/ccl/2022.1/lib/",
+        "LIBRARY_PATH": "/opt/intel/oneapi/tcm/1.5/lib:/opt/intel/oneapi/umf/1.1/lib:/opt/intel/oneapi/tbb/2023.1/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/pti/1.1/lib:/opt/intel/oneapi/mpi/2021.18/lib:/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/ippcp/2026.0/lib/:/opt/intel/oneapi/ipp/2026.0/lib:/opt/intel/oneapi/dnnl/2026.0/lib:/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/ccl/2022.1/lib/",
+        "CPATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/dev-utilities/2026.0/include:/opt/intel/oneapi/ccl/2022.1/include",
+        "ONEAPI_ROOT": "/opt/intel/oneapi",
+        "CPLUS_INCLUDE_PATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/tbb/2023.1/env/../include:/opt/intel/oneapi/pti/1.1/include:/opt/intel/oneapi/mpi/2021.18/include:/opt/intel/oneapi/mkl/2026.1/include:/opt/intel/oneapi/ippcp/2026.0/include:/opt/intel/oneapi/ipp/2026.0/include:/opt/intel/oneapi/dpl/2022.13/include:/opt/intel/oneapi/dnnl/2026.0/include",
+        "C_INCLUDE_PATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/tbb/2023.1/env/../include:/opt/intel/oneapi/pti/1.1/include:/opt/intel/oneapi/mpi/2021.18/include:/opt/intel/oneapi/mkl/2026.1/include:/opt/intel/oneapi/ippcp/2026.0/include:/opt/intel/oneapi/ipp/2026.0/include:/opt/intel/oneapi/dnnl/2026.0/include",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1"
+      },
+      "started_utc": "2026-10-10T12:12:46.705337+00:00",
+      "wall_seconds": 600,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1898867,
+          "start_ticks": 32404581,
+          "sid": 1898867,
+          "pgid": 1898867
+        },
+        {
+          "pid": 1898868,
+          "start_ticks": 32404582,
+          "sid": 1898867,
+          "pgid": 1898867
+        }
+      ],
+      "pid": 1898867,
+      "direct_identity": {
+        "pid": 1898867,
+        "state": "R",
+        "ppid": 1898262,
+        "pgid": 1898867,
+        "sid": 1898867,
+        "start_ticks": 32404581,
+        "rss_bytes": 274432
+      },
+      "peak_session_rss_bytes": 109752320,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T12:12:47.776387+00:00",
+      "elapsed_seconds": 1.070644234016072,
+      "logs": {
+        "compile-host-expert_layout.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "compile-host-expert_layout.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "compile-host-native_expert",
+      "argv": [
+        "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+        "-std=c++20",
+        "-O2",
+        "-fp-model=precise",
+        "-ffunction-sections",
+        "-fdata-sections",
+        "-DSTRATA_NATIVE_EXPERTS=1",
+        "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-native-service-capacity-20261010/include",
+        "-I/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned/ggml/include",
+        "-I/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned/ggml/src",
+        "-I/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned/ggml/src/ggml-cpu",
+        "-c",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-native-service-capacity-20261010/src/kernels/cpu/native_expert.cpp",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gpu-iq-dequant-capacity-root-v3/build/native_expert.o"
+      ],
+      "environment": {
+        "PATH": "/opt/intel/oneapi/vtune/2026.4/bin64:/opt/intel/oneapi/mpi/2021.18/bin:/opt/intel/oneapi/mkl/2026.1/bin:/opt/intel/oneapi/dev-utilities/2026.0/bin:/opt/intel/oneapi/debugger/2026.1/opt/debugger/bin:/opt/intel/oneapi/compiler/2026.1/bin:/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/opt/intel/oneapi/tcm/1.5/lib:/opt/intel/oneapi/umf/1.1/lib:/opt/intel/oneapi/tcm/1.5/env/../lib:/opt/intel/oneapi/tbb/2023.1/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/pti/1.1/lib:/opt/intel/oneapi/mpi/2021.18/opt/mpi/libfabric/lib:/opt/intel/oneapi/mpi/2021.18/lib:/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/ippcp/2026.0/lib/:/opt/intel/oneapi/ipp/2026.0/lib:/opt/intel/oneapi/dnnl/2026.0/lib:/opt/intel/oneapi/debugger/2026.1/opt/debugger/lib:/opt/intel/oneapi/compiler/2026.1/opt/compiler/lib:/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/ccl/2022.1/lib/",
+        "LIBRARY_PATH": "/opt/intel/oneapi/tcm/1.5/lib:/opt/intel/oneapi/umf/1.1/lib:/opt/intel/oneapi/tbb/2023.1/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/pti/1.1/lib:/opt/intel/oneapi/mpi/2021.18/lib:/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/ippcp/2026.0/lib/:/opt/intel/oneapi/ipp/2026.0/lib:/opt/intel/oneapi/dnnl/2026.0/lib:/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/ccl/2022.1/lib/",
+        "CPATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/dev-utilities/2026.0/include:/opt/intel/oneapi/ccl/2022.1/include",
+        "ONEAPI_ROOT": "/opt/intel/oneapi",
+        "CPLUS_INCLUDE_PATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/tbb/2023.1/env/../include:/opt/intel/oneapi/pti/1.1/include:/opt/intel/oneapi/mpi/2021.18/include:/opt/intel/oneapi/mkl/2026.1/include:/opt/intel/oneapi/ippcp/2026.0/include:/opt/intel/oneapi/ipp/2026.0/include:/opt/intel/oneapi/dpl/2022.13/include:/opt/intel/oneapi/dnnl/2026.0/include",
+        "C_INCLUDE_PATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/tbb/2023.1/env/../include:/opt/intel/oneapi/pti/1.1/include:/opt/intel/oneapi/mpi/2021.18/include:/opt/intel/oneapi/mkl/2026.1/include:/opt/intel/oneapi/ippcp/2026.0/include:/opt/intel/oneapi/ipp/2026.0/include:/opt/intel/oneapi/dnnl/2026.0/include",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1"
+      },
+      "started_utc": "2026-10-10T12:12:47.777194+00:00",
+      "wall_seconds": 600,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1898933,
+          "start_ticks": 32404689,
+          "sid": 1898933,
+          "pgid": 1898933
+        },
+        {
+          "pid": 1898934,
+          "start_ticks": 32404689,
+          "sid": 1898933,
+          "pgid": 1898933
+        }
+      ],
+      "pid": 1898933,
+      "direct_identity": {
+        "pid": 1898933,
+        "state": "R",
+        "ppid": 1898262,
+        "pgid": 1898933,
+        "sid": 1898933,
+        "start_ticks": 32404689,
+        "rss_bytes": 274432
+      },
+      "peak_session_rss_bytes": 104116224,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T12:12:48.324432+00:00",
+      "elapsed_seconds": 0.5467828060500324,
+      "logs": {
+        "compile-host-native_expert.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "compile-host-native_expert.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "configure",
+      "argv": [
+        "/usr/bin/cmake",
+        "-S",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gpu-iq-dequant-capacity-root-v3/project",
+        "-B",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gpu-iq-dequant-capacity-root-v3/build",
+        "-DCMAKE_CXX_COMPILER=/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+        "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+        "-DHARNESS_SOURCE=/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-10-gpu-iq-dequant-capacity/source/gpu_iq_dequant_capacity_v1.cpp",
+        "-DHOST_REFERENCE_FILES=/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gpu-iq-dequant-capacity-root-v3/build/native_role_plan.o;/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gpu-iq-dequant-capacity-root-v3/build/expert_layout.o;/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gpu-iq-dequant-capacity-root-v3/build/native_expert.o;/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-native-role-plan-v0141-20261010/build-native-service-host-v1/ggml/src/libggml-cpu.a;/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gpu-iq-dequant-capacity-root-v3/build/libggml-base-precise.a"
+      ],
+      "environment": {
+        "PATH": "/opt/intel/oneapi/vtune/2026.4/bin64:/opt/intel/oneapi/mpi/2021.18/bin:/opt/intel/oneapi/mkl/2026.1/bin:/opt/intel/oneapi/dev-utilities/2026.0/bin:/opt/intel/oneapi/debugger/2026.1/opt/debugger/bin:/opt/intel/oneapi/compiler/2026.1/bin:/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/opt/intel/oneapi/tcm/1.5/lib:/opt/intel/oneapi/umf/1.1/lib:/opt/intel/oneapi/tcm/1.5/env/../lib:/opt/intel/oneapi/tbb/2023.1/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/pti/1.1/lib:/opt/intel/oneapi/mpi/2021.18/opt/mpi/libfabric/lib:/opt/intel/oneapi/mpi/2021.18/lib:/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/ippcp/2026.0/lib/:/opt/intel/oneapi/ipp/2026.0/lib:/opt/intel/oneapi/dnnl/2026.0/lib:/opt/intel/oneapi/debugger/2026.1/opt/debugger/lib:/opt/intel/oneapi/compiler/2026.1/opt/compiler/lib:/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/ccl/2022.1/lib/",
+        "LIBRARY_PATH": "/opt/intel/oneapi/tcm/1.5/lib:/opt/intel/oneapi/umf/1.1/lib:/opt/intel/oneapi/tbb/2023.1/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/pti/1.1/lib:/opt/intel/oneapi/mpi/2021.18/lib:/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/ippcp/2026.0/lib/:/opt/intel/oneapi/ipp/2026.0/lib:/opt/intel/oneapi/dnnl/2026.0/lib:/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/ccl/2022.1/lib/",
+        "CPATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/dev-utilities/2026.0/include:/opt/intel/oneapi/ccl/2022.1/include",
+        "ONEAPI_ROOT": "/opt/intel/oneapi",
+        "CPLUS_INCLUDE_PATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/tbb/2023.1/env/../include:/opt/intel/oneapi/pti/1.1/include:/opt/intel/oneapi/mpi/2021.18/include:/opt/intel/oneapi/mkl/2026.1/include:/opt/intel/oneapi/ippcp/2026.0/include:/opt/intel/oneapi/ipp/2026.0/include:/opt/intel/oneapi/dpl/2022.13/include:/opt/intel/oneapi/dnnl/2026.0/include",
+        "C_INCLUDE_PATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/tbb/2023.1/env/../include:/opt/intel/oneapi/pti/1.1/include:/opt/intel/oneapi/mpi/2021.18/include:/opt/intel/oneapi/mkl/2026.1/include:/opt/intel/oneapi/ippcp/2026.0/include:/opt/intel/oneapi/ipp/2026.0/include:/opt/intel/oneapi/dnnl/2026.0/include",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1"
+      },
+      "started_utc": "2026-10-10T12:12:48.325271+00:00",
+      "wall_seconds": 600,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1898974,
+          "start_ticks": 32404743,
+          "sid": 1898974,
+          "pgid": 1898974
+        },
+        {
+          "pid": 1898981,
+          "start_ticks": 32404748,
+          "sid": 1898974,
+          "pgid": 1898974
+        },
+        {
+          "pid": 1898982,
+          "start_ticks": 32404748,
+          "sid": 1898974,
+          "pgid": 1898974
+        },
+        {
+          "pid": 1899033,
+          "start_ticks": 32404761,
+          "sid": 1898974,
+          "pgid": 1898974
+        },
+        {
+          "pid": 1899042,
+          "start_ticks": 32404762,
+          "sid": 1898974,
+          "pgid": 1898974
+        },
+        {
+          "pid": 1899045,
+          "start_ticks": 32404762,
+          "sid": 1898974,
+          "pgid": 1898974
+        },
+        {
+          "pid": 1899053,
+          "start_ticks": 32404767,
+          "sid": 1898974,
+          "pgid": 1898974
+        },
+        {
+          "pid": 1899064,
+          "start_ticks": 32404779,
+          "sid": 1898974,
+          "pgid": 1898974
+        },
+        {
+          "pid": 1899066,
+          "start_ticks": 32404780,
+          "sid": 1898974,
+          "pgid": 1898974
+        },
+        {
+          "pid": 1899067,
+          "start_ticks": 32404780,
+          "sid": 1898974,
+          "pgid": 1898974
+        },
+        {
+          "pid": 1899070,
+          "start_ticks": 32404781,
+          "sid": 1898974,
+          "pgid": 1898974
+        },
+        {
+          "pid": 1899071,
+          "start_ticks": 32404781,
+          "sid": 1898974,
+          "pgid": 1898974
+        },
+        {
+          "pid": 1899075,
+          "start_ticks": 32404786,
+          "sid": 1898974,
+          "pgid": 1898974
+        },
+        {
+          "pid": 1899076,
+          "start_ticks": 32404787,
+          "sid": 1898974,
+          "pgid": 1898974
+        },
+        {
+          "pid": 1899077,
+          "start_ticks": 32404787,
+          "sid": 1898974,
+          "pgid": 1898974
+        },
+        {
+          "pid": 1899079,
+          "start_ticks": 32404788,
+          "sid": 1898974,
+          "pgid": 1898974
+        }
+      ],
+      "pid": 1898974,
+      "direct_identity": {
+        "pid": 1898974,
+        "state": "R",
+        "ppid": 1898262,
+        "pgid": 1898974,
+        "sid": 1898974,
+        "start_ticks": 32404743,
+        "rss_bytes": 335872
+      },
+      "peak_session_rss_bytes": 109490176,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T12:12:48.955020+00:00",
+      "elapsed_seconds": 0.6292659399914555,
+      "logs": {
+        "configure.stdout": {
+          "bytes": 611,
+          "sha256": "d108173d30eb7db999c5c574d1bf3e10872d0053f5277d8ff68cd824f7795bc9"
+        },
+        "configure.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "build",
+      "argv": [
+        "/usr/bin/cmake",
+        "--build",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gpu-iq-dequant-capacity-root-v3/build",
+        "--parallel",
+        "1"
+      ],
+      "environment": {
+        "PATH": "/opt/intel/oneapi/vtune/2026.4/bin64:/opt/intel/oneapi/mpi/2021.18/bin:/opt/intel/oneapi/mkl/2026.1/bin:/opt/intel/oneapi/dev-utilities/2026.0/bin:/opt/intel/oneapi/debugger/2026.1/opt/debugger/bin:/opt/intel/oneapi/compiler/2026.1/bin:/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/opt/intel/oneapi/tcm/1.5/lib:/opt/intel/oneapi/umf/1.1/lib:/opt/intel/oneapi/tcm/1.5/env/../lib:/opt/intel/oneapi/tbb/2023.1/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/pti/1.1/lib:/opt/intel/oneapi/mpi/2021.18/opt/mpi/libfabric/lib:/opt/intel/oneapi/mpi/2021.18/lib:/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/ippcp/2026.0/lib/:/opt/intel/oneapi/ipp/2026.0/lib:/opt/intel/oneapi/dnnl/2026.0/lib:/opt/intel/oneapi/debugger/2026.1/opt/debugger/lib:/opt/intel/oneapi/compiler/2026.1/opt/compiler/lib:/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/ccl/2022.1/lib/",
+        "LIBRARY_PATH": "/opt/intel/oneapi/tcm/1.5/lib:/opt/intel/oneapi/umf/1.1/lib:/opt/intel/oneapi/tbb/2023.1/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/pti/1.1/lib:/opt/intel/oneapi/mpi/2021.18/lib:/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/ippcp/2026.0/lib/:/opt/intel/oneapi/ipp/2026.0/lib:/opt/intel/oneapi/dnnl/2026.0/lib:/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/ccl/2022.1/lib/",
+        "CPATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/dev-utilities/2026.0/include:/opt/intel/oneapi/ccl/2022.1/include",
+        "ONEAPI_ROOT": "/opt/intel/oneapi",
+        "CPLUS_INCLUDE_PATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/tbb/2023.1/env/../include:/opt/intel/oneapi/pti/1.1/include:/opt/intel/oneapi/mpi/2021.18/include:/opt/intel/oneapi/mkl/2026.1/include:/opt/intel/oneapi/ippcp/2026.0/include:/opt/intel/oneapi/ipp/2026.0/include:/opt/intel/oneapi/dpl/2022.13/include:/opt/intel/oneapi/dnnl/2026.0/include",
+        "C_INCLUDE_PATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/tbb/2023.1/env/../include:/opt/intel/oneapi/pti/1.1/include:/opt/intel/oneapi/mpi/2021.18/include:/opt/intel/oneapi/mkl/2026.1/include:/opt/intel/oneapi/ippcp/2026.0/include:/opt/intel/oneapi/ipp/2026.0/include:/opt/intel/oneapi/dnnl/2026.0/include",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1"
+      },
+      "started_utc": "2026-10-10T12:12:48.955932+00:00",
+      "wall_seconds": 600,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1899089,
+          "start_ticks": 32404806,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1899090,
+          "start_ticks": 32404808,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1899095,
+          "start_ticks": 32404810,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1899099,
+          "start_ticks": 32404811,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1899102,
+          "start_ticks": 32404812,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1899103,
+          "start_ticks": 32404812,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1899104,
+          "start_ticks": 32404813,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1899234,
+          "start_ticks": 32405075,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1899440,
+          "start_ticks": 32405459,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1899441,
+          "start_ticks": 32405459,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1899442,
+          "start_ticks": 32405460,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1899973,
+          "start_ticks": 32406125,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1900587,
+          "start_ticks": 32407268,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1900589,
+          "start_ticks": 32407269,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1900590,
+          "start_ticks": 32407269,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1900593,
+          "start_ticks": 32407270,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1900656,
+          "start_ticks": 32407297,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1900659,
+          "start_ticks": 32407308,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1900663,
+          "start_ticks": 32407320,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1900687,
+          "start_ticks": 32407346,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901065,
+          "start_ticks": 32407585,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901066,
+          "start_ticks": 32407585,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901110,
+          "start_ticks": 32407707,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901113,
+          "start_ticks": 32407714,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901117,
+          "start_ticks": 32407723,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901124,
+          "start_ticks": 32407737,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901132,
+          "start_ticks": 32407753,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901151,
+          "start_ticks": 32407770,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901155,
+          "start_ticks": 32407786,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901172,
+          "start_ticks": 32407803,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901179,
+          "start_ticks": 32407819,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901182,
+          "start_ticks": 32407824,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901195,
+          "start_ticks": 32407861,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901220,
+          "start_ticks": 32407868,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901223,
+          "start_ticks": 32407875,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901229,
+          "start_ticks": 32407882,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901237,
+          "start_ticks": 32407890,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901242,
+          "start_ticks": 32407907,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901263,
+          "start_ticks": 32407916,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901276,
+          "start_ticks": 32407929,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901282,
+          "start_ticks": 32407941,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901288,
+          "start_ticks": 32407952,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901291,
+          "start_ticks": 32407963,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901299,
+          "start_ticks": 32407979,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901307,
+          "start_ticks": 32407995,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901312,
+          "start_ticks": 32408002,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901320,
+          "start_ticks": 32408013,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901323,
+          "start_ticks": 32408024,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901326,
+          "start_ticks": 32408034,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901329,
+          "start_ticks": 32408042,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901334,
+          "start_ticks": 32408056,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901342,
+          "start_ticks": 32408068,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901344,
+          "start_ticks": 32408075,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901347,
+          "start_ticks": 32408086,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901350,
+          "start_ticks": 32408094,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901352,
+          "start_ticks": 32408101,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901355,
+          "start_ticks": 32408109,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901357,
+          "start_ticks": 32408116,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901366,
+          "start_ticks": 32408126,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901381,
+          "start_ticks": 32408142,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901384,
+          "start_ticks": 32408152,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901391,
+          "start_ticks": 32408164,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901394,
+          "start_ticks": 32408176,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901402,
+          "start_ticks": 32408188,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901405,
+          "start_ticks": 32408199,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901408,
+          "start_ticks": 32408209,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901410,
+          "start_ticks": 32408215,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901436,
+          "start_ticks": 32408252,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901452,
+          "start_ticks": 32408286,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901455,
+          "start_ticks": 32408298,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901458,
+          "start_ticks": 32408306,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901465,
+          "start_ticks": 32408315,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901468,
+          "start_ticks": 32408324,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901470,
+          "start_ticks": 32408332,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901496,
+          "start_ticks": 32408340,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901505,
+          "start_ticks": 32408347,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901527,
+          "start_ticks": 32408353,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901559,
+          "start_ticks": 32408363,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901586,
+          "start_ticks": 32408370,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901590,
+          "start_ticks": 32408378,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901593,
+          "start_ticks": 32408386,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901606,
+          "start_ticks": 32408414,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901611,
+          "start_ticks": 32408427,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901617,
+          "start_ticks": 32408435,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901621,
+          "start_ticks": 32408446,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901625,
+          "start_ticks": 32408457,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901628,
+          "start_ticks": 32408465,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901630,
+          "start_ticks": 32408473,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901633,
+          "start_ticks": 32408481,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901642,
+          "start_ticks": 32408491,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901647,
+          "start_ticks": 32408506,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901650,
+          "start_ticks": 32408516,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901653,
+          "start_ticks": 32408527,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901656,
+          "start_ticks": 32408540,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901665,
+          "start_ticks": 32408550,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901673,
+          "start_ticks": 32408561,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901678,
+          "start_ticks": 32408571,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901682,
+          "start_ticks": 32408578,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901699,
+          "start_ticks": 32408600,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901702,
+          "start_ticks": 32408610,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901710,
+          "start_ticks": 32408619,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901713,
+          "start_ticks": 32408628,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901728,
+          "start_ticks": 32408636,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901730,
+          "start_ticks": 32408644,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901733,
+          "start_ticks": 32408653,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901737,
+          "start_ticks": 32408670,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901744,
+          "start_ticks": 32408679,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901748,
+          "start_ticks": 32408693,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901752,
+          "start_ticks": 32408704,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901759,
+          "start_ticks": 32408723,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901767,
+          "start_ticks": 32408738,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901803,
+          "start_ticks": 32408759,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901822,
+          "start_ticks": 32408806,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901830,
+          "start_ticks": 32408824,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901836,
+          "start_ticks": 32408841,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901860,
+          "start_ticks": 32408870,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901874,
+          "start_ticks": 32408877,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901883,
+          "start_ticks": 32408896,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901885,
+          "start_ticks": 32408902,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901898,
+          "start_ticks": 32408920,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901901,
+          "start_ticks": 32408926,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901908,
+          "start_ticks": 32408947,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901928,
+          "start_ticks": 32408974,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901943,
+          "start_ticks": 32409002,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901961,
+          "start_ticks": 32409018,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901964,
+          "start_ticks": 32409024,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901975,
+          "start_ticks": 32409043,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901977,
+          "start_ticks": 32409051,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901988,
+          "start_ticks": 32409071,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1901992,
+          "start_ticks": 32409085,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1902001,
+          "start_ticks": 32409100,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1902007,
+          "start_ticks": 32409113,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1902017,
+          "start_ticks": 32409134,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1902047,
+          "start_ticks": 32409151,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1902057,
+          "start_ticks": 32409167,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1902059,
+          "start_ticks": 32409173,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1902064,
+          "start_ticks": 32409182,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1902067,
+          "start_ticks": 32409191,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1902070,
+          "start_ticks": 32409200,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1902074,
+          "start_ticks": 32409211,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1902081,
+          "start_ticks": 32409222,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1902084,
+          "start_ticks": 32409234,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1902088,
+          "start_ticks": 32409246,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1902091,
+          "start_ticks": 32409258,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1902096,
+          "start_ticks": 32409277,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1902105,
+          "start_ticks": 32409295,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1902109,
+          "start_ticks": 32409313,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1902114,
+          "start_ticks": 32409333,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1902127,
+          "start_ticks": 32409358,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1902167,
+          "start_ticks": 32409380,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1902188,
+          "start_ticks": 32409401,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1902199,
+          "start_ticks": 32409422,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1902216,
+          "start_ticks": 32409445,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1902268,
+          "start_ticks": 32409467,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1902303,
+          "start_ticks": 32409487,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1902360,
+          "start_ticks": 32409509,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1902400,
+          "start_ticks": 32409526,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1902407,
+          "start_ticks": 32409545,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1902410,
+          "start_ticks": 32409552,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1902415,
+          "start_ticks": 32409567,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1902425,
+          "start_ticks": 32409582,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1902432,
+          "start_ticks": 32409599,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1902438,
+          "start_ticks": 32409620,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1902440,
+          "start_ticks": 32409626,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1902450,
+          "start_ticks": 32409643,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1902458,
+          "start_ticks": 32409659,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1902461,
+          "start_ticks": 32409666,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1902463,
+          "start_ticks": 32409674,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1902465,
+          "start_ticks": 32409681,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1902468,
+          "start_ticks": 32409688,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1902471,
+          "start_ticks": 32409697,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1902477,
+          "start_ticks": 32409707,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1902486,
+          "start_ticks": 32409727,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1902501,
+          "start_ticks": 32409743,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1902505,
+          "start_ticks": 32409758,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1902512,
+          "start_ticks": 32409771,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1902530,
+          "start_ticks": 32409785,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1902535,
+          "start_ticks": 32409805,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1902539,
+          "start_ticks": 32409821,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1902549,
+          "start_ticks": 32409839,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1902554,
+          "start_ticks": 32409854,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1902560,
+          "start_ticks": 32409871,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1902585,
+          "start_ticks": 32409885,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1902609,
+          "start_ticks": 32409900,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1902633,
+          "start_ticks": 32409931,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1902637,
+          "start_ticks": 32409939,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1902640,
+          "start_ticks": 32409946,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1902647,
+          "start_ticks": 32409954,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1902649,
+          "start_ticks": 32409963,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1902652,
+          "start_ticks": 32409970,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1902660,
+          "start_ticks": 32409991,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1902670,
+          "start_ticks": 32409998,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1902684,
+          "start_ticks": 32410026,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1902687,
+          "start_ticks": 32410032,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1902691,
+          "start_ticks": 32410046,
+          "sid": 1899089,
+          "pgid": 1899089
+        },
+        {
+          "pid": 1902698,
+          "start_ticks": 32410057,
+          "sid": 1899089,
+          "pgid": 1899089
+        }
+      ],
+      "pid": 1899089,
+      "direct_identity": {
+        "pid": 1899089,
+        "state": "R",
+        "ppid": 1898262,
+        "pgid": 1899089,
+        "sid": 1899089,
+        "start_ticks": 32404806,
+        "rss_bytes": 311296
+      },
+      "peak_session_rss_bytes": 632369152,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T12:13:42.074066+00:00",
+      "elapsed_seconds": 53.117582299979404,
+      "logs": {
+        "build.stdout": {
+          "bytes": 16829,
+          "sha256": "3d8f05b5ded1926587fd165b28b2817bd3f957de63616742e385fdfec04e4a0b"
+        },
+        "build.stderr": {
+          "bytes": 191681,
+          "sha256": "1c305e39e0e5a67e46f61a7ead5eecc318f35e36f77ead1000e6a0600f76c62b"
+        }
+      }
+    },
+    {
+      "label": "binary-needed",
+      "argv": [
+        "/usr/bin/readelf",
+        "-d",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gpu-iq-dequant-capacity-root-v3/build/gpu_iq_dequant_capacity_v1"
+      ],
+      "environment": {
+        "PATH": "/opt/intel/oneapi/vtune/2026.4/bin64:/opt/intel/oneapi/mpi/2021.18/bin:/opt/intel/oneapi/mkl/2026.1/bin:/opt/intel/oneapi/dev-utilities/2026.0/bin:/opt/intel/oneapi/debugger/2026.1/opt/debugger/bin:/opt/intel/oneapi/compiler/2026.1/bin:/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/opt/intel/oneapi/tcm/1.5/lib:/opt/intel/oneapi/umf/1.1/lib:/opt/intel/oneapi/tcm/1.5/env/../lib:/opt/intel/oneapi/tbb/2023.1/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/pti/1.1/lib:/opt/intel/oneapi/mpi/2021.18/opt/mpi/libfabric/lib:/opt/intel/oneapi/mpi/2021.18/lib:/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/ippcp/2026.0/lib/:/opt/intel/oneapi/ipp/2026.0/lib:/opt/intel/oneapi/dnnl/2026.0/lib:/opt/intel/oneapi/debugger/2026.1/opt/debugger/lib:/opt/intel/oneapi/compiler/2026.1/opt/compiler/lib:/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/ccl/2022.1/lib/",
+        "LIBRARY_PATH": "/opt/intel/oneapi/tcm/1.5/lib:/opt/intel/oneapi/umf/1.1/lib:/opt/intel/oneapi/tbb/2023.1/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/pti/1.1/lib:/opt/intel/oneapi/mpi/2021.18/lib:/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/ippcp/2026.0/lib/:/opt/intel/oneapi/ipp/2026.0/lib:/opt/intel/oneapi/dnnl/2026.0/lib:/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/ccl/2022.1/lib/",
+        "CPATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/dev-utilities/2026.0/include:/opt/intel/oneapi/ccl/2022.1/include",
+        "ONEAPI_ROOT": "/opt/intel/oneapi",
+        "CPLUS_INCLUDE_PATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/tbb/2023.1/env/../include:/opt/intel/oneapi/pti/1.1/include:/opt/intel/oneapi/mpi/2021.18/include:/opt/intel/oneapi/mkl/2026.1/include:/opt/intel/oneapi/ippcp/2026.0/include:/opt/intel/oneapi/ipp/2026.0/include:/opt/intel/oneapi/dpl/2022.13/include:/opt/intel/oneapi/dnnl/2026.0/include",
+        "C_INCLUDE_PATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/tbb/2023.1/env/../include:/opt/intel/oneapi/pti/1.1/include:/opt/intel/oneapi/mpi/2021.18/include:/opt/intel/oneapi/mkl/2026.1/include:/opt/intel/oneapi/ippcp/2026.0/include:/opt/intel/oneapi/ipp/2026.0/include:/opt/intel/oneapi/dnnl/2026.0/include",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1"
+      },
+      "started_utc": "2026-10-10T12:13:42.085989+00:00",
+      "wall_seconds": 30,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1902725,
+          "start_ticks": 32410120,
+          "sid": 1902725,
+          "pgid": 1902725
+        }
+      ],
+      "pid": 1902725,
+      "direct_identity": {
+        "pid": 1902725,
+        "state": "R",
+        "ppid": 1898262,
+        "pgid": 1902725,
+        "sid": 1902725,
+        "start_ticks": 32410120,
+        "rss_bytes": 270336
+      },
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T12:13:42.174326+00:00",
+      "elapsed_seconds": 0.08710220095235854,
+      "logs": {
+        "binary-needed.stdout": {
+          "bytes": 1619,
+          "sha256": "ded8933cf5355c6253bfcda4e7f40a729fbdf0227eb56ca583c3883b6159192b"
+        },
+        "binary-needed.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "adopted": false,
+  "model_executed": false,
+  "scope": "Isolated actual-pack generic GPU IQ dequant; host submission/completion wall, not exclusive device service or current production route",
+  "source": {
+    "bytes": 26902,
+    "sha256": "de0e86cb4c74df03b51517dce96d223ddc4149f0bb71a97c7da05dd12f9242a7"
+  },
+  "build_environment": {
+    "PATH": "/opt/intel/oneapi/vtune/2026.4/bin64:/opt/intel/oneapi/mpi/2021.18/bin:/opt/intel/oneapi/mkl/2026.1/bin:/opt/intel/oneapi/dev-utilities/2026.0/bin:/opt/intel/oneapi/debugger/2026.1/opt/debugger/bin:/opt/intel/oneapi/compiler/2026.1/bin:/usr/bin:/bin",
+    "LANG": "C.UTF-8",
+    "LC_ALL": "C.UTF-8",
+    "LD_LIBRARY_PATH": "/opt/intel/oneapi/tcm/1.5/lib:/opt/intel/oneapi/umf/1.1/lib:/opt/intel/oneapi/tcm/1.5/env/../lib:/opt/intel/oneapi/tbb/2023.1/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/pti/1.1/lib:/opt/intel/oneapi/mpi/2021.18/opt/mpi/libfabric/lib:/opt/intel/oneapi/mpi/2021.18/lib:/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/ippcp/2026.0/lib/:/opt/intel/oneapi/ipp/2026.0/lib:/opt/intel/oneapi/dnnl/2026.0/lib:/opt/intel/oneapi/debugger/2026.1/opt/debugger/lib:/opt/intel/oneapi/compiler/2026.1/opt/compiler/lib:/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/ccl/2022.1/lib/",
+    "LIBRARY_PATH": "/opt/intel/oneapi/tcm/1.5/lib:/opt/intel/oneapi/umf/1.1/lib:/opt/intel/oneapi/tbb/2023.1/env/../lib/intel64/gcc4.8:/opt/intel/oneapi/pti/1.1/lib:/opt/intel/oneapi/mpi/2021.18/lib:/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/ippcp/2026.0/lib/:/opt/intel/oneapi/ipp/2026.0/lib:/opt/intel/oneapi/dnnl/2026.0/lib:/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/ccl/2022.1/lib/",
+    "CPATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/dev-utilities/2026.0/include:/opt/intel/oneapi/ccl/2022.1/include",
+    "ONEAPI_ROOT": "/opt/intel/oneapi",
+    "CPLUS_INCLUDE_PATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/tbb/2023.1/env/../include:/opt/intel/oneapi/pti/1.1/include:/opt/intel/oneapi/mpi/2021.18/include:/opt/intel/oneapi/mkl/2026.1/include:/opt/intel/oneapi/ippcp/2026.0/include:/opt/intel/oneapi/ipp/2026.0/include:/opt/intel/oneapi/dpl/2022.13/include:/opt/intel/oneapi/dnnl/2026.0/include",
+    "C_INCLUDE_PATH": "/opt/intel/oneapi/umf/1.1/include:/opt/intel/oneapi/tbb/2023.1/env/../include:/opt/intel/oneapi/pti/1.1/include:/opt/intel/oneapi/mpi/2021.18/include:/opt/intel/oneapi/mkl/2026.1/include:/opt/intel/oneapi/ippcp/2026.0/include:/opt/intel/oneapi/ipp/2026.0/include:/opt/intel/oneapi/dnnl/2026.0/include",
+    "MKLROOT": "/opt/intel/oneapi/mkl/2026.1"
+  },
+  "cached_CPU_reference_files": {
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-native-role-plan-v0141-20261010/build-native-service-host-v1/ggml/src/libggml-cpu.a": {
+      "bytes": 2163864,
+      "sha256": "e731c114f35c7f98b9529a7960282525fcb86c2e87b4539f1a0ab290bc58cf3a"
+    },
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-native-role-plan-v0141-20261010/build-native-service-host-v1/ggml/src/libggml-base.a": {
+      "bytes": 1625676,
+      "sha256": "c63fbb38204b8bebafd83a3aea522dcab5ec7523184782edb0b74aa845408a56"
+    }
+  },
+  "reference_build_receipt": {
+    "bytes": 165974,
+    "sha256": "c8227c12ea5701da507bf87ed54d7a20e3b4286c50c75b01837e6409294ff92c"
+  },
+  "reference_compile_commands": {
+    "bytes": 40030,
+    "sha256": "59887dfa57a4968dcf6029a6f2e6cab3460776fce16097d2fffa517811aae902"
+  },
+  "precise_reference_reason": "Original cached GGML half converter returns0x6057 forFP32bits0x540ae211; independent RNE/literal IEEE overflow requires0x7c00. Preserve failure; compile exact original GGML C reference with precise, no reassociation/contraction.",
+  "precise_reference_sources": {
+    "/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned/ggml/src/ggml.c": {
+      "bytes": 260689,
+      "sha256": "1a634ca1df25db2fbd526cba9bfe11fccd5aa9b31f819c3cac6b630be03f9f51"
+    },
+    "/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned/ggml/src/ggml-quants.c": {
+      "bytes": 228250,
+      "sha256": "07143d7068936ae46b3c528b2f3d4bbb666e74d88992165716174d243573965d"
+    }
+  },
+  "precise_reference_objects": {
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gpu-iq-dequant-capacity-root-v3/build/ggml.c.o": {
+      "bytes": 272496,
+      "sha256": "313f961ff66d151213c4b58a243e988d91828d9dbae80b16c0315655b73e9519"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gpu-iq-dequant-capacity-root-v3/build/ggml-quants.c.o": {
+      "bytes": 923608,
+      "sha256": "59eb4abd4e1b8603915fb3c03866dd31e8095f2b0b308ddfcfd24289b001bafc"
+    }
+  },
+  "effective_CPU_reference_files": {
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-native-role-plan-v0141-20261010/build-native-service-host-v1/ggml/src/libggml-cpu.a": {
+      "bytes": 2163864,
+      "sha256": "e731c114f35c7f98b9529a7960282525fcb86c2e87b4539f1a0ab290bc58cf3a"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gpu-iq-dequant-capacity-root-v3/build/libggml-base-precise.a": {
+      "bytes": 1864356,
+      "sha256": "ef5216a53fbc95ba2651920a71f8a5f9f7d006a250679f2973a364b9ec70dc35"
+    }
+  },
+  "root_recipe_correction": {
+    "reason": "SYCL architecture enum name is not an OCLOC device token; original failed normally before GPU execution",
+    "original": {
+      "bytes": 3552,
+      "sha256": "60069c4875f6b1a7ec608e7f583dcabdf5f05e164002d0cf7b31cff8c2e8c278"
+    },
+    "corrected": {
+      "bytes": 3542,
+      "sha256": "e2fe6dac681335a03d2effb39de5ba55c036b919c4871bfad4d0414d76b2ee74"
+    },
+    "effective_OCLOC_device": "bmg-g21",
+    "primary_reference": "https://www.intel.com/content/www/us/en/docs/dpcpp-cpp-compiler/developer-guide-reference/2026-0/ahead-of-time-compilation.html",
+    "source_compiler_policy_string": "Original harness names SYCL architecture enum intel_gpu_bmg_g21; actual compiler command uses OCLOC bmg-g21"
+  },
+  "host_source_pins": {
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-native-service-capacity-20261010/src/artifact/native_role_plan.cpp": {
+      "bytes": 8549,
+      "sha256": "905ba9607eec70e44544396bcc48ac600c87951e3676d256ab6dd22a15e1a9a4"
+    },
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-native-service-capacity-20261010/src/kernels/cpu/expert_layout.cpp": {
+      "bytes": 19524,
+      "sha256": "9826d86cc83330d447d62a62189dc782f549ffb815c7bdccd2ad4f4582672f4d"
+    },
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-native-service-capacity-20261010/src/kernels/cpu/native_expert.cpp": {
+      "bytes": 12874,
+      "sha256": "767f02f33aca4da9fabbe113c50ce1d7cb2aa9f25b4234df59224ec46a5985cd"
+    }
+  },
+  "GPU_source_pin": {
+    "bytes": 266951,
+    "sha256": "22c2fb9c379804c2fc20ae302be05ad0f1c66bc623c6134bd7822057ffbba13a"
+  },
+  "host_object_pins": {
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gpu-iq-dequant-capacity-root-v3/build/native_role_plan.o": {
+      "bytes": 71144,
+      "sha256": "639694f553dd74ebd08e33fe25ac815d1cd4bc2a3dd4fe130d70e6e8c8d4b6c6"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gpu-iq-dequant-capacity-root-v3/build/expert_layout.o": {
+      "bytes": 75232,
+      "sha256": "5596b556c86ef38f8e34a27afcc1f7453bd9c31271ee1ebcde00a76bbe1b7a7c"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gpu-iq-dequant-capacity-root-v3/build/native_expert.o": {
+      "bytes": 26704,
+      "sha256": "84e774343ac4a956e67a17050786831d403ad5453703f6c5a7253fd547756273"
+    }
+  },
+  "binary": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gpu-iq-dequant-capacity-root-v3/build/gpu_iq_dequant_capacity_v1",
+    "bytes": 15552584,
+    "sha256": "3582cb8318146538c69a1de7269c75c793fc9053287000b07af109fa4127dc5a"
+  },
+  "compile_commands": [
+    {
+      "directory": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gpu-iq-dequant-capacity-root-v3/build",
+      "command": "/opt/intel/oneapi/compiler/2026.1/bin/icpx  -I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-prefill-service-events-20261010/sycl/include -I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-native-service-capacity-20261010/include -I/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned/ggml/include -I/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned/ggml/src -I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-prefill-service-events-20261010/third_party/ggml -std=c++20 -O2 -Wall -Wextra -fp-model=precise -fsycl -fsycl-targets=spir64_gen -fsycl-default-sub-group-size=32 -fsycl-device-code-split=per_kernel -ffunction-sections -fdata-sections -Wno-unused-parameter -Wno-unused-variable -Wno-deprecated-declarations -o CMakeFiles/gpu_iq_dequant_capacity_v1.dir/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-10-gpu-iq-dequant-capacity/source/gpu_iq_dequant_capacity_v1.cpp.o -c /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-10-gpu-iq-dequant-capacity/source/gpu_iq_dequant_capacity_v1.cpp",
+      "file": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-10-gpu-iq-dequant-capacity/source/gpu_iq_dequant_capacity_v1.cpp",
+      "output": "CMakeFiles/gpu_iq_dequant_capacity_v1.dir/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-10-gpu-iq-dequant-capacity/source/gpu_iq_dequant_capacity_v1.cpp.o"
+    },
+    {
+      "directory": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gpu-iq-dequant-capacity-root-v3/build",
+      "command": "/opt/intel/oneapi/compiler/2026.1/bin/icpx  -I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-prefill-service-events-20261010/sycl/include -I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-native-service-capacity-20261010/include -I/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned/ggml/include -I/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned/ggml/src -I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-prefill-service-events-20261010/third_party/ggml -std=c++20 -O2 -Wall -Wextra -fp-model=precise -fsycl -fsycl-targets=spir64_gen -fsycl-default-sub-group-size=32 -fsycl-device-code-split=per_kernel -ffunction-sections -fdata-sections -Wno-unused-parameter -Wno-unused-variable -Wno-deprecated-declarations -o CMakeFiles/gpu_iq_dequant_capacity_v1.dir/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-prefill-service-events-20261010/sycl/src/kernels/cuda/iq_kernels.dp.cpp.o -c /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-prefill-service-events-20261010/sycl/src/kernels/cuda/iq_kernels.dp.cpp",
+      "file": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-prefill-service-events-20261010/sycl/src/kernels/cuda/iq_kernels.dp.cpp",
+      "output": "CMakeFiles/gpu_iq_dequant_capacity_v1.dir/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-prefill-service-events-20261010/sycl/src/kernels/cuda/iq_kernels.dp.cpp.o"
+    }
+  ],
+  "binary_needed": "\nDynamic section at offset 0xe58d60 contains 28 entries:\n  Tag        Type                         Name/Value\n 0x0000000000000001 (NEEDED)             Shared library: [libstdc++.so.6]\n 0x0000000000000001 (NEEDED)             Shared library: [libm.so.6]\n 0x0000000000000001 (NEEDED)             Shared library: [libgcc_s.so.1]\n 0x0000000000000001 (NEEDED)             Shared library: [libsycl.so.9]\n 0x0000000000000001 (NEEDED)             Shared library: [libc.so.6]\n 0x000000000000000c (INIT)               0x408000\n 0x000000000000000d (FINI)               0x65eddc\n 0x0000000000000019 (INIT_ARRAY)         0x12578c0\n 0x000000000000001b (INIT_ARRAYSZ)       48 (bytes)\n 0x000000000000001a (FINI_ARRAY)         0x12578f0\n 0x000000000000001c (FINI_ARRAYSZ)       16 (bytes)\n 0x000000006ffffef5 (GNU_HASH)           0x4003b0\n 0x0000000000000005 (STRTAB)             0x402ee0\n 0x0000000000000006 (SYMTAB)             0x4009d8\n 0x000000000000000a (STRSZ)              10797 (bytes)\n 0x000000000000000b (SYMENT)             24 (bytes)\n 0x0000000000000015 (DEBUG)              0x0\n 0x0000000000000003 (PLTGOT)             0x1258fe8\n 0x0000000000000002 (PLTRELSZ)           4776 (bytes)\n 0x0000000000000014 (PLTREL)             RELA\n 0x0000000000000017 (JMPREL)             0x4060b8\n 0x0000000000000007 (RELA)               0x405e18\n 0x0000000000000008 (RELASZ)             672 (bytes)\n 0x0000000000000009 (RELAENT)            24 (bytes)\n 0x000000006ffffffe (VERNEED)            0x405c28\n 0x000000006fffffff (VERNEEDNUM)         3\n 0x000000006ffffff0 (VERSYM)             0x40590e\n 0x0000000000000000 (NULL)               0x0\n",
+  "finished_utc": "2026-10-10T12:13:42.175852+00:00"
+}

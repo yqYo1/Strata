@@ -1,0 +1,1 @@
+R255–R258 add isolated control audit, conditional decode budgets, allocation lifetimes and CPU pair extension eligibility. Root corrections preserve originals. Original cached GGML FP16 reference fails a large-value overflow test; the private precise reference now passes CPU conversion tests. No GPU IQ capacity, new model throughput or adoption is implied.
