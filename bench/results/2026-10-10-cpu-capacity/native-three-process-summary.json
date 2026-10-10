@@ -1,0 +1,4443 @@
+{
+  "source_commit": "dba6bea90192f907cbeecdb75c29aa0e7d1fa449",
+  "processes": 24,
+  "measured_rows": 6000,
+  "warmup_rows": 720,
+  "convention": "OneMAC=2 dense-equivalentFLOPs; packedquant instruction counts and physicalDRAM bytes are unmeasured.",
+  "samples": [
+    {
+      "NT": 1,
+      "mode": "streaming",
+      "repeat": 1,
+      "cohort": 0,
+      "arm": "GU",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 214.91133333333335,
+      "median_ms": 41.262976,
+      "sample_archive": "native/native-capacity-v2-measure-nt1-streaming-r1-controller2.json",
+      "dense_equivalent_GFLOPs": 30.494436465270947,
+      "logical_packed_weight_GBps": 4.88387459014105
+    },
+    {
+      "NT": 1,
+      "mode": "streaming",
+      "repeat": 1,
+      "cohort": 0,
+      "arm": "FFquant",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 0.152421875,
+      "median_ms": 0.029265,
+      "sample_archive": "native/native-capacity-v2-measure-nt1-streaming-r1-controller2.json"
+    },
+    {
+      "NT": 1,
+      "mode": "streaming",
+      "repeat": 1,
+      "cohort": 0,
+      "arm": "Down",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 84.60184375,
+      "median_ms": 16.243554,
+      "sample_archive": "native/native-capacity-v2-measure-nt1-streaming-r1-controller2.json",
+      "dense_equivalent_GFLOPs": 38.73201640478432,
+      "logical_packed_weight_GBps": 10.89337961384559
+    },
+    {
+      "NT": 1,
+      "mode": "streaming",
+      "repeat": 1,
+      "cohort": 0,
+      "arm": "direct_complete",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 287.52582291666664,
+      "median_ms": 55.204958,
+      "sample_archive": "native/native-capacity-v2-measure-nt1-streaming-r1-controller2.json",
+      "dense_equivalent_GFLOPs": 34.18962477971635,
+      "logical_packed_weight_GBps": 6.855732052182705
+    },
+    {
+      "NT": 1,
+      "mode": "streaming",
+      "repeat": 1,
+      "cohort": 0,
+      "arm": "pool",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 91.99456250000001,
+      "median_ms": 17.662956,
+      "sample_archive": "native/native-capacity-v2-measure-nt1-streaming-r1-controller2.json",
+      "dense_equivalent_GFLOPs": 106.8584895982303,
+      "logical_packed_weight_GBps": 21.427353382978474
+    },
+    {
+      "NT": 1,
+      "mode": "streaming",
+      "repeat": 1,
+      "cohort": 1,
+      "arm": "GU",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 202.24035416666666,
+      "median_ms": 38.830148,
+      "sample_archive": "native/native-capacity-v2-measure-nt1-streaming-r1-controller2.json",
+      "dense_equivalent_GFLOPs": 32.40500654285428,
+      "logical_packed_weight_GBps": 5.189864329129006
+    },
+    {
+      "NT": 1,
+      "mode": "streaming",
+      "repeat": 1,
+      "cohort": 1,
+      "arm": "FFquant",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 0.16927604166666668,
+      "median_ms": 0.032501,
+      "sample_archive": "native/native-capacity-v2-measure-nt1-streaming-r1-controller2.json"
+    },
+    {
+      "NT": 1,
+      "mode": "streaming",
+      "repeat": 1,
+      "cohort": 1,
+      "arm": "Down",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 87.19291666666668,
+      "median_ms": 16.74104,
+      "sample_archive": "native/native-capacity-v2-measure-nt1-streaming-r1-controller2.json",
+      "dense_equivalent_GFLOPs": 37.58103439212856,
+      "logical_packed_weight_GBps": 10.56966592278616
+    },
+    {
+      "NT": 1,
+      "mode": "streaming",
+      "repeat": 1,
+      "cohort": 1,
+      "arm": "direct_complete",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 285.406578125,
+      "median_ms": 54.798063,
+      "sample_archive": "native/native-capacity-v2-measure-nt1-streaming-r1-controller2.json",
+      "dense_equivalent_GFLOPs": 34.443494836669686,
+      "logical_packed_weight_GBps": 6.906638287561368
+    },
+    {
+      "NT": 1,
+      "mode": "streaming",
+      "repeat": 1,
+      "cohort": 1,
+      "arm": "pool",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 89.96120833333333,
+      "median_ms": 17.272552,
+      "sample_archive": "native/native-capacity-v2-measure-nt1-streaming-r1-controller2.json",
+      "dense_equivalent_GFLOPs": 109.27376568326441,
+      "logical_packed_weight_GBps": 21.91166655627958
+    },
+    {
+      "NT": 1,
+      "mode": "hot",
+      "repeat": 1,
+      "cohort": 0,
+      "arm": "GU",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 182.2355,
+      "median_ms": 1.457884,
+      "sample_archive": "native/native-capacity-v2-measure-nt1-hot-r1-controller2.json",
+      "dense_equivalent_GFLOPs": 35.962257628178925,
+      "logical_packed_weight_GBps": 5.75958032326303
+    },
+    {
+      "NT": 1,
+      "mode": "hot",
+      "repeat": 1,
+      "cohort": 0,
+      "arm": "FFquant",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 0.1315,
+      "median_ms": 0.001052,
+      "sample_archive": "native/native-capacity-v2-measure-nt1-hot-r1-controller2.json"
+    },
+    {
+      "NT": 1,
+      "mode": "hot",
+      "repeat": 1,
+      "cohort": 0,
+      "arm": "Down",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 77.16525,
+      "median_ms": 0.617322,
+      "sample_archive": "native/native-capacity-v2-measure-nt1-hot-r1-controller2.json",
+      "dense_equivalent_GFLOPs": 42.46471047524631,
+      "logical_packed_weight_GBps": 11.943199821163024
+    },
+    {
+      "NT": 1,
+      "mode": "hot",
+      "repeat": 1,
+      "cohort": 0,
+      "arm": "direct_complete",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 261.680125,
+      "median_ms": 2.093441,
+      "sample_archive": "native/native-capacity-v2-measure-nt1-hot-r1-controller2.json",
+      "dense_equivalent_GFLOPs": 37.56647548223237,
+      "logical_packed_weight_GBps": 7.532860969093469
+    },
+    {
+      "NT": 1,
+      "mode": "hot",
+      "repeat": 1,
+      "cohort": 0,
+      "arm": "pool",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 70.3575,
+      "median_ms": 0.56286,
+      "sample_archive": "native/native-capacity-v2-measure-nt1-hot-r1-controller2.json",
+      "dense_equivalent_GFLOPs": 139.72071207760368,
+      "logical_packed_weight_GBps": 28.016913619727816
+    },
+    {
+      "NT": 1,
+      "mode": "hot",
+      "repeat": 1,
+      "cohort": 1,
+      "arm": "GU",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 180.88925,
+      "median_ms": 1.447114,
+      "sample_archive": "native/native-capacity-v2-measure-nt1-hot-r1-controller2.json",
+      "dense_equivalent_GFLOPs": 36.22990310369466,
+      "logical_packed_weight_GBps": 5.802445418951098
+    },
+    {
+      "NT": 1,
+      "mode": "hot",
+      "repeat": 1,
+      "cohort": 1,
+      "arm": "FFquant",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 0.124,
+      "median_ms": 0.000992,
+      "sample_archive": "native/native-capacity-v2-measure-nt1-hot-r1-controller2.json"
+    },
+    {
+      "NT": 1,
+      "mode": "hot",
+      "repeat": 1,
+      "cohort": 1,
+      "arm": "Down",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 77.05375000000001,
+      "median_ms": 0.61643,
+      "sample_archive": "native/native-capacity-v2-measure-nt1-hot-r1-controller2.json",
+      "dense_equivalent_GFLOPs": 42.52615868792887,
+      "logical_packed_weight_GBps": 11.960482130979997
+    },
+    {
+      "NT": 1,
+      "mode": "hot",
+      "repeat": 1,
+      "cohort": 1,
+      "arm": "direct_complete",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 258.540375,
+      "median_ms": 2.068323,
+      "sample_archive": "native/native-capacity-v2-measure-nt1-hot-r1-controller2.json",
+      "dense_equivalent_GFLOPs": 38.02268794574155,
+      "logical_packed_weight_GBps": 7.624341072453384
+    },
+    {
+      "NT": 1,
+      "mode": "hot",
+      "repeat": 1,
+      "cohort": 1,
+      "arm": "pool",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 63.71362499999999,
+      "median_ms": 0.509709,
+      "sample_archive": "native/native-capacity-v2-measure-nt1-hot-r1-controller2.json",
+      "dense_equivalent_GFLOPs": 154.29038922208557,
+      "logical_packed_weight_GBps": 30.938437422136946
+    },
+    {
+      "NT": 3,
+      "mode": "hot",
+      "repeat": 1,
+      "cohort": 0,
+      "arm": "GU",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 109.92858333333334,
+      "median_ms": 2.638286,
+      "sample_archive": "native/native-capacity-v2-measure-nt3-hot-r1-controller2.json",
+      "dense_equivalent_GFLOPs": 59.61688763083304,
+      "logical_packed_weight_GBps": 3.1826723865418685
+    },
+    {
+      "NT": 3,
+      "mode": "hot",
+      "repeat": 1,
+      "cohort": 0,
+      "arm": "FFquant",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 0.11395833333333333,
+      "median_ms": 0.002735,
+      "sample_archive": "native/native-capacity-v2-measure-nt3-hot-r1-controller2.json"
+    },
+    {
+      "NT": 3,
+      "mode": "hot",
+      "repeat": 1,
+      "cohort": 0,
+      "arm": "Down",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 54.76141666666666,
+      "median_ms": 1.314274,
+      "sample_archive": "native/native-capacity-v2-measure-nt3-hot-r1-controller2.json",
+      "dense_equivalent_GFLOPs": 59.83775072777823,
+      "logical_packed_weight_GBps": 5.609789130729209
+    },
+    {
+      "NT": 3,
+      "mode": "hot",
+      "repeat": 1,
+      "cohort": 0,
+      "arm": "direct_complete",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 163.054,
+      "median_ms": 3.913296,
+      "sample_archive": "native/native-capacity-v2-measure-nt3-hot-r1-controller2.json",
+      "dense_equivalent_GFLOPs": 60.289229335066906,
+      "logical_packed_weight_GBps": 4.02974883576402
+    },
+    {
+      "NT": 3,
+      "mode": "hot",
+      "repeat": 1,
+      "cohort": 0,
+      "arm": "pool",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 39.15870833333333,
+      "median_ms": 0.939809,
+      "sample_archive": "native/native-capacity-v2-measure-nt3-hot-r1-controller2.json",
+      "dense_equivalent_GFLOPs": 251.03994535059783,
+      "logical_packed_weight_GBps": 16.779579680552114
+    },
+    {
+      "NT": 3,
+      "mode": "hot",
+      "repeat": 1,
+      "cohort": 1,
+      "arm": "GU",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 123.77841666666667,
+      "median_ms": 2.970682,
+      "sample_archive": "native/native-capacity-v2-measure-nt3-hot-r1-controller2.json",
+      "dense_equivalent_GFLOPs": 52.946225816159384,
+      "logical_packed_weight_GBps": 2.8265563261230917
+    },
+    {
+      "NT": 3,
+      "mode": "hot",
+      "repeat": 1,
+      "cohort": 1,
+      "arm": "FFquant",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 0.15070833333333333,
+      "median_ms": 0.003617,
+      "sample_archive": "native/native-capacity-v2-measure-nt3-hot-r1-controller2.json"
+    },
+    {
+      "NT": 3,
+      "mode": "hot",
+      "repeat": 1,
+      "cohort": 1,
+      "arm": "Down",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 58.62825,
+      "median_ms": 1.407078,
+      "sample_archive": "native/native-capacity-v2-measure-nt3-hot-r1-controller2.json",
+      "dense_equivalent_GFLOPs": 55.89114462737673,
+      "logical_packed_weight_GBps": 5.239794808816568
+    },
+    {
+      "NT": 3,
+      "mode": "hot",
+      "repeat": 1,
+      "cohort": 1,
+      "arm": "direct_complete",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 194.51695833333335,
+      "median_ms": 4.668407,
+      "sample_archive": "native/native-capacity-v2-measure-nt3-hot-r1-controller2.json",
+      "dense_equivalent_GFLOPs": 50.537495980963094,
+      "logical_packed_weight_GBps": 3.3779402695609013
+    },
+    {
+      "NT": 3,
+      "mode": "hot",
+      "repeat": 1,
+      "cohort": 1,
+      "arm": "pool",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 38.993,
+      "median_ms": 0.935832,
+      "sample_archive": "native/native-capacity-v2-measure-nt3-hot-r1-controller2.json",
+      "dense_equivalent_GFLOPs": 252.10678839791754,
+      "logical_packed_weight_GBps": 16.850887766180254
+    },
+    {
+      "NT": 3,
+      "mode": "streaming",
+      "repeat": 1,
+      "cohort": 0,
+      "arm": "GU",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 110.54460763888888,
+      "median_ms": 63.673694,
+      "sample_archive": "native/native-capacity-v2-measure-nt3-streaming-r1-controller2.json",
+      "dense_equivalent_GFLOPs": 59.28466471569877,
+      "logical_packed_weight_GBps": 3.1649365277912103
+    },
+    {
+      "NT": 3,
+      "mode": "streaming",
+      "repeat": 1,
+      "cohort": 0,
+      "arm": "FFquant",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 0.1921840277777778,
+      "median_ms": 0.110698,
+      "sample_archive": "native/native-capacity-v2-measure-nt3-streaming-r1-controller2.json"
+    },
+    {
+      "NT": 3,
+      "mode": "streaming",
+      "repeat": 1,
+      "cohort": 0,
+      "arm": "Down",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 54.192720486111114,
+      "median_ms": 31.215007,
+      "sample_archive": "native/native-capacity-v2-measure-nt3-streaming-r1-controller2.json",
+      "dense_equivalent_GFLOPs": 60.46568562358483,
+      "logical_packed_weight_GBps": 5.668658027211078
+    },
+    {
+      "NT": 3,
+      "mode": "streaming",
+      "repeat": 1,
+      "cohort": 0,
+      "arm": "direct_complete",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 161.93768402777778,
+      "median_ms": 93.276106,
+      "sample_archive": "native/native-capacity-v2-measure-nt3-streaming-r1-controller2.json",
+      "dense_equivalent_GFLOPs": 60.70483259667808,
+      "logical_packed_weight_GBps": 4.057527873215462
+    },
+    {
+      "NT": 3,
+      "mode": "streaming",
+      "repeat": 1,
+      "cohort": 0,
+      "arm": "pool",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 42.98419097222222,
+      "median_ms": 24.758894,
+      "sample_archive": "native/native-capacity-v2-measure-nt3-streaming-r1-controller2.json",
+      "dense_equivalent_GFLOPs": 228.69803473450793,
+      "logical_packed_weight_GBps": 15.286240168886382
+    },
+    {
+      "NT": 3,
+      "mode": "streaming",
+      "repeat": 1,
+      "cohort": 1,
+      "arm": "GU",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 110.333796875,
+      "median_ms": 63.552267,
+      "sample_archive": "native/native-capacity-v2-measure-nt3-streaming-r1-controller2.json",
+      "dense_equivalent_GFLOPs": 59.3979377635734,
+      "logical_packed_weight_GBps": 3.1709836566491014
+    },
+    {
+      "NT": 3,
+      "mode": "streaming",
+      "repeat": 1,
+      "cohort": 1,
+      "arm": "FFquant",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 0.18505208333333334,
+      "median_ms": 0.10659,
+      "sample_archive": "native/native-capacity-v2-measure-nt3-streaming-r1-controller2.json"
+    },
+    {
+      "NT": 3,
+      "mode": "streaming",
+      "repeat": 1,
+      "cohort": 1,
+      "arm": "Down",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 54.08543576388889,
+      "median_ms": 31.153211,
+      "sample_archive": "native/native-capacity-v2-measure-nt3-streaming-r1-controller2.json",
+      "dense_equivalent_GFLOPs": 60.58562630991714,
+      "logical_packed_weight_GBps": 5.679902466554731
+    },
+    {
+      "NT": 3,
+      "mode": "streaming",
+      "repeat": 1,
+      "cohort": 1,
+      "arm": "direct_complete",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 162.0397013888889,
+      "median_ms": 93.334868,
+      "sample_archive": "native/native-capacity-v2-measure-nt3-streaming-r1-controller2.json",
+      "dense_equivalent_GFLOPs": 60.666613896105794,
+      "logical_packed_weight_GBps": 4.054973324652905
+    },
+    {
+      "NT": 3,
+      "mode": "streaming",
+      "repeat": 1,
+      "cohort": 1,
+      "arm": "pool",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 45.130489583333336,
+      "median_ms": 25.995162,
+      "sample_archive": "native/native-capacity-v2-measure-nt3-streaming-r1-controller2.json",
+      "dense_equivalent_GFLOPs": 217.82170082263767,
+      "logical_packed_weight_GBps": 14.55926298901311
+    },
+    {
+      "NT": 2,
+      "mode": "streaming",
+      "repeat": 1,
+      "cohort": 0,
+      "arm": "GU",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 147.40679427083333,
+      "median_ms": 56.604209,
+      "sample_archive": "native/native-capacity-v2-measure-nt2-streaming-r1-controller2.json",
+      "dense_equivalent_GFLOPs": 44.45928040439537,
+      "logical_packed_weight_GBps": 3.5602158136332234
+    },
+    {
+      "NT": 2,
+      "mode": "streaming",
+      "repeat": 1,
+      "cohort": 0,
+      "arm": "FFquant",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 0.17123437500000002,
+      "median_ms": 0.065754,
+      "sample_archive": "native/native-capacity-v2-measure-nt2-streaming-r1-controller2.json"
+    },
+    {
+      "NT": 2,
+      "mode": "streaming",
+      "repeat": 1,
+      "cohort": 0,
+      "arm": "Down",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 61.89961458333334,
+      "median_ms": 23.769452,
+      "sample_archive": "native/native-capacity-v2-measure-nt2-streaming-r1-controller2.json",
+      "dense_equivalent_GFLOPs": 52.937324764575976,
+      "logical_packed_weight_GBps": 7.444311295018496
+    },
+    {
+      "NT": 2,
+      "mode": "streaming",
+      "repeat": 1,
+      "cohort": 0,
+      "arm": "direct_complete",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 213.32144010416664,
+      "median_ms": 81.915433,
+      "sample_archive": "native/native-capacity-v2-measure-nt2-streaming-r1-controller2.json",
+      "dense_equivalent_GFLOPs": 46.082569080725,
+      "logical_packed_weight_GBps": 4.620257577103939
+    },
+    {
+      "NT": 2,
+      "mode": "streaming",
+      "repeat": 1,
+      "cohort": 0,
+      "arm": "pool",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 59.060601562500004,
+      "median_ms": 22.679271,
+      "sample_archive": "native/native-capacity-v2-measure-nt2-streaming-r1-controller2.json",
+      "dense_equivalent_GFLOPs": 166.44598497015178,
+      "logical_packed_weight_GBps": 16.687943805601158
+    },
+    {
+      "NT": 2,
+      "mode": "streaming",
+      "repeat": 1,
+      "cohort": 1,
+      "arm": "GU",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 138.074984375,
+      "median_ms": 53.020794,
+      "sample_archive": "native/native-capacity-v2-measure-nt2-streaming-r1-controller2.json",
+      "dense_equivalent_GFLOPs": 47.46406475919617,
+      "logical_packed_weight_GBps": 3.8008333107950056
+    },
+    {
+      "NT": 2,
+      "mode": "streaming",
+      "repeat": 1,
+      "cohort": 1,
+      "arm": "FFquant",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 0.16797395833333337,
+      "median_ms": 0.064502,
+      "sample_archive": "native/native-capacity-v2-measure-nt2-streaming-r1-controller2.json"
+    },
+    {
+      "NT": 2,
+      "mode": "streaming",
+      "repeat": 1,
+      "cohort": 1,
+      "arm": "Down",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 61.826484375,
+      "median_ms": 23.74137,
+      "sample_archive": "native/native-capacity-v2-measure-nt2-streaming-r1-controller2.json",
+      "dense_equivalent_GFLOPs": 52.9999406099985,
+      "logical_packed_weight_GBps": 7.453116648281038
+    },
+    {
+      "NT": 2,
+      "mode": "streaming",
+      "repeat": 1,
+      "cohort": 1,
+      "arm": "direct_complete",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 195.7440859375,
+      "median_ms": 75.165729,
+      "sample_archive": "native/native-capacity-v2-measure-nt2-streaming-r1-controller2.json",
+      "dense_equivalent_GFLOPs": 50.220674371427975,
+      "logical_packed_weight_GBps": 5.035145737760357
+    },
+    {
+      "NT": 2,
+      "mode": "streaming",
+      "repeat": 1,
+      "cohort": 1,
+      "arm": "pool",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 53.4584140625,
+      "median_ms": 20.528031,
+      "sample_archive": "native/native-capacity-v2-measure-nt2-streaming-r1-controller2.json",
+      "dense_equivalent_GFLOPs": 183.88873243615038,
+      "logical_packed_weight_GBps": 18.436760934353618
+    },
+    {
+      "NT": 2,
+      "mode": "hot",
+      "repeat": 1,
+      "cohort": 0,
+      "arm": "GU",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 140.31725,
+      "median_ms": 2.245076,
+      "sample_archive": "native/native-capacity-v2-measure-nt2-hot-r1-controller2.json",
+      "dense_equivalent_GFLOPs": 46.70559036754212,
+      "logical_packed_weight_GBps": 3.7400961036508344
+    },
+    {
+      "NT": 2,
+      "mode": "hot",
+      "repeat": 1,
+      "cohort": 0,
+      "arm": "FFquant",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 0.1215,
+      "median_ms": 0.001944,
+      "sample_archive": "native/native-capacity-v2-measure-nt2-hot-r1-controller2.json"
+    },
+    {
+      "NT": 2,
+      "mode": "hot",
+      "repeat": 1,
+      "cohort": 0,
+      "arm": "Down",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 60.741875,
+      "median_ms": 0.97187,
+      "sample_archive": "native/native-capacity-v2-measure-nt2-hot-r1-controller2.json",
+      "dense_equivalent_GFLOPs": 53.94630969162542,
+      "logical_packed_weight_GBps": 7.586199800384825
+    },
+    {
+      "NT": 2,
+      "mode": "hot",
+      "repeat": 1,
+      "cohort": 0,
+      "arm": "direct_complete",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 197.627,
+      "median_ms": 3.162032,
+      "sample_archive": "native/native-capacity-v2-measure-nt2-hot-r1-controller2.json",
+      "dense_equivalent_GFLOPs": 49.742191097370295,
+      "logical_packed_weight_GBps": 4.9871728053353035
+    },
+    {
+      "NT": 2,
+      "mode": "hot",
+      "repeat": 1,
+      "cohort": 0,
+      "arm": "pool",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 48.5063125,
+      "median_ms": 0.776101,
+      "sample_archive": "native/native-capacity-v2-measure-nt2-hot-r1-controller2.json",
+      "dense_equivalent_GFLOPs": 202.66228235757973,
+      "logical_packed_weight_GBps": 20.319004871788596
+    },
+    {
+      "NT": 2,
+      "mode": "hot",
+      "repeat": 1,
+      "cohort": 1,
+      "arm": "GU",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 139.65225,
+      "median_ms": 2.234436,
+      "sample_archive": "native/native-capacity-v2-measure-nt2-hot-r1-controller2.json",
+      "dense_equivalent_GFLOPs": 46.927994357412786,
+      "logical_packed_weight_GBps": 3.7579057981521955
+    },
+    {
+      "NT": 2,
+      "mode": "hot",
+      "repeat": 1,
+      "cohort": 1,
+      "arm": "FFquant",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 0.120875,
+      "median_ms": 0.001934,
+      "sample_archive": "native/native-capacity-v2-measure-nt2-hot-r1-controller2.json"
+    },
+    {
+      "NT": 2,
+      "mode": "hot",
+      "repeat": 1,
+      "cohort": 1,
+      "arm": "Down",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 63.6554375,
+      "median_ms": 1.018487,
+      "sample_archive": "native/native-capacity-v2-measure-nt2-hot-r1-controller2.json",
+      "dense_equivalent_GFLOPs": 51.477142074469285,
+      "logical_packed_weight_GBps": 7.238973104222244
+    },
+    {
+      "NT": 2,
+      "mode": "hot",
+      "repeat": 1,
+      "cohort": 1,
+      "arm": "direct_complete",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 208.189375,
+      "median_ms": 3.33103,
+      "sample_archive": "native/native-capacity-v2-measure-nt2-hot-r1-controller2.json",
+      "dense_equivalent_GFLOPs": 47.21854801667953,
+      "logical_packed_weight_GBps": 4.734151298547295
+    },
+    {
+      "NT": 2,
+      "mode": "hot",
+      "repeat": 1,
+      "cohort": 1,
+      "arm": "pool",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 48.396750000000004,
+      "median_ms": 0.774348,
+      "sample_archive": "native/native-capacity-v2-measure-nt2-hot-r1-controller2.json",
+      "dense_equivalent_GFLOPs": 203.12107734506964,
+      "logical_packed_weight_GBps": 20.36500384839891
+    },
+    {
+      "NT": 4,
+      "mode": "hot",
+      "repeat": 1,
+      "cohort": 0,
+      "arm": "GU",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 99.45534375,
+      "median_ms": 3.182571,
+      "sample_archive": "native/native-capacity-v2-measure-nt4-hot-r1-controller2.json",
+      "dense_equivalent_GFLOPs": 65.89490069506697,
+      "logical_packed_weight_GBps": 2.63837004736108
+    },
+    {
+      "NT": 4,
+      "mode": "hot",
+      "repeat": 1,
+      "cohort": 0,
+      "arm": "FFquant",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 0.11084374999999999,
+      "median_ms": 0.003547,
+      "sample_archive": "native/native-capacity-v2-measure-nt4-hot-r1-controller2.json"
+    },
+    {
+      "NT": 4,
+      "mode": "hot",
+      "repeat": 1,
+      "cohort": 0,
+      "arm": "Down",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 51.44278125,
+      "median_ms": 1.646169,
+      "sample_archive": "native/native-capacity-v2-measure-nt4-hot-r1-controller2.json",
+      "dense_equivalent_GFLOPs": 63.69795567769773,
+      "logical_packed_weight_GBps": 4.4787625085881215
+    },
+    {
+      "NT": 4,
+      "mode": "hot",
+      "repeat": 1,
+      "cohort": 0,
+      "arm": "direct_complete",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 149.59284375000001,
+      "median_ms": 4.786971,
+      "sample_archive": "native/native-capacity-v2-measure-nt4-hot-r1-controller2.json",
+      "dense_equivalent_GFLOPs": 65.71437345243996,
+      "logical_packed_weight_GBps": 3.2942752316652846
+    },
+    {
+      "NT": 4,
+      "mode": "hot",
+      "repeat": 1,
+      "cohort": 0,
+      "arm": "pool",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 35.17809375,
+      "median_ms": 1.125699,
+      "sample_archive": "native/native-capacity-v2-measure-nt4-hot-r1-controller2.json",
+      "dense_equivalent_GFLOPs": 279.44663715611364,
+      "logical_packed_weight_GBps": 14.008718138685385
+    },
+    {
+      "NT": 4,
+      "mode": "hot",
+      "repeat": 1,
+      "cohort": 1,
+      "arm": "GU",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 94.32815625,
+      "median_ms": 3.018501,
+      "sample_archive": "native/native-capacity-v2-measure-nt4-hot-r1-controller2.json",
+      "dense_equivalent_GFLOPs": 69.47660444704175,
+      "logical_packed_weight_GBps": 2.7817781077428827
+    },
+    {
+      "NT": 4,
+      "mode": "hot",
+      "repeat": 1,
+      "cohort": 1,
+      "arm": "FFquant",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 0.11240625,
+      "median_ms": 0.003597,
+      "sample_archive": "native/native-capacity-v2-measure-nt4-hot-r1-controller2.json"
+    },
+    {
+      "NT": 4,
+      "mode": "hot",
+      "repeat": 1,
+      "cohort": 1,
+      "arm": "Down",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 50.64253125,
+      "median_ms": 1.620561,
+      "sample_archive": "native/native-capacity-v2-measure-nt4-hot-r1-controller2.json",
+      "dense_equivalent_GFLOPs": 64.7045066492406,
+      "logical_packed_weight_GBps": 4.54953562377473
+    },
+    {
+      "NT": 4,
+      "mode": "hot",
+      "repeat": 1,
+      "cohort": 1,
+      "arm": "direct_complete",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 156.4616875,
+      "median_ms": 5.006774,
+      "sample_archive": "native/native-capacity-v2-measure-nt4-hot-r1-controller2.json",
+      "dense_equivalent_GFLOPs": 62.8294386764811,
+      "logical_packed_weight_GBps": 3.1496528503183887
+    },
+    {
+      "NT": 4,
+      "mode": "hot",
+      "repeat": 1,
+      "cohort": 1,
+      "arm": "pool",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 35.222249999999995,
+      "median_ms": 1.127112,
+      "sample_archive": "native/native-capacity-v2-measure-nt4-hot-r1-controller2.json",
+      "dense_equivalent_GFLOPs": 279.0963098609544,
+      "logical_packed_weight_GBps": 13.9911561583942
+    },
+    {
+      "NT": 4,
+      "mode": "streaming",
+      "repeat": 1,
+      "cohort": 0,
+      "arm": "GU",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 95.011375,
+      "median_ms": 72.968736,
+      "sample_archive": "native/native-capacity-v2-measure-nt4-streaming-r1-controller2.json",
+      "dense_equivalent_GFLOPs": 68.9770040692496,
+      "logical_packed_weight_GBps": 2.761774576991439
+    },
+    {
+      "NT": 4,
+      "mode": "streaming",
+      "repeat": 1,
+      "cohort": 0,
+      "arm": "FFquant",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 0.23090364583333334,
+      "median_ms": 0.177334,
+      "sample_archive": "native/native-capacity-v2-measure-nt4-streaming-r1-controller2.json"
+    },
+    {
+      "NT": 4,
+      "mode": "streaming",
+      "repeat": 1,
+      "cohort": 0,
+      "arm": "Down",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 50.45746744791666,
+      "median_ms": 38.751335,
+      "sample_archive": "native/native-capacity-v2-measure-nt4-streaming-r1-controller2.json",
+      "dense_equivalent_GFLOPs": 64.94182458488206,
+      "logical_packed_weight_GBps": 4.566222041124519
+    },
+    {
+      "NT": 4,
+      "mode": "streaming",
+      "repeat": 1,
+      "cohort": 0,
+      "arm": "direct_complete",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 146.75339583333334,
+      "median_ms": 112.706608,
+      "sample_archive": "native/native-capacity-v2-measure-nt4-streaming-r1-controller2.json",
+      "dense_equivalent_GFLOPs": 66.98584345649014,
+      "logical_packed_weight_GBps": 3.358014287857904
+    },
+    {
+      "NT": 4,
+      "mode": "streaming",
+      "repeat": 1,
+      "cohort": 0,
+      "arm": "pool",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 38.73277994791666,
+      "median_ms": 29.746775,
+      "sample_archive": "native/native-capacity-v2-measure-nt4-streaming-r1-controller2.json",
+      "dense_equivalent_GFLOPs": 253.80052795639196,
+      "logical_packed_weight_GBps": 12.72307334156392
+    },
+    {
+      "NT": 4,
+      "mode": "streaming",
+      "repeat": 1,
+      "cohort": 1,
+      "arm": "GU",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 98.42030468749999,
+      "median_ms": 75.586794,
+      "sample_archive": "native/native-capacity-v2-measure-nt4-streaming-r1-controller2.json",
+      "dense_equivalent_GFLOPs": 66.58788570924176,
+      "logical_packed_weight_GBps": 2.6661165176551878
+    },
+    {
+      "NT": 4,
+      "mode": "streaming",
+      "repeat": 1,
+      "cohort": 1,
+      "arm": "FFquant",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 0.19307161458333333,
+      "median_ms": 0.148279,
+      "sample_archive": "native/native-capacity-v2-measure-nt4-streaming-r1-controller2.json"
+    },
+    {
+      "NT": 4,
+      "mode": "streaming",
+      "repeat": 1,
+      "cohort": 1,
+      "arm": "Down",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 50.80378515625,
+      "median_ms": 39.017307,
+      "sample_archive": "native/native-capacity-v2-measure-nt4-streaming-r1-controller2.json",
+      "dense_equivalent_GFLOPs": 64.49913111635306,
+      "logical_packed_weight_GBps": 4.535095156618574
+    },
+    {
+      "NT": 4,
+      "mode": "streaming",
+      "repeat": 1,
+      "cohort": 1,
+      "arm": "direct_complete",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 151.02320572916668,
+      "median_ms": 115.985822,
+      "sample_archive": "native/native-capacity-v2-measure-nt4-streaming-r1-controller2.json",
+      "dense_equivalent_GFLOPs": 65.09198339776391,
+      "logical_packed_weight_GBps": 3.263074688559779
+    },
+    {
+      "NT": 4,
+      "mode": "streaming",
+      "repeat": 1,
+      "cohort": 1,
+      "arm": "pool",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 38.95134375,
+      "median_ms": 29.914632,
+      "sample_archive": "native/native-capacity-v2-measure-nt4-streaming-r1-controller2.json",
+      "dense_equivalent_GFLOPs": 252.37640229035745,
+      "logical_packed_weight_GBps": 12.651681625232763
+    },
+    {
+      "NT": 1,
+      "mode": "hot",
+      "repeat": 2,
+      "cohort": 0,
+      "arm": "GU",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 181.6445,
+      "median_ms": 1.453156,
+      "sample_archive": "native/native-capacity-v2-measure-nt1-hot-r2-controller2.json",
+      "dense_equivalent_GFLOPs": 36.07926471762151,
+      "logical_packed_weight_GBps": 5.778319739931569
+    },
+    {
+      "NT": 1,
+      "mode": "hot",
+      "repeat": 2,
+      "cohort": 0,
+      "arm": "FFquant",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 0.12525,
+      "median_ms": 0.001002,
+      "sample_archive": "native/native-capacity-v2-measure-nt1-hot-r2-controller2.json"
+    },
+    {
+      "NT": 1,
+      "mode": "hot",
+      "repeat": 2,
+      "cohort": 0,
+      "arm": "Down",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 80.077,
+      "median_ms": 0.640616,
+      "sample_archive": "native/native-capacity-v2-measure-nt1-hot-r2-controller2.json",
+      "dense_equivalent_GFLOPs": 40.920613909112475,
+      "logical_packed_weight_GBps": 11.508922661937884
+    },
+    {
+      "NT": 1,
+      "mode": "hot",
+      "repeat": 2,
+      "cohort": 0,
+      "arm": "direct_complete",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 270.181125,
+      "median_ms": 2.161449,
+      "sample_archive": "native/native-capacity-v2-measure-nt1-hot-r2-controller2.json",
+      "dense_equivalent_GFLOPs": 36.3844809662407,
+      "logical_packed_weight_GBps": 7.29584644375139
+    },
+    {
+      "NT": 1,
+      "mode": "hot",
+      "repeat": 2,
+      "cohort": 0,
+      "arm": "pool",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 73.493375,
+      "median_ms": 0.587947,
+      "sample_archive": "native/native-capacity-v2-measure-nt1-hot-r2-controller2.json",
+      "dense_equivalent_GFLOPs": 133.7589952835885,
+      "logical_packed_weight_GBps": 26.82146520009457
+    },
+    {
+      "NT": 1,
+      "mode": "hot",
+      "repeat": 2,
+      "cohort": 1,
+      "arm": "GU",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 185.53924999999998,
+      "median_ms": 1.484314,
+      "sample_archive": "native/native-capacity-v2-measure-nt1-hot-r2-controller2.json",
+      "dense_equivalent_GFLOPs": 35.3219062812855,
+      "logical_packed_weight_GBps": 5.6570240528621305
+    },
+    {
+      "NT": 1,
+      "mode": "hot",
+      "repeat": 2,
+      "cohort": 1,
+      "arm": "FFquant",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 0.1315,
+      "median_ms": 0.001052,
+      "sample_archive": "native/native-capacity-v2-measure-nt1-hot-r2-controller2.json"
+    },
+    {
+      "NT": 1,
+      "mode": "hot",
+      "repeat": 2,
+      "cohort": 1,
+      "arm": "Down",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 78.8835,
+      "median_ms": 0.631068,
+      "sample_archive": "native/native-capacity-v2-measure-nt1-hot-r2-controller2.json",
+      "dense_equivalent_GFLOPs": 41.53973898216991,
+      "logical_packed_weight_GBps": 11.683051588735287
+    },
+    {
+      "NT": 1,
+      "mode": "hot",
+      "repeat": 2,
+      "cohort": 1,
+      "arm": "direct_complete",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 261.129,
+      "median_ms": 2.089032,
+      "sample_archive": "native/native-capacity-v2-measure-nt1-hot-r2-controller2.json",
+      "dense_equivalent_GFLOPs": 37.64576129039669,
+      "logical_packed_weight_GBps": 7.548759425418088
+    },
+    {
+      "NT": 1,
+      "mode": "hot",
+      "repeat": 2,
+      "cohort": 1,
+      "arm": "pool",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 73.49837500000001,
+      "median_ms": 0.587987,
+      "sample_archive": "native/native-capacity-v2-measure-nt1-hot-r2-controller2.json",
+      "dense_equivalent_GFLOPs": 133.74989583103027,
+      "logical_packed_weight_GBps": 26.819640570284715
+    },
+    {
+      "NT": 1,
+      "mode": "streaming",
+      "repeat": 2,
+      "cohort": 0,
+      "arm": "GU",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 214.49658854166668,
+      "median_ms": 41.183345,
+      "sample_archive": "native/native-capacity-v2-measure-nt1-streaming-r2-controller2.json",
+      "dense_equivalent_GFLOPs": 30.553399681351767,
+      "logical_packed_weight_GBps": 4.893317917716494
+    },
+    {
+      "NT": 1,
+      "mode": "streaming",
+      "repeat": 2,
+      "cohort": 0,
+      "arm": "FFquant",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 0.14939583333333334,
+      "median_ms": 0.028684,
+      "sample_archive": "native/native-capacity-v2-measure-nt1-streaming-r2-controller2.json"
+    },
+    {
+      "NT": 1,
+      "mode": "streaming",
+      "repeat": 2,
+      "cohort": 0,
+      "arm": "Down",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 86.11622395833332,
+      "median_ms": 16.534315,
+      "sample_archive": "native/native-capacity-v2-measure-nt1-streaming-r2-controller2.json",
+      "dense_equivalent_GFLOPs": 38.050902018015265,
+      "logical_packed_weight_GBps": 10.701816192566794
+    },
+    {
+      "NT": 1,
+      "mode": "streaming",
+      "repeat": 2,
+      "cohort": 0,
+      "arm": "direct_complete",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 305.2634375,
+      "median_ms": 58.61058,
+      "sample_archive": "native/native-capacity-v2-measure-nt1-streaming-r2-controller2.json",
+      "dense_equivalent_GFLOPs": 32.203004986471726,
+      "logical_packed_weight_GBps": 6.457373395724798
+    },
+    {
+      "NT": 1,
+      "mode": "streaming",
+      "repeat": 2,
+      "cohort": 0,
+      "arm": "pool",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 93.66966145833334,
+      "median_ms": 17.984575,
+      "sample_archive": "native/native-capacity-v2-measure-nt1-streaming-r2-controller2.json",
+      "dense_equivalent_GFLOPs": 104.9475342063963,
+      "logical_packed_weight_GBps": 21.044167015345096
+    },
+    {
+      "NT": 1,
+      "mode": "streaming",
+      "repeat": 2,
+      "cohort": 1,
+      "arm": "GU",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 197.37806250000003,
+      "median_ms": 37.896588,
+      "sample_archive": "native/native-capacity-v2-measure-nt1-streaming-r2-controller2.json",
+      "dense_equivalent_GFLOPs": 33.20328468620974,
+      "logical_packed_weight_GBps": 5.317713563025779
+    },
+    {
+      "NT": 1,
+      "mode": "streaming",
+      "repeat": 2,
+      "cohort": 1,
+      "arm": "FFquant",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 0.132171875,
+      "median_ms": 0.025377,
+      "sample_archive": "native/native-capacity-v2-measure-nt1-streaming-r2-controller2.json"
+    },
+    {
+      "NT": 1,
+      "mode": "streaming",
+      "repeat": 2,
+      "cohort": 1,
+      "arm": "Down",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 83.24827604166667,
+      "median_ms": 15.983669,
+      "sample_archive": "native/native-capacity-v2-measure-nt1-streaming-r2-controller2.json",
+      "dense_equivalent_GFLOPs": 39.361776072815324,
+      "logical_packed_weight_GBps": 11.07049952047931
+    },
+    {
+      "NT": 1,
+      "mode": "streaming",
+      "repeat": 2,
+      "cohort": 1,
+      "arm": "direct_complete",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 273.807875,
+      "median_ms": 52.571112,
+      "sample_archive": "native/native-capacity-v2-measure-nt1-streaming-r2-controller2.json",
+      "dense_equivalent_GFLOPs": 35.902546630552536,
+      "logical_packed_weight_GBps": 7.199208569147253
+    },
+    {
+      "NT": 1,
+      "mode": "streaming",
+      "repeat": 2,
+      "cohort": 1,
+      "arm": "pool",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 79.16882291666667,
+      "median_ms": 15.200414,
+      "sample_archive": "native/native-capacity-v2-measure-nt1-streaming-r2-controller2.json",
+      "dense_equivalent_GFLOPs": 124.17009168302916,
+      "logical_packed_weight_GBps": 24.89869025935741
+    },
+    {
+      "NT": 3,
+      "mode": "streaming",
+      "repeat": 2,
+      "cohort": 0,
+      "arm": "GU",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 117.54288194444445,
+      "median_ms": 67.7047,
+      "sample_archive": "native/native-capacity-v2-measure-nt3-streaming-r2-controller2.json",
+      "dense_equivalent_GFLOPs": 55.7549712206095,
+      "logical_packed_weight_GBps": 2.976502369850247
+    },
+    {
+      "NT": 3,
+      "mode": "streaming",
+      "repeat": 2,
+      "cohort": 0,
+      "arm": "FFquant",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 0.18122569444444447,
+      "median_ms": 0.104386,
+      "sample_archive": "native/native-capacity-v2-measure-nt3-streaming-r2-controller2.json"
+    },
+    {
+      "NT": 3,
+      "mode": "streaming",
+      "repeat": 2,
+      "cohort": 0,
+      "arm": "Down",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 55.893027777777775,
+      "median_ms": 32.194384,
+      "sample_archive": "native/native-capacity-v2-measure-nt3-streaming-r2-controller2.json",
+      "dense_equivalent_GFLOPs": 58.62627469436906,
+      "logical_packed_weight_GBps": 5.496213252597099
+    },
+    {
+      "NT": 3,
+      "mode": "streaming",
+      "repeat": 2,
+      "cohort": 0,
+      "arm": "direct_complete",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 174.41699479166667,
+      "median_ms": 100.464189,
+      "sample_archive": "native/native-capacity-v2-measure-nt3-streaming-r2-controller2.json",
+      "dense_equivalent_GFLOPs": 56.36148020863434,
+      "logical_packed_weight_GBps": 3.7672169931118438
+    },
+    {
+      "NT": 3,
+      "mode": "streaming",
+      "repeat": 2,
+      "cohort": 0,
+      "arm": "pool",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 42.87849305555556,
+      "median_ms": 24.698012,
+      "sample_archive": "native/native-capacity-v2-measure-nt3-streaming-r2-controller2.json",
+      "dense_equivalent_GFLOPs": 229.2617883577026,
+      "logical_packed_weight_GBps": 15.323921617658943
+    },
+    {
+      "NT": 3,
+      "mode": "streaming",
+      "repeat": 2,
+      "cohort": 1,
+      "arm": "GU",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 107.72880208333332,
+      "median_ms": 62.05179,
+      "sample_archive": "native/native-capacity-v2-measure-nt3-streaming-r2-controller2.json",
+      "dense_equivalent_GFLOPs": 60.834241848623556,
+      "logical_packed_weight_GBps": 3.247661348689539
+    },
+    {
+      "NT": 3,
+      "mode": "streaming",
+      "repeat": 2,
+      "cohort": 1,
+      "arm": "FFquant",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 0.25231597222222224,
+      "median_ms": 0.145334,
+      "sample_archive": "native/native-capacity-v2-measure-nt3-streaming-r2-controller2.json"
+    },
+    {
+      "NT": 3,
+      "mode": "streaming",
+      "repeat": 2,
+      "cohort": 1,
+      "arm": "Down",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 52.821100694444446,
+      "median_ms": 30.424954,
+      "sample_archive": "native/native-capacity-v2-measure-nt3-streaming-r2-controller2.json",
+      "dense_equivalent_GFLOPs": 62.03581441733651,
+      "logical_packed_weight_GBps": 5.815857601625297
+    },
+    {
+      "NT": 3,
+      "mode": "streaming",
+      "repeat": 2,
+      "cohort": 1,
+      "arm": "direct_complete",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 160.76868229166666,
+      "median_ms": 92.602761,
+      "sample_archive": "native/native-capacity-v2-measure-nt3-streaming-r2-controller2.json",
+      "dense_equivalent_GFLOPs": 61.14623731359371,
+      "logical_packed_weight_GBps": 4.087031487106524
+    },
+    {
+      "NT": 3,
+      "mode": "streaming",
+      "repeat": 2,
+      "cohort": 1,
+      "arm": "pool",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 40.98828819444444,
+      "median_ms": 23.609254,
+      "sample_archive": "native/native-capacity-v2-measure-nt3-streaming-r2-controller2.json",
+      "dense_equivalent_GFLOPs": 239.83436325434087,
+      "logical_packed_weight_GBps": 16.030595460576603
+    },
+    {
+      "NT": 3,
+      "mode": "hot",
+      "repeat": 2,
+      "cohort": 0,
+      "arm": "GU",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 132.23766666666666,
+      "median_ms": 3.173704,
+      "sample_archive": "native/native-capacity-v2-measure-nt3-hot-r2-controller2.json",
+      "dense_equivalent_GFLOPs": 49.55925316286586,
+      "logical_packed_weight_GBps": 2.6457413797884115
+    },
+    {
+      "NT": 3,
+      "mode": "hot",
+      "repeat": 2,
+      "cohort": 0,
+      "arm": "FFquant",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 0.14945833333333333,
+      "median_ms": 0.003587,
+      "sample_archive": "native/native-capacity-v2-measure-nt3-hot-r2-controller2.json"
+    },
+    {
+      "NT": 3,
+      "mode": "hot",
+      "repeat": 2,
+      "cohort": 0,
+      "arm": "Down",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 61.55420833333333,
+      "median_ms": 1.477301,
+      "sample_archive": "native/native-capacity-v2-measure-nt3-hot-r2-controller2.json",
+      "dense_equivalent_GFLOPs": 53.23437809897916,
+      "logical_packed_weight_GBps": 4.990722946779296
+    },
+    {
+      "NT": 3,
+      "mode": "hot",
+      "repeat": 2,
+      "cohort": 0,
+      "arm": "direct_complete",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 188.736125,
+      "median_ms": 4.529667,
+      "sample_archive": "native/native-capacity-v2-measure-nt3-hot-r2-controller2.json",
+      "dense_equivalent_GFLOPs": 52.085418199616,
+      "logical_packed_weight_GBps": 3.481403820634056
+    },
+    {
+      "NT": 3,
+      "mode": "hot",
+      "repeat": 2,
+      "cohort": 0,
+      "arm": "pool",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 41.82458333333333,
+      "median_ms": 1.00379,
+      "sample_archive": "native/native-capacity-v2-measure-nt3-hot-r2-controller2.json",
+      "dense_equivalent_GFLOPs": 235.0388029368693,
+      "logical_packed_weight_GBps": 15.710058876856714
+    },
+    {
+      "NT": 3,
+      "mode": "hot",
+      "repeat": 2,
+      "cohort": 1,
+      "arm": "GU",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 106.58520833333334,
+      "median_ms": 2.558045,
+      "sample_archive": "native/native-capacity-v2-measure-nt3-hot-r2-controller2.json",
+      "dense_equivalent_GFLOPs": 61.48695585886878,
+      "logical_packed_weight_GBps": 3.2825067580906513
+    },
+    {
+      "NT": 3,
+      "mode": "hot",
+      "repeat": 2,
+      "cohort": 1,
+      "arm": "FFquant",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 0.11895833333333333,
+      "median_ms": 0.002855,
+      "sample_archive": "native/native-capacity-v2-measure-nt3-hot-r2-controller2.json"
+    },
+    {
+      "NT": 3,
+      "mode": "hot",
+      "repeat": 2,
+      "cohort": 1,
+      "arm": "Down",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 53.77704166666666,
+      "median_ms": 1.290649,
+      "sample_archive": "native/native-capacity-v2-measure-nt3-hot-r2-controller2.json",
+      "dense_equivalent_GFLOPs": 60.93306545776583,
+      "logical_packed_weight_GBps": 5.712474886665547
+    },
+    {
+      "NT": 3,
+      "mode": "hot",
+      "repeat": 2,
+      "cohort": 1,
+      "arm": "direct_complete",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 159.62008333333333,
+      "median_ms": 3.830882,
+      "sample_archive": "native/native-capacity-v2-measure-nt3-hot-r2-controller2.json",
+      "dense_equivalent_GFLOPs": 61.58623523251303,
+      "logical_packed_weight_GBps": 4.116441070228736
+    },
+    {
+      "NT": 3,
+      "mode": "hot",
+      "repeat": 2,
+      "cohort": 1,
+      "arm": "pool",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 45.25770833333333,
+      "median_ms": 1.086185,
+      "sample_archive": "native/native-capacity-v2-measure-nt3-hot-r2-controller2.json",
+      "dense_equivalent_GFLOPs": 217.20940723725698,
+      "logical_packed_weight_GBps": 14.518337115684714
+    },
+    {
+      "NT": 2,
+      "mode": "hot",
+      "repeat": 2,
+      "cohort": 0,
+      "arm": "GU",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 139.3404375,
+      "median_ms": 2.229447,
+      "sample_archive": "native/native-capacity-v2-measure-nt2-hot-r2-controller2.json",
+      "dense_equivalent_GFLOPs": 47.033008633979634,
+      "logical_packed_weight_GBps": 3.7663151445179004
+    },
+    {
+      "NT": 2,
+      "mode": "hot",
+      "repeat": 2,
+      "cohort": 0,
+      "arm": "FFquant",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 0.1158125,
+      "median_ms": 0.001853,
+      "sample_archive": "native/native-capacity-v2-measure-nt2-hot-r2-controller2.json"
+    },
+    {
+      "NT": 2,
+      "mode": "hot",
+      "repeat": 2,
+      "cohort": 0,
+      "arm": "Down",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 60.580875,
+      "median_ms": 0.969294,
+      "sample_archive": "native/native-capacity-v2-measure-nt2-hot-r2-controller2.json",
+      "dense_equivalent_GFLOPs": 54.08967764166496,
+      "logical_packed_weight_GBps": 7.606360918359136
+    },
+    {
+      "NT": 2,
+      "mode": "hot",
+      "repeat": 2,
+      "cohort": 0,
+      "arm": "direct_complete",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 197.9213125,
+      "median_ms": 3.166741,
+      "sample_archive": "native/native-capacity-v2-measure-nt2-hot-r2-controller2.json",
+      "dense_equivalent_GFLOPs": 49.66822357748866,
+      "logical_packed_weight_GBps": 4.9797567909721705
+    },
+    {
+      "NT": 2,
+      "mode": "hot",
+      "repeat": 2,
+      "cohort": 0,
+      "arm": "pool",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 47.8506875,
+      "median_ms": 0.765611,
+      "sample_archive": "native/native-capacity-v2-measure-nt2-hot-r2-controller2.json",
+      "dense_equivalent_GFLOPs": 205.43905455903845,
+      "logical_packed_weight_GBps": 20.59740520969526
+    },
+    {
+      "NT": 2,
+      "mode": "hot",
+      "repeat": 2,
+      "cohort": 1,
+      "arm": "GU",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 137.1075,
+      "median_ms": 2.19372,
+      "sample_archive": "native/native-capacity-v2-measure-nt2-hot-r2-controller2.json",
+      "dense_equivalent_GFLOPs": 47.79898984373576,
+      "logical_packed_weight_GBps": 3.8276534835804026
+    },
+    {
+      "NT": 2,
+      "mode": "hot",
+      "repeat": 2,
+      "cohort": 1,
+      "arm": "FFquant",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 0.1158125,
+      "median_ms": 0.001853,
+      "sample_archive": "native/native-capacity-v2-measure-nt2-hot-r2-controller2.json"
+    },
+    {
+      "NT": 2,
+      "mode": "hot",
+      "repeat": 2,
+      "cohort": 1,
+      "arm": "Down",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 60.562125,
+      "median_ms": 0.968994,
+      "sample_archive": "native/native-capacity-v2-measure-nt2-hot-r2-controller2.json",
+      "dense_equivalent_GFLOPs": 54.10642377558581,
+      "logical_packed_weight_GBps": 7.608715843441755
+    },
+    {
+      "NT": 2,
+      "mode": "hot",
+      "repeat": 2,
+      "cohort": 1,
+      "arm": "direct_complete",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 196.8775,
+      "median_ms": 3.15004,
+      "sample_archive": "native/native-capacity-v2-measure-nt2-hot-r2-controller2.json",
+      "dense_equivalent_GFLOPs": 49.931556424680316,
+      "logical_packed_weight_GBps": 5.006158651953625
+    },
+    {
+      "NT": 2,
+      "mode": "hot",
+      "repeat": 2,
+      "cohort": 1,
+      "arm": "pool",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 47.3741875,
+      "median_ms": 0.757987,
+      "sample_archive": "native/native-capacity-v2-measure-nt2-hot-r2-controller2.json",
+      "dense_equivalent_GFLOPs": 207.50540576553422,
+      "logical_packed_weight_GBps": 20.8045784426382
+    },
+    {
+      "NT": 2,
+      "mode": "streaming",
+      "repeat": 2,
+      "cohort": 0,
+      "arm": "GU",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 135.282609375,
+      "median_ms": 51.948522,
+      "sample_archive": "native/native-capacity-v2-measure-nt2-streaming-r2-controller2.json",
+      "dense_equivalent_GFLOPs": 48.44377285652131,
+      "logical_packed_weight_GBps": 3.879286498276121
+    },
+    {
+      "NT": 2,
+      "mode": "streaming",
+      "repeat": 2,
+      "cohort": 0,
+      "arm": "FFquant",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 0.18492968750000002,
+      "median_ms": 0.071013,
+      "sample_archive": "native/native-capacity-v2-measure-nt2-streaming-r2-controller2.json"
+    },
+    {
+      "NT": 2,
+      "mode": "streaming",
+      "repeat": 2,
+      "cohort": 0,
+      "arm": "Down",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 62.0764140625,
+      "median_ms": 23.837343,
+      "sample_archive": "native/native-capacity-v2-measure-nt2-streaming-r2-controller2.json",
+      "dense_equivalent_GFLOPs": 52.78655427326778,
+      "logical_packed_weight_GBps": 7.423109194678283
+    },
+    {
+      "NT": 2,
+      "mode": "streaming",
+      "repeat": 2,
+      "cohort": 0,
+      "arm": "direct_complete",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 204.48352864583333,
+      "median_ms": 78.521675,
+      "sample_archive": "native/native-capacity-v2-measure-nt2-streaming-r2-controller2.json",
+      "dense_equivalent_GFLOPs": 48.07428776831365,
+      "logical_packed_weight_GBps": 4.819948122604363
+    },
+    {
+      "NT": 2,
+      "mode": "streaming",
+      "repeat": 2,
+      "cohort": 0,
+      "arm": "pool",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 52.36208593749999,
+      "median_ms": 20.107041,
+      "sample_archive": "native/native-capacity-v2-measure-nt2-streaming-r2-controller2.json",
+      "dense_equivalent_GFLOPs": 187.73889206273566,
+      "logical_packed_weight_GBps": 18.822779542748236
+    },
+    {
+      "NT": 2,
+      "mode": "streaming",
+      "repeat": 2,
+      "cohort": 1,
+      "arm": "GU",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 136.97650260416665,
+      "median_ms": 52.598977,
+      "sample_archive": "native/native-capacity-v2-measure-nt2-streaming-r2-controller2.json",
+      "dense_equivalent_GFLOPs": 47.844702378907485,
+      "logical_packed_weight_GBps": 3.831314057685951
+    },
+    {
+      "NT": 2,
+      "mode": "streaming",
+      "repeat": 2,
+      "cohort": 1,
+      "arm": "FFquant",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 0.16559895833333332,
+      "median_ms": 0.06359,
+      "sample_archive": "native/native-capacity-v2-measure-nt2-streaming-r2-controller2.json"
+    },
+    {
+      "NT": 2,
+      "mode": "streaming",
+      "repeat": 2,
+      "cohort": 1,
+      "arm": "Down",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 61.06471875,
+      "median_ms": 23.448852,
+      "sample_archive": "native/native-capacity-v2-measure-nt2-streaming-r2-controller2.json",
+      "dense_equivalent_GFLOPs": 53.661100338728744,
+      "logical_packed_weight_GBps": 7.546092235133728
+    },
+    {
+      "NT": 2,
+      "mode": "streaming",
+      "repeat": 2,
+      "cohort": 1,
+      "arm": "direct_complete",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 194.7239348958333,
+      "median_ms": 74.773991,
+      "sample_archive": "native/native-capacity-v2-measure-nt2-streaming-r2-controller2.json",
+      "dense_equivalent_GFLOPs": 50.483778510632135,
+      "logical_packed_weight_GBps": 5.06152466838369
+    },
+    {
+      "NT": 2,
+      "mode": "streaming",
+      "repeat": 2,
+      "cohort": 1,
+      "arm": "pool",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 54.972208333333334,
+      "median_ms": 21.109328,
+      "sample_archive": "native/native-capacity-v2-measure-nt2-streaming-r2-controller2.json",
+      "dense_equivalent_GFLOPs": 178.82490622155288,
+      "logical_packed_weight_GBps": 17.92905960815048
+    },
+    {
+      "NT": 4,
+      "mode": "streaming",
+      "repeat": 2,
+      "cohort": 0,
+      "arm": "GU",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 95.51140234374999,
+      "median_ms": 73.352757,
+      "sample_archive": "native/native-capacity-v2-measure-nt4-streaming-r2-controller2.json",
+      "dense_equivalent_GFLOPs": 68.61589128817612,
+      "logical_packed_weight_GBps": 2.7473159597804893
+    },
+    {
+      "NT": 4,
+      "mode": "streaming",
+      "repeat": 2,
+      "cohort": 0,
+      "arm": "FFquant",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 0.2229713541666667,
+      "median_ms": 0.171242,
+      "sample_archive": "native/native-capacity-v2-measure-nt4-streaming-r2-controller2.json"
+    },
+    {
+      "NT": 4,
+      "mode": "streaming",
+      "repeat": 2,
+      "cohort": 0,
+      "arm": "Down",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 50.63974348958333,
+      "median_ms": 38.891323,
+      "sample_archive": "native/native-capacity-v2-measure-nt4-streaming-r2-controller2.json",
+      "dense_equivalent_GFLOPs": 64.70806868668366,
+      "logical_packed_weight_GBps": 4.549786079532445
+    },
+    {
+      "NT": 4,
+      "mode": "streaming",
+      "repeat": 2,
+      "cohort": 0,
+      "arm": "direct_complete",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 147.96146614583333,
+      "median_ms": 113.634406,
+      "sample_archive": "native/native-capacity-v2-measure-nt4-streaming-r2-controller2.json",
+      "dense_equivalent_GFLOPs": 66.43891991656119,
+      "logical_packed_weight_GBps": 3.3305968968588617
+    },
+    {
+      "NT": 4,
+      "mode": "streaming",
+      "repeat": 2,
+      "cohort": 0,
+      "arm": "pool",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 38.53455989583333,
+      "median_ms": 29.594542,
+      "sample_archive": "native/native-capacity-v2-measure-nt4-streaming-r2-controller2.json",
+      "dense_equivalent_GFLOPs": 255.10606651726525,
+      "logical_packed_weight_GBps": 12.7885202616077
+    },
+    {
+      "NT": 4,
+      "mode": "streaming",
+      "repeat": 2,
+      "cohort": 1,
+      "arm": "GU",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 99.39538151041666,
+      "median_ms": 76.335653,
+      "sample_archive": "native/native-capacity-v2-measure-nt4-streaming-r2-controller2.json",
+      "dense_equivalent_GFLOPs": 65.93465310370765,
+      "logical_packed_weight_GBps": 2.6399616965351695
+    },
+    {
+      "NT": 4,
+      "mode": "streaming",
+      "repeat": 2,
+      "cohort": 1,
+      "arm": "FFquant",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 0.22871223958333334,
+      "median_ms": 0.175651,
+      "sample_archive": "native/native-capacity-v2-measure-nt4-streaming-r2-controller2.json"
+    },
+    {
+      "NT": 4,
+      "mode": "streaming",
+      "repeat": 2,
+      "cohort": 1,
+      "arm": "Down",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 51.26913151041666,
+      "median_ms": 39.374693,
+      "sample_archive": "native/native-capacity-v2-measure-nt4-streaming-r2-controller2.json",
+      "dense_equivalent_GFLOPs": 63.91370213349981,
+      "logical_packed_weight_GBps": 4.493932181261705
+    },
+    {
+      "NT": 4,
+      "mode": "streaming",
+      "repeat": 2,
+      "cohort": 1,
+      "arm": "direct_complete",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 148.89168229166665,
+      "median_ms": 114.348812,
+      "sample_archive": "native/native-capacity-v2-measure-nt4-streaming-r2-controller2.json",
+      "dense_equivalent_GFLOPs": 66.02383591007488,
+      "logical_packed_weight_GBps": 3.309788649137868
+    },
+    {
+      "NT": 4,
+      "mode": "streaming",
+      "repeat": 2,
+      "cohort": 1,
+      "arm": "pool",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 40.22615625,
+      "median_ms": 30.893688,
+      "sample_archive": "native/native-capacity-v2-measure-nt4-streaming-r2-controller2.json",
+      "dense_equivalent_GFLOPs": 244.37830795727592,
+      "logical_packed_weight_GBps": 12.250735490045733
+    },
+    {
+      "NT": 4,
+      "mode": "hot",
+      "repeat": 2,
+      "cohort": 0,
+      "arm": "GU",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 96.69640625000001,
+      "median_ms": 3.094285,
+      "sample_archive": "native/native-capacity-v2-measure-nt4-hot-r2-controller2.json",
+      "dense_equivalent_GFLOPs": 67.7750110283959,
+      "logical_packed_weight_GBps": 2.7136479025041322
+    },
+    {
+      "NT": 4,
+      "mode": "hot",
+      "repeat": 2,
+      "cohort": 0,
+      "arm": "FFquant",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 0.11084374999999999,
+      "median_ms": 0.003547,
+      "sample_archive": "native/native-capacity-v2-measure-nt4-hot-r2-controller2.json"
+    },
+    {
+      "NT": 4,
+      "mode": "hot",
+      "repeat": 2,
+      "cohort": 0,
+      "arm": "Down",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 51.007875,
+      "median_ms": 1.632252,
+      "sample_archive": "native/native-capacity-v2-measure-nt4-hot-r2-controller2.json",
+      "dense_equivalent_GFLOPs": 64.2410608165896,
+      "logical_packed_weight_GBps": 4.516949588666456
+    },
+    {
+      "NT": 4,
+      "mode": "hot",
+      "repeat": 2,
+      "cohort": 0,
+      "arm": "direct_complete",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 147.38403125,
+      "median_ms": 4.716289,
+      "sample_archive": "native/native-capacity-v2-measure-nt4-hot-r2-controller2.json",
+      "dense_equivalent_GFLOPs": 66.69922051002388,
+      "logical_packed_weight_GBps": 3.3436458198384367
+    },
+    {
+      "NT": 4,
+      "mode": "hot",
+      "repeat": 2,
+      "cohort": 0,
+      "arm": "pool",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 35.074468749999994,
+      "median_ms": 1.122383,
+      "sample_archive": "native/native-capacity-v2-measure-nt4-hot-r2-controller2.json",
+      "dense_equivalent_GFLOPs": 280.27224218470883,
+      "logical_packed_weight_GBps": 14.050105890769908
+    },
+    {
+      "NT": 4,
+      "mode": "hot",
+      "repeat": 2,
+      "cohort": 1,
+      "arm": "GU",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 95.14253124999999,
+      "median_ms": 3.044561,
+      "sample_archive": "native/native-capacity-v2-measure-nt4-hot-r2-controller2.json",
+      "dense_equivalent_GFLOPs": 68.88191762293481,
+      "logical_packed_weight_GBps": 2.757967404824538
+    },
+    {
+      "NT": 4,
+      "mode": "hot",
+      "repeat": 2,
+      "cohort": 1,
+      "arm": "FFquant",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 0.10896875,
+      "median_ms": 0.003487,
+      "sample_archive": "native/native-capacity-v2-measure-nt4-hot-r2-controller2.json"
+    },
+    {
+      "NT": 4,
+      "mode": "hot",
+      "repeat": 2,
+      "cohort": 1,
+      "arm": "Down",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 50.87796875,
+      "median_ms": 1.628095,
+      "sample_archive": "native/native-capacity-v2-measure-nt4-hot-r2-controller2.json",
+      "dense_equivalent_GFLOPs": 64.40508692674567,
+      "logical_packed_weight_GBps": 4.528482674536805
+    },
+    {
+      "NT": 4,
+      "mode": "hot",
+      "repeat": 2,
+      "cohort": 1,
+      "arm": "direct_complete",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 147.45384375,
+      "median_ms": 4.718523,
+      "sample_archive": "native/native-capacity-v2-measure-nt4-hot-r2-controller2.json",
+      "dense_equivalent_GFLOPs": 66.66764154800136,
+      "logical_packed_weight_GBps": 3.342062759893297
+    },
+    {
+      "NT": 4,
+      "mode": "hot",
+      "repeat": 2,
+      "cohort": 1,
+      "arm": "pool",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 34.398187500000006,
+      "median_ms": 1.100742,
+      "sample_archive": "native/native-capacity-v2-measure-nt4-hot-r2-controller2.json",
+      "dense_equivalent_GFLOPs": 285.7824994412859,
+      "logical_packed_weight_GBps": 14.32633623501238
+    },
+    {
+      "NT": 1,
+      "mode": "streaming",
+      "repeat": 3,
+      "cohort": 0,
+      "arm": "GU",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 200.06433854166667,
+      "median_ms": 38.412353,
+      "sample_archive": "native/native-capacity-v2-measure-nt1-streaming-r3-controller2.json",
+      "dense_equivalent_GFLOPs": 32.75746216327857,
+      "logical_packed_weight_GBps": 5.246312299587583
+    },
+    {
+      "NT": 1,
+      "mode": "streaming",
+      "repeat": 3,
+      "cohort": 0,
+      "arm": "FFquant",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 0.13233333333333333,
+      "median_ms": 0.025408,
+      "sample_archive": "native/native-capacity-v2-measure-nt1-streaming-r3-controller2.json"
+    },
+    {
+      "NT": 1,
+      "mode": "streaming",
+      "repeat": 3,
+      "cohort": 0,
+      "arm": "Down",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 80.87281770833333,
+      "median_ms": 15.527581,
+      "sample_archive": "native/native-capacity-v2-measure-nt1-streaming-r3-controller2.json",
+      "dense_equivalent_GFLOPs": 40.51794030248498,
+      "logical_packed_weight_GBps": 11.395670710073901
+    },
+    {
+      "NT": 1,
+      "mode": "streaming",
+      "repeat": 3,
+      "cohort": 0,
+      "arm": "direct_complete",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 288.0815416666667,
+      "median_ms": 55.311656,
+      "sample_archive": "native/native-capacity-v2-measure-nt1-streaming-r3-controller2.json",
+      "dense_equivalent_GFLOPs": 34.12367187125983,
+      "logical_packed_weight_GBps": 6.842507120018246
+    },
+    {
+      "NT": 1,
+      "mode": "streaming",
+      "repeat": 3,
+      "cohort": 0,
+      "arm": "pool",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 92.075421875,
+      "median_ms": 17.678481,
+      "sample_archive": "native/native-capacity-v2-measure-nt1-streaming-r3-controller2.json",
+      "dense_equivalent_GFLOPs": 106.76464793553247,
+      "logical_packed_weight_GBps": 21.408536174572916
+    },
+    {
+      "NT": 1,
+      "mode": "streaming",
+      "repeat": 3,
+      "cohort": 1,
+      "arm": "GU",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 196.28779687500003,
+      "median_ms": 37.687257,
+      "sample_archive": "native/native-capacity-v2-measure-nt1-streaming-r3-controller2.json",
+      "dense_equivalent_GFLOPs": 33.3877098033428,
+      "logical_packed_weight_GBps": 5.347250398191622
+    },
+    {
+      "NT": 1,
+      "mode": "streaming",
+      "repeat": 3,
+      "cohort": 1,
+      "arm": "FFquant",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 0.13071354166666668,
+      "median_ms": 0.025097,
+      "sample_archive": "native/native-capacity-v2-measure-nt1-streaming-r3-controller2.json"
+    },
+    {
+      "NT": 1,
+      "mode": "streaming",
+      "repeat": 3,
+      "cohort": 1,
+      "arm": "Down",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 82.472703125,
+      "median_ms": 15.834759,
+      "sample_archive": "native/native-capacity-v2-measure-nt1-streaming-r3-controller2.json",
+      "dense_equivalent_GFLOPs": 39.731934031960954,
+      "logical_packed_weight_GBps": 11.174606446489019
+    },
+    {
+      "NT": 1,
+      "mode": "streaming",
+      "repeat": 3,
+      "cohort": 1,
+      "arm": "direct_complete",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 274.70145833333333,
+      "median_ms": 52.74268,
+      "sample_archive": "native/native-capacity-v2-measure-nt1-streaming-r3-controller2.json",
+      "dense_equivalent_GFLOPs": 35.7857583270323,
+      "logical_packed_weight_GBps": 7.175790081201789
+    },
+    {
+      "NT": 1,
+      "mode": "streaming",
+      "repeat": 3,
+      "cohort": 1,
+      "arm": "pool",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 82.21013020833333,
+      "median_ms": 15.784345,
+      "sample_archive": "native/native-capacity-v2-measure-nt1-streaming-r3-controller2.json",
+      "dense_equivalent_GFLOPs": 119.57650444158438,
+      "logical_packed_weight_GBps": 23.977580317713535
+    },
+    {
+      "NT": 1,
+      "mode": "hot",
+      "repeat": 3,
+      "cohort": 0,
+      "arm": "GU",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 191.309,
+      "median_ms": 1.530472,
+      "sample_archive": "native/native-capacity-v2-measure-nt1-hot-r3-controller2.json",
+      "dense_equivalent_GFLOPs": 34.25662148670475,
+      "logical_packed_weight_GBps": 5.4864120349800585
+    },
+    {
+      "NT": 1,
+      "mode": "hot",
+      "repeat": 3,
+      "cohort": 0,
+      "arm": "FFquant",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 0.134,
+      "median_ms": 0.001072,
+      "sample_archive": "native/native-capacity-v2-measure-nt1-hot-r3-controller2.json"
+    },
+    {
+      "NT": 1,
+      "mode": "hot",
+      "repeat": 3,
+      "cohort": 0,
+      "arm": "Down",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 78.46275,
+      "median_ms": 0.627702,
+      "sample_archive": "native/native-capacity-v2-measure-nt1-hot-r3-controller2.json",
+      "dense_equivalent_GFLOPs": 41.76249239288707,
+      "logical_packed_weight_GBps": 11.74570098549949
+    },
+    {
+      "NT": 1,
+      "mode": "hot",
+      "repeat": 3,
+      "cohort": 0,
+      "arm": "direct_complete",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 266.9075,
+      "median_ms": 2.13526,
+      "sample_archive": "native/native-capacity-v2-measure-nt1-hot-r3-controller2.json",
+      "dense_equivalent_GFLOPs": 36.830737240429734,
+      "logical_packed_weight_GBps": 7.385330123732004
+    },
+    {
+      "NT": 1,
+      "mode": "hot",
+      "repeat": 3,
+      "cohort": 0,
+      "arm": "pool",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 75.7865,
+      "median_ms": 0.606292,
+      "sample_archive": "native/native-capacity-v2-measure-nt1-hot-r3-controller2.json",
+      "dense_equivalent_GFLOPs": 129.7117560515395,
+      "logical_packed_weight_GBps": 26.009909416584744
+    },
+    {
+      "NT": 1,
+      "mode": "hot",
+      "repeat": 3,
+      "cohort": 1,
+      "arm": "GU",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 181.707,
+      "median_ms": 1.453656,
+      "sample_archive": "native/native-capacity-v2-measure-nt1-hot-r3-controller2.json",
+      "dense_equivalent_GFLOPs": 36.0668548817602,
+      "logical_packed_weight_GBps": 5.776332227156907
+    },
+    {
+      "NT": 1,
+      "mode": "hot",
+      "repeat": 3,
+      "cohort": 1,
+      "arm": "FFquant",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 0.12774999999999997,
+      "median_ms": 0.001022,
+      "sample_archive": "native/native-capacity-v2-measure-nt1-hot-r3-controller2.json"
+    },
+    {
+      "NT": 1,
+      "mode": "hot",
+      "repeat": 3,
+      "cohort": 1,
+      "arm": "Down",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 77.753875,
+      "median_ms": 0.622031,
+      "sample_archive": "native/native-capacity-v2-measure-nt1-hot-r3-controller2.json",
+      "dense_equivalent_GFLOPs": 42.14323723415715,
+      "logical_packed_weight_GBps": 11.852785472106696
+    },
+    {
+      "NT": 1,
+      "mode": "hot",
+      "repeat": 3,
+      "cohort": 1,
+      "arm": "direct_complete",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 259.938125,
+      "median_ms": 2.079505,
+      "sample_archive": "native/native-capacity-v2-measure-nt1-hot-r3-controller2.json",
+      "dense_equivalent_GFLOPs": 37.81823078088295,
+      "logical_packed_weight_GBps": 7.583343151374967
+    },
+    {
+      "NT": 1,
+      "mode": "hot",
+      "repeat": 3,
+      "cohort": 1,
+      "arm": "pool",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 70.91475,
+      "median_ms": 0.567318,
+      "sample_archive": "native/native-capacity-v2-measure-nt1-hot-r3-controller2.json",
+      "dense_equivalent_GFLOPs": 138.62278298943448,
+      "logical_packed_weight_GBps": 27.79675596402723
+    },
+    {
+      "NT": 3,
+      "mode": "hot",
+      "repeat": 3,
+      "cohort": 0,
+      "arm": "GU",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 110.21204166666666,
+      "median_ms": 2.645089,
+      "sample_archive": "native/native-capacity-v2-measure-nt3-hot-r3-controller2.json",
+      "dense_equivalent_GFLOPs": 59.46355680281458,
+      "logical_packed_weight_GBps": 3.1744867564002575
+    },
+    {
+      "NT": 3,
+      "mode": "hot",
+      "repeat": 3,
+      "cohort": 0,
+      "arm": "FFquant",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 0.11275,
+      "median_ms": 0.002706,
+      "sample_archive": "native/native-capacity-v2-measure-nt3-hot-r3-controller2.json"
+    },
+    {
+      "NT": 3,
+      "mode": "hot",
+      "repeat": 3,
+      "cohort": 0,
+      "arm": "Down",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 54.20162500000001,
+      "median_ms": 1.300839,
+      "sample_archive": "native/native-capacity-v2-measure-nt3-hot-r3-controller2.json",
+      "dense_equivalent_GFLOPs": 60.455752018504974,
+      "logical_packed_weight_GBps": 5.667726751734841
+    },
+    {
+      "NT": 3,
+      "mode": "hot",
+      "repeat": 3,
+      "cohort": 0,
+      "arm": "direct_complete",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 160.15479166666668,
+      "median_ms": 3.843715,
+      "sample_archive": "native/native-capacity-v2-measure-nt3-hot-r3-controller2.json",
+      "dense_equivalent_GFLOPs": 61.38061744952474,
+      "logical_packed_weight_GBps": 4.102697520497747
+    },
+    {
+      "NT": 3,
+      "mode": "hot",
+      "repeat": 3,
+      "cohort": 0,
+      "arm": "pool",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 37.62833333333334,
+      "median_ms": 0.90308,
+      "sample_archive": "native/native-capacity-v2-measure-nt3-hot-r3-controller2.json",
+      "dense_equivalent_GFLOPs": 261.2499446339194,
+      "logical_packed_weight_GBps": 17.46201886876024
+    },
+    {
+      "NT": 3,
+      "mode": "hot",
+      "repeat": 3,
+      "cohort": 1,
+      "arm": "GU",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 109.149625,
+      "median_ms": 2.619591,
+      "sample_archive": "native/native-capacity-v2-measure-nt3-hot-r3-controller2.json",
+      "dense_equivalent_GFLOPs": 60.04235012259547,
+      "logical_packed_weight_GBps": 3.205385878940644
+    },
+    {
+      "NT": 3,
+      "mode": "hot",
+      "repeat": 3,
+      "cohort": 1,
+      "arm": "FFquant",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 0.11395833333333333,
+      "median_ms": 0.002735,
+      "sample_archive": "native/native-capacity-v2-measure-nt3-hot-r3-controller2.json"
+    },
+    {
+      "NT": 3,
+      "mode": "hot",
+      "repeat": 3,
+      "cohort": 1,
+      "arm": "Down",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 54.005833333333335,
+      "median_ms": 1.29614,
+      "sample_archive": "native/native-capacity-v2-measure-nt3-hot-r3-controller2.json",
+      "dense_equivalent_GFLOPs": 60.674927091209284,
+      "logical_packed_weight_GBps": 5.68827441480087
+    },
+    {
+      "NT": 3,
+      "mode": "hot",
+      "repeat": 3,
+      "cohort": 1,
+      "arm": "direct_complete",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 163.26529166666666,
+      "median_ms": 3.918367,
+      "sample_archive": "native/native-capacity-v2-measure-nt3-hot-r3-controller2.json",
+      "dense_equivalent_GFLOPs": 60.21120533120048,
+      "logical_packed_weight_GBps": 4.024533689672254
+    },
+    {
+      "NT": 3,
+      "mode": "hot",
+      "repeat": 3,
+      "cohort": 1,
+      "arm": "pool",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 38.848958333333336,
+      "median_ms": 0.932375,
+      "sample_archive": "native/native-capacity-v2-measure-nt3-hot-r3-controller2.json",
+      "dense_equivalent_GFLOPs": 253.0415337176565,
+      "logical_packed_weight_GBps": 16.913366403003085
+    },
+    {
+      "NT": 3,
+      "mode": "streaming",
+      "repeat": 3,
+      "cohort": 0,
+      "arm": "GU",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 118.3505277777778,
+      "median_ms": 68.169904,
+      "sample_archive": "native/native-capacity-v2-measure-nt3-streaming-r3-controller2.json",
+      "dense_equivalent_GFLOPs": 55.37448901204261,
+      "logical_packed_weight_GBps": 2.95619016861165
+    },
+    {
+      "NT": 3,
+      "mode": "streaming",
+      "repeat": 3,
+      "cohort": 0,
+      "arm": "FFquant",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 0.23085069444444442,
+      "median_ms": 0.13297,
+      "sample_archive": "native/native-capacity-v2-measure-nt3-streaming-r3-controller2.json"
+    },
+    {
+      "NT": 3,
+      "mode": "streaming",
+      "repeat": 3,
+      "cohort": 0,
+      "arm": "Down",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 54.992486111111106,
+      "median_ms": 31.675672,
+      "sample_archive": "native/native-capacity-v2-measure-nt3-streaming-r3-controller2.json",
+      "dense_equivalent_GFLOPs": 59.58632227281556,
+      "logical_packed_weight_GBps": 5.586217713076459
+    },
+    {
+      "NT": 3,
+      "mode": "streaming",
+      "repeat": 3,
+      "cohort": 0,
+      "arm": "direct_complete",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 173.24146701388892,
+      "median_ms": 99.787085,
+      "sample_archive": "native/native-capacity-v2-measure-nt3-streaming-r3-controller2.json",
+      "dense_equivalent_GFLOPs": 56.74392031794494,
+      "logical_packed_weight_GBps": 3.7927793962515284
+    },
+    {
+      "NT": 3,
+      "mode": "streaming",
+      "repeat": 3,
+      "cohort": 0,
+      "arm": "pool",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 43.62486979166667,
+      "median_ms": 25.127925,
+      "sample_archive": "native/native-capacity-v2-measure-nt3-streaming-r3-controller2.json",
+      "dense_equivalent_GFLOPs": 225.33935452290626,
+      "logical_packed_weight_GBps": 15.061745050576201
+    },
+    {
+      "NT": 3,
+      "mode": "streaming",
+      "repeat": 3,
+      "cohort": 1,
+      "arm": "GU",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 108.25280208333334,
+      "median_ms": 62.353614,
+      "sample_archive": "native/native-capacity-v2-measure-nt3-streaming-r3-controller2.json",
+      "dense_equivalent_GFLOPs": 60.539772401965344,
+      "logical_packed_weight_GBps": 3.2319409745840875
+    },
+    {
+      "NT": 3,
+      "mode": "streaming",
+      "repeat": 3,
+      "cohort": 1,
+      "arm": "FFquant",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 0.23558333333333334,
+      "median_ms": 0.135696,
+      "sample_archive": "native/native-capacity-v2-measure-nt3-streaming-r3-controller2.json"
+    },
+    {
+      "NT": 3,
+      "mode": "streaming",
+      "repeat": 3,
+      "cohort": 1,
+      "arm": "Down",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 53.766670138888884,
+      "median_ms": 30.969602,
+      "sample_archive": "native/native-capacity-v2-measure-nt3-streaming-r3-controller2.json",
+      "dense_equivalent_GFLOPs": 60.94481937481793,
+      "logical_packed_weight_GBps": 5.713576816389181
+    },
+    {
+      "NT": 3,
+      "mode": "streaming",
+      "repeat": 3,
+      "cohort": 1,
+      "arm": "direct_complete",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 160.6746857638889,
+      "median_ms": 92.548619,
+      "sample_archive": "native/native-capacity-v2-measure-nt3-streaming-r3-controller2.json",
+      "dense_equivalent_GFLOPs": 61.18200856135952,
+      "logical_packed_weight_GBps": 4.089422447243647
+    },
+    {
+      "NT": 3,
+      "mode": "streaming",
+      "repeat": 3,
+      "cohort": 1,
+      "arm": "pool",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 42.120092013888886,
+      "median_ms": 24.261173,
+      "sample_archive": "native/native-capacity-v2-measure-nt3-streaming-r3-controller2.json",
+      "dense_equivalent_GFLOPs": 233.38980353505582,
+      "logical_packed_weight_GBps": 15.599839298784113
+    },
+    {
+      "NT": 2,
+      "mode": "streaming",
+      "repeat": 3,
+      "cohort": 0,
+      "arm": "GU",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 140.94682552083333,
+      "median_ms": 54.123581,
+      "sample_archive": "native/native-capacity-v2-measure-nt2-streaming-r3-controller2.json",
+      "dense_equivalent_GFLOPs": 46.49696774498347,
+      "logical_packed_weight_GBps": 3.723389995203754
+    },
+    {
+      "NT": 2,
+      "mode": "streaming",
+      "repeat": 3,
+      "cohort": 0,
+      "arm": "FFquant",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 0.17047656249999998,
+      "median_ms": 0.065463,
+      "sample_archive": "native/native-capacity-v2-measure-nt2-streaming-r3-controller2.json"
+    },
+    {
+      "NT": 2,
+      "mode": "streaming",
+      "repeat": 3,
+      "cohort": 0,
+      "arm": "Down",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 62.144908854166665,
+      "median_ms": 23.863645,
+      "sample_archive": "native/native-capacity-v2-measure-nt2-streaming-r3-controller2.json",
+      "dense_equivalent_GFLOPs": 52.728374060207486,
+      "logical_packed_weight_GBps": 7.414927602216678
+    },
+    {
+      "NT": 2,
+      "mode": "streaming",
+      "repeat": 3,
+      "cohort": 0,
+      "arm": "direct_complete",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 198.5301796875,
+      "median_ms": 76.235589,
+      "sample_archive": "native/native-capacity-v2-measure-nt2-streaming-r3-controller2.json",
+      "dense_equivalent_GFLOPs": 49.51589735864702,
+      "logical_packed_weight_GBps": 4.96448450080185
+    },
+    {
+      "NT": 2,
+      "mode": "streaming",
+      "repeat": 3,
+      "cohort": 0,
+      "arm": "pool",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 54.998119791666674,
+      "median_ms": 21.119278,
+      "sample_archive": "native/native-capacity-v2-measure-nt2-streaming-r3-controller2.json",
+      "dense_equivalent_GFLOPs": 178.74065581219205,
+      "logical_packed_weight_GBps": 17.920612627003628
+    },
+    {
+      "NT": 2,
+      "mode": "streaming",
+      "repeat": 3,
+      "cohort": 1,
+      "arm": "GU",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 136.40802343750002,
+      "median_ms": 52.380681,
+      "sample_archive": "native/native-capacity-v2-measure-nt2-streaming-r3-controller2.json",
+      "dense_equivalent_GFLOPs": 48.04409473026896,
+      "logical_packed_weight_GBps": 3.8472810233223194
+    },
+    {
+      "NT": 2,
+      "mode": "streaming",
+      "repeat": 3,
+      "cohort": 1,
+      "arm": "FFquant",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 0.18146093750000003,
+      "median_ms": 0.069681,
+      "sample_archive": "native/native-capacity-v2-measure-nt2-streaming-r3-controller2.json"
+    },
+    {
+      "NT": 2,
+      "mode": "streaming",
+      "repeat": 3,
+      "cohort": 1,
+      "arm": "Down",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 60.6631875,
+      "median_ms": 23.294664,
+      "sample_archive": "native/native-capacity-v2-measure-nt2-streaming-r3-controller2.json",
+      "dense_equivalent_GFLOPs": 54.01628458774937,
+      "logical_packed_weight_GBps": 7.596040020152254
+    },
+    {
+      "NT": 2,
+      "mode": "streaming",
+      "repeat": 3,
+      "cohort": 1,
+      "arm": "direct_complete",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 195.00430208333333,
+      "median_ms": 74.881652,
+      "sample_archive": "native/native-capacity-v2-measure-nt2-streaming-r3-controller2.json",
+      "dense_equivalent_GFLOPs": 50.41119552223554,
+      "logical_packed_weight_GBps": 5.054247467724136
+    },
+    {
+      "NT": 2,
+      "mode": "streaming",
+      "repeat": 3,
+      "cohort": 1,
+      "arm": "pool",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 52.0360859375,
+      "median_ms": 19.981857,
+      "sample_archive": "native/native-capacity-v2-measure-nt2-streaming-r3-controller2.json",
+      "dense_equivalent_GFLOPs": 188.91505429150052,
+      "logical_packed_weight_GBps": 18.9407020578718
+    },
+    {
+      "NT": 2,
+      "mode": "hot",
+      "repeat": 3,
+      "cohort": 0,
+      "arm": "GU",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 175.5091875,
+      "median_ms": 2.808147,
+      "sample_archive": "native/native-capacity-v2-measure-nt2-hot-r3-controller2.json",
+      "dense_equivalent_GFLOPs": 37.34049535156101,
+      "logical_packed_weight_GBps": 2.9901568543242214
+    },
+    {
+      "NT": 2,
+      "mode": "hot",
+      "repeat": 3,
+      "cohort": 0,
+      "arm": "FFquant",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 0.12268749999999999,
+      "median_ms": 0.001963,
+      "sample_archive": "native/native-capacity-v2-measure-nt2-hot-r3-controller2.json"
+    },
+    {
+      "NT": 2,
+      "mode": "hot",
+      "repeat": 3,
+      "cohort": 0,
+      "arm": "Down",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 66.2515625,
+      "median_ms": 1.060025,
+      "sample_archive": "native/native-capacity-v2-measure-nt2-hot-r3-controller2.json",
+      "dense_equivalent_GFLOPs": 49.45996556684983,
+      "logical_packed_weight_GBps": 6.955307657838258
+    },
+    {
+      "NT": 2,
+      "mode": "hot",
+      "repeat": 3,
+      "cohort": 0,
+      "arm": "direct_complete",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 230.261,
+      "median_ms": 3.684176,
+      "sample_archive": "native/native-capacity-v2-measure-nt2-hot-r3-controller2.json",
+      "dense_equivalent_GFLOPs": 42.69242294613504,
+      "logical_packed_weight_GBps": 4.28036011308906
+    },
+    {
+      "NT": 2,
+      "mode": "hot",
+      "repeat": 3,
+      "cohort": 0,
+      "arm": "pool",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 49.872625,
+      "median_ms": 0.797962,
+      "sample_archive": "native/native-capacity-v2-measure-nt2-hot-r3-controller2.json",
+      "dense_equivalent_GFLOPs": 197.11013807675053,
+      "logical_packed_weight_GBps": 19.762344572799208
+    },
+    {
+      "NT": 2,
+      "mode": "hot",
+      "repeat": 3,
+      "cohort": 1,
+      "arm": "GU",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 136.213875,
+      "median_ms": 2.179422,
+      "sample_archive": "native/native-capacity-v2-measure-nt2-hot-r3-controller2.json",
+      "dense_equivalent_GFLOPs": 48.112572966593895,
+      "logical_packed_weight_GBps": 3.852764632090527
+    },
+    {
+      "NT": 2,
+      "mode": "hot",
+      "repeat": 3,
+      "cohort": 1,
+      "arm": "FFquant",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 0.1220625,
+      "median_ms": 0.001953,
+      "sample_archive": "native/native-capacity-v2-measure-nt2-hot-r3-controller2.json"
+    },
+    {
+      "NT": 2,
+      "mode": "hot",
+      "repeat": 3,
+      "cohort": 1,
+      "arm": "Down",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 62.694874999999996,
+      "median_ms": 1.003118,
+      "sample_archive": "native/native-capacity-v2-measure-nt2-hot-r3-controller2.json",
+      "dense_equivalent_GFLOPs": 52.2658351260769,
+      "logical_packed_weight_GBps": 7.349883064604564
+    },
+    {
+      "NT": 2,
+      "mode": "hot",
+      "repeat": 3,
+      "cohort": 1,
+      "arm": "direct_complete",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 198.9219375,
+      "median_ms": 3.182751,
+      "sample_archive": "native/native-capacity-v2-measure-nt2-hot-r3-controller2.json",
+      "dense_equivalent_GFLOPs": 49.418380514215535,
+      "logical_packed_weight_GBps": 4.95470742134713
+    },
+    {
+      "NT": 2,
+      "mode": "hot",
+      "repeat": 3,
+      "cohort": 1,
+      "arm": "pool",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 51.453125,
+      "median_ms": 0.82325,
+      "sample_archive": "native/native-capacity-v2-measure-nt2-hot-r3-controller2.json",
+      "dense_equivalent_GFLOPs": 191.05545095657456,
+      "logical_packed_weight_GBps": 19.155299119344065
+    },
+    {
+      "NT": 4,
+      "mode": "hot",
+      "repeat": 3,
+      "cohort": 0,
+      "arm": "GU",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 97.38896875,
+      "median_ms": 3.116447,
+      "sample_archive": "native/native-capacity-v2-measure-nt4-hot-r3-controller2.json",
+      "dense_equivalent_GFLOPs": 67.29304236523194,
+      "logical_packed_weight_GBps": 2.6943503290766695
+    },
+    {
+      "NT": 4,
+      "mode": "hot",
+      "repeat": 3,
+      "cohort": 0,
+      "arm": "FFquant",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 0.11021875,
+      "median_ms": 0.003527,
+      "sample_archive": "native/native-capacity-v2-measure-nt4-hot-r3-controller2.json"
+    },
+    {
+      "NT": 4,
+      "mode": "hot",
+      "repeat": 3,
+      "cohort": 0,
+      "arm": "Down",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 50.4813125,
+      "median_ms": 1.615402,
+      "sample_archive": "native/native-capacity-v2-measure-nt4-hot-r3-controller2.json",
+      "dense_equivalent_GFLOPs": 64.91114905144354,
+      "logical_packed_weight_GBps": 4.564065167679624
+    },
+    {
+      "NT": 4,
+      "mode": "hot",
+      "repeat": 3,
+      "cohort": 0,
+      "arm": "direct_complete",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 147.2284375,
+      "median_ms": 4.71131,
+      "sample_archive": "native/native-capacity-v2-measure-nt4-hot-r3-controller2.json",
+      "dense_equivalent_GFLOPs": 66.7697094863212,
+      "logical_packed_weight_GBps": 3.3471794469054252
+    },
+    {
+      "NT": 4,
+      "mode": "hot",
+      "repeat": 3,
+      "cohort": 0,
+      "arm": "pool",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 34.1884375,
+      "median_ms": 1.09403,
+      "sample_archive": "native/native-capacity-v2-measure-nt4-hot-r3-controller2.json",
+      "dense_equivalent_GFLOPs": 287.53580797601523,
+      "logical_packed_weight_GBps": 14.414229957130974
+    },
+    {
+      "NT": 4,
+      "mode": "hot",
+      "repeat": 3,
+      "cohort": 1,
+      "arm": "GU",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 93.42184375,
+      "median_ms": 2.989499,
+      "sample_archive": "native/native-capacity-v2-measure-nt4-hot-r3-controller2.json",
+      "dense_equivalent_GFLOPs": 70.15061721044229,
+      "logical_packed_weight_GBps": 2.8087649469024747
+    },
+    {
+      "NT": 4,
+      "mode": "hot",
+      "repeat": 3,
+      "cohort": 1,
+      "arm": "FFquant",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 0.10928125,
+      "median_ms": 0.003497,
+      "sample_archive": "native/native-capacity-v2-measure-nt4-hot-r3-controller2.json"
+    },
+    {
+      "NT": 4,
+      "mode": "hot",
+      "repeat": 3,
+      "cohort": 1,
+      "arm": "Down",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 50.33975,
+      "median_ms": 1.610872,
+      "sample_archive": "native/native-capacity-v2-measure-nt4-hot-r3-controller2.json",
+      "dense_equivalent_GFLOPs": 65.09368838740757,
+      "logical_packed_weight_GBps": 4.576899964739594
+    },
+    {
+      "NT": 4,
+      "mode": "hot",
+      "repeat": 3,
+      "cohort": 1,
+      "arm": "direct_complete",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 144.73749999999998,
+      "median_ms": 4.6316,
+      "sample_archive": "native/native-capacity-v2-measure-nt4-hot-r3-controller2.json",
+      "dense_equivalent_GFLOPs": 67.91881855082477,
+      "logical_packed_weight_GBps": 3.4047845237067107
+    },
+    {
+      "NT": 4,
+      "mode": "hot",
+      "repeat": 3,
+      "cohort": 1,
+      "arm": "pool",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 34.0384375,
+      "median_ms": 1.08923,
+      "sample_archive": "native/native-capacity-v2-measure-nt4-hot-r3-controller2.json",
+      "dense_equivalent_GFLOPs": 288.80291582126824,
+      "logical_packed_weight_GBps": 14.477750337394305
+    },
+    {
+      "NT": 4,
+      "mode": "streaming",
+      "repeat": 3,
+      "cohort": 0,
+      "arm": "GU",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 103.77198958333334,
+      "median_ms": 79.696888,
+      "sample_archive": "native/native-capacity-v2-measure-nt4-streaming-r3-controller2.json",
+      "dense_equivalent_GFLOPs": 63.15384359800849,
+      "logical_packed_weight_GBps": 2.5286206909358873
+    },
+    {
+      "NT": 4,
+      "mode": "streaming",
+      "repeat": 3,
+      "cohort": 0,
+      "arm": "FFquant",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 0.1867578125,
+      "median_ms": 0.14343,
+      "sample_archive": "native/native-capacity-v2-measure-nt4-streaming-r3-controller2.json"
+    },
+    {
+      "NT": 4,
+      "mode": "streaming",
+      "repeat": 3,
+      "cohort": 0,
+      "arm": "Down",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 51.01702083333333,
+      "median_ms": 39.181072,
+      "sample_archive": "native/native-capacity-v2-measure-nt4-streaming-r3-controller2.json",
+      "dense_equivalent_GFLOPs": 64.22954430649575,
+      "logical_packed_weight_GBps": 4.516139834050482
+    },
+    {
+      "NT": 4,
+      "mode": "streaming",
+      "repeat": 3,
+      "cohort": 0,
+      "arm": "direct_complete",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 148.76209114583332,
+      "median_ms": 114.249286,
+      "sample_archive": "native/native-capacity-v2-measure-nt4-streaming-r3-controller2.json",
+      "dense_equivalent_GFLOPs": 66.08135126551251,
+      "logical_packed_weight_GBps": 3.312671905888322
+    },
+    {
+      "NT": 4,
+      "mode": "streaming",
+      "repeat": 3,
+      "cohort": 0,
+      "arm": "pool",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 37.533330729166664,
+      "median_ms": 28.825598,
+      "sample_archive": "native/native-capacity-v2-measure-nt4-streaming-r3-controller2.json",
+      "dense_equivalent_GFLOPs": 261.9112082254113,
+      "logical_packed_weight_GBps": 13.129663433174917
+    },
+    {
+      "NT": 4,
+      "mode": "streaming",
+      "repeat": 3,
+      "cohort": 1,
+      "arm": "GU",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 95.10550520833333,
+      "median_ms": 73.041028,
+      "sample_archive": "native/native-capacity-v2-measure-nt4-streaming-r3-controller2.json",
+      "dense_equivalent_GFLOPs": 68.90873441704572,
+      "logical_packed_weight_GBps": 2.759041124119995
+    },
+    {
+      "NT": 4,
+      "mode": "streaming",
+      "repeat": 3,
+      "cohort": 1,
+      "arm": "FFquant",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 0.20837369791666668,
+      "median_ms": 0.160031,
+      "sample_archive": "native/native-capacity-v2-measure-nt4-streaming-r3-controller2.json"
+    },
+    {
+      "NT": 4,
+      "mode": "streaming",
+      "repeat": 3,
+      "cohort": 1,
+      "arm": "Down",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 49.868819010416665,
+      "median_ms": 38.299253,
+      "sample_archive": "native/native-capacity-v2-measure-nt4-streaming-r3-controller2.json",
+      "dense_equivalent_GFLOPs": 65.70839384256398,
+      "logical_packed_weight_GBps": 4.62012144205528
+    },
+    {
+      "NT": 4,
+      "mode": "streaming",
+      "repeat": 3,
+      "cohort": 1,
+      "arm": "direct_complete",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 145.26329166666667,
+      "median_ms": 111.562208,
+      "sample_archive": "native/native-capacity-v2-measure-nt4-streaming-r3-controller2.json",
+      "dense_equivalent_GFLOPs": 67.67298115863751,
+      "logical_packed_weight_GBps": 3.39246064402024
+    },
+    {
+      "NT": 4,
+      "mode": "streaming",
+      "repeat": 3,
+      "cohort": 1,
+      "arm": "pool",
+      "measured_rounds": 25,
+      "median_us_per_expert_token": 38.742703125,
+      "median_ms": 29.754396,
+      "sample_archive": "native/native-capacity-v2-measure-nt4-streaming-r3-controller2.json",
+      "dense_equivalent_GFLOPs": 253.73552197127444,
+      "logical_packed_weight_GBps": 12.719814577987064
+    }
+  ],
+  "cells": [
+    {
+      "NT": 1,
+      "mode": "hot",
+      "cohort": 0,
+      "arm": "Down",
+      "process_medians_us": [
+        77.16525,
+        80.077,
+        78.46275
+      ],
+      "median_us_per_expert_token": 78.46275,
+      "process_median_range_us": [
+        77.16525,
+        80.077
+      ],
+      "dense_equivalent_GFLOPs": 41.76249239288707,
+      "logical_packed_weight_GBps": 11.74570098549949
+    },
+    {
+      "NT": 1,
+      "mode": "hot",
+      "cohort": 0,
+      "arm": "FFquant",
+      "process_medians_us": [
+        0.1315,
+        0.12525,
+        0.134
+      ],
+      "median_us_per_expert_token": 0.1315,
+      "process_median_range_us": [
+        0.12525,
+        0.134
+      ]
+    },
+    {
+      "NT": 1,
+      "mode": "hot",
+      "cohort": 0,
+      "arm": "GU",
+      "process_medians_us": [
+        182.2355,
+        181.6445,
+        191.309
+      ],
+      "median_us_per_expert_token": 182.2355,
+      "process_median_range_us": [
+        181.6445,
+        191.309
+      ],
+      "dense_equivalent_GFLOPs": 35.962257628178925,
+      "logical_packed_weight_GBps": 5.75958032326303
+    },
+    {
+      "NT": 1,
+      "mode": "hot",
+      "cohort": 0,
+      "arm": "direct_complete",
+      "process_medians_us": [
+        261.680125,
+        270.181125,
+        266.9075
+      ],
+      "median_us_per_expert_token": 266.9075,
+      "process_median_range_us": [
+        261.680125,
+        270.181125
+      ],
+      "dense_equivalent_GFLOPs": 36.830737240429734,
+      "logical_packed_weight_GBps": 7.385330123732004
+    },
+    {
+      "NT": 1,
+      "mode": "hot",
+      "cohort": 0,
+      "arm": "pool",
+      "process_medians_us": [
+        70.3575,
+        73.493375,
+        75.7865
+      ],
+      "median_us_per_expert_token": 73.493375,
+      "process_median_range_us": [
+        70.3575,
+        75.7865
+      ],
+      "dense_equivalent_GFLOPs": 133.7589952835885,
+      "logical_packed_weight_GBps": 26.82146520009457
+    },
+    {
+      "NT": 1,
+      "mode": "hot",
+      "cohort": 1,
+      "arm": "Down",
+      "process_medians_us": [
+        77.05375000000001,
+        78.8835,
+        77.753875
+      ],
+      "median_us_per_expert_token": 77.753875,
+      "process_median_range_us": [
+        77.05375000000001,
+        78.8835
+      ],
+      "dense_equivalent_GFLOPs": 42.14323723415715,
+      "logical_packed_weight_GBps": 11.852785472106696
+    },
+    {
+      "NT": 1,
+      "mode": "hot",
+      "cohort": 1,
+      "arm": "FFquant",
+      "process_medians_us": [
+        0.124,
+        0.1315,
+        0.12774999999999997
+      ],
+      "median_us_per_expert_token": 0.12774999999999997,
+      "process_median_range_us": [
+        0.124,
+        0.1315
+      ]
+    },
+    {
+      "NT": 1,
+      "mode": "hot",
+      "cohort": 1,
+      "arm": "GU",
+      "process_medians_us": [
+        180.88925,
+        185.53924999999998,
+        181.707
+      ],
+      "median_us_per_expert_token": 181.707,
+      "process_median_range_us": [
+        180.88925,
+        185.53924999999998
+      ],
+      "dense_equivalent_GFLOPs": 36.0668548817602,
+      "logical_packed_weight_GBps": 5.776332227156907
+    },
+    {
+      "NT": 1,
+      "mode": "hot",
+      "cohort": 1,
+      "arm": "direct_complete",
+      "process_medians_us": [
+        258.540375,
+        261.129,
+        259.938125
+      ],
+      "median_us_per_expert_token": 259.938125,
+      "process_median_range_us": [
+        258.540375,
+        261.129
+      ],
+      "dense_equivalent_GFLOPs": 37.81823078088295,
+      "logical_packed_weight_GBps": 7.583343151374967
+    },
+    {
+      "NT": 1,
+      "mode": "hot",
+      "cohort": 1,
+      "arm": "pool",
+      "process_medians_us": [
+        63.71362499999999,
+        73.49837500000001,
+        70.91475
+      ],
+      "median_us_per_expert_token": 70.91475,
+      "process_median_range_us": [
+        63.71362499999999,
+        73.49837500000001
+      ],
+      "dense_equivalent_GFLOPs": 138.62278298943448,
+      "logical_packed_weight_GBps": 27.79675596402723
+    },
+    {
+      "NT": 1,
+      "mode": "streaming",
+      "cohort": 0,
+      "arm": "Down",
+      "process_medians_us": [
+        84.60184375,
+        86.11622395833332,
+        80.87281770833333
+      ],
+      "median_us_per_expert_token": 84.60184375,
+      "process_median_range_us": [
+        80.87281770833333,
+        86.11622395833332
+      ],
+      "dense_equivalent_GFLOPs": 38.73201640478432,
+      "logical_packed_weight_GBps": 10.89337961384559
+    },
+    {
+      "NT": 1,
+      "mode": "streaming",
+      "cohort": 0,
+      "arm": "FFquant",
+      "process_medians_us": [
+        0.152421875,
+        0.14939583333333334,
+        0.13233333333333333
+      ],
+      "median_us_per_expert_token": 0.14939583333333334,
+      "process_median_range_us": [
+        0.13233333333333333,
+        0.152421875
+      ]
+    },
+    {
+      "NT": 1,
+      "mode": "streaming",
+      "cohort": 0,
+      "arm": "GU",
+      "process_medians_us": [
+        214.91133333333335,
+        214.49658854166668,
+        200.06433854166667
+      ],
+      "median_us_per_expert_token": 214.49658854166668,
+      "process_median_range_us": [
+        200.06433854166667,
+        214.91133333333335
+      ],
+      "dense_equivalent_GFLOPs": 30.553399681351767,
+      "logical_packed_weight_GBps": 4.893317917716494
+    },
+    {
+      "NT": 1,
+      "mode": "streaming",
+      "cohort": 0,
+      "arm": "direct_complete",
+      "process_medians_us": [
+        287.52582291666664,
+        305.2634375,
+        288.0815416666667
+      ],
+      "median_us_per_expert_token": 288.0815416666667,
+      "process_median_range_us": [
+        287.52582291666664,
+        305.2634375
+      ],
+      "dense_equivalent_GFLOPs": 34.12367187125983,
+      "logical_packed_weight_GBps": 6.842507120018246
+    },
+    {
+      "NT": 1,
+      "mode": "streaming",
+      "cohort": 0,
+      "arm": "pool",
+      "process_medians_us": [
+        91.99456250000001,
+        93.66966145833334,
+        92.075421875
+      ],
+      "median_us_per_expert_token": 92.075421875,
+      "process_median_range_us": [
+        91.99456250000001,
+        93.66966145833334
+      ],
+      "dense_equivalent_GFLOPs": 106.76464793553247,
+      "logical_packed_weight_GBps": 21.408536174572916
+    },
+    {
+      "NT": 1,
+      "mode": "streaming",
+      "cohort": 1,
+      "arm": "Down",
+      "process_medians_us": [
+        87.19291666666668,
+        83.24827604166667,
+        82.472703125
+      ],
+      "median_us_per_expert_token": 83.24827604166667,
+      "process_median_range_us": [
+        82.472703125,
+        87.19291666666668
+      ],
+      "dense_equivalent_GFLOPs": 39.361776072815324,
+      "logical_packed_weight_GBps": 11.07049952047931
+    },
+    {
+      "NT": 1,
+      "mode": "streaming",
+      "cohort": 1,
+      "arm": "FFquant",
+      "process_medians_us": [
+        0.16927604166666668,
+        0.132171875,
+        0.13071354166666668
+      ],
+      "median_us_per_expert_token": 0.132171875,
+      "process_median_range_us": [
+        0.13071354166666668,
+        0.16927604166666668
+      ]
+    },
+    {
+      "NT": 1,
+      "mode": "streaming",
+      "cohort": 1,
+      "arm": "GU",
+      "process_medians_us": [
+        202.24035416666666,
+        197.37806250000003,
+        196.28779687500003
+      ],
+      "median_us_per_expert_token": 197.37806250000003,
+      "process_median_range_us": [
+        196.28779687500003,
+        202.24035416666666
+      ],
+      "dense_equivalent_GFLOPs": 33.20328468620974,
+      "logical_packed_weight_GBps": 5.317713563025779
+    },
+    {
+      "NT": 1,
+      "mode": "streaming",
+      "cohort": 1,
+      "arm": "direct_complete",
+      "process_medians_us": [
+        285.406578125,
+        273.807875,
+        274.70145833333333
+      ],
+      "median_us_per_expert_token": 274.70145833333333,
+      "process_median_range_us": [
+        273.807875,
+        285.406578125
+      ],
+      "dense_equivalent_GFLOPs": 35.7857583270323,
+      "logical_packed_weight_GBps": 7.175790081201789
+    },
+    {
+      "NT": 1,
+      "mode": "streaming",
+      "cohort": 1,
+      "arm": "pool",
+      "process_medians_us": [
+        89.96120833333333,
+        79.16882291666667,
+        82.21013020833333
+      ],
+      "median_us_per_expert_token": 82.21013020833333,
+      "process_median_range_us": [
+        79.16882291666667,
+        89.96120833333333
+      ],
+      "dense_equivalent_GFLOPs": 119.57650444158438,
+      "logical_packed_weight_GBps": 23.977580317713535
+    },
+    {
+      "NT": 2,
+      "mode": "hot",
+      "cohort": 0,
+      "arm": "Down",
+      "process_medians_us": [
+        60.741875,
+        60.580875,
+        66.2515625
+      ],
+      "median_us_per_expert_token": 60.741875,
+      "process_median_range_us": [
+        60.580875,
+        66.2515625
+      ],
+      "dense_equivalent_GFLOPs": 53.94630969162542,
+      "logical_packed_weight_GBps": 7.586199800384825
+    },
+    {
+      "NT": 2,
+      "mode": "hot",
+      "cohort": 0,
+      "arm": "FFquant",
+      "process_medians_us": [
+        0.1215,
+        0.1158125,
+        0.12268749999999999
+      ],
+      "median_us_per_expert_token": 0.1215,
+      "process_median_range_us": [
+        0.1158125,
+        0.12268749999999999
+      ]
+    },
+    {
+      "NT": 2,
+      "mode": "hot",
+      "cohort": 0,
+      "arm": "GU",
+      "process_medians_us": [
+        140.31725,
+        139.3404375,
+        175.5091875
+      ],
+      "median_us_per_expert_token": 140.31725,
+      "process_median_range_us": [
+        139.3404375,
+        175.5091875
+      ],
+      "dense_equivalent_GFLOPs": 46.70559036754212,
+      "logical_packed_weight_GBps": 3.7400961036508344
+    },
+    {
+      "NT": 2,
+      "mode": "hot",
+      "cohort": 0,
+      "arm": "direct_complete",
+      "process_medians_us": [
+        197.627,
+        197.9213125,
+        230.261
+      ],
+      "median_us_per_expert_token": 197.9213125,
+      "process_median_range_us": [
+        197.627,
+        230.261
+      ],
+      "dense_equivalent_GFLOPs": 49.66822357748866,
+      "logical_packed_weight_GBps": 4.9797567909721705
+    },
+    {
+      "NT": 2,
+      "mode": "hot",
+      "cohort": 0,
+      "arm": "pool",
+      "process_medians_us": [
+        48.5063125,
+        47.8506875,
+        49.872625
+      ],
+      "median_us_per_expert_token": 48.5063125,
+      "process_median_range_us": [
+        47.8506875,
+        49.872625
+      ],
+      "dense_equivalent_GFLOPs": 202.66228235757973,
+      "logical_packed_weight_GBps": 20.319004871788596
+    },
+    {
+      "NT": 2,
+      "mode": "hot",
+      "cohort": 1,
+      "arm": "Down",
+      "process_medians_us": [
+        63.6554375,
+        60.562125,
+        62.694874999999996
+      ],
+      "median_us_per_expert_token": 62.694874999999996,
+      "process_median_range_us": [
+        60.562125,
+        63.6554375
+      ],
+      "dense_equivalent_GFLOPs": 52.2658351260769,
+      "logical_packed_weight_GBps": 7.349883064604564
+    },
+    {
+      "NT": 2,
+      "mode": "hot",
+      "cohort": 1,
+      "arm": "FFquant",
+      "process_medians_us": [
+        0.120875,
+        0.1158125,
+        0.1220625
+      ],
+      "median_us_per_expert_token": 0.120875,
+      "process_median_range_us": [
+        0.1158125,
+        0.1220625
+      ]
+    },
+    {
+      "NT": 2,
+      "mode": "hot",
+      "cohort": 1,
+      "arm": "GU",
+      "process_medians_us": [
+        139.65225,
+        137.1075,
+        136.213875
+      ],
+      "median_us_per_expert_token": 137.1075,
+      "process_median_range_us": [
+        136.213875,
+        139.65225
+      ],
+      "dense_equivalent_GFLOPs": 47.79898984373576,
+      "logical_packed_weight_GBps": 3.8276534835804026
+    },
+    {
+      "NT": 2,
+      "mode": "hot",
+      "cohort": 1,
+      "arm": "direct_complete",
+      "process_medians_us": [
+        208.189375,
+        196.8775,
+        198.9219375
+      ],
+      "median_us_per_expert_token": 198.9219375,
+      "process_median_range_us": [
+        196.8775,
+        208.189375
+      ],
+      "dense_equivalent_GFLOPs": 49.418380514215535,
+      "logical_packed_weight_GBps": 4.95470742134713
+    },
+    {
+      "NT": 2,
+      "mode": "hot",
+      "cohort": 1,
+      "arm": "pool",
+      "process_medians_us": [
+        48.396750000000004,
+        47.3741875,
+        51.453125
+      ],
+      "median_us_per_expert_token": 48.396750000000004,
+      "process_median_range_us": [
+        47.3741875,
+        51.453125
+      ],
+      "dense_equivalent_GFLOPs": 203.12107734506964,
+      "logical_packed_weight_GBps": 20.36500384839891
+    },
+    {
+      "NT": 2,
+      "mode": "streaming",
+      "cohort": 0,
+      "arm": "Down",
+      "process_medians_us": [
+        61.89961458333334,
+        62.0764140625,
+        62.144908854166665
+      ],
+      "median_us_per_expert_token": 62.0764140625,
+      "process_median_range_us": [
+        61.89961458333334,
+        62.144908854166665
+      ],
+      "dense_equivalent_GFLOPs": 52.78655427326778,
+      "logical_packed_weight_GBps": 7.423109194678283
+    },
+    {
+      "NT": 2,
+      "mode": "streaming",
+      "cohort": 0,
+      "arm": "FFquant",
+      "process_medians_us": [
+        0.17123437500000002,
+        0.18492968750000002,
+        0.17047656249999998
+      ],
+      "median_us_per_expert_token": 0.17123437500000002,
+      "process_median_range_us": [
+        0.17047656249999998,
+        0.18492968750000002
+      ]
+    },
+    {
+      "NT": 2,
+      "mode": "streaming",
+      "cohort": 0,
+      "arm": "GU",
+      "process_medians_us": [
+        147.40679427083333,
+        135.282609375,
+        140.94682552083333
+      ],
+      "median_us_per_expert_token": 140.94682552083333,
+      "process_median_range_us": [
+        135.282609375,
+        147.40679427083333
+      ],
+      "dense_equivalent_GFLOPs": 46.49696774498347,
+      "logical_packed_weight_GBps": 3.723389995203754
+    },
+    {
+      "NT": 2,
+      "mode": "streaming",
+      "cohort": 0,
+      "arm": "direct_complete",
+      "process_medians_us": [
+        213.32144010416664,
+        204.48352864583333,
+        198.5301796875
+      ],
+      "median_us_per_expert_token": 204.48352864583333,
+      "process_median_range_us": [
+        198.5301796875,
+        213.32144010416664
+      ],
+      "dense_equivalent_GFLOPs": 48.07428776831365,
+      "logical_packed_weight_GBps": 4.819948122604363
+    },
+    {
+      "NT": 2,
+      "mode": "streaming",
+      "cohort": 0,
+      "arm": "pool",
+      "process_medians_us": [
+        59.060601562500004,
+        52.36208593749999,
+        54.998119791666674
+      ],
+      "median_us_per_expert_token": 54.998119791666674,
+      "process_median_range_us": [
+        52.36208593749999,
+        59.060601562500004
+      ],
+      "dense_equivalent_GFLOPs": 178.74065581219205,
+      "logical_packed_weight_GBps": 17.920612627003628
+    },
+    {
+      "NT": 2,
+      "mode": "streaming",
+      "cohort": 1,
+      "arm": "Down",
+      "process_medians_us": [
+        61.826484375,
+        61.06471875,
+        60.6631875
+      ],
+      "median_us_per_expert_token": 61.06471875,
+      "process_median_range_us": [
+        60.6631875,
+        61.826484375
+      ],
+      "dense_equivalent_GFLOPs": 53.661100338728744,
+      "logical_packed_weight_GBps": 7.546092235133728
+    },
+    {
+      "NT": 2,
+      "mode": "streaming",
+      "cohort": 1,
+      "arm": "FFquant",
+      "process_medians_us": [
+        0.16797395833333337,
+        0.16559895833333332,
+        0.18146093750000003
+      ],
+      "median_us_per_expert_token": 0.16797395833333337,
+      "process_median_range_us": [
+        0.16559895833333332,
+        0.18146093750000003
+      ]
+    },
+    {
+      "NT": 2,
+      "mode": "streaming",
+      "cohort": 1,
+      "arm": "GU",
+      "process_medians_us": [
+        138.074984375,
+        136.97650260416665,
+        136.40802343750002
+      ],
+      "median_us_per_expert_token": 136.97650260416665,
+      "process_median_range_us": [
+        136.40802343750002,
+        138.074984375
+      ],
+      "dense_equivalent_GFLOPs": 47.844702378907485,
+      "logical_packed_weight_GBps": 3.831314057685951
+    },
+    {
+      "NT": 2,
+      "mode": "streaming",
+      "cohort": 1,
+      "arm": "direct_complete",
+      "process_medians_us": [
+        195.7440859375,
+        194.7239348958333,
+        195.00430208333333
+      ],
+      "median_us_per_expert_token": 195.00430208333333,
+      "process_median_range_us": [
+        194.7239348958333,
+        195.7440859375
+      ],
+      "dense_equivalent_GFLOPs": 50.41119552223554,
+      "logical_packed_weight_GBps": 5.054247467724136
+    },
+    {
+      "NT": 2,
+      "mode": "streaming",
+      "cohort": 1,
+      "arm": "pool",
+      "process_medians_us": [
+        53.4584140625,
+        54.972208333333334,
+        52.0360859375
+      ],
+      "median_us_per_expert_token": 53.4584140625,
+      "process_median_range_us": [
+        52.0360859375,
+        54.972208333333334
+      ],
+      "dense_equivalent_GFLOPs": 183.88873243615038,
+      "logical_packed_weight_GBps": 18.436760934353618
+    },
+    {
+      "NT": 3,
+      "mode": "hot",
+      "cohort": 0,
+      "arm": "Down",
+      "process_medians_us": [
+        54.76141666666666,
+        61.55420833333333,
+        54.20162500000001
+      ],
+      "median_us_per_expert_token": 54.76141666666666,
+      "process_median_range_us": [
+        54.20162500000001,
+        61.55420833333333
+      ],
+      "dense_equivalent_GFLOPs": 59.83775072777823,
+      "logical_packed_weight_GBps": 5.609789130729209
+    },
+    {
+      "NT": 3,
+      "mode": "hot",
+      "cohort": 0,
+      "arm": "FFquant",
+      "process_medians_us": [
+        0.11395833333333333,
+        0.14945833333333333,
+        0.11275
+      ],
+      "median_us_per_expert_token": 0.11395833333333333,
+      "process_median_range_us": [
+        0.11275,
+        0.14945833333333333
+      ]
+    },
+    {
+      "NT": 3,
+      "mode": "hot",
+      "cohort": 0,
+      "arm": "GU",
+      "process_medians_us": [
+        109.92858333333334,
+        132.23766666666666,
+        110.21204166666666
+      ],
+      "median_us_per_expert_token": 110.21204166666666,
+      "process_median_range_us": [
+        109.92858333333334,
+        132.23766666666666
+      ],
+      "dense_equivalent_GFLOPs": 59.46355680281458,
+      "logical_packed_weight_GBps": 3.1744867564002575
+    },
+    {
+      "NT": 3,
+      "mode": "hot",
+      "cohort": 0,
+      "arm": "direct_complete",
+      "process_medians_us": [
+        163.054,
+        188.736125,
+        160.15479166666668
+      ],
+      "median_us_per_expert_token": 163.054,
+      "process_median_range_us": [
+        160.15479166666668,
+        188.736125
+      ],
+      "dense_equivalent_GFLOPs": 60.289229335066906,
+      "logical_packed_weight_GBps": 4.02974883576402
+    },
+    {
+      "NT": 3,
+      "mode": "hot",
+      "cohort": 0,
+      "arm": "pool",
+      "process_medians_us": [
+        39.15870833333333,
+        41.82458333333333,
+        37.62833333333334
+      ],
+      "median_us_per_expert_token": 39.15870833333333,
+      "process_median_range_us": [
+        37.62833333333334,
+        41.82458333333333
+      ],
+      "dense_equivalent_GFLOPs": 251.03994535059783,
+      "logical_packed_weight_GBps": 16.779579680552114
+    },
+    {
+      "NT": 3,
+      "mode": "hot",
+      "cohort": 1,
+      "arm": "Down",
+      "process_medians_us": [
+        58.62825,
+        53.77704166666666,
+        54.005833333333335
+      ],
+      "median_us_per_expert_token": 54.005833333333335,
+      "process_median_range_us": [
+        53.77704166666666,
+        58.62825
+      ],
+      "dense_equivalent_GFLOPs": 60.674927091209284,
+      "logical_packed_weight_GBps": 5.68827441480087
+    },
+    {
+      "NT": 3,
+      "mode": "hot",
+      "cohort": 1,
+      "arm": "FFquant",
+      "process_medians_us": [
+        0.15070833333333333,
+        0.11895833333333333,
+        0.11395833333333333
+      ],
+      "median_us_per_expert_token": 0.11895833333333333,
+      "process_median_range_us": [
+        0.11395833333333333,
+        0.15070833333333333
+      ]
+    },
+    {
+      "NT": 3,
+      "mode": "hot",
+      "cohort": 1,
+      "arm": "GU",
+      "process_medians_us": [
+        123.77841666666667,
+        106.58520833333334,
+        109.149625
+      ],
+      "median_us_per_expert_token": 109.149625,
+      "process_median_range_us": [
+        106.58520833333334,
+        123.77841666666667
+      ],
+      "dense_equivalent_GFLOPs": 60.04235012259547,
+      "logical_packed_weight_GBps": 3.205385878940644
+    },
+    {
+      "NT": 3,
+      "mode": "hot",
+      "cohort": 1,
+      "arm": "direct_complete",
+      "process_medians_us": [
+        194.51695833333335,
+        159.62008333333333,
+        163.26529166666666
+      ],
+      "median_us_per_expert_token": 163.26529166666666,
+      "process_median_range_us": [
+        159.62008333333333,
+        194.51695833333335
+      ],
+      "dense_equivalent_GFLOPs": 60.21120533120048,
+      "logical_packed_weight_GBps": 4.024533689672254
+    },
+    {
+      "NT": 3,
+      "mode": "hot",
+      "cohort": 1,
+      "arm": "pool",
+      "process_medians_us": [
+        38.993,
+        45.25770833333333,
+        38.848958333333336
+      ],
+      "median_us_per_expert_token": 38.993,
+      "process_median_range_us": [
+        38.848958333333336,
+        45.25770833333333
+      ],
+      "dense_equivalent_GFLOPs": 252.10678839791754,
+      "logical_packed_weight_GBps": 16.850887766180254
+    },
+    {
+      "NT": 3,
+      "mode": "streaming",
+      "cohort": 0,
+      "arm": "Down",
+      "process_medians_us": [
+        54.192720486111114,
+        55.893027777777775,
+        54.992486111111106
+      ],
+      "median_us_per_expert_token": 54.992486111111106,
+      "process_median_range_us": [
+        54.192720486111114,
+        55.893027777777775
+      ],
+      "dense_equivalent_GFLOPs": 59.58632227281556,
+      "logical_packed_weight_GBps": 5.586217713076459
+    },
+    {
+      "NT": 3,
+      "mode": "streaming",
+      "cohort": 0,
+      "arm": "FFquant",
+      "process_medians_us": [
+        0.1921840277777778,
+        0.18122569444444447,
+        0.23085069444444442
+      ],
+      "median_us_per_expert_token": 0.1921840277777778,
+      "process_median_range_us": [
+        0.18122569444444447,
+        0.23085069444444442
+      ]
+    },
+    {
+      "NT": 3,
+      "mode": "streaming",
+      "cohort": 0,
+      "arm": "GU",
+      "process_medians_us": [
+        110.54460763888888,
+        117.54288194444445,
+        118.3505277777778
+      ],
+      "median_us_per_expert_token": 117.54288194444445,
+      "process_median_range_us": [
+        110.54460763888888,
+        118.3505277777778
+      ],
+      "dense_equivalent_GFLOPs": 55.7549712206095,
+      "logical_packed_weight_GBps": 2.976502369850247
+    },
+    {
+      "NT": 3,
+      "mode": "streaming",
+      "cohort": 0,
+      "arm": "direct_complete",
+      "process_medians_us": [
+        161.93768402777778,
+        174.41699479166667,
+        173.24146701388892
+      ],
+      "median_us_per_expert_token": 173.24146701388892,
+      "process_median_range_us": [
+        161.93768402777778,
+        174.41699479166667
+      ],
+      "dense_equivalent_GFLOPs": 56.74392031794494,
+      "logical_packed_weight_GBps": 3.7927793962515284
+    },
+    {
+      "NT": 3,
+      "mode": "streaming",
+      "cohort": 0,
+      "arm": "pool",
+      "process_medians_us": [
+        42.98419097222222,
+        42.87849305555556,
+        43.62486979166667
+      ],
+      "median_us_per_expert_token": 42.98419097222222,
+      "process_median_range_us": [
+        42.87849305555556,
+        43.62486979166667
+      ],
+      "dense_equivalent_GFLOPs": 228.69803473450793,
+      "logical_packed_weight_GBps": 15.286240168886382
+    },
+    {
+      "NT": 3,
+      "mode": "streaming",
+      "cohort": 1,
+      "arm": "Down",
+      "process_medians_us": [
+        54.08543576388889,
+        52.821100694444446,
+        53.766670138888884
+      ],
+      "median_us_per_expert_token": 53.766670138888884,
+      "process_median_range_us": [
+        52.821100694444446,
+        54.08543576388889
+      ],
+      "dense_equivalent_GFLOPs": 60.94481937481793,
+      "logical_packed_weight_GBps": 5.713576816389181
+    },
+    {
+      "NT": 3,
+      "mode": "streaming",
+      "cohort": 1,
+      "arm": "FFquant",
+      "process_medians_us": [
+        0.18505208333333334,
+        0.25231597222222224,
+        0.23558333333333334
+      ],
+      "median_us_per_expert_token": 0.23558333333333334,
+      "process_median_range_us": [
+        0.18505208333333334,
+        0.25231597222222224
+      ]
+    },
+    {
+      "NT": 3,
+      "mode": "streaming",
+      "cohort": 1,
+      "arm": "GU",
+      "process_medians_us": [
+        110.333796875,
+        107.72880208333332,
+        108.25280208333334
+      ],
+      "median_us_per_expert_token": 108.25280208333334,
+      "process_median_range_us": [
+        107.72880208333332,
+        110.333796875
+      ],
+      "dense_equivalent_GFLOPs": 60.539772401965344,
+      "logical_packed_weight_GBps": 3.2319409745840875
+    },
+    {
+      "NT": 3,
+      "mode": "streaming",
+      "cohort": 1,
+      "arm": "direct_complete",
+      "process_medians_us": [
+        162.0397013888889,
+        160.76868229166666,
+        160.6746857638889
+      ],
+      "median_us_per_expert_token": 160.76868229166666,
+      "process_median_range_us": [
+        160.6746857638889,
+        162.0397013888889
+      ],
+      "dense_equivalent_GFLOPs": 61.14623731359371,
+      "logical_packed_weight_GBps": 4.087031487106524
+    },
+    {
+      "NT": 3,
+      "mode": "streaming",
+      "cohort": 1,
+      "arm": "pool",
+      "process_medians_us": [
+        45.130489583333336,
+        40.98828819444444,
+        42.120092013888886
+      ],
+      "median_us_per_expert_token": 42.120092013888886,
+      "process_median_range_us": [
+        40.98828819444444,
+        45.130489583333336
+      ],
+      "dense_equivalent_GFLOPs": 233.38980353505582,
+      "logical_packed_weight_GBps": 15.599839298784113
+    },
+    {
+      "NT": 4,
+      "mode": "hot",
+      "cohort": 0,
+      "arm": "Down",
+      "process_medians_us": [
+        51.44278125,
+        51.007875,
+        50.4813125
+      ],
+      "median_us_per_expert_token": 51.007875,
+      "process_median_range_us": [
+        50.4813125,
+        51.44278125
+      ],
+      "dense_equivalent_GFLOPs": 64.2410608165896,
+      "logical_packed_weight_GBps": 4.516949588666456
+    },
+    {
+      "NT": 4,
+      "mode": "hot",
+      "cohort": 0,
+      "arm": "FFquant",
+      "process_medians_us": [
+        0.11084374999999999,
+        0.11084374999999999,
+        0.11021875
+      ],
+      "median_us_per_expert_token": 0.11084374999999999,
+      "process_median_range_us": [
+        0.11021875,
+        0.11084374999999999
+      ]
+    },
+    {
+      "NT": 4,
+      "mode": "hot",
+      "cohort": 0,
+      "arm": "GU",
+      "process_medians_us": [
+        99.45534375,
+        96.69640625000001,
+        97.38896875
+      ],
+      "median_us_per_expert_token": 97.38896875,
+      "process_median_range_us": [
+        96.69640625000001,
+        99.45534375
+      ],
+      "dense_equivalent_GFLOPs": 67.29304236523194,
+      "logical_packed_weight_GBps": 2.6943503290766695
+    },
+    {
+      "NT": 4,
+      "mode": "hot",
+      "cohort": 0,
+      "arm": "direct_complete",
+      "process_medians_us": [
+        149.59284375000001,
+        147.38403125,
+        147.2284375
+      ],
+      "median_us_per_expert_token": 147.38403125,
+      "process_median_range_us": [
+        147.2284375,
+        149.59284375000001
+      ],
+      "dense_equivalent_GFLOPs": 66.69922051002388,
+      "logical_packed_weight_GBps": 3.3436458198384367
+    },
+    {
+      "NT": 4,
+      "mode": "hot",
+      "cohort": 0,
+      "arm": "pool",
+      "process_medians_us": [
+        35.17809375,
+        35.074468749999994,
+        34.1884375
+      ],
+      "median_us_per_expert_token": 35.074468749999994,
+      "process_median_range_us": [
+        34.1884375,
+        35.17809375
+      ],
+      "dense_equivalent_GFLOPs": 280.27224218470883,
+      "logical_packed_weight_GBps": 14.050105890769908
+    },
+    {
+      "NT": 4,
+      "mode": "hot",
+      "cohort": 1,
+      "arm": "Down",
+      "process_medians_us": [
+        50.64253125,
+        50.87796875,
+        50.33975
+      ],
+      "median_us_per_expert_token": 50.64253125,
+      "process_median_range_us": [
+        50.33975,
+        50.87796875
+      ],
+      "dense_equivalent_GFLOPs": 64.7045066492406,
+      "logical_packed_weight_GBps": 4.54953562377473
+    },
+    {
+      "NT": 4,
+      "mode": "hot",
+      "cohort": 1,
+      "arm": "FFquant",
+      "process_medians_us": [
+        0.11240625,
+        0.10896875,
+        0.10928125
+      ],
+      "median_us_per_expert_token": 0.10928125,
+      "process_median_range_us": [
+        0.10896875,
+        0.11240625
+      ]
+    },
+    {
+      "NT": 4,
+      "mode": "hot",
+      "cohort": 1,
+      "arm": "GU",
+      "process_medians_us": [
+        94.32815625,
+        95.14253124999999,
+        93.42184375
+      ],
+      "median_us_per_expert_token": 94.32815625,
+      "process_median_range_us": [
+        93.42184375,
+        95.14253124999999
+      ],
+      "dense_equivalent_GFLOPs": 69.47660444704175,
+      "logical_packed_weight_GBps": 2.7817781077428827
+    },
+    {
+      "NT": 4,
+      "mode": "hot",
+      "cohort": 1,
+      "arm": "direct_complete",
+      "process_medians_us": [
+        156.4616875,
+        147.45384375,
+        144.73749999999998
+      ],
+      "median_us_per_expert_token": 147.45384375,
+      "process_median_range_us": [
+        144.73749999999998,
+        156.4616875
+      ],
+      "dense_equivalent_GFLOPs": 66.66764154800136,
+      "logical_packed_weight_GBps": 3.342062759893297
+    },
+    {
+      "NT": 4,
+      "mode": "hot",
+      "cohort": 1,
+      "arm": "pool",
+      "process_medians_us": [
+        35.222249999999995,
+        34.398187500000006,
+        34.0384375
+      ],
+      "median_us_per_expert_token": 34.398187500000006,
+      "process_median_range_us": [
+        34.0384375,
+        35.222249999999995
+      ],
+      "dense_equivalent_GFLOPs": 285.7824994412859,
+      "logical_packed_weight_GBps": 14.32633623501238
+    },
+    {
+      "NT": 4,
+      "mode": "streaming",
+      "cohort": 0,
+      "arm": "Down",
+      "process_medians_us": [
+        50.45746744791666,
+        50.63974348958333,
+        51.01702083333333
+      ],
+      "median_us_per_expert_token": 50.63974348958333,
+      "process_median_range_us": [
+        50.45746744791666,
+        51.01702083333333
+      ],
+      "dense_equivalent_GFLOPs": 64.70806868668366,
+      "logical_packed_weight_GBps": 4.549786079532445
+    },
+    {
+      "NT": 4,
+      "mode": "streaming",
+      "cohort": 0,
+      "arm": "FFquant",
+      "process_medians_us": [
+        0.23090364583333334,
+        0.2229713541666667,
+        0.1867578125
+      ],
+      "median_us_per_expert_token": 0.2229713541666667,
+      "process_median_range_us": [
+        0.1867578125,
+        0.23090364583333334
+      ]
+    },
+    {
+      "NT": 4,
+      "mode": "streaming",
+      "cohort": 0,
+      "arm": "GU",
+      "process_medians_us": [
+        95.011375,
+        95.51140234374999,
+        103.77198958333334
+      ],
+      "median_us_per_expert_token": 95.51140234374999,
+      "process_median_range_us": [
+        95.011375,
+        103.77198958333334
+      ],
+      "dense_equivalent_GFLOPs": 68.61589128817612,
+      "logical_packed_weight_GBps": 2.7473159597804893
+    },
+    {
+      "NT": 4,
+      "mode": "streaming",
+      "cohort": 0,
+      "arm": "direct_complete",
+      "process_medians_us": [
+        146.75339583333334,
+        147.96146614583333,
+        148.76209114583332
+      ],
+      "median_us_per_expert_token": 147.96146614583333,
+      "process_median_range_us": [
+        146.75339583333334,
+        148.76209114583332
+      ],
+      "dense_equivalent_GFLOPs": 66.43891991656119,
+      "logical_packed_weight_GBps": 3.3305968968588617
+    },
+    {
+      "NT": 4,
+      "mode": "streaming",
+      "cohort": 0,
+      "arm": "pool",
+      "process_medians_us": [
+        38.73277994791666,
+        38.53455989583333,
+        37.533330729166664
+      ],
+      "median_us_per_expert_token": 38.53455989583333,
+      "process_median_range_us": [
+        37.533330729166664,
+        38.73277994791666
+      ],
+      "dense_equivalent_GFLOPs": 255.10606651726525,
+      "logical_packed_weight_GBps": 12.7885202616077
+    },
+    {
+      "NT": 4,
+      "mode": "streaming",
+      "cohort": 1,
+      "arm": "Down",
+      "process_medians_us": [
+        50.80378515625,
+        51.26913151041666,
+        49.868819010416665
+      ],
+      "median_us_per_expert_token": 50.80378515625,
+      "process_median_range_us": [
+        49.868819010416665,
+        51.26913151041666
+      ],
+      "dense_equivalent_GFLOPs": 64.49913111635306,
+      "logical_packed_weight_GBps": 4.535095156618574
+    },
+    {
+      "NT": 4,
+      "mode": "streaming",
+      "cohort": 1,
+      "arm": "FFquant",
+      "process_medians_us": [
+        0.19307161458333333,
+        0.22871223958333334,
+        0.20837369791666668
+      ],
+      "median_us_per_expert_token": 0.20837369791666668,
+      "process_median_range_us": [
+        0.19307161458333333,
+        0.22871223958333334
+      ]
+    },
+    {
+      "NT": 4,
+      "mode": "streaming",
+      "cohort": 1,
+      "arm": "GU",
+      "process_medians_us": [
+        98.42030468749999,
+        99.39538151041666,
+        95.10550520833333
+      ],
+      "median_us_per_expert_token": 98.42030468749999,
+      "process_median_range_us": [
+        95.10550520833333,
+        99.39538151041666
+      ],
+      "dense_equivalent_GFLOPs": 66.58788570924176,
+      "logical_packed_weight_GBps": 2.6661165176551878
+    },
+    {
+      "NT": 4,
+      "mode": "streaming",
+      "cohort": 1,
+      "arm": "direct_complete",
+      "process_medians_us": [
+        151.02320572916668,
+        148.89168229166665,
+        145.26329166666667
+      ],
+      "median_us_per_expert_token": 148.89168229166665,
+      "process_median_range_us": [
+        145.26329166666667,
+        151.02320572916668
+      ],
+      "dense_equivalent_GFLOPs": 66.02383591007488,
+      "logical_packed_weight_GBps": 3.309788649137868
+    },
+    {
+      "NT": 4,
+      "mode": "streaming",
+      "cohort": 1,
+      "arm": "pool",
+      "process_medians_us": [
+        38.95134375,
+        40.22615625,
+        38.742703125
+      ],
+      "median_us_per_expert_token": 38.95134375,
+      "process_median_range_us": [
+        38.742703125,
+        40.22615625
+      ],
+      "dense_equivalent_GFLOPs": 252.37640229035745,
+      "logical_packed_weight_GBps": 12.651681625232763
+    }
+  ]
+}

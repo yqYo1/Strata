@@ -1,0 +1,90 @@
+# R229: Native capacity rate denominators and interpretation limits
+
+Date: 2026-10-10
+Scope: read-only arithmetic/source audit plus closed controller2 qualification receipts. I did not execute a fixture, inspect live process or hardware state, profile, build, test, or alter project sources. Only this report was written.
+
+## Finding
+
+The v2 design has unambiguous logical denominators for GU, Down, and complete native service. Use them to report effective dense-equivalent MAC/s or FLOP/s and logical packed-weight bytes/s for each individual round, mode, cohort, and NT. These quantities compare work throughput; they do not count CPU instructions or physical DRAM transactions. A hot8/streaming192 rate contrast can test the effect of active-set geometry on this closed fixture, but it cannot by itself prove an L3 or DRAM cause.
+
+The closed NT1–4 streaming correctness receipts all passed with normal exit 0, complete output, empty session, no survivors, no GPU work and no model inference. Per-token stage-vector counts are 1,152 / 2,304 / 3,456 / 4,608 and compared output values are 2,211,840 / 4,423,680 / 6,635,520 / 8,847,360. NT1 maxabs and NRMS are zero in all three controls. For NT2, NT3 and NT4, worst per-token errors respectively are:
+
+| NT | GU maxabs / NRMS | Staged Down maxabs / NRMS | Full-chain maxabs / NRMS |
+|---:|---:|---:|---:|
+| 2 | 2.3842e-7 / 1.4215e-7 | 2.9803e-8 / 1.2563e-7 | 2.9803e-8 / 1.2563e-7 |
+| 3 | 2.3842e-7 / 1.4215e-7 | 2.9803e-8 / 1.2945e-7 | 2.9803e-8 / 1.2945e-7 |
+| 4 | 2.3842e-7 / 1.5080e-7 | 4.4703e-8 / 1.2945e-7 | 4.4703e-8 / 1.2945e-7 |
+
+These are within the predeclared AND gates by a wide margin. They qualify numerical behavior for these 384 actual payloads and synthetic finite activations only. They do not make NT2–4 bit-exact or qualify model inference/adoption. Peak session RSS in the four closed qualifiers ranges from 1,439,105,024 to 1,526,812,672 bytes; these are correctness-process observations, not timing-process memory guarantees. R61's correction to R227 is applied: the `sizeof(ExpertPool)` assertion is an object-size bound, not total pool memory, and the hot8 set is an unequal-work, different-expert subset comparison.
+
+I audited only receipts established as closed. No closed `measure` receipt was present among the receipts reviewed, so this report states formulas and interpretation limits, not an observed timing/rate outcome. Active or closure-unknown measure paths were not read.
+
+## Exact workload and denominators
+
+For this pack, `H=2560`, `FF=640`; GU22 is IQ2_S and Down20 is IQ4_NL. Count one multiply-accumulate as one MAC and, by the conventional dense-equivalent accounting, two FLOPs. This convention is for workload normalization, not a claim that the quantized kernels execute floating-point FMAs.
+
+| Stage, per expert-token | Dot products | MAC/token | Dense-equivalent FLOP/token | Packed weight bytes/job |
+|---|---:|---:|---:|---:|
+| GU22 Gate + Up | 2 × 640 rows × 2,560 values | 3,276,800 | 6,553,600 | 1,049,600 |
+| Down20 | 2,560 rows × 640 values | 1,638,400 | 3,276,800 | 921,600 |
+| Full GU + Down | sum of both stages | 4,915,200 | 9,830,400 | 1,971,200 |
+
+The GU packed extent is 640 × 10 blocks/row × 82 B × two matrices. The Down extent is 2,560 × 20 blocks/row × 18 B. One expert job processes NT token vectors: MAC/FLOP work scales by NT, while the unique packed extent per job stays 1,049,600 / 921,600 / 1,971,200 B. Consequently, the per-token logical weight extent is those values divided by NT. The grouped NT kernels can reuse packed-block decode across tokens; the denominator still does not say how many cache or memory transactions occurred.
+
+For each `ROUND` or `WARMUP` measurement row, let `J` be its `logical_jobs` field (8 hot or 192 streaming), `N` be NT, and `t` be `outer_ms/1000` seconds. Normalize that one cohort and arm as follows:
+
+- GU effective MAC/s = `J × N × 3,276,800 / t`; dense-equivalent FLOP/s is twice this.
+- Down effective MAC/s = `J × N × 1,638,400 / t`; dense-equivalent FLOP/s is twice this.
+- `direct_complete` and `pool` effective MAC/s = `J × N × 4,915,200 / t`; dense-equivalent FLOP/s is twice this.
+- Logical packed-weight byte rate is `J × stage_weight_bytes / t` (use GU bytes for GU, Down bytes for Down, both for complete/pool). Report explicitly as a logical operand rate, not GB/s of observed RAM traffic.
+- Elapsed ns per token is `outer_ms × 1e6 / (J × N)`. Keep per-expert job time (`outer_ms/J`) separate from per-token time.
+
+`FFquant` has no packed-weight denominator and no dot MAC count. For Down20 it quantizes 640 FF values per token to 680 B of Q8_0 activation data; its rate should be reported as time per active token/job or values/s, not assigned fictitious weight bytes or MACs. Input quantization into the GU activation format is a once-per-layer/token setup phase outside these service intervals. The full direct/pool service does include per-expert FF quantization between GU and Down.
+
+The total logical weight extents in one cohort sweep are independent of NT:
+
+| Active set | Jobs/cohort | GU bytes | Down bytes | Combined bytes |
+|---|---:|---:|---:|---:|
+| Hot subset | 8 | 8,396,800 B (8.008 MiB) | 7,372,800 B (7.031 MiB) | 15,769,600 B (15.039 MiB) |
+| Streaming cohort | 192 | 201,523,200 B (192.188 MiB) | 176,947,200 B (168.750 MiB) | 378,470,400 B (360.938 MiB) |
+
+For a single cohort round, effective MAC totals by NT are therefore:
+
+| Active set | NT | GU MAC | Down MAC | Full MAC |
+|---|---:|---:|---:|---:|
+| Hot8 | 1 | 26,214,400 | 13,107,200 | 39,321,600 |
+| Hot8 | 2 | 52,428,800 | 26,214,400 | 78,643,200 |
+| Hot8 | 3 | 78,643,200 | 39,321,600 | 117,964,800 |
+| Hot8 | 4 | 104,857,600 | 52,428,800 | 157,286,400 |
+| Streaming192 | 1 | 629,145,600 | 314,572,800 | 943,718,400 |
+| Streaming192 | 2 | 1,258,291,200 | 629,145,600 | 1,887,436,800 |
+| Streaming192 | 3 | 1,887,436,800 | 943,718,400 | 2,831,155,200 |
+| Streaming192 | 4 | 2,516,582,400 | 1,258,291,200 | 3,774,873,600 |
+
+The output's round `logical_jobs` is per cohort, not both cohorts combined. Keep train and holdout rows separate before any paired summary. For sample-level comparisons, use the same NT/seed/repeat and arm, and summarize by process/cohort without treating the 25 rounds or 192 expert IDs as independent hardware machines.
+
+## Hot/streaming and cache/RAM limits
+
+The AMD product specification gives the Ryzen 5 5600X a 32 MB L3 cache ([AMD Ryzen 5 5600X specifications](https://www.amd.com/en/products/processors/desktops/ryzen/5000-series/amd-ryzen-5-5600x.html)). The hot set's combined packed blobs are about 15.04 MiB, below that nominal capacity before code, activations, reference data, other active state and associativity effects. The streaming cohort's unique packed blobs are about 360.94 MiB, over eleven times the nominal L3. These support labels “intended hot-sized set” and “large host-resident set”; neither proves that all hot bytes reside in cache or that every streaming byte was fetched from DRAM during every measured round. The process prepasses all 384 payloads before timing; the source cannot establish the cache state at the first measured row. Repeated rounds then operate on each respective active set.
+
+Thus effective packed bytes/s is useful when paired with timings, but it is not physical bandwidth. No PMU/uncore byte counter, memory-controller transaction measurement, or disk-cold protocol is present. Do not compare this rate with nominal DDR bandwidth or say “DRAM-bound” from it. A hot/streaming rate change could reflect cache reuse, expert-specific work, row partition, instruction decode, CPU frequency/thermal state, or OS scheduling. Source and receipts do not isolate those effects.
+
+Dense-equivalent FLOP/s is also not a CPU floating-point roof comparison. IQ2_S/IQ4_NL service uses packed-byte decode, lookup/sign work, integer dot-product instructions, per-token reductions and floating accumulation; grouping retains per-token dot work while amortizing some weight decode. R224's emitted NT4 IQ2_S GU specialization contains YMM stack spills, but that establishes spill presence in this build, not that spills dominate the measured service rate. No dynamic instruction/uop count, per-stage cycles, core counters or cache-miss sample is in the qualifiers. A MAC/s number cannot be translated to retired instructions or a percentage of peak floating-point throughput.
+
+## Single host versus pool interpretation
+
+The direct GU, FFquant, Down and `direct_complete` arms are run by one pinned caller thread over the active expert order. Each direct native call handles all NT token vectors for one expert. The pool arm uses the same five-worker `ExpertPool` with `host_works=true`; it is therefore five workers plus the caller, not five total threads. With controller2's `tasks=0`, `phase_tasks()` makes 18 row partitions per GU and Down phase (`3 × (5 workers + host)`). In the batch1 cells, one expert's row ranges are divided across those partitions; this is not expert-level one-job-per-worker scaling. Pool GU/Down row phases are synchronous and include worker coordination. Its FF activation quantization is done serially by the caller between phases. The direct-vs-pool comparison therefore contrasts one-thread full-row calls with a six-participant split-row service plus its synchronization and serial interstage quantization.
+
+`pool.ms_multi_gu`, `ms_multi_q` and `ms_multi_down` are elapsed wall spans around pool phases/quantization, not sums of worker CPU time. `pool.diag()` is a post-call snapshot of batch/job/park/sleep states; it is not a per-worker service-time counter. Affinity receipts show placement, not how many cycles each thread executed. Neither five workers plus host nor tasks=0 implies all six continuously occupied. A faster pool row can be called a measured pool service-time difference; a slower/faster row cannot alone be assigned to worker imbalance, host wait, or memory traffic.
+
+No worker-count sweep is part of these cells: `tasks=0` changes row partition count but leaves the five workers and host unchanged. Report that exact topology, batch size and task plan with every rate. Do not describe it as worker scaling. If phase deltas or pool diagnostics change materially, they help locate wall time and state but do not replace per-thread CPU-time or performance-counter evidence.
+
+## Minimal follow-up if a mechanism claim is needed
+
+First finish and preserve the clean hot8/streaming192 timings without profiling. If NT4 direct GU is materially slower than NT3 and the specific question is whether R224's spill code matters, the smallest useful follow-up is a separate, narrowly sampled NT3-versus-NT4 direct GU hot8 comparison on the same frozen binary, weights, inputs and pinned caller, with cycles/instructions and an instruction sample that can attribute the NT4 stack loads/stores. Keep it separate from clean timings. This tests the spill hypothesis; it does not measure DRAM bandwidth. If the question is host wait versus worker CPU contribution, add one bounded per-thread CPU-time versus wall-time observation for the same direct and pool cells; the existing pool phase wall counters and `diag` snapshots are insufficient for that distinction. Physical DRAM traffic needs validated platform memory-controller/uncore counters, not a broader generic cache profile.
+
+## Evidence pins and limits
+
+Latest committed registry read: v84 SHA-256 `fd025ce071bd30fdbef0cb547f06ed31397541d922be29bb2897d09aca33b922`, storage commit `2563819df746f78b4160ba1967e8f210efd9c23b`, round61. The frozen native source remains commit `dba6bea90192f907cbeecdb75c29aa0e7d1fa449`; harness SHA-256 `f062f24ea57443c4cd59d09d2b56d498165ea497254ae9fa8998375b062b2ac3`; controller2 SHA-256 `93a996dc21416a76bd8073bfd57f395a97d2037a62e63aa831d980bcbd39497d`. NT1–4 qualifier record SHA-256 values are respectively `99297d64043b169d66f1a0e334835c47f1eee204e7ebc3220445070a91e23249`, `3aa736fc6a5286611aafdfe05f2c9eaba882bcb11b670d95e740d22481c816f8`, `b4848618ae7762fb56fbbb5aff209647e35f32b163a7403d6ddd89e5a345d111`, and `2200aa4ef719eaa648d4efecddb669a0df5836978ce6c09dfcb1c56b3c2463a2`.
+
+I read R220, R224, R227 and registry v84's round58–61 corrections before making this report. In particular: R224's spill is not measured dominance or an NT speed ordering; R227's object/work/blob memory limits are not a total-process limit, with root-observed peak RSS retained in the qualifier receipts; and hot8/streaming192 are unequal work sets using different experts. Original reports and statuses are unchanged.

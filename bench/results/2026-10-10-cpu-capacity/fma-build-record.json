@@ -1,0 +1,159 @@
+{
+  "active": false,
+  "complete": true,
+  "passed": true,
+  "source": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu_fma_capacity_v1.cpp",
+    "bytes": 4055,
+    "sha256": "92e15390ad292bc809760bab3903d85d82eea6d00225ba2faee11bd5e42fba8b"
+  },
+  "commands": [
+    {
+      "label": "compile",
+      "argv": [
+        "/usr/bin/g++",
+        "-std=c++20",
+        "-O3",
+        "-mavx2",
+        "-mfma",
+        "-ffp-contract=off",
+        "-fno-fast-math",
+        "-pthread",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu_fma_capacity_v1.cpp",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-fma-capacity-build-v1/cpu-fma-capacity"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T09:38:17.481897+00:00",
+      "wall_seconds": 120,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1318144,
+          "start_ticks": 31477659,
+          "sid": 1318144,
+          "pgid": 1318144
+        },
+        {
+          "pid": 1318145,
+          "start_ticks": 31477659,
+          "sid": 1318144,
+          "pgid": 1318144
+        }
+      ],
+      "pid": 1318144,
+      "direct_identity": {
+        "pid": 1318144,
+        "state": "R",
+        "ppid": 1318142,
+        "pgid": 1318144,
+        "sid": 1318144,
+        "start_ticks": 31477659,
+        "rss_bytes": 471040
+      },
+      "peak_session_rss_bytes": 294080512,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T09:38:19.300943+00:00",
+      "elapsed_seconds": 1.818843905988615,
+      "logs": {
+        "compile.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "compile.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "objdump",
+      "argv": [
+        "/usr/bin/objdump",
+        "-d",
+        "--demangle",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-fma-capacity-build-v1/cpu-fma-capacity"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T09:38:19.301341+00:00",
+      "wall_seconds": 30,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1318235,
+          "start_ticks": 31477841,
+          "sid": 1318235,
+          "pgid": 1318235
+        }
+      ],
+      "pid": 1318235,
+      "direct_identity": {
+        "pid": 1318235,
+        "state": "R",
+        "ppid": 1318142,
+        "pgid": 1318235,
+        "sid": 1318235,
+        "start_ticks": 31477841,
+        "rss_bytes": 479232
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T09:38:19.458812+00:00",
+      "elapsed_seconds": 0.15724455995950848,
+      "logs": {
+        "objdump.stdout": {
+          "bytes": 143570,
+          "sha256": "db08714188d7d83f1a88332aaab4e9b43ffffca8ef3f67eb2774d2f74bf9f2ab"
+        },
+        "objdump.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "compiler": "g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+  "gpu_work_submitted": false,
+  "hot_loop_fma_assembly": [
+    "    4080:\tc4 62 75 98 e8       \tvfmadd132ps %ymm0,%ymm1,%ymm13",
+    "    4085:\tc4 62 75 98 e0       \tvfmadd132ps %ymm0,%ymm1,%ymm12",
+    "    408a:\tc4 62 75 98 d8       \tvfmadd132ps %ymm0,%ymm1,%ymm11",
+    "    408f:\tc4 62 75 98 d0       \tvfmadd132ps %ymm0,%ymm1,%ymm10",
+    "    4094:\tc4 62 75 98 c8       \tvfmadd132ps %ymm0,%ymm1,%ymm9",
+    "    4099:\tc4 62 75 98 c0       \tvfmadd132ps %ymm0,%ymm1,%ymm8",
+    "    409e:\tc4 e2 75 98 f8       \tvfmadd132ps %ymm0,%ymm1,%ymm7",
+    "    40a3:\tc4 e2 75 98 f0       \tvfmadd132ps %ymm0,%ymm1,%ymm6",
+    "    40a8:\tc4 e2 75 98 e8       \tvfmadd132ps %ymm0,%ymm1,%ymm5",
+    "    40ad:\tc4 e2 75 98 e0       \tvfmadd132ps %ymm0,%ymm1,%ymm4",
+    "    40b2:\tc4 e2 75 98 d8       \tvfmadd132ps %ymm0,%ymm1,%ymm3",
+    "    40b7:\tc4 e2 75 98 d0       \tvfmadd132ps %ymm0,%ymm1,%ymm2"
+  ],
+  "compute_assembly": "<compute(float, float)>:\n    4000:\tf3 0f 1e fa          \tendbr64\n    4004:\tc4 e2 7d 18 15 f7 0f \tvbroadcastss 0xff7(%rip),%ymm2        # 5004 <_IO_stdin_used+0x4>\n    400b:\t00 00 \n    400d:\t48 89 fa             \tmov    %rdi,%rdx\n    4010:\tc4 e2 7d 18 1d ef 0f \tvbroadcastss 0xfef(%rip),%ymm3        # 5008 <_IO_stdin_used+0x8>\n    4017:\t00 00 \n    4019:\tc4 e2 7d 18 c0       \tvbroadcastss %xmm0,%ymm0\n    401e:\tc4 e2 7d 18 25 e5 0f \tvbroadcastss 0xfe5(%rip),%ymm4        # 500c <_IO_stdin_used+0xc>\n    4025:\t00 00 \n    4027:\tc4 e2 7d 18 c9       \tvbroadcastss %xmm1,%ymm1\n    402c:\tc4 e2 7d 18 2d db 0f \tvbroadcastss 0xfdb(%rip),%ymm5        # 5010 <_IO_stdin_used+0x10>\n    4033:\t00 00 \n    4035:\tb8 00 90 d0 03       \tmov    $0x3d09000,%eax\n    403a:\tc4 e2 7d 18 35 79 12 \tvbroadcastss 0x1279(%rip),%ymm6        # 52bc <typeinfo name for std::thread::_State_impl<std::thread::_Invoker<std::tuple<main::{lambda()#1}> > >+0x7c>\n    4041:\t00 00 \n    4043:\tc4 41 10 57 ed       \tvxorps %xmm13,%xmm13,%xmm13\n    4048:\tc4 e2 7d 18 3d 67 12 \tvbroadcastss 0x1267(%rip),%ymm7        # 52b8 <typeinfo name for std::thread::_State_impl<std::thread::_Invoker<std::tuple<main::{lambda()#1}> > >+0x78>\n    404f:\t00 00 \n    4051:\tc4 62 7d 18 05 5a 12 \tvbroadcastss 0x125a(%rip),%ymm8        # 52b4 <typeinfo name for std::thread::_State_impl<std::thread::_Invoker<std::tuple<main::{lambda()#1}> > >+0x74>\n    4058:\t00 00 \n    405a:\tc4 62 7d 18 0d 4d 12 \tvbroadcastss 0x124d(%rip),%ymm9        # 52b0 <typeinfo name for std::thread::_State_impl<std::thread::_Invoker<std::tuple<main::{lambda()#1}> > >+0x70>\n    4061:\t00 00 \n    4063:\tc4 62 7d 18 15 40 12 \tvbroadcastss 0x1240(%rip),%ymm10        # 52ac <typeinfo name for std::thread::_State_impl<std::thread::_Invoker<std::tuple<main::{lambda()#1}> > >+0x6c>\n    406a:\t00 00 \n    406c:\tc4 62 7d 18 1d 33 12 \tvbroadcastss 0x1233(%rip),%ymm11        # 52a8 <typeinfo name for std::thread::_State_impl<std::thread::_Invoker<std::tuple<main::{lambda()#1}> > >+0x68>\n    4073:\t00 00 \n    4075:\tc4 62 7d 18 25 26 12 \tvbroadcastss 0x1226(%rip),%ymm12        # 52a4 <typeinfo name for std::thread::_State_impl<std::thread::_Invoker<std::tuple<main::{lambda()#1}> > >+0x64>\n    407c:\t00 00 \n    407e:\t66 90                \txchg   %ax,%ax\n    4080:\tc4 62 75 98 e8       \tvfmadd132ps %ymm0,%ymm1,%ymm13\n    4085:\tc4 62 75 98 e0       \tvfmadd132ps %ymm0,%ymm1,%ymm12\n    408a:\tc4 62 75 98 d8       \tvfmadd132ps %ymm0,%ymm1,%ymm11\n    408f:\tc4 62 75 98 d0       \tvfmadd132ps %ymm0,%ymm1,%ymm10\n    4094:\tc4 62 75 98 c8       \tvfmadd132ps %ymm0,%ymm1,%ymm9\n    4099:\tc4 62 75 98 c0       \tvfmadd132ps %ymm0,%ymm1,%ymm8\n    409e:\tc4 e2 75 98 f8       \tvfmadd132ps %ymm0,%ymm1,%ymm7\n    40a3:\tc4 e2 75 98 f0       \tvfmadd132ps %ymm0,%ymm1,%ymm6\n    40a8:\tc4 e2 75 98 e8       \tvfmadd132ps %ymm0,%ymm1,%ymm5\n    40ad:\tc4 e2 75 98 e0       \tvfmadd132ps %ymm0,%ymm1,%ymm4\n    40b2:\tc4 e2 75 98 d8       \tvfmadd132ps %ymm0,%ymm1,%ymm3\n    40b7:\tc4 e2 75 98 d0       \tvfmadd132ps %ymm0,%ymm1,%ymm2\n    40bc:\t48 83 e8 01          \tsub    $0x1,%rax\n    40c0:\t75 be                \tjne    4080 <compute(float, float)+0x80>\n    40c2:\t48 8d 7a 08          \tlea    0x8(%rdx),%rdi\n    40c6:\t48 89 d1             \tmov    %rdx,%rcx\n    40c9:\t48 83 e7 f8          \tand    $0xfffffffffffffff8,%rdi\n    40cd:\t48 29 f9             \tsub    %rdi,%rcx\n    40d0:\t81 c1 80 01 00 00    \tadd    $0x180,%ecx\n    40d6:\tc1 e9 03             \tshr    $0x3,%ecx\n    40d9:\tf3 48 ab             \trep stos %rax,%es:(%rdi)\n    40dc:\tc5 7c 11 2a          \tvmovups %ymm13,(%rdx)\n    40e0:\t48 89 d0             \tmov    %rdx,%rax\n    40e3:\tc5 7c 11 62 20       \tvmovups %ymm12,0x20(%rdx)\n    40e8:\tc5 7c 11 5a 40       \tvmovups %ymm11,0x40(%rdx)\n    40ed:\tc5 7c 11 52 60       \tvmovups %ymm10,0x60(%rdx)\n    40f2:\tc5 7c 11 8a 80 00 00 \tvmovups %ymm9,0x80(%rdx)\n    40f9:\t00 \n    40fa:\tc5 7c 11 82 a0 00 00 \tvmovups %ymm8,0xa0(%rdx)\n    4101:\t00 \n    4102:\tc5 fc 11 ba c0 00 00 \tvmovups %ymm7,0xc0(%rdx)\n    4109:\t00 \n    410a:\tc5 fc 11 b2 e0 00 00 \tvmovups %ymm6,0xe0(%rdx)\n    4111:\t00 \n    4112:\tc5 fc 11 aa 00 01 00 \tvmovups %ymm5,0x100(%rdx)\n    4119:\t00 \n    411a:\tc5 fc 11 a2 20 01 00 \tvmovups %ymm4,0x120(%rdx)\n    4121:\t00 \n    4122:\tc5 fc 11 9a 40 01 00 \tvmovups %ymm3,0x140(%rdx)\n    4129:\t00 \n    412a:\tc5 fc 11 92 60 01 00 \tvmovups %ymm2,0x160(%rdx)\n    4131:\t00 \n    4132:\tc5 f8 77             \tvzeroupper\n    4135:\tc3                   \tret\n    4136:\t66 2e 0f 1f 84 00 00 \tcs nopw 0x0(%rax,%rax,1)\n    413d:\t00 00 00 ",
+  "binary": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-fma-capacity-build-v1/cpu-fma-capacity",
+    "bytes": 32320,
+    "sha256": "1bab43d105e64c7a55e732af024375e5c581af4124d55b782e7f92bdd1efaa8d"
+  }
+}
