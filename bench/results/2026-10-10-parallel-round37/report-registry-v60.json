@@ -1,0 +1,2841 @@
+{
+  "registry_version": 60,
+  "created_utc": "2026-10-10T03:03:43.719607+00:00",
+  "research_completed": 260,
+  "reports": [
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/intel-sycl-transfer.txt",
+      "sha256": "783adcc4910017111ddebd10cf719c5b6911a00933c279a6678e44d56627db8b",
+      "bytes": 24900,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_intel_sycl_transfer",
+      "scope": "SYCL/Level Zero transfer, queue, USM, staging, Intel runtime documents"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/moe-decode-cpu.txt",
+      "sha256": "b6b261e5ab7533154149eed4e6d1d5c3be77fb7e940a5ea9823faedd4b93b900",
+      "bytes": 23843,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_moe_decode_cpu",
+      "scope": "CPU MoE decode, scheduling, AVX2, expert cache, KV residency"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/prefill-algorithms-blogs.txt",
+      "sha256": "ec5b5ad7ccfd5d174b3c77a403cbcc296bd9d8d77a6bfec9aaca86e18e6a3549",
+      "bytes": 10939,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "scope": "Prefill algorithms and implementer blogs across engines"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/prefill-code-audit-addendum.txt",
+      "sha256": "ef39d29957a2974cbcdf14b56e6435352d717bcda73c2554037fcc28360ae193",
+      "bytes": 11336,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "scope": "Local active code and primary-source follow-up after completed original report"
+    },
+    {
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "model": "gpt-6-luna",
+      "scope": "Existing SYCL XMX kernels and active call paths, joint_matrix/UB/lifetime audit; distinguish duplication from new MMQ work",
+      "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/prefill-xmx-existing-code-audit.txt",
+      "sha256": "da4e45c3be71c1ead314cc5c13258c945e2386894817ac36e36713e425dbc5b5",
+      "bytes": 7143
+    },
+    {
+      "agent": "/root/research_usm_import_lifetimes_round2",
+      "model": "gpt-6-luna",
+      "scope": "Concrete arena/mmap USM-import contracts, runtime support and bounded lifetime-safe staging removal",
+      "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/usm-import-lifetimes-round2.txt",
+      "sha256": "386bb9fca759a3d68dd55152233efc242b832920c11076af98715a6be33cd57b",
+      "bytes": 21278
+    },
+    {
+      "agent": "/root/research_decode_weight_reuse_round2",
+      "model": "gpt-6-luna",
+      "scope": "Remaining CPU MoE weight rereads/layout and exact hybrid scheduling beyond already grouped AVX2 rows",
+      "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/decode-weight-reuse-round2.txt",
+      "sha256": "183eb4210bc0d754ea99cd8e47f4e9aebb2787b480ea8f8071bfaf94a5b5ca0a",
+      "bytes": 13421
+    },
+    {
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "model": "gpt-6-luna",
+      "scope": "Layer-major prefill with streamed INT8 KV at physical 262144 context on 10 GiB; exact resources and active guard limitations, external layer/activation offload implementations",
+      "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/layer-major-streamed-kv-round3.txt",
+      "sha256": "c59ccab8a9cde429ea02f09aa7a9ecde905ff14b9514cd554f7d7868f6efb4c8",
+      "bytes": 13377
+    },
+    {
+      "agent": "/root/research_decode_weight_reuse_round2",
+      "model": "gpt-6-luna",
+      "scope": "Actual mixed-format layer metadata and AVX2 multi-token coverage; CPU quantized Down rows and bounded disassembly analysis on Zen3",
+      "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/cpu-mixed-format-avx2-round3.txt",
+      "sha256": "9f1e8cedec1eba38e01d1c606b2f942cab63915b4de5940626a649cd4d8b906b",
+      "bytes": 13851
+    },
+    {
+      "agent": "/root/research_usm_import_lifetimes_round2",
+      "model": "gpt-6-luna",
+      "scope": "Existing prefill DMA completion points, exact arena/context lifetime and installed Level Zero v2 prepare/release implementation; concrete bounded import design or rejection",
+      "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/dma-retirement-import-v2-round3.txt",
+      "sha256": "d3252a5ef53b8d4d6b6ddeb73374272f87bf723484533cebc7639ed089b5614c",
+      "bytes": 8277,
+      "status": "returned-wrong-backend-needs-sycl-addendum"
+    },
+    {
+      "agent": "/root/research_usm_import_lifetimes_round2",
+      "model": "gpt-6-luna",
+      "scope": "Correct actual SYCL backend DMA retirement and failure lifetime; sycl/src/prefill not CUDA src/prefill",
+      "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/sycl-dma-retirement-addendum-round3.txt",
+      "sha256": "765f4e9b580a79fd19e68ca8ab72309c024a6bfb8b38973edfc6959148fa23b5",
+      "bytes": 10562,
+      "status": "completed-read-only"
+    },
+    {
+      "agent": "/root/research_decode_weight_reuse_round2",
+      "model": "gpt-6-luna",
+      "scope": "Actual CPU quantized intrinsic input contracts/-128/saturation and bounded prefetch pointer/alias UB; primary source static audit",
+      "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/cpu-quant-intrinsic-ub-round4.txt",
+      "sha256": "6460c58180c455b09b4e3a0c80793a96f96b397e97d6b8bead271800d9819f55",
+      "bytes": 6812,
+      "status": "completed-read-only"
+    },
+    {
+      "agent": "/root/research_usm_import_lifetimes_round2",
+      "model": "gpt-6-luna",
+      "scope": "Independent read-only safety review of completed Sol streamedINT8 layer-major patch, partial-page layout/queue ordering/default/capacity cleanup",
+      "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/layer-major-streamed-kv-independent-review-round5.txt",
+      "sha256": "ebf2c96e2deda24d21e624474c83566fdf17db5b0c22ebffc62ba0b044fe2f72",
+      "bytes": 12382,
+      "status": "completed-read-only"
+    },
+    {
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "model": "gpt-6-luna",
+      "scope": "Exact expert-major reuse inside one layer using host intermediate activations; distinguish existing layer-major chunk schedule and xmx/stager proposals; primary external implementations/blogs",
+      "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/prefill-expert-major-intermediates-round5.txt",
+      "sha256": "8d5b941c5fff283c799c98cf06bf96e1d950f46b6f70ca7db09b267b7d102bab",
+      "bytes": 19347,
+      "status": "completed-read-only"
+    },
+    {
+      "agent": "/root/research_decode_weight_reuse_round2",
+      "model": "gpt-6-luna",
+      "scope": "Independent review of root bounded IQ prefetch fix/input parsing/pointer bounds and math preservation; source-only exact154685d candidate",
+      "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/iq-prefetch-bounds-independent-review-round6.txt",
+      "status": "completed-read-only",
+      "sha256": "79df66e82a3a239d95f40d2a8355c067f068a2841636f411da2d8a348db521de",
+      "bytes": 6347
+    },
+    {
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "model": "gpt-6-luna",
+      "scope": "Actual persistent prefill workspace lifetime during decode and safe release/rebuild to trade VRAM for exact decode expert-cache residency; existing mechanisms/prior trials reconciled",
+      "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/prefill-workspace-decode-residency-round6.txt",
+      "status": "retained-with-round7-callsite-correction",
+      "sha256": "a99b18201067d52340bae629a215342225525dabd52abd84998f26bc1b5f7d19",
+      "bytes": 6838,
+      "correction_report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/prefill-mtp-workspace-allocation-contract-round7.txt"
+    },
+    {
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "model": "gpt-6-luna",
+      "scope": "Derive exact minimal MTP decode workspace carving and aliases versus prompt-only buffers; concrete safe split/rebuild design and graph references from actual SYCL baseline, no blanket release or cache resizing.",
+      "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/prefill-mtp-workspace-allocation-contract-round7.txt",
+      "status": "completed-read-only",
+      "sha256": "567d71e5b67c9436c4a5ed12d85b298e4878cc22b60f367ce693fa1b1db352ea",
+      "bytes": 14361
+    },
+    {
+      "agent": "/root/research_decode_weight_reuse_round2",
+      "model": "gpt-6-luna",
+      "scope": "Exact active serve CPU pool phase counters and overlap/critical path; propose minimal diagnostic instrumentation and grain sweep informed by primary other-engine implementations without repeating rejected rows/compile/prefetch candidates.",
+      "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/decode-pool-phase-critical-path-round7.txt",
+      "status": "completed-read-only",
+      "sha256": "a53b1849b16d11a59260b1d9e65ed0feb875cd582be47245d11b1d9da125a90c",
+      "bytes": 13890
+    },
+    {
+      "agent": "/root/research_usm_import_lifetimes_round2",
+      "model": "gpt-6-luna",
+      "scope": "Corrected92b/6cdf layer-major streamed INT8 stage error/cancel/capacity and resumed partial-page stale-prefetch lifetime independent audit, focus unreviewed boundary cases and actual SYCL path.",
+      "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/streamed-kv-error-lifecycle-round7.txt",
+      "status": "completed-read-only",
+      "sha256": "175fd7e5901c231c617882928ae022c50611ece13e418c3d38b406cbff460301",
+      "bytes": 6523
+    },
+    {
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "model": "gpt-6-luna",
+      "scope": "Concrete safe single-GPU no-borrow serve prompt reset/lazy init wiring across run_part, yield/cache hit/restore/sessions/chunk fallback; original on_chunk callback preservation and whole-prompt boundary, no source changes.",
+      "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/serve-prefill-lazy-lifecycle-round8.txt",
+      "status": "completed-read-only",
+      "sha256": "ed592daa18970f241844bfa33e907e12e06bced5ead2fa9c5ca81552dd6927f0",
+      "bytes": 14442
+    },
+    {
+      "agent": "/root/research_usm_import_lifetimes_round2",
+      "model": "gpt-6-luna",
+      "scope": "Primary SYCL queue wait exception/retirement contract and safe error/cancellation cleanup without masking failed drains; discriminate inherited destructors/new streamed path, host mock qualification plan.",
+      "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/sycl-drain-error-contract-round8.txt",
+      "status": "completed-read-only",
+      "sha256": "f14c992aeefbe243b3db481778b12f4534e0d754975c9cc74fe9c9bae66a2deb",
+      "bytes": 13578
+    },
+    {
+      "agent": "/root/research_decode_weight_reuse_round2",
+      "model": "gpt-6-luna",
+      "scope": "Exact integer/codebook/sign preprocessing for a bounded hot CPU-expert cache on Zen3; partial RAM geometry and current routing/lifetime/precision constraints, primary implementation/blog research distinct from rejected row/compiler suggestions.",
+      "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/cpu-hot-expert-predecode-cache-round9.txt",
+      "status": "completed-read-only",
+      "sha256": "a5b940dee4654625ac16ed272dba9c1a5d31292ae06f05c4976bdb999c939fab",
+      "bytes": 10700
+    },
+    {
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "model": "gpt-6-luna",
+      "scope": "Actual SYCL dequant/GEMM/MMQ expert storage keys/lifetimes under repeated chunks and recycled layer-major cache; correctness alias audit and bounded reuse opportunities, primary implementations/blogs distinct from full-layer FP16 predecode.",
+      "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/prefill-dequant-cache-layer-lifetime-round9.txt",
+      "status": "completed-read-only",
+      "sha256": "51b46792554fc288684b5e5407e207875ff0368448e15981d4b7d9b0d962df86",
+      "bytes": 8406
+    },
+    {
+      "agent": "/root/research_decode_weight_reuse_round2",
+      "model": "gpt-6-luna",
+      "scope": "Actual retained decoder/MTP VRAM after first prompt, existing graph/cache retire and RAM restoration eligibility/lifetimes; reconcile prior results",
+      "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/decode-retained-vram-after-first-prefill-round10.txt",
+      "status": "completed-read-only",
+      "sha256": "32baae1bf881434bf89665d4b21f871a56b59341e7c05dd2d8b0b8feb88b8862",
+      "bytes": 10682
+    },
+    {
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "model": "gpt-6-luna",
+      "scope": "Exact mixed-format layer expert cache packed capacity, MAXBLOB padding and lifetime-safe allocation alternatives",
+      "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/layer-expert-cache-footprint-contract-round10.txt",
+      "status": "completed-read-only",
+      "sha256": "d8872336bc069086eef35af51a7423b78402dfd865a3b601cc144365b4dd8e11",
+      "bytes": 10074
+    },
+    {
+      "agent": "/root/research_decode_weight_reuse_round2",
+      "model": "gpt-6-luna",
+      "scope": "CPU GU/quant/Down range affinity and weighted scheduling; root shape/cost audit required",
+      "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/decode-cpu-new-mechanisms-round11.txt",
+      "status": "completed-read-only",
+      "sha256": "7d69ab41a7c1edcf8d3e2b64b93eaa09117e772d09fe0a69e57b342f6c7b6d2d",
+      "bytes": 5447
+    },
+    {
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "model": "gpt-6-luna",
+      "scope": "Graph address/backing lifetime and cache/MTP RAM lease recapture contracts",
+      "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/graph-address-lifecycle-and-rebuild-round11.txt",
+      "status": "completed-read-only",
+      "sha256": "d691c654659d8f08478ac08cb52c2ee235b76cf0d42487a94b9ee5074d151eae",
+      "bytes": 7966
+    },
+    {
+      "agent": "/root/research_decode_weight_reuse_round2",
+      "model": "gpt-6-luna",
+      "scope": "Concrete variable nt cost and worker tails across quantized CPU MoE implementations; no unmeasured scheduler adoption",
+      "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/decode-cpu-heterogeneous-expert-work-round12.txt",
+      "sha256": "2780df13f4cb72dca2f9c86ff93feb150279a7c09abefc25873a66b1f8ca9f0b",
+      "bytes": 7677,
+      "status": "completed-read-only-root-qualified",
+      "testing_owner": "/root"
+    },
+    {
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "model": "gpt-6-luna",
+      "scope": "Source allocation owners/lifetimes after successful verified RAM lease; no attribution of free-counter delta",
+      "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/layer-major-first-warm-headroom-round12.txt",
+      "sha256": "0da1f31e41662e1511e96b4d93065367247064e9aa69fc74a2a0e24160e0b9bd",
+      "bytes": 10506,
+      "status": "completed-read-only-root-qualified",
+      "testing_owner": "/root"
+    },
+    {
+      "agent": "/root/research_decode_weight_reuse_round2",
+      "model": "gpt-6-luna",
+      "scope": "VTune CPU-only collection under local PMU/ptrace restrictions",
+      "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/vtune-cpu-owned-collection-round13.txt",
+      "sha256": "2bb46b564c3b9c1a1684a59b2f12ff8009b9fdcb6cfb7a3c2adc2b1d2b9e71d4",
+      "bytes": 8186,
+      "status": "completed-read-only-root-reviewed-with-corrections",
+      "root_review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-root-review-v13-v14.txt",
+      "root_review_sha256": "e461a5ccd123e0aa365189a2e2a695ecc376368fa1db727d5f8fb741acfb9445"
+    },
+    {
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "model": "gpt-6-luna",
+      "scope": "Long-context QSA kernel mechanisms; serial-batch claim corrected by root",
+      "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/qsa-long-context-kernel-mechanisms-round13.txt",
+      "sha256": "6d5f67d80fc88838f91b9c26975a63ba9f207f3ffc95b66336859e837a74575e",
+      "bytes": 6189,
+      "status": "completed-read-only-root-reviewed-with-corrections",
+      "root_review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-root-review-v13-v14.txt",
+      "root_review_sha256": "e461a5ccd123e0aa365189a2e2a695ecc376368fa1db727d5f8fb741acfb9445"
+    },
+    {
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "model": "gpt-6-luna",
+      "scope": "Dense mirror allocation/phase ownership",
+      "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/dense-mirror-phase-ownership-round13.txt",
+      "sha256": "bf9936c3dfec220a2aa406acb78449af9c37619d07766da34fd00101c832eba3",
+      "bytes": 7700,
+      "status": "completed-read-only-root-reviewed-with-corrections",
+      "root_review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-root-review-v13-v14.txt",
+      "root_review_sha256": "e461a5ccd123e0aa365189a2e2a695ecc376368fa1db727d5f8fb741acfb9445"
+    },
+    {
+      "agent": "/root/research_decode_weight_reuse_round2",
+      "model": "gpt-6-luna",
+      "scope": "Qualified baseline VTune protocol/ownership integration",
+      "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/vtune-baseline-protocol-supervision-round14.txt",
+      "sha256": "77d317785a4d284216db7d906c91114a3cbc5efb5670b77dd7733ed579564497",
+      "bytes": 7723,
+      "status": "completed-read-only-root-reviewed-with-corrections",
+      "root_review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-root-review-v13-v14.txt",
+      "root_review_sha256": "e461a5ccd123e0aa365189a2e2a695ecc376368fa1db727d5f8fb741acfb9445"
+    },
+    {
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "model": "gpt-6-luna",
+      "scope": "Repeated full-context compute/indexer/selection failure",
+      "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/long-context-repeat-compute-failure-round14.txt",
+      "sha256": "775f16b15371d5774c33f154cd807a0a030515a64c77af08fa4d21112b2ca9da",
+      "bytes": 7501,
+      "status": "completed-read-only-root-reviewed-with-corrections",
+      "root_review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-root-review-v13-v14.txt",
+      "root_review_sha256": "e461a5ccd123e0aa365189a2e2a695ecc376368fa1db727d5f8fb741acfb9445"
+    },
+    {
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "model": "gpt-6-luna",
+      "scope": "Repeated full-context host/stage authority, queue and scratch lifetime failure",
+      "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/streamed-kv-repeat-ownership-failure-round14.txt",
+      "sha256": "ee68d5bd801dedc458b66a08b4badc3140708e47bafed7ac0c4d97d00f499db7",
+      "bytes": 10330,
+      "status": "completed-read-only-root-reviewed-with-corrections",
+      "root_review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-root-review-v13-v14.txt",
+      "root_review_sha256": "e461a5ccd123e0aa365189a2e2a695ecc376368fa1db727d5f8fb741acfb9445"
+    },
+    {
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "model": "gpt-6-luna",
+      "scope": "Newoptindiagnostic independent source bounds/file/lifetime/budget",
+      "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/repeat-capture-independent-review-round15.txt",
+      "sha256": "82a0155e130212f43e8db2107888934a424ee91f76545dda6f1b2240c264fd9b",
+      "bytes": 6954,
+      "status": "completed-source-only-root-reviewed-with-corrections",
+      "root_review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-root-review-v15-v16.txt",
+      "root_review_sha256": "e5aaa7e04fddb496037b57b3d63c5c84c53ec5e4f8c52ab022410657dd826ef3"
+    },
+    {
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "model": "gpt-6-luna",
+      "scope": "ActiveINT8variant1 attention/partiallastslot/memory/lane/merge at98328",
+      "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/qsa-selected-attention-long-row-source-audit-round15.txt",
+      "sha256": "31f4d62738cdf91215826a223e1e2552a909ff83b68af8041537e3b57e439f31",
+      "bytes": 10227,
+      "status": "completed-source-only-root-reviewed-with-corrections",
+      "root_review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-root-review-v15-v16.txt",
+      "root_review_sha256": "e5aaa7e04fddb496037b57b3d63c5c84c53ec5e4f8c52ab022410657dd826ef3"
+    },
+    {
+      "agent": "/root/research_decode_weight_reuse_round2",
+      "model": "gpt-6-luna",
+      "scope": "Alternatives afteractualVTunescope1 rejection, GNUgprofngclock-only",
+      "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/non-ptrace-cpu-profiler-alternatives-round16.txt",
+      "sha256": "6b17f033cb0eb3748ea586eed6862bf5dcfba28816911b179cd8ebe5637d83f1",
+      "bytes": 9208,
+      "status": "completed-source-only-root-reviewed-with-corrections",
+      "root_review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-root-review-v15-v16.txt",
+      "root_review_sha256": "e5aaa7e04fddb496037b57b3d63c5c84c53ec5e4f8c52ab022410657dd826ef3"
+    },
+    {
+      "agent": "/root/research_decode_weight_reuse_round2",
+      "model": "gpt-6-luna",
+      "scope": "Paired GU activation-load reuse and Zen3 register-pressure limits",
+      "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/native-gu-zen3-mechanisms-round17.txt",
+      "sha256": "936286740db60a4125f26294bdafb312035313bc1d958efe44bac2ff76ef71d0",
+      "bytes": 6026,
+      "status": "completed-source-only-root-reviewed",
+      "root_review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-root-review-v17.txt",
+      "root_review_sha256": "6ccb1f94c905efff506bf31b4098db2a8562f3bebe3af081bf9897b76e28dcdc"
+    },
+    {
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "model": "gpt-6-luna",
+      "scope": "Actual expert nt and dispatch costs in equal flattened pool tasks",
+      "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/gu-task-shaping-real-nt-round17.txt",
+      "sha256": "dd7660b98e9d72896c9167eeb4c3f8af624f34a3784003fbfb9543fad87b9c25",
+      "bytes": 7381,
+      "status": "completed-source-only-root-reviewed",
+      "root_review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-root-review-v17.txt",
+      "root_review_sha256": "6ccb1f94c905efff506bf31b4098db2a8562f3bebe3af081bf9897b76e28dcdc"
+    },
+    {
+      "agent": "/root/research_decode_weight_reuse_round2",
+      "model": "gpt-6-luna",
+      "scope": "Actual failed collector timer setup and errno-localization design",
+      "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/gprofng-itimer-initialization-source-audit-round18.txt",
+      "sha256": "033938799dd21e9aff22c1b5b628bc4026897bb0d020957457dbc5e2623c95c2",
+      "bytes": 11748,
+      "status": "completed-read-only-root-reviewed-with-corrections",
+      "root_review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-root-review-v18.txt",
+      "root_review_sha256": "34456636041886b10f3dc3695e3eddfc30a3f02244ba80f384e0ef3fba3e5e2d"
+    },
+    {
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "model": "gpt-6-luna",
+      "scope": "Bounded caller-side format/NT/actual-dispatch exposure design",
+      "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/native-dispatch-histogram-design-round18.txt",
+      "sha256": "4e3d5c8987d68b5c6d1c9d20a1feb315bce1787f969ae7c9945970f337363f10",
+      "bytes": 9898,
+      "status": "completed-read-only-root-reviewed-with-corrections",
+      "root_review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-root-review-v18.txt",
+      "root_review_sha256": "34456636041886b10f3dc3695e3eddfc30a3f02244ba80f384e0ef3fba3e5e2d"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/repeat-capture-error-retirement-audit-round19.txt",
+      "sha256": "7010c69c7c7ce12f2f242f571328c035e48ddaa5486338f63650d38a0d85f415",
+      "bytes": 8674,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "scope": "Capture destination retirement on double failure"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/gprofng-real-symbol-resolution-audit-round19.txt",
+      "sha256": "90cb0d315107aae92f31323882ed6d2ad381c3cef1dd828cd1123a13dc8053a2",
+      "bytes": 13254,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_decode_weight_reuse_round2",
+      "scope": "Installed versioned symbols vs raw timer controls"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/repeat-capture-quarantine-independent-audit-round20.txt",
+      "sha256": "43c9f18eb98afabd34c85598c5b1c989b7cb8454b450d273279eb21ba1910942",
+      "bytes": 8009,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "scope": "Independent root9c quarantine review"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/native-dispatch-histogram-independent-audit-round20.txt",
+      "sha256": "fc49084e60d0ba9bc2c734dbdc9512c19ce762277672bf07dd65fb8e2eae99c8",
+      "bytes": 8706,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "scope": "H96 actual dispatch/phase source"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/long-prefill-boundary-cross-engine-round21.txt",
+      "sha256": "a68d008580e84396c619708acd120439c720a68347d0da7c6293c7b4b2f58a0e",
+      "bytes": 8131,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "scope": "Cross-engine long-prefill boundaries and cutoff ties"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/zen3-native-gu-cross-engine-round21.txt",
+      "sha256": "d80766ce4f0a0aab84d105a08d5550163b25da92f0626f487ae92280e7423caa",
+      "bytes": 10234,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "scope": "Cross-engine Zen3 GU high-NT/compiler pressure"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/repeat-capture-owned-controller-audit-round22.txt",
+      "sha256": "d1c57c829c017b212ec3006359ffdce97e14c937fc06d02d6f4d868d32783e20",
+      "bytes": 9889,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "scope": "FiveGEN controller admission and missing capture reader"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/gprofng-native-protocol-source-audit-round22.txt",
+      "sha256": "222981c936dfaecde4a8d12f67711eab970ca080f23190fc85cce807b96dc75b",
+      "bytes": 9660,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_decode_weight_reuse_round2",
+      "scope": "Sol native profiler protocol source"
+    },
+    {
+      "agent": "/root/research_decode_weight_reuse_round2",
+      "model": "gpt-6-luna",
+      "scope": "Installed collector debug mechanism after actual native cerror9",
+      "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/gprofng-native-cerror-debug-path-round23.txt",
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/gprofng-native-cerror-debug-path-round23.txt",
+      "status": "completed-read-only",
+      "sha256": "e9e6bfb1999c501c5e91038261d0760f18c9b7c0a1ba280b1fd0352e41035bef",
+      "bytes": 9209
+    },
+    {
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "model": "gpt-6-luna",
+      "scope": "Reader bounds and test independence",
+      "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/repeat-capture-reader-bounds-test-audit-round24.txt",
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/repeat-capture-reader-bounds-test-audit-round24.txt",
+      "sha256": "9f69026e4ec2f85ed46d79de069163e677ece257bc8f2f18156e3938d4db93da",
+      "bytes": 6839,
+      "status": "completed-read-only",
+      "git_archive": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-10-parallel-research-reader/repeat-capture-reader-bounds-test-audit-round24.txt"
+    },
+    {
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "model": "gpt-6-luna",
+      "scope": "Producer framing/coverage/GEN pairing",
+      "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/repeat-capture-reader-coverage-audit-round24.txt",
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/repeat-capture-reader-coverage-audit-round24.txt",
+      "sha256": "ad145157222afa36531f520509ad0e4857907cb5eb86aed0791b42528bc18a8c",
+      "bytes": 6691,
+      "status": "completed-read-only",
+      "git_archive": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-10-parallel-research-reader/repeat-capture-reader-coverage-audit-round24.txt"
+    },
+    {
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "model": "gpt-6-luna",
+      "scope": "Cross-engine Zen3 quantized expert optimization",
+      "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/zen3-moe-expert-optimization-round25.txt",
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/zen3-moe-expert-optimization-round25.txt",
+      "sha256": "bd84d8dddcb3b0563d7cd5d4f6410b659b559eb73102e6c79901cd72c8851752",
+      "bytes": 7304,
+      "status": "completed-read-only",
+      "git_archive": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-10-parallel-research-reader/zen3-moe-expert-optimization-round25.txt"
+    },
+    {
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "model": "gpt-6-luna",
+      "scope": "Cross-engine long-prefill QSA optimization",
+      "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/long-prefill-qsa-optimization-round25.txt",
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/long-prefill-qsa-optimization-round25.txt",
+      "sha256": "77a7950913663e512406b66e06ef378c165848ee838bfd5fa4bad3596b220f9c",
+      "bytes": 9205,
+      "status": "completed-read-only",
+      "git_archive": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-10-parallel-research-reader/long-prefill-qsa-optimization-round25.txt"
+    },
+    {
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "model": "gpt-6-luna",
+      "scope": "Actual stale-content failure, pinned ae8 review",
+      "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/repeat-capture-stale-content-audit-round26.txt",
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/repeat-capture-stale-content-audit-round26.txt",
+      "sha256": "ac02586c4aa7ee3f251e898502a11906427e4085872acd21e88658a46824a4e5",
+      "bytes": 6009,
+      "status": "completed-read-only",
+      "git_archive": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-10-parallel-research-reader/repeat-capture-stale-content-audit-round26.txt"
+    },
+    {
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "model": "gpt-6-luna",
+      "scope": "Pinned ae8 independent fixture and bounded ledger",
+      "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/repeat-capture-independent-fixture-audit-round26.txt",
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/repeat-capture-independent-fixture-audit-round26.txt",
+      "sha256": "76c0b2eb30c86d1b0a5c132a536e28d2c8cb0ec3a35ab33d9bfb7d3dfd85d406",
+      "bytes": 6368,
+      "status": "completed-read-only",
+      "git_archive": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-10-parallel-research-reader/repeat-capture-independent-fixture-audit-round26.txt"
+    },
+    {
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "model": "gpt-6-luna",
+      "scope": "Final4a content/ledger/test contract",
+      "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/repeat-capture-final-contract-audit-round27.txt",
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/repeat-capture-final-contract-audit-round27.txt",
+      "sha256": "2f933156a7c31d952e62bb1ea88fe49b739befe35afd5e929b16364ee3631f87",
+      "bytes": 5794,
+      "status": "completed-read-only",
+      "git_archive": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-10-parallel-research-reader/repeat-capture-final-contract-audit-round27.txt"
+    },
+    {
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "model": "gpt-6-luna",
+      "scope": "Production wrapper parity design; corrected byR28",
+      "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/native-histogram-cpu-qualification-design-round27.txt",
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/native-histogram-cpu-qualification-design-round27.txt",
+      "sha256": "17c9362f8622ad89350e3bbaf0312c9a91848cbe0131f43da8780bd7e75b6be4",
+      "bytes": 8354,
+      "status": "completed-read-only",
+      "git_archive": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-10-parallel-research-reader/native-histogram-cpu-qualification-design-round27.txt"
+    },
+    {
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "model": "gpt-6-luna",
+      "scope": "FiveGEN owner ledger/reader/digest binding",
+      "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/repeat-capture-controller-reader-binding-audit-round28.txt",
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/repeat-capture-controller-reader-binding-audit-round28.txt",
+      "sha256": "af7ba5d98a33f0d01ef6aaad4061ef99d3c0f31f8aa912ea938480d33f3b2c60",
+      "bytes": 4536,
+      "status": "completed-read-only",
+      "git_archive": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-10-parallel-research-reader/repeat-capture-controller-reader-binding-audit-round28.txt"
+    },
+    {
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "model": "gpt-6-luna",
+      "scope": "Correct actual SYCL target/kernel/source mapping",
+      "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/sycl-native-wrapper-parity-source-map-round28.txt",
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/sycl-native-wrapper-parity-source-map-round28.txt",
+      "sha256": "942840cd0735dcdfc9c776652cd3d19a108c70eb126636fcf617b1679b9f024c",
+      "bytes": 7595,
+      "status": "completed-read-only",
+      "git_archive": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-10-parallel-research-reader/sycl-native-wrapper-parity-source-map-round28.txt"
+    },
+    {
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "model": "gpt-6-luna",
+      "scope": "Returned25d harness math/ActQ/reference/row gates",
+      "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/native-wrapper-harness-math-audit-round29.txt",
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/native-wrapper-harness-math-audit-round29.txt",
+      "status": "completed-read-only",
+      "sha256": "e4bd5ebe4b5c71f9eefec2fad584c2e407397405179766d63a526908ba54472d",
+      "bytes": 2758,
+      "git_archive": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-10-parallel-research-reader/native-wrapper-harness-math-audit-round29.txt"
+    },
+    {
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "model": "gpt-6-luna",
+      "scope": "Returned25d target/output ABI and empty interval test gap",
+      "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/native-wrapper-harness-target-output-audit-round29.txt",
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/native-wrapper-harness-target-output-audit-round29.txt",
+      "status": "completed-read-only",
+      "sha256": "3d999d75f487681966c2632175d3c6916cf3efcf3915b443c956111a55c94759",
+      "bytes": 5042,
+      "git_archive": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-10-parallel-research-reader/native-wrapper-harness-target-output-audit-round29.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/avx2-moe-implementation-blogs-round30.txt",
+      "sha256": "41c27d6ca85e26aa8999c8208849447ae5bf0b7f49603626588372eecafb0e89",
+      "bytes": 6041,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "scope": "NT8 grid IQ panel primary implementation and small-LUT exclusion",
+      "status": "completed-read-only",
+      "archive": "bench/results/2026-10-10-native-wrapper-matrix/research/avx2-moe-implementation-blogs-round30.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/long-prefill-phase-attribution-round30.txt",
+      "sha256": "e62dc9ad685a78174ea64237f1ccf9a4cbdccd935860d11c32c310c9a8fce9f8",
+      "bytes": 8039,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "scope": "Existing QSA timing semantics and current missing phase attribution",
+      "status": "completed-read-only",
+      "archive": "bench/results/2026-10-10-native-wrapper-matrix/research/long-prefill-phase-attribution-round30.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/native-iq-panel-feasibility-round31.txt",
+      "sha256": "6cb35c534e6c6f77bf0e301d4ab3b8a56a63e450d72a36cfe5d7cdf417cf5fa9",
+      "bytes": 8964,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "scope": "Actual pack geometry, IQP ABI/callgraph, scratch/row ownership",
+      "status": "completed-read-only",
+      "archive": "bench/results/2026-10-10-native-wrapper-matrix/research/native-iq-panel-feasibility-round31.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/repeat-qsa11-source-candidates-round31.txt",
+      "sha256": "a69cd50cd16f8cb8c6037b74ab705c53917c2f6e97b43e3308105534b8495d17",
+      "bytes": 4546,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "scope": "C QSA11 repeat source audit, upstream transient hypothesis only",
+      "status": "completed-read-only",
+      "archive": "bench/results/2026-10-10-native-wrapper-matrix/research/repeat-qsa11-source-candidates-round31.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/native-decode-window-smallbatch-round32.txt",
+      "sha256": "437e7308d8b34bbb3db59b308c77c23b536b783ab80c20271994e1202691795b",
+      "bytes": 4502,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "scope": "Exact configured split native NT ceiling, NT8 exclusion",
+      "status": "completed-read-only",
+      "archive": "bench/results/2026-10-10-native-wrapper-matrix/research/native-decode-window-smallbatch-round32.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/native-histogram-controller-review-round32.txt",
+      "sha256": "56b5c6d2e28ac6dc04d0b06b78134a05ab25005ab9e3c56b9114ef39ac7f286d",
+      "bytes": 4616,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "scope": "Independent histogram owner/parser source review",
+      "status": "completed-read-only",
+      "archive": "bench/results/2026-10-10-native-wrapper-matrix/research/native-histogram-controller-review-round32.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/native-nt1-ggml-hotpath-round33.txt",
+      "sha256": "95ee8146daff2b1ff94afa18e25732df1be1b9c24998fe70f982d2593781166a",
+      "bytes": 7579,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "scope": "Actual NT1 ggml source/ISA and novel-mechanism exclusion",
+      "status": "completed-read-only",
+      "archive": "bench/results/2026-10-10-native-wrapper-matrix/research/native-nt1-ggml-hotpath-round33.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/gdn-ordinal7-repeat-source-round33.txt",
+      "sha256": "8999faa9547786066a4e45e4e072e02724c8886fbec6a4f09c1819bac72b06f0",
+      "bytes": 4825,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "scope": "GDN7 mapping to model9, repeated-state reset/scratch audit",
+      "status": "completed-read-only",
+      "archive": "bench/results/2026-10-10-native-wrapper-matrix/research/gdn-ordinal7-repeat-source-round33.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/existing-layer9-capture-coverage-round34.txt",
+      "sha256": "a4384b726faeb6fc19a6bef9e27ff4aaa423d449a6fe8039bc80d2a7e170feec",
+      "bytes": 5333,
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "model": "gpt-6-luna",
+      "scope": "Existing D capture coverage for GDN9 input/post-GDN/post-MoE",
+      "status": "completed-read-only",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/existing-layer9-capture-coverage-round34.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/decode-expert-cache-phase-capacity-round34.txt",
+      "sha256": "5e27eb396ae619ea9f1f690c1fec1d3362bc84b356be6388844a192147993a0c",
+      "bytes": 4882,
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "model": "gpt-6-luna",
+      "scope": "Static decode expert-cache quota, exact explicit-capacity allocation and evidence gap",
+      "status": "completed-read-only",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/decode-expert-cache-phase-capacity-round34.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/repeat-gdn-boundary-contracts-round35.txt",
+      "sha256": "d3f9cb4d863520e41e91740f3916640c191da12aaff6357009b1c1efccf792fd",
+      "bytes": 7432,
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "model": "gpt-6-luna",
+      "scope": "Actual GDN residual capture queue/event boundary contracts and conditional next discriminants",
+      "status": "completed-read-only",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/repeat-gdn-boundary-contracts-round35.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/decode-cache-profile-quota-evidence-round35.txt",
+      "sha256": "7af86fcce9e3e2f9b79f53775035932c048e7187222ae640989c64231ae140a7",
+      "bytes": 10817,
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "model": "gpt-6-luna",
+      "scope": "Actual STRP profile ranking, current and candidate fixed128quota admission, unavailable routing-frequency evidence",
+      "status": "completed-read-only",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/decode-cache-profile-quota-evidence-round35.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/gdn-kernel-reduction-determinism-round36.txt",
+      "sha256": "8225140f71592e0c3890dc1571af949d1200535b42a4c33c39b60b9fa9cdf7dd",
+      "bytes": 8565,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "scope": "gdn-kernel-reduction-determinism-round36",
+      "status": "completed-read-only",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/gdn-kernel-reduction-determinism-round36.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/cache-route-count-semantics-audit-round36.txt",
+      "sha256": "07f1062f52d30f7f31359a7b7ab0ea4c1afba3d67ba89097f1d50a07dc19e784",
+      "bytes": 12358,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "scope": "cache-route-count-semantics-audit-round36",
+      "status": "completed-read-only",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/cache-route-count-semantics-audit-round36.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/cache-profile-model-identity-provenance-round37.txt",
+      "sha256": "9402da78e01bceb552e6f679d4e9ec9f8d9bfb600f4ba9a3f43a37867f7d7451",
+      "bytes": 7716,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "scope": "cache-profile-model-identity-provenance-round37",
+      "status": "completed-read-only",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/cache-profile-model-identity-provenance-round37.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/gdn-projection-gemm-alias-lifetime-round37.txt",
+      "sha256": "492d52a2df9712801e859e4a998552d7aa77c26ac06693c9680287a6345bba13",
+      "bytes": 10129,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "scope": "gdn-projection-gemm-alias-lifetime-round37",
+      "status": "completed-read-only",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/gdn-projection-gemm-alias-lifetime-round37.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/cache-route-pairs-independent-review-round38.txt",
+      "sha256": "48151ebfee2822710a1b0ceb541e8c5183cca74be283d17301198ce491becceb",
+      "bytes": 9227,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "scope": "cache-route-pairs-independent-review-round38",
+      "status": "completed-read-only",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/cache-route-pairs-independent-review-round38.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/first-full-capture-failure-next-discriminant-round38.txt",
+      "sha256": "59af4d37839fb76151408972685aa858fbb7cbe24a42b63fcb9d5f77a3056807",
+      "bytes": 8830,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "scope": "first-full-capture-failure-next-discriminant-round38",
+      "status": "completed-read-only",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/first-full-capture-failure-next-discriminant-round38.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/cache-route-pairs-controller-framing-design-round39.txt",
+      "sha256": "ac792ddc834dd5524a6aafaad4c18893d9fa8c3723b878669af6ec5e0c8d182e",
+      "bytes": 11489,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "scope": "cache-route-pairs-controller-framing-design-round39",
+      "status": "completed-read-only",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/cache-route-pairs-controller-framing-design-round39.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/prefill-residual-chunk-hash-contract-round39.txt",
+      "sha256": "5f498771e1ffb94cfc673fda75a621e70bafce5ef2ae8ffe39886acd3328d1b9",
+      "bytes": 11257,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "scope": "prefill-residual-chunk-hash-contract-round39",
+      "status": "completed-read-only",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/prefill-residual-chunk-hash-contract-round39.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/static-cache-replay-objective-cross-engine-round40.txt",
+      "sha256": "a5931d31950f172d078060217f5cf33e294c3004838b90f1098f1b649dd7b419",
+      "bytes": 9261,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "scope": "static-cache-replay-objective-cross-engine-round40",
+      "status": "completed-read-only",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/static-cache-replay-objective-cross-engine-round40.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/layer-major-residual-spill-reload-contract-round40.txt",
+      "sha256": "0a2f0ce0d519461c6661824dcdbf3e7010ff944611ddc3233df7b3f2e4521cf7",
+      "bytes": 12305,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "scope": "layer-major-residual-spill-reload-contract-round40",
+      "status": "completed-read-only",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/layer-major-residual-spill-reload-contract-round40.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/cache-route-pairs-parser-source-audit-round41.txt",
+      "sha256": "b795c850f284bbc287357e83e7cd47aad44fe48c6d201ccad9b74420d236479c",
+      "bytes": 9374,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "scope": "cache-route-pairs-parser-source-audit-round41",
+      "status": "completed-read-only",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/cache-route-pairs-parser-source-audit-round41.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/cache-route-pairs-controller-admission-audit-round41.txt",
+      "sha256": "45b631d1df63566b1060ab890147c432e58db06dd8eac0c06c6930a57332c176",
+      "bytes": 15810,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "scope": "cache-route-pairs-controller-admission-audit-round41",
+      "status": "completed-read-only",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/cache-route-pairs-controller-admission-audit-round41.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/cache-route-pairs-native-job-shape-proof-round42.txt",
+      "sha256": "a5ec4691e8bb4c39d42cd201a819dd74bde911506be51e14ab85a7a006cc5334",
+      "bytes": 11747,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "scope": "cache-route-pairs-native-job-shape-proof-round42",
+      "status": "completed-read-only",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/cache-route-pairs-native-job-shape-proof-round42.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/layer-major-async-error-drain-handler-round42.txt",
+      "sha256": "69bf2fa31f6b9da6c0ee199c2df6598658ac41c3da2886d62ad117d1e74db7e3",
+      "bytes": 6763,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "scope": "layer-major-async-error-drain-handler-round42",
+      "status": "completed-read-only",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/layer-major-async-error-drain-handler-round42.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/cache-route-pairs-parser-fixture-oracles-round43.txt",
+      "sha256": "a712aebf1f9526c4c7aff21480bcaacb086c42e5e4fa8f983c3dda860789fc43",
+      "bytes": 6973,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "scope": "cache-route-pairs-parser-fixture-oracles-round43",
+      "status": "completed-read-only",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/cache-route-pairs-parser-fixture-oracles-round43.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/cache-route-pairs-controller-budget-hardening-round43.txt",
+      "sha256": "4407aec2cf1d085afc2bcda5eda068d3c5bff10aca139b279ab711a32480da4a",
+      "bytes": 6806,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "scope": "cache-route-pairs-controller-budget-hardening-round43",
+      "status": "completed-read-only",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/cache-route-pairs-controller-budget-hardening-round43.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/cache-route-pairs-engine-stdout-boundaries-round44.txt",
+      "sha256": "167a0c5ad66c1a5efcd2c2ea4e68394e341cfdc31bf539d490b26f0f8365e04e",
+      "bytes": 4660,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "scope": "cache-route-pairs-engine-stdout-boundaries-round44",
+      "status": "completed-read-only",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/cache-route-pairs-engine-stdout-boundaries-round44.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/layer-major-error-drain-cpu-oracle-design-round44.txt",
+      "sha256": "5caded55fc2086c15a94c9ef74dd1c90f9ad2d7e70e3b511bf37bda1cba691cc",
+      "bytes": 9952,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "scope": "layer-major-error-drain-cpu-oracle-design-round44",
+      "status": "completed-read-only",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/layer-major-error-drain-cpu-oracle-design-round44.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/external-zen3-small-nt-expert-candidates-round45.txt",
+      "sha256": "afc12842246d9cffba503a28e22c6894eee4fe015fbb573ea3fb2a10e6f27e1c",
+      "bytes": 8381,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "scope": "external-zen3-small-nt-expert-candidates-round45",
+      "status": "completed-read-only",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/external-zen3-small-nt-expert-candidates-round45.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/external-layer-major-residual-traffic-candidates-round45.txt",
+      "sha256": "d4bc4f4071eadc6b688ca5267d02e741e899e48510da5f460b107075344006fa",
+      "bytes": 8970,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "scope": "external-layer-major-residual-traffic-candidates-round45",
+      "status": "completed-read-only",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/external-layer-major-residual-traffic-candidates-round45.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/chunk-major-residual-candidate-existing-path-audit-round46.txt",
+      "sha256": "8f2bb4dfce49ebb7e3b1b60df4e7d9e77af9ce27092cd847850e11b98501840b",
+      "bytes": 6393,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "scope": "chunk-major-residual-candidate-existing-path-audit-round46",
+      "status": "completed-read-only",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/chunk-major-residual-candidate-existing-path-audit-round46.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/native-expert-service-calibration-protocol-round46.txt",
+      "sha256": "2648d6650e011a299a6044b2cf969264a5230f31cb441383c37cf2ba755ecc23",
+      "bytes": 15600,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "scope": "native-expert-service-calibration-protocol-round46",
+      "status": "completed-read-only",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/native-expert-service-calibration-protocol-round46.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/layer-grouped-residual-schedule-capacity-round47.txt",
+      "sha256": "9faf96bada4d24be4a9894efd0bbb745e1466c0319589edd14deed582831f71f",
+      "bytes": 6359,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "scope": "layer-grouped-residual-schedule-capacity-round47",
+      "status": "completed-read-only",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/layer-grouped-residual-schedule-capacity-round47.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/native-service-expert-payload-adapter-contract-round48.txt",
+      "sha256": "c01df8cb30509e5295a29b5f0ddbb0fbc2d1e6dd57183adad50fbb8abfacc914",
+      "bytes": 9956,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "scope": "native-service-expert-payload-adapter-contract-round48",
+      "status": "completed-read-only",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/native-service-expert-payload-adapter-contract-round48.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/bounded-engine-protocol-independent-review-round48.txt",
+      "sha256": "9453bdef5636014f8f3d6cb50db7237621ee490c5190f38b15dd227d371434b8",
+      "bytes": 7565,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "scope": "bounded-engine-protocol-independent-review-round48",
+      "status": "completed-read-only",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/bounded-engine-protocol-independent-review-round48.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/cache-route-pairs-v3-protocol-budget-audit-round49.txt",
+      "sha256": "128b52d7d0d4dd712bd6632384bd22446974f81b93386cae1930228dab694eac",
+      "bytes": 10012,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "scope": "cache-route-pairs-v3-protocol-budget-audit-round49",
+      "status": "completed-read-only",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/cache-route-pairs-v3-protocol-budget-audit-round49.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/cache-route-pairs-v3-fixture-admission-audit-round49.txt",
+      "sha256": "f91242ebde8a02724eb2695ee62d199648a3631f5b4cf58c956e0fd76d8f69c4",
+      "bytes": 8863,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "scope": "cache-route-pairs-v3-fixture-admission-audit-round49",
+      "status": "completed-read-only",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/cache-route-pairs-v3-fixture-admission-audit-round49.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/cache-route-pairs-shape-join-audit-round50.txt",
+      "sha256": "c24f334025856fb0a2809dbed592a962fcabc6c203c767d510cc51c5d2ca9d0e",
+      "bytes": 9475,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "scope": "cache-route-pairs-shape-join-audit-round50",
+      "status": "completed-read-only",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/cache-route-pairs-shape-join-audit-round50.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/decode-cost-aware-cache-external-screen-round50.txt",
+      "sha256": "30bf8f09b5a9b6b0b23992d33246dfa6e04e73528afc28208770af291094b074",
+      "bytes": 4710,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "scope": "decode-cost-aware-cache-external-screen-round50",
+      "status": "completed-read-only",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/decode-cost-aware-cache-external-screen-round50.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/cache-route-pairs-v4-eof-budget-admission-audit-round51.txt",
+      "sha256": "adb47d083f2fe7217a964a919336288d70efb2d2e0e3ca28f1fa0d3323a4a8db",
+      "bytes": 7008,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "scope": "cache-route-pairs-v4-eof-budget-admission-audit-round51",
+      "status": "completed-read-only",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/cache-route-pairs-v4-eof-budget-admission-audit-round51.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/decode-cache-external-primary-implementation-audit-round51.txt",
+      "sha256": "e732b0e5b6337c5bbe09c81505e0fc7cb9f80bf2de4387b020f55608f1485715",
+      "bytes": 9161,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "scope": "decode-cache-external-primary-implementation-audit-round51",
+      "status": "completed-read-only",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/decode-cache-external-primary-implementation-audit-round51.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/cache-route-pairs-v5-join-provenance-audit-round52.txt",
+      "sha256": "32d3f9a290a8a58aa8c0390705136d8ea4f6a40902de3b3d30d2f16363e8a607",
+      "bytes": 8701,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "scope": "cache-route-pairs-v5-join-provenance-audit-round52",
+      "status": "completed-read-only",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/cache-route-pairs-v5-join-provenance-audit-round52.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/cache-route-pairs-v5-fixture-transport-audit-round52.txt",
+      "sha256": "df49758e7fa42549ee7645ea8d642c24036277a27d80e10303b748192fa6aff9",
+      "bytes": 8694,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "scope": "cache-route-pairs-v5-fixture-transport-audit-round52",
+      "status": "completed-read-only",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/cache-route-pairs-v5-fixture-transport-audit-round52.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/cache-route-static-replay-information-contract-round53.txt",
+      "sha256": "dd54d57de68c151a07fea770def4f66ed003837239024a8b2aa79adfcfc7a205",
+      "bytes": 11597,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "scope": "cache-route-static-replay-information-contract-round53",
+      "status": "completed-read-only",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/cache-route-static-replay-information-contract-round53.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/small-nt-moe-phase-scheduling-external-screen-round53.txt",
+      "sha256": "bc4e3ffa8259392e8ab6deb1886b8d9d763d0a5f6d58df1b51901dcebe90334f",
+      "bytes": 7756,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "scope": "small-nt-moe-phase-scheduling-external-screen-round53",
+      "status": "completed-read-only",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/small-nt-moe-phase-scheduling-external-screen-round53.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/cache-route-pairs-actual-startup-wire-audit-round54.txt",
+      "sha256": "631cd43774f9ea5006c28a794093dd10b6a79e6ebd5f618468305a7d599656cf",
+      "bytes": 10430,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "scope": "cache-route-pairs-actual-startup-wire-audit-round54",
+      "status": "completed-read-only",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/cache-route-pairs-actual-startup-wire-audit-round54.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/cache-route-pairs-startup-mock-coverage-audit-round54.txt",
+      "sha256": "ab053db39cc6f193c5289a4ed288afa397bcd9c87388763e0afa4d796c405ec1",
+      "bytes": 7180,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "scope": "cache-route-pairs-startup-mock-coverage-audit-round54",
+      "status": "completed-read-only",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/cache-route-pairs-startup-mock-coverage-audit-round54.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/cache-route-pairs-v6-info-admission-audit-round55.txt",
+      "sha256": "9ca6aa854d80d859441d4eafe164af0817b6fe47433e3f112ab64e7d7af898e9",
+      "bytes": 8005,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "scope": "cache-route-pairs-v6-info-admission-audit-round55",
+      "status": "completed-read-only",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/cache-route-pairs-v6-info-admission-audit-round55.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/cache-route-pairs-v6-info-fixture-fallback-audit-round55.txt",
+      "sha256": "f72fa71fce2e2c4bd497be98bd07bc39e90f764e3726ddea6048b8cae5c58f2e",
+      "bytes": 8133,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "scope": "cache-route-pairs-v6-info-fixture-fallback-audit-round55",
+      "status": "completed-read-only",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/cache-route-pairs-v6-info-fixture-fallback-audit-round55.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/cache-route-pairs-real-startup-peer-scope-audit-round56.txt",
+      "sha256": "4e93fe5aee01484883aeb99cdf6b7c66f1636648c83b2d83fbb8dcaa2ecf958f",
+      "bytes": 5223,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "scope": "cache-route-pairs-real-startup-peer-scope-audit-round56",
+      "status": "completed-read-only",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/cache-route-pairs-real-startup-peer-scope-audit-round56.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/small-nt-expert-local-pipeline-dependency-audit-round56.txt",
+      "sha256": "0e57acf897d12a48195ec0591443f1efe32ac9fe7b939d00e3c8f7e2af6fd39a",
+      "bytes": 12233,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "scope": "small-nt-expert-local-pipeline-dependency-audit-round56",
+      "status": "completed-read-only",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/small-nt-expert-local-pipeline-dependency-audit-round56.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/small-nt-worker-telemetry-minimum-contract-round57.txt",
+      "sha256": "e8a8d72f455214ddff35869fa34607534a8d797512684f18c08117b1bf7e93f6",
+      "bytes": 17132,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "scope": "small-nt-worker-telemetry-minimum-contract-round57",
+      "status": "completed-read-only",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/small-nt-worker-telemetry-minimum-contract-round57.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/static-prefix-quota-selection-oracle-round57.txt",
+      "sha256": "533d4131991f1e3ba263ca729ecf8e9bd4b368ceda4e9451b2590005d359e7ec",
+      "bytes": 7183,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "scope": "static-prefix-quota-selection-oracle-round57",
+      "status": "completed-read-only",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/static-prefix-quota-selection-oracle-round57.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/cache-route-offline-replay-fixture-retention-audit-round58.txt",
+      "sha256": "b7ab93b11b2e03791aaa6a7c2d70e0810d0eba8327fcd32e86b4881fb2ae21c4",
+      "bytes": 10120,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "scope": "cache-route-offline-replay-fixture-retention-audit-round58",
+      "status": "completed-read-only",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/cache-route-offline-replay-fixture-retention-audit-round58.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/cache-route-offline-replay-provenance-audit-round58.txt",
+      "sha256": "5a25b483b3daf5c5ba98e0f3fbaf6d58a26c8836d7e64f0c4c26a0fc4eba3782",
+      "bytes": 8025,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "scope": "cache-route-offline-replay-provenance-audit-round58",
+      "status": "completed-read-only",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/cache-route-offline-replay-provenance-audit-round58.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/actual-small-nt-format-kernel-priority-round59.txt",
+      "sha256": "a81a3e7db19b2a48339d5c7fe727f34e2522df4345cfab66997b575a8ac15a01",
+      "bytes": 13947,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "scope": "actual-small-nt-format-kernel-priority-round59",
+      "status": "completed-read-only",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/actual-small-nt-format-kernel-priority-round59.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/static-quota-live-engine-phase-contract-round59.txt",
+      "sha256": "9ef2d3522cd6c36ad153c34de93a91236c8cc162ff77ba199f7478e0245cd83b",
+      "bytes": 10373,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "scope": "static-quota-live-engine-phase-contract-round59",
+      "status": "completed-read-only",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/static-quota-live-engine-phase-contract-round59.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/native-service-host-only-reader-link-contract-round60.txt",
+      "sha256": "86b2e95c3d5955cb7ac550c5113974069be2425f794d0a9b82f8e8c6cbb0a7f2",
+      "bytes": 9143,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "scope": "native-service-host-only-reader-link-contract-round60",
+      "status": "completed-read-only",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/native-service-host-only-reader-link-contract-round60.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/static-quota-dp-source-oracle-audit-round60.txt",
+      "sha256": "a39c0809bf620f919f5053e2f5ab85684c18e17e86a637ab5dd03212635eedba",
+      "bytes": 8378,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "scope": "static-quota-dp-source-oracle-audit-round60",
+      "status": "completed-read-only",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/static-quota-dp-source-oracle-audit-round60.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/native-service-exact-cpu-harness-queue-boundary-round61.txt",
+      "sha256": "0f9a845d1f396222bff40be84978baddd5f80c96b7353f7302dbc6d43b86efe7",
+      "bytes": 7611,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "scope": "native-service-exact-cpu-harness-queue-boundary-round61",
+      "status": "completed-read-only",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/native-service-exact-cpu-harness-queue-boundary-round61.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/native-service-shared-host-role-plan-contract-round61.txt",
+      "sha256": "16e9f087363f957f2d07fd6c52fa7c4c5b57631ce28b7a13bef45407d04e1c74",
+      "bytes": 13996,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "scope": "native-service-shared-host-role-plan-contract-round61",
+      "status": "completed-read-only",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/native-service-shared-host-role-plan-contract-round61.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/static-quota-trace-source-provenance-audit-round62.txt",
+      "sha256": "0166869e06d21df97c0be21be2d4120d7fa081389afaba4b06dc37b7047da8c3",
+      "bytes": 11316,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "scope": "static-quota-trace-source-provenance-audit-round62",
+      "status": "completed-read-only",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/static-quota-trace-source-provenance-audit-round62.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/static-quota-trace-fixture-retention-audit-round62.txt",
+      "sha256": "aa4331aec735cacb1208f18c9e3af5d4e3cd28ac6df2a378463b911b27936969",
+      "bytes": 8410,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "scope": "static-quota-trace-fixture-retention-audit-round62",
+      "status": "completed-read-only",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/static-quota-trace-fixture-retention-audit-round62.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/quota-training-prompt-independence-contract-round63.txt",
+      "sha256": "ccf21875834c408fde68c5e85e50b3027950297524ec90203703740b09d772f1",
+      "bytes": 7092,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "scope": "quota-training-prompt-independence-contract-round63",
+      "status": "completed-read-only",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/quota-training-prompt-independence-contract-round63.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/native-service-route-cohort-sufficiency-round63.txt",
+      "sha256": "0f9d6133c84891090b740174041be64f04ae58b0e3c212da30a31a8298214049",
+      "bytes": 8282,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "scope": "native-service-route-cohort-sufficiency-round63",
+      "status": "completed-read-only",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/native-service-route-cohort-sufficiency-round63.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/independent-32k-host-tokenizer-entry-contract-round64.txt",
+      "sha256": "142a8200ecc15f0bdd755369d75c7605be7e0aa50ecbdf3bb33b2eb182807cd6",
+      "bytes": 6133,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "scope": "independent-32k-host-tokenizer-entry-contract-round64",
+      "status": "completed-read-only",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/independent-32k-host-tokenizer-entry-contract-round64.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/native-service-activation-and-ffn-oracle-contract-round64.txt",
+      "sha256": "beb6fa9803fc7ef653cbb7d47d078dfd6f336f72c31deb711c054c3c09ec4b3f",
+      "bytes": 14662,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "scope": "native-service-activation-and-ffn-oracle-contract-round64",
+      "status": "completed-read-only",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/native-service-activation-and-ffn-oracle-contract-round64.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/independent-32k-actual-tokenizer-assets-audit-round65.txt",
+      "sha256": "039e3183bfab69e38eeb48074b03a0bca813ca9f074e5276a9ce4bdce916ab90",
+      "bytes": 6763,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "scope": "independent-32k-actual-tokenizer-assets-audit-round65",
+      "status": "completed-read-only",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/independent-32k-actual-tokenizer-assets-audit-round65.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/native-service-no-device-runtime-admission-round65.txt",
+      "sha256": "57026a6639533725fb156ff9c15dca0cf697c0def5fbdb9db786468f2cb9300c",
+      "bytes": 12958,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "scope": "native-service-no-device-runtime-admission-round65",
+      "status": "completed-read-only",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/native-service-no-device-runtime-admission-round65.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/independent-prompt-production-semantics-review-round66.txt",
+      "sha256": "5bf60677c41255da358a44cea14874475ae82fc06c0f34f7860c82cf5432fb46",
+      "bytes": 8174,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "scope": "independent-prompt-production-semantics-review-round66",
+      "status": "completed-read-only",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/independent-prompt-production-semantics-review-round66.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/independent-prompt-bounds-and-fixtures-review-round66.txt",
+      "sha256": "c7d5274c95fa060ba65671bc6a68b03823ce5520acab5c5369f131b24bc7146c",
+      "bytes": 10564,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "scope": "independent-prompt-bounds-and-fixtures-review-round66",
+      "status": "completed-read-only",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/independent-prompt-bounds-and-fixtures-review-round66.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/independent-prompt-v2-admission-review-round67.txt",
+      "sha256": "cc2b43074d5287deb5089b91d2ec45475c7e717b0f90017a257dfd24f8a6177e",
+      "bytes": 6552,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "scope": "independent-prompt-v2-admission-review-round67",
+      "status": "completed-read-only",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/independent-prompt-v2-admission-review-round67.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/independent-code-corpus-selection-round67.txt",
+      "sha256": "08467a2687205b9f8b7aa1c0a66c8da690e52f00a729270d1656e0f38013bf81",
+      "bytes": 10030,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "scope": "independent-code-corpus-selection-round67",
+      "status": "completed-read-only",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/independent-code-corpus-selection-round67.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/native-service-page-residency-calibration-round68.txt",
+      "sha256": "2af1f26c83ea216b0cfee148c1f2aacd416fb39a164025db99fe9037ff5b1e27",
+      "bytes": 10843,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "scope": "native-service-page-residency-calibration-round68",
+      "status": "completed-read-only",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/native-service-page-residency-calibration-round68.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/independent-longprompt-reference-controller-contract-round68.txt",
+      "sha256": "056585095e0f2c8a57b57ee7e6864bc774997e74a0e9b5c5b16f1201f781a516",
+      "bytes": 10785,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "scope": "independent-longprompt-reference-controller-contract-round68",
+      "status": "completed-read-only",
+      "reviewed_by": "/root",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/independent-longprompt-reference-controller-contract-round68.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/longprompt-baseline-pool-tasks-compatibility-round69.txt",
+      "sha256": "8686d4dcd0b85a44e7915345eec3580474f764ab05cf07c49055e3f507ee1913",
+      "bytes": 5051,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "scope": "longprompt-baseline-pool-tasks-compatibility-round69",
+      "status": "completed-read-only",
+      "reviewed_by": "/root",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/longprompt-baseline-pool-tasks-compatibility-round69.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/static-quota-initializer-minimal-seam-round69.txt",
+      "sha256": "520358c99d169dce4a672da81e3b145fe526d0d093107a56b8d8afa5c6e5b744",
+      "bytes": 17058,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "scope": "static-quota-initializer-minimal-seam-round69",
+      "status": "completed-read-only",
+      "reviewed_by": "/root",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/static-quota-initializer-minimal-seam-round69.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/native-role-plan-host-build-link-contract-round70.txt",
+      "sha256": "3ff4a6e23ad077fa06fb562ba00512651e4db5dd55abf2baba930f6cd4ac2fe8",
+      "bytes": 10453,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "scope": "native-role-plan-host-build-link-contract-round70",
+      "status": "completed-read-only",
+      "reviewed_by": "/root",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/native-role-plan-host-build-link-contract-round70.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/iq4nl-nt1-exact-row-candidate-contract-round70.txt",
+      "sha256": "bd594fb4346d1575ead8fdcda1b0d6cfe57378338e39578bc1d41a8f30b485c4",
+      "bytes": 13976,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "scope": "iq4nl-nt1-exact-row-candidate-contract-round70",
+      "status": "completed-read-only",
+      "reviewed_by": "/root",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/iq4nl-nt1-exact-row-candidate-contract-round70.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/native-pool-actual-service-harness-seam-round71.txt",
+      "sha256": "072c4332d27b862f600085f0b70ed25a9c6cb229de07c2db19c58cd33c349949",
+      "bytes": 13169,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "scope": "native-pool-actual-service-harness-seam-round71",
+      "status": "completed-read-only",
+      "reviewed_by": "/root",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/native-pool-actual-service-harness-seam-round71.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/external-moe-service-weighted-offload-objectives-round71.txt",
+      "sha256": "145041b43ff706e39f70ff1f51df0c2c98f888fe78774d613fce8c0495b9193c",
+      "bytes": 9154,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "scope": "external-moe-service-weighted-offload-objectives-round71",
+      "status": "completed-read-only",
+      "reviewed_by": "/root",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/external-moe-service-weighted-offload-objectives-round71.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/native-role-plan-source-ownership-review-round72.txt",
+      "sha256": "56e248e2aee47611c573e8a8edb28718fbbf2ddae268b1d5efe4cc0d8ab23f9e",
+      "bytes": 10633,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "scope": "native-role-plan-source-ownership-review-round72",
+      "status": "completed-read-only",
+      "reviewed_by": "/root",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/native-role-plan-source-ownership-review-round72.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/long-prompt-reference-collector-source-review-round72.txt",
+      "sha256": "ead6061a09bd69726eb07c73afc15a1aa82ca663319056dea9d5cd5cf3a39792",
+      "bytes": 7282,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "scope": "long-prompt-reference-collector-source-review-round72",
+      "status": "completed-read-only",
+      "reviewed_by": "/root",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/long-prompt-reference-collector-source-review-round72.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/native-role-plan-production-integration-seam-round73.txt",
+      "sha256": "83ff1910b9a81e6f73500c717df7135545d54b0db93a52983df7f5fa71f56b45",
+      "bytes": 7976,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "scope": "native-role-plan-production-integration-seam-round73",
+      "status": "completed-read-only",
+      "reviewed_by": "/root",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/native-role-plan-production-integration-seam-round73.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/long-prompt-baseline-build-input-closure-round73.txt",
+      "sha256": "8465642025ed480ffa86c9917249b8c4cb0653b7ddd9337841a6db7af9b83290",
+      "bytes": 10941,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "scope": "long-prompt-baseline-build-input-closure-round73",
+      "status": "completed-read-only",
+      "reviewed_by": "/root",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/long-prompt-baseline-build-input-closure-round73.txt",
+      "round": 73
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/standalone-native-cpu-profiler-admission-round74.txt",
+      "sha256": "dc00c106bc6ea794d9031b1127bfd557fd785bc96d3204af3e1ab97821a4bb04",
+      "bytes": 11349,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "scope": "standalone-native-cpu-profiler-admission-round74",
+      "status": "completed-read-only",
+      "reviewed_by": "/root",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/standalone-native-cpu-profiler-admission-round74.txt",
+      "round": 74
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/native-pool-phase-specific-task-candidate-round75.txt",
+      "sha256": "e956576640ffdd0187687f29ecfd924a330fc399dca31eac17e8f44dd4c6a5ed",
+      "bytes": 11338,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "scope": "native-pool-phase-specific-task-candidate-round75",
+      "status": "completed-read-only",
+      "reviewed_by": "/root",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/native-pool-phase-specific-task-candidate-round75.txt",
+      "round": 75
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/long-prompt-reference-v2-admission-source-review-round75.txt",
+      "sha256": "9dd0a1ab6318e6aff6d049abe0ba7e59169b7149c33904b03ee1c68ba0af5ed9",
+      "bytes": 9124,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "scope": "long-prompt-reference-v2-admission-source-review-round75",
+      "status": "completed-read-only",
+      "reviewed_by": "/root",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/long-prompt-reference-v2-admission-source-review-round75.txt",
+      "round": 75
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/native-pool-ff-quant-parallel-phase-round76.txt",
+      "sha256": "72286cbe1ab05b370b0a2a2e3b16ae4f4c0df2c68ead8248999cbaa3deae52e9",
+      "bytes": 9274,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "scope": "native-pool-ff-quant-parallel-phase-round76",
+      "status": "completed-read-only",
+      "reviewed_by": "/root",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/native-pool-ff-quant-parallel-phase-round76.txt",
+      "round": 76
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/sycl-prefill-submission-dependency-optimization-round76.txt",
+      "sha256": "b5923ca5171f90eba68d0a75e9571b235e0531c8154ad8228f3650e33dcbaa64",
+      "bytes": 7277,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "scope": "sycl-prefill-submission-dependency-optimization-round76",
+      "status": "completed-read-only",
+      "reviewed_by": "/root",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/sycl-prefill-submission-dependency-optimization-round76.txt",
+      "round": 76
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/native-service-host-v1-independent-source-review-round77.txt",
+      "sha256": "c9b40448da98e77c3697f68643b4b8b95ce4f4ee9ebf42bea44e9c7939c64347",
+      "bytes": 7813,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "scope": "native-service-host-v1-independent-source-review-round77",
+      "status": "completed-read-only",
+      "reviewed_by": "/root",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/native-service-host-v1-independent-source-review-round77.txt",
+      "round": 77
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/long-prompt-reference-v3-admission-source-review-round77.txt",
+      "sha256": "f599284c82759148e7f8025f71e746f3620b72e4689ac32cdac5866d9fe55d7f",
+      "bytes": 7361,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "scope": "long-prompt-reference-v3-admission-source-review-round77",
+      "status": "completed-read-only",
+      "reviewed_by": "/root",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/long-prompt-reference-v3-admission-source-review-round77.txt",
+      "round": 77
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/native-service-host-runtime-boundary-and-r77-correction-round78.txt",
+      "sha256": "17d100fef6d871915de9de5c7d0789528213748a4d5ba28405471073613a3f5f",
+      "bytes": 9136,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "scope": "native-service-host-runtime-boundary-and-r77-correction-round78",
+      "status": "completed-read-only",
+      "reviewed_by": "/root",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/native-service-host-runtime-boundary-and-r77-correction-round78.txt",
+      "round": 78
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/levelzero-command-list-mode-qualified-tuning-plan-round78.txt",
+      "sha256": "926f93a19e7de83519f3508807b6933c395a75a5a6e5381ba54aa94c81e920fa",
+      "bytes": 13516,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "scope": "levelzero-command-list-mode-qualified-tuning-plan-round78",
+      "status": "completed-read-only",
+      "reviewed_by": "/root",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/levelzero-command-list-mode-qualified-tuning-plan-round78.txt",
+      "round": 78
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/exact-gu-down-nt-route-cohort-sufficiency-round79.txt",
+      "sha256": "5ab06d2c9d38d0445a30bba13c752d790e394dbd791e37683c14e1130b658638",
+      "bytes": 8031,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "scope": "exact-gu-down-nt-route-cohort-sufficiency-round79",
+      "status": "completed-read-only",
+      "reviewed_by": "/root",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/exact-gu-down-nt-route-cohort-sufficiency-round79.txt",
+      "round": 79
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/native-gu-activation-dependent-service-cost-round80.txt",
+      "sha256": "971a0c42d9912e1f07fa6dd35f8fdb85527e07df1e72ec5bfad3def5ee0b485a",
+      "bytes": 6218,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "scope": "native-gu-activation-dependent-service-cost-round80",
+      "status": "completed-read-only",
+      "reviewed_by": "/root",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/native-gu-activation-dependent-service-cost-round80.txt",
+      "round": 80
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/levelzero-v2-copy-offload-safe-overlap-round79.txt",
+      "sha256": "234c62a54e7606115f2b68b3b87ada26e254529710fe61f339e76cb77fff3634",
+      "bytes": 10046,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "scope": "levelzero-v2-copy-offload-safe-overlap-round79",
+      "status": "completed-read-only",
+      "reviewed_by": "/root",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/levelzero-v2-copy-offload-safe-overlap-round79.txt",
+      "round": 79
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/native-service-calibration-v1-independent-source-review-round81.txt",
+      "sha256": "f9fb64e37704b92083f2cf11d67f0f180492bc8e0a1a96bddc051627681d9d02",
+      "bytes": 4267,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "scope": "native-service-calibration-v1-independent-source-review-round81",
+      "status": "completed-read-only",
+      "reviewed_by": "/root",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/native-service-calibration-v1-independent-source-review-round81.txt",
+      "round": 81
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/sycl-prefill-overlap-aggregate-seam-round80.txt",
+      "sha256": "ccd2142932c8122af1252a1079130e5026411ae660f9aa8863274d1dfd2b13ed",
+      "bytes": 13970,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "scope": "sycl-prefill-overlap-aggregate-seam-round80",
+      "status": "completed-read-only",
+      "reviewed_by": "/root",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/sycl-prefill-overlap-aggregate-seam-round80.txt",
+      "round": 80
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/prefill-transfer-reuse-external-new-candidates-round81.txt",
+      "sha256": "e2718871a9c93ddbb4c0547edb4cfcdac03e00e992cd7b7b735788e51f6f6d4c",
+      "bytes": 6620,
+      "model": "gpt-6-luna",
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "scope": "New external prefill algorithms and transfer reuse candidates",
+      "status": "completed-read-only",
+      "reviewed_by": "/root",
+      "archive": "bench/results/2026-10-10-parallel-round35/research/prefill-transfer-reuse-external-new-candidates-round81.txt",
+      "round": 81
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/native-service-cohort-fit-holdout-first-cell-round82.txt",
+      "sha256": "757dcde3bc83d4eced6cc4941c35b36c38ee5ad73da6aa3b1e6c6aa6d43851eb",
+      "bytes": 11982,
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "model": "gpt-6-luna",
+      "scope": "Exact22/20NT1 first 192/192 routed cohort selection and production shape limitations",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/native-gu22-down20-nt1-external-kernel-candidates-round83.txt",
+      "sha256": "5342679346f1ea2d55bcfa45e2c50f8516b5828a5d2e785e18aefdc97463a39f",
+      "bytes": 9669,
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "model": "gpt-6-luna",
+      "scope": "Exact-format NT1 external kernel candidates and known-mechanism limits",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/native-pool-host-pin-construction-order-production-audit-round84.txt",
+      "sha256": "c7ae8f70842a0fa918915a823aadc304bd911e39372cfe540032e81d5abcc727",
+      "bytes": 8023,
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "model": "gpt-6-luna",
+      "scope": "Parent host pin/pool construction order audit; root SYCL-path correction",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/iq2s-nt1-paired-gu-exact-order-prototype-contract-round85.txt",
+      "sha256": "aa987f961e9aca22ea140ba7dd567b89ba12856865f0fde9fc021935ca07fa32",
+      "bytes": 14590,
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "model": "gpt-6-luna",
+      "scope": "Pinned IQ2S NT1 pair independent integer/FMA/reduction schedule",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/zen3-native-pool-heterogeneous-tail-candidates-round86.txt",
+      "sha256": "ea18276af6fae71e3c3e63617b87395e9117170ad59cbde05630b2a8636e57b9",
+      "bytes": 7556,
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "model": "gpt-6-luna",
+      "scope": "Heterogeneous NT task-grain novelty screen; no additional candidate",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/iq2s-nt1-actual-build-isa-static-admission-round87.txt",
+      "sha256": "e55db7e07c1884aa2f8279bd2707172e6fe179471b22cde2503f3577ada24f00",
+      "bytes": 7845,
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "model": "gpt-6-luna",
+      "scope": "Actual build static ISA admission; root linked ISA closes remaining gap",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/iq2s-nt1-q8k-legal-input-integer-bounds-round88.txt",
+      "sha256": "728c040c71736ac56623c5eb5a2c2589360e1df50b8574c389056749a187e31c",
+      "bytes": 10268,
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "model": "gpt-6-luna",
+      "scope": "Production-quantized ordinary Q8K input domain and saturation/int32 bounds",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/zen3-iq2s-nt1-decoder-instruction-alternatives-round89.txt",
+      "sha256": "dca290b4982a802afcca3fd41be6191cb9d2668effd86a64a66e7eeeec490a8e",
+      "bytes": 8572,
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "model": "gpt-6-luna",
+      "scope": "External decoder instructions narrowed to known mechanisms; no measured candidate",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/native-q8k-live-domain-aggregate-observation-contract-round90.txt",
+      "sha256": "aa6378bda45729dbbd72a9edfe394935a5830748aa7ee09560bc673722a9ffc3",
+      "bytes": 12403,
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "model": "gpt-6-luna",
+      "scope": "Diagnostic finite-input domain aggregate contract; root corrects alternate-checkout provenance",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/gdn-chunkwise-wy-config-parity-and-workspace-round82.txt",
+      "sha256": "6e19978d99197a1bd91b0ea6630adf3046978a7e2b46693c6980478eb59f1006",
+      "bytes": 13158,
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "model": "gpt-6-luna",
+      "scope": "Actual head mapping/36GDN layers and WY physical-context workspace",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/gdn-wy-bounded-sycl-kernel-feasibility-round83.txt",
+      "sha256": "cf2e0ff8f8b38c3b8d54c0b8f6f72669abf5006741c36241bb94f3bfb258c3b1",
+      "bytes": 13696,
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "model": "gpt-6-luna",
+      "scope": "Bounded WY chunk/persistent-kernel feasibility; not parity or speed",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/gdn-serial-subgroup-remap-exact-order-screen-round84.txt",
+      "sha256": "d5bebb9db033ded4a596e80f09820d2e10e880c0a5d86ec520f60fbb2c5c25ac",
+      "bytes": 5061,
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "model": "gpt-6-luna",
+      "scope": "Known HIP quad pattern adapted to exact-order SYCL subgroup32 candidate",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/gdn-wy-equation-oracle-independent-review-round85.txt",
+      "sha256": "129a58b916ebe5ad0f2eeb36b96752e748d6d088976736dfe00d097b1eb503b3",
+      "bytes": 7115,
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "model": "gpt-6-luna",
+      "scope": "Independent source derivation/review of separate CPU WY oracle",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/gdn-sycl-subgroup32-admission-fallback-contract-round86.txt",
+      "sha256": "0f027c0f6c55eb1c152e69cdc98346d520bd736e943b835089878f60b1d2b4b8",
+      "bytes": 10820,
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "model": "gpt-6-luna",
+      "scope": "Exact named-kernel pre-submit admission and no post-submit fallback",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/xe2-gdn-grf-compile-tuning-evidence-round87.txt",
+      "sha256": "0c1a597954beeef5c761ad9efd48ba8678b79745d11c878c79e1352eb535b85e",
+      "bytes": 5482,
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "model": "gpt-6-luna",
+      "scope": "Per-kernel GRF controls/counter evidence; target support unverified",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/gdn-sycl-quad-exact-order-semantic-review-round88.txt",
+      "sha256": "6dec29849869e82d9be60df5e6e49e7ef3a164c11e2fffb56429358de0c22c62",
+      "bytes": 9888,
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "model": "gpt-6-luna",
+      "scope": "Quad ownership/collective/staging proof and launch attribute correction",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/gdn-quad-existing-parity-coverage-audit-round89.txt",
+      "sha256": "4fad5a7c613d2dbef102a5573255e3f8858e5a26bca07d39bb2ffdce09a7a99f",
+      "bytes": 11302,
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "model": "gpt-6-luna",
+      "scope": "Actual existing keyhead parity gaps for candidate/tails/carry/fullcontext",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/xe2-gdn-quad-profiler-discriminator-evidence-round90.txt",
+      "sha256": "6658da4a8fb0fa94075ddff711c856969ee4a0f7beae61c5eba324a50b051a5e",
+      "bytes": 13527,
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "model": "gpt-6-luna",
+      "scope": "Primary unitrace/VTune discriminators with B570 counter support unknown",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/xe2-llamacpp-b580-new-implementation-transfer-screen-round91.txt",
+      "sha256": "2641fe61c76a9c317be7bb7810c9743b7ad4f55a0c52cd0750df28ad623301d4",
+      "bytes": 6628,
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "model": "gpt-6-luna",
+      "scope": "Pinned B580 implementer token-block GDN transfer screen; no speed transfer",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/gdn-token-block-staging-exact-order-transfer-contract-round92.txt",
+      "sha256": "299c24aab86615a08541534367d550f419d16b30f168061fbc371064367ca4be",
+      "bytes": 13508,
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "model": "gpt-6-luna",
+      "scope": "Quad plus token-block staging coverage/SLM/register/race contract",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/xe2-long-context-full-attention-transfer-screen-round93.txt",
+      "sha256": "0fd4081d10ab3f17f074a51d37539558546172af9151e221445db3f22f7754c5",
+      "bytes": 6348,
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "model": "gpt-6-luna",
+      "scope": "Long-context full-attention transfer screen; no new exact candidate",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/gdn-quad-v1-independent-source-safety-review-round94.txt",
+      "sha256": "6aeeacb70fcacce05055db3150c8d3c96b6a402a77ba79d1de41e81f9cc9717b",
+      "bytes": 7482,
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "model": "gpt-6-luna",
+      "scope": "Independent source safety review found failed-drain USM teardown defect; root source fix committed",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/iq2s-nt1-single-decoder-candidate-contract-round91.txt",
+      "sha256": "0e73687c0142adfa11ae3c477febb1a5ff8edbde57b674423ac32a69255d0fca",
+      "bytes": 14061,
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "model": "gpt-6-luna",
+      "scope": "Index-only candidate contract, scalar grid reads and independent arithmetic",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/iq2s-index-spread-lane-and-language-proof-round92.txt",
+      "sha256": "9d094d3b9556a180281144b1e0b88087d6c5edcf84939b22d8890e7f2ef408c8",
+      "bytes": 9186,
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "model": "gpt-6-luna",
+      "scope": "Byte/index lane and C++ intrinsic/language proof",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/zen3-iq2s-index-only-codegen-counter-contract-round93.txt",
+      "sha256": "74a15bd2df77b7dca10a5ef28caac3002bd1c25498c32de4ccda4fa715114b66",
+      "bytes": 14556,
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "model": "gpt-6-luna",
+      "scope": "Zen3 static codegen and minimal model-specific counter contract",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/iq2s-prototype-three-arm-attribution-review-round94.txt",
+      "sha256": "2e7bbc2d03939c5c77e9c02737bfade70fc597e1c37cf4c67e1e1268018fd640",
+      "bytes": 15802,
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "model": "gpt-6-luna",
+      "scope": "Baseline/control/index comparison attribution and shared adaptations",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/zen3-local-pmu-metadata-admission-round95.txt",
+      "sha256": "c39f1ad3bea3e01ab0e0c9a553caf7e9001810388a210d16e4b2ed89a1f5236a",
+      "bytes": 12046,
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "model": "gpt-6-luna",
+      "scope": "Observed5600X/PMU metadata, perf policy and correct Model21 scope",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/iq2s-mixed-lane-proof-and-offline-codegen-round96.txt",
+      "sha256": "176318ef6ec1ca44882cc8aeb826a2eced00b50c8c56741aadbd582f0d27434c",
+      "bytes": 9318,
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "model": "gpt-6-luna",
+      "scope": "Bijective mixed-lane/alignment coverage and offline codegen contract",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/iq2s-precise-fp-and-ub-qualification-round97.txt",
+      "sha256": "0acc73f4e5ed6d8b76f14a3fae1f061507d18cee15963d2079cbb6eff96eddca",
+      "bytes": 12253,
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "model": "gpt-6-luna",
+      "scope": "Precise contraction, MXCSR, admitted integer bounds and nonfinite distinction",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/iq2s-index-only-real-cohort-reader-contract-round98.txt",
+      "sha256": "765f26704223ecc54683a198537bd35524cfe25560c1d95d0ad0961332b24cb4",
+      "bytes": 14536,
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "model": "gpt-6-luna",
+      "scope": "Existing384-ID actual GU reader and IQ4NL Down640 format correction",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/iq2s-index-only-actual-linked-codegen-round99.txt",
+      "sha256": "64ef71a7e7e5c743c298055474c6bbcf2d41a96da37f28cf34f5dfb20d8f9408",
+      "bytes": 8160,
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "model": "gpt-6-luna",
+      "scope": "Actual index stack materialization and extra vector stack work; timing hold",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/iq2s-actual-linked-q8k-quantizer-fp-order-round100.txt",
+      "sha256": "7c4ba602fbec5c950064f93ef29dde9214aab4a317a4fa9fdf05a8b631b6ddc6",
+      "bytes": 7787,
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "model": "gpt-6-luna",
+      "scope": "Actual reference quantizer multiply/add order versus custom production quantizer gap",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/iq2s-register-index-independent-source-review-round101.txt",
+      "sha256": "768eea313f0dd0a8999a688893a723073347372d3f0771211c423c97c961746f",
+      "bytes": 7134,
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "model": "gpt-6-luna",
+      "scope": "Independent exact register-return source/ISA/lane and intrinsic store caveat review",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/iq2s-intelllvm-intrinsic-store-alias-contract-round102.txt",
+      "sha256": "ae872925c689cce5da3413c839da6de39b2a772e8072de19f793788b4a56bced",
+      "bytes": 4099,
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "model": "gpt-6-luna",
+      "scope": "Exact IntelLLVM packed may_alias intrinsic-store contract closes compiler-extension alias caveat",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/gdn-quad-root-fix-host-lifetime-review-round95.txt",
+      "sha256": "e011765e31ace96f2f07d544843758e711ba4861b4b26f9e0e21365650d3a1b1",
+      "bytes": 12257,
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "model": "gpt-6-luna",
+      "scope": "Independent review found ordinary host vectors unwinding before queue completion",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/gdn-quad-fail-stop-wrapper-independent-review-round96.txt",
+      "sha256": "28e5ed9cfe04f1f575e57a66212ccba8f94f843c4127b0122a3af04775190782",
+      "bytes": 12071,
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "model": "gpt-6-luna",
+      "scope": "Independent review of root no-unwind host-endpoint fix",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/gdn-quad-production-selector-phase-contract-round97.txt",
+      "sha256": "94fde0b794645a34033d291f0c294ed509ac4f43d36829c1c192571e8a0772ea",
+      "bytes": 6904,
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "model": "gpt-6-luna",
+      "scope": "Source production prefill selector versus independent decode step paths",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/iq2s-index-only-prototype-independent-source-review-round98.txt",
+      "sha256": "f5656a73af1218d9b706d8cd78ad8d2576133ec908782f3e7190f55b0501cfb9",
+      "bytes": 7812,
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "model": "gpt-6-luna",
+      "scope": "Independent standalone CPU source review and mixed-byte gap",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/gdn-quad-observed-spill-grf256-contract-round99.txt",
+      "sha256": "71b58c10c70967d24d7c14d28bce03f8742c3500c969be3351d8103da5bfc5fa",
+      "bytes": 13306,
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "model": "gpt-6-luna",
+      "scope": "Actual named spill5056/reference0, runtime-cost and target-support unknown",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/bmg-grf256-target-and-native-artifact-support-round100.txt",
+      "sha256": "162dbf5e6fd7103283f2ba738b82f65cc6931b2928fce10ffeed6eecf90efbca",
+      "bytes": 7428,
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "model": "gpt-6-luna",
+      "scope": "BMG general feasibility versus exact installed-property support gap",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/gdn-quad-exact-order-spill-source-variants-round101.txt",
+      "sha256": "99385d2600cf38b3c680eda320724aac316528d096d295ecc73b907a02d64de5",
+      "bytes": 10617,
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "model": "gpt-6-luna",
+      "scope": "Exact-order liveness source variants and corrected v2 target-image inventory",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/gdn-quad-quiet-prefix-independent-review-round102.txt",
+      "sha256": "4febfe77133f5a8b92f05639245ad053add3a307b2649dfa7f9e3a595af2acac",
+      "bytes": 9088,
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "model": "gpt-6-luna",
+      "scope": "Independent new quiet timing lifetime/pairing/service-interval review",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/bmg-installed-igc-neo-register-contract-round103.txt",
+      "sha256": "18f6be76c622918638369abb02e0191f39029bddbeaef9918cc2415376d97b46",
+      "bytes": 6822,
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "model": "gpt-6-luna",
+      "scope": "Installed compiler path ambiguity and exact target property support gap",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/gdn-quad-quiet-order-and-admission-discriminator-round104.txt",
+      "sha256": "8e17dd426b0411c7d64d86ecdc1669061f87c3d496da1dc8df788e78377b1e18",
+      "bytes": 9539,
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "model": "gpt-6-luna",
+      "scope": "Actual quiet order effect and bounded host admission/device event discriminator",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/gdn-executable-bundle-phase-reuse-contract-round105.txt",
+      "sha256": "e63dc3fae2c3a24e76cae9e08e110dec5515c67efbc4baf2d15ada6bb9e451b0",
+      "bytes": 16487,
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "model": "gpt-6-luna",
+      "scope": "Bundle reuse ownership contract; live source pins were concurrent edits, not claimed commit",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/iq2s-register-index-actual-linked-codegen-round103.txt",
+      "sha256": "ec808d80eafc4b4c4fc5e02d20f7a166e29e096e5cce90c47db9bf4ca36ee127",
+      "bytes": 5736,
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "model": "gpt-6-luna",
+      "scope": "Actual register revision linked codegen, local32B versus old184B; static qualification only",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/zen3-quantized-moe-implementer-blog-candidates-round104.txt",
+      "sha256": "5eeae1ab726bd111db479bbbe04e83b73910adcb5d052d2fdc01586610230983",
+      "bytes": 8739,
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "model": "gpt-6-luna",
+      "scope": "Other-engine/blog next NT1 candidate screen: no distinct supported factor",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/gdn-quiet-event-profiling-clock-and-error-contract-round106.txt",
+      "sha256": "798061b61ef8477c9a88327259b1c59d769a81681375e08842317a231bf1f9e2",
+      "bytes": 13147,
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "model": "gpt-6-luna",
+      "scope": "Frozen source provenance correction and post-drain profiling-error/clock contract",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/gdn-host-event-final-source-review-round107.txt",
+      "sha256": "8d86dc16adee19d3a773df51547b0a448f2ecb812beae1f66fbe7c343656b4fb",
+      "bytes": 6357,
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "model": "gpt-6-luna",
+      "scope": "Final host-event diagnostic lifetime/admission/async propagation source review",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/gdn-head-precompute-and-norm-implementer-blog-candidates-round108.txt",
+      "sha256": "30f2197ac8cd9ad50808d4551a2ee9d06aa04d92405a0476fb23700c3b29b22c",
+      "bytes": 12807,
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "model": "gpt-6-luna",
+      "scope": "External implementer precompute/fusion candidate screen; conditional same-slot decay exp",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/gdn-gate-buffer-production-ownership-round109.txt",
+      "sha256": "5ba9efcff728bb9a68bfb11e0ab29b6bfbee7f933a8c61c001fc90cdedff3985",
+      "bytes": 6674,
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "model": "gpt-6-luna",
+      "scope": "Production gate allocation/consumer/private prompt versus decode ownership",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/gdn-gate-native-exp-representation-contract-round110.txt",
+      "sha256": "5105c26602128fb3a4f784dacddaf2db15e2c43b628089dc039e5ae1d8ce5cc4",
+      "bytes": 8637,
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "model": "gpt-6-luna",
+      "scope": "Official native-exp/precise-FP representation limits and qualification",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/iq2s-real-cohort-three-arm-independent-review-round111.txt",
+      "sha256": "d65266bbb9ce14fb50d3b21502c45257af73893206a07f4cb2233169eb32186d",
+      "bytes": 6640,
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "model": "gpt-6-luna",
+      "scope": "Independent complete actual-cohort source review and missing custom implementation scope",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/gdn-host-event-order-interpretation-round112.txt",
+      "sha256": "dc9c20a75f40414210a3c0d199d5829322c43d1a73819b3d14d7be9d2eeb4aad",
+      "bytes": 10144,
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "model": "gpt-6-luna",
+      "scope": "Closed event interpretation and proposed query-schedule discriminator; root priority held by prior OFF evidence",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/native-q8k-production-custom-quantizer-source-closure-round113.txt",
+      "sha256": "92ff6c7139abc96394fa94e823ce6035f42dc84b91be2e02be6b6a3805eaa7dc",
+      "bytes": 10293,
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "model": "gpt-6-luna",
+      "scope": "Closed custom/reference source dispatch, absolute MXCSR and actual linked-emission gate",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/gdn-quiet-order-frequency-observation-contract-round114.txt",
+      "sha256": "cd63e1bd170b08e43ca1a0e1b7094d7a596491bd9f0077d3b01b40e07cca8299",
+      "bytes": 10390,
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "model": "gpt-6-luna",
+      "scope": "Quiet OFF query-absence source proof and conditional low-load frequency observation contract; no extra run priority",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round115-actual-linked-q8k-contract.txt",
+      "bytes": 9490,
+      "sha256": "f29049808c69f02d381eec8334a31c7b14822f6e3b25e3b78d6ea89809ccd60c",
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "model": "gpt-6-luna",
+      "scope": "Actual linked custom-Q8K FP/dispatch admission",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round116-actual-linked-iq2s-dot-contract.txt",
+      "bytes": 13722,
+      "sha256": "3e9f1404780dcc1f7d05e3a90dc3e9c815e6ea0a8dcbf44e5df32b2e1e92ff93",
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "model": "gpt-6-luna",
+      "scope": "IQ2_S linked contract and conditional next instruction candidate",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round117-external-cpu-nt1-next-candidate.txt",
+      "bytes": 6246,
+      "sha256": "dbbceb546d380dfd5dfb2c0e2fdb115823feae4df13be2d967b1a081d9ec68d3",
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "model": "gpt-6-luna",
+      "scope": "External CPU NT1 format-preserving candidates",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round118-external-prefill-next-candidate.txt",
+      "bytes": 6650,
+      "sha256": "c8720358302161ef837b22b39bca4c4292da87a326e92e8321cbd408b88670ab",
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "model": "gpt-6-luna",
+      "scope": "External exact-output prefill candidate search",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round119-actual-weight-runtime-admission.txt",
+      "bytes": 5175,
+      "sha256": "239e30868563306b3b39f252dd5afab9c322ef7e4f45f8cc5b75ba41f050b170",
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "model": "gpt-6-luna",
+      "scope": "Closed actual-weight Release/ASan admission review",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round120-iq2s-phase-integration-boundary.txt",
+      "bytes": 10786,
+      "sha256": "cc235c860bb0f819939295779c482662a994e5621e12996985947b3750a790f8",
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "model": "gpt-6-luna",
+      "scope": "Explicit prefill/decode selection and physical-context gates",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round121-iq2s-timing-source-admission.txt",
+      "bytes": 5360,
+      "sha256": "a724859b48e9ec1133ceb2c09df3286f7cd86192c1b6d17a16fc9aadb4bcd934",
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "model": "gpt-6-luna",
+      "scope": "Immutable timing source source-only contract and compile blocker",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round122-iq2s-timing-design.txt",
+      "bytes": 8340,
+      "sha256": "bdf87ebf7cf421d3049222e0b1827185d1ad8e2137de9ada70277f47522d819b",
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "model": "gpt-6-luna",
+      "scope": "Immutable timing source paired comparison and replication design",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round123-post-rejection-iq2s-next-candidate.txt",
+      "bytes": 5989,
+      "sha256": "adca1c6ebf2eddc0d660af7271a762ccd5caf83a1c9830c5168b32dd4708d80c",
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "model": "gpt-6-luna",
+      "scope": "Closed CPU rejection and conditional sign-scratch priority",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round124-gdn-gate-exp-qualification.txt",
+      "bytes": 10585,
+      "sha256": "55b8df393faa7c62865b02c285ac015d444ae8004fb04cdfcb5da3fe4fd2c99a",
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "model": "gpt-6-luna",
+      "scope": "Exact prefill factorization producer/all-consumer/scratch/FP admission",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round125-gdn-fp32-native-exp-domain.txt",
+      "bytes": 7597,
+      "sha256": "6b15f2eb106a4384929d32f6fa28f44c0538cf9c47a323e0c7302bf2b234ff3d",
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "model": "gpt-6-luna",
+      "scope": "Binary32 storage/materialization and native-exp domain limits",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round126-gdn-probe-async-usm-lifecycle.txt",
+      "bytes": 10870,
+      "sha256": "058c46c5bc9d0ab48de91d7a3412328b79057f25fc56e6cb8ccbee180b086df1",
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "model": "gpt-6-luna",
+      "scope": "USM, async failure, partial submit and process termination contracts",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round128-gdn-probe-async-source-admission.txt",
+      "bytes": 10535,
+      "sha256": "adc367efa32281bbe9c885b62c3ffefc297c1e0e951db66388db5898c3157039",
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "model": "gpt-6-luna",
+      "scope": "Corrected immutable private probe lifecycle and actual debug scripts",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true,
+      "original_agent_output_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/R/round128-gdn-probe-async-source-admission.txt"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round127-gdn-probe-numerical-source-admission.txt",
+      "bytes": 9364,
+      "sha256": "da6eaa162f718994760785dfda9e43b64f7de54f7e2ad92ddc15c0a9639d898e",
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "model": "gpt-6-luna",
+      "scope": "Corrected immutable probe numerical/layout source admission",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round129-b570-exact-pci-admission.txt",
+      "bytes": 7634,
+      "sha256": "dc9d5fba974d34214b33e311e5993804975fa06c5d0e266beabb6ed8cfed75d9",
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "model": "gpt-6-luna",
+      "scope": "Installed SYCL/native Level Zero exact selected-device PCI admission",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round130-installed-native-exp-lowering-provenance.txt",
+      "bytes": 6736,
+      "sha256": "183711c3fe246919e9b93812453b9e98c5490f54d258d2ea26b25c13218b9bc0",
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "model": "gpt-6-luna",
+      "scope": "Installed compiler/IGC native-exp lowering provenance and precise missing artifact",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round131-exact-igc-single-kernel-capture-controls.txt",
+      "bytes": 10195,
+      "sha256": "37d4839fa5b2f5049394b1b1d0cebbf05c3663cbf78b41fb4a995fd9bf7fda53",
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "model": "gpt-6-luna",
+      "scope": "Exact-tag IGC Release dump controls and unproven single-kernel/options/byte-cap prerequisites",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round132-cpu-prefill-batching-new-candidate.txt",
+      "bytes": 11460,
+      "sha256": "7faee162ac2d9610d320992af262f6c73fe775eb53670c221ee2ae9e0b51d63c",
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "model": "gpt-6-luna",
+      "scope": "Other-engine and implementer-blog CPU prefill multi-token/route scheduling candidate screen",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round133-exact-pci-source-admission.txt",
+      "bytes": 15055,
+      "sha256": "c76f6a0770708a1231d1cdd1ff2171c6d4c9964492233d7470a170d57c65689b",
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "model": "gpt-6-luna",
+      "scope": "Actual immutable exact-PCI startup source/ABI/bounds/refusal audit",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round134-optimized-prefill-native-caller-admission.txt",
+      "bytes": 6248,
+      "sha256": "a8fb8f5164579271853667957abc74d506378b0ab9986e8ed08897057cad3dcf",
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "model": "gpt-6-luna",
+      "scope": "Complete optimized prefill caller distinguishes native IQ GPU from verifier CPU route",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round135-owned-runtime-controller-reuse-audit.txt",
+      "bytes": 17714,
+      "sha256": "d983ba8064e47621844bf900cd5cd33e2064b3e504981c878b989f2ec67f346c",
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "model": "gpt-6-luna",
+      "scope": "Exact ownership/closure/limits/journal/controller exception adaptation risks",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round136-native-iq-gpu-prefill-new-factors.txt",
+      "bytes": 9143,
+      "sha256": "66d837fdca2934377e874e428ebbb9f3f2a312b8ce470ff2126860274dcda48c",
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "model": "gpt-6-luna",
+      "scope": "Native grouped IQ GPU prefill external factor screen, no distinct candidate",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round137-prefill-gate-factor-production-interface.txt",
+      "bytes": 8674,
+      "sha256": "f68b53d17fc5bc9fcb13fc475fe6f76babe64d3cf9c701fffa4cc186300cc65c",
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "model": "gpt-6-luna",
+      "scope": "Production factor interface and prefill-only integration scope",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round138-current-owner-controller-source-audit.txt",
+      "bytes": 12081,
+      "sha256": "d5363b04b50f5d49579d79fea5a6175cddb70b5a0acbd826f2d501f84764337f",
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "model": "gpt-6-luna",
+      "scope": "Actual owner v1 source bounds/identity schema and durable observation",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round139-public-pci-loader-driver-provenance.txt",
+      "bytes": 8598,
+      "sha256": "c3ded5a7979cbfe426f2badaade0cb9d9dec07e381d8a87931c9d9cfb3c59236",
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "model": "gpt-6-luna",
+      "scope": "Standard public PCI loader versus vendor driver-extension resolver failure",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round140-gdn-gate-exp-source-multiplicity.txt",
+      "bytes": 11213,
+      "sha256": "e112d8b4d86b50da327a3043f7045ad9d66e625ad61f1d9d8bed9d675832d054",
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "model": "gpt-6-luna",
+      "scope": "Source reader multiplicity and required real recurrence performance discriminator",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round141-gdn-factor-real-recurrence-oracle.txt",
+      "bytes": 11999,
+      "sha256": "3769a760c923f4fa4e369a9af052ebe63b1286eb8b76d8ec137a01b41664d161",
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "model": "gpt-6-luna",
+      "scope": "Concrete actual-state/conv/oracle and bounded full-prefix schedules",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round142-moe-prefill-transfer-new-candidates.txt",
+      "bytes": 8120,
+      "sha256": "baa15f94e03bb43626bdb2fbeb227d672bde380632bac56ce0089bd01ed5dfc1",
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "model": "gpt-6-luna",
+      "scope": "Conditional nonfused MMQ GPU grouping candidate, compiled route unresolved",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round143-gdn-factor-production-source-audit.txt",
+      "bytes": 8315,
+      "sha256": "75d5fcef58e9a2e82cb04dcc0685d62a31ef6d03fe6294aecff3569bb1ec3fcb",
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "model": "gpt-6-luna",
+      "scope": "Actual Sol factor copies, selector pairing, SYCL lifetime and default preservation",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round144-nonfused-mmq-gpu-grouping-interface.txt",
+      "bytes": 13582,
+      "sha256": "04c545f2eb9f05e99554660df846bedf315af5d0fc8de849f836154699d70de2",
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "model": "gpt-6-luna",
+      "scope": "Counts/off scratch publication and MMQ invariants; compiled stub correction pending",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round145-real-gdn-factor-parity-source-audit.txt",
+      "bytes": 8979,
+      "sha256": "9f52c8c6fbf4b4cc939ceca9ba1356584d93856994ee4fa469f4f1605d206926",
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "model": "gpt-6-luna",
+      "scope": "Actual root fixture input/guard/state carry and OFF-test gap",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round146-compiled-sycl-moe-grouping-route-correction.txt",
+      "bytes": 11887,
+      "sha256": "a2366cedbb511b45b293d2ef82eff6bfb572f726f5b75127d7ac4b9575eb4cf4",
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "model": "gpt-6-luna",
+      "scope": "Withdraw inactive MMQ/fused premise; compiled FP16/GEMM grouping seam",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round147-zen3-native-decode-new-factor-screen.txt",
+      "bytes": 6374,
+      "sha256": "fc516864906703ff36c10d4575e60648d49b2c7f0dec3dbf32cfbe96c491bb2a",
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "model": "gpt-6-luna",
+      "scope": "External exact-format Zen3 decode factor screen; no new candidate",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round148-active-iq-dequant-new-factor.txt",
+      "bytes": 10427,
+      "sha256": "78710cb072feb1d5199e43248c3bac8cdc009f97e558c043ad604f72dca747f6",
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "model": "gpt-6-luna",
+      "scope": "active-iq-dequant-new-factor",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round149-active-f16-gemm-launch-new-factor.txt",
+      "bytes": 9957,
+      "sha256": "18b9c67299cd9dca4df23d51c6f359722a8ae9c59e5ee13256fcb51842c6280f",
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "model": "gpt-6-luna",
+      "scope": "active-f16-gemm-launch-new-factor",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round150-active-route-group-defined-behavior-audit.txt",
+      "bytes": 10982,
+      "sha256": "0ecd9369af609ba99340a493eae43e00a1efd35174128d6b070aaff0db993fa8",
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "model": "gpt-6-luna",
+      "scope": "active-route-group-defined-behavior-audit",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round151-iq-format-specialization-admission-screen.txt",
+      "bytes": 12774,
+      "sha256": "8a763b98068e93edfb73c32e15523a0781eb796c08e61502d9bb125557c04a47",
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "model": "gpt-6-luna",
+      "scope": "iq-format-specialization-admission-screen",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round152-active-group-production-reachability.txt",
+      "bytes": 8433,
+      "sha256": "372b2883e7b7eed86d32fafc37e44f26c31568c2e545517368f99d8ab455b3d9",
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "model": "gpt-6-luna",
+      "scope": "active-group-production-reachability",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round153-f16-gemm-row-permutation-contract.txt",
+      "bytes": 10100,
+      "sha256": "1dc9efe94ae744f6eb3ad5a7b4bbcd9bfcd28ec03dd75edeb78c1a15350e7df9",
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "model": "gpt-6-luna",
+      "scope": "f16-gemm-row-permutation-contract",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    }
+  ],
+  "previous_committed_registry": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/report-registry-v59.json",
+    "bytes": 164081,
+    "sha256": "dc3ce37565d0bf9afb268012fe6667a7cb0623511497b57aa6fa9cc032b1db8d",
+    "storage_commit": "e2c712f79c315bfbe15b3a6c6ff0d2a5948e9e0b"
+  },
+  "scope": "Recurring read-only parallel research plus separate Sol source implementations; root actual six-route GDN proof and ongoing32K timer qualification",
+  "historical_field_policy": "Prior registries preserve historical assignment details. This schema carries report inventory and current closed evidence, without repeating stale running/decision fields.",
+  "new_reports": [
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round148-active-iq-dequant-new-factor.txt",
+      "bytes": 10427,
+      "sha256": "78710cb072feb1d5199e43248c3bac8cdc009f97e558c043ad604f72dca747f6",
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "model": "gpt-6-luna",
+      "scope": "active-iq-dequant-new-factor",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round149-active-f16-gemm-launch-new-factor.txt",
+      "bytes": 9957,
+      "sha256": "18b9c67299cd9dca4df23d51c6f359722a8ae9c59e5ee13256fcb51842c6280f",
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "model": "gpt-6-luna",
+      "scope": "active-f16-gemm-launch-new-factor",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round150-active-route-group-defined-behavior-audit.txt",
+      "bytes": 10982,
+      "sha256": "0ecd9369af609ba99340a493eae43e00a1efd35174128d6b070aaff0db993fa8",
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "model": "gpt-6-luna",
+      "scope": "active-route-group-defined-behavior-audit",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round151-iq-format-specialization-admission-screen.txt",
+      "bytes": 12774,
+      "sha256": "8a763b98068e93edfb73c32e15523a0781eb796c08e61502d9bb125557c04a47",
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "model": "gpt-6-luna",
+      "scope": "iq-format-specialization-admission-screen",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round152-active-group-production-reachability.txt",
+      "bytes": 8433,
+      "sha256": "372b2883e7b7eed86d32fafc37e44f26c31568c2e545517368f99d8ab455b3d9",
+      "agent": "/root/research_dense_mirror_phase_ownership",
+      "model": "gpt-6-luna",
+      "scope": "active-group-production-reachability",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round153-f16-gemm-row-permutation-contract.txt",
+      "bytes": 10100,
+      "sha256": "1dc9efe94ae744f6eb3ad5a7b4bbcd9bfcd28ec03dd75edeb78c1a15350e7df9",
+      "agent": "/root/research_prefill_algorithms_blogs",
+      "model": "gpt-6-luna",
+      "scope": "f16-gemm-row-permutation-contract",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    }
+  ],
+  "live_agent_snapshot": {
+    "time_utc": "2026-10-10T03:03:43.719607+00:00",
+    "method": "Assignments issued after full report review; verify actual statuses on resume",
+    "agents": [
+      {
+        "agent": "/root/research_dense_mirror_phase_ownership",
+        "model": "gpt-6-luna",
+        "round": 154,
+        "status_at_dispatch": "assigned",
+        "scope": "Independent actual32K component timer source audit"
+      },
+      {
+        "agent": "/root/research_prefill_algorithms_blogs",
+        "model": "gpt-6-luna",
+        "round": 155,
+        "status_at_dispatch": "assigned",
+        "scope": "Compact layer-major grouping transfer screen"
+      },
+      {
+        "agent": "/root/implement_repeat_capture_reader_hardening",
+        "model": "gpt-6.1-sol",
+        "status_at_dispatch": "completed-source-only",
+        "handoff": "implementation-gdn-factor-component-timing-v1.txt"
+      }
+    ]
+  },
+  "current_root_decisions": {
+    "CPU_register_index": "REJECT previous twelve real-weight process/cell medians; no reimplementation.",
+    "GDN_primitive": "PASS actual B570 typed root0000:05:00.0:15cases/75stages/7970640bit comparisons;three8K fingerprints equal,normal0,empty ownedSID,newkernel journal interval clean.",
+    "GDN_primitive_receipt": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gdn-gate-factor-probe-runtime-v2/record.json",
+      "bytes": 11435,
+      "sha256": "d101225b5206311e3a7c867d49a29844878187f94d5ba6ff555c0238fec44228"
+    },
+    "GDN_real_candidate": "PASS actual source622a paired real gates+conv+recurrence+norm,132 chunks over six selector configs; state/history/y/half/guards/inputs bitwise equal. Normal0,emptySID,complete clean journal intervals. Tuned6chunks,16pipeline fallbacks per arm. Synthetic correctness only; model/full262144/performance pending.",
+    "root_execution": "All six owned GPU runs closed normally; root serial lock; new source11911c35 timer build/runtime not yet executed.",
+    "private_API_contract": "Typed explicit DecayFactor is allowed with buildON; env controls production prefill caller. Legacy public/decode APIs remain loggate.",
+    "R145_OFF_test": "Corrected independent API assertions rebuilt successfully and host contract passed on all six owned runs.",
+    "MoE_grouping": "Separate defaultOFF typed prototype3b018e44 unbuilt/unrun. R152 proves not selected in layer-major/server, and exact32768 prompt gives32767 batched tokens. HOLD adoption/benchmark attribution. Integer parity and actual GEMM row-permutation bitwise qualification required.",
+    "model_performance_this_wave": false,
+    "actual_physical_262144_lifecycle": false,
+    "adopted": false,
+    "next_gate": "Build and independently audit11911c35 component timer; quiet paired>=32768 repeated component samples; actual model and physical262144 lifecycle before adoption.",
+    "GDN_real_proof_commit": "00d9c24e1355eec9682356f9f6a89b40ddd19081",
+    "IQ_specialization": "R151 narrows R148 to type20 IQ4_NL flat/down,manifest39/48 layers. Unimplemented/unmeasured; runtime reachability and per-output exactness prerequisite.",
+    "GEMM_batch": "R149 same-ne adjacent pair conditional/unimplemented/unmeasured; independent experiment,not bundled with grouping."
+  },
+  "report_provenance_corrections": {
+    "R113_R115_R117_R119_hash_transcriptions": {
+      "reason": "Original report hashes for ggml-quants.c are invalid/mistranscribed. Do not copy report text as an identity.",
+      "actual_path": "/home/yayoi/orca/workspaces/Strata/ggml-sycl-pinned/ggml/src/ggml-quants.c",
+      "frozen_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-source-snapshots/iq2s-custom-quantizer-d68516f4/pinned-ggml/ggml/src/ggml-quants.c",
+      "identity": {
+        "bytes": 228250,
+        "sha256": "07143d7068936ae46b3c528b2f3d4bbb666e74d88992165716174d243573965d"
+      },
+      "method": "Root SHA256 directly from identical current and immutable file bytes"
+    },
+    "R122_expert_shuffle": {
+      "reason": "Expert order is fixed; seed rotates only arm offset. R122 sentence claiming expert shuffle is incorrect.",
+      "source": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-actual-cohort-timing-20261010/sycl/tools/native-service-calibration/native_service_calibration.cpp",
+      "source_identity": {
+        "bytes": 36400,
+        "sha256": "a69be85d36a56b34bcdcd21545ca155c204d28f388852eeae3eca321c87981db"
+      }
+    },
+    "R121_compile_blocker": {
+      "reason": "R121 independently found the vector-vs-array order_hash mismatch in immutable v1; root preserved the first failed build then fixed the private helper in 156bef6d. Fresh Release and ASan/UBSan builds pass on corrected immutable v2."
+    },
+    "Sol_timing_handoff": {
+      "reason": "Trait vec_dot has eight arguments; switch is inside the timed region. Original handoff preserved. Root source comments/readme corrected before the source commit."
+    }
+  },
+  "timing_result_commit": "bd01b72ed35e89dd5de9b41abeeaab120ee65c9e",
+  "qualification_result_commit": "906cac75a6f3f48a85e059c64c45393b96a2edc4",
+  "recurring_research_policy": {
+    "models": "Multiple gpt-6-luna researchers, distinct scopes; separate gpt-6.1-sol implementation if useful",
+    "share": "Past R directory, latest committed registry, immutable source pins and prior root decisions in every assignment",
+    "intervention": "No midtask intervention; fully read completed reports before follow-ups",
+    "execution": "Root owns all builds, tests, CPU/GPU work, profiling, Git and cleanup under shared lock; research never executes these",
+    "repeat": "Assign new reviewed-result or source/qualification gaps while root continues independent tuning. Record concrete dependency when there is no new admissible gap."
+  },
+  "additional_provenance_corrections": {
+    "R123_ratio_ranges": "All process/cell paired register/direct medians are1.199..1.230, not20..32% slower than direct in the later scratch paragraph. Direct/trait medians span1.034..1.091;5–6% is only shorthand for many cells.",
+    "R126_script_availability": "Both pinned parent scripts exist in b7436c79 worktree; R128 directly verifies their bytes and corrects the prior absence claim. Original R126 remains unchanged.",
+    "R128_output_path": "Agent interpreted shorthand R as a literal B/R directory; root copied identical bytes to the canonical shared research directory. Only one committed report copy is required.",
+    "R132_scope": "Native verifier-only statement applies to multi-token CPU kernels; optimized prefill has conditional native IQ GPU grouping, independently shown by R134. Original R132 preserved unchanged.",
+    "R140_gate_count": "48 unique gates/token;24576 source work-item expressions/token. Original report24576 gate scalars/token is incorrect,not emitted SFU count.",
+    "R141_quad_carry": "Old quad --prefix fixture does carry recurrence state. Missing conv/full model coverage remains correct; no tolerance adoption.",
+    "R142_R144_compiled_route": "Migrated fused source is not currently linked: actual SYCL CMake uses aborting stub. Candidate inactive/unqualified until compiled-route correction.",
+    "R153_pin_transcription": "Original report has truncated/mistyped pin strings (particularly blas_utils.hpp); root actual byte/hash identities retained separately in verified-source-pins.json. Original report unchanged. Numerical/source claims are not binary performance proof."
+  },
+  "implementation_handoffs_current_batch": [
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/implementation-iq2s-real-cohort-timing-v1.txt",
+      "bytes": 7138,
+      "sha256": "440b3fca81c026454b4d94f8f24f7f4f6a1349825e95714787748fe328efc707",
+      "model": "gpt-6.1-sol",
+      "status": "completed-source-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/implementation-gdn-gate-factor-probe-v1.txt",
+      "bytes": 6211,
+      "sha256": "6c9da29d58424cddf8b5755683e9442534d680c852115f64201abf96f885e954",
+      "model": "gpt-6.1-sol",
+      "status": "completed-source-only",
+      "root_full_report_reviewed": true,
+      "committed_in_probe_source": "a0d25a1564dc32b4c8f8a9875b172ad44ea5063a"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/implementation-gdn-probe-exact-pci-v1.txt",
+      "bytes": 6333,
+      "sha256": "366333bdf3c1339dded73bf515f3cdd28acb14a1228dc71aa30b676cd0bcdc6f",
+      "model": "gpt-6.1-sol",
+      "status": "completed-source-only",
+      "root_full_report_reviewed": true,
+      "root_build_evidence_commit": "00ccf742bb0a39a6c6d5d7aba9b43d7a1a9f4518"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/implementation-gdn-prefill-gate-factor-v1.txt",
+      "bytes": 9760,
+      "sha256": "f24b37eb3316313519561ddd2ca8f4685b34c947b10960f6aa5718110fd63e74",
+      "model": "gpt-6.1-sol",
+      "status": "completed-source-only",
+      "root_full_report_reviewed": true,
+      "source_commit": "cbc77580050a327538be48b0ba7a759c14f7a49f"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/implementation-sycl-active-route-group-v1.txt",
+      "bytes": 9361,
+      "sha256": "871bb7a2efef684e6f44b09017f3f7002b1f6a262f1e0d5b2f36d2659ac917e6",
+      "model": "gpt-6.1-sol",
+      "status": "completed-source-only",
+      "root_full_report_reviewed": true,
+      "source_commit": "3b018e44727ea2085c8afe7695acfad3835e49e7"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/implementation-gdn-factor-component-timing-v1.txt",
+      "bytes": 8214,
+      "sha256": "a00a9c9c7ad91669841a0ce8dc1d59718476f1be9579ffc787d5a0325c767620",
+      "model": "gpt-6.1-sol",
+      "status": "completed-source-only",
+      "root_full_report_reviewed": true,
+      "source_commit": "11911c35b69f4d7fe22c23122e6f2a16987ae7ed"
+    }
+  ]
+}

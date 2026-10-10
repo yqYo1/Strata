@@ -1,0 +1,58 @@
+# R148 — active native IQ-to-FP16 dequant factor screen
+
+Date: 2026-10-10. Read-only review of fixed WPROBE609a270d source and public primary sources. No edit, compiler/disassembler, build, test, runtime/model, GPU, profiler, Git, or cleanup operation was performed. This report selects at most one source-level candidate; no speed result is claimed.
+
+## Finding and candidate
+
+One narrow candidate remains for a root-owned discriminator: **specialize the active IQ dequant launch on the GGML type so `dq_dispatch` does not execute a runtime format switch in every work-item.** Keep a fallback for all other types. Apply only to the native expert formats actually seen in model metadata; the current dispatcher maps type 21 to IQ3_S, 22 to IQ2_S, and 23 to IQ4_XS (`iq_kernels.dp.cpp:2725-2753`). The type-22/type-23 distinction matters: `iq_dequant_f16` supports both; type 23 is IQ4_XS, not IQ3_S.
+
+This is a hypothesis, not an adoption recommendation. `dequant_flat_kernel` and `dequant_gu_kernel` pass the runtime `ty` argument to `dq_dispatch`; every work-item then encounters the same switch, whose arms name all supported formats. A type-specific kernel instantiation and host-side type dispatch could remove those other-format branches from the per-work-item path and enable constant folding/inlining around one decoder. The decoded bytes, grid/table values, arithmetic sequence, lane-to-output mapping, and FP16 conversion would stay the same. The compiler may already lower the uniform switch cheaply, so any gain could be negligible; only an actual isolated comparison can qualify it.
+
+The smallest source seam is `sycl/src/kernels/cuda/iq_kernels.dp.cpp:2725-2773,4292-4317,4390-4418`: add format-specialized flat and GU launch kernels for the admitted type IDs, keeping `dq_dispatch` for fallback. The precedent is structural, not performance evidence: upstream llama.cpp's SYCL `convert.cpp` maps IQ2_S, IQ3_S, and IQ4_XS to distinct format-specific dequantizer functions (`get_to_fp16_sycl` switch, lines 3135-3148) and gives each its own launch routine (lines 2635-2738). The existing Strata kernel already has per-format helpers, so the proposed factor is only removal of the generic in-kernel switch, not a new decoder or an upstream code copy.
+
+## Linked route, per-call shape, and storage
+
+The fixed build confirms this is an actual compiled translation unit, not merely a file in the tree. `sycl/CMakeLists.txt:71-90` resolves requested `.cu` files to their `.dp.cpp` migrated copies; `:249-262` lists `iq_kernels.cu`, builds its resolved file into `strata_kernels`, and `:273` links that library into `strata_engine`. The actual file is `sycl/src/kernels/cuda/iq_kernels.dp.cpp`.
+
+In the ordinary native-IQ prefill fallback, `prefill.cpp:4778-4803` calls `iq_dequant_gu_f16` and `iq_dequant_f16`, then FP16 GEMM, SwiGLU, and the down FP16 GEMM. R146 (`round146-compiled-sycl-moe-grouping-route-correction.txt`) establishes that the SYCL build uses the non-MMQ host-group path here: the fused and MMQ translation units are not linked for this build, and runtime flags do not make those stubs into an active alternative. This report therefore evaluates the linked dequant-to-FP16 route, not a hypothetical fused/MMQ consumer.
+
+For the current compiled MoE dimensions (`N=n_embd=2560`, `n_ff=640`; see the caller’s `1280`, `2560`, and `640` workspace/GEMM dimensions at `prefill.cpp:1351,4799-4802`):
+
+- GU is two matrices, each `[n_ff,n_embd] = [640,2560]`. `iq_dequant_gu_f16` sets `per_row=10` 256-value blocks and launches `2 * n_ff * per_row = 12,800` work-groups of 32 work-items, one group per block and gate/up parity (`iq_kernels.dp.cpp:4390-4415`). It writes `2 * 640 * 2560 = 3,276,800` FP16 elements (6,553,600 bytes) in interleaved gate/up row order expected by the GEMM (`include/strata/kernels/iq_kernels.hpp:34-38`).
+- Down is `[n_embd,n_ff] = [2560,640]`, flattened as `n=1,638,400` values. `iq_dequant_f16` launches `n/256=6,400` groups of 32 work-items (`iq_kernels.dp.cpp:4292-4317`), writing 3,276,800 bytes of FP16.
+- Thus the native fallback writes 9,830,400 bytes (9.375 MiB) of decoded FP16 weights per expert, before the downstream GEMMs read them. This is a source-derived volume for these dimensions, not a claim about the fraction of runtime or a bandwidth measurement. `prefill.cpp:1351` allocates a two-slot GU/down FP16 ring. The candidate adds no buffer, cache, or persistent decoded-weight expansion.
+
+The active per-format work already has useful properties which this candidate does not change. `dq_iq2_s` / `dq_iq3_s` generate 8 output values per lane from their codebook indices and scale/sign fields (`:2417-2465`). `store_run<half,8>` packs each 8-value run into one 16-byte vector store (`:2371-2385`). A 32-work-item group covers one 256-value superblock; the code reads the packed weights once for that block. Repeating full-block predecode, changing the store layout, reordering lane shape, table staging, or changing subgroup size would repeat prior screens or add a separate mechanism, so none is included in this candidate.
+
+`prefill.cpp:242-243,1351,4725-4726,4780-4803` fixes the two-slot FP16 expert ring and submits dequant then GEMM on the same compute queue. The unchanged `q=j%DQ` slot must not be reused before its corresponding GEMM has consumed it; staged `blob_dev` must remain live until its queued reads complete. The dequant helpers mark input and output pointers `__restrict__` (`iq_kernels.dp.cpp:2757-2767`), so their non-aliasing contract must remain true. Preserve the current queue ordering and staging-slot event rules; no new async path, scratch, or cross-call cache is proposed.
+
+## Exactness and limits
+
+The specialization must call the same decoder helper and preserve its expression order, integer index arithmetic and destination offset. In particular, type 22 uses `qs | ((qh << shift) & 0x300)`, the IQ2_S scale expression, sign byte and 8-value grid; IQ3_S uses two IQ3_S grid indices, qh bits, its scale and sign fields; type 23 uses IQ4_XS scale/index expansion and `kvalues_iq4nl` (`:2417-2465,2530-2544`). Do not replace floating operations with integer approximations, regroup multiplication, or alter table contents.
+
+Keep `cvt<half>` and `store_run` exactly as they are (`:2363-2385`), including their automatic FP16 conversion. Exact comparison must include normal values, FP16 subnormals and signed zero, and any exceptional/overflow cases representable from legal packed inputs. Do not substitute a different rounding mode or fast-math path. `sycl/CMakeLists.txt:66` uses `-fp-model=precise`; this factor does not request compiler flags or an ISA change. Bounds remain the existing multiple-of-256 guards and int64 block indexing (`:4292-4293,4390-4393,2760-2773`); no new pointer reinterpretation or shift is needed, so it introduces no new overflow/undefined-behavior mechanism if those expressions are copied unchanged.
+
+## External evidence and excluded leads
+
+- The upstream [llama.cpp SYCL `convert.cpp`](https://github.com/ggml-org/llama.cpp/blob/master/ggml/src/ggml-sycl/convert.cpp) dispatches IQ2_S, IQ3_S, and IQ4_XS to per-format routines (accessed 2026-10-10; lines 2635-2738 and 3135-3148). This demonstrates a working code organization for distinct IQ format launchers; it gives no measured gain for Strata’s expert shapes and is not treated as a performance result.
+- Intel’s [oneAPI GPU Optimization Guide 2024.2](https://cdrdv2-public.intel.com/824351/oneapi_optimization-guide-gpu_2024.2-771772-824351.pdf) discusses subgroup shuffle and work-item mapping as device-specific tools. It does not identify a faster Strata IQ2_S/IQ3_S dequant layout; changing SIMD/subgroup shape is not part of the selected factor.
+- R136 already screens GPU expert grouping, quantized-weight reuse, local decoded tiles, tile sizing, XMX, and cross-engine kernels; R146 corrects the compiled SYCL path and rejects reuse of the unlinked fused/MMQ implementations. R9 covers prefill dequant caching/layer lifetime. Existing source also already vectorizes FP16 stores. I do not re-propose those ideas, an all-layer FP16 cache, an unlinked MMQ kernel, or new store/unroll/subgroup/compiler-flag variants.
+
+## Minimal discriminator for root
+
+The current audit does not show that a particular >=32K request selected this native fallback or that dequant dominates it. First record bounded per-layer counts for `lay.native`, `f.gu_type`, `f.d_type`, `n_embd`, `n_ff`, selected branch and dequant calls; the source-only route is not runtime proof. For the fixed shape above, time the actual GU and down helper separately from staging and GEMM in a diagnostic run, and retain only per-call/aggregate samples and output hashes needed for the comparison.
+
+Compare generic-dispatch baseline against one opt-in type-specialized arm on the same actual weights, same >=32K prompt, chunking, cache, ring and model settings, with multiple paired runs. In a separate correctness-only run, compare every produced FP16 output byte/hash for each admitted matrix, then compare gate/up/down GEMM outputs, SwiGLU outputs, and downstream model states/logits. Do not let hash collection or added synchronization contaminate the timing samples. Accept only if the specialized arm is observed, all exact outputs match, isolated dequant time improves repeatably, and total prefill improves beyond run variation; otherwise reject it. No speedup estimate or hotspot attribution is made by this report.
+
+## Source pins
+
+Fixed worktree: `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-gate-factor-probe-20261010`, WPROBE609a270d. SHA-256:
+
+- `sycl/src/kernels/cuda/iq_kernels.dp.cpp`: `22c2fb9c379804c2fc20ae302be05ad0f1c66bc623c6134bd7822057ffbba13a`
+- `sycl/src/kernels/cuda/dequant_bf16.dp.cpp`: `af62aba821491b6b1e1f52325736be6b01c2fbbb612b402a94e9b03a8624b79b` (generic dense IQ wrapper; primary MoE call is direct in `prefill.cpp`)
+- `sycl/src/prefill/prefill.cpp`: `f3c9bb38b46cdc111e9e663cc606d655f60f07c05873aff5499d51895e886c77`
+- `sycl/src/prefill/gemm.dp.cpp`: `11a2c943ccc323c328b58d99119d77b3b4ed95c92a0f680480bf5ede96bcb705`
+- `sycl/CMakeLists.txt`: `5911b38ff78b7d185ffd92ee34d0360f272e003b558ae7a3fa0707a1e684f9b6`
+- `include/strata/kernels/iq_kernels.hpp`: `e3750f39de3957ff8bbd0ecc9d77d0e394f34984935f528c908d107aa62a62b3`
+
+Prior decisions consulted: R9, R136, and R146. External pages were read on 2026-10-10.

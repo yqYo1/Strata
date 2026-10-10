@@ -1,0 +1,7 @@
+# Recurring parallel optimization work
+
+Root renewed both Luna scopes after fully reviewing each returned report while continuing real GDN qualification. R148–153 originals are preserved unchanged;260 read-only reports are reviewed in the registry. Separate Sol produced typed route grouping and32K component timing source; root owns all tests and builds.
+
+New findings: grouping is intentionally excluded from current compact layer-major/server paths and from an exactly32768-token standard CLI prompt because one token is left for generation. It is held until a relevant path and numerical parity are established. The type20 dequant specialization and equal-ne GEMM batching are conditional, unimplemented ideas. Source/document evidence supplies no speed or row-permutation bitwise guarantee. R153 pin transcription is corrected separately with actual file identities.
+
+Root actually passed six selector configurations of paired GDN producer/conv/recurrence/norm:132 paired chunks, carried state/history, full exact outputs/inputs/guards, normal0 and clean complete kernel intervals. Original host-script and missing-oneMKL startup failures are preserved; neither launched GPU work. Proof commit00d9c24e. No speed/model/physical262144/adoption claim follows. New timer11911c35 still requires root compile and qualification. R154 audits it and R155 examines the actual compact layer-major grouping seam; status snapshots are timestamped assignments, not permanent live claims.

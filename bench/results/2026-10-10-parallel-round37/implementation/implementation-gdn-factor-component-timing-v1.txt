@@ -1,0 +1,116 @@
+Real GDN factor synthetic component timing v1
+SOURCE ONLY / UNBUILT / UNTESTED. No build/compiler/test/runtime/GPU/device/model/
+payload/profile/Git/lock/cleanup/services/reset performed. Root owns all serial
+qualification/execution. Only assigned fixture file/report edited; production
+kernels/prefill/CMake/flags/decode/other worktrees unchanged.
+Worktree owner base622a53eb9551aa4edca3720279a17cc1d2f2be19:
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-gdn-factor-component-timing-20261010
+Read existing fixture full, R143 production and R145 fixture source constraints;
+R140 correction48 unique gates/token vs24576workitemexpressions retained. Registry
+v59 owner SHAdc3ce37565d0bf9afb268012fe6667a7cb0623511497b57aa6fa9cc032b1db8d,
+storagee2c712f79c315bfbe15b3a6c6ff0d2a5948e9e0b historical only. Prior root B570
+per-dispatch bitwise PASS is separate evidence, not this changed-source execution.
+
+Changed path:
+sycl/src/prefill/gdn_gate_factor_parity.cpp
+22007 bytes SHA256 d355fb3a2302032fa4fe06ef6948a829c063c030fcfea367b6a41da433c2199c
+No new tensor/state/context allocations. Existing Fixture/guards/immutable/full
+compare code reused with optional quiet/publish arguments whose defaults preserve
+old noargs/host-only/prefix outputs/checks/stage/error handling. Existing short
+22chunks/267stages expected unchanged; root must verify counts/stdout contract.
+No change exact PCI identity/in_order/nonthrow sticky async collector/USM ownership.
+
+Explicit new argv only:
+--bench 32768 --chunk divisor1..8192 --repeats3..9
+argc7/exactflag positions, decimal finite admission before GPU construction.
+T fixed32768, chunk positive<=8192 dividing32768 (powers-of-two divisors), repeats
+3..9. No automatic timing on old modes. Known trace/validation/loader env variables
+must be absent for bench (even value0): STRATA_TRACE,STRATA_PREFILL_TIMING,
+UR_LOG_LOADER,UR_LOG_LEVEL_ZERO,UR_LOG_TRACING,UR_ENABLE_LAYERS,ZE_DEBUG,
+ZE_ENABLE_VALIDATION_LAYER,ZE_ENABLE_PARAMETER_VALIDATION,SYCL_PI_TRACE,
+SYCL_UR_TRACE,SYCL_TRACE,LD_PRELOAD,LD_DEBUG. Root must inspect broader actual env/
+external tracing; source cannot universally detect profiler/tracer attachment.
+Correctness diagnostic runs separate from clean quiet samples. No profiler started.
+
+Warmup: initialize both separate states/history with existing identical nonzero
+formula; run an entire32768 prefix, both actual gates+conv+recurrence+norm arms on
+each chunk, carry and exact comparisons. Cold/JIT warmup has no clock/sample.
+Then EVERY measured sample initializes/resets both arms' state/history to the same
+nonzero values before its full independent prefix. Input formulas retain global
+offset. Same prepared inputs/guards per pairedchunk, independent carried state and
+history perarm. Arm first=((sample+chunk_index)%2)!=0 rotates log/factor order;
+chunk1..8192 never cuts a sampled whole prefix. Odd repeats leave one extra first
+position across samples: owner must counterbalance fresh-process replication.
+
+Interval service_stage: prints/flushed STAGE before begin; begins steady_clock
+immediately before actual gdn_gates_encoded+gdn_conv+gdn_recurrence_encoded calls;
+ends after existing stage q.wait_and_throw and sticky async check return. Includes
+host API/admission/kernelbundle lookups/submission overhead and actual queued
+producer/conv/recurrence/norm completion; not event/kernel-only/device-time claim.
+No wait-free latency. Excludes prepare/upload/init/reset/readback/hash/compare/
+metadata/debugprinting/coldwarmup. Full drain at previousprepare precedes clock.
+Service includes tiny stage return/control overhead; no assumed subtraction.
+Postsubmit exception/async failure retains original _Exit2 fail-stop with no unsafe
+unwind/USM release. No retry/fallback added. Validated host failures afterdrain
+normalfail; Fixture final drain before buffer teardown; normalexit0 after teardown
+and terminalflush mandatory.
+
+After each pairedchunk outside clocks, existing materialized oldlog native-exp
+kernel/comparator, complete state/history/h/beta/factor-vs-materialized-exp/y/half
+bit comparisons, guards/tails and immutable input readbacks all remain. Numerical
+mismatch fails immediately; no tolerance. These checks can affect nextchunk cache/
+thermal state and are part of correctness-qualified component timing conditions,
+not clean standalone kernel throughput. No extra fullcontext outputs retained.
+No actual selector inferred from env: variant0/2 only printed; root binds named
+actual route using prior L0/sourcequalification and exact binary/profile evidence.
+
+Output schema:
+BENCH_SCOPE fixed synthetic_only=true/model=false/fullKV=false/performance_adopted=false,
+prefix32768,chunk,repeats,intervaldefinition.
+BENCH_WARMUP_COMPLETE32768/botharms/excluded/reset_before_every_sample.
+For each arm/chunk BENCH_CHUNK sample,chunkindex,offset,live,arm,position0/1,
+variant,seconds,state/history/y/half FNV. Exact helper hash covers complete guarded
+host buffer like old CHUNK_PASS. All checks precede hashes/printing.
+BENCH_SAMPLE perarm full32768 aggregate sum of its chunk service seconds, chunks,
+paired_chunk_bits/warmup_excluded. No postprocess speed ratio/statistical claim.
+BENCH_COMPLETE prefix/repeats/2*repeats armsamples/repeats*(32768/chunk) pairedchunks,
+synthetic_only/modelfalse/fullKVfalse/performance_adoptedfalse.
+Original final TERMINAL scope retained; root requires complete BENCH records plus
+normal0/flush/no async/error/fault/cleanup/survivors. Earlier records not success.
+
+Bounds: existing capacity cap=chunk<=8192, same20float+2halfUSM/hostmirrors. At8192
+logical device bytes approximately1.83GB including guards/fixedstate, same host
+mirror size; largest transient immutable qkv readback approximately336MB. Owner
+must increase appropriate RSS/AS/process/device budgets; caps not RSS guarantees.
+No extra fullcontextstates/outputbuffer. Benchmark scalar aggregate/2seconds only.
+Finite warmup+measured chunks=(1+repeats)*32768/chunk; max327680 atchunk1/repeats9.
+Max measured BENCH_CHUNK589824rows plus589824preclockSTAGErows; tinychunk modes
+can require >64MiB stdout and very long runtime despite finite loops. Suggested
+conservative bound256MiB stdout for smallestchunk and owner finitewall/resources;
+root first uses8192 where3repeats produce24chunkrows/24STAGErows/6aggregates.
+Do not infer allchunk modes fit a normal short deadline or fixed64MiB text cap.
+Quiet validation suppresses old percheck progress/CHUNK_PASS only in bench;
+FAIL_STOP diagnostics still emitted and bounded. Root chooses admissible resource
+profile, catches cap/timeout as failed not partialpass. No cleanup requested here.
+
+Root-only UNEXECUTED recipe: fresh sameflags factor/parityenabledbuild of existing
+root target gdn_gate_factor_parity; compile/link/binary/source hashes pinned.
+Under shared owned serial lock, clean owner-supervised profile:
+$BUILD/gdn_gate_factor_parity --bench 32768 --chunk 8192 --repeats 3
+Separate freshprocess profiles pipeline/columns/serial/quad/keyhead/tuned only
+after corresponding exact correctness/environment/routes admitted. Disable
+trace/validation for timing; retain owned PID/startticks/session/faultcursor and
+normalclose evidence externally. No actual command executed by implementer.
+
+Pending root gates: review source/diff; fresh actual CPU compile/hostadmission and
+sameflags GPU correctness/quiet qualification. Reconfirm noargs22chunks267stages,
+--host-only and --prefixstdout/error behavior. Strict badargv/zero/chunknotdivisor/
+repeatsoutside3..9/dirtyenv reject beforeGPU. Exact same B570rootPCI/inorder/handler.
+Warmup actually covers selected producer/conv/recurrence/norm kernels; state reset
+before eachprefix; allchunk exact data/guards/immutable; perarm full>=32K samples/
+counts/order/hash/carry checks and clean fault/normal0/no survivors. Record compiler
+JIT/flags/GRF/backend/taskselectors/identity independently; no source selectorpass.
+Synthetic projections/state cannot establish modelreachability/model32K speed,
+fullKV262144 lifecycle, decode math/performance/adoption. R140 expression counts
+are not SFU/instruction or measured speed. Root model/physical math/performance
+criteria remain separate. No estimated speedup or runtime result claimed.
