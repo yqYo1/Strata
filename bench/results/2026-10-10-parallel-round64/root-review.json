@@ -1,0 +1,43 @@
+{
+  "created_utc": "2026-10-10T10:12:49.292014+00:00",
+  "original_reports": [
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round233-storage-capacity-source-and-admission-audit.txt",
+      "bytes": 11903,
+      "sha256": "8bf3870ca9f304129330e29e48900445e778e2aa0faaafefad98cf4000bc9473",
+      "agent": "/root/research_bottleneck_evidence_audit_v203",
+      "model": "gpt-6-luna",
+      "scope": "Independent storage source/admission review; first full sample only",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round234-zfs-direct-read-extra-arc-prefetch-discriminator.txt",
+      "bytes": 11051,
+      "sha256": "932dc9cd9d7b8a32e14fc5b71337a7056c11574d3de4434513069c3b8bb8dab8",
+      "agent": "/root/research_native_iq4nl_esimd_k640_v202",
+      "model": "gpt-6-luna",
+      "scope": "Pinned ZFS DIO data/metadata ARC classification and read-only discriminator",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    }
+  ],
+  "corrections": {
+    "R233": "Accepted source and admission limits. Root subsequently completed all 15 repeated cells; report reviewed only the first full W1 sample. Sequential 1MiB alignment avoids crossing an extra possible 128KiB record per request, not merely a 4KiB boundary. Emergency-write compiler warnings are preserved and do not change a normal-path result.",
+    "R234": "Accepted pinned upstream distinction: DIO predictive data prefetch suppressed; indirect metadata demand/prefetch can use ARC. Pool-wide 4.30GB ARC delta remains unattributed. No claim that metadata or this PID caused all ARC traffic; no property, history, privilege or cache change."
+  },
+  "registry_identity": {
+    "bytes": 241848,
+    "sha256": "a5cc1908c197344d1a7b769dca9c7f8be451e3fe0d1930e26fa262d97e9edcb0"
+  },
+  "storage_summary_identity": {
+    "bytes": 27369,
+    "sha256": "77ed38e7edafb014a39061ea738f917eb8f57eb9e7fd9e29512660b0f966b94e"
+  },
+  "remaining": [
+    "actual matched32K PLE/PCIe/GEMM shape and critical-path ledger",
+    "complete internal oneMKL event span",
+    "full262144-position candidate validation"
+  ],
+  "adopted": false
+}

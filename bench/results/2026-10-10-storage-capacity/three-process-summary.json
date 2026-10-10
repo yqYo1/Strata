@@ -1,0 +1,856 @@
+{
+  "created_utc": "2026-10-10T10:12:49.289916+00:00",
+  "closed_pass": true,
+  "processes": 15,
+  "source": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/storage_capacity_v2.cpp",
+    "bytes": 27880,
+    "sha256": "5d32e4fb69adae2c85cdc48967132a7297bea8e8e2e8d7f5adc866f2fec280e9"
+  },
+  "binary": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/storage-capacity-v2-build/storage-capacity",
+    "bytes": 68296,
+    "sha256": "3e0c914ba343c41d1921e01daf3230ee164ec8f2a980bff4af6054cbedf5e704"
+  },
+  "boot_id": "0a908c16-e292-4299-80ff-082da39f4bb9",
+  "scope": "Attained same-file application payload rates, not absolute SSD or NAND capacity, physical QD, PLE service or model speed. Three fresh processes per cell; no cache reset/property change; samples not assumed independent of filesystem history. Counter snapshots are whole-process pool/block-global, not timer/file attribution.",
+  "counter_event_mean_bytes": 131072,
+  "cells": [
+    {
+      "mode": "sequential",
+      "workers": 1,
+      "fresh_processes": 3,
+      "logical_GBps": {
+        "median": 1.1504621558063008,
+        "min": 1.1295175712520147,
+        "max": 1.2066334429702532,
+        "individual_process_values": [
+          1.1295175712520147,
+          1.2066334429702532,
+          1.1504621558063008
+        ]
+      },
+      "IOPS": {
+        "median": 1097.1662099898347,
+        "min": 1077.1918976326128,
+        "max": 1150.735323877576,
+        "individual_process_values": [
+          1077.1918976326128,
+          1150.735323877576,
+          1097.1662099898347
+        ]
+      },
+      "wall_seconds_observed": {
+        "median": 25.031758862,
+        "min": 23.866478616,
+        "max": 25.495921442,
+        "individual_process_values": [
+          25.495921442,
+          23.866478616,
+          25.031758862
+        ]
+      },
+      "latency_median_ns": {
+        "median": 830202,
+        "min": 826536,
+        "max": 832888,
+        "individual_process_values": [
+          830202,
+          832888,
+          826536
+        ]
+      },
+      "latency_p95_ns": {
+        "median": 1241085,
+        "min": 1205509,
+        "max": 1282933,
+        "individual_process_values": [
+          1282933,
+          1205509,
+          1241085
+        ]
+      },
+      "latency_p99_ns": {
+        "median": 4977237,
+        "min": 1498069,
+        "max": 4977996,
+        "individual_process_values": [
+          4977996,
+          1498069,
+          4977237
+        ]
+      },
+      "whole_process_direct_DMU_to_timed_payload_ratio": {
+        "median": 0.9999635886979319,
+        "min": 0.9999635886979319,
+        "max": 0.9999772429362074,
+        "individual_process_values": [
+          0.9999772429362074,
+          0.9999635886979319,
+          0.9999635886979319
+        ]
+      },
+      "whole_process_leaf_to_timed_payload_ratio": {
+        "median": 1.112374238776216,
+        "min": 1.108296172944582,
+        "max": 1.118697004487693,
+        "individual_process_values": [
+          1.118697004487693,
+          1.112374238776216,
+          1.108296172944582
+        ]
+      }
+    },
+    {
+      "mode": "sequential",
+      "workers": 16,
+      "fresh_processes": 3,
+      "logical_GBps": {
+        "median": 2.2659742640904046,
+        "min": 2.1374565189296733,
+        "max": 2.2728237347966616,
+        "individual_process_values": [
+          2.2659742640904046,
+          2.1374565189296733,
+          2.2728237347966616
+        ]
+      },
+      "IOPS": {
+        "median": 2161.001457300572,
+        "min": 2038.4373845383388,
+        "max": 2167.533621594106,
+        "individual_process_values": [
+          2161.001457300572,
+          2038.4373845383388,
+          2167.533621594106
+        ]
+      },
+      "wall_seconds_observed": {
+        "median": 12.70892248,
+        "min": 12.670622373,
+        "max": 13.473065304,
+        "individual_process_values": [
+          12.70892248,
+          13.473065304,
+          12.670622373
+        ]
+      },
+      "latency_median_ns": {
+        "median": 7090532,
+        "min": 7069665,
+        "max": 7091865,
+        "individual_process_values": [
+          7090532,
+          7091865,
+          7069665
+        ]
+      },
+      "latency_p95_ns": {
+        "median": 8961463,
+        "min": 8944172,
+        "max": 9658234,
+        "individual_process_values": [
+          8961463,
+          9658234,
+          8944172
+        ]
+      },
+      "latency_p99_ns": {
+        "median": 10833645,
+        "min": 10702541,
+        "max": 30477068,
+        "individual_process_values": [
+          10833645,
+          30477068,
+          10702541
+        ]
+      },
+      "whole_process_direct_DMU_to_timed_payload_ratio": {
+        "median": 0.9999635886979319,
+        "min": 0.9999635886979319,
+        "max": 0.9999772429362074,
+        "individual_process_values": [
+          0.9999772429362074,
+          0.9999635886979319,
+          0.9999635886979319
+        ]
+      },
+      "whole_process_leaf_to_timed_payload_ratio": {
+        "median": 1.0136809778255171,
+        "min": 1.008954193444145,
+        "max": 1.0201414237729391,
+        "individual_process_values": [
+          1.0201414237729391,
+          1.0136809778255171,
+          1.008954193444145
+        ]
+      }
+    },
+    {
+      "mode": "random",
+      "workers": 1,
+      "fresh_processes": 3,
+      "logical_GBps": {
+        "median": 0.009111800729303314,
+        "min": 0.009080103212168388,
+        "max": 0.010242626201481038,
+        "individual_process_values": [
+          0.010242626201481038,
+          0.009111800729303314,
+          0.009080103212168388
+        ]
+      },
+      "IOPS": {
+        "median": 2224.5607249275668,
+        "min": 2216.822073283298,
+        "max": 2500.6411624709567,
+        "individual_process_values": [
+          2500.6411624709567,
+          2224.5607249275668,
+          2216.822073283298
+        ]
+      },
+      "wall_seconds_observed": {
+        "median": 29.460198261,
+        "min": 26.207678648,
+        "max": 29.563040169,
+        "individual_process_values": [
+          26.207678648,
+          29.460198261,
+          29.563040169
+        ]
+      },
+      "latency_median_ns": {
+        "median": 399111,
+        "min": 396536,
+        "max": 402859,
+        "individual_process_values": [
+          396536,
+          402859,
+          399111
+        ]
+      },
+      "latency_p95_ns": {
+        "median": 603666,
+        "min": 578868,
+        "max": 610589,
+        "individual_process_values": [
+          578868,
+          610589,
+          603666
+        ]
+      },
+      "latency_p99_ns": {
+        "median": 4100697,
+        "min": 768515,
+        "max": 4509726,
+        "individual_process_values": [
+          768515,
+          4100697,
+          4509726
+        ]
+      },
+      "whole_process_direct_DMU_to_timed_payload_ratio": {
+        "median": 31.99560546875,
+        "min": 31.99560546875,
+        "max": 31.9970703125,
+        "individual_process_values": [
+          31.9970703125,
+          31.99560546875,
+          31.99560546875
+        ]
+      },
+      "whole_process_leaf_to_timed_payload_ratio": {
+        "median": 48.44703674316406,
+        "min": 48.07551574707031,
+        "max": 48.76249694824219,
+        "individual_process_values": [
+          48.07551574707031,
+          48.76249694824219,
+          48.44703674316406
+        ]
+      }
+    },
+    {
+      "mode": "random",
+      "workers": 16,
+      "fresh_processes": 3,
+      "logical_GBps": {
+        "median": 0.050993481070258084,
+        "min": 0.05055013234143778,
+        "max": 0.05127337111556995,
+        "individual_process_values": [
+          0.05127337111556995,
+          0.05055013234143778,
+          0.050993481070258084
+        ]
+      },
+      "IOPS": {
+        "median": 12449.580339418477,
+        "min": 12341.340903671333,
+        "max": 12517.912870012195,
+        "individual_process_values": [
+          12517.912870012195,
+          12341.340903671333,
+          12449.580339418477
+        ]
+      },
+      "wall_seconds_observed": {
+        "median": 5.264113184,
+        "min": 5.235377549,
+        "max": 5.310281963,
+        "individual_process_values": [
+          5.235377549,
+          5.310281963,
+          5.264113184
+        ]
+      },
+      "latency_median_ns": {
+        "median": 1246045,
+        "min": 1238911,
+        "max": 1257466,
+        "individual_process_values": [
+          1238911,
+          1257466,
+          1246045
+        ]
+      },
+      "latency_p95_ns": {
+        "median": 1753290,
+        "min": 1751445,
+        "max": 1770873,
+        "individual_process_values": [
+          1751445,
+          1770873,
+          1753290
+        ]
+      },
+      "latency_p99_ns": {
+        "median": 2052011,
+        "min": 2047463,
+        "max": 2072640,
+        "individual_process_values": [
+          2047463,
+          2072640,
+          2052011
+        ]
+      },
+      "whole_process_direct_DMU_to_timed_payload_ratio": {
+        "median": 31.99560546875,
+        "min": 31.99560546875,
+        "max": 31.9970703125,
+        "individual_process_values": [
+          31.9970703125,
+          31.99560546875,
+          31.99560546875
+        ]
+      },
+      "whole_process_leaf_to_timed_payload_ratio": {
+        "median": 33.59458923339844,
+        "min": 33.40863037109375,
+        "max": 33.9644775390625,
+        "individual_process_values": [
+          33.40863037109375,
+          33.9644775390625,
+          33.59458923339844
+        ]
+      }
+    },
+    {
+      "mode": "random",
+      "workers": 64,
+      "fresh_processes": 3,
+      "logical_GBps": {
+        "median": 0.05307418508644007,
+        "min": 0.03705500094491645,
+        "max": 0.05313353487562344,
+        "individual_process_values": [
+          0.03705500094491645,
+          0.05307418508644007,
+          0.05313353487562344
+        ]
+      },
+      "IOPS": {
+        "median": 12957.564718369158,
+        "min": 9046.631090067493,
+        "max": 12972.054412994003,
+        "individual_process_values": [
+          9046.631090067493,
+          12957.564718369158,
+          12972.054412994003
+        ]
+      },
+      "wall_seconds_observed": {
+        "median": 5.057740511,
+        "min": 5.05209105,
+        "max": 7.244243669,
+        "individual_process_values": [
+          7.244243669,
+          5.057740511,
+          5.05209105
+        ]
+      },
+      "latency_median_ns": {
+        "median": 4906954,
+        "min": 4896134,
+        "max": 5147195,
+        "individual_process_values": [
+          5147195,
+          4906954,
+          4896134
+        ]
+      },
+      "latency_p95_ns": {
+        "median": 5505059,
+        "min": 5504069,
+        "max": 22999978,
+        "individual_process_values": [
+          22999978,
+          5505059,
+          5504069
+        ]
+      },
+      "latency_p99_ns": {
+        "median": 5897278,
+        "min": 5859886,
+        "max": 27006376,
+        "individual_process_values": [
+          27006376,
+          5859886,
+          5897278
+        ]
+      },
+      "whole_process_direct_DMU_to_timed_payload_ratio": {
+        "median": 31.99560546875,
+        "min": 31.99560546875,
+        "max": 31.9970703125,
+        "individual_process_values": [
+          31.9970703125,
+          31.99560546875,
+          31.99560546875
+        ]
+      },
+      "whole_process_leaf_to_timed_payload_ratio": {
+        "median": 32.76495361328125,
+        "min": 32.56439208984375,
+        "max": 33.07659912109375,
+        "individual_process_values": [
+          32.56439208984375,
+          33.07659912109375,
+          32.76495361328125
+        ]
+      }
+    }
+  ],
+  "samples": [
+    {
+      "mode": "random",
+      "workers": 1,
+      "repeat": 1,
+      "logical_bytes": 268435456,
+      "requests": 65536,
+      "wall_seconds_observed": 26.207678648,
+      "logical_GBps": 0.010242626201481038,
+      "IOPS": 2500.6411624709567,
+      "latency_median_ns": 396536,
+      "latency_p95_ns": 578868,
+      "latency_p99_ns": 768515,
+      "actual_peak_inflight_requests": 1,
+      "final_buffer_checked_bytes": 4096,
+      "planned_job_order_fnv": 6007490663408221155,
+      "receipt": "measure/random-w1-r1-record.json",
+      "receipt_identity": {
+        "bytes": 13727,
+        "sha256": "23743b63da531cd08d262d5547dea694b8fad9697e8f1264abc6c46a4b94c869"
+      },
+      "whole_process_direct_DMU_to_timed_payload_ratio": 31.9970703125,
+      "whole_process_direct_bytes": 8589148160,
+      "whole_process_direct_count": 65530,
+      "whole_process_ARC_read_bytes": 4301295616,
+      "whole_process_leaf_read_bytes": 12905172992,
+      "whole_process_leaf_to_timed_payload_ratio": 48.07551574707031
+    },
+    {
+      "mode": "sequential",
+      "workers": 1,
+      "repeat": 1,
+      "logical_bytes": 28798091264,
+      "requests": 27464,
+      "wall_seconds_observed": 25.495921442,
+      "logical_GBps": 1.1295175712520147,
+      "IOPS": 1077.1918976326128,
+      "latency_median_ns": 830202,
+      "latency_p95_ns": 1282933,
+      "latency_p99_ns": 4977996,
+      "actual_peak_inflight_requests": 1,
+      "final_buffer_checked_bytes": 1048576,
+      "planned_job_order_fnv": 13104395759642551151,
+      "receipt": "measure/sequential-w1-r1-record.json",
+      "receipt_identity": {
+        "bytes": 13808,
+        "sha256": "ba643cf94faeb2a9f207bcea344a5193c857c57cd41881f6753f3661902786f7"
+      },
+      "whole_process_direct_DMU_to_timed_payload_ratio": 0.9999772429362074,
+      "whole_process_direct_bytes": 28797435904,
+      "whole_process_direct_count": 219707,
+      "whole_process_ARC_read_bytes": 3406358016,
+      "whole_process_leaf_read_bytes": 32216338432,
+      "whole_process_leaf_to_timed_payload_ratio": 1.118697004487693
+    },
+    {
+      "mode": "random",
+      "workers": 16,
+      "repeat": 1,
+      "logical_bytes": 268435456,
+      "requests": 65536,
+      "wall_seconds_observed": 5.235377549,
+      "logical_GBps": 0.05127337111556995,
+      "IOPS": 12517.912870012195,
+      "latency_median_ns": 1238911,
+      "latency_p95_ns": 1751445,
+      "latency_p99_ns": 2047463,
+      "actual_peak_inflight_requests": 16,
+      "final_buffer_checked_bytes": 65536,
+      "planned_job_order_fnv": 6007490663408221155,
+      "receipt": "measure/random-w16-r1-record.json",
+      "receipt_identity": {
+        "bytes": 16603,
+        "sha256": "5cfd3bfc7e148a92cc6b313eed26ff200b63448b0682e39b6b72b3aa8c607353"
+      },
+      "whole_process_direct_DMU_to_timed_payload_ratio": 31.9970703125,
+      "whole_process_direct_bytes": 8589148160,
+      "whole_process_direct_count": 65530,
+      "whole_process_ARC_read_bytes": 377158144,
+      "whole_process_leaf_read_bytes": 8968060928,
+      "whole_process_leaf_to_timed_payload_ratio": 33.40863037109375
+    },
+    {
+      "mode": "sequential",
+      "workers": 16,
+      "repeat": 1,
+      "logical_bytes": 28798091264,
+      "requests": 27464,
+      "wall_seconds_observed": 12.70892248,
+      "logical_GBps": 2.2659742640904046,
+      "IOPS": 2161.001457300572,
+      "latency_median_ns": 7090532,
+      "latency_p95_ns": 8961463,
+      "latency_p99_ns": 10833645,
+      "actual_peak_inflight_requests": 16,
+      "final_buffer_checked_bytes": 16777216,
+      "planned_job_order_fnv": 13104395759642551151,
+      "receipt": "measure/sequential-w16-r1-record.json",
+      "receipt_identity": {
+        "bytes": 16678,
+        "sha256": "ee4433cd41d975e81d190eb82a554f8eb8210e77d5910d48dae6559e11226f31"
+      },
+      "whole_process_direct_DMU_to_timed_payload_ratio": 0.9999772429362074,
+      "whole_process_direct_bytes": 28797435904,
+      "whole_process_direct_count": 219707,
+      "whole_process_ARC_read_bytes": 578603008,
+      "whole_process_leaf_read_bytes": 29378125824,
+      "whole_process_leaf_to_timed_payload_ratio": 1.0201414237729391
+    },
+    {
+      "mode": "random",
+      "workers": 64,
+      "repeat": 1,
+      "logical_bytes": 268435456,
+      "requests": 65536,
+      "wall_seconds_observed": 7.244243669,
+      "logical_GBps": 0.03705500094491645,
+      "IOPS": 9046.631090067493,
+      "latency_median_ns": 5147195,
+      "latency_p95_ns": 22999978,
+      "latency_p99_ns": 27006376,
+      "actual_peak_inflight_requests": 64,
+      "final_buffer_checked_bytes": 262144,
+      "planned_job_order_fnv": 6007490663408221155,
+      "receipt": "measure/random-w64-r1-record.json",
+      "receipt_identity": {
+        "bytes": 25956,
+        "sha256": "5f9385e4a605a42a52e8078fdb44898e14ddfab6c3c14943afca9fa171ec70b1"
+      },
+      "whole_process_direct_DMU_to_timed_payload_ratio": 31.9970703125,
+      "whole_process_direct_bytes": 8589148160,
+      "whole_process_direct_count": 65530,
+      "whole_process_ARC_read_bytes": 151416320,
+      "whole_process_leaf_read_bytes": 8741437440,
+      "whole_process_leaf_to_timed_payload_ratio": 32.56439208984375
+    },
+    {
+      "mode": "random",
+      "workers": 64,
+      "repeat": 2,
+      "logical_bytes": 268435456,
+      "requests": 65536,
+      "wall_seconds_observed": 5.057740511,
+      "logical_GBps": 0.05307418508644007,
+      "IOPS": 12957.564718369158,
+      "latency_median_ns": 4906954,
+      "latency_p95_ns": 5505059,
+      "latency_p99_ns": 5859886,
+      "actual_peak_inflight_requests": 64,
+      "final_buffer_checked_bytes": 262144,
+      "planned_job_order_fnv": 6007490663408221155,
+      "receipt": "measure/random-w64-r2-record.json",
+      "receipt_identity": {
+        "bytes": 25917,
+        "sha256": "37ab7b4d8273836aeff61d9417f770315c00abfa5e2f9349ee52467257bc8fe8"
+      },
+      "whole_process_direct_DMU_to_timed_payload_ratio": 31.99560546875,
+      "whole_process_direct_bytes": 8588754944,
+      "whole_process_direct_count": 65527,
+      "whole_process_ARC_read_bytes": 288626688,
+      "whole_process_leaf_read_bytes": 8878931968,
+      "whole_process_leaf_to_timed_payload_ratio": 33.07659912109375
+    },
+    {
+      "mode": "sequential",
+      "workers": 16,
+      "repeat": 2,
+      "logical_bytes": 28798091264,
+      "requests": 27464,
+      "wall_seconds_observed": 13.473065304,
+      "logical_GBps": 2.1374565189296733,
+      "IOPS": 2038.4373845383388,
+      "latency_median_ns": 7091865,
+      "latency_p95_ns": 9658234,
+      "latency_p99_ns": 30477068,
+      "actual_peak_inflight_requests": 16,
+      "final_buffer_checked_bytes": 16777216,
+      "planned_job_order_fnv": 13104395759642551151,
+      "receipt": "measure/sequential-w16-r2-record.json",
+      "receipt_identity": {
+        "bytes": 16688,
+        "sha256": "f9018a6e0912f55d5344c50784e20b7157f457d91a4bea6634029e025472d652"
+      },
+      "whole_process_direct_DMU_to_timed_payload_ratio": 0.9999635886979319,
+      "whole_process_direct_bytes": 28797042688,
+      "whole_process_direct_count": 219704,
+      "whole_process_ARC_read_bytes": 392792576,
+      "whole_process_leaf_read_bytes": 29192077312,
+      "whole_process_leaf_to_timed_payload_ratio": 1.0136809778255171
+    },
+    {
+      "mode": "random",
+      "workers": 16,
+      "repeat": 2,
+      "logical_bytes": 268435456,
+      "requests": 65536,
+      "wall_seconds_observed": 5.310281963,
+      "logical_GBps": 0.05055013234143778,
+      "IOPS": 12341.340903671333,
+      "latency_median_ns": 1257466,
+      "latency_p95_ns": 1770873,
+      "latency_p99_ns": 2072640,
+      "actual_peak_inflight_requests": 16,
+      "final_buffer_checked_bytes": 65536,
+      "planned_job_order_fnv": 6007490663408221155,
+      "receipt": "measure/random-w16-r2-record.json",
+      "receipt_identity": {
+        "bytes": 16607,
+        "sha256": "ff28487106eb6a340ff21cd48941148888b6a3196610710106dc33d72d704571"
+      },
+      "whole_process_direct_DMU_to_timed_payload_ratio": 31.99560546875,
+      "whole_process_direct_bytes": 8588754944,
+      "whole_process_direct_count": 65527,
+      "whole_process_ARC_read_bytes": 526466560,
+      "whole_process_leaf_read_bytes": 9117270016,
+      "whole_process_leaf_to_timed_payload_ratio": 33.9644775390625
+    },
+    {
+      "mode": "sequential",
+      "workers": 1,
+      "repeat": 2,
+      "logical_bytes": 28798091264,
+      "requests": 27464,
+      "wall_seconds_observed": 23.866478616,
+      "logical_GBps": 1.2066334429702532,
+      "IOPS": 1150.735323877576,
+      "latency_median_ns": 832888,
+      "latency_p95_ns": 1205509,
+      "latency_p99_ns": 1498069,
+      "actual_peak_inflight_requests": 1,
+      "final_buffer_checked_bytes": 1048576,
+      "planned_job_order_fnv": 13104395759642551151,
+      "receipt": "measure/sequential-w1-r2-record.json",
+      "receipt_identity": {
+        "bytes": 13765,
+        "sha256": "6201e9facf2c557086534defa6251c1ed57a394697a144392a7402cfa80c58f8"
+      },
+      "whole_process_direct_DMU_to_timed_payload_ratio": 0.9999635886979319,
+      "whole_process_direct_bytes": 28797042688,
+      "whole_process_direct_count": 219704,
+      "whole_process_ARC_read_bytes": 3226277888,
+      "whole_process_leaf_read_bytes": 32034254848,
+      "whole_process_leaf_to_timed_payload_ratio": 1.112374238776216
+    },
+    {
+      "mode": "random",
+      "workers": 1,
+      "repeat": 2,
+      "logical_bytes": 268435456,
+      "requests": 65536,
+      "wall_seconds_observed": 29.460198261,
+      "logical_GBps": 0.009111800729303314,
+      "IOPS": 2224.5607249275668,
+      "latency_median_ns": 402859,
+      "latency_p95_ns": 610589,
+      "latency_p99_ns": 4100697,
+      "actual_peak_inflight_requests": 1,
+      "final_buffer_checked_bytes": 4096,
+      "planned_job_order_fnv": 6007490663408221155,
+      "receipt": "measure/random-w1-r2-record.json",
+      "receipt_identity": {
+        "bytes": 13757,
+        "sha256": "38e13ec2c86e18f8a85f06a870dd8a491324078f0895553e5579ccb5828e7891"
+      },
+      "whole_process_direct_DMU_to_timed_payload_ratio": 31.99560546875,
+      "whole_process_direct_bytes": 8588754944,
+      "whole_process_direct_count": 65527,
+      "whole_process_ARC_read_bytes": 4486196224,
+      "whole_process_leaf_read_bytes": 13089583104,
+      "whole_process_leaf_to_timed_payload_ratio": 48.76249694824219
+    },
+    {
+      "mode": "random",
+      "workers": 1,
+      "repeat": 3,
+      "logical_bytes": 268435456,
+      "requests": 65536,
+      "wall_seconds_observed": 29.563040169,
+      "logical_GBps": 0.009080103212168388,
+      "IOPS": 2216.822073283298,
+      "latency_median_ns": 399111,
+      "latency_p95_ns": 603666,
+      "latency_p99_ns": 4509726,
+      "actual_peak_inflight_requests": 1,
+      "final_buffer_checked_bytes": 4096,
+      "planned_job_order_fnv": 6007490663408221155,
+      "receipt": "measure/random-w1-r3-record.json",
+      "receipt_identity": {
+        "bytes": 13754,
+        "sha256": "aea3e2893709311191341d4084714a4b7ee017d9f97901e2f24eba59ce3b5f2c"
+      },
+      "whole_process_direct_DMU_to_timed_payload_ratio": 31.99560546875,
+      "whole_process_direct_bytes": 8588754944,
+      "whole_process_direct_count": 65527,
+      "whole_process_ARC_read_bytes": 4400135168,
+      "whole_process_leaf_read_bytes": 13004902400,
+      "whole_process_leaf_to_timed_payload_ratio": 48.44703674316406
+    },
+    {
+      "mode": "sequential",
+      "workers": 1,
+      "repeat": 3,
+      "logical_bytes": 28798091264,
+      "requests": 27464,
+      "wall_seconds_observed": 25.031758862,
+      "logical_GBps": 1.1504621558063008,
+      "IOPS": 1097.1662099898347,
+      "latency_median_ns": 826536,
+      "latency_p95_ns": 1241085,
+      "latency_p99_ns": 4977237,
+      "actual_peak_inflight_requests": 1,
+      "final_buffer_checked_bytes": 1048576,
+      "planned_job_order_fnv": 13104395759642551151,
+      "receipt": "measure/sequential-w1-r3-record.json",
+      "receipt_identity": {
+        "bytes": 13796,
+        "sha256": "ec681ec9da3729c4c6170c5069cbd87f7789209d5d93f2e56b1613e1f2b4eef1"
+      },
+      "whole_process_direct_DMU_to_timed_payload_ratio": 0.9999635886979319,
+      "whole_process_direct_bytes": 28797042688,
+      "whole_process_direct_count": 219704,
+      "whole_process_ARC_read_bytes": 3108776960,
+      "whole_process_leaf_read_bytes": 31916814336,
+      "whole_process_leaf_to_timed_payload_ratio": 1.108296172944582
+    },
+    {
+      "mode": "random",
+      "workers": 16,
+      "repeat": 3,
+      "logical_bytes": 268435456,
+      "requests": 65536,
+      "wall_seconds_observed": 5.264113184,
+      "logical_GBps": 0.050993481070258084,
+      "IOPS": 12449.580339418477,
+      "latency_median_ns": 1246045,
+      "latency_p95_ns": 1753290,
+      "latency_p99_ns": 2052011,
+      "actual_peak_inflight_requests": 16,
+      "final_buffer_checked_bytes": 65536,
+      "planned_job_order_fnv": 6007490663408221155,
+      "receipt": "measure/random-w16-r3-record.json",
+      "receipt_identity": {
+        "bytes": 16607,
+        "sha256": "b776f07536e17ccbbc4da345ea92eb56f1ceaa978b7af322c6f0d792c1145858"
+      },
+      "whole_process_direct_DMU_to_timed_payload_ratio": 31.99560546875,
+      "whole_process_direct_bytes": 8588754944,
+      "whole_process_direct_count": 65527,
+      "whole_process_ARC_read_bytes": 427820032,
+      "whole_process_leaf_read_bytes": 9017978880,
+      "whole_process_leaf_to_timed_payload_ratio": 33.59458923339844
+    },
+    {
+      "mode": "sequential",
+      "workers": 16,
+      "repeat": 3,
+      "logical_bytes": 28798091264,
+      "requests": 27464,
+      "wall_seconds_observed": 12.670622373,
+      "logical_GBps": 2.2728237347966616,
+      "IOPS": 2167.533621594106,
+      "latency_median_ns": 7069665,
+      "latency_p95_ns": 8944172,
+      "latency_p99_ns": 10702541,
+      "actual_peak_inflight_requests": 16,
+      "final_buffer_checked_bytes": 16777216,
+      "planned_job_order_fnv": 13104395759642551151,
+      "receipt": "measure/sequential-w16-r3-record.json",
+      "receipt_identity": {
+        "bytes": 16679,
+        "sha256": "4a4d9edda20174179f2676e3f72af6c7f06adfd0c143ae5bb3d2f8e4ab897655"
+      },
+      "whole_process_direct_DMU_to_timed_payload_ratio": 0.9999635886979319,
+      "whole_process_direct_bytes": 28797042688,
+      "whole_process_direct_count": 219704,
+      "whole_process_ARC_read_bytes": 256728576,
+      "whole_process_leaf_read_bytes": 29055954944,
+      "whole_process_leaf_to_timed_payload_ratio": 1.008954193444145
+    },
+    {
+      "mode": "random",
+      "workers": 64,
+      "repeat": 3,
+      "logical_bytes": 268435456,
+      "requests": 65536,
+      "wall_seconds_observed": 5.05209105,
+      "logical_GBps": 0.05313353487562344,
+      "IOPS": 12972.054412994003,
+      "latency_median_ns": 4896134,
+      "latency_p95_ns": 5504069,
+      "latency_p99_ns": 5897278,
+      "actual_peak_inflight_requests": 64,
+      "final_buffer_checked_bytes": 262144,
+      "planned_job_order_fnv": 6007490663408221155,
+      "receipt": "measure/random-w64-r3-record.json",
+      "receipt_identity": {
+        "bytes": 25922,
+        "sha256": "1c8544388059e335a4065e41d32500c00c508409fe54d773eed06f41ef31150a"
+      },
+      "whole_process_direct_DMU_to_timed_payload_ratio": 31.99560546875,
+      "whole_process_direct_bytes": 8588754944,
+      "whole_process_direct_count": 65527,
+      "whole_process_ARC_read_bytes": 205699072,
+      "whole_process_leaf_read_bytes": 8795275264,
+      "whole_process_leaf_to_timed_payload_ratio": 32.76495361328125
+    }
+  ],
+  "planned_order_hashes": {
+    "random": 6007490663408221155,
+    "sequential": 13104395759642551151
+  }
+}

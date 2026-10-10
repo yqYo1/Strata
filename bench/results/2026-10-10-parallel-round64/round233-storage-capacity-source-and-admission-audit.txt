@@ -1,0 +1,73 @@
+# R233 — Storage-capacity source and first closed-cell admission audit
+
+Date: 2026-10-10. Independent read-only source and receipt review. Registry v86 SHA-256 is `e4c2f35abcf01452a087989939f28e6bb99ce582bec2932a60d1ea610be1b489`; the storage checkout is at commit `ded1e39ca579901e9264b70caa2f22909e308230`. I reviewed R226, R230, R232 and the v86 corrections through R63 before examining the frozen archive `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-10-storage-capacity`, its five closed qualification records, build/controller receipts, and the first closed full random W1 receipt at `/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/storage-capacity-v2-measure-random-w1-r1/record.json`.
+
+No fixture, build, test, profiler, live process, or hardware query was run. I did not change project source, Git state, services, or artifacts. No cleanup or prefetch investigation was performed.
+
+## Finding
+
+The source and five qualification receipts admit the described bounded, read-only `pread` control. The first full random one-worker cell is closed and internally consistent: it completed all 65,536 requested 4 KiB reads, reported 26.208 s measured wall, 2,500.64 logical IOPS, and 10.24 MB/s of application-requested payload. These are rates for this deterministic, replacement-sampled blocking-`pread` harness on this file. They do not measure actual `PleReader` service, absolute SSD capacity, physical NVMe bytes, or NAND service.
+
+The clearest storage-layer observation is the whole-process ZFS counter delta: 65,530 direct reads totaling 8,589,148,160 bytes, exactly 131,072 bytes per counted direct read. Dividing that pool-wide direct-DMU byte delta by the cell's 268,435,456 requested bytes gives 31.997. This is consistent with the R232 OpenZFS accounting contract and a 128 KiB block size for counted events. It is not a per-file/timed-window ratio: the counters cover the whole supervised process, include startup and the untimed final buffered comparison, and are pool-wide. The packaged Ubuntu module was not byte-audited and the dataset `direct` property remains unavailable through the installed `zfs` CLI. Thus this supports DMU direct-path activity during the process, not exact per-request file attribution or 32× physical-media amplification.
+
+## Source review and admission
+
+The archived Sol handoff source is unchanged at 27,590 bytes, SHA-256 `f0ae7ecb2cc9d85f7413983473d254e60f360fc3c111e08299824ef649f75337`. Root's v2 source is 27,880 bytes, SHA-256 `5d32e4fb69adae2c85cdc48967132a7297bea8e8e2e8d7f5adc866f2fec280e9`. A line diff shows only the intended sequential-start change and its dependent request bound, offset, and receipt fields: sequential 1 MiB reads begin at the first 1 MiB boundary (1,048,576), rather than the 4 KiB boundary at 4,096. The table-aligned interval ends at 28,800,135,168. This omits the 1,044,480-byte interval between the first 4 KiB and 1 MiB boundaries and a 995,328-byte tail after the largest full 1 MiB sequence. It avoids a first sequential request crossing the original 4 KiB boundary. The random offset formula and random request set are unchanged.
+
+Source safeguards reviewed:
+
+- CLI/path admission happens before opening the shard; the path is fixed to the original regular GGUF file and exact expected 28,800,138,432-byte size. The timed descriptor requests `O_RDONLY | O_DIRECT | O_CLOEXEC | O_NOFOLLOW` and verifies read-only plus `O_DIRECT` with `F_GETFL`. Each request checks 4 KiB offset/length/buffer alignment and table/file bounds.
+- Random mode issues 65,536 4 KiB reads with replacement from a deterministic SplitMix64(seed XOR job) modulo the aligned block count. It is not full-table coverage or a claim of mathematically unbiased sampling. Sequential full mode admits 27,464 1 MiB requests. Sequential worker counts are 1 or 16; random worker counts are 1, 16 or 64.
+- Worker buffers, latency slots, contexts and thread attributes are allocated before worker launch. Each worker reserves one initial job, then claims unique indexes atomically. Each job has a unique latency slot; each worker writes only its own buffer and receipt. Atomic request and byte counts, syscall/EINTR counts, inflight high-water, worker assignments and final output counts are reconciled after joins.
+- The gate waits for every worker to be ready before the steady-clock start. Whole-operation wall ends after all workers are joined. Each latency covers `pread` including EINTR retries plus inflight accounting; canary checks occur after each per-request end clock but within whole wall. The timer excludes setup and final buffered-reference reads/comparisons. No warm-up runs. Rate fields are omitted in qualification mode and in measure mode are recomputed by the controller from full logical bytes and observed wall time.
+- Short reads and all non-EINTR errors fail the cell. Output PASS occurs only after complete read counts/bytes, zero remaining inflight, every worker's successful assignment, final-buffer comparisons, guards and unchanged file stat are checked. RAII releases/joins workers before buffers or descriptors can be destroyed; join uncertainty terminates without cleanup. Controller ownership supplies finite wall/RSS/CPU/text/output caps and checks normal exit, no survivors, frozen source/binary identities and fixture metadata.
+
+The compiler receipt is PASS for G++ 13.3.0 with C++20, `-O3 -pthread -Wall -Wextra -Wpedantic`; binary SHA-256 `3e0c914ba343c41d1921e01daf3230ee164ec8f2a980bff4af6054cbedf5e704`. Its 2,011-byte compiler stderr consists of four `-Wunused-result` warnings where emergency diagnostic `write()` return values are ignored. These occur only in failure-reporting branches and did not affect the closed normal path; they remain a small source polish issue, not a failed admission gate. The build has no GPU/SYCL runtime dependency.
+
+### Five qualification receipts
+
+All five records are `active:false`, `complete:true`, `passed:true`; their owned command exited 0, closed its session, and recorded no survivors. All use the same frozen binary and file identity; each is marked `qualification_only:true`, `timing_claim:false`, and omits GB/s/IOPS.
+
+| Mode/workers | Completed qualification reads | Requests/bytes | Peak worker `pread` regions | Final buffers compared |
+|---|---:|---:|---:|---:|
+| Random / 1 | 16 | 16 × 4 KiB = 64 KiB | 1 | 1 (4 KiB) |
+| Random / 16 | 16 | 16 × 4 KiB = 64 KiB | 16 | 16 (64 KiB) |
+| Random / 64 | 64 | 64 × 4 KiB = 256 KiB | 56 | 64 (256 KiB) |
+| Sequential / 1 | 16 | 16 × 1 MiB = 16 MiB | 1 | 1 (1 MiB) |
+| Sequential / 16 | 16 | 16 × 1 MiB = 16 MiB | 13 | 16 (16 MiB) |
+
+Every worker got at least one request; worker counts and bytes reconcile. For the one-worker qualification cells, only the final surviving buffer is compared. At 16 or 64 workers the qualifying request count equals worker count, so each request buffer survives and is compared. The 64-worker random qualification's observed peak is 56 concurrent worker `pread` regions, below its 64 worker limit; neither that nor the other high-water values are physical device queue depth. These short qualification cells carry no timing evidence.
+
+## First full random W1 receipt
+
+The receipt is `active:false`, `complete:true`, `passed:true`, stage `measure`; its supervised command exited normally with code 0, `session_empty:true`, no errors or survivors, and the direct child was reaped. The run used boot ID `0a908c16-e292-4299-80ff-082da39f4bb9`, seed `2026101001`, the pinned v2 binary/source, and the closed random W1 qualification. GPU work, model inference and adoption are all false. The archived stdout hash matches its 2,546-byte successful JSON output; stderr is empty.
+
+| Receipt field | Observed value |
+|---|---:|
+| Requested/completed reads | 65,536 / 65,536 |
+| Request size; logical bytes | 4,096 B; 268,435,456 B (256 MiB) |
+| `pread` calls; EINTR retries | 65,536; 0 |
+| Internal whole-operation wall | 26.207678648 s |
+| Logical application rate; IOPS | 0.010242626 GB/s decimal (10.24 MB/s); 2,500.641 |
+| Per-read median / P95 / P99 | 396,536 / 578,868 / 768,515 ns |
+| Peak worker `pread` regions | 1 |
+| Final buffer equality checked | 1 × 4 KiB only |
+| File `stat_unchanged` | true |
+
+All 65,536 calls returned the full requested length; the source rejects a short read and increments completion/bytes only after success. This validates completed request count and payload length, not byte-for-byte content of every request. The final successful worker buffer alone is byte-compared with a full same-offset buffered read and hashed. The receipt's `stat_unchanged` compares device, inode, size, mode, mtime and ctime before/after. The 65,536 random offsets are deterministic replacement samples spanning most of the table's address range; they do not cover every byte once. The per-request clock sum is not a second throughput denominator. Wall includes start-gate handoff, reads, worker bookkeeping and joins, with setup and the final 4 KiB buffered reference outside the timed interval.
+
+### Counter scope and limits
+
+The counter snapshots were taken around the supervised process, not around the internal 26.208 s timer. The record labels this correctly as whole-process, pool/block-global data and performs no unrelated-traffic subtraction. The calculated values are:
+
+- ZFS `direct_read_count` delta 65,530; `direct_read_bytes` delta 8,589,148,160 B; their ratio is exactly 131,072 B per counted direct read. Whole-process direct-DMU bytes / timed application payload is 31.9971.
+- ZFS `arc_read_bytes` delta 4,301,295,616 B.
+- Leaf NVMe read-sector delta 25,205,416 sectors × 512 = 12,905,172,992 B; whole-process leaf bytes / timed payload is 48.0755. The partition counter is also preserved.
+
+The direct and leaf ratios cannot be named timed-window read amplification or SSD throughput: counter scope includes startup and post-timer final buffered reference work, and system counters include activity outside this file. The large ARC and leaf deltas reinforce that these counters are not a clean physical-media byte ledger for the 256 MiB timed payload. The apparent closeness of direct-plus-ARC and leaf totals is not a reconciliation proof. No data subtraction or prefetch attribution was made.
+
+The F_GETFL `O_DIRECT` bit proves the kernel accepted the descriptor flag. Metadata records `zfs_dio_enabled=1`, `zfs_dio_strict=0`, and the current dataset `recordsize=131072`, `compression=off`, `primarycache=metadata`, `secondarycache=none`, one-leaf NVMe topology and firmware. The installed ZFS userspace is 2.2.2 while the module is 2.4.1; `zfs get direct` fails as an invalid property, so the dataset `direct` setting is unknown. Per R230/R232, `recordsize` is not proof of every existing on-disk block size, upstream source is not a byte audit of the packaged module, and direct-DMU accounting is not vdev or NAND accounting. The first run's exact 128 KiB per counted direct event is useful counter evidence under those limits.
+
+## Admission conclusion and open boundary
+
+I found no source or qualification blocker for the five admitted shapes, and the first full random W1 sample is a valid closed harness timing receipt. Its application-request rate and counter observations are admissible only with the scopes above. One sample is not a repeated capacity result; the planned repeated serial cells remain necessary before reporting a stable rate or comparison. The standalone harness does not include PLE row-cache hits, 90-byte row grouping, sorted page jobs, 8 KiB straddlers, foreground decode/collect, or actual model request behavior. The random modulo sampler and whole-process counters further limit generalization. No absolute SSD peak, per-file physical bytes, physical queue depth, NAND behavior, PLE rate or model-performance claim follows from this receipt.

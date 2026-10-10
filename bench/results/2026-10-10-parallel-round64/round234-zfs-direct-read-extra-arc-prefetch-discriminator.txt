@@ -1,0 +1,58 @@
+# R234 — Why true Direct I/O can coincide with ARC reads
+
+Date: 2026-10-10 (Asia/Tokyo). Read-only source audit of the parent-supplied first 65,536-read result, the R226/R230/R232 reader and storage contracts, and pinned upstream OpenZFS 2.4.1 code. No benchmark, runtime/device/process query, build, test, trace, Git operation, configuration change, source edit, or cleanup was performed. This report is the only file written.
+
+## Finding
+
+A large `arc_read_bytes` delta does not contradict a simultaneous true Direct-I/O data path. In OpenZFS 2.4.1, the direct read path still performs dnode/block-pointer work through dbufs and invokes the predictive zfetch logic. For `DMU_DIRECTIO`, zfetch is told not to fetch predicted file data, but it may issue prefetches for indirect metadata blocks. Those ARC reads are counted separately from direct data-block reads. This makes metadata traversal/prefetch a source-eligible explanation for some ARC activity during O_DIRECT reads; it does not prove that this is what produced this run's 4.30 GB ARC delta.
+
+The root-supplied process deltas are internally consistent with the R232 record-granularity result: 65,530 direct reads and 8,589,148,160 direct bytes over 268,435,456 application bytes is 31.997×, almost exactly 128 KiB per 4 KiB request. The separate 37,237 ARC reads / 4,301,295,616 ARC bytes are pool-wide DMU ARC-path accounting and cannot be assigned to this process or to metadata from those aggregate fields alone. The 12,905,172,992 leaf bytes (48.075× the application bytes) are another layer, not an attribution of the ARC delta.
+
+## Pinned source path
+
+`zfs_read()` starts with `DMU_READ_PREFETCH`; for O_DIRECT it adds `DMU_UNCACHEDIO`, and after direct-I/O setup it adds `DMU_DIRECTIO`. `dmu_read_uio_dnode()` sends `DMU_DIRECTIO` + `UIO_DIRECT` requests to `dmu_read_uio_direct()` and then `dmu_read_abd()`. The latter calls `dmu_buf_hold_array_by_dnode(..., read=B_FALSE, ..., flags)` to obtain the data dbufs without issuing buffered data reads there. In that hold-array function, unless `DMU_READ_NO_PREFETCH` is set, it calls `dmu_zfetch_prepare()` with `fetch_data = read && !(flags & DMU_DIRECTIO)`. Since this is the Direct-I/O path, `fetch_data` is false. The function's comment says Direct-I/O data reads are issued and accounted later in `dmu_{read/write}_abd()`.
+
+With `fetch_data=false`, zfetch does not queue predicted data blocks (`pf_nblks=0`), but still tracks and may queue indirect-block prefetches. `dmu_zfetch_run()` issues indirects at level 1 with ordinary ARC flags; `dbuf_prefetch_impl()` follows the block-pointer tree and calls `arc_read()` for uncached indirect metadata. In Linux, an ARC read miss calls `zfs_racct_read(size, 1, flags)`; only `ARC_FLAG_UNCACHED` maps to `DMU_UNCACHEDIO`, not `DMU_DIRECTIO`, so the pool stats increment `arc_read_*`, while the direct data request increments `direct_read_*` with its `DMU_DIRECTIO` flag. These are separate operations from the same source read call chain. [Pinned `zfs_vnops.c`](https://github.com/openzfs/zfs/blob/zfs-2.4.1/module/zfs/zfs_vnops.c), [`dmu.c`](https://github.com/openzfs/zfs/blob/zfs-2.4.1/module/zfs/dmu.c), [`dmu_zfetch.c`](https://github.com/openzfs/zfs/blob/zfs-2.4.1/module/zfs/dmu_zfetch.c), [`dbuf.c`](https://github.com/openzfs/zfs/blob/zfs-2.4.1/module/zfs/dbuf.c), [`arc.c`](https://github.com/openzfs/zfs/blob/zfs-2.4.1/module/zfs/arc.c), [Linux `zfs_racct.c`](https://github.com/openzfs/zfs/blob/zfs-2.4.1/module/os/linux/zfs/zfs_racct.c), [`spa_stats.c`](https://github.com/openzfs/zfs/blob/zfs-2.4.1/module/zfs/spa_stats.c).
+
+The same code path can also demand-read indirect blocks through ARC while finding the relevant block pointers. Metadata is retained under the supplied `primarycache=metadata`; `secondarycache=none` only excludes the secondary cache and does not turn off ARC metadata reads. The `arc_read_bytes` field counts sizes passed through the ARC miss accounting hook (logical ARC/ZFS block sizes), not leaf-device physical bytes. `arc_read_count/bytes` include demand and speculative prefetch misses from the entire pool; direct counters likewise are pool-wide, and cache hits do not add read bytes there.
+
+A source distinction matters: the DIO call passes `fetch_data=false`, so this specific zfetch path is not evidence that ZFS prefetched 4 KiB application data as ARC data. ARC activity can be demand or prefetched metadata; other ARC data reads could come from a fallback, another pool reader, or unrelated work. The observed aggregate ARC delta alone does not choose among those causes. Random page order also does not guarantee a large zfetch stream: the code's prediction and prefetch issuance depend on its live stream state, indirect-tree geometry, misses, and timing. Do not multiply the ARC delta by recordsize or label it metadata without a more specific counter.
+
+## Finite read-only discriminator
+
+For each existing fixed finite workload arm, take short before/after snapshots with idle baselines and no overlapping pool work where practical. Keep the original file, cache/property state, offsets and read pattern fixed; do not drop ARC or alter zfetch/ARC parameters. Preserve separate deltas for:
+
+- `/proc/spl/kstat/zfs/rpool/iostats`: `direct_read_count/bytes` and `arc_read_count/bytes` (pool-wide bytes/counts, no file or caller attribution).
+- `/proc/spl/kstat/zfs/zfetchstats`: `io_issued`, `io_active`, `hits`, `stride`, `future`, `past`, `misses`, and `max_streams`. These are global zfetch counts, not metadata-byte totals or per-process records.
+- `/proc/spl/kstat/zfs/arcstats`: `demand_metadata_misses`, `prefetch_metadata_misses`, `demand_data_misses`, `prefetch_data_misses`, plus corresponding hit/iohit fields. These classify ARC miss *counts* by demand/prefetch and data/metadata; this kstat does not provide matching byte totals by category. An ARC-byte increase accompanied by metadata-prefetch/demand-metadata misses and zfetch issuance, with little data-miss growth, supports the metadata-path explanation but still cannot attribute bytes to the foreground PID. Significant ARC data misses would keep fallback/unrelated data reads in scope.
+- The already collected reader request/return-byte and direct-counter deltas, plus leaf-vdev and block-device deltas, each with its separate scope.
+
+Where OpenZFS read history is already enabled and the existing file is readable without a privilege change, `/proc/spl/kstat/zfs/rpool/reads` offers a stronger discriminator: the 2.4.1 history records object, level, block ID, origin, PID and process name for individual ARC read operations. A level greater than zero identifies an indirect metadata read; the PID/process name can associate it with a benchmark worker. The history is disabled by default (`zfs_read_history=0`) and its proc entry is installed mode `0600`, so do not enable it, change its tunable, or elevate for this audit. If it is unavailable, there is no exact per-request/per-process attribution in the pool iostats, ARC miss counters, or zfetchstats alone. State the remaining amount as unattributed pool ARC activity.
+
+A bounded idle-baseline / workload / idle-baseline series with identical snapshots can bound background drift, but cannot allocate concurrent activity exactly. A read-only buffered-vs-O_DIRECT control over the same deterministic offsets may show how the same file data appears in ARC counters, but it changes the I/O path and therefore is a separate control; it cannot retrospectively attribute the original O_DIRECT run. No source-only counter comparison proves that all extra ARC bytes were caused by the DIO process.
+
+## Counter boundary and PLE implication
+
+`spa_iostats_read_add()` routes its supplied `size` to direct or ARC fields solely by testing `DMU_DIRECTIO`. Linux `zfs_racct_read()` forwards its `size` argument unchanged. On the DIO data path, R232 established that argument is `db->db_size` per uncached data block, not the original 4 KiB/8 KiB slice. By contrast, ARC miss accounting calls the same resource hook for each ARC-read block and classifies ARC stats as data or metadata in ARC code. Neither pool counter is physical I/O accounting; ZIO/vdev and Linux block statistics are needed for those lower boundaries.
+
+For PLE record coalescing, R232's conditional 32× direct-byte amplification remains the main data-path concern; the observed 31.997× direct ratio strongly supports full-record DMU accounting during this run. The ARC delta adds a separate potential metadata cost but is not a reason to infer that PLE data pages were also read through the ARC. A batching design that reads each needed 128 KiB record once and scatters page slices could address repeated direct-record reads. Sorting page jobs alone does not establish such coalescing. Before any architecture change, retain the per-process `ReaderStats`, pool counters, the ARC/zfetch classification counters if accessible, and leaf/device deltas together; make the coalescing decision from reproducible matched runs, not from the unattributed ARC aggregate.
+
+## Pinned source hashes
+
+Retrieved raw upstream source SHA-256 (upstream `zfs-2.4.1` tag; not a byte-for-byte audit of Ubuntu's packaged module):
+
+- `module/zfs/zfs_vnops.c`: `8342b09c9e7982bd4ebc23c662c221bfc4a52d5a97d16a0f28e19fbd08907f83`
+- `module/zfs/dmu.c`: `bffae5cd82e54b015a386a9498012d7172ad80b09072f1c2ff30a4857cc95f58`
+- `module/zfs/dmu_zfetch.c`: `70cf55f5973188c7d8e2e7117da38c2dea058f45facf5c328726485654d8611c`
+- `module/zfs/dbuf.c`: `c569bdbc536e5fe49378eedae9eba1891efa7a69657936280a00c7b46046c7a5`
+- `module/zfs/arc.c`: `aa991842111cc7331c97ddb67597534e489068be2e8df9606e924c1cd705b47d`
+- `module/os/linux/zfs/zfs_racct.c`: `fbf2cb34b2975ea3fb7deb292c7eae6485eff3e8e25af1d4ac1af4c0e44d65fd`
+- `module/zfs/spa_stats.c`: `a2e4a8a94edc569381336a4e1cf7bef207b4d1473eea779bcc5fccf0340c5e9a`
+
+Primary counter/source references:
+
+- [OpenZFS 2.4.1 `dmu_buf_hold_array_by_dnode()`](https://github.com/openzfs/zfs/blob/zfs-2.4.1/module/zfs/dmu.c): computes the DIO zfetch call with `fetch_data=false`, holds dbufs without issuing DIO data reads, then runs zfetch.
+- [OpenZFS 2.4.1 `dmu_zfetch_prepare()` and `dmu_zfetch_run()`](https://github.com/openzfs/zfs/blob/zfs-2.4.1/module/zfs/dmu_zfetch.c): `fetch_data=false` suppresses predicted file-data prefetch while indirect prefetch can still be issued; `zfetchstats` is a global kstat.
+- [OpenZFS 2.4.1 `dbuf_prefetch_impl()`](https://github.com/openzfs/zfs/blob/zfs-2.4.1/module/zfs/dbuf.c): follows the indirect chain and uses `arc_read()` for indirect reads.
+- [OpenZFS 2.4.1 `arc_read()`](https://github.com/openzfs/zfs/blob/zfs-2.4.1/module/zfs/arc.c): ARC misses account a read through `zfs_racct_read()` and ARC stats distinguish prefetch/demand and data/metadata miss counts.
+- [OpenZFS 2.4.1 `spa_read_history`](https://github.com/openzfs/zfs/blob/zfs-2.4.1/module/zfs/spa_stats.c): optional per-read history includes object, level, block ID, origin, PID and process name; disabled by default and proc entry mode 0600.
