@@ -1,0 +1,45 @@
+# R208 — Hardware probe measurement validity audit
+
+Date: 2026-10-10 (Asia/Tokyo). Read-only source and primary-document audit completed before interpreting the in-progress CPU result. The GPU probe has not been run. No build, test, device/process/service inspection, GPU, PMU, profiler, Git operation, cleanup, or source edit was performed. Only this report was written.
+
+## Decision
+
+No source-level correctness or safety defect was found in the CPU/GPU probes. The CPU probe can report application-level logical streaming rates; the GPU probe can report host-inclusive queue-operation rates and synthetic GEMM throughput on the identified B570 under the recorded runtime settings. Neither probe by itself establishes an absolute hardware maximum, production Strata throughput, or measured DRAM traffic. Interpret results by case and retain every sample; do not promote the largest single sample to a roofline or compare unlike byte conventions.
+
+The main interpretation hazards are substantive: CPU `read` has a serial-dependent vector accumulation that can limit instruction throughput; cached CPU stores can cause extra physical traffic; GPU timings include host submission/wait costs; transfer buffers and runtime settings define a particular host path; and the GEMM data are unusually compressible and do not prove cache eviction. These are limits on claims, not reasons to discard otherwise valid measurements.
+
+## Frozen inputs and provenance
+
+The reviewed source files and SHA-256 hashes were:
+
+- `hardware_ceiling_cpu_v1.cpp` (4,485 bytes): `5b1d4bf706c8e9299a021a14a10acbd4f025ba3361549b4ec5cc0a7b8b795e04`
+- `hardware_ceiling_gpu_v1.cpp` (9,326 bytes): `6f27814b78d076c1c1dd9d75e3d7285c89190ca54e7c4bb5cda11388fa200e1c`
+- `run_hardware_ceilings_v1.py` (7,687 bytes): `78194792418e96bb98389ee260df51967bb565088d964f90dc3579f176c54351`
+
+These are static-review identities; the controller is intended to bind the result to these sources and the closed preceding receipts. CPU build and execution were still underway at audit time. No GPU measurement exists yet.
+
+## CPU probe
+
+The three 512 MiB arrays exceed the reported 32 MiB LLC capacity. Each case has a warmup (`sample=-1`) and seven measured samples for thread counts 1, 2, 4, 6 and 12. The worker ranges cover the aligned array extent, and the controller requires the expected validation and measurement row counts. The logical-byte arithmetic is consistent with the code and four passes: read = 1 array extent/pass, copy = 2, triad = 3. It is an application-level convention, not a memory-controller counter.
+
+The AVX2 `read` loop folds all loaded vectors through one serial-dependent accumulator and reduces it at the end. This validates the data and streams the full input, but the dependency chain can make it instruction/dependency limited; do not call it a clean peak DRAM-read roof. `triad_cached` performs `a + b + 2*b`; its logical two-read/one-write byte count is consistent, but the operation is not canonical STREAM triad. Cached stores may add read-for-ownership and writeback traffic beyond the logical count. The non-temporal copy uses aligned streaming stores and fences each pass; keep its results distinct from cached copy.
+
+Timing starts before the release barrier and ends after completion synchronization. Thread creation is outside the timed interval, but barrier and host scheduling costs remain inside. Cases run in fixed order, with one warmup followed by samples 0–6; there is no randomized or counterbalanced order. Preserve all seven measurements and summarize by case (at least median and spread), with frequency/thermal context. Do not use a single best sample as the maximum.
+
+Affinity selects the first N allowed logical CPU IDs, not a topology-aware set. The controller captures topology, but the source does not guarantee that six selected IDs are six distinct physical cores; inspect the actual run's affinity/topology receipt before describing 1/2/4/6-thread results as physical-core scaling. Twelve threads include SMT on this host. The preceding NT1 service characterization is a separate host-resident actual-weight/synthetic-activation measurement; it does not supply a qualified default NT1–NT4 roof, and it is not evidence that no service samples exist. Pool-fit gates remained false. Do not merge it with these synthetic stream rates.
+
+## GPU probe
+
+The probe validates the exact Level Zero device and PCI identity (Intel B570 at PCI `05:00`) and uses one in-order SYCL queue. USM allocations are associated with that queue's context, queue waits bracket operations, and transfers/data are checked. The failure path exits without freeing potentially active allocations. The controller's process ownership and closed-run checks are conservative. The transfer source uses ordinary `malloc` pageable memory in one arm and host USM in the pinned arm, with device USM as the device endpoint; both are legal host-accessible pointers for queue `memcpy`, but pageable transfers may be staged by the runtime.
+
+Each timed `span()` includes host-side submission and waits for completion before stopping a `steady_clock` timer. This is a useful inclusive API-to-completion latency/rate for the recorded queue/runtime route, not a device event time or isolated PCIe engine bandwidth. The environment forces copy offload off and keeps direct submission disabled due to prior faults. Retain these settings in the result description; this is a controlled local route, not a universal B570 transfer ceiling.
+
+For GPU memory cases, the reported convention is logical bytes: copy = 2 extents, XOR read = 1 extent plus a small checksum, XOR triad = 3 extents. These values are internally consistent with the operations and are not hardware-counter traffic. The 256 MiB arrays are large, but no cache-size or achieved-DRAM evidence is collected. `VRAM_triad_xor` is not a canonical STREAM triad. The same rule applies to queue-copy cases: use the stated byte convention and operation label, not an unqualified “VRAM bandwidth” claim.
+
+The GEMM shapes and FLOP formula (`2*n*T*k*calls`) agree with the column-major oneMKL call, and the exact output check is valid for the constructed inputs. `X` contains ones and every weight value is only `+/-0.125`; thus the expected result is exactly the signed count times 0.125 and is a useful call-layout/indexing check. It does not exercise general floating-point accuracy, production value distributions, or representative compression behavior. There are eight rotating matrices, each 6.25 MiB for GU (50 MiB address span total); Down uses half that extent per matrix (25 MiB actual values, 50 MiB span). Rotation does not establish that data are cold or exceed the device cache because cache capacity/eviction is not tested. Do not call this a proven DRAM-resident or production-dense GEMM maximum.
+
+The qualification stage has one validation-enabled sample; the measurement stage has seven samples without that validation pass. Keep qualification and measurement rows separate. The controller checks row counts, finite positive elapsed times, and identity, but its parser does not independently assert every unique case/sample pair or recompute every byte/FLOP field. Before reporting maxima, validate complete case-by-sample coverage and recompute the displayed rates from the saved raw seconds and source formulas. Use seven-sample distributions per case, not the best sample, and do not compare CPU and GPU “GB/s” as though the byte conventions or execution path were equivalent.
+
+## Reference basis
+
+The SYCL 2020 specification documents queue `memcpy` for host pointers and accessible USM: <https://registry.khronos.org/SYCL/specs/sycl-2020/pdf/sycl-2020.pdf>. Intel oneMKL's GEMM reference states the `C = alpha*op(A)*op(B) + beta*C` operation and supported input/output types for the used API: <https://www.intel.com/content/www/us/en/docs/onemkl/developer-reference-dpcpp/2026-0/gemm.html>. Those references support API and arithmetic interpretation; the benchmark source and run receipts remain the evidence for measured results.

@@ -1,0 +1,77 @@
+# R206 — CPU/RAM ceilings and default GU/Down demand
+
+Date: 2026-10-10 (Asia/Tokyo). Read-only hardware, frozen-source and closed-evidence audit for the Ryzen 5 5600X. Only this report was written. No device/process inspection, benchmark, model, profiler, PMU, build/test, Git operation, cleanup, or source change was performed.
+
+## Finding
+
+The available evidence gives nominal CPU and memory ceilings, plus exact per-expert arithmetic and packed extents for the dominant IQ2_S GU22 / IQ4_NL Down20 pair. It does **not** give the installed RAM's actual rate/channel population, a STREAM result, default-configuration worker service samples, worker-tail or DRAM-byte counts. Therefore there is no measured effective CPU/RAM roof, and no defensible current default decode service lower bound in milliseconds. The live root-owned 32,769-input comparison must supply the same-request default-route denominators before older task-6 diagnostics can be related to it.
+
+This is an evidence boundary, not a new optimization proposal. It distinguishes useful *work demand* from actual memory transactions, service time and request critical path.
+
+## Hardware ceilings that are known
+
+The owner identifies the host as Ryzen 5 5600X with 128 GB system RAM. AMD's product specification lists 6 CPU cores, 12 threads, up to 4.6 GHz boost, 3 MB L2, 32 MB L3, 65 W default TDP, DDR4 and up to 3200 MT/s. Thus the CPU's headline arithmetic clock ceiling is `6 × 4.6 = 27.6` billion core-cycles/s only under the explicitly optimistic assumption that all six cores sustain maximum boost together; AMD's “up to” boost is not an all-core sustained frequency guarantee. Twelve SMT threads do not double execution throughput. The nominal 128 GB capacity says nothing about channels, DIMM population, data rate, timings, memory-controller frequency, or sustained bandwidth. [AMD Ryzen 5 5600X specifications](https://www.amd.com/en/products/processors/desktops/ryzen/5000-series/amd-ryzen-5-5600x.html)
+
+If (and only if) the system actually operates two 64-bit DDR4 channels at 3200 MT/s, the theoretical transfer ceiling is `2 channels × 8 bytes × 3.2 GT/s = 51.2 GB/s` (25.6 GB/s/channel). This is a bus-rate calculation, not an observation or an effective ceiling. The 5600X product page confirms the rate limit but the closed evidence does not establish the installed channel/rate condition. Likewise, 32 MB L3 is capacity, not bandwidth; no closed L1/L2/L3 bandwidth ceiling exists.
+
+The source uses AVX2-style integer quantized dots for multi-token GU/Down, and GGML AVX2/format-specialized dot code for NT1 on this host. Floating-point FMA peak is not a useful roof for these IQ kernels: their decode/index, shuffle/gather, integer-dot, conversion and reduction instruction mix is not “FLOPs” in a comparable sense. Do not convert 4.6 GHz or equivalent dense FP32 MAC counts into a measured kernel ceiling. The AMD Family 19h optimization guide 56665 is Zen 3 architecture guidance, but its stated scope is EPYC 7003/Family 19h models 00h–0Fh; R95 records this 5600X as family 19h model 21h, stepping 0. Avoid importing model-specific latency/PMC numbers from 56665 into this exact host. A Model 21h PPR remains the correct primary reference for events and model-specific behavior.
+
+## Exact demand for the GU22 / Down20 cell
+
+Frozen source is `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-decode-pool-phase-timing-v0141-20261009`, HEAD `7d0105f2a942ac72ca20fef69d4c2e7960653de3`; the source hashes are `pool.cpp` `f789078f1e14b6cf72bec5cacc2802d358ad82cbd7bf890f344a4a4a32158611`, `native_expert.cpp` `767f02f33aca4da9fabbe113c50ce1d7cb2aa9f25b4234df59224ec46a5985cd`, and `iq_avx2_rows.inl` `94da07f977ef20288d65747604f9c3a7a87cba3237f36d216dbb624bddd9be23`. The pack metadata records 48 layers × 512 experts, with 15 layers GU22/Down20. The actual pair-by-NT route census in R59 is a prior tasks=6 diagnostic, not the new default-configuration result.
+
+With `H=2560`, `FF=640` and quant blocks in R79:
+
+| Per distinct expert job | GU22 / IQ2_S | Down20 / IQ4_NL |
+|---|---:|---:|
+| Output rows | 640 (Gate and Up each) | 2,560 |
+| Dot reduction length | 2,560 | 640 |
+| Logical packed weight extent | `2 × 640 × (2560/256) × 82 = 1,049,600 B` | `2560 × (640/32) × 18 = 921,600 B` |
+| Dense-equivalent MACs for NT tokens | `3,276,800 × NT` | `1,638,400 × NT` |
+| Output floats | `640 × NT` after Gate/Up and SwiGLU | `2,560 × NT` |
+
+A dense-equivalent MAC is one weight–activation multiply and accumulation for each represented output/input pair. It is a stable work-count convention, not an instruction count for IQ decode or an assumed FMA execution path. At NT1 the default dispatcher uses the pinned GGML dot for both GU22 and Down20; at NT≥2 the CPU AVX2 multi-token route is selected by the default minimum NT=2. That path decodes/unpacks each weight block once across the grouped token activations, so logical weight extent is per expert job while dot work scales with NT. It does not follow that DRAM reads equal that extent: block/codebook/activation reuse, L1/L2/LLC hits, line fetches, prefetch and cross-job reuse determine physical traffic.
+
+For type20 Down, FF outputs are separately quantized per routed expert/token before Down (`640` floats/token to Q8_0, `680` packed bytes/token); the serial host quantization is not included in either matrix MAC count or packed weight bytes. Input quantization to the GU activation type is per layer/token, not per expert job, and must not be multiplied by callback pair count. Keep it as its own current source counter if accounting total CPU work.
+
+For a captured default request, the exact useful work is computed only after obtaining same-request counts `J_{phase,format,NT}` and unique expert jobs. For this cell:
+
+- `W_GU22_MAC = 3,276,800 × Σ_{NT=1..4}(NT × J_GU22,NT)`
+- `W_Down20_MAC = 1,638,400 × Σ_{NT=1..4}(NT × J_Down20,NT)`
+- unique logical packed extent terms are `1,049,600 × Σ J_GU22,NT` and `921,600 × Σ J_Down20,NT`, respectively.
+
+Do not replace those current-run `J` values with historical ones. R59's closed task-6 route trace observed NT1 and NT2 cells (for one A+B pattern, GU22 23,660 NT1 + 6,432 NT2 jobs; Down20 46,254 NT1 + 12,208 NT2). It reported no NT3/4 for those two patterns. These figures can illustrate the counting formula, but they are not a new default run, independent workload holdout, service rate, byte-traffic measurement, or valid denominator for the clean default CPU counter. R34's cache-route totals and R204's task-6 phase receipt are likewise separate observations. Round-52 correction to R204 explicitly says not to compare old task-6 GU/Q/Down totals against the 123.78 ms CPU-dispatch mean from another clean default request; join phase counters and callback/draft/verifier origins within the same actual request first.
+
+## Roofline interpretation and actual lower bounds
+
+A roofline lower bound needs *measured* demand at the resource being bounded and the matching effective ceiling. For a phase, the generic minimum is `max(D_DRAM/BW_DRAM, D_LLC/BW_LLC, D_L2/BW_L2, D_L1/BW_L1, I_resource/P_resource)` over independent bottleneck resources, plus sequential phase dependencies where applicable. Here `D_DRAM` must be bytes crossing the memory controller, not packed blob length, `P_resource` must describe the relevant quantized decode/integer instruction mix, and cache-level demand/ceilings require actual cache traffic/throughput. Summing these times would double count overlapped resources; summing GU/Q/Down host spans is not a critical-path equation.
+
+The conditional theoretical RAM-rate illustration for one job would be 20.5 μs for 1,049,600 B of GU22 weights and 18.0 μs for 921,600 B of Down20 weights at 51.2 GB/s. **These are not established lower bounds for the real kernel**: they assume (a) two channels actually at 3200 MT/s, (b) those exact logical bytes cross DRAM once, (c) no additional traffic, and (d) full bus-rate service with no contention. Cache reuse can make DRAM bytes lower than the logical extent; line behavior can make it higher. Because no measured physical bytes/bandwidth are present, neither those values nor `jobs × extent ÷ 51.2 GB/s` may be used as actual default decode time or its lower bound.
+
+Similarly, dense-equivalent MACs do not provide a lower-bound time without an instruction-throughput model for the exact emitted code. A codebook-latency-limited NT1 dot can run far below byte-bandwidth roof even while the packed logical extent is large. A large pool host phase can instead reflect wait/dispatch/host-drain, worker tail or work hidden behind GPU activity. An architectural limitation is supported only when same-run data places relevant CPU service on the exposed critical path and counters or exact kernel service approach a measured resource ceiling. If pool work falls but physical decode does not, it was hidden by overlap; that supports scheduling/overlap investigation, not a serving win.
+
+## What is and is not measured on this host
+
+- **Known nominal hardware:** 5600X, 6C/12T, 32 MB L3, max boost up to 4.6 GHz, DDR4 up to 3200 MT/s; 128 GB capacity is owner-supplied. The 27.6 core-GHz calculation and conditional 51.2 GB/s are arithmetic from specs only.
+- **Actual memory configuration/effective bandwidth:** unknown. No closed receipt found here for channel count, trained data rate/timings, STREAM Copy/Triad, or memory-controller bandwidth.
+- **Actual NT1–NT4 GU22/Down20 service:** unknown. R46 is a calibration protocol; R59/R79 are old route exposure, not direct actual-weight timed service. R204's task-6 diagnostic does not qualify the pending default settings and root correction forbids cross-request phase-counter comparison.
+- **PMU/VTune access:** not currently admitted. R95 records `perf_event_paranoid=4` with no effective `CAP_PERFMON`; Linux kernel documentation says this access policy controls unprivileged perf access. R13/R16/R74 record VTune software Hotspots blocked by local ptrace scope and an actual gprofng clock-sampler failure (`cerror 9` / `itimer could not be set`). Therefore no present hardware counter, sampled hotspot or instruction/cache traffic result can be claimed. Do not infer a workable profiler from a document or sysfs PMU listing. [Linux perf security documentation](https://docs.kernel.org/admin-guide/perf-security.html)
+
+## Minimal evidence to close the ceiling question
+
+1. **Use the already-planned clean matched default run first.** Retain per-request actual batched positions, route mode, worker count, `--pool-tasks 0`, context and MTP state, output/state result, exact job counts by `(layer, phase, format, NT=1..4)`, and the same request's GU/FF-quant/Down, CPU-dispatch, verifier-wait and physical wall counters. Tag the dispatch origin if draft/verifier or speculative callbacks share the pool; do not silently call the aggregate a verifier-only phase. This gives demand and critical-path status without another speculative kernel change.
+2. **Measure effective RAM throughput only if traffic could bind.** Record DIMM/channel/rate configuration from an authorized platform inventory, then run a standard STREAM Copy/Triad with arrays well beyond the 32 MB L3 and the same six-core/affinity policy as CPU workers. Retain command/compiler/flags, array size, thread pinning, every sample and correctness status. STREAM is a sustainable whole-system memory ceiling, not proof that Strata reaches it. The benchmark owner describes standard STREAM results and requires published run rules; no STREAM sample is in the closed evidence. [STREAM benchmark and run rules](https://www.cs.virginia.edu/~mccalpin/stream/)
+3. **Only if the host resource limit is still ambiguous,** collect `cycles:u,instructions:u` and model-21h documented memory/cache events in an owner-approved perf-capable context, with exact event encodings, user/kernel scope, enabled/running ratios, affinity, multiplexing and process boundaries. The current permission state blocks that pass. AMD uProf distinguishes time sampling from hardware counter/event sampling, but this documentation does not override local permission/failure evidence; no additional profiling attempt is authorized here. [AMD uProf sampling methods](https://docs.amd.com/r/en-US/68658-uProf-getting-started-guide/AMD-uProf-Time-Sampling-Methods)
+
+Keep order/overlap and architecture conclusions separate: the existing pool phase timers show host elapsed spans, not worker CPU time; same-request output and physical wall determine whether CPU work is exposed. STREAM plus exact request work can give a coarse bandwidth plausibility bound. They cannot substitute for actual task/worker completion distribution or GPU-overlap evidence. Do not introduce a kernel or scheduler change from the ceilings or formulas in this report.
+
+## Evidence pins and primary sources
+
+- Latest catalog: `report-registry-v75.json`, 312 report entries, SHA-256 `2a1a99b1c836954b4f51b4a7b57589a79dfe55429f79cd9fb5aa8193e7586136`. Round-52 corrections: archived `root-review-corrections.json`, SHA-256 `ba2c5622bab16ae1aefea954bc09cf3e684ff2589bb547794c4ca2af7e51df9f`; corrections applied above, especially same-request-only phase joins and no new GPU run as of that receipt.
+- Frozen worktree files/hashes and relevant route calculations are pinned in R204 and the source path above. Geometry/bytes and previous exact NT cells are independently computed/qualified in `exact-gu-down-nt-route-cohort-sufficiency-round79.txt` and `actual-small-nt-format-kernel-priority-round59.txt`; they remain historical route evidence.
+- AMD, [Ryzen 5 5600X specifications](https://www.amd.com/en/products/processors/desktops/ryzen/5000-series/amd-ryzen-5-5600x.html).
+- AMD, [Software Optimization Guide 56665](https://docs.amd.com/v/u/en-US/56665); caveat: applies to EPYC 7003/Family 19h Models 00h–0Fh rather than this Model 21h CPU. See the exact host/model correction in R95.
+- Linux kernel, [perf events security and CAP_PERFMON](https://docs.kernel.org/admin-guide/perf-security.html).
+- John McCalpin, [STREAM benchmark](https://www.cs.virginia.edu/~mccalpin/stream/).
+- GNU, [gprofng sampling and limits](https://sourceware.org/binutils/docs/gprofng.html); local actual failure is documented in R74 and precludes using it as present evidence.
+- AMD, [uProf time-sampling methods](https://docs.amd.com/r/en-US/68658-uProf-getting-started-guide/AMD-uProf-Time-Sampling-Methods).

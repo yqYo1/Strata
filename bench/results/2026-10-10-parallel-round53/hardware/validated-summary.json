@@ -1,0 +1,1109 @@
+{
+  "scope": "Observed effective streaming/dense-shape performance under current safe runtime settings, not absolute hardware maxima or physical DRAM counters. Seven within-process samples per case; no independent-process confidence interval.",
+  "cpu": [
+    {
+      "case": "read",
+      "threads": 1,
+      "GBps": {
+        "median": 26.865212,
+        "minimum": 24.665611,
+        "maximum": 28.013554,
+        "count": 7
+      }
+    },
+    {
+      "case": "copy_cached",
+      "threads": 1,
+      "GBps": {
+        "median": 20.566435,
+        "minimum": 19.455054,
+        "maximum": 21.07583,
+        "count": 7
+      }
+    },
+    {
+      "case": "copy_nontemporal",
+      "threads": 1,
+      "GBps": {
+        "median": 30.819636,
+        "minimum": 27.77101,
+        "maximum": 31.812173,
+        "count": 7
+      }
+    },
+    {
+      "case": "triad_cached",
+      "threads": 1,
+      "GBps": {
+        "median": 23.386545,
+        "minimum": 22.780997,
+        "maximum": 23.871212,
+        "count": 7
+      }
+    },
+    {
+      "case": "read",
+      "threads": 2,
+      "GBps": {
+        "median": 36.609183,
+        "minimum": 34.40622,
+        "maximum": 37.819379,
+        "count": 7
+      }
+    },
+    {
+      "case": "copy_cached",
+      "threads": 2,
+      "GBps": {
+        "median": 23.064554,
+        "minimum": 22.28431,
+        "maximum": 23.723778,
+        "count": 7
+      }
+    },
+    {
+      "case": "copy_nontemporal",
+      "threads": 2,
+      "GBps": {
+        "median": 37.351032,
+        "minimum": 35.112377,
+        "maximum": 39.77406,
+        "count": 7
+      }
+    },
+    {
+      "case": "triad_cached",
+      "threads": 2,
+      "GBps": {
+        "median": 26.794158,
+        "minimum": 26.08073,
+        "maximum": 27.420319,
+        "count": 7
+      }
+    },
+    {
+      "case": "read",
+      "threads": 4,
+      "GBps": {
+        "median": 36.527847,
+        "minimum": 35.228197,
+        "maximum": 37.492794,
+        "count": 7
+      }
+    },
+    {
+      "case": "copy_cached",
+      "threads": 4,
+      "GBps": {
+        "median": 23.701712,
+        "minimum": 23.105926,
+        "maximum": 24.024195,
+        "count": 7
+      }
+    },
+    {
+      "case": "copy_nontemporal",
+      "threads": 4,
+      "GBps": {
+        "median": 36.37572,
+        "minimum": 33.862741,
+        "maximum": 37.659294,
+        "count": 7
+      }
+    },
+    {
+      "case": "triad_cached",
+      "threads": 4,
+      "GBps": {
+        "median": 26.090882,
+        "minimum": 25.88261,
+        "maximum": 26.698742,
+        "count": 7
+      }
+    },
+    {
+      "case": "read",
+      "threads": 6,
+      "GBps": {
+        "median": 37.689211,
+        "minimum": 36.603231,
+        "maximum": 38.209457,
+        "count": 7
+      }
+    },
+    {
+      "case": "copy_cached",
+      "threads": 6,
+      "GBps": {
+        "median": 22.948619,
+        "minimum": 22.254439,
+        "maximum": 23.501832,
+        "count": 7
+      }
+    },
+    {
+      "case": "copy_nontemporal",
+      "threads": 6,
+      "GBps": {
+        "median": 37.575052,
+        "minimum": 26.579575,
+        "maximum": 38.779842,
+        "count": 7
+      }
+    },
+    {
+      "case": "triad_cached",
+      "threads": 6,
+      "GBps": {
+        "median": 25.878735,
+        "minimum": 25.144769,
+        "maximum": 26.159422,
+        "count": 7
+      }
+    },
+    {
+      "case": "read",
+      "threads": 12,
+      "GBps": {
+        "median": 36.473764,
+        "minimum": 33.694496,
+        "maximum": 37.439844,
+        "count": 7
+      }
+    },
+    {
+      "case": "copy_cached",
+      "threads": 12,
+      "GBps": {
+        "median": 23.292706,
+        "minimum": 22.370547,
+        "maximum": 23.658902,
+        "count": 7
+      }
+    },
+    {
+      "case": "copy_nontemporal",
+      "threads": 12,
+      "GBps": {
+        "median": 35.600769,
+        "minimum": 22.068216,
+        "maximum": 37.398612,
+        "count": 7
+      }
+    },
+    {
+      "case": "triad_cached",
+      "threads": 12,
+      "GBps": {
+        "median": 26.336607,
+        "minimum": 20.316402,
+        "maximum": 26.55263,
+        "count": 7
+      }
+    }
+  ],
+  "gpu": [
+    {
+      "case": "H2D_pageable",
+      "payload_bytes_per_call": 1048576,
+      "logical_bytes_multiplier": 1,
+      "GBps": {
+        "median": 3.568035,
+        "minimum": 3.330719,
+        "maximum": 3.738402,
+        "count": 7
+      }
+    },
+    {
+      "case": "H2D_pageable",
+      "payload_bytes_per_call": 8388608,
+      "logical_bytes_multiplier": 1,
+      "GBps": {
+        "median": 4.540785,
+        "minimum": 4.418871,
+        "maximum": 4.638329,
+        "count": 7
+      }
+    },
+    {
+      "case": "H2D_pageable",
+      "payload_bytes_per_call": 67108864,
+      "logical_bytes_multiplier": 1,
+      "GBps": {
+        "median": 4.582801,
+        "minimum": 4.567884,
+        "maximum": 4.628414,
+        "count": 7
+      }
+    },
+    {
+      "case": "H2D_pageable",
+      "payload_bytes_per_call": 268435456,
+      "logical_bytes_multiplier": 1,
+      "GBps": {
+        "median": 4.590254,
+        "minimum": 4.512154,
+        "maximum": 4.608462,
+        "count": 7
+      }
+    },
+    {
+      "case": "D2H_pageable",
+      "payload_bytes_per_call": 1048576,
+      "logical_bytes_multiplier": 1,
+      "GBps": {
+        "median": 3.547715,
+        "minimum": 3.429796,
+        "maximum": 3.591235,
+        "count": 7
+      }
+    },
+    {
+      "case": "D2H_pageable",
+      "payload_bytes_per_call": 8388608,
+      "logical_bytes_multiplier": 1,
+      "GBps": {
+        "median": 4.905545,
+        "minimum": 4.822796,
+        "maximum": 4.955989,
+        "count": 7
+      }
+    },
+    {
+      "case": "D2H_pageable",
+      "payload_bytes_per_call": 67108864,
+      "logical_bytes_multiplier": 1,
+      "GBps": {
+        "median": 5.171495,
+        "minimum": 5.133773,
+        "maximum": 5.252508,
+        "count": 7
+      }
+    },
+    {
+      "case": "D2H_pageable",
+      "payload_bytes_per_call": 268435456,
+      "logical_bytes_multiplier": 1,
+      "GBps": {
+        "median": 5.295493,
+        "minimum": 5.19784,
+        "maximum": 5.30415,
+        "count": 7
+      }
+    },
+    {
+      "case": "H2D_host_USM",
+      "payload_bytes_per_call": 1048576,
+      "logical_bytes_multiplier": 1,
+      "GBps": {
+        "median": 5.826523,
+        "minimum": 5.649298,
+        "maximum": 5.850702,
+        "count": 7
+      }
+    },
+    {
+      "case": "H2D_host_USM",
+      "payload_bytes_per_call": 8388608,
+      "logical_bytes_multiplier": 1,
+      "GBps": {
+        "median": 6.393492,
+        "minimum": 6.195469,
+        "maximum": 6.415894,
+        "count": 7
+      }
+    },
+    {
+      "case": "H2D_host_USM",
+      "payload_bytes_per_call": 67108864,
+      "logical_bytes_multiplier": 1,
+      "GBps": {
+        "median": 6.436762,
+        "minimum": 6.409191,
+        "maximum": 6.446348,
+        "count": 7
+      }
+    },
+    {
+      "case": "H2D_host_USM",
+      "payload_bytes_per_call": 268435456,
+      "logical_bytes_multiplier": 1,
+      "GBps": {
+        "median": 6.448533,
+        "minimum": 6.445397,
+        "maximum": 6.450517,
+        "count": 7
+      }
+    },
+    {
+      "case": "D2H_host_USM",
+      "payload_bytes_per_call": 1048576,
+      "logical_bytes_multiplier": 1,
+      "GBps": {
+        "median": 5.262681,
+        "minimum": 5.188453,
+        "maximum": 5.345466,
+        "count": 7
+      }
+    },
+    {
+      "case": "D2H_host_USM",
+      "payload_bytes_per_call": 8388608,
+      "logical_bytes_multiplier": 1,
+      "GBps": {
+        "median": 5.595516,
+        "minimum": 4.688292,
+        "maximum": 5.601138,
+        "count": 7
+      }
+    },
+    {
+      "case": "D2H_host_USM",
+      "payload_bytes_per_call": 67108864,
+      "logical_bytes_multiplier": 1,
+      "GBps": {
+        "median": 5.62946,
+        "minimum": 5.598093,
+        "maximum": 5.634792,
+        "count": 7
+      }
+    },
+    {
+      "case": "D2H_host_USM",
+      "payload_bytes_per_call": 268435456,
+      "logical_bytes_multiplier": 1,
+      "GBps": {
+        "median": 5.642946,
+        "minimum": 5.642528,
+        "maximum": 5.644472,
+        "count": 7
+      }
+    },
+    {
+      "case": "VRAM_queue_copy",
+      "payload_bytes_per_call": 268435456,
+      "logical_bytes_multiplier": 2,
+      "GBps": {
+        "median": 330.073151,
+        "minimum": 329.656108,
+        "maximum": 330.121443,
+        "count": 7
+      }
+    },
+    {
+      "case": "VRAM_kernel_copy",
+      "payload_bytes_per_call": 268435456,
+      "logical_bytes_multiplier": 2,
+      "GBps": {
+        "median": 308.30026,
+        "minimum": 306.246157,
+        "maximum": 308.538134,
+        "count": 7
+      }
+    },
+    {
+      "case": "VRAM_read_xor",
+      "payload_bytes_per_call": 268435456,
+      "logical_bytes_multiplier": 1,
+      "GBps": {
+        "median": 266.511443,
+        "minimum": 248.037231,
+        "maximum": 266.653842,
+        "count": 7
+      }
+    },
+    {
+      "case": "VRAM_triad_xor",
+      "payload_bytes_per_call": 268435456,
+      "logical_bytes_multiplier": 3,
+      "GBps": {
+        "median": 316.67648,
+        "minimum": 315.506324,
+        "maximum": 317.593568,
+        "count": 7
+      }
+    }
+  ],
+  "gemm": [
+    {
+      "case": "GU",
+      "M": 1,
+      "weight_mode": "hot",
+      "TFLOPps": {
+        "median": 0.303513,
+        "minimum": 0.243579,
+        "maximum": 0.328333,
+        "count": 7
+      },
+      "us_per_call": {
+        "median": 21.592515624999997,
+        "minimum": 19.960234375,
+        "maximum": 26.905484375,
+        "count": 7
+      }
+    },
+    {
+      "case": "GU",
+      "M": 1,
+      "weight_mode": "rotate8",
+      "TFLOPps": {
+        "median": 0.228466,
+        "minimum": 0.211474,
+        "maximum": 0.23317,
+        "count": 7
+      },
+      "us_per_call": {
+        "median": 28.685234375,
+        "minimum": 28.106484375,
+        "maximum": 30.990046875,
+        "count": 7
+      }
+    },
+    {
+      "case": "GU",
+      "M": 4,
+      "weight_mode": "hot",
+      "TFLOPps": {
+        "median": 1.118188,
+        "minimum": 1.003779,
+        "maximum": 1.274538,
+        "count": 7
+      },
+      "us_per_call": {
+        "median": 23.443640625,
+        "minimum": 20.567765625000003,
+        "maximum": 26.115718750000003,
+        "count": 7
+      }
+    },
+    {
+      "case": "GU",
+      "M": 4,
+      "weight_mode": "rotate8",
+      "TFLOPps": {
+        "median": 1.045459,
+        "minimum": 1.03462,
+        "maximum": 1.046982,
+        "count": 7
+      },
+      "us_per_call": {
+        "median": 25.07453125,
+        "minimum": 25.038062500000002,
+        "maximum": 25.33721875,
+        "count": 7
+      }
+    },
+    {
+      "case": "GU",
+      "M": 8,
+      "weight_mode": "hot",
+      "TFLOPps": {
+        "median": 2.363085,
+        "minimum": 1.91108,
+        "maximum": 2.546575,
+        "count": 7
+      },
+      "us_per_call": {
+        "median": 22.18659375,
+        "minimum": 20.587968749999998,
+        "maximum": 27.434125,
+        "count": 7
+      }
+    },
+    {
+      "case": "GU",
+      "M": 8,
+      "weight_mode": "rotate8",
+      "TFLOPps": {
+        "median": 1.924299,
+        "minimum": 1.806717,
+        "maximum": 2.072159,
+        "count": 7
+      },
+      "us_per_call": {
+        "median": 27.24565625,
+        "minimum": 25.30153125,
+        "maximum": 29.018828125,
+        "count": 7
+      }
+    },
+    {
+      "case": "GU",
+      "M": 32,
+      "weight_mode": "hot",
+      "TFLOPps": {
+        "median": 9.468977,
+        "minimum": 7.378521,
+        "maximum": 11.02321,
+        "count": 7
+      },
+      "us_per_call": {
+        "median": 22.147609375000002,
+        "minimum": 19.024874999999998,
+        "maximum": 28.422390625000002,
+        "count": 7
+      }
+    },
+    {
+      "case": "GU",
+      "M": 32,
+      "weight_mode": "rotate8",
+      "TFLOPps": {
+        "median": 8.269965,
+        "minimum": 4.843071,
+        "maximum": 8.353086,
+        "count": 7
+      },
+      "us_per_call": {
+        "median": 25.35865625,
+        "minimum": 25.1063125,
+        "maximum": 43.302109375,
+        "count": 7
+      }
+    },
+    {
+      "case": "GU",
+      "M": 80,
+      "weight_mode": "hot",
+      "TFLOPps": {
+        "median": 15.674382,
+        "minimum": 13.404395,
+        "maximum": 15.720581,
+        "count": 7
+      },
+      "us_per_call": {
+        "median": 33.44871875,
+        "minimum": 33.350421875,
+        "maximum": 39.113140625,
+        "count": 7
+      }
+    },
+    {
+      "case": "GU",
+      "M": 80,
+      "weight_mode": "rotate8",
+      "TFLOPps": {
+        "median": 13.160516,
+        "minimum": 13.119074,
+        "maximum": 13.239753,
+        "count": 7
+      },
+      "us_per_call": {
+        "median": 39.837953125,
+        "minimum": 39.599531250000005,
+        "maximum": 39.963796875,
+        "count": 7
+      }
+    },
+    {
+      "case": "GU",
+      "M": 160,
+      "weight_mode": "hot",
+      "TFLOPps": {
+        "median": 29.58582,
+        "minimum": 29.37936,
+        "maximum": 29.62729,
+        "count": 7
+      },
+      "us_per_call": {
+        "median": 35.44184375,
+        "minimum": 35.392234375,
+        "maximum": 35.690906250000005,
+        "count": 7
+      }
+    },
+    {
+      "case": "GU",
+      "M": 160,
+      "weight_mode": "rotate8",
+      "TFLOPps": {
+        "median": 25.652814,
+        "minimum": 23.636848,
+        "maximum": 25.78603,
+        "count": 7
+      },
+      "us_per_call": {
+        "median": 40.875671875,
+        "minimum": 40.6645,
+        "maximum": 44.361921875,
+        "count": 7
+      }
+    },
+    {
+      "case": "GU",
+      "M": 320,
+      "weight_mode": "hot",
+      "TFLOPps": {
+        "median": 32.879071,
+        "minimum": 32.78975,
+        "maximum": 33.06401,
+        "count": 7
+      },
+      "us_per_call": {
+        "median": 63.78379687499999,
+        "minimum": 63.42703125,
+        "maximum": 63.95754687499999,
+        "count": 7
+      }
+    },
+    {
+      "case": "GU",
+      "M": 320,
+      "weight_mode": "rotate8",
+      "TFLOPps": {
+        "median": 32.046316,
+        "minimum": 31.97709,
+        "maximum": 32.164114,
+        "count": 7
+      },
+      "us_per_call": {
+        "median": 65.44128125,
+        "minimum": 65.201609375,
+        "maximum": 65.582953125,
+        "count": 7
+      }
+    },
+    {
+      "case": "GU",
+      "M": 640,
+      "weight_mode": "hot",
+      "TFLOPps": {
+        "median": 41.406822,
+        "minimum": 39.524278,
+        "maximum": 41.951693,
+        "count": 7
+      },
+      "us_per_call": {
+        "median": 101.295,
+        "minimum": 99.979375,
+        "maximum": 106.1196875,
+        "count": 7
+      }
+    },
+    {
+      "case": "GU",
+      "M": 640,
+      "weight_mode": "rotate8",
+      "TFLOPps": {
+        "median": 40.819136,
+        "minimum": 40.683282,
+        "maximum": 41.117327,
+        "count": 7
+      },
+      "us_per_call": {
+        "median": 102.753375,
+        "minimum": 102.0081875,
+        "maximum": 103.09649999999999,
+        "count": 7
+      }
+    },
+    {
+      "case": "GU",
+      "M": 1280,
+      "weight_mode": "hot",
+      "TFLOPps": {
+        "median": 49.746603,
+        "minimum": 45.112943,
+        "maximum": 49.980646,
+        "count": 7
+      },
+      "us_per_call": {
+        "median": 168.62675,
+        "minimum": 167.837125,
+        "maximum": 185.9468125,
+        "count": 7
+      }
+    },
+    {
+      "case": "GU",
+      "M": 1280,
+      "weight_mode": "rotate8",
+      "TFLOPps": {
+        "median": 49.25714,
+        "minimum": 48.393797,
+        "maximum": 49.401365,
+        "count": 7
+      },
+      "us_per_call": {
+        "median": 170.30237499999998,
+        "minimum": 169.8051875,
+        "maximum": 173.3405625,
+        "count": 7
+      }
+    },
+    {
+      "case": "GU",
+      "M": 8192,
+      "weight_mode": "hot",
+      "TFLOPps": {
+        "median": 52.786926,
+        "minimum": 52.644571,
+        "maximum": 52.874464,
+        "count": 7
+      },
+      "us_per_call": {
+        "median": 1017.0528125000001,
+        "minimum": 1015.3689999999999,
+        "maximum": 1019.8029999999999,
+        "count": 7
+      }
+    },
+    {
+      "case": "GU",
+      "M": 8192,
+      "weight_mode": "rotate8",
+      "TFLOPps": {
+        "median": 52.759704,
+        "minimum": 52.683226,
+        "maximum": 52.842006,
+        "count": 7
+      },
+      "us_per_call": {
+        "median": 1017.5775624999999,
+        "minimum": 1015.9926874999999,
+        "maximum": 1019.05475,
+        "count": 7
+      }
+    },
+    {
+      "case": "Down",
+      "M": 1,
+      "weight_mode": "hot",
+      "TFLOPps": {
+        "median": 0.167706,
+        "minimum": 0.128259,
+        "maximum": 0.186372,
+        "count": 7
+      },
+      "us_per_call": {
+        "median": 19.538953125000003,
+        "minimum": 17.581999999999997,
+        "maximum": 25.548234375,
+        "count": 7
+      }
+    },
+    {
+      "case": "Down",
+      "M": 1,
+      "weight_mode": "rotate8",
+      "TFLOPps": {
+        "median": 0.180628,
+        "minimum": 0.179741,
+        "maximum": 0.185612,
+        "count": 7
+      },
+      "us_per_call": {
+        "median": 18.141171874999998,
+        "minimum": 17.654,
+        "maximum": 18.23071875,
+        "count": 7
+      }
+    },
+    {
+      "case": "Down",
+      "M": 4,
+      "weight_mode": "hot",
+      "TFLOPps": {
+        "median": 0.726619,
+        "minimum": 0.615404,
+        "maximum": 0.747213,
+        "count": 7
+      },
+      "us_per_call": {
+        "median": 18.038625,
+        "minimum": 17.541453125,
+        "maximum": 21.298515625,
+        "count": 7
+      }
+    },
+    {
+      "case": "Down",
+      "M": 4,
+      "weight_mode": "rotate8",
+      "TFLOPps": {
+        "median": 0.708115,
+        "minimum": 0.623781,
+        "maximum": 0.749165,
+        "count": 7
+      },
+      "us_per_call": {
+        "median": 18.51,
+        "minimum": 17.49575,
+        "maximum": 21.012515625000002,
+        "count": 7
+      }
+    },
+    {
+      "case": "Down",
+      "M": 8,
+      "weight_mode": "hot",
+      "TFLOPps": {
+        "median": 1.479571,
+        "minimum": 1.463281,
+        "maximum": 1.526495,
+        "count": 7
+      },
+      "us_per_call": {
+        "median": 17.7175625,
+        "minimum": 17.1729375,
+        "maximum": 17.9148125,
+        "count": 7
+      }
+    },
+    {
+      "case": "Down",
+      "M": 8,
+      "weight_mode": "rotate8",
+      "TFLOPps": {
+        "median": 1.425502,
+        "minimum": 1.009345,
+        "maximum": 1.454462,
+        "count": 7
+      },
+      "us_per_call": {
+        "median": 18.38959375,
+        "minimum": 18.0234375,
+        "maximum": 25.9716875,
+        "count": 7
+      }
+    },
+    {
+      "case": "Down",
+      "M": 32,
+      "weight_mode": "hot",
+      "TFLOPps": {
+        "median": 4.253375,
+        "minimum": 3.980279,
+        "maximum": 4.288202,
+        "count": 7
+      },
+      "us_per_call": {
+        "median": 24.652796875,
+        "minimum": 24.452578125,
+        "maximum": 26.34428125,
+        "count": 7
+      }
+    },
+    {
+      "case": "Down",
+      "M": 32,
+      "weight_mode": "rotate8",
+      "TFLOPps": {
+        "median": 5.876798,
+        "minimum": 5.654449,
+        "maximum": 5.958559,
+        "count": 7
+      },
+      "us_per_call": {
+        "median": 17.842640625,
+        "minimum": 17.5978125,
+        "maximum": 18.544265625,
+        "count": 7
+      }
+    },
+    {
+      "case": "Down",
+      "M": 80,
+      "weight_mode": "hot",
+      "TFLOPps": {
+        "median": 14.404976,
+        "minimum": 11.141182,
+        "maximum": 14.534386,
+        "count": 7
+      },
+      "us_per_call": {
+        "median": 18.19815625,
+        "minimum": 18.036125,
+        "maximum": 23.52928125,
+        "count": 7
+      }
+    },
+    {
+      "case": "Down",
+      "M": 80,
+      "weight_mode": "rotate8",
+      "TFLOPps": {
+        "median": 14.20736,
+        "minimum": 14.105162,
+        "maximum": 14.420106,
+        "count": 7
+      },
+      "us_per_call": {
+        "median": 18.45128125,
+        "minimum": 18.1790625,
+        "maximum": 18.584968749999998,
+        "count": 7
+      }
+    },
+    {
+      "case": "Down",
+      "M": 160,
+      "weight_mode": "hot",
+      "TFLOPps": {
+        "median": 25.567619,
+        "minimum": 20.844512,
+        "maximum": 25.690396,
+        "count": 7
+      },
+      "us_per_call": {
+        "median": 20.505937499999998,
+        "minimum": 20.4079375,
+        "maximum": 25.152328125,
+        "count": 7
+      }
+    },
+    {
+      "case": "Down",
+      "M": 160,
+      "weight_mode": "rotate8",
+      "TFLOPps": {
+        "median": 22.547582,
+        "minimum": 20.144162,
+        "maximum": 22.670137,
+        "count": 7
+      },
+      "us_per_call": {
+        "median": 23.252515625,
+        "minimum": 23.1268125,
+        "maximum": 26.026796875,
+        "count": 7
+      }
+    },
+    {
+      "case": "Down",
+      "M": 320,
+      "weight_mode": "hot",
+      "TFLOPps": {
+        "median": 35.305459,
+        "minimum": 35.196932,
+        "maximum": 35.400815,
+        "count": 7
+      },
+      "us_per_call": {
+        "median": 29.700109375,
+        "minimum": 29.620109375000002,
+        "maximum": 29.791687500000002,
+        "count": 7
+      }
+    },
+    {
+      "case": "Down",
+      "M": 320,
+      "weight_mode": "rotate8",
+      "TFLOPps": {
+        "median": 31.885376,
+        "minimum": 31.747852,
+        "maximum": 32.001618,
+        "count": 7
+      },
+      "us_per_call": {
+        "median": 32.885796875000004,
+        "minimum": 32.76634375,
+        "maximum": 33.02825,
+        "count": 7
+      }
+    },
+    {
+      "case": "Down",
+      "M": 640,
+      "weight_mode": "hot",
+      "TFLOPps": {
+        "median": 40.497287,
+        "minimum": 40.385473,
+        "maximum": 40.706034,
+        "count": 7
+      },
+      "us_per_call": {
+        "median": 51.785,
+        "minimum": 51.5194375,
+        "maximum": 51.928375,
+        "count": 7
+      }
+    },
+    {
+      "case": "Down",
+      "M": 640,
+      "weight_mode": "rotate8",
+      "TFLOPps": {
+        "median": 38.709268,
+        "minimum": 36.705207,
+        "maximum": 39.107046,
+        "count": 7
+      },
+      "us_per_call": {
+        "median": 54.177,
+        "minimum": 53.6259375,
+        "maximum": 57.135,
+        "count": 7
+      }
+    },
+    {
+      "case": "Down",
+      "M": 1280,
+      "weight_mode": "hot",
+      "TFLOPps": {
+        "median": 39.820342,
+        "minimum": 39.244743,
+        "maximum": 39.85707,
+        "count": 7
+      },
+      "us_per_call": {
+        "median": 105.3306875,
+        "minimum": 105.233625,
+        "maximum": 106.8755625,
+        "count": 7
+      }
+    },
+    {
+      "case": "Down",
+      "M": 1280,
+      "weight_mode": "rotate8",
+      "TFLOPps": {
+        "median": 38.72182,
+        "minimum": 36.919659,
+        "maximum": 38.801007,
+        "count": 7
+      },
+      "us_per_call": {
+        "median": 108.318875,
+        "minimum": 108.0978125,
+        "maximum": 113.60625,
+        "count": 7
+      }
+    },
+    {
+      "case": "Down",
+      "M": 8192,
+      "weight_mode": "hot",
+      "TFLOPps": {
+        "median": 41.768376,
+        "minimum": 41.548435,
+        "maximum": 42.008633,
+        "count": 7
+      },
+      "us_per_call": {
+        "median": 642.6763125,
+        "minimum": 639.0006875,
+        "maximum": 646.078375,
+        "count": 7
+      }
+    },
+    {
+      "case": "Down",
+      "M": 8192,
+      "weight_mode": "rotate8",
+      "TFLOPps": {
+        "median": 41.87621,
+        "minimum": 41.797776,
+        "maximum": 42.016166,
+        "count": 7
+      },
+      "us_per_call": {
+        "median": 641.021375,
+        "minimum": 638.886125,
+        "maximum": 642.22425,
+        "count": 7
+      }
+    }
+  ]
+}

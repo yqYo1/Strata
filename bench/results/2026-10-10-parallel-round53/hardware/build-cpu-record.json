@@ -1,0 +1,114 @@
+{
+  "active": false,
+  "complete": true,
+  "passed": true,
+  "stage": "build-cpu",
+  "started_utc": "2026-10-10T07:10:57.025230+00:00",
+  "boot_id": "0a908c16-e292-4299-80ff-082da39f4bb9",
+  "source": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/hardware_ceiling_cpu_v1.cpp",
+    "bytes": 4485,
+    "sha256": "5b1d4bf706c8e9299a021a14a10acbd4f025ba3361549b4ec5cc0a7b8b795e04"
+  },
+  "controller": {
+    "bytes": 7687,
+    "sha256": "78194792418e96bb98389ee260df51967bb565088d964f90dc3579f176c54351"
+  },
+  "parent_owner": {
+    "bytes": 24299,
+    "sha256": "7df012ee4d9bd047a6094ccedb37fddb3d56d4b054d9fdf468534b0fb6e94e1f"
+  },
+  "commands": [
+    {
+      "label": "compile",
+      "argv": [
+        "/usr/bin/g++",
+        "-std=c++20",
+        "-O3",
+        "-mavx2",
+        "-pthread",
+        "-Wall",
+        "-Wextra",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/hardware_ceiling_cpu_v1.cpp",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/hardware-ceiling-cpu-v1"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T07:10:57.025766+00:00",
+      "wall_seconds": 240,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 765105,
+          "start_ticks": 30593613,
+          "sid": 765105,
+          "pgid": 765105
+        },
+        {
+          "pid": 765106,
+          "start_ticks": 30593614,
+          "sid": 765105,
+          "pgid": 765105
+        }
+      ],
+      "pid": 765105,
+      "direct_identity": {
+        "pid": 765105,
+        "state": "R",
+        "ppid": 765096,
+        "pgid": 765105,
+        "sid": 765105,
+        "start_ticks": 30593613,
+        "rss_bytes": 294912
+      },
+      "peak_session_rss_bytes": 288739328,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T07:10:58.817823+00:00",
+      "elapsed_seconds": 1.7918720510206185,
+      "logs": {
+        "compile.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "compile.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "adopted": false,
+  "model_executed": false,
+  "scope": "Hardware streaming and production-shape dense GEMM characterization; logical traffic is not hardware-counter DRAM traffic. Host-inclusive monotonic time, no GPU profiling timestamps. Not model throughput.",
+  "limits": {
+    "AS_each_bytes": 17179869184,
+    "RSS_session_sampled_bytes": 2147483648,
+    "CPU_each_seconds": [
+      120,
+      121
+    ],
+    "wall_seconds": 240
+  },
+  "environment": {
+    "PATH": "/usr/bin:/bin",
+    "LANG": "C.UTF-8",
+    "LC_ALL": "C.UTF-8"
+  },
+  "binary": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/hardware-ceiling-cpu-v1",
+    "bytes": 31792,
+    "sha256": "9ba2a8c6608cbd1a98296daabe02956b340972e79af88dad5860eaa6e840aa6e"
+  },
+  "finished_utc": "2026-10-10T07:10:58.818734+00:00"
+}
