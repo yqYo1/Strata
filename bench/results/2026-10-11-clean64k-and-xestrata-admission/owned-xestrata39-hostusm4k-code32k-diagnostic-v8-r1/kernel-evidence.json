@@ -1,0 +1,181 @@
+[
+  {
+    "original": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-xestrata39-hostusm4k-code32k-diagnostic-v8-r1/probes/health-kernel.stdout",
+      "bytes": 17,
+      "sha256": "19c4e28b2f54ea8f217db4e622b0a5c758efa7b77ce2dc0394b6d159568c0b2e"
+    },
+    "total_entries": 0,
+    "filter": "MESSAGE contains exact xe 0000:05:00.0; retain complete entry",
+    "relevant": [],
+    "cursor_lines": [
+      "-- No entries --"
+    ]
+  },
+  {
+    "original": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-xestrata39-hostusm4k-code32k-diagnostic-v8-r1/probes/kernel-before.stdout",
+      "bytes": 156,
+      "sha256": "80cc928cfbac52bd7f953e8aeb217f9e286b05181a96c717f621262e35c71d0d"
+    },
+    "total_entries": 0,
+    "filter": "MESSAGE contains exact xe 0000:05:00.0; retain complete entry",
+    "relevant": [],
+    "cursor_lines": [
+      "-- No entries --",
+      "-- cursor: s=3ad31c4e321d43ad949846afdb43877a;i=c0570fe;b=0a908c16e292429980ff082da39f4bb9;m=4e976950c2;t=65d7e86c5377e;x=f10725589483d33c"
+    ]
+  },
+  {
+    "original": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-xestrata39-hostusm4k-code32k-diagnostic-v8-r1/probes/kernel-after.stdout",
+      "bytes": 6246,
+      "sha256": "5d8cfc1d1737a5a3f800a445c2df9f3923e36624d6b7aa8dcda44e944afe3aa9"
+    },
+    "total_entries": 8,
+    "filter": "MESSAGE contains exact xe 0000:05:00.0; retain complete entry",
+    "relevant": [
+      {
+        "_TRANSPORT": "kernel",
+        "SYSLOG_FACILITY": "0",
+        "MESSAGE": "xe 0000:05:00.0: [drm] Tile0: GT0: \n\tASID: 1386\n\tFaulted Address: 0x0000aaa79d800000\n\tFaultType: 0\n\tAccessType: 1\n\tFaultLevel: 1\n\tEngineClass: 5 ccs\n\tEngineInstance: 0",
+        "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+        "__SEQNUM": "201683663",
+        "_UDEV_SYSNAME": "0000:05:00.0",
+        "__CURSOR": "s=3ad31c4e321d43ad949846afdb43877a;i=c0572cf;b=0a908c16e292429980ff082da39f4bb9;m=4e9e0d360a;t=65d7e8d691cc7;x=a4171235130491d2",
+        "__SEQNUM_ID": "3ad31c4e321d43ad949846afdb43877a",
+        "SYSLOG_IDENTIFIER": "kernel",
+        "PRIORITY": "6",
+        "_HOSTNAME": "jitakusaba01",
+        "__MONOTONIC_TIMESTAMP": "337659115018",
+        "_RUNTIME_SCOPE": "system",
+        "_SOURCE_MONOTONIC_TIMESTAMP": "337655858679",
+        "_BOOT_ID": "0a908c16e292429980ff082da39f4bb9",
+        "__REALTIME_TIMESTAMP": "1791647980002503",
+        "_KERNEL_SUBSYSTEM": "pci",
+        "_KERNEL_DEVICE": "+pci:0000:05:00.0"
+      },
+      {
+        "_TRANSPORT": "kernel",
+        "_RUNTIME_SCOPE": "system",
+        "PRIORITY": "6",
+        "__MONOTONIC_TIMESTAMP": "337659115603",
+        "MESSAGE": "xe 0000:05:00.0: [drm] Tile0: GT0: Fault response: Unsuccessful -ENOENT",
+        "_UDEV_SYSNAME": "0000:05:00.0",
+        "__REALTIME_TIMESTAMP": "1791647980003088",
+        "_KERNEL_DEVICE": "+pci:0000:05:00.0",
+        "__SEQNUM": "201683664",
+        "SYSLOG_IDENTIFIER": "kernel",
+        "_BOOT_ID": "0a908c16e292429980ff082da39f4bb9",
+        "_HOSTNAME": "jitakusaba01",
+        "__SEQNUM_ID": "3ad31c4e321d43ad949846afdb43877a",
+        "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+        "SYSLOG_FACILITY": "0",
+        "_KERNEL_SUBSYSTEM": "pci",
+        "_SOURCE_MONOTONIC_TIMESTAMP": "337655858687",
+        "__CURSOR": "s=3ad31c4e321d43ad949846afdb43877a;i=c0572d0;b=0a908c16e292429980ff082da39f4bb9;m=4e9e0d3853;t=65d7e8d691f10;x=5d29ea684eeecf98"
+      },
+      {
+        "SYSLOG_FACILITY": "0",
+        "_KERNEL_SUBSYSTEM": "pci",
+        "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+        "__REALTIME_TIMESTAMP": "1791647980003535",
+        "_RUNTIME_SCOPE": "system",
+        "_KERNEL_DEVICE": "+pci:0000:05:00.0",
+        "SYSLOG_IDENTIFIER": "kernel",
+        "_UDEV_SYSNAME": "0000:05:00.0",
+        "__SEQNUM": "201683665",
+        "_TRANSPORT": "kernel",
+        "__MONOTONIC_TIMESTAMP": "337659116050",
+        "__SEQNUM_ID": "3ad31c4e321d43ad949846afdb43877a",
+        "__CURSOR": "s=3ad31c4e321d43ad949846afdb43877a;i=c0572d1;b=0a908c16e292429980ff082da39f4bb9;m=4e9e0d3a12;t=65d7e8d6920cf;x=59cea11739c85c84",
+        "_BOOT_ID": "0a908c16e292429980ff082da39f4bb9",
+        "_SOURCE_MONOTONIC_TIMESTAMP": "337655858743",
+        "MESSAGE": "xe 0000:05:00.0: [drm] Tile0: GT0: Engine memory CAT error [18]: class=ccs, logical_mask: 0x1, guc_id=2",
+        "_HOSTNAME": "jitakusaba01",
+        "PRIORITY": "6"
+      },
+      {
+        "_SOURCE_MONOTONIC_TIMESTAMP": "337655860273",
+        "SYSLOG_FACILITY": "0",
+        "_KERNEL_SUBSYSTEM": "pci",
+        "_KERNEL_DEVICE": "+pci:0000:05:00.0",
+        "MESSAGE": "xe 0000:05:00.0: [drm] Tile0: GT0: Engine reset: engine_class=ccs, logical_mask: 0x1, guc_id=2, state=0x249",
+        "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+        "__MONOTONIC_TIMESTAMP": "337659116210",
+        "_TRANSPORT": "kernel",
+        "__CURSOR": "s=3ad31c4e321d43ad949846afdb43877a;i=c0572d2;b=0a908c16e292429980ff082da39f4bb9;m=4e9e0d3ab2;t=65d7e8d69216f;x=558398981297f6f6",
+        "__SEQNUM_ID": "3ad31c4e321d43ad949846afdb43877a",
+        "_BOOT_ID": "0a908c16e292429980ff082da39f4bb9",
+        "SYSLOG_IDENTIFIER": "kernel",
+        "PRIORITY": "6",
+        "__REALTIME_TIMESTAMP": "1791647980003695",
+        "_RUNTIME_SCOPE": "system",
+        "_UDEV_SYSNAME": "0000:05:00.0",
+        "_HOSTNAME": "jitakusaba01",
+        "__SEQNUM": "201683666"
+      },
+      {
+        "_UDEV_SYSNAME": "0000:05:00.0",
+        "__REALTIME_TIMESTAMP": "1791647980003873",
+        "__CURSOR": "s=3ad31c4e321d43ad949846afdb43877a;i=c0572d3;b=0a908c16e292429980ff082da39f4bb9;m=4e9e0d3b64;t=65d7e8d692221;x=934c52e7e8951495",
+        "_RUNTIME_SCOPE": "system",
+        "_TRANSPORT": "kernel",
+        "SYSLOG_FACILITY": "0",
+        "__MONOTONIC_TIMESTAMP": "337659116388",
+        "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+        "__SEQNUM": "201683667",
+        "SYSLOG_IDENTIFIER": "kernel",
+        "__SEQNUM_ID": "3ad31c4e321d43ad949846afdb43877a",
+        "_KERNEL_DEVICE": "+pci:0000:05:00.0",
+        "_BOOT_ID": "0a908c16e292429980ff082da39f4bb9",
+        "_HOSTNAME": "jitakusaba01",
+        "_KERNEL_SUBSYSTEM": "pci",
+        "MESSAGE": "xe 0000:05:00.0: [drm] Tile0: GT0: Timedout job: seqno=128700, lrc_seqno=128700, guc_id=2, flags=0x20 in strata [2791225]",
+        "_SOURCE_MONOTONIC_TIMESTAMP": "337655860294",
+        "PRIORITY": "5"
+      },
+      {
+        "_RUNTIME_SCOPE": "system",
+        "_HOSTNAME": "jitakusaba01",
+        "__MONOTONIC_TIMESTAMP": "337659196935",
+        "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+        "__CURSOR": "s=3ad31c4e321d43ad949846afdb43877a;i=c0572d4;b=0a908c16e292429980ff082da39f4bb9;m=4e9e0e7607;t=65d7e8d6a5cc4;x=59ddcf37d4419279",
+        "_KERNEL_DEVICE": "+pci:0000:05:00.0",
+        "_TRANSPORT": "kernel",
+        "__SEQNUM": "201683668",
+        "__SEQNUM_ID": "3ad31c4e321d43ad949846afdb43877a",
+        "_SOURCE_MONOTONIC_TIMESTAMP": "337655940968",
+        "_UDEV_SYSNAME": "0000:05:00.0",
+        "MESSAGE": "xe 0000:05:00.0: [drm] Xe device coredump has been created",
+        "PRIORITY": "6",
+        "__REALTIME_TIMESTAMP": "1791647980084420",
+        "SYSLOG_IDENTIFIER": "kernel",
+        "SYSLOG_FACILITY": "0",
+        "_BOOT_ID": "0a908c16e292429980ff082da39f4bb9",
+        "_KERNEL_SUBSYSTEM": "pci"
+      },
+      {
+        "_TRANSPORT": "kernel",
+        "__SEQNUM": "201683669",
+        "_BOOT_ID": "0a908c16e292429980ff082da39f4bb9",
+        "__MONOTONIC_TIMESTAMP": "337659197497",
+        "__SEQNUM_ID": "3ad31c4e321d43ad949846afdb43877a",
+        "_KERNEL_SUBSYSTEM": "pci",
+        "_SOURCE_MONOTONIC_TIMESTAMP": "337655940974",
+        "__CURSOR": "s=3ad31c4e321d43ad949846afdb43877a;i=c0572d5;b=0a908c16e292429980ff082da39f4bb9;m=4e9e0e7839;t=65d7e8d6a5ef6;x=4c7e927daefd6827",
+        "_RUNTIME_SCOPE": "system",
+        "_UDEV_SYSNAME": "0000:05:00.0",
+        "MESSAGE": "xe 0000:05:00.0: [drm] Check your /sys/class/drm/card1/device/devcoredump/data",
+        "PRIORITY": "6",
+        "_HOSTNAME": "jitakusaba01",
+        "_KERNEL_DEVICE": "+pci:0000:05:00.0",
+        "SYSLOG_FACILITY": "0",
+        "SYSLOG_IDENTIFIER": "kernel",
+        "__REALTIME_TIMESTAMP": "1791647980084982",
+        "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d"
+      }
+    ],
+    "cursor_lines": []
+  }
+]

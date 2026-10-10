@@ -1,0 +1,102 @@
+{
+  "runs": [
+    {
+      "name": "owned-clean64k-v3-baseline-r1",
+      "original_receipt": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-clean64k-v3-baseline-r1/record.json",
+        "bytes": 37475,
+        "sha256": "9f97faaea66de8258170a85ea11ef653d8632a3d98b0d12c6972e6c441470fd6"
+      },
+      "original_result_unchanged": true,
+      "completed": true,
+      "timing_valid": true,
+      "new_fault_messages": [],
+      "scope": "whole unchanged fork vs current baseline; LP5 protocol, not exclusive compute"
+    },
+    {
+      "name": "owned-xestrata39-first32k-diagnostic-v6-r1",
+      "original_receipt": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-xestrata39-first32k-diagnostic-v6-r1/record.json",
+        "bytes": 17161,
+        "sha256": "0ff74ddb847d4c460f8dee85abd885d7c71e64195932f591a8c29354369b62f2"
+      },
+      "original_result_unchanged": true,
+      "completed": false,
+      "timing_valid": false,
+      "new_fault_messages": [],
+      "scope": "one fresh raw-fork diagnostic; output divergence is evidence, not quality equivalence"
+    },
+    {
+      "name": "owned-xestrata39-hostusm32k-diagnostic-v7-r1",
+      "original_receipt": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-xestrata39-hostusm32k-diagnostic-v7-r1/record.json",
+        "bytes": 20329,
+        "sha256": "7c58cf4ff133a87ab841aea40c8146ed84958ce70dd3abeb1334087aaf4352f4"
+      },
+      "original_result_unchanged": true,
+      "completed": false,
+      "timing_valid": false,
+      "new_fault_messages": [],
+      "scope": "one fresh raw-fork diagnostic; output divergence is evidence, not quality equivalence"
+    },
+    {
+      "name": "owned-xestrata39-hostusm4k-code32k-diagnostic-v8-r1",
+      "original_receipt": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-xestrata39-hostusm4k-code32k-diagnostic-v8-r1/record.json",
+        "bytes": 20774,
+        "sha256": "be30b5494b9f535150353e62e58b1450933072059f9362a7e3941003d14c1881"
+      },
+      "original_result_unchanged": true,
+      "completed": false,
+      "timing_valid": false,
+      "new_fault_messages": [
+        "xe 0000:05:00.0: [drm] Tile0: GT0: Fault response: Unsuccessful -ENOENT",
+        "xe 0000:05:00.0: [drm] Tile0: GT0: Engine memory CAT error [18]: class=ccs, logical_mask: 0x1, guc_id=2",
+        "xe 0000:05:00.0: [drm] Tile0: GT0: Engine reset: engine_class=ccs, logical_mask: 0x1, guc_id=2, state=0x249"
+      ],
+      "scope": "one fresh raw-fork diagnostic; output divergence is evidence, not quality equivalence"
+    }
+  ],
+  "hardware": "Ryzen5 5600X /128GB RAM /ArcB57010GB; IntelLLVM2026.1.1, compute-runtime1.17.39395+14",
+  "actual_goal_input": 65536,
+  "minimum_comparison_input": 32768,
+  "prefill_goal_tps": 1000,
+  "decode_goal_tps": 70,
+  "baseline64K_sample": {
+    "host_spawn_seconds": 0.002120262011885643,
+    "host_start_to_READY_seconds": 44.595850970014,
+    "host_send_seconds": 0.04035290202591568,
+    "host_send_begin_to_DONE_seconds": 163.25995860103285,
+    "host_send_end_to_DONE_seconds": 163.21960569900693,
+    "prompt_tokens": 65536,
+    "generated_tokens": 3,
+    "actual_batched_positions": 65535,
+    "prompt_ms": 162402.9,
+    "decode_ms": 813.4,
+    "finish_reason": "stop",
+    "mtp_counts": [
+      0,
+      6
+    ],
+    "fresh_complete_finite": true,
+    "prefill_tps": 403.53959196541444,
+    "decode_tps": 3.6882222768625526
+  },
+  "prefill_performance_eligible": true,
+  "decode_performance_eligible": false,
+  "reason": "3IDs honeststop is too short for decode comparison",
+  "adopted": false,
+  "full262144_newbinary_qualified": false,
+  "corrections": {
+    "R300_terminal": "Terminal prompt token is processed before DONE, after prompt_ms closes; denominator uses original engine n=65536 convention though batched positions=65535.",
+    "R301_runtime": "Build-only unexecuted scope is time-of-build; later exact81375binary32K math controls passed. FP16 Dm alone yields zero currentshared-region saving under PLEmax; no quality/adoption conclusion.",
+    "R303_compiled": "Compared aa58 workspace mirror is not current81375compiled generator8bb78/object292bb. Xe source triage stands; reject that D runtime attribution.",
+    "R304_runtime": "Exact compute-runtime39395.14 public source was located in R271; source unavailable claim rejected. Installed-library equivalence remains unqualified; hostwrites-after-prepare are publicly allowed.",
+    "R306_placement": "V7actual4204=>3923MiB;3944 was erroneous root setup wording. Do not force identical filledslots29vs128 when comparing unchanged whole engines. V7ready50 below512 has no GEN.",
+    "R305_versions": "Previously reviewed private SHA567fafc603f34b04151cfbef895a078c9b49bdc8254d299c79fcf3683a8e31c9 was subsequently edited by reporter; latest74709a91c26de01460d89e23f9815a4b049180077a50932aa043912a15c56d18 fully reread. Reported intermediate aac9bb... unavailable. No byte-equivalence or original recovery claimed; freeze current archive. R309 was explicitly reassigned after oldR305 completion notification.",
+    "original_status": "V5CPU original PASS was cleanup-only misclassification; separatefailure-classification marks overallFAIL exactGDBenv mismatch; preserve original. Baseline original eventledgerFAILED invalid101timestamps remains unchanged; separate math-only admission does not qualify event timing.",
+    "new_gpu_fault": "V8actualREADY1503 andPP4096 then secondchunkSIGABRT, UR40, GPUaddressfault/CAT18/CCSreset. No fork performance/adoption. Throwstackdequant is not proven faultingkernel."
+  },
+  "additional_GPU_work": "stopped after v8newfault; no reset/rebind/service changes; failure sourceaudit pending",
+  "next": "restore documented task/chat fixture boundary; mainCPUchecks first; independent integerhealth before any knownbaselineGPU continuation; no rawXe faultpath retry untilqualified"
+}

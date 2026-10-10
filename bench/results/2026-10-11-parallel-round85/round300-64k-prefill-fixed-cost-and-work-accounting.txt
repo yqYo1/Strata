@@ -1,0 +1,53 @@
+R300 — 64K prefill fixed-cost and work accounting
+
+Purpose and boundary
+
+This is a read-only source audit to set expectations and decision points for the planned raw Xe 32K comparison followed by a clean 64K request. It does not report a 64K speed result. The target under discussion is roughly 1,000 prompt tokens/s at a real ~64K fresh input; model loading has a separate measurement. Decode speed is a separate contract. No build, test, GPU run, service launch, Git operation, or cleanup was performed for this report.
+
+Sources inspected
+
+- Xe reference: `/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/eval-b570-20261010`, commit `39bdadcc9e2b89b1e3c8be7bb2a603b04fa0e197`; `src/prefill/prefill.cpp` SHA256 `919c69…` (full hash recorded in the R298 source inventory); `src/program/generate.cpp`.
+- Current service-only D implementation: `/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-gemm-service-only-v1/prefill.cpp`; the workspace counterpart hash is `6913f3ab…` per R298. The service-only file has a narrow accounting/instrumentation addition; it is not itself a clean performance result.
+- Configuration under comparison: prefill chunk 8192; KV resident boundary 32768 and maximum context 262144; baseline ring 8 and raw Xe ring 16/profile as already specified by the run recipes. Conclusions below are source accounting, conditional on the actual arm honoring those settings and its recorded source/configuration.
+
+What the reported prefill number means
+
+In Xe `generate.cpp`, the request timer starts at `r0` immediately before session/request reconciliation (around line 7456). It ends after prompt reading, final refill of lent slots, and related prompt work (around 8258). It therefore includes more than device kernels: commit wait/quiesce, session/checkpoint work when applicable, KV growth/refresh, cache refill/lending, prompt chunk setup, model-source reads and any required refill. Model loading occurred before the request and is outside this timer. First-token verification is after the prompt timer. `DONE` records `prompt_ms` plus `read_n`; the server's displayed speed is `1000 * read_n / prompt_ms` (around 9169–9245).
+
+For a non-cancelled request, `read_n = n - resume`. Prompt reading deliberately stops before the final prompt token (`read_part` path around 8034 and the prompt boundary logic); that final token is the first verifier window after `DONE`. Thus `read_n` is the service accounting denominator, not a count of token rows passed to prefill kernels: the difference is one token for an uncached complete prompt. Report actual resume/read counts and timer; do not substitute nominal context length or model-load time.
+
+A historical D 32K clean sample in `owned-v01402-code32k-pure-clean-r2` recorded 32,768 fresh/read tokens, 83,205.4 ms prompt time, and 393.9 tok/s (the companion `DONE` line has 32,768 prompt and read_n). Another earlier patched-default sample measured 337.2 tok/s. These are historical 32K context, not a projection for 64K, and neither is evidence that 64K meets the target. Registry `xestrata-clean-64k-comparison-v1` was a recipe/controller only at audit time; no matching clean 64K result was found.
+
+Work that grows with 32K → 64K
+
+At a fixed 8192 chunk, the prefill loop has four full chunks at 32K and eight at 64K (the final terminal token remains outside the kernel read). Each chunk repeats the token-row path through embedding, residual/hyper-connection, every model layer's projections and feed-forward/MoE work, plus layer state updates. QSA layers also project queries/keys/values and indexer rows, append current KV, and score/select attention against prior context. Consequently token-row GEMM, GDN recurrence, routing/expert products, current-chunk KV append, and the stream/cache access sequence are not fixed one-time costs: they recur with the added chunks.
+
+Attention is a mixed scaling case. QSA query/key/value and indexer projections scale with new rows. Attention for each new query reads its causal prefix, so total QSA attention reads grow faster than linearly in sequence length; doubling a single uninterrupted prompt from 32K to 64K can approach a 4x prefix-read workload for the QSA portion, rather than 2x. This is a source-level work shape, not a runtime multiplier: selected-block/indexer behavior, kernels, cache residency, streaming, and overlap determine measured time. GDN state is carried chunk to chunk; its state allocation is fixed per session, but recurrence/update work is performed on new tokens.
+
+Each `Prefill::run` chunk also does setup which repeats per chunk: embedding/token-id gathering, PLE-row gather/read-ahead where enabled, routing, chunk-level event/queue control, and expert admission/stream sequencing. Therefore 64K has eight chunk setups vs four at 32K under this fixed chunk recipe. At a different chunk size, chunk count changes; use the run's effective chunk size, not nominal `--prefill` alone.
+
+Expert transfers and KV streaming
+
+The raw Xe prefill source constructs the ordered sequence of non-resident experts for each chunk; for its large-chunk stream-all path the copy issuer walks that sequence, copies each entry to a reusable ring slot, and releases the slot after the consumer event. The copy itself is per streamed expert per chunk; ring depth changes the amount in flight and VRAM reserved for staging, not the total number/bytes of expert blobs required by that chunk. With the specified raw Xe 16-slot arm, 8K chunks meet Xe's 2048-token stream-all threshold. If all nonresident experts are included, moving from four to eight chunks repeats that per-chunk sequence; if the model/cache residency or stream-all setting changes, actual expert bytes differ. Record source reads/bytes and effective ring/stream-all; don't infer total bytes from ring size.
+
+The D source makes the path conditional: `stream_all` requires ring > STAGE, chunk T >= `stream_all_min()`, and a transient model source; otherwise it stages only the routed sequence through the small stage ring. Its code comments explicitly describe stream-all as every non-resident expert, in layer order, per chunk. A ring of 8 vs 16 is a fixed-capacity staging difference; neither makes transfer bytes constant across a longer prompt. Which arm transfers all experts or only routed experts is a run-setting/source-path fact to verify in the actual receipt. The service-only instrumentation's expert ledger is useful for per-expert GEMM/callback accounting, but is not request-level timing evidence.
+
+With resident KV capacity 32K and maximum context 256K, later query positions in a 64K prompt exceed the resident KV boundary. The D QSA path includes host/staging KV reads for earlier cells plus writes of each new chunk to the relevant host/stage/resident tiers (source around 3830–3890); the Xe path has equivalent KV append/stage mechanisms (around 1500 onward). The larger maximum-context allocation is a session/setup capacity, not 64K of prefill work repeated per request. The additional 32K of actual positions does entail additional KV append and later-prefix attention activity; host spill traffic depends on the chosen KV mode, storage format, staged flag, page layout and overlap. Do not label all 64K KV as streamed or use capacity bytes as transferred bytes without the per-run records.
+
+Scratch and costs that can be fixed or amortized
+
+The per-chunk prefill arena and most temporary tensors are sized for T (the chunk), allocated/laid out when the prefill object is initialized or relaid out, then reused across its chunks. Holding T=8192 means doubling prompt length does not double peak scratch. The expert ring also has fixed depth/size for the arm, not one ring allocation per chunk. QSA KV/session storage, GDN state, page tables, cache slots, model weights, and the host arena are session/model capacity allocations; their footprint does not double just because this request reads twice as many tokens, though use/traffic can increase.
+
+Model load is outside prompt_ms and must remain a separate row. Request setup, cache refill, session/checkpoint handling, source reads and final refill occur inside prompt_ms where applicable. They may be one-time costs per process/session or per request, but cannot be called amortized based on a single prompt. To attribute them, keep process warm/cold state, resume count, cache state, refill work, source byte counters and exact request timer visible. GPU queue/kernel warmup and profiler/debug modes can alter timing; timing-enabled evidence should not be mixed with clean speed samples.
+
+Decision points for the planned measurements
+
+1. First establish the raw Xe 32K control using its exact source, chunk, KV, ring and profile settings. Preserve individual samples, not only a mean. Confirm clean process and correctness/fault status.
+2. Run the clean 64K request under the accepted D service contract. Confirm actual input and read_n, resume=0 (unless the test is explicitly a resume case), prompt_ms boundaries, effective chunk count/size, and the exact DONE line. Compute speed from those measured fields; do not project from 32K.
+3. Attribute the gap using existing phase/copy/GEMM records: repeated expert source bytes and host copy time; token/layer GEMM and MoE; QSA attention/indexer/KV phases; per-chunk host setup; and fixed request/refill/session time. Keep model load separate. If time does not sum exactly, preserve the discrepancy as overlap/unaccounted rather than force a phase label.
+4. Choose an optimization only where the clean 64K evidence shows a material repeated or fixed cost. A token-linear phase at 64K can benefit from lower per-row cost; an attention-prefix phase needs QSA evidence; expert transfer requires source-byte/copy evidence; a request fixed cost can only be targeted if it is large in the end-to-end prompt timer. The 32K run is a path/control check, not proof that a 64K optimization works.
+5. Retain only the compact report/structured receipts and any single diagnostic required by an unresolved failure, per `docs/ARTIFACT_RETENTION.md`. No successful API trace, raw profiler timeline or duplicate polling log is needed to support this source accounting.
+
+Limitations
+
+This is not a 64K benchmark, a FLOP/byte count, a measured attribution, or a guarantee about transfer/attention multipliers. Sources explain that work is repeated and which branches control transfers, but the actual amount of overlap, cache hits, selected attention blocks, staged KV traffic, and bottleneck requires the planned run's recorded samples. The historical 32K figures are context only.

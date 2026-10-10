@@ -1,0 +1,608 @@
+{
+  "active": false,
+  "completed": false,
+  "diagnostic_passed": false,
+  "math_equivalence": false,
+  "performance_eligible": false,
+  "adopted": false,
+  "full256k_qualified": false,
+  "source_commit": "39bdadcc9e2b89b1e3c8be7bb2a603b04fa0e197",
+  "argv": [
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/eval-b570-20261010/build/eval-b570-icpx-v1/strata",
+    "--pack",
+    "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+    "--native",
+    "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+    "--serve",
+    "--max-context",
+    "262144",
+    "--spec",
+    "4",
+    "--spec-min-p",
+    "0",
+    "--mtp",
+    "/home/yayoi/.local/share/strata-sycl/mtp/rt",
+    "--suffix-draft",
+    "0",
+    "--prefill",
+    "8192",
+    "--no-prefill-borrow",
+    "--expert-cache",
+    "128",
+    "--expert-profile",
+    "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-prefill-service-events-20261010/data/expert-profile.bin",
+    "--expert-cache-per-layer",
+    "--pool-workers",
+    "5",
+    "--pcie-frac",
+    "0",
+    "--spec-split",
+    "--adapt-swaps",
+    "0",
+    "--conversation-cache-mib",
+    "0",
+    "--conversation-cache-slots",
+    "4",
+    "--greedy",
+    "--short-read",
+    "0",
+    "--kv",
+    "int8",
+    "--kv-resident",
+    "32768",
+    "--prompt-cache",
+    "1",
+    "--prompt-cache-every",
+    "262139",
+    "--prompt-cache-root",
+    "0",
+    "--turn-token",
+    "-1"
+  ],
+  "binary_sha256": "4e68a6865161b8838886cf7805ad689fe7a05e280f963abdec5e3010c52bd036",
+  "build_receipt_sha256": "5934bfa88b1d40181f5411c2e92c834792e2e0abbe8eb784c138e998057fc3d2",
+  "controller_sha256": "09c10203e075814af9bf95b3f0a7c646e364dcd9fa76dc89a3d57d71dff06bd6",
+  "owner_helper_sha256": "61e1d206bf57bb320051cdd65943d23722bc523a602d80c54b7e7a2ad0d3f0d1",
+  "auxiliary_owner_source_sha256": "7df012ee4d9bd047a6094ccedb37fddb3d56d4b054d9fdf468534b0fb6e94e1f",
+  "health_source_sha256": "2f90005f79d2309747d917cff51dc53d8ee6192d68cb1feca074f84af8b0796c",
+  "reference_sha256": "95ae2a0a7e61f2240f6138f21fdcb35c1a70ec54300b22a7b99fd6b92873b4a7",
+  "prompt_fixture_sha256": "137fa1157c697295238d2fd487c09f9df60ab9cfee421e8c7e0b743b240af449",
+  "expert_profile_sha256": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf",
+  "initial_memory": {
+    "MemTotal": 134986940416,
+    "MemAvailable": 84622659584
+  },
+  "boot_id": "0a908c16-e292-4299-80ff-082da39f4bb9",
+  "started_utc": "2026-10-10T15:44:28.801037+00:00",
+  "scope": "one fresh raw-fork diagnostic; output divergence is evidence, not quality equivalence",
+  "dump_support": false,
+  "head_comparison": null,
+  "live_state_comparison": null,
+  "allocator_mode": "source-supported per-layer host USM; default mmap-import startup FAILED",
+  "requested_expert_cache": 128,
+  "expected_physical_expert_slots": 144,
+  "requested_ring": 8,
+  "effective_ring_source_contract": 16,
+  "limits": {
+    "wall_seconds": 1000,
+    "protocol_seconds": 700,
+    "logs_bytes": 67108864,
+    "RSS_bytes": 111669149696,
+    "artifacts_bytes": 2147483648
+  },
+  "health_calls": [
+    {
+      "label": "embedding-state",
+      "argv": [
+        "/usr/bin/systemctl",
+        "--user",
+        "show",
+        "llama-server-qwen3embed.service",
+        "-p",
+        "ActiveState"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_CTYPE": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "COLUMNS": "80",
+        "LINES": "24",
+        "XDG_RUNTIME_DIR": "/run/user/1000",
+        "DBUS_SESSION_BUS_ADDRESS": "unix:path=/run/user/1000/bus"
+      },
+      "started_utc": "2026-10-10T15:44:28.801844+00:00",
+      "wall_seconds": 5,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2741528,
+          "start_ticks": 33674791,
+          "sid": 2741528,
+          "pgid": 2741528
+        }
+      ],
+      "pid": 2741528,
+      "direct_identity": {
+        "pid": 2741528,
+        "state": "R",
+        "ppid": 2741439,
+        "pgid": 2741528,
+        "sid": 2741528,
+        "start_ticks": 33674791,
+        "rss_bytes": 405504
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T15:44:28.981886+00:00",
+      "elapsed_seconds": 0.1798296999768354,
+      "logs": {
+        "embedding-state.stdout": {
+          "bytes": 21,
+          "sha256": "9bf2451134cf07027a1e5d0b7b71598867aaf8ba6db4f4afb1f9f3611eda0c68"
+        },
+        "embedding-state.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "kernel-before",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "-n",
+        "0",
+        "--show-cursor",
+        "--no-pager"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_CTYPE": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "COLUMNS": "80",
+        "LINES": "24",
+        "XDG_RUNTIME_DIR": "/run/user/1000",
+        "DBUS_SESSION_BUS_ADDRESS": "unix:path=/run/user/1000/bus"
+      },
+      "started_utc": "2026-10-10T15:44:28.982432+00:00",
+      "wall_seconds": 20,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2741595,
+          "start_ticks": 33674809,
+          "sid": 2741595,
+          "pgid": 2741595
+        }
+      ],
+      "pid": 2741595,
+      "direct_identity": {
+        "pid": 2741595,
+        "state": "R",
+        "ppid": 2741439,
+        "pgid": 2741595,
+        "sid": 2741595,
+        "start_ticks": 33674809,
+        "rss_bytes": 454656
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T15:44:29.149411+00:00",
+      "elapsed_seconds": 0.16666314704343677,
+      "logs": {
+        "kernel-before.stdout": {
+          "bytes": 156,
+          "sha256": "a9e9a8f69b41ee36a84fc2d4510c208f92d8330b2f419177250a82e726bef493"
+        },
+        "kernel-before.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "health-runtime",
+      "argv": [
+        "/usr/bin/python3",
+        "-c",
+        "import ctypes,sys; ctypes.CDLL(sys.argv[1])",
+        "/opt/intel/oneapi/compiler/2026.1/lib/libur_adapter_level_zero_v2.so.0"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_CTYPE": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "COLUMNS": "80",
+        "LINES": "24",
+        "XDG_RUNTIME_DIR": "/run/user/1000",
+        "DBUS_SESSION_BUS_ADDRESS": "unix:path=/run/user/1000/bus",
+        "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/compiler/2026.1/opt/compiler/lib:/opt/intel/oneapi/umf/1.1/lib:/usr/lib/x86_64-linux-gnu:/opt/intel/oneapi/mkl/2026.1/lib",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.1/lib/libur_adapter_level_zero_v2.so.0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0"
+      },
+      "started_utc": "2026-10-10T15:44:29.150167+00:00",
+      "wall_seconds": 5,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2741601,
+          "start_ticks": 33674826,
+          "sid": 2741601,
+          "pgid": 2741601
+        }
+      ],
+      "pid": 2741601,
+      "direct_identity": {
+        "pid": 2741601,
+        "state": "R",
+        "ppid": 2741439,
+        "pgid": 2741601,
+        "sid": 2741601,
+        "start_ticks": 33674826,
+        "rss_bytes": 401408
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T15:44:29.318512+00:00",
+      "elapsed_seconds": 0.1679742140113376,
+      "logs": {
+        "health-runtime.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "health-runtime.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "health",
+      "argv": [
+        "/home/yayoi/.local/bin/strata-xe-health",
+        "0000:05:00.0"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_CTYPE": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "COLUMNS": "80",
+        "LINES": "24",
+        "XDG_RUNTIME_DIR": "/run/user/1000",
+        "DBUS_SESSION_BUS_ADDRESS": "unix:path=/run/user/1000/bus",
+        "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/compiler/2026.1/opt/compiler/lib:/opt/intel/oneapi/umf/1.1/lib:/usr/lib/x86_64-linux-gnu:/opt/intel/oneapi/mkl/2026.1/lib",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.1/lib/libur_adapter_level_zero_v2.so.0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0",
+        "ZEL_ENABLE_LOADER_LOGGING": "1",
+        "ZEL_LOADER_LOG_CONSOLE": "1",
+        "ZEL_LOADER_LOGGING_LEVEL": "trace",
+        "ZEL_LOADER_LOGGING_ENABLE_SUCCESS_PRINT": "1",
+        "ZE_ENABLE_VALIDATION_LAYER": "1",
+        "ZE_ENABLE_PARAMETER_VALIDATION": "1",
+        "UR_LOG_LOADER": "level:debug;flush:debug;output:stderr",
+        "UR_LOG_LEVEL_ZERO": "level:debug;flush:debug;output:stderr",
+        "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+        "STRATA_TRACE": "1",
+        "UR_ENABLE_LAYERS": "UR_LAYER_TRACING"
+      },
+      "started_utc": "2026-10-10T15:44:29.319337+00:00",
+      "wall_seconds": 30,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2741606,
+          "start_ticks": 33674843,
+          "sid": 2741606,
+          "pgid": 2741606
+        }
+      ],
+      "pid": 2741606,
+      "direct_identity": {
+        "pid": 2741606,
+        "state": "R",
+        "ppid": 2741439,
+        "pgid": 2741606,
+        "sid": 2741606,
+        "start_ticks": 33674843,
+        "rss_bytes": 131072
+      },
+      "peak_session_rss_bytes": 49446912,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T15:44:29.565726+00:00",
+      "elapsed_seconds": 0.24603643000591546,
+      "logs": {
+        "health.stdout": {
+          "bytes": 155,
+          "sha256": "b4f8fc2b00a50aeccb0b5564d71bcbe199659b20d1571b27a48069240f015243"
+        },
+        "health.stderr": {
+          "bytes": 118338,
+          "sha256": "ac9eade3e7a1260a1d60ec379c61e988f035d289dc1d418802c5476e636307b2"
+        }
+      }
+    },
+    {
+      "label": "health-kernel",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "--after-cursor",
+        "s=3ad31c4e321d43ad949846afdb43877a;i=c0562eb;b=0a908c16e292429980ff082da39f4bb9;m=4e655340f8;t=65d7e54af27b5;x=61df318e3e14a8d8",
+        "--no-pager",
+        "-o",
+        "short-iso-precise"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_CTYPE": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "COLUMNS": "80",
+        "LINES": "24",
+        "XDG_RUNTIME_DIR": "/run/user/1000",
+        "DBUS_SESSION_BUS_ADDRESS": "unix:path=/run/user/1000/bus"
+      },
+      "started_utc": "2026-10-10T15:44:29.566588+00:00",
+      "wall_seconds": 20,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2741637,
+          "start_ticks": 33674868,
+          "sid": 2741637,
+          "pgid": 2741637
+        }
+      ],
+      "pid": 2741637,
+      "direct_identity": {
+        "pid": 2741637,
+        "state": "R",
+        "ppid": 2741439,
+        "pgid": 2741637,
+        "sid": 2741637,
+        "start_ticks": 33674868,
+        "rss_bytes": 446464
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T15:44:29.739710+00:00",
+      "elapsed_seconds": 0.17269607301568612,
+      "logs": {
+        "health-kernel.stdout": {
+          "bytes": 17,
+          "sha256": "19c4e28b2f54ea8f217db4e622b0a5c758efa7b77ce2dc0394b6d159568c0b2e"
+        },
+        "health-kernel.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "kernel-after",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "--after-cursor",
+        "s=3ad31c4e321d43ad949846afdb43877a;i=c0562eb;b=0a908c16e292429980ff082da39f4bb9;m=4e655340f8;t=65d7e54af27b5;x=61df318e3e14a8d8",
+        "--no-pager",
+        "-o",
+        "json"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_CTYPE": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "COLUMNS": "80",
+        "LINES": "24",
+        "XDG_RUNTIME_DIR": "/run/user/1000",
+        "DBUS_SESSION_BUS_ADDRESS": "unix:path=/run/user/1000/bus"
+      },
+      "started_utc": "2026-10-10T15:45:17.897363+00:00",
+      "wall_seconds": 5,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2744410,
+          "start_ticks": 33679701,
+          "sid": 2744410,
+          "pgid": 2744410
+        }
+      ],
+      "pid": 2744410,
+      "direct_identity": {
+        "pid": 2744410,
+        "state": "R",
+        "ppid": 2741439,
+        "pgid": 2744410,
+        "sid": 2744410,
+        "start_ticks": 33679701,
+        "rss_bytes": 651264
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T15:45:18.064503+00:00",
+      "elapsed_seconds": 0.166227872017771,
+      "logs": {
+        "kernel-after.stdout": {
+          "bytes": 739,
+          "sha256": "e8759adf6605f4d9c60fb9c7d8255a6c25de9c1e83e2025c51e8ee9cb0c8a9e1"
+        },
+        "kernel-after.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "elapsed_seconds": 49.38684351800475,
+  "environment": {
+    "PATH": "/usr/bin:/bin",
+    "HOME": "/home/yayoi",
+    "LANG": "C.UTF-8",
+    "LC_CTYPE": "C.UTF-8",
+    "LC_ALL": "C.UTF-8",
+    "COLUMNS": "80",
+    "LINES": "24",
+    "XDG_RUNTIME_DIR": "/run/user/1000",
+    "DBUS_SESSION_BUS_ADDRESS": "unix:path=/run/user/1000/bus",
+    "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/compiler/2026.1/opt/compiler/lib:/opt/intel/oneapi/umf/1.1/lib:/usr/lib/x86_64-linux-gnu:/opt/intel/oneapi/mkl/2026.1/lib",
+    "SYCL_CACHE_PERSISTENT": "0",
+    "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.1/lib/libur_adapter_level_zero_v2.so.0",
+    "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+    "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+    "NEOReadDebugKeys": "1",
+    "EnableDirectSubmission": "0",
+    "ZEL_ENABLE_LOADER_LOGGING": "1",
+    "ZEL_LOADER_LOG_CONSOLE": "1",
+    "ZEL_LOADER_LOGGING_LEVEL": "warn",
+    "ZEL_LOADER_LOGGING_ENABLE_SUCCESS_PRINT": "0",
+    "ZE_ENABLE_VALIDATION_LAYER": "1",
+    "ZE_ENABLE_PARAMETER_VALIDATION": "1",
+    "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+    "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
+    "STRATA_TRACE": "1",
+    "UR_ENABLE_LAYERS": "",
+    "STRATA_PREFILL_RING": "8",
+    "STRATA_PREFILL_FIRST": "0",
+    "STRATA_ARENA_HOST_USM": "1"
+  },
+  "startup": [
+    "INFO context=262144 kv=int8 kv_resident=32768 expert_slots=144 expert_cache_mib=281 spec=4 mtp_max=0 lookup=0 vram_free_mib=50 cvec=0 arena_mib=47962 pool_workers=5 pcie_frac=0.00 spec_min_p=0.00 conversation_cache_mib=0 conversation_cache_slots=4 conversation_cache_min_free_mib=2560 tail_role_token=-1 vram_elastic=0 batch_slots=0 slot_cache=0 engine=xe0.1.40.2.1",
+    "READY 262144 stop"
+  ],
+  "inferior": {
+    "pid": 2741655,
+    "start_ticks": 33674894,
+    "state": "t"
+  },
+  "debugger": {
+    "pid": 2741643,
+    "start_ticks": 33674885,
+    "state": "R"
+  },
+  "actual_inferior": {
+    "pid": 2741655,
+    "start_ticks": 33674894,
+    "state": "D"
+  },
+  "actual_target_environment": {
+    "PATH": "/usr/bin:/bin",
+    "HOME": "/home/yayoi",
+    "LANG": "C.UTF-8",
+    "LC_CTYPE": "C.UTF-8",
+    "LC_ALL": "C.UTF-8",
+    "COLUMNS": "80",
+    "LINES": "24",
+    "XDG_RUNTIME_DIR": "/run/user/1000",
+    "DBUS_SESSION_BUS_ADDRESS": "unix:path=/run/user/1000/bus",
+    "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/compiler/2026.1/opt/compiler/lib:/opt/intel/oneapi/umf/1.1/lib:/usr/lib/x86_64-linux-gnu:/opt/intel/oneapi/mkl/2026.1/lib",
+    "SYCL_CACHE_PERSISTENT": "0",
+    "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.1/lib/libur_adapter_level_zero_v2.so.0",
+    "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+    "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+    "NEOReadDebugKeys": "1",
+    "EnableDirectSubmission": "0",
+    "ZEL_ENABLE_LOADER_LOGGING": "1",
+    "ZEL_LOADER_LOG_CONSOLE": "1",
+    "ZEL_LOADER_LOGGING_LEVEL": "warn",
+    "ZEL_LOADER_LOGGING_ENABLE_SUCCESS_PRINT": "0",
+    "ZE_ENABLE_VALIDATION_LAYER": "1",
+    "ZE_ENABLE_PARAMETER_VALIDATION": "1",
+    "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+    "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
+    "STRATA_TRACE": "1",
+    "UR_ENABLE_LAYERS": "",
+    "STRATA_PREFILL_RING": "8",
+    "STRATA_PREFILL_FIRST": "0",
+    "STRATA_ARENA_HOST_USM": "1"
+  },
+  "startup_vram_free_mib": 50,
+  "error": "ValueError('startup VRAM reserve below512MiB; no prompt launch')",
+  "failure_snapshot": {
+    "label": "failure",
+    "stop": "*stopped,reason=\"signal-received\",signal-name=\"SIGINT\",signal-meaning=\"Interrupt\",frame={addr=\"0x00007ffff7627e51\",func=\"__futex_abstimed_wait_common64\",args=[{name=\"private\",value=\"32767\"},{name=\"cancel\",value=\"true\"},{name=\"abstime\",value=\"0x0\"},{name=\"op\",value=\"393\"},{name=\"expected\",value=\"0\"},{name=\"futex_word\",value=\"0x7fffffff45f8\"}],file=\"./nptl/futex-internal.c\",fullname=\"./nptl/./nptl/futex-internal.c\",line=\"57\",arch=\"i386:x86-64\"},thread-id=\"1\",stopped-threads=\"all\",core=\"0\"",
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-xestrata39-hostusm32k-diagnostic-v7-r1/debugger/failure.mi.txt",
+    "resumed": false,
+    "register_thread_id": "1",
+    "main_thread_id": "1",
+    "main_registers_captured": true,
+    "main_stack_words_captured": true,
+    "main_instructions_captured": true,
+    "capture_errors": []
+  },
+  "exit_code": null,
+  "exit_signal": null,
+  "cleanup": {
+    "forced": true,
+    "inferior_survived": false,
+    "gdb_survived": false
+  },
+  "new_fault_messages": [],
+  "boot_unchanged": true,
+  "owned_gdb_closed": true,
+  "auxiliary_ownership_closed": true,
+  "finished_utc": "2026-10-10T15:45:18.065450+00:00"
+}

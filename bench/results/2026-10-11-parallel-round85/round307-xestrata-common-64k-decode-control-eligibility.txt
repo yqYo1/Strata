@@ -1,0 +1,64 @@
+# R307 — XeStrata IQ2_S NT1 decode-control eligibility at 64K
+
+Date: 2026-10-11 (Asia/Tokyo). Read-only source and prior-evidence audit. No build, test, GPU/runtime run, profiler/PMU collection, model/profile payload access, Git operation, service/process query, cleanup, or source edit was performed. Only this report was written. Any 64K model run remains root-owned.
+
+## Decision
+
+The narrowly eligible CPU candidate remains XeStrata's AVX2 IQ2_S (type 22) Gate/Up row kernel at `NT=1`, compared against the current D engine's actual NT1 dispatch. Keep Down unchanged. The candidate only reaches a native expert job owned by the CPU; it does not apply to VRAM-resident hits, PCIe/peer/helper-GPU work, other GU types, or arbitrary route entries. For the existing `(GU22, Down20)` NT1 capacity fixture, the matching shape is `H=2560`, `FF=640`, with the current Down20 path retained.
+
+The current linked-root binary `81375b88f043f6b791bd2fee5df7b512e25b584ad5631e0b915d5ac354db237c` can emit the existing host-side decode timing and pool-phase output when its serve-path opt-in is used. That output is **not** a per-format/NT histogram. It cannot answer “what percentage of the clean 64K decode's CPU GU work is type 22 at NT1?” The earlier route histogram is from a separate `--pool-tasks 6` diagnostic build, reaches NT2 only, and is not a clean default task-0 64K measurement. Do not transplant its fractions into a new run.
+
+## Source and executable provenance
+
+The pristine Xe source is `/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/eval-b570-20261010`, commit `39bdadcc9e2b89b1e3c8be7bb2a603b04fa0e197`. The relevant Xe files are `src/kernels/cpu/native_expert.cpp` (SHA-256 `39c7b9e66c52edb7b42d5dd65e5c317bf322e23f1ab24f6b300640abffc989d3`) and `src/kernels/cpu/iq_avx2_rows.inl` (`59ff9ceeacc5c9ba6fe34351fa82b67b28494badf4013cce45dfd2dd07588aa7`).
+
+For the current D decode baseline, use cached W0141 source, not the repository-root mirror: `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-decode-pool-phase-timing-v0141-20261009`, commit `7d0105f2a942ac72ca20fef69d4c2e7960653de3`. The compiled generator input is `sycl/src/program/generate.cpp`, SHA-256 `8bb78a21e3cbb9f03e40db3699d056225181e9ebb638d7eea04fadb41d852ced`; the cached object linked into `81375...` is SHA-256 `292bbf76f97eaa7b91600e5fb96446313ff29a842472f8b311f5edf971e6ff72`. R297 establishes this object/source provenance. The different root mirror and the earlier unsupported `aa58...` attribution do not describe that executable. Its link-only build receipt is not a 64K or 262,144-position runtime/quality result; later 32K controls must not be promoted to full-context evidence.
+
+The current pool and decoder source identities used for the dispatch comparison are `src/kernels/cpu/pool.cpp` SHA-256 `f789078f1e14b6cf72bec5cacc2802d358ad82cbd7bf890f344a4a4a32158611`, `src/kernels/cpu/native_expert.cpp` SHA-256 `694e86a623889ed03c5157d68f70651692eee9d265d7c2f99d44877ada37a146`, and `sycl/src/core/expert_source.cpp` SHA-256 `3109bfa4a54cf64f7cf7088fc510370dd49d25d628349324873c8030f52ee028`.
+
+## What the production caller dispatches
+
+In the cached D caller, `expert_pool_dispatch_multi` classifies each routed entry by owner, then forms one `ExpertJobMulti` per distinct CPU-owned expert in the layer-window. Its `nt` is the number of CPU-owned routed rows for that expert in that call. The per-layer `NativeFmt` supplies both GU and Down type, and native jobs enter `run_split_multi_native`; `ExpertPool`'s GU and Down phases dispatch separately. The pool's `tasks=0` value controls row partitioning, not `NT`. Pool workers do not change a job's expert-token row count.
+
+On the Ryzen 5 5600X / Zen 3 AVX2 configuration recorded by the fixture, current D defaults to `mt_min=2`: IQ2_S GU22 NT1 falls through to ggml-cpu's `vec_dot`; eligible NT2+ calls may use Strata's existing AVX2 `iq256_gu_rows`. Down20 NT1 also stays on ggml's single-token path; its custom IQ4_NL row kernel begins at NT2. XeStrata's source defaults the eligible AVX2 GU path to `mt_min=1`, exposing its custom IQ2_S row arithmetic at NT1. The custom row reduction order differs from ggml's single-token route, so exact token parity is not implied by source similarity. Retain D's runtime ISA gate and qualify the numerical change before considering adoption.
+
+The `(22,20)` component fixture uses actual packed weights but deterministic synthetic/prequantized activations. Its NT1–4 observations are fixture service controls, not a current decoder mix or measured model speed. R293's `29,271` `(22,20)` calls belong to an actual-prefill census; they are not a decode NT1 count. Neither that census nor a format-pair marginal can establish the current CPU-owned decode population.
+
+## What the existing opt-in can and cannot report
+
+In the correctly attributed `sycl/src/program/generate.cpp`, `STRATA_DECODE_TIMING` is a host-clock/request opt-in. With it set and `STRATA_VERIFY_PROFILE` unset, the output reports request/window elapsed counters and average per-layer-window aggregate CPU experts, route entries, VRAM hits and PCIe rows, plus GU, intermediate FF quantization, Down host phase spans and logical packed expert-blob bytes. `STRATA_VERIFY_PROFILE` is a separate switch that enables event-based verifier stage reporting; it is not required for the host counters. Thus a root-owned run can collect this existing output without enabling GPU event profiling.
+
+Those fields contain no `(GU type, Down type, NT, selected CPU kernel)` cross-tab. `STRATA_POOL_TRACE` is not a substitute: it prints layer and coarse begin/run counts, not the format pair or job NT. The existing output also does not report per-worker CPU-time, task service, wait/tail, cache misses, DRAM traffic, or MTP accepted-prefix route rows. Phase milliseconds are host elapsed spans with pool barriers and possible GPU overlap, not additive CPU service or exclusive critical-path shares. Submitted blob bytes are logical extents, not measured reads.
+
+The separate closed `owned-cache-route-pairs-v0141-code32k-tasks6-diagnostic-r6` histogram does record per-role/type/NT jobs and route rows, including GU22 NT1 ggml and NT2 `iq256`, and Down20 NT1 ggml / NT2 `iq4nl`. It is diagnostic-only (`--pool-tasks 6`, `performance_eligible=false`, `full_lifecycle_passed=false`, `adopted=false`), does not cross-tab a per-layer GU/Down pair, and its `source_bound_max_nt` is 2. It is useful proof that the path can be instrumented, not evidence for a clean 64K task-0 request. The separate clean 32,769-position task-0 phase receipt has no NT/type histogram. These source and receipt limits are recorded in R282/R284.
+
+## Minimum data needed to gate the candidate
+
+For one clean request that actually consumes 65,536 context positions (or whatever exact position the run claims), use a request-scoped, bounded histogram from the actual multi-token caller. The denominator must be computed from that same request and must preserve its cache/route and MTP behavior. Record per layer and window: loaded `(GU type, Down type)`, CPU versus VRAM/PCIe/peer owner, distinct CPU expert jobs and their `NT` bins, expert-token routed rows per bin, and the selected GU/Down branch. Reconcile the sums against the dispatcher’s CPU jobs and routed entries. Keep task partition count separate from NT.
+
+Report at least these ratios and raw counts:
+
+- eligible jobs: CPU-owned GU22 jobs with `NT=1` divided by all CPU-owned GU22 jobs;
+- eligible GU rows: rows in those jobs divided by all CPU-owned GU22 expert-token rows;
+- fixture-matched jobs/rows: the same counts restricted to per-layer `(22,20)` pairs, since that is the existing capacity fixture;
+- overall request contribution: those eligible jobs/rows divided by all CPU-owned native GU jobs/rows, clearly labeled as reach rather than time saved.
+
+MTP needs two views. First count all evaluated verifier rows/jobs, including speculative suffix work, because that work consumed service. Separately use the exact committed prefix (`a`/`n_keep` at the verifier commit boundary) to count accepted target rows and discarded rows; report eligible NT1 jobs/rows per committed target token as a useful-work normalization. Do not infer this split from mean acceptance or average emitted tokens, and do not confuse a top-k expert-token row with a generated token. If correlating accepted rows back to each expert NT bin is necessary, preserve per-window row-to-expert ownership through the commit boundary; job-level `nt` alone cannot identify which subset of a multi-row job was accepted.
+
+Cache fill counts are a separate denominator. The reported 29 actual fills in the raw Xe fork versus 128 in the baseline concern physical cache population; they do not mean that 29 versus 128 CPU jobs or routed entries ran. Because residency changes which routes become CPU misses, retain the exact cache fill/hit/refusal and CPU-owner counters alongside the NT histogram, but never derive CPU NT frequency from fill count. Likewise, do not use prefill format counts or the task-6 diagnostic as substitutes for the matching clean decode request.
+
+This requires a small opt-in source-counter addition at `expert_pool_dispatch_multi` after `jobs_multi` is formed, with a bounded per-request accumulator keyed by layer/pair/NT/owner and an exact connection to window acceptance. Emit once per request (or in compact per-window rows if the MTP join requires it); do not add per-job printing, timing waits, GPU event queries, or an unbounded trace. The existing `STRATA_DECODE_TIMING` counters can accompany it without GPU event profiling, but cannot produce the histogram by themselves. Root should first decide whether the current clean run can tolerate a separately built counters-only diagnostic; this audit authorizes no build or run.
+
+## Evidence boundary and decision
+
+R286/R293 establish only component-fixture eligibility and the narrow source dispatch delta. R282 says the old route histogram's per-layer pair/time/worker joins are missing. R284 requires absent NT bins to remain absent and actual consumed positions—not `--max-context`—to define a context claim. The full-context cache-failure investigation (R303–R305) is separate from CPU arithmetic and gives no NT distribution.
+
+Therefore the next gate is an actual clean-request NT/type/owner histogram joined to the request's exact context, cache, and MTP commit evidence. If that census shows meaningful CPU-owned GU22 NT1 work, qualify Xe's GU-only NT1 cell against current D for correctness and component service; then assess it in an engine request comparison. If it does not, hold the candidate. No fraction of NT1/type22 production decode, speedup, or adoption conclusion follows from existing receipts.
+
+## Evidence map
+
+- Current output semantics and host-clock phases: R204, frozen W0141 `sycl/src/program/generate.cpp`, `sycl/src/core/expert_source.cpp`, and `src/kernels/cpu/pool.cpp` hashes above.
+- Actual Xe-versus-D candidate: R293 and Xe commit/file hashes above.
+- Capacity and roof limits: R286; existing route-counter provenance and default task-0 gap: R282; bounded worker-service/counter and actual-position contract: R284.
+- Linked executable/generator correction: R297; do not use the unrelated root mirror hash.
+- Startup/cache mismatch and scope: R303–R305; not evidence of CPU NT or format frequency.

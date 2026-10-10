@@ -1,0 +1,76 @@
+# R301 — compact MoE Dm low-precision store candidate contract
+
+Date: 2026-10-11
+Status: read-only source audit and conditional byte arithmetic. No implementation, build, test, GPU run, profile, Git operation, process/service query, or cleanup. This is a candidate contract, not a correctness, fit, ability, or speed result.
+
+## Pinned source and eligibility
+
+The requested immutable linked caller is `/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-gemm-service-only-v1/prefill.cpp`, SHA-256 `1cf7e911a555e8611c1368a4d18d4ba81c95027bb8de77f89ad65ac64b05fc3c`. R297 records its linked prefill object as `5f16be55880b987a774dfbac90ec86e8c1cacd422ced90c465d067e5a5d63a98` in the unexecuted link-only candidate; the caller/object provenance does not establish that candidate has run or passed quality. Its unchanged kernel sources are from the task-pinned W tree `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-prefill-service-events-20261010/sycl`, HEAD recorded in R298 as `495369cf4dc6e6da564095a1c26504dd3694e3f2`. Relevant source hashes:
+
+- `sycl/src/prefill/gemm.dp.cpp`: `ad863d0dc122c7e809ec584637820e1796230c1319f1300b2167d89cf3080f04`.
+- `sycl/src/prefill/kernels.dp.cpp`: `3a5077a284048b4fde24a4146e3b02e8d84d259480f755e4b0e94cfc52e54f1c`.
+- `sycl/src/prefill/moe_mmq.dp.cpp`: `0d40574992eea9d9f7e78a925a6445533ff8636857014879e107fc99e5909960`.
+- `sycl/src/prefill/moe_fused.dp.cpp`: `1edd5bee4bbc42442d63816abb585aca14c875f148f70ab971ef3a63a8cbd4dd`.
+- `sycl/src/prefill/moe_fused_iq.dp.cpp`: `1717285bc25ad7742cd10a9077682ffeed7ee8b98e485b0a52157be337940998`.
+- Headers `include/strata/prefill/gemm.hpp`, `kernels.hpp`, `moe_mmq.hpp`, `moe_fused.hpp`: `c10283413dfda1d7cee16fdb3ffa5bef9bcfd138f03297ea63cc5a3567d01450`, `51182b3c71119cd64b56e2d5de110a3b2f0e9832927c240ef14a307e1be2ae81`, `26910a9726f6200e41bcb0e80c2066b8b81063691ada8a566060ed614d1fe95b`, `2809428405209d177a5ded160f62707f21eb344e85c84de8837b2b86ea938f65`.
+
+The smallest coherent first candidate is **one 16-bit Dm store format (preferably test BF16 and FP16 as separate arms), only in the single-GPU compact non-MMQ expert fallback**. The source eligibility is the exact compact admission `mp.fallback && !mp.any`, compact mode enabled, `lay.native`, `!use_mmq`, `!fused_l`, and `m.pp == nullptr`; the actual compact path also rejects any expert with `ne > T`. Under these gates all routed down products use the ordinary per-expert `Gemm::f16` call, and compact gather is limited to at most T output rows per expert. No generic change to `m.Dm` is safe until its other production routes are separately handled. Existing source guards do not presently make this change.
+
+This candidate is deliberately separate from R291's inter-layer GR residual proposal. `Dm` holds the ten routed expert outputs for one MoE layer, is rounded once on GEMM write, and is read by the current layer's weighted combine. It is not GDN recurrent state written and fed back every token. R299's recurrent-state ability results therefore do not predict its loss. No local task-quality evidence yet qualifies this Dm conversion.
+
+## Current buffer, lifetime, and exact route map
+
+For this artifact `N=2,560`, `K=10`, and each prompt row has ten routed slots. `m.Dm` is currently `float[T*K*N]`. `moe_set_bytes` and runtime `carve` allocate the same full plane; `bytes_needed_impl` repeats the same plane in its size calculation. Compact mode shrinks other MoE arrays but **does not** shrink Dm. Each output row is indexed in the grouped expert row order; `slot_dev[token*K+rank]` selects it later. The row count is `T*K` even when an individual compact expert has at most T rows. The buffer remains live from the down products through `moe_combine`.
+
+Current production down-output writers and the boundary a format change must cover:
+
+| Writer/path | Current destination and contract | Candidate consequence |
+|---|---|---|
+| Ordinary native/non-native expert fallback | Per-expert `m.gemm.f16(Hh, dq_d, m.Dm + o0*N, ne, N, 640)`; native weights are dequantized to FP16 first. This is the sole writer in the proposed compact eligibility. | Provide a Dm-storage output path for this one call; keep FP16 input and FP32 product accumulation. If direct 16-bit C storage is unavailable, use a proven dead `T*N` FP32 tile, then pack only `ne*N` outputs to Dm16. |
+| Grouped MMQ | `mmq::Product::dst` is `float*`; main grouped down products write `m.Dm+r0*N`; remote and helper products write `P.Dm`/`P.Dm_b[b]`. A group can hold up to 16 experts, so its rows can exceed T. | Requires an MMQ output epilogue that writes the chosen 16-bit format or a full group-sized FP32 staging allocation; the compact `T*N` tile does not cover the group. Not eligible for the first candidate. |
+| Generic fused Q2_0 | `fused::experts(..., float* dm, ...)` writes down results in the fused expert kernel. | Change and qualify the fused store epilogue; not a caller-side cast. Not eligible for the first candidate. |
+| Native fused IQ | `fused::experts_native(..., float* dm, ...)` writes via native fused IQ kernels (`moe_fused_iq.dp.cpp`). | Change and qualify that kernel's final store independently. Not eligible for the first candidate. |
+| Peer/MMQ | Peer compact mode uses two float `Dm_b` buffers; the other mode has float `P.Dm`. Primary P2P copies each finished group into `m.Dm`; no-P2P path stages float `host_rows`, then copies to primary Dm. | A global Dm16 mode must retag peer scratch, double-buffer offsets, host rows, transfer byte counts, and copy/conversion order. Current peer admission requires MMQ, so it is excluded by the compact-first predicate. |
+| CPU | The inspected linked caller contains no CPU expert product writing Dm; `cpu::expert_layout()` selects/inspects packed formats but computation here is routed to GPU or the peer-MMQ path. | No Dm CPU writer to convert in this caller. Re-audit if a CPU MoE compute route is added. |
+
+Current readers/aliases: the normal final reader is `moe_combine(m.Dm, slot_dev, w, shared, sg, bo, T, cs)`. Its kernel applies ten `sycl::fma(float(w), float(Dm[row,d]), sum)` operations in route-rank order, then adds `shared*sigm(sg)`. Preserve this float multiply/accumulation order; only convert each stored Dm value back to float at load. Both the scalar and aligned four-column combine kernels need a 16-bit-Dm variant, or the optimized path must be disabled for this mode. `STRATA_DBG_NAN` also scans all `T*K*N` Dm entries as float and must decode/scan the new format (or exclude the candidate when enabled). Peer paths copy Dm values as FP32. The shared-expert result `m.shared[T*N]` remains FP32 and is not Dm.
+
+The single-GPU compact path has an existing `m.bo[T*N]` float allocation; compact base layout aliases `emb`, `mixed`, and `bo` to the same image. This is large enough for one down output with `ne<=T`, but only after all readers of that layer's `mixed`/image and the shared expert have finished. Source order and the in-order compute queue make a per-expert temporary/pack plausible; this liveness must be asserted and documented before use. The final combine overwrites `bo` with the required FP32 result. Never treat `bo` as a spare independent buffer in compact layout or overlap a live input.
+
+## GEMM output and conversion contract
+
+The linked `Gemm::f16` interface takes `float* Y`. The SYCL implementation in `gemm.dp.cpp` calls oneMKL with half A/B, `real_float` C, and `compute_type::f32`; `f16_event` has the same float output. It therefore preserves FP32 accumulation today, but exposes no 16-bit C storage API. No linked Strata-specific XMX Dm-output API is used by this compact call; any XMX instruction selection by oneMKL is backend behavior and does not change the declared float output contract. The custom fused and MMQ down outputs also declare float destinations. A separate XMX/oneMKL FP32-accumulate + FP16/BF16-store path is not established by these sources.
+
+Preferred implementation shape for the compact-only first arm: keep the existing GEMM and its FP32 accumulation, write `ne*N` float results into a dead `bo` tile, enqueue one FP32→BF16 (or FP16) pack to `uint16_t Dm16 + o0*N`, then have combine widen on load and keep weights and all FMA/add arithmetic FP32. This avoids a full extra FP32 Dm plane, but adds per-output FP32 tile writes and reads plus 16-bit pack traffic. It is an extra conversion pass over each down result and may cost more than the combine's reduced read traffic; measure only after correctness. A direct half/bfloat16 C-output GEMM with f32 accumulation would avoid that staging traffic if the specific oneMKL backend supports it, but this source has no such overload and support is unverified. Do not claim a conversion-free or speed-positive path based on XMX capability alone.
+
+BF16 has FP32-like exponent range and would avoid FP16's finite limit of 65,504; FP16 retains more mantissa bits but needs explicit overflow/underflow accounting. The user has specified “tiny” ability loss but no numeric bound. No format should be accepted from an error-only synthetic tensor or a finite-only check.
+
+## Shared-workspace accounting: net allocation is clipped by the maximum
+
+Use the exact compact formulas in `moe_set_bytes`, `gdn_set_bytes`, `ple_set_bytes`, `qsa_set_bytes`, `hc_set_bytes`, and the `region=max(...)` carve. For compact native fallback, before alignment the MoE term is 132,772 B/T, including Dm at 102,400 B/T; replacing Dm FP32 with 16-bit changes those to 81,572 B/T and Dm 51,200 B/T. The raw Dm plane halves, but the single allocated shared region is the maximum of independent overlaid planes. In the linked caller's current unaliased compact PLE formula, PLE is 142,352 B/T (BF16X2 arm: 147,472 B/T), GDN is 107,264 B/T, and MoE is 132,772 B/T. PLE remains the maximum after Dm is halved. T values below are multiples of 256, so the outer 256-byte region rounding adds no bytes.
+
+| T | Current PLE/shared region | Current MoE term | MoE with Dm16 | Raw Dm-plane reduction | Actual shared-region saving with current source |
+|---:|---:|---:|---:|---:|---:|
+| 8,192 | 1,166,147,584 B (1,112.125 MiB) | 1,087,668,224 B | 668,237,824 B | 400 MiB | **0 B** |
+| 12,288 | 1,749,221,376 B (1,668.188 MiB) | 1,631,502,336 B | 1,002,356,736 B | 600 MiB | **0 B** |
+| 16,384 | 2,332,295,168 B (2,224.250 MiB) | 2,175,336,448 B | 1,336,475,648 B | 800 MiB | **0 B** |
+
+Those are current-source workspace results, not a claim about actual VRAM availability or fit. `region` remains the PLE-sized allocation; actual Dm sub-buffer footprint inside it shrinks, but `bytes_needed_impl`/borrowed workspace need not shrink. Therefore this candidate alone does not repair the current shared-region ceiling at any of these sizes.
+
+For comparison only, if R283's separate conditional PLE key/gated alias were implemented and qualified, its PLE term would be 101,392 B/T (106,512 B/T with BF16X2), below GDN's 107,264 B/T. Then the Dm16 candidate would change the max from MoE 132,772 B/T to GDN 107,264 B/T: only 25,508 B/T net, or 208,961,536 B (199.281 MiB) at 8,192; 313,442,304 B (298.922 MiB) at 12,288; and 417,923,072 B (398.563 MiB) at 16,384. This is still less than the raw Dm half-plane saving. R283 is a distinct, conditional proposal, not an adopted premise for this report; do not add its reduction to any actual capacity claim without its own acceptance.
+
+## Predeclared qualification gates
+
+Before opening a low-precision result, freeze the F32-storage control and candidate protocol, model/weights, routing, chunking, context length, decode settings, and comparison margins. The source-supported local quality harness needs the R294/R297 paired-continuation correction: the compiled generator's `STRATA_LOGPOS` covers tokens through `read_windows`, not long batched Prefill; the first-logits hook alone covers only the first next-token distribution. A valid paired score must capture that first distribution after the actual batched prompt, force the reference continuation token, score every subsequent fixed token, and prove exact target-position coverage.
+
+Acceptance requires all of the following, separately reported:
+
+1. **Whole-layer numeric/finite gate:** for each layer, compare all actual Dm output rows before and after the chosen 16-bit store, and compare final MoE `bo`. Record NaN/Inf counts, FP16 overflow/underflow/saturation and BF16 subnormal/rounding counts, plus max, p99.9, RMS, and relative error by layer. Reject any nonfinite Dm/bo or any unexplained missing/duplicate route row. Freeze error ceilings from F32 control repeatability and the explicit task allowance before candidate data; source inspection cannot supply those thresholds.
+2. **Head/log-probability gate:** compare post-full-prompt first-head logits, top-1/top-K identities and margins, then paired teacher-forced per-token log-probability/NLL and top-K agreement across the intended long-context positions. Re-run the same control to establish its noise floor. Keep intended long-context and output lengths explicit.
+3. **Task-ability gate:** evaluate fixed code and retrieval continuations plus representative reasoning tasks; report each task/seed and exact score delta, not only an aggregate. Pass only if all predeclared task deltas remain within the user's defined tiny-loss allowance. R299's recurrent-state papers are cautionary context, not a Dm quality prediction.
+4. **Physical 262,144-cell lifecycle gate:** independently run the selected candidate through a real 262,144-token occupancy lifecycle with the final prompt-conditioning token, final cell/tail, continuation, restore/reset, and state/head comparison against same-source FP32 control; record physical occupancy/admission and verify no read/write crosses the allocation. A source bound, a shorter prompt, or another binary's previous lifecycle result does not qualify it.
+5. **Fit/transfer/performance gate:** report actual selected chunk, shared-region and outer workspace receipt, device free/reserve at the correct phase, and conversion time. Do not call raw Dm bytes net capacity, and do not run performance conclusions before the above correctness/quality gates pass.
+
+## Recommendation
+
+Keep the compact-only, single-GPU native fallback as the smallest candidate because it confines Dm writers to one existing FP16-input/FP32-accumulate GEMM route and avoids MMQ, fused, peer, and CPU ambiguity. First resolve the PLE shared maximum if capacity savings are the purpose: under the current linked caller, Dm16's raw 400/600/800 MiB plane reduction yields zero shared-region reduction at T=8,192/12,288/16,384. If root later accepts the separate PLE alias, the conditional ceiling reduction is capped at the GDN gap shown above. Preserve FP32 default behavior for all other branches. Source inspection recommends only this bounded experiment; it does not recommend enabling or adopting it.

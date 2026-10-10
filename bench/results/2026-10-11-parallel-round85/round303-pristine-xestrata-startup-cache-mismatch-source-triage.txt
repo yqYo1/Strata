@@ -1,0 +1,25 @@
+# Round 303: pristine XeStrata startup cache mismatch source triage
+
+## Finding
+
+The recorded pristine XeStrata run exits in startup cache verification, before READY/prefill. Its stderr says `ExpertCache::verify_slot: slot 84 differs from the arena at byte 0 (of 2662400)`. In source, this check reads back the slot assigned to `profile[0]`, then compares it byte-for-byte with the same first profile expert from the host source. Thus the evidence establishes a byte mismatch in that first fill; it does not establish whether the differing bytes originated in the source mapping/layout, the host-to-device copy, or the device cache/readback path.
+
+The observed `--expert-cache 128` becoming 144 slots is explained by the explicit per-layer policy, not an unexplained extra allocation. The native-pack path treats 128 largest-blob slots as a byte budget, divides it by the sum of one aligned blob per layer, obtains three slots per layer, and creates 48 × 3 = 144 physical slots. The log independently records exactly that result (`128 uniform slots -> 144 slots, 3 per layer`). `ExpertCache::open_sized` constructs 256-byte-aligned offsets in this same layer-major order; the cache then assigns each layer its contiguous quota. Slot 84 is therefore the first slot in layer 28's range under the logged 48-layer geometry. The failing blob length, 2,662,400 bytes, is the per-layer size passed for the first profile entry; the private profile was not opened or parsed here.
+
+No evident slot-size/order contradiction explains this single mismatch: the sizing vector is built as quota copies of each layer's blob in layer order, `open_sized` offsets that vector in order, and `verify_slot` resolves the residency slot for the same `profile[0]` pair just filled. This is a source-level consistency observation, not proof that every runtime index or pointer is correct.
+
+## Source path and evidence
+
+At `src/program/generate.cpp:3571-3593`, the per-layer sizing path calculates the cap, quota, and layer-major `sized_slots`; it replaces `o.expert_cache` with the physical slot count. At `:3745-3765`, the profile loop admits a slot, obtains the pair's blob, performs `fill_slot_blocking` using that layer's blob size, and immediately verifies the first profile pair by readback. The loop can stop when a layer's quota is full, but that behavior does not explain a mismatch for an already-filled first pair.
+
+At `src/core/expert_cache.cpp:366-390`, `open_sized` aligns offsets to 256 bytes and resets per-layer admission cursors after sizing. At `:531-557`, `verify_slot` does a synchronous device-to-host copy and compares the requested bytes with `memcmp`, reporting the first differing index. At `src/core/gpu.cpp:230-234`, the Xe synchronous copy uses `rt().compute().memcpy(...)` and waits for its event. The ordinary mapped-source path copies the selected layer/expert bytes from its mapped blob into the fill input (`src/core/expert_source.cpp:572-591, 836-849`); other source modes may supply their own blob path.
+
+The source tree inspected is `/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/eval-b570-20261010`, HEAD `39bdadcc9e2b89b1e3c8be7bb2a603b04fa0e197`. Relevant SHA-256 values: `src/program/generate.cpp` `25854acf5a75ba7cba4e7aa7f27d762c8a961385cd6c45df7c3deeab7b293802`; `src/core/expert_cache.cpp` `7f8b00350794b4985c9bf34a9bb88b37a36384fac0a072aa437bfc8d758bc10a`; `src/core/expert_source.cpp` `a8cc1e1f88b04fac5b8fa80fdbc7393ae3c4adeb68a509803c8d9f7b48208f69`.
+
+The run record is `/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-xestrata39-first32k-diagnostic-v6-r1/`, specifically `debugger/inferior.stderr` and `record.json`. The record names the expert profile SHA-256 as `8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf`; this report does not inspect that binary or any model payload. The run used `--expert-cache 128 --expert-cache-per-layer`; the captured stderr reports the 144-slot sizing and the failing verification.
+
+## Comparison and limits
+
+The D-engine source at `/home/yayoi/orca/workspaces/Strata/sycl` is not source-identical to pristine XeStrata: `src/program/generate.cpp` hashes to `aa58f73711d3ad9b2020a3d9f54b98610b3aa070abe8da0cbd56ba3f42b2b76a`, `src/core/expert_cache.cpp` to `c691d1147fea50f351a208b676efc4ceaaee9d4e8534cdbf5f7672c934db7e19`, and `src/core/expert_source.cpp` to `daf174b8ded139073d0b16ff524892410bd8c74beb282878ff1afbbb4b27606b`. The diff includes the CUDA-to-SYCL GPU abstraction and substantial surrounding changes, so the D source does not isolate a one-line regression by itself.
+
+This triage ran no model, GPU operation, test, build, profile parser, or payload read. Static inspection cannot distinguish a host source/layout error from a SYCL host-to-device copy/readback error. To localize it, a follow-up would need a controlled isolated comparison of the exact first profile blob and slot 84 on the same device, plus pointer-kind/source-mode and copy status evidence; it should retain only compact hashes/byte diagnostics and not dump model contents. No implementation change is recommended from this evidence alone.

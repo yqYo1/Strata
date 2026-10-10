@@ -1,0 +1,183 @@
+{
+  "active": false,
+  "passed": true,
+  "complete": true,
+  "gpu_executed": false,
+  "model_executed": false,
+  "controller_sha256": "b809c8baba4264898b1b7901c15d7f29a486d4e61faa833da2d090518bc29580",
+  "owner_sha256": "8b40cc573b9abd069f8386deb6af65f0a55f7992bcda2a6a62b51a5c9a47b686",
+  "tests": [
+    {
+      "case": "syntax-3-files",
+      "passed": true
+    },
+    {
+      "case": "4K8K-geometry-earlystop-negative-and-synthetic-gates",
+      "passed": true,
+      "scope": "4 unittest groups; synthetic receipt/hash mocks cannot admit real GPU"
+    },
+    {
+      "case": "actual64K-baseline-prefill-valid-decode3-ineligible",
+      "passed": true,
+      "source_receipt": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-clean64k-v3-baseline-r1/record.json",
+      "source_sha256": "9f97faaea66de8258170a85ea11ef653d8632a3d98b0d12c6972e6c441470fd6",
+      "validation": {
+        "prompt_tokens": 65536,
+        "generated_tokens": 3,
+        "actual_batched_positions": 65535,
+        "prompt_ms": 162402.9,
+        "decode_ms": 813.4,
+        "finish_reason": "stop",
+        "mtp_counts": [
+          0,
+          6
+        ],
+        "fresh_complete_finite": true,
+        "prefill_chunk": 8192,
+        "prefill_tps": 403.53959196541444,
+        "decode_performance_eligible": false,
+        "decode_tps": null
+      },
+      "original_receipt_unchanged": true
+    },
+    {
+      "case": "actual-failed-fork-not-admitted-8192",
+      "passed": true,
+      "source_receipt": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-xestrata39-hostusm32k-diagnostic-v7-r1/record.json",
+      "source_sha256": "7c58cf4ff133a87ab841aea40c8146ed84958ce70dd3abeb1334087aaf4352f4",
+      "rejection": "closed normal diagnostic"
+    },
+    {
+      "case": "actual-failed-fork-not-admitted-4096",
+      "passed": true,
+      "source_receipt": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-xestrata39-hostusm4k-code32k-diagnostic-v8-r1/record.json",
+      "source_sha256": "be30b5494b9f535150353e62e58b1450933072059f9362a7e3941003d14c1881",
+      "rejection": "closed normal diagnostic"
+    },
+    {
+      "case": "real-baseline32K-math-only-admission-originalFAILED-retained",
+      "passed": true,
+      "source_sha256": "6e79e72a9936375746ac0dda1c8e5cb0d071195d99f729d9cd4e6c42a09fac1f"
+    }
+  ],
+  "commands": [
+    {
+      "label": "syntax",
+      "argv": [
+        "/usr/bin/python3",
+        "-c",
+        "import pathlib,sys\nfor p in sys.argv[1:]: compile(pathlib.Path(p).read_text(),p,\"exec\")",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xestrata-clean-64k-comparison-v4/run_clean.py",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xestrata-clean-64k-comparison-v4/direct_owner.py",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xestrata-clean-64k-comparison-v4/test_contract.py"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-10T16:04:24.996088+00:00",
+      "wall_seconds": 10,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2819243,
+          "start_ticks": 33794410,
+          "sid": 2819243,
+          "pgid": 2819243
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 337944.10887214,
+      "pid": 2819243,
+      "spawn_return_monotonic": 337944.110427138,
+      "direct_identity": {
+        "pid": 2819243,
+        "state": "R",
+        "ppid": 2819195,
+        "pgid": 2819243,
+        "sid": 2819243,
+        "start_ticks": 33794410,
+        "rss_bytes": 466944
+      },
+      "peak_session_rss_bytes": 12697600,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T16:04:25.118763+00:00",
+      "elapsed_seconds": 0.12250312295509502,
+      "logs": {
+        "syntax.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "syntax.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "synthetic-contract",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xestrata-clean-64k-comparison-v4/test_contract.py"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-10T16:04:25.119179+00:00",
+      "wall_seconds": 20,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2819271,
+          "start_ticks": 33794423,
+          "sid": 2819271,
+          "pgid": 2819271
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 337944.231950846,
+      "pid": 2819271,
+      "spawn_return_monotonic": 337944.233483763,
+      "direct_identity": {
+        "pid": 2819271,
+        "state": "R",
+        "ppid": 2819195,
+        "pgid": 2819271,
+        "sid": 2819271,
+        "start_ticks": 33794423,
+        "rss_bytes": 520192
+      },
+      "peak_session_rss_bytes": 10240000,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T16:04:25.328598+00:00",
+      "elapsed_seconds": 0.2092551999958232,
+      "logs": {
+        "synthetic-contract.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "synthetic-contract.stderr": {
+          "bytes": 102,
+          "sha256": "e73c3805f810fdcf3d0167ced7085c48306c9482a952ffb710551d230cdb3e51"
+        }
+      }
+    }
+  ]
+}

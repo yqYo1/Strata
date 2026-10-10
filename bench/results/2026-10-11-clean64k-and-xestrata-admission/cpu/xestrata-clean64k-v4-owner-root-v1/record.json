@@ -1,0 +1,333 @@
+{
+  "active": false,
+  "complete": true,
+  "passed": true,
+  "commands": [
+    {
+      "label": "normal-interactive",
+      "argv": [
+        "/usr/bin/python3",
+        "-c",
+        "import sys\nprint(\"READY\",flush=True)\nassert input()==\"GEN\"\nprint(\"DONE\",flush=True)\nassert input()==\"QUIT\""
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T16:04:29.420704+00:00",
+      "wall_seconds": 3,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2819632,
+          "start_ticks": 33794853,
+          "sid": 2819632,
+          "pgid": 2819632
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 337948.533493584,
+      "pid": 2819632,
+      "spawn_return_monotonic": 337948.535105168,
+      "direct_identity": {
+        "pid": 2819632,
+        "state": "R",
+        "ppid": 2819588,
+        "pgid": 2819632,
+        "sid": 2819632,
+        "start_ticks": 33794853,
+        "rss_bytes": 466944
+      },
+      "peak_session_rss_bytes": 7819264,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T16:04:29.545611+00:00",
+      "elapsed_seconds": 0.12472057901322842,
+      "logs": {
+        "normal-interactive.stdout": {
+          "bytes": 11,
+          "sha256": "35c15a698aecce39532bf4f1f3cd49a842cce5aeb2abc411f8a1239b0e07379d"
+        },
+        "normal-interactive.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "nonzero",
+      "argv": [
+        "/usr/bin/python3",
+        "-c",
+        "raise SystemExit(2)"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T16:04:29.546059+00:00",
+      "wall_seconds": 3,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2819636,
+          "start_ticks": 33794865,
+          "sid": 2819636,
+          "pgid": 2819636
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 337948.658843387,
+      "pid": 2819636,
+      "spawn_return_monotonic": 337948.660696337,
+      "direct_identity": {
+        "pid": 2819636,
+        "state": "R",
+        "ppid": 2819588,
+        "pgid": 2819636,
+        "sid": 2819636,
+        "start_ticks": 33794865,
+        "rss_bytes": 401408
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 2,
+      "finished_utc": "2026-10-10T16:04:29.660819+00:00",
+      "elapsed_seconds": 0.11459426896180958,
+      "logs": {
+        "nonzero.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "nonzero.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "timeout",
+      "argv": [
+        "/usr/bin/python3",
+        "-c",
+        "import time;time.sleep(20)"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T16:04:29.661216+00:00",
+      "wall_seconds": 0.15,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2819640,
+          "start_ticks": 33794877,
+          "sid": 2819640,
+          "pgid": 2819640
+        }
+      ],
+      "cleanup": [
+        {
+          "pid": 2819640,
+          "start_ticks": 33794877,
+          "signal": "SIGTERM",
+          "result": "sent"
+        }
+      ],
+      "observation_complete": false,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 337948.774025132,
+      "pid": 2819640,
+      "spawn_return_monotonic": 337948.775631868,
+      "direct_identity": {
+        "pid": 2819640,
+        "state": "R",
+        "ppid": 2819588,
+        "pgid": 2819640,
+        "sid": 2819640,
+        "start_ticks": 33794877,
+        "rss_bytes": 466944
+      },
+      "peak_session_rss_bytes": 7876608,
+      "error": "RuntimeError('owned whole-process wall deadline')",
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": -15,
+      "finished_utc": "2026-10-10T16:04:30.026470+00:00",
+      "elapsed_seconds": 0.36506256100255996,
+      "logs": {
+        "timeout.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "timeout.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "log-limit",
+      "argv": [
+        "/usr/bin/python3",
+        "-c",
+        "import os,time;os.write(2,b\"x\"*262144);time.sleep(20)"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T16:04:30.026941+00:00",
+      "wall_seconds": 3,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2819717,
+          "start_ticks": 33794914,
+          "sid": 2819717,
+          "pgid": 2819717
+        }
+      ],
+      "cleanup": [
+        {
+          "pid": 2819717,
+          "start_ticks": 33794914,
+          "signal": "SIGTERM",
+          "result": "sent"
+        }
+      ],
+      "observation_complete": false,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 337949.139788973,
+      "pid": 2819717,
+      "spawn_return_monotonic": 337949.141446805,
+      "direct_identity": {
+        "pid": 2819717,
+        "state": "R",
+        "ppid": 2819588,
+        "pgid": 2819717,
+        "sid": 2819717,
+        "start_ticks": 33794914,
+        "rss_bytes": 466944
+      },
+      "peak_session_rss_bytes": 8065024,
+      "error": "RuntimeError('combined log cap')",
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": -15,
+      "finished_utc": "2026-10-10T16:04:30.300375+00:00",
+      "elapsed_seconds": 0.27320333395618945,
+      "logs": {
+        "log-limit.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "log-limit.stderr": {
+          "bytes": 262144,
+          "sha256": "d509bff642a353f88582e8a846ecae041c333b79c57a7a24ff310fbdb7e914e9"
+        }
+      }
+    },
+    {
+      "label": "reparented-new-PGID",
+      "argv": [
+        "/usr/bin/python3",
+        "-c",
+        "import os,time\np=os.fork()\nif p==0:\n os.setpgid(0,0);time.sleep(20)\nelse:\n time.sleep(.05);os._exit(0)"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T16:04:30.301028+00:00",
+      "wall_seconds": 3,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2819814,
+          "start_ticks": 33794941,
+          "sid": 2819814,
+          "pgid": 2819814
+        },
+        {
+          "pid": 2819815,
+          "start_ticks": 33794942,
+          "sid": 2819814,
+          "pgid": 2819815
+        }
+      ],
+      "cleanup": [
+        {
+          "pid": 2819815,
+          "start_ticks": 33794942,
+          "signal": "SIGTERM",
+          "result": "sent"
+        }
+      ],
+      "observation_complete": false,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 337949.413947857,
+      "pid": 2819814,
+      "spawn_return_monotonic": 337949.415841734,
+      "direct_identity": {
+        "pid": 2819814,
+        "state": "R",
+        "ppid": 2819588,
+        "pgid": 2819814,
+        "sid": 2819814,
+        "start_ticks": 33794941,
+        "rss_bytes": 466944
+      },
+      "peak_session_rss_bytes": 8007680,
+      "error": "RuntimeError('owned whole-process wall deadline')",
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T16:04:33.488741+00:00",
+      "elapsed_seconds": 3.187407589983195,
+      "logs": {
+        "reparented-new-PGID.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "reparented-new-PGID.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "controller_sha256": "b809c8baba4264898b1b7901c15d7f29a486d4e61faa833da2d090518bc29580",
+  "owner_sha256": "8b40cc573b9abd069f8386deb6af65f0a55f7992bcda2a6a62b51a5c9a47b686",
+  "gpu_executed": false,
+  "model_executed": false,
+  "checked": [
+    "normal-interactive",
+    "nonzero",
+    "timeout",
+    "log-limit",
+    "reparented-new-PGID"
+  ]
+}

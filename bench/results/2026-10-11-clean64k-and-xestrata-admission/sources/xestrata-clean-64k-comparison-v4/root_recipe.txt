@@ -1,0 +1,58 @@
+SOURCE ONLY. Root owns all execution/build/CPU/GPU checks and serialized lock.
+No implementer tests executed. Existing v3 stays unchanged.
+B=/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007
+Q=$B/xestrata-clean-64k-comparison-v4
+
+Root first checks syntax of run_clean.py/direct_owner.py/test_contract.py,
+then invokes CPU-only test_contract.py under its finite CPU owner. These tests
+use synthetic protocol/receipt stubs; mocked receipt hashes do not admit any
+real GPU run. No model/GPU calls exist in that test source.
+Run the real v4 host-checks in a new output directory to qualify exact v4
+controller hash plus unchanged direct_owner.py (all five existing owner cases).
+Reusing v3 owner qualification must fail exact-controller pin.
+Example root-owned CPU commands (choose new output destination):
+/usr/bin/python3 -m py_compile "$Q/run_clean.py" "$Q/direct_owner.py" "$Q/test_contract.py"
+/usr/bin/python3 "$Q/test_contract.py"
+/usr/bin/python3 "$Q/run_clean.py" host-checks --output "$B/clean64k-v4-owner-root-r1"
+
+CPU-preflight one arm/repetition per invocation with explicit root-created
+65536-token fixture/path/SHA. Include --prefill-chunk4096 or8192 (default8192).
+Actual option spelling requires separate value: --prefill-chunk 4096.
+Preflight pins original CPU contract8192 then replaces ONLY --prefill value
+in resulting argv for BOTH arms. No fixture truncation/expansion in controller.
+Root inspect emitted argv, common model/profile/cache128/pool5/spec4/KV32768,
+owned buffer mode and effective requested/fork ring distinction.
+
+run requires exact closed CPU owner qualification, original baseline math-only
+derivative admission, explicit rawfork diagnostic receipt path and SHA for Xe.
+4K gate pins run_first_diagnostic_v8.py SHA
+59e69eaeaadb03a5587da62cb59806c7f4d0ff87b7175ba69b61e7215c781898.
+Its expected root output owned-xestrata39-hostusm4k-code32k-diagnostic-v8-r1/
+record.json is CURRENTLY ACTIVE at preparation; controller rejects active.
+Root supplies its final exact hash ONLY after finite closed healthy admission.
+8K gate pins v7 SHA
+09c10203e075814af9bf95b3f0a7c646e364dcd9fa76dc89a3d57d71dff06bd6;
+requires completed normal healthy/no-fault/no-cleanup32K GEN evidence too.
+Prior 8K READY reserve failure cannot admit a clean run.
+Both exact pristine39bd/source manifests, fork binary4e68..., actual hostUSM1
+initial environment equality and same --prefill in diagnostic argv required.
+Baseline exact81375... originalFAILED/eventinvalid admission is preserved;
+that numerical32K admission remains8K, not a 4K math qualification claim.
+
+After root gates, ONE fresh64K GEN64 process/arm/repetition; three paired fresh
+alternating arm processes at SAME chunk for any comparison. No GDB/profiler,
+head/state dump, tracing/validation or copy profiling in clean targets.
+No automatic retry/reset; unchanged runtime watchdog/512MiB VRAM preGEN guard.
+Same owner/env/pidfd/session lifetime/health/budgets as v3 retained.
+PP totals65536, positionschunk multiples below65536 followed65535; REUSED/
+RESUME0; complete IDs+finiteLP5; positive pre/decode protocol times retained.
+An honest stop with3 IDs is valid finite completion and prefill timing only;
+decode eligibility requires64 IDs AND length. decode_tps=null for earlystop.
+performance_eligible conservatively follows decode eligibility; explicit
+prefill_performance_eligible permits valid earlystop prefill samples.
+Do not average ineligible decode samples or mix chunk configurations.
+
+Whole engines differ intrinsically: requested cache128 versus Xephysical144/
+initialfill29, baseline ring8 versus Xe ring16 (source-contract expected, not
+forced runtime parity). No cache/allocator patch. No math equality/adoption/
+quality/full262144 lifecycle qualification from timing or protocol receipts.

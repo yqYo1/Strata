@@ -1,0 +1,131 @@
+SOURCE-ONLY PREPARATION. No commands/tests/controller were executed by agent.
+B=/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007
+Q=$B/xestrata-clean-64k-comparison-v1
+Root owns every test/run, shared owned-v0141-measurement.lock, health review,
+retention and Git. No builds/fork edits/GDB/profiling by this controller.
+
+FIRST CPU qualification, root serialized with ongoing GPU/build work:
+python3 -m py_compile "$Q/direct_owner.py" "$Q/run_clean.py"
+python3 "$Q/run_clean.py" host-checks --output "$B/xestrata-clean64k-owner-contract-root-v1"
+Five bounded CPU-only child cases: interactiveREADY/GEN/DONE/QUIT normal0,
+nonzero2 retained, timeout, combinedloglimit, reparentedchild/newPGID sameSID.
+Require passedtrue/complete/activefalse and source hashes of exact new files.
+This CPU receipt is required for every GPU run; unchangedv1 must remain
+unchanged after qualifying. Root source corrections require privatev2 and
+new contracts. Do not change/test these files during an active owner run.
+
+Root additional CPU contract tests (import run_clean safely; __main__ guard):
+- validate synthetic65536 and32768 DONE/read_n with PP total FULLinput65536
+  or32768 and lastbatchedposition65535 or32767. Missing/duplicateRESUME or
+  REUSED, reusedDONE, wronginput/read_n/PPtotal, droppedchunk/tail, NaN/Inf/
+  nonpositivephase times, invalidID/topID/LP5/missingLP/TLPorder, negative
+  oraccepted>offeredMTP, shortlength(<64) mustreject. Honeststop(<64) allowed.
+- stdinpartialsend, splitstdoutlines, non-newlineEOF, excessivependingline,
+  childEOFbeforeDONE, startup/requestlinecap, senddeadline, protocoldeadline,
+  QUITfailure, targetnonzero andsignaledexit. All are failures, never retry.
+- owner anchor is heldunreaped until final scan; pidfd identity revalidation
+  rejects recycled ticks/SID. Permission/unknownscan failures stayfailed and
+  unresolvedactive; no numericPID/group signaling. Test fake identity/pidfd
+  error injection CPU-only to verify no fallback signal, receipt preservation.
+- fixture exact65536, wronghash/extra/missing/outofrange/nondecimal tokens,
+  duplicatebadCLI and changedadapter/source/binary/profile/receipt hashes.
+- inspect every nested command.environment and actual target env: only
+  explicitly built allowlists. No os.environclone, secretvariable leakage,
+  GDB, profiling, validation/APItrace/logpos/dump flags in TARGET.
+
+Root creates explicit immutable actual65536-token fixture separately; source
+controller neither concatenates nor truncates prompts. Pass its absolutepath
+andsha; bound<=1MiB andexact65536 vocabularyIDs. Fixture construction must
+be admitted and recorded by root with semantics/source/sha. Avoid silently
+counting repeated32K as an independent fullcodingfixture without labeling.
+
+CPU file/preflight (no subprocess/process/device/service queries):
+python3 "$Q/run_clean.py" cpu-preflight --arm xe --repetition 1 \
+ --fixture /ABSOLUTE/ROOT/CREATED/64K/tokens.txt --fixture-sha ACTUAL64HEX
+Repeat baseline arm. Checks frozenCPUv3contract/adapter/source/bothbinaries/
+profile/fixture/defaultargv, not liveGPU. This mode does not require firstfork
+diagnostic yet. Executionmode does require a closed finitehealthy firstraw32K
+fork diagnostic and qualified CURRENT32K baseline receipt, exactSHA arguments.
+
+Each GPU invocation ONE arm/repetition in NEWdirectory:
+python3 "$Q/run_clean.py" run --arm xe --repetition 1 \
+ --output "$B/owned-xestrata-clean64k-xe-r1" \
+ --fixture /ABSOLUTE/ROOT/CREATED/64K/tokens.txt --fixture-sha ACTUAL64HEX \
+ --fork-diagnostic /ABSOLUTE/CLOSED/FIRSTRAW32K/record.json --fork-diagnostic-sha ACTUAL64HEX \
+ --baseline-diagnostic /ABSOLUTE/CLOSED/CURRENTBASELINE32K/record.json --baseline-diagnostic-sha ACTUAL64HEX \
+ --owner-qualification "$B/xestrata-clean64k-owner-contract-root-v1/record.json"
+Do not run until source/CPU contracts and rawfork/sourcecapacity eligibility
+are reviewed by root. No automaticrun/pairedloop/retry/reset. Root orders
+three fresh pairs, e.g.baseline1/xe1,xe2/baseline2,baseline3/xe3, identical
+fixture/hash/parameters. One process, one freshrequest, no warmup/reuse.
+Store every receipt/sample, no failure averaging or discardedfast/slow samples.
+
+Known frozen admission:
+CPUv3record SHA c16fb0f8b096384ccf2bb798505b311cfacbd398b8e0f5f8a10c7b6a7ba432d4
+Xe binary4e68a6865161b8838886cf7805ad689fe7a05e280f963abdec5e3010c52bd036
+baseline81375b88f043f6b791bd2fee5df7b512e25b584ad5631e0b915d5ac354db237c
+profile8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf
+RootCPUv3argv reused verbatim beyond armexecutable. Same pack/native/MTP/
+absoluteprofile/cache128/pool5/spec4/no-prefill-borrow/chunk8192/context262144/
+KVresident32768/shortread0/greedy. Both requestedSTRATA_PREFILL_RING8;
+pristinefork clamps to16, baseline8. Preserve distinction, no fork patch or
+forcedeffective8. source-contract sizes recorded with runtime_measuredfalse;
+not newly queried GPU ring count. Wholefork math/route/allocator differ.
+
+Quiet target environment is built from explicit PATH/LANG/LC_ALL/HOME/USER/
+LOGNAME plus allowlistedXDG_RUNTIME_DIR/DBUS_SESSION_BUS_ADDRESS only. Runtime
+loader paths/V2/copyoffload-disabled/cacheoff/device_selector fixed; NEOkeys1,
+DirectSubmission0. No inheritedflags, APIlogs/ZEvalidation/STRATA_TRACE,
+profiling/service/timing/head/state/logpos/unitrace/XPTI. Baseline retains its
+qualifiedcompact2/attentionlayout1/layermajor0/ownedKVstage1/prefetch0;
+fork untouchedpristinedefaults apart fromcommonFIRST0/requestedRING8.
+Actual target executable+sha+PID/start and EXACTfullinitialenv mustequal
+this allowlist atREADY. Foreignvariable causesfailure without logging its
+contents. All nestedutilityreceipts also contain explicit env dictionaries.
+
+Before+after: pinned existinghealthhelper2f90005f... check_health implementation
+reused, with pure health_environment supplier replaced by explicitdictionary
+so health commands cannot clone inheritedos.environ. No reset/servicewrites.
+Embedding serviceinactive, existingdumpabsent, integerhealthcheck, journal
+cursor/newfault audit, bootbefore/after stable; afterhealth occurs only once
+ownedtarget/auxsession isobservablyclosed. Health validation/traces separate
+fromquietTARGET and outsidemeasurement sample. Newfault/dump/unknownownership
+blocks nextprobe and invalidates timing; parent reviews before anynewrun.
+
+Directowner: start_new_session Popen pipes (noGDB/PTY); leader heldunreaped
+untilfinalSIDscan; discover sameSID/processes while leaderSID cannotrecycle;
+register pidfd then recheckPID/start/SID. Previously pinned members leaving
+SID remainowned. Cleanup SIGTERM3s thenSIGKILL3s onlypidfds matchingrecorded
+startticks, no numericgroup/pidreuse signaling; no signalunknownmembers.
+Session/proc closure observed beforeleaderwait(). No SIDscan afterreap.
+Unknownscan/failedreap/survivor retainsactive/unqualified; no nexthealth/run.
+This is not a generaldaemonizer capture: descendants escaping to newSID
+beforeeverobserved are outsideprovablecoverage. Root must review targetsource
+no subprocess/daemonization, and CPUownershipcontracts beforemodeladmission.
+
+Bounds: totalmeasurementcontrollerdeadline1000s shared before/target/after
+utilities, plus boundedownedcleanupgraces; eachline700s/send20s/QUIT30s still
+boundedbyremainingownerwall. TargetCPU1000/1001rlimit, perfile64MiB, NOFILE256,
+CORE0. Combinedaggregateownerlogs64MiB; sessionRSS104GiB sampled0.25s;
+artifact2GiB, pendingline/input1MiB, ownerpopulation256, startup1000lines/
+request2000lines, compactreceipt2MiB, freeRAM64GiB/disk8GiB. Auxiliaryhealth
+commands use smaller finiteCPU/RSS/log limits. No runtimewatchdog changes.
+SampledRSS/log/artifact guards can overshoot briefly; not hard RSS cgroup.
+Unknownownership failures preserveactive receipt, not claimednormalcleanup.
+
+Per invocation records all64IDs/LP5 (or honestearlystop), finitephase/DONE
+times, loadspawn/start-toREADY, send, sendbegin-toDONE, sendend-toDONE, allPP,
+prefillTPS=n/prompt_ms anddecodeTPS=actualgenerated/decode_ms. LP5 itself is
+the explicitly required commonprotocol and its device/hostcost remains in
+both arms; no claim plainnoLPdecode or exclusiveGPU/kernelservice timing.
+Quality_qualified/math_equivalence/adopted/full262144lifecycle allfalse even
+if timing_validtrue. No generated-ID equality gate borrowed fromrawfork;
+no head/live dump demand sincepristinefork hasnone. Parent joins armoutputs
+and reports differences independently; earlystop samples retainactualcounts
+and mustnotbeaveraged as64token-equivalentdecode workloads.
+
+R293 CPUdispatch/reduction differences andR294 LOGPOS pathcoverage read.
+LP5 greedyoutput is not independentteacherforcedNLL or fullprefillquality.
+Do not claim user1000prefill64K goal/70decode target achieved frompreparation;
+root decides measuredscope/fixedfeesamortization andquality gates. Physical
+262144 complete lifecycle stillmandatory beforeadoption; no64Ktest waivesit.

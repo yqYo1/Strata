@@ -1,0 +1,70 @@
+# Round 306: XeStrata 8K VRAM reserve and 4K admission accounting
+
+Date: 2026-10-11
+Status: read-only source and receipt audit. No GPU, build, test, Git, implementation, profile parsing, model payload read, process/service query, or cleanup was performed. This is not a 4K fit, prompt, quality, or performance result. The live 8K baseline and planned 4K diagnostic were not touched.
+
+## Pinned inputs and provenance
+
+Pristine Xe tree: `/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/eval-b570-20261010`, HEAD `39bdadcc9e2b89b1e3c8be7bb2a603b04fa0e197`.
+
+The R306 receipt is `/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-xestrata39-hostusm32k-diagnostic-v7-r1/`. Relevant artifact hashes: `record.json` `7c58cf4ff133a87ab841aea40c8146ed84958ce70dd3abeb1334087aaf4352f4`; `debugger/inferior.stderr` `db6922c9bcb4e3587b3e4031f069eb5a131ba1aa4e1555b29f2b7b7d4d25ec13`; `protocol.stdout.raw` `be3efeb61a0fd61629cbfc95f6bb99ed22c32372a9f6631505169c8991f31b75`. The record pins binary SHA-256 `4e68a6865161b8838886cf7805ad689fe7a05e280f963abdec5e3010c52bd036`, source commit above, host-USM allocator mode, requested cache budget 128, expected physical slots 144, requested ring 8, and source-contract effective ring 16.
+
+Relevant pristine Xe file hashes:
+
+- `src/program/generate.cpp`: `25854acf5a75ba7cba4e7aa7f27d762c8a961385cd6c45df7c3deeab7b293802`
+- `src/prefill/prefill.cpp`: `919c696192311066055077bdd0fc74769bfb50854e3437b6b387732acf6d532e`
+- `include/strata/prefill/prefill.hpp`: `c3db75e2c4d672504c42b3f6fb31e1ddbf6740e2584573cfea11494d75fa14ae`
+- `src/core/expert_cache.cpp`: `7f8b00350794b4985c9bf34a9bb88b37a36384fac0a072aa437bfc8d758bc10a`
+- `include/strata/core/expert_cache.hpp`: hash not collected in this round.
+
+The source/receipt context was cross-checked against shared report registry v107, SHA-256 `c4189296c68a79eed586db993b663086df2f7b88627977cad672c9b88d172259`, and R299–R305 in the same research directory. R301 exists at `round301-dm-lowprecision-store-candidate-contract.txt`; it is a D-engine low-precision-store candidate, not an Xe result. R303's ordinary mapped-arena run failed startup verification before READY; it does not describe R306. R304 treats prepare-before-write as allowed by the cited public contract while leaving the page-import theory unproven. R305 found no host-USM bounds/lifetime defect for valid model indices. R302's staging-submit audit concerns a separate failure path. R299's quality review does not qualify a low-precision change, and R300's 64K timing accounting remains relevant to the future request denominator. None overrides the R306 receipt or supplies a 4K result.
+
+## R306 outcome and the exact recorded VRAM sequence
+
+The host-USM startup path passed its cache check: stderr says `pre-filled 29 of 144 slots ...; slot 0 verified`, and the raw protocol reaches `READY 262144 stop`. The request owner then refuses to send a prompt because its captured startup `vram_free_mib=50` is below its 512 MiB admission guard (`ValueError('startup VRAM reserve below512MiB; no prompt launch')`). This is a startup-admission failure after engine readiness. There is no `GEN`, prompt, `DONE`, expert-hit count, output, or performance sample in this receipt. It must remain failed/non-prompt evidence; do not rewrite it as a 4K pass or as an engine prompt failure.
+
+The exact v7 `STRATA_TRACE` sequence is:
+
+| Source phase | Free VRAM | Interpretation |
+|---|---:|---|
+| weights, session, drafter | 4204 MiB | before expert-cache allocation |
+| opening expert cache | 3923 MiB | 281 MiB consumed; agrees with `expert_cache_mib=281` |
+| profile fill, R4 hit path, graphs | 3923 MiB | fill is within already allocated slots; no material extra VRAM in the trace |
+| head and prompt path | 265 MiB | 3658 MiB below the preceding trace point; this is net head/prompt setup after the prior marker and includes `Prefill::init` with its own buffers (`--no-prefill-borrow`). The 521,472,000-byte native head was loaded before the 4204 MiB marker, so it must not be subtracted from this later delta. The trace has no finer allocation breakdown. |
+| verifier and drafter binding | 50 MiB | 215 MiB below the preceding point; log also reports a 64 MiB verify window and MTP draft head over 106299 tokens (212.9 MiB), but the phase delta is net allocator state and should not be assigned exactly to either object |
+
+The task's `3944/3923` pre-cache/cache pair is not present in the pinned v7 stderr. This receipt records 4204/3923 (a 281 MiB change, matching the physical cache allocation). I use the byte-pinned values above; any 3944 value needs a separately identified receipt before it can be joined to this sequence. The final protocol `INFO` agrees with the trace: context 262144, `kv=int8`, `kv_resident=32768`, `expert_slots=144`, `expert_cache_mib=281`, `vram_free_mib=50`, arena 47962 MiB, five pool workers, PCIe share zero. `READY` follows; no `DONE` follows because the owner guard blocks launch.
+
+The separate load line is `loaded 46.84 GiB at 1.31 GiB/s`; it is startup model/arena loading evidence, not a prompt-time or `DONE` measurement. The serving `INFO` capacity fields above are a startup snapshot, not per-request occupancy or hit counts.
+
+## Cache budget, physical capacity, and actual fill are distinct
+
+The argv asks for `--expert-cache 128 --expert-cache-per-layer` and the profile has 24,576 ranked pairs. `generate.cpp:3571-3593` treats 128 as a byte budget of 128 times the largest 2.66 MB blob. It divides the cap by the sum of one 256-byte-aligned blob per each of 48 layers, obtains quota 3, and allocates 48 × 3 = 144 physical slots. The trace confirms `128 uniform slots (0.32 GiB) -> 144 slots, 3 per layer (0.27 GiB)`. `INFO expert_slots=144` reports physical capacity, not the number filled.
+
+The profile-fill loop at `generate.cpp:3745-3758` visits the globally ranked list in order. With per-layer admission, `ExpertCache::admit` refuses a pair once that layer's three-slot range is full (`expert_cache.cpp:432-445`); the caller breaks on the first `kNotResident` at `generate.cpp:3747-3748`, rather than skipping that pair and continuing other layers. Thus the measured 29 prefilled / 144 physical is real and source-consistent. `verify_slot` verifies the first filled pair only (`:3760-3767`); `token graph hit path: 29 resident experts` agrees with that occupancy. Do not call this a 144-expert filled cache, infer 144 decode hits, or compare its requested byte budget with a physical slot count as though they were equal. Per-layer quota plus global profile order is a decode-coverage limitation in this exact arm, separate from the reserve guard.
+
+## What 8K to 4K can release, conditionally
+
+The run sets `--max-context 262144`, `--prefill 8192`, `--kv int8 --kv-resident 32768`, and `--no-prefill-borrow`; the prompt path therefore owns its chunk buffers instead of borrowing cache slots. The 3.09 GiB pinned host K/V reported in the receipt is host RAM and is not VRAM recovered by lowering prompt chunk. Max-context KV/session capacity, the 32K resident K/V tier, head, expert cache and draft binding likewise remain capacity allocations unless their options change.
+
+`Prefill::bytes_needed` at `prefill.cpp:1000-1041` mirrors the `init` allocation order. It combines fixed GEMM scratch, T-scaled row/route/projection buffers, one shared region sized to `max(gdn_set_bytes(T), qsa_set_bytes(T,...), moe_set_bytes(T,...))`, constant dequant/group workspaces, the ring, PLE buffers, and the KV-stage buffers. For this receipt's requested ring 8, `ring_slots` clamps the effective value to 16 (`:149-164`); both 8192 and 4096 exceed `STREAM_ALL_MIN=2048`, so the stream-all threshold remains crossed and the ring branch remains the same 16 slots. The two sizes also both use the same stream-all MMQ group buffers when those layers are enabled (`:1025-1034`). Max-context-dependent selection/stage terms, the fixed 64 MiB GEMM scratch (32 Mi FP16 elements), group buffers and ring capacity do not halve with T. The chunk-scaled terms do.
+
+The source's coarse planning estimate is `160 MiB + 680 KiB * chunk` (`generate.cpp:3473-3480`), which changes by 2720 MiB from 8192 to 4096. That estimate is explicitly used for cache planning and is not the exact source allocation receipt. The observed 3923-to-265 MiB phase is a net 3658 MiB after the prior marker, but the receipt does not give a finer allocation breakdown; it cannot be used as an exact prompt-scratch total. The native head weights themselves were loaded before the 4204 MiB marker. The code's exact source calculation is `Prefill::bytes_needed(8192)-Prefill::bytes_needed(4096)`: it must use the loaded geometry and `mmq_plan`, session shape, alignment, and actual effective ring. Both chunk-scaled terms and the `max(gdn,qsa,moe)` shared region change; fixed GEMM/group/ring/max-context pieces remain. The only standalone numeric forecast available from the inspected source is therefore the coarse 2720 MiB planning proxy, not a measured or exact allocator delta. Report it as approximate source planning only. Do not claim a 4K fit: startup admission, allocator rounding/fragmentation and subsequent verifier/draft allocations still decide it. A 4K run must keep the real reserve guard and report its own `INFO` free VRAM.
+
+The receipt's own startup advisory says 50 MiB leaves the GPU LOW and suggests a reserve of 1162 MiB or lower context; the owner uses a separate 512 MiB minimum. A source estimate that crosses 512 is not evidence of the 1162 MiB reserve, and neither boundary should be weakened to manufacture a pass.
+
+## Future comparison contract
+
+Keep the current v7 failure status and the root-owned current-best 8K baseline unchanged. When that baseline closes, the direct comparison is the exact same fresh 64K fixture and request on pinned Xe, first the established host-USM 8K arm and then the raw host-USM 4K arm, with the same binary/source, model, profile hash, allocator, max context, KV mode/resident boundary, `--expert-cache 128 --expert-cache-per-layer`, and service/draft options. Preserve `--no-prefill-borrow` in both if it is part of the baseline. Record requested and effective ring; under the captured request 8 clamps to 16, and 4K/8K are both stream-all. Keep the 144-slot physical capacity and actual 29-fill behavior explicit; any cache/profile/admission fix is a different experimental arm, not an invisible prerequisite for comparing chunk size.
+
+For a cross-engine or cross-source claim, add a matched common-4K control on both source trees with the identical 64K prompt, context, KV boundary, cache policy, resident fill, and all applicable flags. State that code/runtime/allocator remain different between engines. The common chunk controls chunk-size effects; it does not erase cache/ring or implementation differences. Do not compare different prompt inputs, combine a fixed 8K arm with a different cache/ring and call it a chunk result, or change a failed run's original status.
+
+Use the capacity snapshot (`INFO` fields above) and existing `READY` as startup evidence. The exact future `DONE` line includes generated count, prompt count, prompt/decode ms, finish, accepted/offered drafts, reused count, decode cache hits/lookups, RAM/file blobs and file MB, prompt `read_n`, and offloaded expert count. R300 explains that uncancelled `read_n` is fresh input (`n-resume`) and prompt timing excludes model loading; the last prompt token is outside the prompt-read timer. No such `DONE` exists for v7, and `INFO/READY` must not be presented as a prompt result.
+
+## Minimal count-only instrumentation proposal
+
+Pristine Xe already accumulates `PrefillStats` counts for `experts_streamed`, `experts_dma`, `experts_resident`, and `experts_cpu`, and prints them after a completed prompt (`prefill.cpp:1312-1320, 1934, 1986-1999, 2142-2202; generate.cpp:9464-9471`). Add only per-path payload-byte counters at those same exact accounting points, incremented by `expert_layout().blob_bytes(layer)`, and emit them adjacent to the existing count totals. This yields actual prompt-path bytes by streamed DMA, copied/CPU, and resident path without treating max-blob slot capacity as traffic. For decode, existing `DONE` already carries request cache `hits/lookups`, offloads and source-tier read deltas; retain those fields and interpret them as decode counters. If an independent source-call byte total is needed, add an `ArenaExpertSource` per-request byte counter incremented at a successful validated `blob(layer, expert)` access, with a reset/snapshot at request boundaries; distinguish attempted pointer requests from bytes actually copied/consumed, so do not use that alone as a transfer-byte counter. No timestamp or page-fault counter is needed for this question. Keep existing correctness verification, startup reserve gate, watchdogs and result statuses intact.
+
+## Decision
+
+R306 establishes host-USM cache verification and engine READY at 8K, but the serving owner correctly rejects prompt launch at 50 MiB free. The log's 29 filled / 144 physical cache explains why the capacity field is not a hit count; the profile loop stops at the first full layer quota. The source's coarse cache-planning proxy estimates 2720 MiB less chunk budget at 4K than 8K, while the exact `bytes_needed` delta remains uncomputed and unmeasured. This is conditional accounting only. No actual 4K fit or 64K prompt result is established.

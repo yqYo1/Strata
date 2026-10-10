@@ -1,0 +1,45 @@
+# Round 305: pristine Xe host-USM arena bounds and full-context lifetimes
+
+Date: 2026-10-11 (Asia/Tokyo). Read-only source audit. No model/profile payload, GPU/runtime operation, test, build, Git operation, process query, or source edit was performed. Scope is the supported fresh-start alternative `STRATA_ARENA_HOST_USM=1` after the default prepared-mmap import path's recorded byte-zero cache-verification failure and ordinary exit 1. This is not an in-process retry of that failed run.
+
+## Finding
+
+I found no normal-path out-of-bounds access or use-after-free in the single-GPU host-USM route at the stated geometry (context 262144, prefill chunk 8192, ring 16, KV resident boundary 32768). `PinnedArena::at` itself has no range check, but the actual open path supplies validated layer starts from the loaded `ExpertLayout`, and production calls use those starts or a validated (layer, expert) pair. The per-layer host-USM block has exactly the layer's packed bytes plus one maximum-blob pad; the padding covers a whole-maximum-blob copy starting at the final expert. The host loader finishes its writes before open publishes the source to generation/prefill. CPU decode and prefill retain the host blocks as their source; queued DMA and kernel access are drained before each block is freed.
+
+This is source-contract evidence, not evidence that a fresh host-USM start passes `verify_slot`. The first small main-owned qualifier remains a fresh, unchanged-source `STRATA_ARENA_HOST_USM=1` run that preserves the same startup byte verifier and records whether every per-layer `device_pointer` lookup succeeds. R304's host-write-after-prepare concern does not apply to this branch because the branch allocates host USM directly and never prepares/imports the anonymous mapping.
+
+## Bounds, mixed formats, and padding
+
+There is no `NativeExpertArena` type in this checkout; the implementation is `ArenaExpertSource` backed by `PinnedArena`. `expert_layout_load` checks the native layer list is contiguous from offset zero, has a positive format-derived blob size for each layer, and accumulates each layer's `bytes * n_expert` into `total`. For native packs, `layer_offset(l)` and `blob_bytes(l)` therefore describe the actual per-layer mixed-format arrangement; the arena uses those same methods for bounds, loader destinations, source offsets, and blob lengths.
+
+On the direct host-USM route, `ArenaExpertSource::open` builds `bounds = [layer_offset(0), ..., layer_offset(n_layers-1), total]`; it passes `bytes = total + max_blob` and `pad = max_blob`. For each layer, the host-USM constructor allocates `bounds[l+1] - bounds[l] + pad`, then records the layer start. Thus per-layer allocation sum is `total + n_layers * max_blob`, while `capacity/registered_bytes` deliberately remain the flattened logical range `total + max_blob`; these are logical-offset metadata, not a claim that the separate block allocations are adjacent. `at(offset)` chooses the block for the containing layer and returns its within-layer offset. Actual layer starts and expert starts are strictly below `total`, so none select the one-past-end sentinel. The source-level no-check edge is invalid caller offsets (especially `offset > total`); no production caller in the audited path uses one.
+
+The final expert's actual bytes end at its layer block's unpadded boundary. The extra `max_blob` is at least that layer's blob length, so a maximum-slot-sized read beginning at that expert fits. Per-expert normal CPU reads and prefill copies use `blob_bytes(layer)`, not `max_blob`, so their exact ranges fit without relying on padding. Format mix is handled consistently: loader writes each layer's actual size, `blob()` offsets through the same layout, and prefill takes each layer's actual blob length.
+
+## Initialization, host access, and transfer lifetime
+
+The loader receives one destination pointer per layer from `a->at(layer_offset(l))`. It distributes layer ranges to reader workers, reads each chunk into a temporary vector, copies into the destination, joins workers, checks complete byte count, and only then assigns `arena_`/publishes `base_` and returns success from `open`. The native GGUF loader similarly writes role slices into those per-layer destinations and joins before return. The alternative host-USM constructor itself does not call `prepare_for_device_copy`, so its host writes are not writes into a prepared anonymous mapping.
+
+For this source, `base_` is the first host-USM block, not null. `blob()` returns the layer-specific pointer from `PinnedArena::at` after checking nonnegative layer/expert and flattened expert-index bounds. `pinned()` verifies the blob end is within the logical flattened allocation. `device_alias()` requires a valid pinned pair and returns that layer's device alias plus `expert * blob_bytes(layer)`. Initial aliases are obtained using `gpu::device_pointer`, which succeeds only when `Runtime::owner` finds the allocation in a runtime context and `get_pointer_type` reports host USM. The allocated blocks use `Runtime::get().context()`; the one-GPU prefill and compute queues share that context. If alias discovery fails, the code clears the aliases and the later kernel-readable setup returns false rather than knowingly passing an ordinary host pointer as a device pointer.
+
+CPU decode consumes the same host-readable pointer returned by `blob()`; it does not require these bytes to be contiguous across layers. For prompt streaming, the source's `pinned()` classification causes direct source-to-stage copies for resident host-USM blobs; the copy uses the actual layer blob size and the queue/event chain. Source and ring lifetimes extend through the work. The prefill stager's chunk guard drains outstanding jobs, and the arena's `Runtime::free` drains the runtime's compute, transfer, and engine-stream queues before calling `sycl::free`. The host-USM destructor's per-layer loop therefore does drain-before-free (once per block, since `Runtime::free` drains each call); it is safe but may perform redundant drains on teardown. The ordinary mapping destructor separately drains before releasing registrations/unmapping. `to_host_usm` also drains the primary and other registered runtimes before releasing registrations and moving bytes; this conversion path is not taken by the direct host-USM constructor.
+
+## Limits and pinned sources
+
+This audit does not establish driver support/visibility on a new GPU; the allocation and alias checks fail startup gracefully if unavailable. The source API's `pinned(layer, expert)` lacks an explicit `layer < n_layers` guard before layout indexing, but every audited production dispatch supplies a model layer. It is a caller-contract edge, not a demonstrated full-context normal-path fault. Likewise, `PinnedArena::at` should not be generalized as safe for arbitrary offsets: only the generated starts and in-range blob offsets were established here.
+
+Pinned source: `/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/eval-b570-20261010`, HEAD `39bdadcc9e2b89b1e3c8be7bb2a603b04fa0e197`.
+
+SHA-256:
+- `include/strata/core/pinned.hpp`: `31bf40c8c12be0246a662fa92b47c77c471bf2779a54abf51377835c83818186`
+- `src/core/pinned.cpp`: `1d2beba41fc8864cae2cf433dfe618725f6455c430809622ac9dda69d7575356`
+- `include/strata/core/expert_source.hpp`: `d54b627e363124c6cee733053b9c513f3493ff13f4335b2d54404d57a3d8b2eb`
+- `src/core/expert_source.cpp`: `a8cc1e1f88b04fac5b8fa80fdbc7393ae3c4adeb68a509803c8d9f7b48208f69`
+- `include/strata/kernels/cpu/expert_layout.hpp`: source reviewed; hash not captured
+- `src/kernels/cpu/expert_layout.cpp`: source reviewed; hash not captured
+- `src/prefill/prefill.cpp`: `919c696192311066055077bdd0fc74769bfb50854e3437b6b387732acf6d532e`
+- `src/core/device.cpp`: source reviewed; hash not captured
+- `src/core/gpu.cpp`: source reviewed; hash not captured
+- `src/program/generate.cpp`: `25854acf5a75ba7cba4e7aa7f27d762c8a961385cd6c45df7c3deeab7b293802`
+
+Adjacent audit: R304 `round304-xe-prepare-before-host-write-contract.txt` correctly concludes that the published copy-optimize API has no pre-touch rule; this report limits that concern to the default map/import arm. R303's byte-zero mismatch is not localized by this static inspection. R301 is present and was reviewed as supplied; no missing-R301 claim is made.

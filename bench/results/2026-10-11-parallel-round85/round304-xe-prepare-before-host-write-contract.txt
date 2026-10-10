@@ -1,0 +1,61 @@
+# Round 304: prepare-for-copy before host writes — contract and source audit
+
+Date: 2026-10-11 (Asia/Tokyo). Read-only source and primary-document audit. No GPU/runtime operation, model/profile access, build, test, execution, Git operation, or source edit was performed. This report is independent of the D-engine mirror. The target Xe source is pristine commit `39bdadcc9e2b89b1e3c8be7bb2a603b04fa0e197`.
+
+## Conclusion
+
+Under the published `sycl_ext_oneapi_copy_optimize` contract, preparing a host range before the CPU initializes it is not undefined behavior. `prepare_for_device_copy` informs the implementation that the specified host range may be used as the source or destination of subsequent explicit copy operations. The extension does not require the range to be pre-faulted or populated before prepare, and does not prohibit ordinary host writes made before an explicit copy begins. The Intel guide asks applications to preserve pointer/range lifetime through all uses and transfers; it does not say the host contents must be immutable from prepare until release. The two explicit undefined-behavior rules are overlapping prepared ranges, and releasing with a pointer/context that does not match the outstanding prepare.
+
+So the Xe ordering is permitted by the public contract: it reserves a stable virtual range, prepares subranges, loads bytes into those ranges, and only later issues explicit copies. A rule silently requiring “touch every page before prepare” is not present in the cited specification or optimization guide. If that order alone causes a prepared range to keep referring to stale physical pages, the likely classification is an implementation/backend defect or an undocumented implementation precondition, rather than caller UB under the published extension. The observed cache verifier failure alone does not prove this is the cause, so this audit does not declare a confirmed driver bug.
+
+## Xe source path
+
+The pinned source is `/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/eval-b570-20261010` at `39bdadcc9e2b89b1e3c8be7bb2a603b04fa0e197`.
+
+`src/core/pinned.cpp:94-110` overmaps a region, then creates a 2 MiB-aligned base over an anonymous `MAP_PRIVATE | MAP_ANONYMOUS | MAP_NORESERVE` mapping, requests `MADV_HUGEPAGE`, and calls `register_pieces` before any loader write. `register_pieces` partitions the requested arena into adjacent pieces, no larger than `max_alloc_bytes()` and at selected expert/layer cuts, and calls `prepare_for_device_copy` once per piece (`:40-68`). The constructor says “Registered before the loader touches a page”; the accompanying prior B70 observation is a source comment, not a qualification of this exact B570/UR/runtime combination. `note` explicitly says “no mlock” (`:123-129`).
+
+`src/core/expert_source.cpp:2334-2338` describes the Linux anonymous pages as committed as the load writes them. After the arena is prepared, `ArenaExpertSource::open` builds per-layer destination pointers and calls `load_experts_ranges` (`:2365-2404`); `pinned.cpp:415+` shows that loader reading each chunk into a temporary vector and copying it into the destination mapping. The caller keeps the mapping and registrations for the arena lifetime. The C++ source therefore confirms the ordering at issue: prepare, CPU-populate, later explicit copy.
+
+The alternative is implemented in the same source, without changing the loader contract. `STRATA_ARENA_HOST_USM=1` allocates a separate `sycl::malloc_host` block per layer (`pinned.cpp:132-168`; selected at `expert_source.cpp:2378-2391`). It does not call `prepare_for_device_copy` on the anonymous mapping. The startup’s `verify_slot` remains an independent correctness check. Root’s supplied run evidence is one default 50 GB arena split into five registration pieces, followed by a byte-0 cache verification mismatch and ordinary exit 1 with no reported fault; the proposed comparison uses per-layer host USM blocks of about 1.4 GB maximum. No retry or GPU query was made for this audit.
+
+## Range size, alignment, and overlap
+
+The official extension defines the prepared range as `[Ptr, Ptr + NumBytes)` and specifies no page-alignment requirement or maximum range size. Intel’s optimization guide says to use the transfer size when it differs from the underlying allocation, permits preparing less than the true allocation, and calls importing beyond the true allocation a user error. It also describes prepare/release as an experimental optimization whose range and lifetime correctness remain the application’s responsibility.
+
+The Xe helper aligns the overall `base` to 2 MiB and bounds each piece by the device allocation limit. Internal piece endpoints come from expert/layout cuts or the final byte count; the helper itself does not round those endpoints to a page size. Its exact prepared intervals are consecutive and non-overlapping, so they do not violate the extension’s literal overlap rule. The source should still record whether all actual layout cuts are page-aligned before attributing page behavior to them; that alignment is not asserted in `register_pieces` itself.
+
+Do not transfer an alignment restriction from a different API. The Unified Runtime’s separate `urUSMHostAllocRegisterExp` implementation explicitly requires page-aligned pointer and size, but this is not the API used by `prepare_for_device_copy`. The closest public Compute Runtime source examined for ordinary host-pointer import rounds the pointer down and size up to its page size in its Linux memory manager. That source-level behavior suggests page-rounded handling below SYCL, but does not add a published alignment precondition to the SYCL experimental API.
+
+## COW, page faults, and the imported backing
+
+`MAP_NORESERVE` plus the source’s own description means the 50 GB reservation does not imply 50 GB of populated physical pages at prepare time. First CPU writes can fault pages into the anonymous mapping; Linux documents `MAP_PRIVATE` as copy-on-write. That makes a COW/stale-page hypothesis coherent: if the importer resolves or pins physical pages while the map is untouched, and a later CPU write changes a page’s physical backing, a device-side user-pointer mapping established earlier might refer to old pages. The exact cache check then sees bytes that differ from the host expert.
+
+That sequence is only a hypothesis. The available public Intel Linux source shows `HostPointerManager` constructing an external-host-pointer graphics allocation for the requested address/size, and `DrmMemoryManager` page-rounding that range before creating a GEM_USERPTR object. It does not, by itself, prove when the kernel faults or pins the pages, whether `prepare_for_device_copy` eagerly materializes backing, or how the installed kernel driver updates any IOMMU/graphics page tables after a later CPU fault. The Linux kernel pinning documentation explains that DMA pinning and writes to pinned page contents require deliberate handling, but does not establish that this Xe userptr path pins pages during prepare. No kernel source tied to the running system was inspected.
+
+The two source-side candidates remain distinct: (1) a mapping/page-population/import interaction, including COW or stale device mapping, and (2) another host-source or H2D/readback discrepancy. The byte-zero verifier failure does not distinguish them. The fact that the program reaches the cache check establishes that the prepare call path did not throw; it does not prove the implementation imported the intended physical pages or that all later writes remained visible to the copy.
+
+## Runtime provenance and evidence limits
+
+The installed SYCL header is `/opt/intel/oneapi/compiler/2026.1/include/sycl/usm.hpp`, SHA-256 `9851865bd769358ec5971f573b2f81cdab0dd8b7c27fdcab2eac5d1768865ebc`; it declares the experimental overloads but contains no additional contract. Prior runtime receipt `dma-retirement-import-v2-round3.txt` pins the installed `libur_adapter_level_zero_v2.so.0.12.0` SHA-256 `bfdc0f26bf88bd0bccd66fc25302a4b22559f8fe30e499be18529be3ed610e60`. The compiler package is recorded as oneAPI DPC++ 2026.1.1-325. No exact Intel LLVM source revision was tied to that package or adapter binary in the prior receipt. Therefore current upstream UR v2 implementation details must not be treated as proven behavior of this installed binary.
+
+The closest versioned public Compute Runtime source is tag `26.31.39395.13`; prior report `bmg-installed-igc-neo-register-contract-round103.txt` records the installed driver package as `.14` and explicitly notes that `.13` is a baseline, not source identity for `.14`. The `.13` source path `level_zero/core/source/driver/host_pointer_manager.cpp` creates the external host allocation; `shared/source/os_interface/linux/drm_memory_manager.cpp` page-rounds and routes it through a userptr BO. These observations are useful to frame the COW/IOMMU possibility, not to state exact `.14` behavior.
+
+Pristine Xe file SHA-256 pins:
+
+- `src/core/pinned.cpp`: `1d2beba41fc8864cae2cf433dfe618725f6455c430809622ac9dda69d7575356`
+- `src/core/expert_source.cpp`: `a8cc1e1f88b04fac5b8fa80fdbc7393ae3c4adeb68a509803c8d9f7b48208f69`
+- `include/strata/core/pinned.hpp`: `31bf40c8c12be0246a662fa92b47c77c471bf2779a54abf51377835c83818186`
+
+The installed API header hash pins the local declaration examined, not an Intel LLVM source commit. The public experimental spec source used below is at immutable Intel LLVM commit `65cc0cfe809f52169b92e6bea782ddc626ba0a87`.
+
+## Primary references
+
+- Intel [`sycl_ext_oneapi_copy_optimize` experimental specification](https://github.com/intel/llvm/blob/65cc0cfe809f52169b92e6bea782ddc626ba0a87/sycl/doc/extensions/experimental/sycl_ext_oneapi_copy_optimize.asciidoc): prepare is an optimization hint for an explicit copy range; overlapping prepares are undefined; release must match the outstanding pointer/context; no pre-touch rule appears.
+- Intel [oneAPI GPU Optimization Guide: Optimizing Data Transfers](https://www.intel.com/content/www/us/en/docs/oneapi/optimization-guide-gpu/2024-2/optimizing-data-transfers.html): describes importing system memory before repeated copies, release after uses complete, experimental status, lifetime responsibility, and the actual-allocation size rule.
+- Linux [`mmap(2)`](https://man7.org/linux/man-pages/man2/munmap.2.html): `MAP_PRIVATE` is a private copy-on-write mapping.
+- Linux kernel [`pin_user_pages()` documentation](https://docs.kernel.org/6.12/core-api/pin_user_pages.html): distinguishes DMA-pinned pages, faults and writes; informative on the class of risk but not proof of this driver’s pin timing.
+- Intel Compute Runtime [host pointer manager at tag 26.31.39395.13](https://github.com/intel/compute-runtime/blob/26.31.39395.13/level_zero/core/source/driver/host_pointer_manager.cpp) and [Linux DRM memory manager at tag 26.31.39395.13](https://github.com/intel/compute-runtime/blob/26.31.39395.13/shared/source/os_interface/linux/drm_memory_manager.cpp): closest public userptr mapping path; not exact installed `.14` source attribution.
+
+## Follow-up interpretation
+
+The planned unchanged-source `STRATA_ARENA_HOST_USM=1` diagnostic is well-targeted and should keep the same `verify_slot` check. If host USM passes while the default prepared anonymous mapping fails, that would support an allocation/import/page-population interaction, but would not isolate COW from other changes in the host allocation path. If it fails too, the pre-touch hypothesis weakens, while source bytes, transfer/readback and other shared paths remain open. Neither outcome warrants suppressing the verifier.
