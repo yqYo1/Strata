@@ -1,0 +1,7 @@
+# Recurring parallel research, round 44
+
+Two distinct gpt-6-luna reports were read in full before renewal. R175 audits the isolated host-task fixture; R176 proposes dispatch measurement. Preserve the original reports and use the separate corrections: device event timestamps cannot be subtracted directly from host steady-clock timestamps, and real-model comparisons require at least 32768 actual batched positions. No arbitrary minimum gain threshold is introduced.
+
+While these recurring investigations ran, the main agent completed two CPU builds and two bounded B570 GPU fixtures. The numerical IQ4NL fixture passed 84 cases and 45,896,704 active half-word comparisons per arm under proof commit 910874e2d7b3324ea33fafe0227abc1924635b4a. The legal host-task error fixture passed control and injection cases, with 21 stages, two CASE records, one delivered error before the fixture callback, no retry, a normal later drain, exact guards and terminal after queue/USM teardown under proof e06668c8fc39177e2a8dca17a67e4eac3d8db7d4.
+
+These are bounded component correctness and error-notification results. Production async integration remains withheld; production prefill source is unchanged from 2ab. No model performance, full physical 262144 lifecycle, device-fault recovery or candidate adoption is claimed. Latest registry contains 283 fully read Luna reports. Root owns all builds/tests under the measurement lock; researchers receive this committed inventory, report directory and prior decisions before distinct follow-ups.

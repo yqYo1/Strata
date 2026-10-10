@@ -1,0 +1,18 @@
+[
+  {
+    "report": "R175",
+    "note": "Static audit preceded root runtime. Root now passed both legal host-task/control cases with 21 stages,2 CASE and terminal after teardown; this does not test all partial-allocation/known-completion failure cleanup or the wait helper. Production integration remains withheld."
+  },
+  {
+    "report": "R176",
+    "note": "Do not subtract host steady_clock submit timestamps from device event command_start. Use event command_start minus event command_submit from the same backend timebase; record host submit-call duration separately. SYCL specification defines no correlation to std::chrono::steady_clock. Reference https://registry.khronos.org/SYCL/specs/sycl-2020/html/sycl-2020.html section4.6.6/event profiling."
+  },
+  {
+    "report": "R176",
+    "note": "Short real-model prompt A/B proposal conflicts with explicit user minimum: model performance comparisons require at least32768 actual batched positions (ordinary CLI prompt>=32769). Standalone dequant component measurements are allowed but are not model-speed evidence."
+  },
+  {
+    "report": "R176",
+    "note": "Summed device-service differences guide prioritization, not a rigorous end-to-end wall-time bound without host/overlap/cadence analysis. Do not introduce an arbitrary minimum useful percentage; user permits useful small gains if measured."
+  }
+]
