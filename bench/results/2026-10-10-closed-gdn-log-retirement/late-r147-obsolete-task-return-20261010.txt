@@ -1,0 +1,34 @@
+# R147 — Zen 3 native IQ2S/IQ3S decode: external new-factor screen
+
+Date: 2026-10-10. Scope is a read-only source and literature screen for arithmetic/dataflow-preserving CPU decode improvements on a Ryzen 5 5600X (Zen 3, AVX2), for native IQ2_S/IQ3_S expert weights. No build, compiler experiment, disassembly, benchmark, model/runtime, GPU, profiler, or source edits were performed. No new speed claim is made.
+
+## Decision
+
+No new, concrete factor survived the exclusions and current-path check. This is a negative screen, not a claim that the current kernel is optimal. The public IQ3_S AVX2 work located is already an established GGML improvement (not an unmerged factor), while the IQ2_S gather/index ideas and the other obvious dataflow candidates are already screened in R117/R123 and were excluded by the assignment. The remaining newer formats and Intel/AVX-512/AMX/VNNI approaches change the encoding or target unsupported instructions. I therefore do not recommend a patch candidate.
+
+## Fixed Strata source and dispatch facts
+
+Source was read only from fixed WPROBE `perf-sycl-gdn-gate-factor-probe-20261010`, HEAD `609a270...`; only `sycl/` files were consulted. `sycl/src/core/expert_source.cpp` hashes to `41b98031b865338f0429b195ef4aa10ba94cbaf2c0f2224ab1c3a4de7c37f4aa`. At lines 2419 onward `expert_pool_dispatch` refuses native IQ packs on the single-token path; this is not a hidden NT=1 optimization opportunity in this dispatch. It quantizes the activation on each call (around 2448) and proceeds to the generic expert pool only for non-native layouts. The separate `expert_pool_dispatch_multi` accepts a bounded verifier window (`n_tok <= MAXT`, around 2542 onward) and routes to native multi-row execution (around 2799); that path is not interchangeable with one-token decode and must not be used as evidence for NT=1 gains.
+
+`sycl/src/kernels/cpu/iq_avx2.cpp` (SHA `e09ab783f50861207d70b65ee9393319475f2368a126f16dbc884a8765859e7a`) is a wrapper around the implementation in the disallowed parent `src/` tree. The wrapper's existing optional `STRATA_IQ2S_GCC` mode only substitutes IQ2_S type 22 for NT=2 or 4 and otherwise calls the existing implementation; it is not a novel NT=1 factor. `sycl/CMakeLists.txt` (SHA `5911b38ff78b7d185ffd92ee34d0360f272e003b558ae7a3fa0707a1e684f9b6`) compiles the AVX2 wrapper with AVX2/FMA/F16C and makes that experimental GCC substitution opt-in/Linux-only. No external included implementation was opened.
+
+## External source screen
+
+* The llama.cpp IQ3_S AVX2 change is pinned at commit `bbd6eb2561153aabbdfac5001c690fe00cad639` ([PR #5829](https://github.com/ggml-org/llama.cpp/pull/5829), source commit; accessed 2026-10-10). Its stated evidence is a faster IQ3_S dot product on a Ryzen 9 7950X at token-generation batch 128. It predates the fixed baseline and demonstrates a multi-token implementation result on a different Zen 4 CPU. It does not identify a new Zen 3 NT=1 factor, and the result cannot be transferred as a performance claim.
+* The llama.cpp IQ2_S/IQ3_S gather optimization report ([issue #26450](https://github.com/ggml-org/llama.cpp/issues/26450), accessed 2026-10-10) reports Intel i9-13900K measurements. Gather/index decode is explicitly excluded by prior Strata screens, and Intel results do not establish benefit on Zen 3.
+* The ik_llama IQK discussion ([discussion #8](https://github.com/ikawrakow/ik_llama.cpp/discussions/8), accessed 2026-10-10) describes different quantization formats and small codebook/table decode. That changes the encoded weights, so it is not a drop-in arithmetic/dataflow-preserving optimization for existing IQ2_S/IQ3_S payloads.
+* Intel LLM Scaler's own README ([repository](https://github.com/intel/llm-scaler), accessed 2026-10-10) is aimed at Intel Arc Pro B-series and conventional serving formats; it supplies no Zen 3 IQ2_S/IQ3_S CPU path. AMD's [Family 19h optimization guide](https://www.amd.com/content/dam/amd/en/documents/processor-tech-docs/revision-guides/57095-PUB_1.01.pdf) is relevant architecture guidance but does not provide a concrete IQ2_S/IQ3_S decode transformation validated for this workload.
+
+The external IQ3_S result is especially easy to misapply: its TG-128 setup is not NT=1 decode. Likewise verifier windows and prefill batches are distinct call shapes. The fixed Strata single-token refusal means current production expert dispatch must first be changed before an NT=1 native-pack candidate could even be measured; this task did not propose that broader dispatch change as an optimization.
+
+## Rejected as not new or not in scope
+
+The prior CPU reports R117/R123 screened IQ2S register/direct-index changes (all twelve measured cells rejected), prefetch, sign scratch, requantizer, full FP16 predecode, decoder gather/index/scale-table/panel proposals, and pool scheduling/affinity variants. Re-listing these would not supply a new factor. The existing GCC IQ2S NT=2/4 option is already in the fixed tree and does not address the requested single-token case. New quantization formats, persistent expansion/predecode, and ISA-specific AVX-512/AMX/VNNI routes either alter the weight representation, incur already-screened expansion/reuse costs, or do not target Zen 3 AVX2.
+
+## Decision gate if a future candidate is found
+
+Require an NT=1 discriminator at the kernel/dataflow level, preserving exact IQ2_S/IQ3_S bytes and output semantics. Validate on the actual 5600X with at least 32K leading context and repeated decode instances, keeping prefill separate; require correctness/overflow/UB checks, and account for any persistent expanded-weight RAM and reuse break-even. Multi-token verifier or prefill numbers alone cannot pass this gate. There is no new benchmark sample in this report.
+
+## Provenance
+
+Fixed source hashes above identify only the wrapper and CMake. Other fixed source reviewed: `expert_source.cpp` SHA above. The read-only source inspection and external reference screen produced no test or measurement artifacts. Historical comparisons cited by decision: R117 and R123 in `/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/`.
