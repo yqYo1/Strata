@@ -1,0 +1,324 @@
+--- a/sycl/src/prefill/prefill.cpp
++++ b/sycl/src/prefill/prefill.cpp
+@@ -55,6 +55,7 @@
+ #include <vector>
+ #include "strata/event_completion.hpp"
+ #include "strata/prefill_service_ledger.hpp"
++#include "strata/prefill_route_census.hpp"
+ namespace strata {
+ inline bool dma_completed(const EventCompletion<sycl::event>& state, uint64_t value) {
+     return event_completed(state, value, [](const sycl::event& event) {
+@@ -2905,6 +2906,10 @@
+     core::SessionState& ss = *m.ss;
+     auto t_start = Clock::now();
+     const int64_t LB = stage_lb_, LE = stage_le_;
++    detail::RouteCensus route_census(n, pos0, LB, LE, g.n_expert,
++        std::getenv("STRATA_PREFILL_ROUTE_CENSUS") != nullptr &&
++        std::strcmp(std::getenv("STRATA_PREFILL_ROUTE_CENSUS"), "1") == 0 &&
++        (m.pp != nullptr || next_ != nullptr || m.transfer_context != nullptr || core::peer_portable()));
+     // Diagnostic backpressure for the direct FP16 expert path. Bound a group
+     // of asynchronous expert submissions without changing their data or math.
+     // Zero keeps the original submission schedule; MMQ grouping is unchanged.
+@@ -3070,6 +3075,7 @@
+             std::fflush(stderr);
+         }
+         const int64_t T = chunk_len(c0), p0 = pos0 + c0;
++        if (route_census.on) route_census.begin_chunk(p0, T);
+         last_chunk_len = T;
+         const bool gpu_rows = m.transfer_context && c0 + T <= m.residual_gpu_tokens;
+         if (m.residual_inplace)
+@@ -3309,6 +3315,7 @@
+         catch (sycl::exception const &exc) {
+           std::cerr << exc.what() << "Exception caught at file:" << __FILE__
+                     << ", line:" << __LINE__ << std::endl;
++          if (route_census.on) detail::RouteCensus::fatal_receipt("prefill_fatal_no_unwind");
+           std::exit(1);
+         }
+         };
+@@ -3348,6 +3355,7 @@
+         catch (sycl::exception const &exc) {
+           std::cerr << exc.what() << "Exception caught at file:" << __FILE__
+                     << ", line:" << __LINE__ << std::endl;
++          if (route_census.on) detail::RouteCensus::fatal_receipt("prefill_fatal_no_unwind");
+           std::exit(1);
+         }
+         };
+@@ -3363,6 +3371,7 @@
+         catch (sycl::exception const &exc) {
+           std::cerr << exc.what() << "Exception caught at file:" << __FILE__
+                     << ", line:" << __LINE__ << std::endl;
++          if (route_census.on) detail::RouteCensus::fatal_receipt("prefill_fatal_no_unwind");
+           std::exit(1);
+         }
+         };
+@@ -3391,9 +3400,11 @@
+                     int job = -1;
+                     const uint8_t* b = nullptr;
+                     if (gsrc != nullptr) {   // read by the stager's thread when its turn comes (see Stager::Job)
++                        if (route_census.on) route_census.plan_source((int)l,e,detail::RouteCensus::stager_gguf);
+                         job = (int) js.size();
+                         js.push_back({nullptr, (size_t) lay0.blob_bytes(l), nullptr, (int32_t) l, e, gsrc});
+                     } else if (m.src->transient(l, e)) {   // CS-T: copied by the source into the stager's buffer
++                        if (route_census.on) route_census.plan_source((int)l,e,detail::RouteCensus::stager_transient);
+                         job = (int) js.size();
+                         js.push_back({nullptr, (size_t) lay0.blob_bytes(l), m.src, (int32_t) l, e});
+                     } else {
+@@ -3409,11 +3420,13 @@
+                             }
+                         }
+                         if (!m.src->pinned(l, e)) {
++                            if (route_census.on) route_census.plan_source((int)l,e,detail::RouteCensus::stager_ram);
+                             job = (int) js.size();
+                             js.push_back({b, (size_t) lay0.blob_bytes(l)});
+                         }
+                     }
+                     seq.push_back({(int32_t) l, e, b, job});
++                    if (route_census.on && job < 0) route_census.plan_source((int)l,e,detail::RouteCensus::pinned);
+                 }
+             }
+             for (int64_t l = LE; l <= g.n_layers; ++l) {
+@@ -3445,6 +3458,7 @@
+                     synchronization behavior.
+                     */
+                     transfers.copy(m.copy, m.stage_dev[sl], en.blob, bytes, en.l, p0, en.e, sl, 1);
++                    if (route_census.on) route_census.copied(en.l, en.e, bytes, detail::RouteCensus::pinned);
+                     ++stats_.experts_dma;
+                 } else {
+                     double stager_ms = 0;
+@@ -3457,6 +3471,7 @@
+                     synchronization behavior.
+                     */
+                     const auto dma = transfers.copy(m.copy, m.stage_dev[sl], hb, bytes, en.l, p0, en.e, sl, 2, stager_ms);
++                    if (route_census.on) route_census.copied(en.l, en.e, bytes, route_census.stager_source(en.l,en.e));
+                     m.stager->issued_one(en.job, dma);
+                 }
+                 dpct::sync_barrier(m.copied[sl], m.copy);
+@@ -3469,6 +3484,7 @@
+         catch (sycl::exception const &exc) {
+           std::cerr << exc.what() << "Exception caught at file:" << __FILE__
+                     << ", line:" << __LINE__ << std::endl;
++          if (route_census.on) detail::RouteCensus::fatal_receipt("prefill_fatal_no_unwind");
+           std::exit(1);
+         }
+         };
+@@ -3518,6 +3534,7 @@
+                         API to ensure synchronization behavior.
+                         */
+                         transfers.copy(m.copy, m.stage_dev[sl], en.blob, bytes, en.l, p0, en.e, sl, 1, 0, ring_ms);
++                        if (route_census.on) route_census.copied(en.l, en.e, bytes, detail::RouteCensus::pinned);
+                         ++iss_dma;
+                     } else {
+                         double stager_ms = 0;
+@@ -3531,6 +3548,7 @@
+                         API to ensure synchronization behavior.
+                         */
+                         const auto dma = transfers.copy(m.copy, m.stage_dev[sl], hb, bytes, en.l, p0, en.e, sl, 2, stager_ms, ring_ms);
++                        if (route_census.on) route_census.copied(en.l, en.e, bytes, route_census.stager_source(en.l,en.e));
+                         m.stager->issued_one(en.job, dma);
+                     }
+                     dpct::sync_barrier(m.copied[sl], m.copy);
+@@ -3540,10 +3558,12 @@
+                     a_issued.store(idx + 1, std::memory_order_release);
+                 }
+                 } catch (const std::exception& e) {
++                    if (route_census.on) detail::RouteCensus::fatal_receipt("issuer_exception_fatal_no_unwind");
+                     std::fprintf(stderr, "strata: prefill issuer failed: %s; ending the process without GPU cleanup\n", e.what());
+                     std::fflush(stderr);
+                     std::_Exit(1);
+                 } catch (...) {
++                    if (route_census.on) detail::RouteCensus::fatal_receipt("issuer_unknown_exception_fatal_no_unwind");
+                     std::fprintf(stderr, "strata: prefill issuer failed: unknown exception\n");
+                     std::fflush(stderr);
+                     std::_Exit(1);
+@@ -3609,6 +3629,7 @@
+         catch (sycl::exception const &exc) {
+           std::cerr << exc.what() << "Exception caught at file:" << __FILE__
+                     << ", line:" << __LINE__ << std::endl;
++          if (route_census.on) detail::RouteCensus::fatal_receipt("prefill_fatal_no_unwind");
+           std::exit(1);
+         }
+         };
+@@ -4130,6 +4151,7 @@
+                     size_t n_order = 0;                   // the routed experts (the debug report; unknown when fused)
+                     bool peer_now = false;                // multi-GPU: the peer computed rows of this layer (MMQ path only)
+                     if (fused_l) {
++                        if (route_census.on) route_census.invalidate("unsupported_fused_device_only_grouping");
+                         if (static bool said = false; !said) {
+                             said = true;
+                             std::fprintf(stderr, "strata: prompt experts on the fused int8 kernels (STRATA_PF_FUSED=1, "
+@@ -4282,6 +4304,23 @@
+                                 (!on_peer.empty() && on_peer[(size_t) e] ? order_peer : order).push_back(e);
+                         for (int32_t e = 0; e < m.g->n_expert && !on_peer.empty(); ++e)   // the peer-streamed ones last:
+                             if (on_peer[(size_t) e] == 2) order_peer.push_back(e);        // their copies get the most time
++                        if (route_census.on) {
++                            detail::RouteCensus::Meta cm;
++                            cm.chunk=p0; cm.T=T; cm.K=K; cm.layer=(unsigned)l; cm.experts=(unsigned)m.g->n_expert;
++                            cm.native=lay.native; cm.stream_all=stream_all;
++                            cm.fused_only=fused_only;
++                            cm.mmq_built=mmq::built(); cm.fused_built=fused::built();
++                            cm.branch=use_mmq ? detail::RouteCensus::mmq : lay.native ? detail::RouteCensus::generic_iq : detail::RouteCensus::generic_gguf;
++                            cm.bytes=lay.blob_bytes(l); cm.gu=mmq_gt; cm.down=mmq_dt;
++                            cm.layer_offset=lay.layer_offset(l); cm.layout_version=lay.version;
++                            cm.H=(int)N; cm.FF=640;
++                            if (lay.native) {
++                                const auto& f=lay.fmt[(size_t)l]; cm.H=f.n_embd; cm.FF=f.n_ff;
++                                cm.gu_row=f.gu_row; cm.down_row=f.d_row; cm.up_off=f.up_off; cm.down_off=f.down_off;
++                            }
++                            if (!order_peer.empty()) route_census.invalidate("unsupported_peer_route");
++                            route_census.layer(cm,m.cnt.data());
++                        }
+                         if (services.on && !use_mmq && !fused_l) {
+                             for (const int32_t expert : order) {
+                                 ExpertServiceId expected; expected.chunk = p0; expected.layer = l;
+@@ -4703,16 +4742,19 @@
+                                 if (m.src->pinned(l, e)) continue;
+                                 job_of[j] = (int) js.size();
+                                 if (gsrc != nullptr) {   // SYCL port: --stream-experts - the stager's thread reads it from the GGUF
++                                if (route_census.on) route_census.plan_source((int)l,e,detail::RouteCensus::stager_gguf);
+                                 js.push_back({nullptr, (size_t) lay.blob_bytes(l), nullptr, (int32_t) l, e, gsrc});
+                                 continue;
+                             }
+                             if (m.src->transient(l, e)) {   // CS-T: copied by the source
++                                    if (route_census.on) route_census.plan_source((int)l,e,detail::RouteCensus::stager_transient);
+                                     js.push_back({nullptr, (size_t) lay.blob_bytes(l), m.src, (int32_t) l, e});
+                                     continue;
+                                 }
+                                 const uint8_t* b = m.src->blob(l, e);
+                                 if (!b) { err = "prefill: expert source has no blob"; return false; }
+                                 js.push_back({b, (size_t) lay.blob_bytes(l)});
++                                if (route_census.on) route_census.plan_source((int)l,e,detail::RouteCensus::stager_ram);
+                             }
+                             m.stager->start(std::move(js));
+                         }
+@@ -4729,6 +4771,7 @@
+                             const uint8_t* b = pinned ? m.src->blob(l, e) : nullptr;
+                             if (pinned && !b) { err = "prefill: expert source has no blob"; return false; }
+                             if (pinned) {
++                                if (route_census.on) route_census.plan_source((int)l,e,detail::RouteCensus::pinned);
+                                 // DMA straight from the page-locked arena: the copy stream only waits for the slot
+                                 if (m.stage_live[sl])(m.copy)
+                                     ->ext_oneapi_submit_barrier(
+@@ -4743,6 +4786,7 @@
+                                 */
+                                 transfers.copy(m.copy, m.stage_dev[sl], b,
+                                                (size_t)lay.blob_bytes(l), l, p0, e, sl, 1);
++                                if (route_census.on) route_census.copied((int)l,e,lay.blob_bytes(l),detail::RouteCensus::pinned);
+                                 ++stats_.experts_dma;
+                             } else {
+                                 // copied to a pinned buffer by the stager (waits only if it is behind), then DMA
+@@ -4761,6 +4805,7 @@
+                                 */
+                                 const auto dma = transfers.copy(m.copy, m.stage_dev[sl], hb,
+                                                (size_t)lay.blob_bytes(l), l, p0, e, sl, 2, stager_ms);
++                                if (route_census.on) route_census.copied((int)l,e,lay.blob_bytes(l),route_census.stager_source((int)l,e));
+                                 m.stager->issued_one(job_of[j], dma);
+                             }
+                             dpct::sync_barrier(m.copied[sl], m.copy);
+@@ -4774,6 +4819,7 @@
+                           std::cerr << exc.what()
+                                     << "Exception caught at file:" << __FILE__
+                                     << ", line:" << __LINE__ << std::endl;
++                          if (route_census.on) detail::RouteCensus::fatal_receipt("prefill_fatal_no_unwind");
+                           std::exit(1);
+                         }
+                         };
+@@ -4823,6 +4869,7 @@
+                           std::cerr << exc.what()
+                                     << "Exception caught at file:" << __FILE__
+                                     << ", line:" << __LINE__ << std::endl;
++                          if (route_census.on) detail::RouteCensus::fatal_receipt("prefill_fatal_no_unwind");
+                           std::exit(1);
+                         }
+                         };
+@@ -4847,6 +4894,7 @@
+                             }
+                         const int32_t e = order[j];
+                             pt.mark(kPfDequant, cs);
++                            if (route_census.on) route_census.executed((int)l,e,slot<0);
+                             if (use_mmq) {
+                                 // gather the expert into its group slot (GGUF blocks, unchanged or converted)
+                                 const size_t q = j % MMQ_GROUP;
+@@ -4937,20 +4985,23 @@
+                                     ExpertServiceId id; id.chunk = p0; id.layer = l; id.expert = e;
+                                     id.role = role; id.rows = ne; id.n = out; id.k = inner; id.ldy = out;
+                                     services.record(event,cs,id,0,host_ms);
+-                                } catch (...) { services.fatal("gemm_submission_failure"); }
++                                } catch (...) { if (route_census.on) detail::RouteCensus::fatal_receipt("gemm_submission_failure"); services.fatal("gemm_submission_failure"); }
+                             };
+                             pt.mark(kPfGemmGU, cs);
+                             expert_product(0, m.Xs + scratch_row * N, m.dq_gu[q], m.GU + scratch_row * 1280, 1280, N);
++                            if (route_census.on) route_census.product((int)l,e,0);
+                             swiglu_interleaved(m.GU + scratch_row * 1280, m.Hh + scratch_row * 640, ne, m.cs);
+                             pt.mark(kPfGemmD, cs);
+                             expert_product(1, m.Hh + scratch_row * 640, m.dq_d[q], m.Dm + o0 * N, N, 640);
++                            if (route_census.on) route_census.product((int)l,e,1);
+                             return true;
+                         }
+                         catch (sycl::exception const &exc) {
+-                          if (services.on) services.fatal("expert_compute_failure");
++                          { if (services.on) { if (route_census.on) detail::RouteCensus::fatal_receipt("service_ledger_fatal"); services.fatal("expert_compute_failure"); } }
+                           std::cerr << exc.what()
+                                     << "Exception caught at file:" << __FILE__
+                                     << ", line:" << __LINE__ << std::endl;
++                          if (route_census.on) detail::RouteCensus::fatal_receipt("prefill_fatal_no_unwind");
+                           std::exit(1);
+                         }
+                         };
+@@ -4994,6 +5045,7 @@
+                                   << exc.what()
+                                   << "Exception caught at file:" << __FILE__
+                                   << ", line:" << __LINE__ << std::endl;
++                              if (route_census.on) detail::RouteCensus::fatal_receipt("prefill_fatal_no_unwind");
+                               std::exit(1);
+                             }
+                             };
+@@ -5048,6 +5100,7 @@
+                           std::cerr << exc.what()
+                                     << "Exception caught at file:" << __FILE__
+                                     << ", line:" << __LINE__ << std::endl;
++                          if (route_census.on) detail::RouteCensus::fatal_receipt("prefill_fatal_no_unwind");
+                           std::exit(1);
+                         }
+                         };
+@@ -5215,6 +5268,7 @@
+             stats_.experts_streamed += iss_streamed;
+             stats_.experts_dma += iss_dma;
+         }
++        if (route_census.on) route_census.end_chunk();
+         stats_.tokens += T;
+         core::progress_at("reading the prompt (batched): finishing the chunk from token", p0);
+         pt.mark(kPfStart, cs);
+@@ -5301,7 +5355,7 @@
+         if (on_chunk || on_stage_chunk) {
+             const auto toc = Clock::now();
+             if (DPCT_CHECK_ERROR(m.cs->wait()) != 0) {
+-                if (services.on) services.fatal("compute_wait_failure");
++                { if (services.on) { if (route_census.on) detail::RouteCensus::fatal_receipt("service_ledger_fatal"); services.fatal("compute_wait_failure"); } }
+                 /*
+                 DPCT1009: SYCL reports errors using exceptions and does not
+                 use error codes. Please replace the
+@@ -5346,6 +5400,7 @@
+         catch (sycl::exception const &exc) {
+           std::cerr << exc.what() << "Exception caught at file:" << __FILE__
+                     << ", line:" << __LINE__ << std::endl;
++          if (route_census.on) detail::RouteCensus::fatal_receipt("prefill_fatal_no_unwind");
+           std::exit(1);
+         }
+         };
+@@ -5358,7 +5413,7 @@
+         std::fprintf(stderr, "\n");
+     }
+     if (DPCT_CHECK_ERROR(m.cs->wait()) != 0) {
+-                if (services.on) services.fatal("compute_wait_failure");
++                { if (services.on) { if (route_census.on) detail::RouteCensus::fatal_receipt("service_ledger_fatal"); services.fatal("compute_wait_failure"); } }
+         /*
+         DPCT1009: SYCL reports errors using exceptions and does not use
+         error codes. Please replace the "get_error_string_dummy(...)" with a
+@@ -5472,6 +5527,7 @@
+         }
+         std::fprintf(stderr, "strata prefill: GDN_HASH %s\n", line.c_str());
+     }
++    if (route_census.on) route_census.finish(true);
+     return true;
+ }
+ catch (sycl::exception const &exc) {

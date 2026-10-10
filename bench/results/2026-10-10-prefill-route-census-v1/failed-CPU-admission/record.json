@@ -1,0 +1,99 @@
+{
+  "active": false,
+  "complete": false,
+  "passed": false,
+  "adopted": false,
+  "gpu_tested": false,
+  "started_utc": "2026-10-10T12:45:36.266831+00:00",
+  "controller": {
+    "bytes": 3811,
+    "sha256": "beddc671ec60e8a66237655de7506626485de569986c250b5cac3514d89be000"
+  },
+  "parent_owner": {
+    "bytes": 24299,
+    "sha256": "7df012ee4d9bd047a6094ccedb37fddb3d56d4b054d9fdf468534b0fb6e94e1f"
+  },
+  "source": {
+    "bytes": 2013,
+    "sha256": "aa0cac1077b8975fb8d9e4528d40fa6c9ded115e65fc4ca5d856275f5031749f"
+  },
+  "header": {
+    "bytes": 16280,
+    "sha256": "a533f6a78a53ae873de1e4da6bccb9de179d48591d41946f2e57d92cedbd8bed"
+  },
+  "commands": [
+    {
+      "label": "compile",
+      "argv": [
+        "/usr/bin/g++",
+        "-std=c++20",
+        "-O2",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-pthread",
+        "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-route-census-v1",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill_route_census_contract_v1.cpp",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-route-census-contract-root-v1/contract"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T12:45:36.267404+00:00",
+      "wall_seconds": 120,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2020779,
+          "start_ticks": 32601538,
+          "sid": 2020779,
+          "pgid": 2020779
+        },
+        {
+          "pid": 2020780,
+          "start_ticks": 32601538,
+          "sid": 2020779,
+          "pgid": 2020779
+        }
+      ],
+      "pid": 2020779,
+      "direct_identity": {
+        "pid": 2020779,
+        "state": "R",
+        "ppid": 2020733,
+        "pgid": 2020779,
+        "sid": 2020779,
+        "start_ticks": 32601538,
+        "rss_bytes": 331776
+      },
+      "peak_session_rss_bytes": 180916224,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 1,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T12:45:37.549602+00:00",
+      "elapsed_seconds": 1.2819886329816654,
+      "logs": {
+        "compile.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "compile.stderr": {
+          "bytes": 699,
+          "sha256": "3b99f651c672c07f90c19e6a21e21fce32fea03ab9506481e0f6b4149575ab1c"
+        }
+      }
+    }
+  ],
+  "results": [],
+  "scope": "CPU contract against exact unmodified Sol header; admission requires every negative to suppress layer rows and emit one invalid receipt",
+  "error": "AssertionError: ('compile', {'label': 'compile', 'argv': ['/usr/bin/g++', '-std=c++20', '-O2', '-Wall', '-Wextra', '-Werror', '-pthread', '-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-route-census-v1', '/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill_route_census_contract_v1.cpp', '-o', '/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-route-census-contract-root-v1/contract'], 'environment': {'PATH': '/usr/bin:/bin', 'LANG': 'C.UTF-8', 'LC_ALL': 'C.UTF-8'}, 'started_utc': '2026-10-10T12:45:36.267404+00:00', 'wall_seconds': 120, 'normal_exit': True, 'session_empty': True, 'observation_complete': True, 'cleanup': [], 'errors': [], 'owners': [{'pid': 2020779, 'start_ticks': 32601538, 'sid': 2020779, 'pgid': 2020779}, {'pid': 2020780, 'start_ticks': 32601538, 'sid': 2020779, 'pgid': 2020779}], 'pid': 2020779, 'direct_identity': {'pid': 2020779, 'state': 'R', 'ppid': 2020733, 'pgid': 2020779, 'sid': 2020779, 'start_ticks': 32601538, 'rss_bytes': 331776}, 'peak_session_rss_bytes': 180916224, 'survivors': [], 'ownership_status': 'observed', 'exit_code': 1, 'direct_child_reaped': True, 'finished_utc': '2026-10-10T12:45:37.549602+00:00', 'elapsed_seconds': 1.2819886329816654, 'logs': {'compile.stdout': {'bytes': 0, 'sha256': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'}, 'compile.stderr': {'bytes': 699, 'sha256': '3b99f651c672c07f90c19e6a21e21fce32fea03ab9506481e0f6b4149575ab1c'}}})",
+  "finished_utc": "2026-10-10T12:45:37.549863+00:00"
+}

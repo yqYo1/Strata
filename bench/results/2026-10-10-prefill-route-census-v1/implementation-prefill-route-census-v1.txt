@@ -1,0 +1,198 @@
+Implementation handoff — bounded host-only PREFILL route census v1
+Date: 2026-10-10. SOURCE ONLY, uncompiled and unexecuted. No Git operation,
+build, test, inference, profiling, GPU/process/hardware query, model payload
+read, cleanup, or live root-run-file read was performed. Only frozen source and
+reports were read. Root owns serial validation, adoption, retention and commits.
+
+Assigned outputs (all are private; no frozen/production tree was edited):
+  B=/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-route-census-v1
+  B/prefill.cpp
+    SHA256 905f43162ae079b6785584da226d950cec14b13bd413ca51ab1a48f49de6ebaf
+  B/prefill_route_census.hpp
+    SHA256 a533f6a78a53ae873de1e4da6bccb9de179d48591d41946f2e57d92cedbd8bed
+  B/prefill.cpp.patch
+    SHA256 c42320bcb2c74cbb16d6dcd4e7d4ab38c822159b6a4c84e08fcbbcff97abf850
+  B/prefill_route_census.hpp.patch
+    SHA256 bd77b06520a33720cffc5b598bf62b9826387516edd092ebcf96e52cf4320ab0
+  This handoff: research-20261009/implementation-prefill-route-census-v1.txt
+  Its final file SHA256 is supplied separately with the completed handoff.
+
+Immutable baseline W:
+  /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-prefill-service-events-20261010
+  owner-pinned commit 495369cf4dc6e6da564095a1c26504dd3694e3f2
+  W/sycl/src/prefill/prefill.cpp SHA256, independently read after private edits:
+    f6cbc4acb9f84b19480a25892a2e6864896a3e3ab0f68ace3c3f51a788591f69
+  Baseline bytes 329171 (parent-pinned); no Git command was used to verify HEAD.
+  Fully read R254, R250 and R256. Read frozen AGENTS.md. Its cross-backend build
+  advice is superseded by the user's SYCL-only and root-owned validation scope.
+  ARTIFACT_RETENTION.md is absent in W; read the storage worktree's policy.
+  Latest registry v98/365 reviewed and storage revision supplied by root are
+  provenance, not additional measurements made by this implementation.
+
+Dispatch and receipt scope
+  STRATA_PREFILL_ROUTE_CENSUS absent or exact "0": disabled. Exact "1": enabled.
+  Any other present value gives an invalid env receipt, without changing model
+  computation. Enabled admission bounds n=32768..262144, positive actual chunk
+  T<=8192, K=10, <=64 layers and <=512 experts, current native H2560/FF640,
+  per-blob <=4MiB and the seven root-admitted pairs 18/20,18/42,21/20,21/42,
+  22/20,22/42,23/20. Other geometry/pairs invalidate the whole receipt.
+  Current generic-native IQ->FP16+f16 GEMM and built MMQ are separate branches.
+  Enum 1=generic_iq,2=generic_gguf,3=mmq; non-native pack geometry is deliberately
+  unsupported/invalid in this minimum current-pack implementation. A built MMQ
+  receipt does not qualify generic IQ/GEMM rates. All receipts say capacity_join
+  false. No capacity prediction or numerical/model-adoption result is emitted.
+  Multi-GPU/peer, pipeline and transfer-context/layer-major orchestration are
+  conservatively unsupported. Fused device-only grouping invalidates instead
+  of adding a route readback or synchronization. These exclusions apply to the
+  entire request; no valid partial histogram is printed. Existing service-ledger
+  exclusions are unchanged. Build identity uses actual mmq::built()/fused::built()
+  host booleans, including the uncompiled fused stub; source presence alone is
+  never treated as a built or selected fused path.
+
+Accounting hooks
+  After existing ids_h grouping, layer metadata records actual p0/T/K, layer,
+  expert population, pair, H/FF, row bytes, up/down offsets, packed layer offset,
+  layout version, exact blob bytes and selected actual branch/runtime flags.
+  No router IDs are copied or read through new device commands.
+  The compute entry records each actual routed expert/ne and whether its actual
+  blob is a resident slot. Generic GU/Down counters are added only AFTER each
+  original expert_product returns. MMQ records its expert gather/control-path
+  exposure and requires zero generic products; it does not claim one matrix
+  product call per expert for a grouped MMQ launch. No timings from generic
+  service capacities are assigned to MMQ.
+  The source planner only retains the already-decided Stager::Job backing-kind;
+  it increments no transfer counters. Actual copy submissions are counted only
+  after the existing transfers.copy returns, in stage_one, inline issue_until,
+  and the existing issuer thread. Final source is that real executed branch:
+  source1=resident_cache;2=pinned;3=stager_RAM;4=stager_transient;5=stager_GGUF.
+  Existing transfer-ledger join source is 0 for resident,1 for pinned,2 for all
+  stager variants. Exact bytes/layer/expert are the same arguments as the real
+  transfer call. No extra pinned/blob/transient/source getter is invoked.
+  In stream_all, copied-but-unrouted experts are retained in ALL-transfer totals
+  separately from routed-transfer counts. This avoids falsely equating the full
+  streaming walk to selected expert copies. Non-stream-all disallows unrouted
+  copies. Every planned primary transfer must have exactly one real submission
+  with the same backing-kind and exact blob extent. Every selected resident
+  call must have zero copy; every selected streamed call exactly one.
+
+Reconciliation and bounds
+  One heap scratch spans 64 layers x512 experts, with separate main Cell/Meta,
+  planned-source and issuer Copy lanes. Source planning precedes issuer start;
+  issuer never reads or writes the mutable main validity state. The main folds
+  Copy data only after the EXISTING issuer.join. Reset happens at the next
+  chunk, after that join. No additional mutex, atomics, waits or events added.
+  Scratch is reused; output is one fixed 32MiB allocation; bins are a fixed512
+  stack array during folding. No per-expert recording allocation. Scratch is
+  approximately 1.4MiB; total added owned heap <34MiB, stack bins <=16KiB on the
+  present field layout. Root should verify sizeof under the chosen toolchain.
+  Body budget is 32MiB-8192 so the final receipt fits the <=32MiB request budget.
+  Any allocation/format/budget/identity/count/pair/copy/branch/coverage failure
+  preserves the first reason, suppresses the entire retained histogram, emits
+  only an invalid receipt, and continues the unchanged original computation.
+  Checks: sum(ne)=T*K per layer; one call per nonzero expert; local rows/calls
+  partition all admitted entries (peer=0 because unsupported admission fails);
+  one actual GU and Down per generic call; no generic products for MMQ;
+  transfer sources/bytes/counts including unrouted stream_all; contiguous chunk
+  p0, actual T total==n; one record for each admitted layer/chunk. Byte additions
+  are checked, geometry multiplications bounded before role arithmetic.
+  Sparse bins sorted by exact(ne,source); branch/pair/owner/geometry are on the
+  enclosing layer record. Bin logical_packed_bytes counts selected packed blobs
+  presented to the compute route, including resident calls; transfer_bytes is
+  separately labeled logical H2D payload, not DRAM/L2/controller/SSD traffic.
+  Every record waits in owned host memory until final success. Final success
+  is after the original run_impl wait/error checks; destructor handles ordinary
+  early-return/unwind after existing issuer/stager guards have joined. Existing
+  inner exits have literal invalid receipts inserted before their unchanged
+  exit(1); issuer exceptions still use existing _Exit(1), no unwind/replay.
+  Service fatal call sites preserve their existing termination and gain a
+  literal invalid route receipt. No diagnostic changes queue-error recovery.
+
+Default-off invariance reasoning (STATIC, not a tested binary proof)
+  New source consists of include, null-owned RouteCensus automatic object and
+  branches guarded by route_census.on. Absent env makes on false; constructor
+  returns before allocation/Clock/log/geometry admission. All producer and
+  compute methods are skipped. Destructor does not emit or time. The extra
+  peer_portable call is additionally guarded by exact enabled env, hence absent
+  default makes no new runtime/device query. Original StreamEntry remains
+  byte-for-byte the same layout and initializer; original vectors/jobs/rings,
+  math arguments, kernel/library submissions, order, waits, event dependencies,
+  thread ownership and cleanup statements remain intact. No production queue
+  factory, ExpertTransferTimer, ExpertServiceLedger or GPU kernel was changed.
+  Exact machine-code or measured wall invariance has NOT been established;
+  root must compare default-off outputs/submissions and appropriate clean runs.
+
+Clock/output limitations and required interpretation
+  host_accumulation_ns covers guarded accumulator methods, reset and copy lane;
+  host_serialization_ns covers end_chunk reconciliation/sorting/formatting. They
+  are host steady_clock spans only, contain no GPU clock arithmetic, and are NOT
+  an exhaustive instrumentation-overhead subtraction. Caller Meta construction,
+  method dispatch, constructor/allocation, final hash/fwrite and final receipt
+  output are not included in those two counters. Request wall and event/service
+  clocks remain separate. Census is accounting-only, not a clean timing arm.
+  Receipt FNV1a64 covers emitted layer text/metadata/bins. No runtime SHA256 is
+  invented: the header emits actual loaded geometry but does not hash model
+  files or prove that the runtime loaded pack equals root's admitted pack.
+  Root must retain the authoritative current-pack metadata receipt SHA
+  902283e324b339127a9eb197954260ab606e32767b4e9acaf1d17e2463d31f84 and hash a
+  canonical projection of emitted loaded-format metadata in the controller.
+  Input/request/build/binary/environment SHA identity stays controller-owned.
+  A missing final valid receipt, output write error/broken pipe, abnormal exit,
+  fault, timeout or missing normal model completion invalidates qualification.
+  Nested unchanged helper/ledger fatal functions can exit before the local
+  destructor; missing receipt is failure, never partial validity. No attempt
+  to recover their live USM or replay is introduced. A stderr write may become
+  partial if the sink itself fails; consumers must require final valid receipt
+  and its exact output byte/hash/counts, never infer validity from layer lines.
+  Full physical262144 context remains root's independent gate. Memory/output
+  caps can intentionally reject a large run; this is no full-context proof.
+
+Root recipe suggestions (NOT RUN)
+  1. Verify baseline SHA above in a new isolated checkout at the pinned base.
+     Apply from repository root:
+       patch -p1 < "$B/prefill.cpp.patch"
+       patch -p1 < "$B/prefill_route_census.hpp.patch"
+     Or copy B/prefill.cpp to sycl/src/prefill/prefill.cpp and the header to
+     sycl/include/strata/prefill_route_census.hpp. Verify resulting file SHA.
+     B is the full absolute output directory printed at the start of this report.
+  2. CPU-only contract qualification against REAL header, root-written driver:
+       g++ -std=c++20 -O2 -Wall -Wextra -Werror -pthread -I"$B" \
+         /ROOT/OWNED/route_census_contract.cpp -o /ROOT/OWNED/route_census_contract
+     Use finite root-owned process/RSS/log limits. No SYCL dependency required.
+     Predeclared normal cell: n32768,pos0=0,LB0,LE1,NE512; four chunks T8192;
+     cnt[0..9]=8192, others0; native22/20,H2560,FF640,gu_row820,down_row360,
+     up_off524800,down_off1049600,bytes1971200; 10 resident generic calls per
+     chunk and one GU/Down each =>4 layers,40calls,327680rows,zero transfers.
+     Assert exact JSON bins/counts and FNV text hash, not stdout text guesses.
+     Add pinned/RAM/transient/GGUF, mixed source and stream_all unrouted copies;
+     issuer-thread copy recording followed by join; MMQ with zero products and
+     built=true; all seven loaded pairs with their ACTUAL metadata geometry.
+     Negatives: absent env/0 no allocations/clocks/output; '',00,2,true invalid;
+     n bounds/chunk discontinuity/oversize; duplicate/missing layer; ne<0/ne>T;
+     T*K sum mismatch; duplicate/unrouted call; missing/extra GU or Down;
+     resident copy; streamed missing/duplicate/wrong-byte/wrong-source copy;
+     planned copy not executed; unsupported pair/non-native/fused/peer/build;
+     incomplete request/early destructor; allocation and 32MiB cap fault paths.
+     Cap test can use alternating source/ne bins across bounded tiny chunks
+     (n still fixed32768) to reach output cap without a GPU or input payload.
+     Require all invalid cases produce no prefill_route_layer lines and one
+     invalid receipt; subprocess fatal_receipt tests require no destructor/replay
+     claim. Instrument allocation and Clock method availability in root driver
+     or inspect off-path object; do not replace the actual aggregation engine.
+  3. Root-only SYCL compile using frozen libraries plus fresh caller object,
+     then serial diagnostic first-check environment per AGENTS and safe runtime
+     settings. Keep service/transfer/phase flags absent when learning histogram;
+     this switch must not enable queue profiling or hundreds of thousands of
+     phase markers. Verify command/wait count against off path in a small owned
+     qualification, then >=32K fixture with unchanged default route/settings.
+  4. Compare clean absent-env vs exact0 outputs/token/head/state fingerprints,
+     then exact1 accounting against route IDs/transfer totals/GU+Down exposure.
+     Test issuer inline/threaded, partial final chunk, all-resident, streamed
+     pinned, real stager and MMQ; unsupported paths must fail census closed while
+     leaving original model dispatch intact. Fault/early-stop gate requires no
+     valid histogram and no unsafe destruction/replay. Do not treat logging run
+     as speed evidence. Retain individual receipts plus source/binary/env/input
+     identities; runtime manifest SHA and full-context validation remain root.
+
+Direct handoff: implementation ready for root static review and serial CPU /
+SYCL qualification. No execution PASS, timing, optimization, adoption, capacity
+join, full-context model result or default machine-code equivalence is claimed.

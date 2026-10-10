@@ -1,0 +1,33 @@
+{
+  "created_utc": "2026-10-10T12:49:42.546856+00:00",
+  "reports": [
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round261-gpu-iq-capacity-receipt-independent-audit.txt",
+      "bytes": 9063,
+      "sha256": "dd8fb10d97f3a612cc22fd813e5eace806718d20a0fab37103d433471e01a574",
+      "agent": "/root/research_bottleneck_evidence_audit_v203",
+      "model": "gpt-6-luna",
+      "scope": "Independent actual GPU IQ capacity receipt coverage/units/production comparability",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round262-component-capacity-architecture-budget.txt",
+      "bytes": 8343,
+      "sha256": "76b55b0248bd0c4a1f3ccb6393be8d374f9e7f0cf9291b891ce3d4fabd6d2f36",
+      "agent": "/root/research_native_iq4nl_esimd_k640_v202",
+      "model": "gpt-6-luna",
+      "scope": "Conditional component/workload byte/expansion/placement architecture budget",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    }
+  ],
+  "corrections": {
+    "R261": "147 samples and checked-half counts/coverage accepted. Standalone O2 generic submit+wait rate only; production O3/route/bytes/critical-path join is absent. Logical bytes are not physical DRAM counters. No GPU fault observed only in the recorded closed intervals.",
+    "R262": "Arithmetic and conditional scope accepted. The phrase uninstrumented timeline is too strong: a qualified instrumented timeline can establish dependencies/overlap; separate clean samples establish latency. Dequant median multiplication is a conditional generic exposure estimate, not a hard maximum or current critical-path time."
+  },
+  "registry_identity": {
+    "bytes": 271763,
+    "sha256": "9b377ef83d9e071f17f4fe54ad576b1d0b2e113f18363e9661ed1bcf1b24cd35"
+  }
+}
