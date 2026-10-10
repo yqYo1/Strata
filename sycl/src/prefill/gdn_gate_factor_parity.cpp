@@ -22,6 +22,10 @@
 #include <string>
 #include <vector>
 
+#if !defined(_WIN32)
+extern char** environ;
+#endif
+
 namespace {
 constexpr size_t Heads=48, Keys=16, Width=128, Channels=10240;
 constexpr size_t State=Width*Heads*Width, History=Channels*3, Guard=32;
@@ -295,8 +299,13 @@ int main(int argc,char** argv) {
             require(argc==7&&!std::strcmp(argv[3],"--chunk")&&!std::strcmp(argv[5],"--repeats"),"usage: --bench 32768 --chunk divisor1..8192 --repeats3..9");
             total=decimal(argv[2],32768);cap=decimal(argv[4],8192);repeats=decimal(argv[6],9);
             require(total==32768&&cap>0&&32768%cap==0&&repeats>=3,"bench admission");
-            for(const char* name:{"STRATA_TRACE","STRATA_PREFILL_TIMING","UR_LOG_LOADER","UR_LOG_LEVEL_ZERO","UR_LOG_TRACING","UR_ENABLE_LAYERS","ZE_DEBUG","ZE_ENABLE_VALIDATION_LAYER","ZE_ENABLE_PARAMETER_VALIDATION","SYCL_PI_TRACE","SYCL_UR_TRACE","SYCL_TRACE","LD_PRELOAD","LD_DEBUG"})
+            for(const char* name:{"STRATA_TRACE","STRATA_PREFILL_TIMING","UR_LOG_LOADER","UR_LOG_LEVEL_ZERO","UR_LOG_TRACING","UR_ENABLE_LAYERS","ZE_DEBUG","ZE_ENABLE_VALIDATION_LAYER","ZE_ENABLE_PARAMETER_VALIDATION","SYCL_PI_TRACE","SYCL_UR_TRACE","SYCL_TRACE","LD_PRELOAD","LD_DEBUG","ZEL_ENABLE_LOADER_LOGGING","ZEL_LOADER_LOGGING_LEVEL","ZEL_LOADER_LOGGING_ENABLE_SUCCESS_PRINT","ZEL_LOADER_LOG_CONSOLE","ZE_ENABLE_LOADER_DEBUG_TRACE"})
                 require(std::getenv(name)==nullptr,"bench requires clean tracing/validation/loader environment");
+#if !defined(_WIN32)
+            // Reject inherited loader diagnostics, including unknown/future ZEL names.
+            for(char** variable=environ;variable&&*variable;++variable)
+                require(std::strncmp(*variable,"ZEL_",4)!=0,"bench rejects all inherited ZEL loader settings");
+#endif
         } else if(argc>1) {
             require(argc==7&&!std::strcmp(argv[1],"--prefix")&&!std::strcmp(argv[3],"--chunk")&&!std::strcmp(argv[5],"--tail"),"usage: --prefix 32768|262144 --chunk 1..8192 --tail 0|1|4");
             total=decimal(argv[2],262144);cap=decimal(argv[4],8192);endpoint=decimal(argv[6],4);
