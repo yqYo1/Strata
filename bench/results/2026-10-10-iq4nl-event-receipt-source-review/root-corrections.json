@@ -1,0 +1,28 @@
+{
+  "original_draft_commit": "a37cd0eecaddf20f93cd7718b0eafc5d6b4af370",
+  "original_handoff_sha256": "1cdc62f90aaaa3ed72115c18f1883e1cf92ef90397f697a128a5ba282deae1f2",
+  "notes": [
+    "Root removed the added outer host callable to preserve original kernel-name lexical scope. Binding the direct submit return occurs only in the dedicated ON test build; inactive ON now binds but does not retain. Default OFF retains original submit tokens.",
+    "Actual device profiling aspect and timer resolution admitted/recorded before run USM allocation. Equality/zero profile intervals permitted; timestamps same backend only.",
+    "Serial wrap now sticky invalid. No event/USM release on capture failure before known completion.",
+    "No compile/runtime/profile-performance/default-object/fullKV/adoption proof yet. R179 returned source gate proposal; loss/nesting/query-error tests pending."
+  ],
+  "root_source_pins": {
+    "sycl/src/kernels/cuda/iq_kernels.dp.cpp": {
+      "bytes": 269005,
+      "sha256": "cc5080af0c9e341a69edc423c272726922c95985aa7d3125cd1b344a06ad2b12"
+    },
+    "sycl/src/prefill/iq4nl_event_receipt.hpp": {
+      "bytes": 2756,
+      "sha256": "5a194e5ad480ae36c63e164c1ae0de51b828919a7aade112ddd29e303c3e0ef0"
+    },
+    "sycl/src/kernels/prefill_iq4nl_parity.cpp": {
+      "bytes": 15812,
+      "sha256": "5ec6f31d1eedcc94e5d5c629e818ae87d2f3bc3cbf7ce3575eb6688842a054eb"
+    },
+    "sycl/CMakeLists.txt": {
+      "bytes": 27846,
+      "sha256": "27a2e7ec5150cf09e2f1814cb840743d0cff00e013c251297728241f65b717d7"
+    }
+  }
+}

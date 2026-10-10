@@ -4311,7 +4311,7 @@ void iq_dequant_f16_prefill_iq4nl(int type, const void* src, int64_t n,
     auto exp_props = sycl::ext::oneapi::experimental::properties{};
     dpct::has_capability_or_fail(strata::q_of(stream)->get_device(), {sycl::aspect::fp16});
 #ifdef STRATA_SYCL_PREFILL_IQ4NL_EVENT_RECEIPT
-    detail::iq4nl_receipt_submit([&]() { return
+    auto receipt_event =
 #endif
     strata::q_of(stream)->submit([&](sycl::handler &cgh) {
         cgh.parallel_for<dpct_kernel_name<class prefill_iq4nl_flat_kernel, sycl::half>>(
@@ -4324,7 +4324,7 @@ void iq_dequant_f16_prefill_iq4nl(int type, const void* src, int64_t n,
             });
     });
 #ifdef STRATA_SYCL_PREFILL_IQ4NL_EVENT_RECEIPT
-    }, detail::Iq4nlArm::private_down, type, n, stream, src, dst);
+    detail::iq4nl_receipt_record(receipt_event, detail::Iq4nlArm::private_down, type, n, stream, src, dst);
 #endif
     check("iq_dequant_f16");
 }
@@ -4341,7 +4341,7 @@ void iq_dequant_f16(int t, const void* src, int64_t n, uint16_t* dst, void* stre
             {sycl::aspect::fp16});
 
 #ifdef STRATA_SYCL_PREFILL_IQ4NL_EVENT_RECEIPT
-    detail::iq4nl_receipt_submit([&]() { return
+    auto receipt_event =
 #endif
         strata::q_of(stream)
             ->submit([&](sycl::handler &cgh) {
@@ -4357,7 +4357,7 @@ void iq_dequant_f16(int t, const void* src, int64_t n, uint16_t* dst, void* stre
                     });
             });
 #ifdef STRATA_SYCL_PREFILL_IQ4NL_EVENT_RECEIPT
-    }, detail::Iq4nlArm::generic, t, n, stream, src, dst);
+    detail::iq4nl_receipt_record(receipt_event, detail::Iq4nlArm::generic, t, n, stream, src, dst);
 #endif
     }
     check("iq_dequant_f16");

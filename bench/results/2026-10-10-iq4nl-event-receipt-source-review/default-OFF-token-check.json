@@ -1,0 +1,20 @@
+{
+  "method": "Strip only new exact receipt #ifdef blocks, then compare C++ lexical tokens (literals retained, comments/whitespace ignored); this is not full compiler preprocessing or binary identity.",
+  "base": "2ab09413117044d7499ac6acc6c12db404024f9d",
+  "paths": {
+    "sycl/src/kernels/cuda/iq_kernels.dp.cpp": {
+      "tokens": 59448,
+      "exact_source_after_guard_removal": true,
+      "lexical_token_match": true
+    },
+    "sycl/src/kernels/prefill_iq4nl_parity.cpp": {
+      "tokens": 3325,
+      "exact_source_after_guard_removal": false,
+      "lexical_token_match": true
+    }
+  },
+  "CMake_baseline_prefix_exact": true,
+  "production_prefill_bytes_exact": true,
+  "binary_identity_qualified": false,
+  "runtime_qualified": false
+}

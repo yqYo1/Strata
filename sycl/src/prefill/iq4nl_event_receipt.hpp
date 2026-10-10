@@ -7,7 +7,6 @@
 #include <cstddef>
 #include <optional>
 #include <stdexcept>
-#include <utility>
 namespace strata::kernels::detail {
 enum class Iq4nlArm : unsigned { generic, private_down };
 struct Iq4nlReceipt {
@@ -27,6 +26,7 @@ struct Iq4nlReceiptSink {
     bool invalid=false;
     void retain(const sycl::event& event, Iq4nlArm arm, int type, int64_t n,
                 void* stream, const void* src, uint16_t* dst) noexcept {
+        if(serial==UINT64_MAX) {invalid=true;return;}
         const uint64_t call=++serial;
         if(count==capacity) {invalid=true;return;}
         auto& slot=slots[count++];
@@ -54,15 +54,14 @@ public:
     Iq4nlReceiptScope(const Iq4nlReceiptScope&)=delete;
     Iq4nlReceiptScope& operator=(const Iq4nlReceiptScope&)=delete;
 };
-// The inactive path does not bind/retain an event or resolve the queue again.
-// Submit exceptions still reach the fixture's existing fail-stop boundary.
-template<class Submit>
-void iq4nl_receipt_submit(Submit&& submit, Iq4nlArm arm, int type, int64_t n,
-                          void* stream, const void* src, uint16_t* dst) {
-    auto* sink=iq4nl_receipt_sink();
-    if(!sink) {submit();return;}
-    auto event=submit();
-    sink->retain(event,arm,type,n,stream,src,dst);
+// This dedicated ON test build binds the exact submit return without a new
+// lexical scope around the original kernel-name class. OFF has no binding.
+// With no sink this does not retain an event or resolve the queue again.
+inline void iq4nl_receipt_record(const sycl::event& event, Iq4nlArm arm,
+                                 int type, int64_t n, void* stream,
+                                 const void* src, uint16_t* dst) noexcept {
+    if(auto* sink=iq4nl_receipt_sink())
+        sink->retain(event,arm,type,n,stream,src,dst);
 }
 } // namespace strata::kernels::detail
 #endif

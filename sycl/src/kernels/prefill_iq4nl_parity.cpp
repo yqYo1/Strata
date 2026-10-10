@@ -224,7 +224,9 @@ int main(int argc,char** argv) {
         identity(q);
 #ifdef STRATA_SYCL_PREFILL_IQ4NL_EVENT_RECEIPT
         require(q.has_property<sycl::property::queue::enable_profiling>(),"receipt requires profiling queue");
-        std::puts("RECEIPT_QUEUE,profiling=1,in_order=1,backend=level_zero");
+        require(q.get_device().has(sycl::aspect::queue_profiling),"receipt requires device profiling aspect");
+        const auto resolution=q.get_device().get_info<sycl::info::device::profiling_timer_resolution>();
+        std::printf("RECEIPT_QUEUE,profiling=1,in_order=1,backend=level_zero,resolution_ns=%zu\n",size_t(resolution));
         require(std::fflush(stdout)==0,"receipt queue flush");
 #endif
         run(q,async);
