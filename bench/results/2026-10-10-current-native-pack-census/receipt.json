@@ -1,0 +1,3273 @@
+{
+  "created_utc": "2026-10-10T11:31:20.365838+00:00",
+  "passed": true,
+  "scope": "Metadata-only census of current local native pack and primary GGUF header. No tensor payload, engine execution, GPU state or performance measurement. This is not an attestation that a model run loaded this pack.",
+  "command": [
+    "python3",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/census_current_native_pack_headers_v1.py"
+  ],
+  "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+  "pid": 1741014,
+  "boot_id": "0a908c16-e292-4299-80ff-082da39f4bb9",
+  "production_source_commit": "495369cf4dc6e6da564095a1c26504dd3694e3f2",
+  "reader_source": {
+    "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-prefill-service-events-20261010/tools/gguf_reader.py",
+    "bytes": 6143,
+    "sha256": "5ecf739bb3c2f07bc7f889f7f3a455e3dfdb40068409e10781a1a9b2be289b5e"
+  },
+  "layout_source": {
+    "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-prefill-service-events-20261010/src/kernels/cpu/expert_layout.cpp",
+    "bytes": 19318,
+    "sha256": "d0593f30dca73abc637fb4a60e431467110a5f9143788faf590cb47389fa6e7a"
+  },
+  "native_format_source": {
+    "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-prefill-service-events-20261010/src/kernels/cpu/native_expert.cpp",
+    "bytes": 11824,
+    "sha256": "694e86a623889ed03c5157d68f70651692eee9d265d7c2f99d44877ada37a146"
+  },
+  "pack_manifest": {
+    "path": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/native_experts.txt",
+    "bytes": 3304,
+    "sha256": "d9ac2dfa3ee63c55c9c6a6db26f72da0cec0ee41733f007e5cbbbba71617aa5d"
+  },
+  "primary": {
+    "path": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+    "device": 40,
+    "inode": 2640848,
+    "bytes": 54817524224,
+    "mtime_ns": 1791009083688077826,
+    "ctime_ns": 1791009083692077878,
+    "header_parsed_bytes": 11024355,
+    "header_plus_padding_bytes": 11024384,
+    "header_plus_padding_sha256": "d6932b90e1b001f706ee5c8a1aebbab3a8a6ae35892df2fb09af459add1140ef"
+  },
+  "relevant_scalar_metadata": {
+    "qwen4exp.block_count": 48,
+    "qwen4exp.context_length": 262144,
+    "qwen4exp.embedding_length": 2560,
+    "qwen4exp.attention.head_count": 24,
+    "qwen4exp.attention.head_count_kv": 2,
+    "qwen4exp.expert_count": 512,
+    "qwen4exp.expert_used_count": 10,
+    "qwen4exp.attention.key_length": 256,
+    "qwen4exp.attention.value_length": 256,
+    "qwen4exp.expert_feed_forward_length": 640,
+    "qwen4exp.expert_shared_feed_forward_length": 640,
+    "qwen4exp.ssm.conv_kernel": 4,
+    "qwen4exp.ssm.state_size": 128,
+    "qwen4exp.ssm.group_count": 16,
+    "qwen4exp.ssm.time_step_rank": 48,
+    "qwen4exp.ssm.inner_size": 6144,
+    "qwen4exp.rope.dimension_count": 64,
+    "qwen4exp.attention.indexer.head_count": 4,
+    "qwen4exp.attention.indexer.key_length": 128,
+    "qwen4exp.embedding_length_per_layer_input": 160
+  },
+  "full_shard_hash_computed": false,
+  "header_read_budget_bytes": 33554432,
+  "expert_layers": 48,
+  "experts_per_layer": 512,
+  "expert_blobs": 24576,
+  "distinct_paired_formats": 7,
+  "paired_formats": [
+    {
+      "gu_type": 18,
+      "down_type": 20,
+      "layers": [
+        0,
+        7,
+        14,
+        16,
+        18,
+        22,
+        31,
+        33,
+        37,
+        38,
+        41,
+        42,
+        43,
+        46
+      ],
+      "layer_count": 14,
+      "experts": 7168,
+      "bytes_per_expert": 2176000,
+      "all_layer_experts_bytes": 15597568000
+    },
+    {
+      "gu_type": 18,
+      "down_type": 42,
+      "layers": [
+        12,
+        20,
+        30
+      ],
+      "layer_count": 3,
+      "experts": 1536,
+      "bytes_per_expert": 1715200,
+      "all_layer_experts_bytes": 2634547200
+    },
+    {
+      "gu_type": 21,
+      "down_type": 20,
+      "layers": [
+        17,
+        25,
+        27,
+        28,
+        29,
+        35,
+        40,
+        44,
+        45
+      ],
+      "layer_count": 9,
+      "experts": 4608,
+      "bytes_per_expert": 2329600,
+      "all_layer_experts_bytes": 10734796800
+    },
+    {
+      "gu_type": 21,
+      "down_type": 42,
+      "layers": [
+        21
+      ],
+      "layer_count": 1,
+      "experts": 512,
+      "bytes_per_expert": 1868800,
+      "all_layer_experts_bytes": 956825600
+    },
+    {
+      "gu_type": 22,
+      "down_type": 20,
+      "layers": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        9,
+        11,
+        15,
+        19,
+        23,
+        24,
+        26,
+        32,
+        34,
+        39
+      ],
+      "layer_count": 15,
+      "experts": 7680,
+      "bytes_per_expert": 1971200,
+      "all_layer_experts_bytes": 15138816000
+    },
+    {
+      "gu_type": 22,
+      "down_type": 42,
+      "layers": [
+        1,
+        8,
+        10,
+        13,
+        36
+      ],
+      "layer_count": 5,
+      "experts": 2560,
+      "bytes_per_expert": 1510400,
+      "all_layer_experts_bytes": 3866624000
+    },
+    {
+      "gu_type": 23,
+      "down_type": 20,
+      "layers": [
+        47
+      ],
+      "layer_count": 1,
+      "experts": 512,
+      "bytes_per_expert": 2662400,
+      "all_layer_experts_bytes": 1363148800
+    }
+  ],
+  "total_all_layer_packed_bytes": 50292326400,
+  "maximum_packed_blob_bytes": 2662400,
+  "layer_cache_MAXBLOB_times512_bytes": 1363148800,
+  "dequant_FP16_GU_output_bytes_per_expert": 6553600,
+  "dequant_FP16_Down_output_bytes_per_expert": 3276800,
+  "per_layer": [
+    {
+      "layer": 0,
+      "gu_type": 18,
+      "down_type": 20,
+      "packed_offset": 0,
+      "packed_blob_bytes": 2176000,
+      "layer_all_experts_bytes": 1114112000,
+      "roles": [
+        {
+          "role": "gate",
+          "tensor": "blk.0.ffn_gate_exps.weight",
+          "type_id": 18,
+          "type_name": "IQ3_XXS",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 1386491904,
+          "tensor_bytes": 321126400,
+          "bytes_per_expert": 627200,
+          "block_geometry": [
+            256,
+            98
+          ]
+        },
+        {
+          "role": "up",
+          "tensor": "blk.0.ffn_up_exps.weight",
+          "type_id": 18,
+          "type_name": "IQ3_XXS",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 1711166464,
+          "tensor_bytes": 321126400,
+          "bytes_per_expert": 627200,
+          "block_geometry": [
+            256,
+            98
+          ]
+        },
+        {
+          "role": "down",
+          "tensor": "blk.0.ffn_down_exps.weight",
+          "type_id": 20,
+          "type_name": "IQ4_NL",
+          "shape": [
+            640,
+            2560,
+            512
+          ],
+          "absolute_offset": 913711104,
+          "tensor_bytes": 471859200,
+          "bytes_per_expert": 921600,
+          "block_geometry": [
+            32,
+            18
+          ]
+        }
+      ]
+    },
+    {
+      "layer": 1,
+      "gu_type": 22,
+      "down_type": 42,
+      "packed_offset": 1114112000,
+      "packed_blob_bytes": 1510400,
+      "layer_all_experts_bytes": 773324800,
+      "roles": [
+        {
+          "role": "gate",
+          "tensor": "blk.1.ffn_gate_exps.weight",
+          "type_id": 22,
+          "type_name": "IQ2_S",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 2340958080,
+          "tensor_bytes": 268697600,
+          "bytes_per_expert": 524800,
+          "block_geometry": [
+            256,
+            82
+          ]
+        },
+        {
+          "role": "up",
+          "tensor": "blk.1.ffn_up_exps.weight",
+          "type_id": 22,
+          "type_name": "IQ2_S",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 2613152640,
+          "tensor_bytes": 268697600,
+          "bytes_per_expert": 524800,
+          "block_geometry": [
+            256,
+            82
+          ]
+        },
+        {
+          "role": "down",
+          "tensor": "blk.1.ffn_down_exps.weight",
+          "type_id": 42,
+          "type_name": "Q2_0",
+          "shape": [
+            640,
+            2560,
+            512
+          ],
+          "absolute_offset": 2104106880,
+          "tensor_bytes": 235929600,
+          "bytes_per_expert": 460800,
+          "block_geometry": [
+            64,
+            18
+          ]
+        }
+      ]
+    },
+    {
+      "layer": 2,
+      "gu_type": 22,
+      "down_type": 20,
+      "packed_offset": 1887436800,
+      "packed_blob_bytes": 1971200,
+      "layer_all_experts_bytes": 1009254400,
+      "roles": [
+        {
+          "role": "gate",
+          "tensor": "blk.2.ffn_gate_exps.weight",
+          "type_id": 22,
+          "type_name": "IQ2_S",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 3491172096,
+          "tensor_bytes": 268697600,
+          "bytes_per_expert": 524800,
+          "block_geometry": [
+            256,
+            82
+          ]
+        },
+        {
+          "role": "up",
+          "tensor": "blk.2.ffn_up_exps.weight",
+          "type_id": 22,
+          "type_name": "IQ2_S",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 3763417856,
+          "tensor_bytes": 268697600,
+          "bytes_per_expert": 524800,
+          "block_geometry": [
+            256,
+            82
+          ]
+        },
+        {
+          "role": "down",
+          "tensor": "blk.2.ffn_down_exps.weight",
+          "type_id": 20,
+          "type_name": "IQ4_NL",
+          "shape": [
+            640,
+            2560,
+            512
+          ],
+          "absolute_offset": 3018391296,
+          "tensor_bytes": 471859200,
+          "bytes_per_expert": 921600,
+          "block_geometry": [
+            32,
+            18
+          ]
+        }
+      ]
+    },
+    {
+      "layer": 3,
+      "gu_type": 22,
+      "down_type": 20,
+      "packed_offset": 2896691200,
+      "packed_blob_bytes": 1971200,
+      "layer_all_experts_bytes": 1009254400,
+      "roles": [
+        {
+          "role": "gate",
+          "tensor": "blk.3.ffn_gate_exps.weight",
+          "type_id": 22,
+          "type_name": "IQ2_S",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 4573970560,
+          "tensor_bytes": 268697600,
+          "bytes_per_expert": 524800,
+          "block_geometry": [
+            256,
+            82
+          ]
+        },
+        {
+          "role": "up",
+          "tensor": "blk.3.ffn_up_exps.weight",
+          "type_id": 22,
+          "type_name": "IQ2_S",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 4846165120,
+          "tensor_bytes": 268697600,
+          "bytes_per_expert": 524800,
+          "block_geometry": [
+            256,
+            82
+          ]
+        },
+        {
+          "role": "down",
+          "tensor": "blk.3.ffn_down_exps.weight",
+          "type_id": 20,
+          "type_name": "IQ4_NL",
+          "shape": [
+            640,
+            2560,
+            512
+          ],
+          "absolute_offset": 4101189760,
+          "tensor_bytes": 471859200,
+          "bytes_per_expert": 921600,
+          "block_geometry": [
+            32,
+            18
+          ]
+        }
+      ]
+    },
+    {
+      "layer": 4,
+      "gu_type": 22,
+      "down_type": 20,
+      "packed_offset": 3905945600,
+      "packed_blob_bytes": 1971200,
+      "layer_all_experts_bytes": 1009254400,
+      "roles": [
+        {
+          "role": "gate",
+          "tensor": "blk.4.ffn_gate_exps.weight",
+          "type_id": 22,
+          "type_name": "IQ2_S",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 5652709504,
+          "tensor_bytes": 268697600,
+          "bytes_per_expert": 524800,
+          "block_geometry": [
+            256,
+            82
+          ]
+        },
+        {
+          "role": "up",
+          "tensor": "blk.4.ffn_up_exps.weight",
+          "type_id": 22,
+          "type_name": "IQ2_S",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 5925377664,
+          "tensor_bytes": 268697600,
+          "bytes_per_expert": 524800,
+          "block_geometry": [
+            256,
+            82
+          ]
+        },
+        {
+          "role": "down",
+          "tensor": "blk.4.ffn_down_exps.weight",
+          "type_id": 20,
+          "type_name": "IQ4_NL",
+          "shape": [
+            640,
+            2560,
+            512
+          ],
+          "absolute_offset": 5179928704,
+          "tensor_bytes": 471859200,
+          "bytes_per_expert": 921600,
+          "block_geometry": [
+            32,
+            18
+          ]
+        }
+      ]
+    },
+    {
+      "layer": 5,
+      "gu_type": 22,
+      "down_type": 20,
+      "packed_offset": 4915200000,
+      "packed_blob_bytes": 1971200,
+      "layer_all_experts_bytes": 1009254400,
+      "roles": [
+        {
+          "role": "gate",
+          "tensor": "blk.5.ffn_gate_exps.weight",
+          "type_id": 22,
+          "type_name": "IQ2_S",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 6738352640,
+          "tensor_bytes": 268697600,
+          "bytes_per_expert": 524800,
+          "block_geometry": [
+            256,
+            82
+          ]
+        },
+        {
+          "role": "up",
+          "tensor": "blk.5.ffn_up_exps.weight",
+          "type_id": 22,
+          "type_name": "IQ2_S",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 7010547200,
+          "tensor_bytes": 268697600,
+          "bytes_per_expert": 524800,
+          "block_geometry": [
+            256,
+            82
+          ]
+        },
+        {
+          "role": "down",
+          "tensor": "blk.5.ffn_down_exps.weight",
+          "type_id": 20,
+          "type_name": "IQ4_NL",
+          "shape": [
+            640,
+            2560,
+            512
+          ],
+          "absolute_offset": 6265571840,
+          "tensor_bytes": 471859200,
+          "bytes_per_expert": 921600,
+          "block_geometry": [
+            32,
+            18
+          ]
+        }
+      ]
+    },
+    {
+      "layer": 6,
+      "gu_type": 22,
+      "down_type": 20,
+      "packed_offset": 5924454400,
+      "packed_blob_bytes": 1971200,
+      "layer_all_experts_bytes": 1009254400,
+      "roles": [
+        {
+          "role": "gate",
+          "tensor": "blk.6.ffn_gate_exps.weight",
+          "type_id": 22,
+          "type_name": "IQ2_S",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 7819193216,
+          "tensor_bytes": 268697600,
+          "bytes_per_expert": 524800,
+          "block_geometry": [
+            256,
+            82
+          ]
+        },
+        {
+          "role": "up",
+          "tensor": "blk.6.ffn_up_exps.weight",
+          "type_id": 22,
+          "type_name": "IQ2_S",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 8091861376,
+          "tensor_bytes": 268697600,
+          "bytes_per_expert": 524800,
+          "block_geometry": [
+            256,
+            82
+          ]
+        },
+        {
+          "role": "down",
+          "tensor": "blk.6.ffn_down_exps.weight",
+          "type_id": 20,
+          "type_name": "IQ4_NL",
+          "shape": [
+            640,
+            2560,
+            512
+          ],
+          "absolute_offset": 7346412416,
+          "tensor_bytes": 471859200,
+          "bytes_per_expert": 921600,
+          "block_geometry": [
+            32,
+            18
+          ]
+        }
+      ]
+    },
+    {
+      "layer": 7,
+      "gu_type": 18,
+      "down_type": 20,
+      "packed_offset": 6933708800,
+      "packed_blob_bytes": 2176000,
+      "layer_all_experts_bytes": 1114112000,
+      "roles": [
+        {
+          "role": "gate",
+          "tensor": "blk.7.ffn_gate_exps.weight",
+          "type_id": 18,
+          "type_name": "IQ3_XXS",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 8905667840,
+          "tensor_bytes": 321126400,
+          "bytes_per_expert": 627200,
+          "block_geometry": [
+            256,
+            98
+          ]
+        },
+        {
+          "role": "up",
+          "tensor": "blk.7.ffn_up_exps.weight",
+          "type_id": 18,
+          "type_name": "IQ3_XXS",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 9230291200,
+          "tensor_bytes": 321126400,
+          "bytes_per_expert": 627200,
+          "block_geometry": [
+            256,
+            98
+          ]
+        },
+        {
+          "role": "down",
+          "tensor": "blk.7.ffn_down_exps.weight",
+          "type_id": 20,
+          "type_name": "IQ4_NL",
+          "shape": [
+            640,
+            2560,
+            512
+          ],
+          "absolute_offset": 8432887040,
+          "tensor_bytes": 471859200,
+          "bytes_per_expert": 921600,
+          "block_geometry": [
+            32,
+            18
+          ]
+        }
+      ]
+    },
+    {
+      "layer": 8,
+      "gu_type": 22,
+      "down_type": 42,
+      "packed_offset": 8047820800,
+      "packed_blob_bytes": 1510400,
+      "layer_all_experts_bytes": 773324800,
+      "roles": [
+        {
+          "role": "gate",
+          "tensor": "blk.8.ffn_gate_exps.weight",
+          "type_id": 22,
+          "type_name": "IQ2_S",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 9848737024,
+          "tensor_bytes": 268697600,
+          "bytes_per_expert": 524800,
+          "block_geometry": [
+            256,
+            82
+          ]
+        },
+        {
+          "role": "up",
+          "tensor": "blk.8.ffn_up_exps.weight",
+          "type_id": 22,
+          "type_name": "IQ2_S",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 10120931584,
+          "tensor_bytes": 268697600,
+          "bytes_per_expert": 524800,
+          "block_geometry": [
+            256,
+            82
+          ]
+        },
+        {
+          "role": "down",
+          "tensor": "blk.8.ffn_down_exps.weight",
+          "type_id": 42,
+          "type_name": "Q2_0",
+          "shape": [
+            640,
+            2560,
+            512
+          ],
+          "absolute_offset": 9611885824,
+          "tensor_bytes": 235929600,
+          "bytes_per_expert": 460800,
+          "block_geometry": [
+            64,
+            18
+          ]
+        }
+      ]
+    },
+    {
+      "layer": 9,
+      "gu_type": 22,
+      "down_type": 20,
+      "packed_offset": 8821145600,
+      "packed_blob_bytes": 1971200,
+      "layer_all_experts_bytes": 1009254400,
+      "roles": [
+        {
+          "role": "gate",
+          "tensor": "blk.9.ffn_gate_exps.weight",
+          "type_id": 22,
+          "type_name": "IQ2_S",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 10929646720,
+          "tensor_bytes": 268697600,
+          "bytes_per_expert": 524800,
+          "block_geometry": [
+            256,
+            82
+          ]
+        },
+        {
+          "role": "up",
+          "tensor": "blk.9.ffn_up_exps.weight",
+          "type_id": 22,
+          "type_name": "IQ2_S",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 11201892480,
+          "tensor_bytes": 268697600,
+          "bytes_per_expert": 524800,
+          "block_geometry": [
+            256,
+            82
+          ]
+        },
+        {
+          "role": "down",
+          "tensor": "blk.9.ffn_down_exps.weight",
+          "type_id": 20,
+          "type_name": "IQ4_NL",
+          "shape": [
+            640,
+            2560,
+            512
+          ],
+          "absolute_offset": 10456865920,
+          "tensor_bytes": 471859200,
+          "bytes_per_expert": 921600,
+          "block_geometry": [
+            32,
+            18
+          ]
+        }
+      ]
+    },
+    {
+      "layer": 10,
+      "gu_type": 22,
+      "down_type": 42,
+      "packed_offset": 9830400000,
+      "packed_blob_bytes": 1510400,
+      "layer_all_experts_bytes": 773324800,
+      "roles": [
+        {
+          "role": "gate",
+          "tensor": "blk.10.ffn_gate_exps.weight",
+          "type_id": 22,
+          "type_name": "IQ2_S",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 11779255296,
+          "tensor_bytes": 268697600,
+          "bytes_per_expert": 524800,
+          "block_geometry": [
+            256,
+            82
+          ]
+        },
+        {
+          "role": "up",
+          "tensor": "blk.10.ffn_up_exps.weight",
+          "type_id": 22,
+          "type_name": "IQ2_S",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 12051501056,
+          "tensor_bytes": 268697600,
+          "bytes_per_expert": 524800,
+          "block_geometry": [
+            256,
+            82
+          ]
+        },
+        {
+          "role": "down",
+          "tensor": "blk.10.ffn_down_exps.weight",
+          "type_id": 42,
+          "type_name": "Q2_0",
+          "shape": [
+            640,
+            2560,
+            512
+          ],
+          "absolute_offset": 11542404096,
+          "tensor_bytes": 235929600,
+          "bytes_per_expert": 460800,
+          "block_geometry": [
+            64,
+            18
+          ]
+        }
+      ]
+    },
+    {
+      "layer": 11,
+      "gu_type": 22,
+      "down_type": 20,
+      "packed_offset": 10603724800,
+      "packed_blob_bytes": 1971200,
+      "layer_all_experts_bytes": 1009254400,
+      "roles": [
+        {
+          "role": "gate",
+          "tensor": "blk.11.ffn_gate_exps.weight",
+          "type_id": 22,
+          "type_name": "IQ2_S",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 12866495360,
+          "tensor_bytes": 268697600,
+          "bytes_per_expert": 524800,
+          "block_geometry": [
+            256,
+            82
+          ]
+        },
+        {
+          "role": "up",
+          "tensor": "blk.11.ffn_up_exps.weight",
+          "type_id": 22,
+          "type_name": "IQ2_S",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 13138741120,
+          "tensor_bytes": 268697600,
+          "bytes_per_expert": 524800,
+          "block_geometry": [
+            256,
+            82
+          ]
+        },
+        {
+          "role": "down",
+          "tensor": "blk.11.ffn_down_exps.weight",
+          "type_id": 20,
+          "type_name": "IQ4_NL",
+          "shape": [
+            640,
+            2560,
+            512
+          ],
+          "absolute_offset": 12393714560,
+          "tensor_bytes": 471859200,
+          "bytes_per_expert": 921600,
+          "block_geometry": [
+            32,
+            18
+          ]
+        }
+      ]
+    },
+    {
+      "layer": 12,
+      "gu_type": 18,
+      "down_type": 42,
+      "packed_offset": 11612979200,
+      "packed_blob_bytes": 1715200,
+      "layer_all_experts_bytes": 878182400,
+      "roles": [
+        {
+          "role": "gate",
+          "tensor": "blk.12.ffn_gate_exps.weight",
+          "type_id": 18,
+          "type_name": "IQ3_XXS",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 13701750144,
+          "tensor_bytes": 321126400,
+          "bytes_per_expert": 627200,
+          "block_geometry": [
+            256,
+            98
+          ]
+        },
+        {
+          "role": "up",
+          "tensor": "blk.12.ffn_up_exps.weight",
+          "type_id": 18,
+          "type_name": "IQ3_XXS",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 14026847104,
+          "tensor_bytes": 321126400,
+          "bytes_per_expert": 627200,
+          "block_geometry": [
+            256,
+            98
+          ]
+        },
+        {
+          "role": "down",
+          "tensor": "blk.12.ffn_down_exps.weight",
+          "type_id": 42,
+          "type_name": "Q2_0",
+          "shape": [
+            640,
+            2560,
+            512
+          ],
+          "absolute_offset": 13464898944,
+          "tensor_bytes": 235929600,
+          "bytes_per_expert": 460800,
+          "block_geometry": [
+            64,
+            18
+          ]
+        }
+      ]
+    },
+    {
+      "layer": 13,
+      "gu_type": 22,
+      "down_type": 42,
+      "packed_offset": 12491161600,
+      "packed_blob_bytes": 1510400,
+      "layer_all_experts_bytes": 773324800,
+      "roles": [
+        {
+          "role": "gate",
+          "tensor": "blk.13.ffn_gate_exps.weight",
+          "type_id": 22,
+          "type_name": "IQ2_S",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 14649780480,
+          "tensor_bytes": 268697600,
+          "bytes_per_expert": 524800,
+          "block_geometry": [
+            256,
+            82
+          ]
+        },
+        {
+          "role": "up",
+          "tensor": "blk.13.ffn_up_exps.weight",
+          "type_id": 22,
+          "type_name": "IQ2_S",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 14922026240,
+          "tensor_bytes": 268697600,
+          "bytes_per_expert": 524800,
+          "block_geometry": [
+            256,
+            82
+          ]
+        },
+        {
+          "role": "down",
+          "tensor": "blk.13.ffn_down_exps.weight",
+          "type_id": 42,
+          "type_name": "Q2_0",
+          "shape": [
+            640,
+            2560,
+            512
+          ],
+          "absolute_offset": 14412929280,
+          "tensor_bytes": 235929600,
+          "bytes_per_expert": 460800,
+          "block_geometry": [
+            64,
+            18
+          ]
+        }
+      ]
+    },
+    {
+      "layer": 14,
+      "gu_type": 18,
+      "down_type": 20,
+      "packed_offset": 13264486400,
+      "packed_blob_bytes": 2176000,
+      "layer_all_experts_bytes": 1114112000,
+      "roles": [
+        {
+          "role": "gate",
+          "tensor": "blk.14.ffn_gate_exps.weight",
+          "type_id": 18,
+          "type_name": "IQ3_XXS",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 15736711296,
+          "tensor_bytes": 321126400,
+          "bytes_per_expert": 627200,
+          "block_geometry": [
+            256,
+            98
+          ]
+        },
+        {
+          "role": "up",
+          "tensor": "blk.14.ffn_up_exps.weight",
+          "type_id": 18,
+          "type_name": "IQ3_XXS",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 16061334656,
+          "tensor_bytes": 321126400,
+          "bytes_per_expert": 627200,
+          "block_geometry": [
+            256,
+            98
+          ]
+        },
+        {
+          "role": "down",
+          "tensor": "blk.14.ffn_down_exps.weight",
+          "type_id": 20,
+          "type_name": "IQ4_NL",
+          "shape": [
+            640,
+            2560,
+            512
+          ],
+          "absolute_offset": 15263930496,
+          "tensor_bytes": 471859200,
+          "bytes_per_expert": 921600,
+          "block_geometry": [
+            32,
+            18
+          ]
+        }
+      ]
+    },
+    {
+      "layer": 15,
+      "gu_type": 22,
+      "down_type": 20,
+      "packed_offset": 14378598400,
+      "packed_blob_bytes": 1971200,
+      "layer_all_experts_bytes": 1009254400,
+      "roles": [
+        {
+          "role": "gate",
+          "tensor": "blk.15.ffn_gate_exps.weight",
+          "type_id": 22,
+          "type_name": "IQ2_S",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 16923842560,
+          "tensor_bytes": 268697600,
+          "bytes_per_expert": 524800,
+          "block_geometry": [
+            256,
+            82
+          ]
+        },
+        {
+          "role": "up",
+          "tensor": "blk.15.ffn_up_exps.weight",
+          "type_id": 22,
+          "type_name": "IQ2_S",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 17196510720,
+          "tensor_bytes": 268697600,
+          "bytes_per_expert": 524800,
+          "block_geometry": [
+            256,
+            82
+          ]
+        },
+        {
+          "role": "down",
+          "tensor": "blk.15.ffn_down_exps.weight",
+          "type_id": 20,
+          "type_name": "IQ4_NL",
+          "shape": [
+            640,
+            2560,
+            512
+          ],
+          "absolute_offset": 16451061760,
+          "tensor_bytes": 471859200,
+          "bytes_per_expert": 921600,
+          "block_geometry": [
+            32,
+            18
+          ]
+        }
+      ]
+    },
+    {
+      "layer": 16,
+      "gu_type": 18,
+      "down_type": 20,
+      "packed_offset": 15387852800,
+      "packed_blob_bytes": 2176000,
+      "layer_all_experts_bytes": 1114112000,
+      "roles": [
+        {
+          "role": "gate",
+          "tensor": "blk.16.ffn_gate_exps.weight",
+          "type_id": 18,
+          "type_name": "IQ3_XXS",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 17998457344,
+          "tensor_bytes": 321126400,
+          "bytes_per_expert": 627200,
+          "block_geometry": [
+            256,
+            98
+          ]
+        },
+        {
+          "role": "up",
+          "tensor": "blk.16.ffn_up_exps.weight",
+          "type_id": 18,
+          "type_name": "IQ3_XXS",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 18323131904,
+          "tensor_bytes": 321126400,
+          "bytes_per_expert": 627200,
+          "block_geometry": [
+            256,
+            98
+          ]
+        },
+        {
+          "role": "down",
+          "tensor": "blk.16.ffn_down_exps.weight",
+          "type_id": 20,
+          "type_name": "IQ4_NL",
+          "shape": [
+            640,
+            2560,
+            512
+          ],
+          "absolute_offset": 17525676544,
+          "tensor_bytes": 471859200,
+          "bytes_per_expert": 921600,
+          "block_geometry": [
+            32,
+            18
+          ]
+        }
+      ]
+    },
+    {
+      "layer": 17,
+      "gu_type": 21,
+      "down_type": 20,
+      "packed_offset": 16501964800,
+      "packed_blob_bytes": 2329600,
+      "layer_all_experts_bytes": 1192755200,
+      "roles": [
+        {
+          "role": "gate",
+          "tensor": "blk.17.ffn_gate_exps.weight",
+          "type_id": 21,
+          "type_name": "IQ3_S",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 19192385920,
+          "tensor_bytes": 360448000,
+          "bytes_per_expert": 704000,
+          "block_geometry": [
+            256,
+            110
+          ]
+        },
+        {
+          "role": "up",
+          "tensor": "blk.17.ffn_up_exps.weight",
+          "type_id": 21,
+          "type_name": "IQ3_S",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 19556330880,
+          "tensor_bytes": 360448000,
+          "bytes_per_expert": 704000,
+          "block_geometry": [
+            256,
+            110
+          ]
+        },
+        {
+          "role": "down",
+          "tensor": "blk.17.ffn_down_exps.weight",
+          "type_id": 20,
+          "type_name": "IQ4_NL",
+          "shape": [
+            640,
+            2560,
+            512
+          ],
+          "absolute_offset": 18719605120,
+          "tensor_bytes": 471859200,
+          "bytes_per_expert": 921600,
+          "block_geometry": [
+            32,
+            18
+          ]
+        }
+      ]
+    },
+    {
+      "layer": 18,
+      "gu_type": 18,
+      "down_type": 20,
+      "packed_offset": 17694720000,
+      "packed_blob_bytes": 2176000,
+      "layer_all_experts_bytes": 1114112000,
+      "roles": [
+        {
+          "role": "gate",
+          "tensor": "blk.18.ffn_gate_exps.weight",
+          "type_id": 18,
+          "type_name": "IQ3_XXS",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 20460359936,
+          "tensor_bytes": 321126400,
+          "bytes_per_expert": 627200,
+          "block_geometry": [
+            256,
+            98
+          ]
+        },
+        {
+          "role": "up",
+          "tensor": "blk.18.ffn_up_exps.weight",
+          "type_id": 18,
+          "type_name": "IQ3_XXS",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 20785239296,
+          "tensor_bytes": 321126400,
+          "bytes_per_expert": 627200,
+          "block_geometry": [
+            256,
+            98
+          ]
+        },
+        {
+          "role": "down",
+          "tensor": "blk.18.ffn_down_exps.weight",
+          "type_id": 20,
+          "type_name": "IQ4_NL",
+          "shape": [
+            640,
+            2560,
+            512
+          ],
+          "absolute_offset": 19987579136,
+          "tensor_bytes": 471859200,
+          "bytes_per_expert": 921600,
+          "block_geometry": [
+            32,
+            18
+          ]
+        }
+      ]
+    },
+    {
+      "layer": 19,
+      "gu_type": 22,
+      "down_type": 20,
+      "packed_offset": 18808832000,
+      "packed_blob_bytes": 1971200,
+      "layer_all_experts_bytes": 1009254400,
+      "roles": [
+        {
+          "role": "gate",
+          "tensor": "blk.19.ffn_gate_exps.weight",
+          "type_id": 22,
+          "type_name": "IQ2_S",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 21654710400,
+          "tensor_bytes": 268697600,
+          "bytes_per_expert": 524800,
+          "block_geometry": [
+            256,
+            82
+          ]
+        },
+        {
+          "role": "up",
+          "tensor": "blk.19.ffn_up_exps.weight",
+          "type_id": 22,
+          "type_name": "IQ2_S",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 21927378560,
+          "tensor_bytes": 268697600,
+          "bytes_per_expert": 524800,
+          "block_geometry": [
+            256,
+            82
+          ]
+        },
+        {
+          "role": "down",
+          "tensor": "blk.19.ffn_down_exps.weight",
+          "type_id": 20,
+          "type_name": "IQ4_NL",
+          "shape": [
+            640,
+            2560,
+            512
+          ],
+          "absolute_offset": 21181929600,
+          "tensor_bytes": 471859200,
+          "bytes_per_expert": 921600,
+          "block_geometry": [
+            32,
+            18
+          ]
+        }
+      ]
+    },
+    {
+      "layer": 20,
+      "gu_type": 18,
+      "down_type": 42,
+      "packed_offset": 19818086400,
+      "packed_blob_bytes": 1715200,
+      "layer_all_experts_bytes": 878182400,
+      "roles": [
+        {
+          "role": "gate",
+          "tensor": "blk.20.ffn_gate_exps.weight",
+          "type_id": 18,
+          "type_name": "IQ3_XXS",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 22498415744,
+          "tensor_bytes": 321126400,
+          "bytes_per_expert": 627200,
+          "block_geometry": [
+            256,
+            98
+          ]
+        },
+        {
+          "role": "up",
+          "tensor": "blk.20.ffn_up_exps.weight",
+          "type_id": 18,
+          "type_name": "IQ3_XXS",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 22823039104,
+          "tensor_bytes": 321126400,
+          "bytes_per_expert": 627200,
+          "block_geometry": [
+            256,
+            98
+          ]
+        },
+        {
+          "role": "down",
+          "tensor": "blk.20.ffn_down_exps.weight",
+          "type_id": 42,
+          "type_name": "Q2_0",
+          "shape": [
+            640,
+            2560,
+            512
+          ],
+          "absolute_offset": 22261564544,
+          "tensor_bytes": 235929600,
+          "bytes_per_expert": 460800,
+          "block_geometry": [
+            64,
+            18
+          ]
+        }
+      ]
+    },
+    {
+      "layer": 21,
+      "gu_type": 21,
+      "down_type": 42,
+      "packed_offset": 20696268800,
+      "packed_blob_bytes": 1868800,
+      "layer_all_experts_bytes": 956825600,
+      "roles": [
+        {
+          "role": "gate",
+          "tensor": "blk.21.ffn_gate_exps.weight",
+          "type_id": 21,
+          "type_name": "IQ3_S",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 23456363520,
+          "tensor_bytes": 360448000,
+          "bytes_per_expert": 704000,
+          "block_geometry": [
+            256,
+            110
+          ]
+        },
+        {
+          "role": "up",
+          "tensor": "blk.21.ffn_up_exps.weight",
+          "type_id": 21,
+          "type_name": "IQ3_S",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 23820359680,
+          "tensor_bytes": 360448000,
+          "bytes_per_expert": 704000,
+          "block_geometry": [
+            256,
+            110
+          ]
+        },
+        {
+          "role": "down",
+          "tensor": "blk.21.ffn_down_exps.weight",
+          "type_id": 42,
+          "type_name": "Q2_0",
+          "shape": [
+            640,
+            2560,
+            512
+          ],
+          "absolute_offset": 23219512320,
+          "tensor_bytes": 235929600,
+          "bytes_per_expert": 460800,
+          "block_geometry": [
+            64,
+            18
+          ]
+        }
+      ]
+    },
+    {
+      "layer": 22,
+      "gu_type": 18,
+      "down_type": 20,
+      "packed_offset": 21653094400,
+      "packed_blob_bytes": 2176000,
+      "layer_all_experts_bytes": 1114112000,
+      "roles": [
+        {
+          "role": "gate",
+          "tensor": "blk.22.ffn_gate_exps.weight",
+          "type_id": 18,
+          "type_name": "IQ3_XXS",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 24722740096,
+          "tensor_bytes": 321126400,
+          "bytes_per_expert": 627200,
+          "block_geometry": [
+            256,
+            98
+          ]
+        },
+        {
+          "role": "up",
+          "tensor": "blk.22.ffn_up_exps.weight",
+          "type_id": 18,
+          "type_name": "IQ3_XXS",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 25047837056,
+          "tensor_bytes": 321126400,
+          "bytes_per_expert": 627200,
+          "block_geometry": [
+            256,
+            98
+          ]
+        },
+        {
+          "role": "down",
+          "tensor": "blk.22.ffn_down_exps.weight",
+          "type_id": 20,
+          "type_name": "IQ4_NL",
+          "shape": [
+            640,
+            2560,
+            512
+          ],
+          "absolute_offset": 24249959296,
+          "tensor_bytes": 471859200,
+          "bytes_per_expert": 921600,
+          "block_geometry": [
+            32,
+            18
+          ]
+        }
+      ]
+    },
+    {
+      "layer": 23,
+      "gu_type": 22,
+      "down_type": 20,
+      "packed_offset": 22767206400,
+      "packed_blob_bytes": 1971200,
+      "layer_all_experts_bytes": 1009254400,
+      "roles": [
+        {
+          "role": "gate",
+          "tensor": "blk.23.ffn_gate_exps.weight",
+          "type_id": 22,
+          "type_name": "IQ2_S",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 25919315200,
+          "tensor_bytes": 268697600,
+          "bytes_per_expert": 524800,
+          "block_geometry": [
+            256,
+            82
+          ]
+        },
+        {
+          "role": "up",
+          "tensor": "blk.23.ffn_up_exps.weight",
+          "type_id": 22,
+          "type_name": "IQ2_S",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 26191765760,
+          "tensor_bytes": 268697600,
+          "bytes_per_expert": 524800,
+          "block_geometry": [
+            256,
+            82
+          ]
+        },
+        {
+          "role": "down",
+          "tensor": "blk.23.ffn_down_exps.weight",
+          "type_id": 20,
+          "type_name": "IQ4_NL",
+          "shape": [
+            640,
+            2560,
+            512
+          ],
+          "absolute_offset": 25446534400,
+          "tensor_bytes": 471859200,
+          "bytes_per_expert": 921600,
+          "block_geometry": [
+            32,
+            18
+          ]
+        }
+      ]
+    },
+    {
+      "layer": 24,
+      "gu_type": 22,
+      "down_type": 20,
+      "packed_offset": 23776460800,
+      "packed_blob_bytes": 1971200,
+      "layer_all_experts_bytes": 1009254400,
+      "roles": [
+        {
+          "role": "gate",
+          "tensor": "blk.24.ffn_gate_exps.weight",
+          "type_id": 22,
+          "type_name": "IQ2_S",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 26998514944,
+          "tensor_bytes": 268697600,
+          "bytes_per_expert": 524800,
+          "block_geometry": [
+            256,
+            82
+          ]
+        },
+        {
+          "role": "up",
+          "tensor": "blk.24.ffn_up_exps.weight",
+          "type_id": 22,
+          "type_name": "IQ2_S",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 27270709504,
+          "tensor_bytes": 268697600,
+          "bytes_per_expert": 524800,
+          "block_geometry": [
+            256,
+            82
+          ]
+        },
+        {
+          "role": "down",
+          "tensor": "blk.24.ffn_down_exps.weight",
+          "type_id": 20,
+          "type_name": "IQ4_NL",
+          "shape": [
+            640,
+            2560,
+            512
+          ],
+          "absolute_offset": 26525734144,
+          "tensor_bytes": 471859200,
+          "bytes_per_expert": 921600,
+          "block_geometry": [
+            32,
+            18
+          ]
+        }
+      ]
+    },
+    {
+      "layer": 25,
+      "gu_type": 21,
+      "down_type": 20,
+      "packed_offset": 24785715200,
+      "packed_blob_bytes": 2329600,
+      "layer_all_experts_bytes": 1192755200,
+      "roles": [
+        {
+          "role": "gate",
+          "tensor": "blk.25.ffn_gate_exps.weight",
+          "type_id": 21,
+          "type_name": "IQ3_S",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 28087739520,
+          "tensor_bytes": 360448000,
+          "bytes_per_expert": 704000,
+          "block_geometry": [
+            256,
+            110
+          ]
+        },
+        {
+          "role": "up",
+          "tensor": "blk.25.ffn_up_exps.weight",
+          "type_id": 21,
+          "type_name": "IQ3_S",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 28451684480,
+          "tensor_bytes": 360448000,
+          "bytes_per_expert": 704000,
+          "block_geometry": [
+            256,
+            110
+          ]
+        },
+        {
+          "role": "down",
+          "tensor": "blk.25.ffn_down_exps.weight",
+          "type_id": 20,
+          "type_name": "IQ4_NL",
+          "shape": [
+            640,
+            2560,
+            512
+          ],
+          "absolute_offset": 27614958720,
+          "tensor_bytes": 471859200,
+          "bytes_per_expert": 921600,
+          "block_geometry": [
+            32,
+            18
+          ]
+        }
+      ]
+    },
+    {
+      "layer": 26,
+      "gu_type": 22,
+      "down_type": 20,
+      "packed_offset": 25978470400,
+      "packed_blob_bytes": 1971200,
+      "layer_all_experts_bytes": 1009254400,
+      "roles": [
+        {
+          "role": "gate",
+          "tensor": "blk.26.ffn_gate_exps.weight",
+          "type_id": 22,
+          "type_name": "IQ2_S",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 29357200896,
+          "tensor_bytes": 268697600,
+          "bytes_per_expert": 524800,
+          "block_geometry": [
+            256,
+            82
+          ]
+        },
+        {
+          "role": "up",
+          "tensor": "blk.26.ffn_up_exps.weight",
+          "type_id": 22,
+          "type_name": "IQ2_S",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 29629869056,
+          "tensor_bytes": 268697600,
+          "bytes_per_expert": 524800,
+          "block_geometry": [
+            256,
+            82
+          ]
+        },
+        {
+          "role": "down",
+          "tensor": "blk.26.ffn_down_exps.weight",
+          "type_id": 20,
+          "type_name": "IQ4_NL",
+          "shape": [
+            640,
+            2560,
+            512
+          ],
+          "absolute_offset": 28884420096,
+          "tensor_bytes": 471859200,
+          "bytes_per_expert": 921600,
+          "block_geometry": [
+            32,
+            18
+          ]
+        }
+      ]
+    },
+    {
+      "layer": 27,
+      "gu_type": 21,
+      "down_type": 20,
+      "packed_offset": 26987724800,
+      "packed_blob_bytes": 2329600,
+      "layer_all_experts_bytes": 1192755200,
+      "roles": [
+        {
+          "role": "gate",
+          "tensor": "blk.27.ffn_gate_exps.weight",
+          "type_id": 21,
+          "type_name": "IQ3_S",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 30447303040,
+          "tensor_bytes": 360448000,
+          "bytes_per_expert": 704000,
+          "block_geometry": [
+            256,
+            110
+          ]
+        },
+        {
+          "role": "up",
+          "tensor": "blk.27.ffn_up_exps.weight",
+          "type_id": 21,
+          "type_name": "IQ3_S",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 30811248000,
+          "tensor_bytes": 360448000,
+          "bytes_per_expert": 704000,
+          "block_geometry": [
+            256,
+            110
+          ]
+        },
+        {
+          "role": "down",
+          "tensor": "blk.27.ffn_down_exps.weight",
+          "type_id": 20,
+          "type_name": "IQ4_NL",
+          "shape": [
+            640,
+            2560,
+            512
+          ],
+          "absolute_offset": 29974522240,
+          "tensor_bytes": 471859200,
+          "bytes_per_expert": 921600,
+          "block_geometry": [
+            32,
+            18
+          ]
+        }
+      ]
+    },
+    {
+      "layer": 28,
+      "gu_type": 21,
+      "down_type": 20,
+      "packed_offset": 28180480000,
+      "packed_blob_bytes": 2329600,
+      "layer_all_experts_bytes": 1192755200,
+      "roles": [
+        {
+          "role": "gate",
+          "tensor": "blk.28.ffn_gate_exps.weight",
+          "type_id": 21,
+          "type_name": "IQ3_S",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 31709491584,
+          "tensor_bytes": 360448000,
+          "bytes_per_expert": 704000,
+          "block_geometry": [
+            256,
+            110
+          ]
+        },
+        {
+          "role": "up",
+          "tensor": "blk.28.ffn_up_exps.weight",
+          "type_id": 21,
+          "type_name": "IQ3_S",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 32073910144,
+          "tensor_bytes": 360448000,
+          "bytes_per_expert": 704000,
+          "block_geometry": [
+            256,
+            110
+          ]
+        },
+        {
+          "role": "down",
+          "tensor": "blk.28.ffn_down_exps.weight",
+          "type_id": 20,
+          "type_name": "IQ4_NL",
+          "shape": [
+            640,
+            2560,
+            512
+          ],
+          "absolute_offset": 31236710784,
+          "tensor_bytes": 471859200,
+          "bytes_per_expert": 921600,
+          "block_geometry": [
+            32,
+            18
+          ]
+        }
+      ]
+    },
+    {
+      "layer": 29,
+      "gu_type": 21,
+      "down_type": 20,
+      "packed_offset": 29373235200,
+      "packed_blob_bytes": 2329600,
+      "layer_all_experts_bytes": 1192755200,
+      "roles": [
+        {
+          "role": "gate",
+          "tensor": "blk.29.ffn_gate_exps.weight",
+          "type_id": 21,
+          "type_name": "IQ3_S",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 32979426560,
+          "tensor_bytes": 360448000,
+          "bytes_per_expert": 704000,
+          "block_geometry": [
+            256,
+            110
+          ]
+        },
+        {
+          "role": "up",
+          "tensor": "blk.29.ffn_up_exps.weight",
+          "type_id": 21,
+          "type_name": "IQ3_S",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 33343627520,
+          "tensor_bytes": 360448000,
+          "bytes_per_expert": 704000,
+          "block_geometry": [
+            256,
+            110
+          ]
+        },
+        {
+          "role": "down",
+          "tensor": "blk.29.ffn_down_exps.weight",
+          "type_id": 20,
+          "type_name": "IQ4_NL",
+          "shape": [
+            640,
+            2560,
+            512
+          ],
+          "absolute_offset": 32506645760,
+          "tensor_bytes": 471859200,
+          "bytes_per_expert": 921600,
+          "block_geometry": [
+            32,
+            18
+          ]
+        }
+      ]
+    },
+    {
+      "layer": 30,
+      "gu_type": 18,
+      "down_type": 42,
+      "packed_offset": 30565990400,
+      "packed_blob_bytes": 1715200,
+      "layer_all_experts_bytes": 878182400,
+      "roles": [
+        {
+          "role": "gate",
+          "tensor": "blk.30.ffn_gate_exps.weight",
+          "type_id": 18,
+          "type_name": "IQ3_XXS",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 34012167296,
+          "tensor_bytes": 321126400,
+          "bytes_per_expert": 627200,
+          "block_geometry": [
+            256,
+            98
+          ]
+        },
+        {
+          "role": "up",
+          "tensor": "blk.30.ffn_up_exps.weight",
+          "type_id": 18,
+          "type_name": "IQ3_XXS",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 34336790656,
+          "tensor_bytes": 321126400,
+          "bytes_per_expert": 627200,
+          "block_geometry": [
+            256,
+            98
+          ]
+        },
+        {
+          "role": "down",
+          "tensor": "blk.30.ffn_down_exps.weight",
+          "type_id": 42,
+          "type_name": "Q2_0",
+          "shape": [
+            640,
+            2560,
+            512
+          ],
+          "absolute_offset": 33775316096,
+          "tensor_bytes": 235929600,
+          "bytes_per_expert": 460800,
+          "block_geometry": [
+            64,
+            18
+          ]
+        }
+      ]
+    },
+    {
+      "layer": 31,
+      "gu_type": 18,
+      "down_type": 20,
+      "packed_offset": 31444172800,
+      "packed_blob_bytes": 2176000,
+      "layer_all_experts_bytes": 1114112000,
+      "roles": [
+        {
+          "role": "gate",
+          "tensor": "blk.31.ffn_gate_exps.weight",
+          "type_id": 18,
+          "type_name": "IQ3_XXS",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 35212497920,
+          "tensor_bytes": 321126400,
+          "bytes_per_expert": 627200,
+          "block_geometry": [
+            256,
+            98
+          ]
+        },
+        {
+          "role": "up",
+          "tensor": "blk.31.ffn_up_exps.weight",
+          "type_id": 18,
+          "type_name": "IQ3_XXS",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 35537121280,
+          "tensor_bytes": 321126400,
+          "bytes_per_expert": 627200,
+          "block_geometry": [
+            256,
+            98
+          ]
+        },
+        {
+          "role": "down",
+          "tensor": "blk.31.ffn_down_exps.weight",
+          "type_id": 20,
+          "type_name": "IQ4_NL",
+          "shape": [
+            640,
+            2560,
+            512
+          ],
+          "absolute_offset": 34739717120,
+          "tensor_bytes": 471859200,
+          "bytes_per_expert": 921600,
+          "block_geometry": [
+            32,
+            18
+          ]
+        }
+      ]
+    },
+    {
+      "layer": 32,
+      "gu_type": 22,
+      "down_type": 20,
+      "packed_offset": 32558284800,
+      "packed_blob_bytes": 1971200,
+      "layer_all_experts_bytes": 1009254400,
+      "roles": [
+        {
+          "role": "gate",
+          "tensor": "blk.32.ffn_gate_exps.weight",
+          "type_id": 22,
+          "type_name": "IQ2_S",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 36394210304,
+          "tensor_bytes": 268697600,
+          "bytes_per_expert": 524800,
+          "block_geometry": [
+            256,
+            82
+          ]
+        },
+        {
+          "role": "up",
+          "tensor": "blk.32.ffn_up_exps.weight",
+          "type_id": 22,
+          "type_name": "IQ2_S",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 36666878464,
+          "tensor_bytes": 268697600,
+          "bytes_per_expert": 524800,
+          "block_geometry": [
+            256,
+            82
+          ]
+        },
+        {
+          "role": "down",
+          "tensor": "blk.32.ffn_down_exps.weight",
+          "type_id": 20,
+          "type_name": "IQ4_NL",
+          "shape": [
+            640,
+            2560,
+            512
+          ],
+          "absolute_offset": 35921429504,
+          "tensor_bytes": 471859200,
+          "bytes_per_expert": 921600,
+          "block_geometry": [
+            32,
+            18
+          ]
+        }
+      ]
+    },
+    {
+      "layer": 33,
+      "gu_type": 18,
+      "down_type": 20,
+      "packed_offset": 33567539200,
+      "packed_blob_bytes": 2176000,
+      "layer_all_experts_bytes": 1114112000,
+      "roles": [
+        {
+          "role": "gate",
+          "tensor": "blk.33.ffn_gate_exps.weight",
+          "type_id": 18,
+          "type_name": "IQ3_XXS",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 37476126080,
+          "tensor_bytes": 321126400,
+          "bytes_per_expert": 627200,
+          "block_geometry": [
+            256,
+            98
+          ]
+        },
+        {
+          "role": "up",
+          "tensor": "blk.33.ffn_up_exps.weight",
+          "type_id": 18,
+          "type_name": "IQ3_XXS",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 37800749440,
+          "tensor_bytes": 321126400,
+          "bytes_per_expert": 627200,
+          "block_geometry": [
+            256,
+            98
+          ]
+        },
+        {
+          "role": "down",
+          "tensor": "blk.33.ffn_down_exps.weight",
+          "type_id": 20,
+          "type_name": "IQ4_NL",
+          "shape": [
+            640,
+            2560,
+            512
+          ],
+          "absolute_offset": 37003345280,
+          "tensor_bytes": 471859200,
+          "bytes_per_expert": 921600,
+          "block_geometry": [
+            32,
+            18
+          ]
+        }
+      ]
+    },
+    {
+      "layer": 34,
+      "gu_type": 22,
+      "down_type": 20,
+      "packed_offset": 34681651200,
+      "packed_blob_bytes": 1971200,
+      "layer_all_experts_bytes": 1009254400,
+      "roles": [
+        {
+          "role": "gate",
+          "tensor": "blk.34.ffn_gate_exps.weight",
+          "type_id": 22,
+          "type_name": "IQ2_S",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 38661975296,
+          "tensor_bytes": 268697600,
+          "bytes_per_expert": 524800,
+          "block_geometry": [
+            256,
+            82
+          ]
+        },
+        {
+          "role": "up",
+          "tensor": "blk.34.ffn_up_exps.weight",
+          "type_id": 22,
+          "type_name": "IQ2_S",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 38934221056,
+          "tensor_bytes": 268697600,
+          "bytes_per_expert": 524800,
+          "block_geometry": [
+            256,
+            82
+          ]
+        },
+        {
+          "role": "down",
+          "tensor": "blk.34.ffn_down_exps.weight",
+          "type_id": 20,
+          "type_name": "IQ4_NL",
+          "shape": [
+            640,
+            2560,
+            512
+          ],
+          "absolute_offset": 38189194496,
+          "tensor_bytes": 471859200,
+          "bytes_per_expert": 921600,
+          "block_geometry": [
+            32,
+            18
+          ]
+        }
+      ]
+    },
+    {
+      "layer": 35,
+      "gu_type": 21,
+      "down_type": 20,
+      "packed_offset": 35690905600,
+      "packed_blob_bytes": 2329600,
+      "layer_all_experts_bytes": 1192755200,
+      "roles": [
+        {
+          "role": "gate",
+          "tensor": "blk.35.ffn_gate_exps.weight",
+          "type_id": 21,
+          "type_name": "IQ3_S",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 39757704320,
+          "tensor_bytes": 360448000,
+          "bytes_per_expert": 704000,
+          "block_geometry": [
+            256,
+            110
+          ]
+        },
+        {
+          "role": "up",
+          "tensor": "blk.35.ffn_up_exps.weight",
+          "type_id": 21,
+          "type_name": "IQ3_S",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 40121649280,
+          "tensor_bytes": 360448000,
+          "bytes_per_expert": 704000,
+          "block_geometry": [
+            256,
+            110
+          ]
+        },
+        {
+          "role": "down",
+          "tensor": "blk.35.ffn_down_exps.weight",
+          "type_id": 20,
+          "type_name": "IQ4_NL",
+          "shape": [
+            640,
+            2560,
+            512
+          ],
+          "absolute_offset": 39284923520,
+          "tensor_bytes": 471859200,
+          "bytes_per_expert": 921600,
+          "block_geometry": [
+            32,
+            18
+          ]
+        }
+      ]
+    },
+    {
+      "layer": 36,
+      "gu_type": 22,
+      "down_type": 42,
+      "packed_offset": 36883660800,
+      "packed_blob_bytes": 1510400,
+      "layer_all_experts_bytes": 773324800,
+      "roles": [
+        {
+          "role": "gate",
+          "tensor": "blk.36.ffn_gate_exps.weight",
+          "type_id": 22,
+          "type_name": "IQ2_S",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 40780381824,
+          "tensor_bytes": 268697600,
+          "bytes_per_expert": 524800,
+          "block_geometry": [
+            256,
+            82
+          ]
+        },
+        {
+          "role": "up",
+          "tensor": "blk.36.ffn_up_exps.weight",
+          "type_id": 22,
+          "type_name": "IQ2_S",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 41053049984,
+          "tensor_bytes": 268697600,
+          "bytes_per_expert": 524800,
+          "block_geometry": [
+            256,
+            82
+          ]
+        },
+        {
+          "role": "down",
+          "tensor": "blk.36.ffn_down_exps.weight",
+          "type_id": 42,
+          "type_name": "Q2_0",
+          "shape": [
+            640,
+            2560,
+            512
+          ],
+          "absolute_offset": 40543530624,
+          "tensor_bytes": 235929600,
+          "bytes_per_expert": 460800,
+          "block_geometry": [
+            64,
+            18
+          ]
+        }
+      ]
+    },
+    {
+      "layer": 37,
+      "gu_type": 18,
+      "down_type": 20,
+      "packed_offset": 37656985600,
+      "packed_blob_bytes": 2176000,
+      "layer_all_experts_bytes": 1114112000,
+      "roles": [
+        {
+          "role": "gate",
+          "tensor": "blk.37.ffn_gate_exps.weight",
+          "type_id": 18,
+          "type_name": "IQ3_XXS",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 41866242560,
+          "tensor_bytes": 321126400,
+          "bytes_per_expert": 627200,
+          "block_geometry": [
+            256,
+            98
+          ]
+        },
+        {
+          "role": "up",
+          "tensor": "blk.37.ffn_up_exps.weight",
+          "type_id": 18,
+          "type_name": "IQ3_XXS",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 42191339520,
+          "tensor_bytes": 321126400,
+          "bytes_per_expert": 627200,
+          "block_geometry": [
+            256,
+            98
+          ]
+        },
+        {
+          "role": "down",
+          "tensor": "blk.37.ffn_down_exps.weight",
+          "type_id": 20,
+          "type_name": "IQ4_NL",
+          "shape": [
+            640,
+            2560,
+            512
+          ],
+          "absolute_offset": 41393461760,
+          "tensor_bytes": 471859200,
+          "bytes_per_expert": 921600,
+          "block_geometry": [
+            32,
+            18
+          ]
+        }
+      ]
+    },
+    {
+      "layer": 38,
+      "gu_type": 18,
+      "down_type": 20,
+      "packed_offset": 38771097600,
+      "packed_blob_bytes": 2176000,
+      "layer_all_experts_bytes": 1114112000,
+      "roles": [
+        {
+          "role": "gate",
+          "tensor": "blk.38.ffn_gate_exps.weight",
+          "type_id": 18,
+          "type_name": "IQ3_XXS",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 43055227776,
+          "tensor_bytes": 321126400,
+          "bytes_per_expert": 627200,
+          "block_geometry": [
+            256,
+            98
+          ]
+        },
+        {
+          "role": "up",
+          "tensor": "blk.38.ffn_up_exps.weight",
+          "type_id": 18,
+          "type_name": "IQ3_XXS",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 43379902336,
+          "tensor_bytes": 321126400,
+          "bytes_per_expert": 627200,
+          "block_geometry": [
+            256,
+            98
+          ]
+        },
+        {
+          "role": "down",
+          "tensor": "blk.38.ffn_down_exps.weight",
+          "type_id": 20,
+          "type_name": "IQ4_NL",
+          "shape": [
+            640,
+            2560,
+            512
+          ],
+          "absolute_offset": 42582446976,
+          "tensor_bytes": 471859200,
+          "bytes_per_expert": 921600,
+          "block_geometry": [
+            32,
+            18
+          ]
+        }
+      ]
+    },
+    {
+      "layer": 39,
+      "gu_type": 22,
+      "down_type": 20,
+      "packed_offset": 39885209600,
+      "packed_blob_bytes": 1971200,
+      "layer_all_experts_bytes": 1009254400,
+      "roles": [
+        {
+          "role": "gate",
+          "tensor": "blk.39.ffn_gate_exps.weight",
+          "type_id": 22,
+          "type_name": "IQ2_S",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 44255558400,
+          "tensor_bytes": 268697600,
+          "bytes_per_expert": 524800,
+          "block_geometry": [
+            256,
+            82
+          ]
+        },
+        {
+          "role": "up",
+          "tensor": "blk.39.ffn_up_exps.weight",
+          "type_id": 22,
+          "type_name": "IQ2_S",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 44527804160,
+          "tensor_bytes": 268697600,
+          "bytes_per_expert": 524800,
+          "block_geometry": [
+            256,
+            82
+          ]
+        },
+        {
+          "role": "down",
+          "tensor": "blk.39.ffn_down_exps.weight",
+          "type_id": 20,
+          "type_name": "IQ4_NL",
+          "shape": [
+            640,
+            2560,
+            512
+          ],
+          "absolute_offset": 43782777600,
+          "tensor_bytes": 471859200,
+          "bytes_per_expert": 921600,
+          "block_geometry": [
+            32,
+            18
+          ]
+        }
+      ]
+    },
+    {
+      "layer": 40,
+      "gu_type": 21,
+      "down_type": 20,
+      "packed_offset": 40894464000,
+      "packed_blob_bytes": 2329600,
+      "layer_all_experts_bytes": 1192755200,
+      "roles": [
+        {
+          "role": "gate",
+          "tensor": "blk.40.ffn_gate_exps.weight",
+          "type_id": 21,
+          "type_name": "IQ3_S",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 45334348544,
+          "tensor_bytes": 360448000,
+          "bytes_per_expert": 704000,
+          "block_geometry": [
+            256,
+            110
+          ]
+        },
+        {
+          "role": "up",
+          "tensor": "blk.40.ffn_up_exps.weight",
+          "type_id": 21,
+          "type_name": "IQ3_S",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 45698549504,
+          "tensor_bytes": 360448000,
+          "bytes_per_expert": 704000,
+          "block_geometry": [
+            256,
+            110
+          ]
+        },
+        {
+          "role": "down",
+          "tensor": "blk.40.ffn_down_exps.weight",
+          "type_id": 20,
+          "type_name": "IQ4_NL",
+          "shape": [
+            640,
+            2560,
+            512
+          ],
+          "absolute_offset": 44861567744,
+          "tensor_bytes": 471859200,
+          "bytes_per_expert": 921600,
+          "block_geometry": [
+            32,
+            18
+          ]
+        }
+      ]
+    },
+    {
+      "layer": 41,
+      "gu_type": 18,
+      "down_type": 20,
+      "packed_offset": 42087219200,
+      "packed_blob_bytes": 2176000,
+      "layer_all_experts_bytes": 1114112000,
+      "roles": [
+        {
+          "role": "gate",
+          "tensor": "blk.41.ffn_gate_exps.weight",
+          "type_id": 18,
+          "type_name": "IQ3_XXS",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 46596260480,
+          "tensor_bytes": 321126400,
+          "bytes_per_expert": 627200,
+          "block_geometry": [
+            256,
+            98
+          ]
+        },
+        {
+          "role": "up",
+          "tensor": "blk.41.ffn_up_exps.weight",
+          "type_id": 18,
+          "type_name": "IQ3_XXS",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 46920935040,
+          "tensor_bytes": 321126400,
+          "bytes_per_expert": 627200,
+          "block_geometry": [
+            256,
+            98
+          ]
+        },
+        {
+          "role": "down",
+          "tensor": "blk.41.ffn_down_exps.weight",
+          "type_id": 20,
+          "type_name": "IQ4_NL",
+          "shape": [
+            640,
+            2560,
+            512
+          ],
+          "absolute_offset": 46123479680,
+          "tensor_bytes": 471859200,
+          "bytes_per_expert": 921600,
+          "block_geometry": [
+            32,
+            18
+          ]
+        }
+      ]
+    },
+    {
+      "layer": 42,
+      "gu_type": 18,
+      "down_type": 20,
+      "packed_offset": 43201331200,
+      "packed_blob_bytes": 2176000,
+      "layer_all_experts_bytes": 1114112000,
+      "roles": [
+        {
+          "role": "gate",
+          "tensor": "blk.42.ffn_gate_exps.weight",
+          "type_id": 18,
+          "type_name": "IQ3_XXS",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 47782160896,
+          "tensor_bytes": 321126400,
+          "bytes_per_expert": 627200,
+          "block_geometry": [
+            256,
+            98
+          ]
+        },
+        {
+          "role": "up",
+          "tensor": "blk.42.ffn_up_exps.weight",
+          "type_id": 18,
+          "type_name": "IQ3_XXS",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 48107257856,
+          "tensor_bytes": 321126400,
+          "bytes_per_expert": 627200,
+          "block_geometry": [
+            256,
+            98
+          ]
+        },
+        {
+          "role": "down",
+          "tensor": "blk.42.ffn_down_exps.weight",
+          "type_id": 20,
+          "type_name": "IQ4_NL",
+          "shape": [
+            640,
+            2560,
+            512
+          ],
+          "absolute_offset": 47309380096,
+          "tensor_bytes": 471859200,
+          "bytes_per_expert": 921600,
+          "block_geometry": [
+            32,
+            18
+          ]
+        }
+      ]
+    },
+    {
+      "layer": 43,
+      "gu_type": 18,
+      "down_type": 20,
+      "packed_offset": 44315443200,
+      "packed_blob_bytes": 2176000,
+      "layer_all_experts_bytes": 1114112000,
+      "roles": [
+        {
+          "role": "gate",
+          "tensor": "blk.43.ffn_gate_exps.weight",
+          "type_id": 18,
+          "type_name": "IQ3_XXS",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 48982913920,
+          "tensor_bytes": 321126400,
+          "bytes_per_expert": 627200,
+          "block_geometry": [
+            256,
+            98
+          ]
+        },
+        {
+          "role": "up",
+          "tensor": "blk.43.ffn_up_exps.weight",
+          "type_id": 18,
+          "type_name": "IQ3_XXS",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 49308010880,
+          "tensor_bytes": 321126400,
+          "bytes_per_expert": 627200,
+          "block_geometry": [
+            256,
+            98
+          ]
+        },
+        {
+          "role": "down",
+          "tensor": "blk.43.ffn_down_exps.weight",
+          "type_id": 20,
+          "type_name": "IQ4_NL",
+          "shape": [
+            640,
+            2560,
+            512
+          ],
+          "absolute_offset": 48510133120,
+          "tensor_bytes": 471859200,
+          "bytes_per_expert": 921600,
+          "block_geometry": [
+            32,
+            18
+          ]
+        }
+      ]
+    },
+    {
+      "layer": 44,
+      "gu_type": 21,
+      "down_type": 20,
+      "packed_offset": 45429555200,
+      "packed_blob_bytes": 2329600,
+      "layer_all_experts_bytes": 1192755200,
+      "roles": [
+        {
+          "role": "gate",
+          "tensor": "blk.44.ffn_gate_exps.weight",
+          "type_id": 21,
+          "type_name": "IQ3_S",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 50159869824,
+          "tensor_bytes": 360448000,
+          "bytes_per_expert": 704000,
+          "block_geometry": [
+            256,
+            110
+          ]
+        },
+        {
+          "role": "up",
+          "tensor": "blk.44.ffn_up_exps.weight",
+          "type_id": 21,
+          "type_name": "IQ3_S",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 50523865984,
+          "tensor_bytes": 360448000,
+          "bytes_per_expert": 704000,
+          "block_geometry": [
+            256,
+            110
+          ]
+        },
+        {
+          "role": "down",
+          "tensor": "blk.44.ffn_down_exps.weight",
+          "type_id": 20,
+          "type_name": "IQ4_NL",
+          "shape": [
+            640,
+            2560,
+            512
+          ],
+          "absolute_offset": 49687089024,
+          "tensor_bytes": 471859200,
+          "bytes_per_expert": 921600,
+          "block_geometry": [
+            32,
+            18
+          ]
+        }
+      ]
+    },
+    {
+      "layer": 45,
+      "gu_type": 21,
+      "down_type": 20,
+      "packed_offset": 46622310400,
+      "packed_blob_bytes": 2329600,
+      "layer_all_experts_bytes": 1192755200,
+      "roles": [
+        {
+          "role": "gate",
+          "tensor": "blk.45.ffn_gate_exps.weight",
+          "type_id": 21,
+          "type_name": "IQ3_S",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 51424864000,
+          "tensor_bytes": 360448000,
+          "bytes_per_expert": 704000,
+          "block_geometry": [
+            256,
+            110
+          ]
+        },
+        {
+          "role": "up",
+          "tensor": "blk.45.ffn_up_exps.weight",
+          "type_id": 21,
+          "type_name": "IQ3_S",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 51788860160,
+          "tensor_bytes": 360448000,
+          "bytes_per_expert": 704000,
+          "block_geometry": [
+            256,
+            110
+          ]
+        },
+        {
+          "role": "down",
+          "tensor": "blk.45.ffn_down_exps.weight",
+          "type_id": 20,
+          "type_name": "IQ4_NL",
+          "shape": [
+            640,
+            2560,
+            512
+          ],
+          "absolute_offset": 50952083200,
+          "tensor_bytes": 471859200,
+          "bytes_per_expert": 921600,
+          "block_geometry": [
+            32,
+            18
+          ]
+        }
+      ]
+    },
+    {
+      "layer": 46,
+      "gu_type": 18,
+      "down_type": 20,
+      "packed_offset": 47815065600,
+      "packed_blob_bytes": 2176000,
+      "layer_all_experts_bytes": 1114112000,
+      "roles": [
+        {
+          "role": "gate",
+          "tensor": "blk.46.ffn_gate_exps.weight",
+          "type_id": 18,
+          "type_name": "IQ3_XXS",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 52692287616,
+          "tensor_bytes": 321126400,
+          "bytes_per_expert": 627200,
+          "block_geometry": [
+            256,
+            98
+          ]
+        },
+        {
+          "role": "up",
+          "tensor": "blk.46.ffn_up_exps.weight",
+          "type_id": 18,
+          "type_name": "IQ3_XXS",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 53016962176,
+          "tensor_bytes": 321126400,
+          "bytes_per_expert": 627200,
+          "block_geometry": [
+            256,
+            98
+          ]
+        },
+        {
+          "role": "down",
+          "tensor": "blk.46.ffn_down_exps.weight",
+          "type_id": 20,
+          "type_name": "IQ4_NL",
+          "shape": [
+            640,
+            2560,
+            512
+          ],
+          "absolute_offset": 52219506816,
+          "tensor_bytes": 471859200,
+          "bytes_per_expert": 921600,
+          "block_geometry": [
+            32,
+            18
+          ]
+        }
+      ]
+    },
+    {
+      "layer": 47,
+      "gu_type": 23,
+      "down_type": 20,
+      "packed_offset": 48929177600,
+      "packed_blob_bytes": 2662400,
+      "layer_all_experts_bytes": 1363148800,
+      "roles": [
+        {
+          "role": "gate",
+          "tensor": "blk.47.ffn_gate_exps.weight",
+          "type_id": 23,
+          "type_name": "IQ4_XS",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 53891822080,
+          "tensor_bytes": 445644800,
+          "bytes_per_expert": 870400,
+          "block_geometry": [
+            256,
+            136
+          ]
+        },
+        {
+          "role": "up",
+          "tensor": "blk.47.ffn_up_exps.weight",
+          "type_id": 23,
+          "type_name": "IQ4_XS",
+          "shape": [
+            2560,
+            640,
+            512
+          ],
+          "absolute_offset": 54341015040,
+          "tensor_bytes": 445644800,
+          "bytes_per_expert": 870400,
+          "block_geometry": [
+            256,
+            136
+          ]
+        },
+        {
+          "role": "down",
+          "tensor": "blk.47.ffn_down_exps.weight",
+          "type_id": 20,
+          "type_name": "IQ4_NL",
+          "shape": [
+            640,
+            2560,
+            512
+          ],
+          "absolute_offset": 53418222080,
+          "tensor_bytes": 471859200,
+          "bytes_per_expert": 921600,
+          "block_geometry": [
+            32,
+            18
+          ]
+        }
+      ]
+    }
+  ],
+  "qualification": "All144role descriptors match pack types, shapes and absolute offsets; per-role tensor extents lie within unchanged primary file; independent header block equations sum to all48declared blobs and contiguous packed total.",
+  "limitations": "No payload hash/correctness, allocator/cache/device-free-memory attestation, selected prefill route, expert row histogram, DMA/service timing or full-context inference. Layer cache bytes are size arithmetic only. Dequant output counts apply to the FP16 dequant route, not fused native or MMQ paths."
+}
