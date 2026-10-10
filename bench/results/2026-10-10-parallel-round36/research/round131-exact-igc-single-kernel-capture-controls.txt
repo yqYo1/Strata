@@ -1,0 +1,64 @@
+# R131 — exact IGC v2.41.5 single-kernel capture controls
+
+Date: 2026-10-10. Read-only inspection of the installed IGC package/library and version-pinned Intel IGC source documentation. No compiler, disassembler, executable, runtime, SYCL, device/GPU query, build, test, profiler, model/payload, Git action, source edit, or cleanup was performed. No active owner output was read.
+
+## Finding
+
+The installed release IGC exposes the known shader-dump controls, and Intel's documentation at the exact v2.41.5 tag explicitly marks the core dump switch, custom output directory and regex file filter as available in Linux Release builds. Thus release-vs-debug is not a blocker for requesting normal shader dumps or using those settings. The exact names are `IGC_ShaderDumpEnable`, `IGC_DumpToCustomDir`, and `IGC_ShaderDumpRegexFilter`.
+
+However, the docs do **not** establish a hard single-kernel selector: the regex is described only as filtering dump *files* by regex, without documenting which filename field it matches, a kernel-name mapping, or whether it suppresses compilation of other kernels. The docs also identify `*_options.txt` as options passed to `clBuildProgram`; they do not establish that a Level Zero SYCL JIT module-create path emits this sidecar or that it records all SYCL/ZE build options. No IGC flag documented here caps aggregate output bytes. Accordingly, exact one-kernel selection, a ≤5 MiB aggregate, and a matching Level Zero/SYCL JIT-options record are not proven by the installed-artifact evidence alone. A broad first capture is not a safe way to discover the naming convention under the stated bound.
+
+## Installed identity and direct confirmation
+
+- `intel-igc-core-2` and `intel-igc-opencl-2`: package version `2.41.5` (R130 records IGC build 22716 and the package/library provenance).
+- Installed core library: `/usr/local/lib/libigc.so.2.41.5+1788943183`, SHA-256 `40badd8f1ee80ac844a8947f5e91e5654fbcd851caefe343b0e5ec4ce4d1b123` (same hash recorded in R130).
+- The library's read-only string table contains exact names `ShaderDumpEnable`, `ShaderDumpEnableAll`, `ShaderDumpRegexFilter`, `DumpToCustomDir`, `DumpToCurrentDir`, and `SpvAsmDumpEnable`. This confirms the installed binary contains those control-name strings; it does not by itself prove a setting's behavior. The version-pinned Release table below supplies the availability evidence.
+- Installed DPC++ package/compiler is `2026.1.1-325`, with the previously recorded compiler/runtime identity in R130. The intended path under investigation is its SYCL SPIR-V to Level Zero/IGC JIT path, not standalone `ocloc` or OpenCL `clBuildProgram`.
+- GitHub tag `v2.41.5` resolves to commit `f05f218e6f0b888823c5678e1f64e91e597ea2dc`. The installed library's exact build-source correspondence to this tag was not independently established; release-tag docs are the pinned primary version source, and installed strings are corroborative.
+
+## Exact names, values and release/debug boundary
+
+Intel's v2.41.5 `configuration_flags.md` says flags use environment names `IGC_<flag>=<value>` and specifically shows `IGC_ShaderDumpEnable=1`. The shader-dump instruction page documents the following:
+
+- `IGC_ShaderDumpEnable=1`: request standard shader dumps. It says the default destination is `/tmp/IntelIGC`.
+- `IGC_DumpToCustomDir=<path>`: route dumps to a custom directory; its parent directory must already exist.
+- `IGC_ShaderDumpRegexFilter=<regex>`: configuration table says “Only dump files matching the given regex.” No regex grammar, field, anchoring, or named-kernel guarantee is specified there.
+- Avoid `IGC_ShaderDumpEnableAll=1`: it dumps all LLVM passes and forces recomputation of analysis passes. It is available in Release but creates much broader output than the minimum normal dump.
+- Avoid debug-only switches such as `IGC_ShaderDumpEnableG4`, `IGC_ShaderDumpEnableIGAJSON`, `IGC_ShaderPassDisable`, and `IGC_ShaderDisplayAllPassesNames` for this purpose. The Release table marks the first two and pass-display/disable controls with `-` (requires a debug build). `CompileOneAtTime` is also a debug-only shader-debug control and its doc says it produces no valid binary, so it cannot provide the desired matching kernel artifact.
+
+The table's status legend is explicit: `-` means requires debug build; `Available` means available in release builds; `Diagnostic` requires a special build option. The three controls above are all `Available`.
+
+## Documented dump products and qualifications
+
+At v2.41.5, `shader_dumps_instruction.md` says normal IGC runtime shader dumps include `*.spv`, `*.spvasm`, LLVM IR checkpoints (`*_beforeUnification.ll`, `*_afterUnification.ll`, `*_optimized.ll`, `*_codegen.ll`), `*.visa.ll`, `*.visaasm`, `*.asm`, and `*.isa`. It separately lists `*_options.txt` as “Options passed to `clBuildProgram`” and `*.cos` as patch tokens exchanged between IGC and Intel Compute Runtime. The docs describe `*.visaasm` as vISA assembly, `*.asm` as kernels in assembly form and `*.isa` as kernel binaries.
+
+These product names demonstrate the content types IGC's documented shader-dump mechanism can produce in its documented runtime path. They are not proof that the installed Level Zero SYCL JIT uses every product path, that one `.spv` is per kernel rather than per module, or that `*_options.txt` records the Level Zero build flags. In particular, the documented `clBuildProgram` wording is OpenCL-facing. Treat the SPIR-V/options products as conditional until the exact SYCL/Level Zero runtime route is confirmed from its own output or a narrowly recorded module-create build-flags receipt. Do not relabel a full device image or offline build artifact as the matching JIT module without a verified identity link.
+
+## Bounded owner recipe if a target-specific filename is already known
+
+If root has a previously evidenced, unique IGC dump filename token for the one required GDN kernel, a future owner-approved run can be configured before the process's first JIT compilation as follows:
+
+1. Use one fresh, empty, owner-controlled custom dump directory with its parent already created; set `IGC_DumpToCustomDir` to it. Do not use the shared default `/tmp/IntelIGC`.
+2. In the one fresh process, set `IGC_ShaderDumpEnable=1` and `IGC_ShaderDumpRegexFilter` to an anchored/escaped expression matching only the verified target filename token. Keep `ShaderDumpEnableAll` off. IGC reads these settings at process/JIT initialization; do not change the variables after compilation starts.
+3. Arrange the owner's normal per-kernel device-code split and submit only the necessary producer or consumer kernel under the already settled PCI admission. Do not turn on module-wide/pass-all dumping or any API trace.
+4. The owner must verify immediately that the directory contains only the intended kernel's required SPIR-V, matching vISA/ISA, and a provably matching options receipt; compute aggregate bytes and hashes before retention. Enforce the existing 5 MiB retained-artifact ceiling in the owner controller. If the file naming cannot be matched in advance, unexpected kernels appear, the required metadata is absent, or the total exceeds the ceiling, stop/retire under the existing artifact-retention rules; do not expand into an all-kernel capture.
+
+This is a conditional recipe, not a proven exact recipe for the current installed Level Zero SYCL path. In the reviewed evidence there is no previously verified v2.41.5 filename token for a generated kernel and no hard output-byte limit. If those prerequisites cannot be met without a discovery capture, then the bounded single-kernel Level Zero/SYCL capture remains unsupported/unverified. The safe resolution is to retain the R130 implementation gap rather than invent a flag or create an unbounded capture.
+
+The immutable root-v3 probe snapshot has distinct source kernel types `BaselineProducer`, `CandidateProducer`, `GroupReader<SG>`, and `ScalarReader`; this identifies source-side candidates only and does not prove the IGC filename convention or one-to-one dump identity. Any future file regex must be rooted in an observed/pinned IGC filename, not guessed from a C++ kernel type.
+
+## Confirmed / inferred / unresolved
+
+**Confirmed:** installed IGC version and core library hash above; exact environment variable spellings occur in that binary; Intel's exact-tag release documentation marks three needed controls Release-available; custom directory parent must exist; default dump destination and product list as documented; regex is described as a file filter.
+
+**Inferred only:** that the dump facility can receive the exact SYCL/SPIR-V JIT invocation in the current Level Zero backend; that a given `.spv`, vISA and ISA file trio all belong to one kernel; that filename regex can select a C++ named kernel; and that an options sidecar is produced for `zeModuleCreate`/SYCL JIT.
+
+**Unresolved:** exact installed `.14` driver + oneAPI 2026.1.1 + IGC 2.41.5 Level Zero dump naming and filter semantics; whether its options sidecar exposes the exact SYCL/JIT flags; an aggregate output cap; and verified ≤5 MiB single-kernel artifacts. No capture was run or created.
+
+## Primary sources
+
+- Intel IGC v2.41.5 [configuration flags](https://github.com/intel/intel-graphics-compiler/blob/v2.41.5/documentation/configuration_flags.md) — exact environment prefix, Release/debug table and flag descriptions.
+- Intel IGC v2.41.5 [shader dump instructions](https://github.com/intel/intel-graphics-compiler/blob/v2.41.5/documentation/shader_dumps_instruction.md) — default/custom destination, product files and `clBuildProgram` options wording.
+- Intel IGC [v2.41.5 release/tag](https://github.com/intel/intel-graphics-compiler/releases/tag/v2.41.5) — pinned release identity.
+- Intel IGC v2.41.5 [tag ref](https://github.com/intel/intel-graphics-compiler/tree/v2.41.5) — source tag; resolved commit `f05f218e6f0b888823c5678e1f64e91e597ea2dc`.
+- The closed compiler/package details and previous SPIR-V/JIT/ISA evidence gap are recorded in `round130-installed-native-exp-lowering-provenance.txt`; the root-v3 immutable snapshot manifest is `b6de67fe89c70fd657ee4d4ec120817281b67289293f5c8869901ff42ce18834`.
