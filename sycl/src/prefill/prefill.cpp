@@ -6,6 +6,9 @@
 #include "strata/sycl_allocation.hpp"
 #include "strata/prefill/prefill.hpp"
 #include "iq4nl_dequant.hpp"
+#ifdef STRATA_SYCL_PREFILL_IQ4NL_CALLER_CENSUS
+#include "iq4nl_caller_census.hpp"
+#endif
 #include "strata/core/gguf_expert_source.hpp"
 #include "../../../src/prefill/mmq_resident_sort.hpp"
 #include "../../../src/prefill/wmma_gemm.h"
@@ -644,6 +647,9 @@ struct PeerPrefill {
 };
 
 struct Prefill::Impl {
+#ifdef STRATA_SYCL_PREFILL_IQ4NL_CALLER_CENSUS
+    std::unique_ptr<detail::Iq4nlCallerCensus> iq4nl_census;
+#endif
 #ifdef STRATA_SYCL_PREFILL_IQ4NL_DEQUANT
     bool iq4nl_down_dequant = false; // frozen by init, never read from env during runs
 #endif
@@ -1070,6 +1076,13 @@ bool Prefill::init(const core::WeightTable &wt, const core::ModelGeometry &g,
     Impl& m = *impl_;
 #ifdef STRATA_SYCL_PREFILL_IQ4NL_DEQUANT
     m.iq4nl_down_dequant = iq4nl_enabled;
+#endif
+#ifdef STRATA_SYCL_PREFILL_IQ4NL_CALLER_CENSUS
+    const char* census_env = std::getenv("STRATA_SYCL_PREFILL_IQ4NL_CALLER_CENSUS");
+    if (census_env && census_env[0] == '1' && census_env[1] == '\0')
+        m.iq4nl_census = std::make_unique<detail::Iq4nlCallerCensus>();
+    else
+        m.iq4nl_census.reset();
 #endif
     m.wt = &wt; m.g = &g; m.ss = &ss; m.src = src; m.cache = cache; m.host_res = host_res;
     m.T = chunk; m.cs = strata::q_of(stream); m.stats = &stats_;
@@ -2359,9 +2372,23 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
     const bool multiple = n > impl_->T || (first > 0 && first < impl_->T && n > 2 * first);
     // =1 reuses weights across chunks. =2 also forces one-chunk runs for equivalence diagnostics.
     const bool layer_major = mode && (std::atoi(mode) == 2 || (std::atoi(mode) == 1 && multiple));
+#ifdef STRATA_SYCL_PREFILL_IQ4NL_CALLER_CENSUS
+    if (impl_->iq4nl_census) {
+        bool private_enabled = false;
+#ifdef STRATA_SYCL_PREFILL_IQ4NL_DEQUANT
+        private_enabled = impl_->iq4nl_down_dequant;
+#endif
+        impl_->iq4nl_census->begin(n, impl_->g->n_layers, impl_->g->n_expert,
+            layer_major, private_enabled,
+            next_ != nullptr || stage_lb_ != 0 || stage_le_ != impl_->g->n_layers || core::peer_portable());
+    }
+#endif
     const bool ok = layer_major ? run_layer_major(tokens, n, pos0, err) : run_impl(tokens, n, pos0, err);
     std::string drain_error;
     const bool drained = drain_pipeline(drain_error);
+#ifdef STRATA_SYCL_PREFILL_IQ4NL_CALLER_CENSUS
+    if (impl_->iq4nl_census) impl_->iq4nl_census->report(ok, drained);
+#endif
     if (!ok) return false;
     if (!drained) { err = drain_error; return false; }
     // Optional equality diagnostic, outside normal timing: authoritative K/V,
@@ -3520,6 +3547,9 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
         }
         };
         for (int64_t l = LB; l < LE; ++l) {
+#ifdef STRATA_SYCL_PREFILL_IQ4NL_CALLER_CENSUS
+            if (m.iq4nl_census) m.iq4nl_census->chunk(l, c0, T);
+#endif
             core::progress_beat();   // the serve watchdog: a prompt chunk of 8192 tokens is still moving
             if (l > LB) pf_step("reading the prompt (batched, step sync): the experts and the rest of layer", l - 1);
             core::progress_at("reading the prompt (batched): layer", l, p0);   // #251: a stall names layer and chunk
@@ -4035,6 +4065,10 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
                     }
                     size_t n_order = 0;                   // the routed experts (the debug report; unknown when fused)
                     bool peer_now = false;                // multi-GPU: the peer computed rows of this layer (MMQ path only)
+#ifdef STRATA_SYCL_PREFILL_IQ4NL_CALLER_CENSUS
+                    if (m.iq4nl_census && (fused_l || use_mmq || !lay.native || !no_peer))
+                        m.iq4nl_census->unsupported = true;
+#endif
                     if (fused_l) {
                         if (static bool said = false; !said) {
                             said = true;
@@ -4142,6 +4176,14 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
                             if (e < 0 || e >= m.g->n_expert) { err = "prefill: routed id out of range"; return false; }
                             ++m.cnt[(size_t) e];
                         }
+#ifdef STRATA_SYCL_PREFILL_IQ4NL_CALLER_CENSUS
+                        if (m.iq4nl_census) {
+                            uint64_t routed_rows = 0;
+                            for (int32_t e = 0; e < m.g->n_expert; ++e)
+                                m.iq4nl_census->add(routed_rows, uint64_t(m.cnt[(size_t)e]));
+                            m.iq4nl_census->routed(l, T, K, routed_rows);
+                        }
+#endif
                         // multi-GPU: the rows of the experts the peer computes go last, as one block [rows_local, T*K)
                         const bool pre_mmq = mmq_plan().any && mmq_plan().layer[(size_t) l];
                         std::vector<char> on_peer;
@@ -4188,6 +4230,10 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
                                 (!on_peer.empty() && on_peer[(size_t) e] ? order_peer : order).push_back(e);
                         for (int32_t e = 0; e < m.g->n_expert && !on_peer.empty(); ++e)   // the peer-streamed ones last:
                             if (on_peer[(size_t) e] == 2) order_peer.push_back(e);        // their copies get the most time
+#ifdef STRATA_SYCL_PREFILL_IQ4NL_CALLER_CENSUS
+                        if (m.iq4nl_census)
+                            for (int32_t e : order) m.iq4nl_census->decision(l, e, m.cnt[(size_t)e]);
+#endif
                         // Aurora (STRATA_MMQ_RESIDENT_SORT_NE=1, opt-in): a layer whose experts are ALL resident and
                         // run through MMQ groups takes them in row-count order, so each 16-expert group's max_rows
                         // (its padded tile rows) is close to its experts' own; slot/src/off are rebuilt coherently
@@ -4801,6 +4847,14 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
                                 const auto& f = lay.fmt[(size_t) l];
                                 strata::kernels::iq_dequant_gu_f16(f.gu_type, blob_dev, blob_dev + f.up_off, f.n_ff, f.n_embd,
                                                                    m.dq_gu[q], m.cs);
+#ifdef STRATA_SYCL_PREFILL_IQ4NL_CALLER_CENSUS
+                                bool census_private = false;
+#ifdef STRATA_SYCL_PREFILL_IQ4NL_DEQUANT
+                                census_private = m.iq4nl_down_dequant && f.d_type == 20;
+#endif
+                                if (m.iq4nl_census)
+                                    m.iq4nl_census->selected(l, e, f.gu_type, f.d_type, f.n_embd, f.n_ff, census_private);
+#endif
 #ifdef STRATA_SYCL_PREFILL_IQ4NL_DEQUANT
                                 if (m.iq4nl_down_dequant && f.d_type == 20) {
                                     strata::kernels::iq_dequant_f16_prefill_iq4nl(f.d_type, blob_dev + f.down_off,
@@ -4808,6 +4862,9 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
                                 } else
 #endif
                                 strata::kernels::iq_dequant_f16(f.d_type, blob_dev + f.down_off, f.n_embd * f.n_ff, m.dq_d[q], m.cs);
+#ifdef STRATA_SYCL_PREFILL_IQ4NL_CALLER_CENSUS
+                                if (m.iq4nl_census) m.iq4nl_census->returned(l, e, census_private);
+#endif
                             } else {
                                 blob_dequant_f16(blob_dev, m.dq_gu[q], m.dq_d[q], m.cs);
                             }

@@ -466,3 +466,9 @@ if(STRATA_SYCL_PREFILL_IQ4NL_HOST_WALL)
   target_compile_definitions(prefill_iq4nl_host_wall PRIVATE STRATA_SYCL_PREFILL_IQ4NL_DEQUANT=1 STRATA_SYCL_PREFILL_IQ4NL_EVENT_RECEIPT=1)
   target_link_libraries(prefill_iq4nl_host_wall PRIVATE strata_kernels ${STRATA_ZE_LOADER})
 endif()
+
+# Host-only actual-caller census; independent of the private dequant option.
+option(STRATA_SYCL_PREFILL_IQ4NL_CALLER_CENSUS "Enable bounded native Down caller census diagnostics" OFF)
+if(STRATA_SYCL_PREFILL_IQ4NL_CALLER_CENSUS)
+  target_compile_definitions(strata_prefill PRIVATE STRATA_SYCL_PREFILL_IQ4NL_CALLER_CENSUS=1)
+endif()
