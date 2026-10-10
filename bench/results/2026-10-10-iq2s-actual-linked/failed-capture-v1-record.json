@@ -1,0 +1,67 @@
+{
+  "active": false,
+  "complete": false,
+  "passed": false,
+  "scope": "Root CPU offline exact new linked symbol capture; no executable/model/GPU run",
+  "controller_sha256": "be89fdf3cc6f93c50e1a172bc16eeb71a420614851e21cf286e3d53b41a9df97",
+  "build_receipt_sha256": "292849fedd2f0b9460304f3c3f317d3b9fcab483734e3d95103d23e4c1131de1",
+  "binary": {
+    "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-nt1-index-spread-20261010/build-iq2s-actual-cohort-release-v1/native_service_calibration",
+    "bytes": 3737208,
+    "sha256": "3b09b5cf3df1e0bebc3607297d10117142fa53d680bf5230fed47f474ce4c7fe"
+  },
+  "source_commit": "1d35cb957f8abdb3ba1527a2abb6f53daffd409b",
+  "commands": [
+    {
+      "argv": [
+        "/usr/bin/nm",
+        "--defined-only",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-nt1-index-spread-20261010/build-iq2s-actual-cohort-release-v1/native_service_calibration"
+      ],
+      "label": "nm-mangled",
+      "exit_code": 0,
+      "stdout_sha256": "ead72558df7b988805cfaf380710a27857ac462c8bae0ee110fd5b3cdc129df0",
+      "stdout_bytes": 153290,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/usr/bin/nm",
+        "-C",
+        "--defined-only",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-nt1-index-spread-20261010/build-iq2s-actual-cohort-release-v1/native_service_calibration"
+      ],
+      "label": "nm-demangled",
+      "exit_code": 0,
+      "stdout_sha256": "7e3179f9634cbc374edc5fc2710989d4d73df538cc12e74db603c98995962851",
+      "stdout_bytes": 197484,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/usr/bin/objdump",
+        "-d",
+        "--demangle",
+        "--no-show-raw-insn",
+        "--disassemble=_ZN6strata7kernels3cpu14q8k_quant_avx2EPKfPvl",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-nt1-index-spread-20261010/build-iq2s-actual-cohort-release-v1/native_service_calibration"
+      ],
+      "label": "custom-q8k",
+      "exit_code": 0,
+      "stdout_sha256": "0cf0e6fe079da584b88aebf3118c4010f048be7680dae6cf70d04d04eadc2877",
+      "stdout_bytes": 343,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "cleanup": [],
+  "survivors": [],
+  "started_utc": "2026-10-10T00:30:24.714367+00:00",
+  "gpu_work_submitted": false,
+  "model_opened": false,
+  "performance_eligible": false,
+  "adopted": false,
+  "symbol_inventory": {},
+  "error": "AssertionError(('custom-q8k', 'empty capture'))",
+  "elapsed_seconds": 0.052925856958609074,
+  "finished_utc": "2026-10-10T00:30:24.762633+00:00"
+}

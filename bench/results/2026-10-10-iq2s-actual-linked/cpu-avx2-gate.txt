@@ -1,0 +1,38 @@
+
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-nt1-index-spread-20261010/build-iq2s-actual-cohort-release-v1/native_service_calibration:     file format elf64-x86-64
+
+
+Disassembly of section .init:
+
+Disassembly of section .plt:
+
+Disassembly of section .plt.got:
+
+Disassembly of section .text:
+
+000000000041b830 <_ZN6strata7kernels3cpu11cpu_avx2_okEv>:
+  41b830:	push   %rbx
+  41b831:	movzbl 0x3488a0(%rip),%eax        # 7640d8 <_ZGVZN6strata7kernels3cpu11cpu_avx2_okEvE2ok>
+  41b838:	test   %al,%al
+  41b83a:	je     41b845 <_ZN6strata7kernels3cpu11cpu_avx2_okEv+0x15>
+  41b83c:	movzbl 0x34888d(%rip),%eax        # 7640d0 <_ZZN6strata7kernels3cpu11cpu_avx2_okEvE2ok>
+  41b843:	pop    %rbx
+  41b844:	ret
+  41b845:	mov    $0x7640d8,%edi
+  41b84a:	call   405a10 <__cxa_guard_acquire@plt>
+  41b84f:	test   %eax,%eax
+  41b851:	je     41b83c <_ZN6strata7kernels3cpu11cpu_avx2_okEv+0xc>
+  41b853:	call   41b890 <_ZZN6strata7kernels3cpu11cpu_avx2_okEvENK3$_0clEv>
+  41b858:	mov    %al,0x348872(%rip)        # 7640d0 <_ZZN6strata7kernels3cpu11cpu_avx2_okEvE2ok>
+  41b85e:	mov    $0x7640d8,%edi
+  41b863:	call   405340 <__cxa_guard_release@plt>
+  41b868:	movzbl 0x348861(%rip),%eax        # 7640d0 <_ZZN6strata7kernels3cpu11cpu_avx2_okEvE2ok>
+  41b86f:	pop    %rbx
+  41b870:	ret
+  41b871:	mov    %rax,%rbx
+  41b874:	mov    $0x7640d8,%edi
+  41b879:	call   405320 <__cxa_guard_abort@plt>
+  41b87e:	mov    %rbx,%rdi
+  41b881:	call   4059d0 <_Unwind_Resume@plt>
+
+Disassembly of section .fini:

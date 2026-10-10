@@ -1,0 +1,155 @@
+
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-nt1-index-spread-20261010/build-iq2s-actual-cohort-release-v1/native_service_calibration:     file format elf64-x86-64
+
+
+Disassembly of section .init:
+
+Disassembly of section .plt:
+
+Disassembly of section .plt.got:
+
+Disassembly of section .text:
+
+00000000005b4e80 <ggml_vec_dot_iq2_s_q8_K>:
+  5b4e80:	push   %rbp
+  5b4e81:	push   %r15
+  5b4e83:	push   %r14
+  5b4e85:	push   %r13
+  5b4e87:	push   %r12
+  5b4e89:	push   %rbx
+  5b4e8a:	mov    %rsi,-0x8(%rsp)
+  5b4e8f:	vxorps %xmm6,%xmm6,%xmm6
+  5b4e93:	cmp    $0x100,%edi
+  5b4e99:	jl     5b50f1 <ggml_vec_dot_iq2_s_q8_K+0x271>
+  5b4e9f:	vpbroadcastb 0x15e8a1(%rip),%xmm1        # 713749 <_ZTSN4ggml3cpu17extra_buffer_typeE+0x939>
+  5b4ea8:	vpbroadcastb 0x15e899(%rip),%xmm2        # 71374a <_ZTSN4ggml3cpu17extra_buffer_typeE+0x93a>
+  5b4eb1:	vmovdqu 0x139607(%rip),%ymm3        # 6ee4c0 <_ZTSNSt6thread11_State_implINS_8_InvokerISt5tupleIJZN6strata7kernels3cpu10ExpertPoolC1EibbNS5_12PoolAffinityEiE3$_0EEEEEE+0x148>
+  5b4eb9:	vpbroadcastq 0x12ce6e(%rip),%ymm4        # 6e1d30 <_zero_none+0x80>
+  5b4ec2:	shr    $0x8,%edi
+  5b4ec5:	lea    0x4(%r9),%rax
+  5b4ec9:	vpxor  %xmm0,%xmm0,%xmm0
+  5b4ecd:	xor    %esi,%esi
+  5b4ecf:	mov    %rcx,%r8
+  5b4ed2:	vxorps %xmm5,%xmm5,%xmm5
+  5b4ed6:	cs nopw 0x0(%rax,%rax,1)
+  5b4ee0:	imul   $0x52,%rsi,%r10
+  5b4ee4:	vpxor  %xmm10,%xmm10,%xmm10
+  5b4ee9:	vmovq  0x4a(%rcx,%r10,1),%xmm8
+  5b4ef0:	movzwl (%rcx,%r10,1),%r11d
+  5b4ef5:	mov    $0xfffffffffffffffe,%r10
+  5b4efc:	vmovss 0x7683c0(,%r11,4),%xmm6
+  5b4f06:	imul   $0x124,%rsi,%r11
+  5b4f0d:	vpsrlq $0x4,%xmm8,%xmm9
+  5b4f13:	vmovss (%r9,%r11,1),%xmm7
+  5b4f19:	xor    %r11d,%r11d
+  5b4f1c:	vpunpcklqdq %xmm9,%xmm8,%xmm8
+  5b4f21:	vpxor  %xmm9,%xmm9,%xmm9
+  5b4f26:	vpaddw %xmm8,%xmm8,%xmm8
+  5b4f2b:	vpand  %xmm1,%xmm8,%xmm8
+  5b4f2f:	vpor   %xmm2,%xmm8,%xmm8
+  5b4f33:	vpmovzxbw %xmm8,%ymm8
+  5b4f38:	nopl   0x0(%rax,%rax,1)
+  5b4f40:	movzbl 0x44(%r8,%r10,1),%r13d
+  5b4f46:	lea    0xd(%r8,%r10,4),%rbx
+  5b4f4b:	movzbl -0x1(%rbx),%r12d
+  5b4f50:	movzbl 0x4(%rbx),%ebp
+  5b4f54:	lea    0x0(,%r13,4),%r15d
+  5b4f5c:	mov    (%rbx),%r15b
+  5b4f5f:	mov    %r13d,%edx
+  5b4f62:	and    $0x30,%edx
+  5b4f65:	mov    %r13d,%r14d
+  5b4f68:	and    $0xc,%r14d
+  5b4f6c:	and    $0x3,%r13d
+  5b4f70:	shl    $0x4,%edx
+  5b4f73:	shl    $0x6,%r14d
+  5b4f77:	shl    $0x8,%r13d
+  5b4f7b:	or     %r12d,%edx
+  5b4f7e:	movzbl -0x2(%rbx),%r12d
+  5b4f83:	vmovq  0x715360(,%rdx,8),%xmm12
+  5b4f8c:	vmovq  0x715360(,%r15,8),%xmm11
+  5b4f96:	or     %r12d,%r14d
+  5b4f99:	movzbl -0x3(%rbx),%r12d
+  5b4f9e:	or     %r12d,%r13d
+  5b4fa1:	vpunpcklqdq %xmm11,%xmm12,%xmm11
+  5b4fa6:	vmovq  0x715360(,%r14,8),%xmm12
+  5b4fb0:	movzbl 0x45(%r8,%r10,1),%r14d
+  5b4fb6:	vmovq  0x715360(,%r13,8),%xmm13
+  5b4fc0:	movzbl 0x1(%rbx),%r13d
+  5b4fc5:	add    $0x2,%r10
+  5b4fc9:	lea    0x0(,%r14,4),%edx
+  5b4fd1:	mov    %bpl,%dl
+  5b4fd4:	movzbl 0x3(%rbx),%ebp
+  5b4fd8:	mov    %r14d,%r15d
+  5b4fdb:	and    $0x30,%r15d
+  5b4fdf:	mov    %r14d,%r12d
+  5b4fe2:	and    $0xc,%r12d
+  5b4fe6:	and    $0x3,%r14d
+  5b4fea:	shl    $0x4,%r15d
+  5b4fee:	shl    $0x8,%r14d
+  5b4ff2:	shl    $0x6,%r12d
+  5b4ff6:	or     %r13d,%r14d
+  5b4ff9:	vpunpcklqdq %xmm12,%xmm13,%xmm12
+  5b4ffe:	vmovq  0x715360(,%r14,8),%xmm14
+  5b5008:	vinserti128 $0x1,%xmm11,%ymm12,%ymm11
+  5b500e:	vmovq  0x715360(,%rdx,8),%xmm12
+  5b5017:	or     %ebp,%r15d
+  5b501a:	movzbl 0x2(%rbx),%ebp
+  5b501e:	vmovq  0x715360(,%r15,8),%xmm13
+  5b5028:	or     %ebp,%r12d
+  5b502b:	vpunpcklqdq %xmm12,%xmm13,%xmm12
+  5b5030:	vmovq  0x715360(,%r12,8),%xmm13
+  5b503a:	vpunpcklqdq %xmm13,%xmm14,%xmm13
+  5b503f:	vinserti128 $0x1,%xmm12,%ymm13,%ymm12
+  5b5045:	vpbroadcastd 0x1d(%rbx),%ymm13
+  5b504b:	vpshufb %ymm3,%ymm13,%ymm13
+  5b5050:	vpand  %ymm4,%ymm13,%ymm13
+  5b5054:	vpcmpeqb %ymm0,%ymm13,%ymm13
+  5b5058:	vpxor  (%rax,%r11,1),%ymm13,%ymm14
+  5b505e:	vpsubb %ymm14,%ymm13,%ymm13
+  5b5063:	vpmaddubsw %ymm13,%ymm11,%ymm11
+  5b5068:	vpbroadcastd 0x21(%rbx),%ymm13
+  5b506e:	vpshufb %ymm3,%ymm13,%ymm13
+  5b5073:	vpand  %ymm4,%ymm13,%ymm13
+  5b5077:	vpcmpeqb %ymm0,%ymm13,%ymm13
+  5b507b:	vpxor  0x20(%rax,%r11,1),%ymm13,%ymm14
+  5b5082:	vpsubb %ymm14,%ymm13,%ymm13
+  5b5087:	vpshufb 0x71bf60(%r11),%ymm8,%ymm14
+  5b5090:	vpmaddubsw %ymm13,%ymm12,%ymm12
+  5b5095:	vpmaddwd %ymm14,%ymm11,%ymm11
+  5b509a:	vpaddd %ymm9,%ymm11,%ymm9
+  5b509f:	vpshufb 0x71bf80(%r11),%ymm8,%ymm11
+  5b50a8:	add    $0x40,%r11
+  5b50ac:	vpmaddwd %ymm11,%ymm12,%ymm11
+  5b50b1:	vpaddd %ymm10,%ymm11,%ymm10
+  5b50b6:	cmp    $0x6,%r10
+  5b50ba:	jb     5b4f40 <ggml_vec_dot_iq2_s_q8_K+0xc0>
+  5b50c0:	vmulss %xmm7,%xmm6,%xmm6
+  5b50c4:	inc    %rsi
+  5b50c7:	add    $0x52,%r8
+  5b50cb:	add    $0x124,%rax
+  5b50d1:	vbroadcastss %xmm6,%ymm7
+  5b50d6:	vpaddd %ymm10,%ymm9,%ymm6
+  5b50db:	vcvtdq2ps %ymm6,%ymm6
+  5b50df:	vfmadd213ps %ymm5,%ymm7,%ymm6
+  5b50e4:	vmovaps %ymm6,%ymm5
+  5b50e8:	cmp    %rdi,%rsi
+  5b50eb:	jne    5b4ee0 <ggml_vec_dot_iq2_s_q8_K+0x60>
+  5b50f1:	vextractf128 $0x1,%ymm6,%xmm0
+  5b50f7:	mov    -0x8(%rsp),%rax
+  5b50fc:	vaddps %xmm6,%xmm0,%xmm0
+  5b5100:	vshufpd $0x1,%xmm0,%xmm0,%xmm1
+  5b5105:	vaddps %xmm1,%xmm0,%xmm0
+  5b5109:	vmovshdup %xmm0,%xmm1
+  5b510d:	vaddss %xmm1,%xmm0,%xmm0
+  5b5111:	vmulss 0x12af1b(%rip),%xmm0,%xmm0        # 6e0034 <_IO_stdin_used+0x34>
+  5b5119:	vmovss %xmm0,(%rax)
+  5b511d:	pop    %rbx
+  5b511e:	pop    %r12
+  5b5120:	pop    %r13
+  5b5122:	pop    %r14
+  5b5124:	pop    %r15
+  5b5126:	pop    %rbp
+  5b5127:	vzeroupper
+  5b512a:	ret
+
+Disassembly of section .fini:

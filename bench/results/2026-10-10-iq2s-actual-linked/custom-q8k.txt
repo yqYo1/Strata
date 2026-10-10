@@ -1,0 +1,216 @@
+
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-nt1-index-spread-20261010/build-iq2s-actual-cohort-release-v1/native_service_calibration:     file format elf64-x86-64
+
+
+Disassembly of section .init:
+
+Disassembly of section .plt:
+
+Disassembly of section .plt.got:
+
+Disassembly of section .text:
+
+0000000000446a00 <_ZN6strata7kernels3cpu14q8k_quant_avx2EPKfPvl>:
+  446a00:	lea    0xff(%rdx),%rax
+  446a07:	test   %rdx,%rdx
+  446a0a:	cmovns %rdx,%rax
+  446a0e:	cmp    $0x100,%rdx
+  446a15:	jl     446e66 <_ZN6strata7kernels3cpu14q8k_quant_avx2EPKfPvl+0x466>
+  446a1b:	sar    $0x8,%rax
+  446a1f:	lea    0x106(%rsi),%rcx
+  446a26:	xor    %edx,%edx
+  446a28:	vbroadcastss 0x2995d7(%rip),%ymm0        # 6e0008 <_IO_stdin_used+0x8>
+  446a31:	vxorps %xmm1,%xmm1,%xmm1
+  446a35:	vxorps %xmm2,%xmm2,%xmm2
+  446a39:	vbroadcastss 0x2995e6(%rip),%ymm3        # 6e0028 <_IO_stdin_used+0x28>
+  446a42:	vbroadcastss 0x2995e1(%rip),%ymm4        # 6e002c <_IO_stdin_used+0x2c>
+  446a4b:	vpbroadcastd 0x2995dc(%rip),%ymm5        # 6e0030 <_IO_stdin_used+0x30>
+  446a54:	vmovdqu 0x2a79a4(%rip),%ymm7        # 6ee400 <_ZTSNSt6thread11_State_implINS_8_InvokerISt5tupleIJZN6strata7kernels3cpu10ExpertPoolC1EibbNS5_12PoolAffinityEiE3$_0EEEEEE+0x88>
+  446a5c:	vmovss 0x2995a0(%rip),%xmm8        # 6e0004 <_IO_stdin_used+0x4>
+  446a64:	mov    %rsi,%r8
+  446a67:	jmp    446ae2 <_ZN6strata7kernels3cpu14q8k_quant_avx2EPKfPvl+0xe2>
+  446a69:	nopl   0x0(%rax)
+  446a70:	imul   $0x124,%rdx,%r9
+  446a77:	add    %rsi,%r9
+  446a7a:	add    $0xe0,%r9
+  446a81:	vmovups %ymm1,(%r9)
+  446a86:	vmovups %ymm1,-0x20(%r9)
+  446a8c:	vmovups %ymm1,-0x40(%r9)
+  446a92:	vmovups %ymm1,-0x60(%r9)
+  446a98:	vmovups %ymm1,-0x80(%r9)
+  446a9e:	vmovups %ymm1,-0xa0(%r9)
+  446aa7:	vmovups %ymm1,-0xc0(%r9)
+  446ab0:	vmovups %ymm1,-0xe0(%r9)
+  446ab9:	movl   $0x0,0x20(%r9)
+  446ac1:	inc    %rdx
+  446ac4:	add    $0x400,%rdi
+  446acb:	add    $0x124,%rcx
+  446ad2:	add    $0x124,%r8
+  446ad9:	cmp    %rax,%rdx
+  446adc:	je     446e66 <_ZN6strata7kernels3cpu14q8k_quant_avx2EPKfPvl+0x466>
+  446ae2:	vandps (%rdi),%ymm0,%ymm9
+  446ae6:	vandps 0x20(%rdi),%ymm0,%ymm10
+  446aeb:	vmaxps %ymm1,%ymm9,%ymm9
+  446aef:	vmaxps %ymm9,%ymm10,%ymm9
+  446af4:	vandps 0x40(%rdi),%ymm0,%ymm10
+  446af9:	vmaxps %ymm9,%ymm10,%ymm9
+  446afe:	vandps 0x60(%rdi),%ymm0,%ymm10
+  446b03:	vmaxps %ymm9,%ymm10,%ymm9
+  446b08:	vandps 0x80(%rdi),%ymm0,%ymm10
+  446b10:	vandps 0xa0(%rdi),%ymm0,%ymm11
+  446b18:	vmaxps %ymm9,%ymm10,%ymm9
+  446b1d:	vmaxps %ymm9,%ymm11,%ymm9
+  446b22:	vandps 0xc0(%rdi),%ymm0,%ymm10
+  446b2a:	vmaxps %ymm9,%ymm10,%ymm9
+  446b2f:	vandps 0xe0(%rdi),%ymm0,%ymm10
+  446b37:	vmaxps %ymm9,%ymm10,%ymm9
+  446b3c:	vandps 0x100(%rdi),%ymm0,%ymm10
+  446b44:	vandps 0x120(%rdi),%ymm0,%ymm11
+  446b4c:	vmaxps %ymm9,%ymm10,%ymm9
+  446b51:	vmaxps %ymm9,%ymm11,%ymm9
+  446b56:	vandps 0x140(%rdi),%ymm0,%ymm10
+  446b5e:	vmaxps %ymm9,%ymm10,%ymm9
+  446b63:	vandps 0x160(%rdi),%ymm0,%ymm10
+  446b6b:	vmaxps %ymm9,%ymm10,%ymm9
+  446b70:	vandps 0x180(%rdi),%ymm0,%ymm10
+  446b78:	vandps 0x1a0(%rdi),%ymm0,%ymm11
+  446b80:	vmaxps %ymm9,%ymm10,%ymm9
+  446b85:	vmaxps %ymm9,%ymm11,%ymm9
+  446b8a:	vandps 0x1c0(%rdi),%ymm0,%ymm10
+  446b92:	vmaxps %ymm9,%ymm10,%ymm9
+  446b97:	vandps 0x1e0(%rdi),%ymm0,%ymm10
+  446b9f:	vmaxps %ymm9,%ymm10,%ymm9
+  446ba4:	vandps 0x200(%rdi),%ymm0,%ymm10
+  446bac:	vandps 0x220(%rdi),%ymm0,%ymm11
+  446bb4:	vmaxps %ymm9,%ymm10,%ymm9
+  446bb9:	vmaxps %ymm9,%ymm11,%ymm9
+  446bbe:	vandps 0x240(%rdi),%ymm0,%ymm10
+  446bc6:	vmaxps %ymm9,%ymm10,%ymm9
+  446bcb:	vandps 0x260(%rdi),%ymm0,%ymm10
+  446bd3:	vmaxps %ymm9,%ymm10,%ymm9
+  446bd8:	vandps 0x280(%rdi),%ymm0,%ymm10
+  446be0:	vandps 0x2a0(%rdi),%ymm0,%ymm11
+  446be8:	vmaxps %ymm9,%ymm10,%ymm9
+  446bed:	vmaxps %ymm9,%ymm11,%ymm9
+  446bf2:	vandps 0x2c0(%rdi),%ymm0,%ymm10
+  446bfa:	vmaxps %ymm9,%ymm10,%ymm9
+  446bff:	vandps 0x2e0(%rdi),%ymm0,%ymm10
+  446c07:	vmaxps %ymm9,%ymm10,%ymm9
+  446c0c:	vandps 0x300(%rdi),%ymm0,%ymm10
+  446c14:	vandps 0x320(%rdi),%ymm0,%ymm11
+  446c1c:	vmaxps %ymm9,%ymm10,%ymm9
+  446c21:	vmaxps %ymm9,%ymm11,%ymm9
+  446c26:	vandps 0x340(%rdi),%ymm0,%ymm10
+  446c2e:	vmaxps %ymm9,%ymm10,%ymm9
+  446c33:	vandps 0x360(%rdi),%ymm0,%ymm10
+  446c3b:	vmaxps %ymm9,%ymm10,%ymm9
+  446c40:	vandps 0x380(%rdi),%ymm0,%ymm10
+  446c48:	vandps 0x3a0(%rdi),%ymm0,%ymm11
+  446c50:	vmaxps %ymm9,%ymm10,%ymm9
+  446c55:	vmaxps %ymm9,%ymm11,%ymm9
+  446c5a:	vandps 0x3c0(%rdi),%ymm0,%ymm10
+  446c62:	vmaxps %ymm9,%ymm10,%ymm9
+  446c67:	vandps 0x3e0(%rdi),%ymm0,%ymm10
+  446c6f:	vmaxps %ymm9,%ymm10,%ymm9
+  446c74:	vextractf128 $0x1,%ymm9,%xmm10
+  446c7a:	vmaxps %xmm10,%xmm9,%xmm9
+  446c7f:	vshufpd $0x3,%xmm9,%xmm9,%xmm10
+  446c85:	vmaxps %xmm10,%xmm9,%xmm9
+  446c8a:	vmovshdup %xmm9,%xmm10
+  446c8f:	vmaxss %xmm10,%xmm9,%xmm9
+  446c94:	vucomiss %xmm2,%xmm9
+  446c98:	jne    446ca0 <_ZN6strata7kernels3cpu14q8k_quant_avx2EPKfPvl+0x2a0>
+  446c9a:	jnp    446a70 <_ZN6strata7kernels3cpu14q8k_quant_avx2EPKfPvl+0x70>
+  446ca0:	vbroadcastss %xmm9,%ymm9
+  446ca5:	mov    $0x8,%r9d
+  446cab:	nopl   0x0(%rax,%rax,1)
+  446cb0:	vandps -0x20(%rdi,%r9,4),%ymm0,%ymm10
+  446cb7:	vcmpeqps %ymm9,%ymm10,%ymm10
+  446cbd:	vmovmskps %ymm10,%r10d
+  446cc2:	test   %r10d,%r10d
+  446cc5:	jne    446d00 <_ZN6strata7kernels3cpu14q8k_quant_avx2EPKfPvl+0x300>
+  446cc7:	vandps (%rdi,%r9,4),%ymm0,%ymm10
+  446ccd:	vcmpeqps %ymm9,%ymm10,%ymm10
+  446cd3:	vmovmskps %ymm10,%r10d
+  446cd8:	test   %r10d,%r10d
+  446cdb:	jne    446d04 <_ZN6strata7kernels3cpu14q8k_quant_avx2EPKfPvl+0x304>
+  446cdd:	add    $0x10,%r9
+  446ce1:	cmp    $0x108,%r9
+  446ce8:	jne    446cb0 <_ZN6strata7kernels3cpu14q8k_quant_avx2EPKfPvl+0x2b0>
+  446cea:	vxorps %xmm9,%xmm9,%xmm9
+  446cef:	jmp    446d29 <_ZN6strata7kernels3cpu14q8k_quant_avx2EPKfPvl+0x329>
+  446cf1:	data16 data16 data16 data16 data16 cs nopw 0x0(%rax,%rax,1)
+  446d00:	add    $0xfffffffffffffff8,%r9
+  446d04:	movzbl %r10b,%r10d
+  446d08:	xor    %r11d,%r11d
+  446d0b:	nopl   0x0(%rax,%rax,1)
+  446d10:	bt     %r11d,%r10d
+  446d14:	lea    0x1(%r11),%r11d
+  446d18:	jae    446d10 <_ZN6strata7kernels3cpu14q8k_quant_avx2EPKfPvl+0x310>
+  446d1a:	add    %r11d,%r9d
+  446d1d:	dec    %r9d
+  446d20:	movslq %r9d,%r9
+  446d23:	vmovss (%rdi,%r9,4),%xmm9
+  446d29:	vmovss 0x2992f3(%rip),%xmm6        # 6e0024 <_IO_stdin_used+0x24>
+  446d31:	vdivss %xmm9,%xmm6,%xmm9
+  446d36:	vbroadcastss %xmm9,%ymm10
+  446d3b:	xor    %r9d,%r9d
+  446d3e:	mov    %rcx,%r10
+  446d41:	data16 data16 data16 data16 data16 cs nopw 0x0(%rax,%rax,1)
+  446d50:	vmulps (%rdi,%r9,4),%ymm10,%ymm11
+  446d56:	vaddps %ymm3,%ymm11,%ymm11
+  446d5a:	vandps %ymm4,%ymm11,%ymm11
+  446d5e:	vpminud %ymm5,%ymm11,%ymm11
+  446d63:	vpslld $0x18,%ymm11,%ymm11
+  446d69:	vmulps 0x20(%rdi,%r9,4),%ymm10,%ymm12
+  446d70:	vpsrad $0x18,%ymm11,%ymm11
+  446d76:	vaddps %ymm3,%ymm12,%ymm12
+  446d7a:	vandps %ymm4,%ymm12,%ymm12
+  446d7e:	vpminud %ymm5,%ymm12,%ymm12
+  446d83:	vpslld $0x18,%ymm12,%ymm12
+  446d89:	vpsrad $0x18,%ymm12,%ymm12
+  446d8f:	vmulps 0x40(%rdi,%r9,4),%ymm10,%ymm13
+  446d96:	vaddps %ymm3,%ymm13,%ymm13
+  446d9a:	vandps %ymm4,%ymm13,%ymm13
+  446d9e:	vpminud %ymm5,%ymm13,%ymm13
+  446da3:	vpslld $0x18,%ymm13,%ymm13
+  446da9:	vpsrad $0x18,%ymm13,%ymm13
+  446daf:	vmulps 0x60(%rdi,%r9,4),%ymm10,%ymm14
+  446db6:	vaddps %ymm3,%ymm14,%ymm14
+  446dba:	vandps %ymm4,%ymm14,%ymm14
+  446dbe:	vpminud %ymm5,%ymm14,%ymm14
+  446dc3:	vpaddd %ymm11,%ymm12,%ymm15
+  446dc8:	vextracti128 $0x1,%ymm15,%xmm6
+  446dce:	vpaddd %xmm6,%xmm15,%xmm6
+  446dd2:	vpshufd $0x4e,%xmm6,%xmm15
+  446dd7:	vpaddd %xmm6,%xmm15,%xmm6
+  446ddb:	vpshufd $0x55,%xmm6,%xmm15
+  446de0:	vpaddd %xmm6,%xmm15,%xmm6
+  446de4:	vpextrw $0x0,%xmm6,-0x2(%r10)
+  446deb:	vpslld $0x18,%ymm14,%ymm6
+  446df1:	vpsrad $0x18,%ymm6,%ymm6
+  446df6:	vpaddd %ymm6,%ymm13,%ymm14
+  446dfa:	vextracti128 $0x1,%ymm14,%xmm15
+  446e00:	vpaddd %xmm15,%xmm14,%xmm14
+  446e05:	vpshufd $0x4e,%xmm14,%xmm15
+  446e0b:	vpaddd %xmm14,%xmm15,%xmm14
+  446e10:	vpshufd $0x55,%xmm14,%xmm15
+  446e16:	vpaddd %xmm14,%xmm15,%xmm14
+  446e1b:	vpextrw $0x0,%xmm14,(%r10)
+  446e21:	vpackssdw %ymm12,%ymm11,%ymm11
+  446e26:	vpackssdw %ymm6,%ymm13,%ymm6
+  446e2a:	vpacksswb %ymm6,%ymm11,%ymm6
+  446e2e:	vpermd %ymm6,%ymm7,%ymm6
+  446e33:	vmovdqu %ymm6,0x4(%r8,%r9,1)
+  446e3a:	add    $0x4,%r10
+  446e3e:	add    $0x20,%r9
+  446e42:	cmp    $0x100,%r9
+  446e49:	jne    446d50 <_ZN6strata7kernels3cpu14q8k_quant_avx2EPKfPvl+0x350>
+  446e4f:	vdivss %xmm9,%xmm8,%xmm6
+  446e54:	imul   $0x124,%rdx,%r9
+  446e5b:	vmovss %xmm6,(%rsi,%r9,1)
+  446e61:	jmp    446ac1 <_ZN6strata7kernels3cpu14q8k_quant_avx2EPKfPvl+0xc1>
+  446e66:	vzeroupper
+  446e69:	ret
+
+Disassembly of section .fini:

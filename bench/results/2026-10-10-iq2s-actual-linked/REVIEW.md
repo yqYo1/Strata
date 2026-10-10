@@ -1,0 +1,11 @@
+# Exact actual-cohort linked instructions
+
+CPU-only offline inspection, no executable, model or GPU execution; no performance result or adoption. The root read every complete symbol body and the three supplemental captures. Binary SHA-256: `3b09b5cf3df1e0bebc3607297d10117142fa53d680bf5230fed47f474ce4c7fe`, rechecked after capture and during archival. The build/source/commands are in the unchanged receipts.
+
+The new binary emits separate multiply and add instructions in the custom Q8_K quantizer; its source-level rounding sequence was not fused. The native activation wrapper checks the cached AVX2 gate and presence of `STRATA_NO_Q8K_AVX2`; the Q8_K branch tail-jumps to that custom quantizer. The gate checks CPUID/XCR0. These are static paths, not proof of the path taken by a live sample. Root must still verify clean environment, runtime gate and absolute MXCSR nearest-even/FTZ/DAZ controls in each admitted run.
+
+The candidate has 32 bytes of local stack allocation for sign scratch versus the direct control's 40 bytes. Those local allocations exclude callee-save pushes. Eight PEXTRW index extracts per 64 values replace the prior index-array roundtrip; no accumulator stack spill appears in this body. Both arms retain two integer accumulators, ascending-block FMA and the final reduction/scaling. This is an emitted-code observation, not evidence that the candidate is faster. The pinned trait uses another FMA operand encoding; finite-domain and actual-weight bitwise checks remain necessary.
+
+The first failed capture combined mangled symbol selection with demangling and produced an empty body. The second selected an extra lambda when matching the AVX2 gate. Their original failed receipts and controllers are retained. Version 3 selects exact symbols and completed normally; the supplemental gate lambda/constants/environment-name bodies were captured separately. Original receipts were not rewritten.
+
+Next admission is the unchanged 384-expert, 15-layer cohort with 245,760 Gate/Up row pairs, plus sanitizer and opt-out checks. Prepared activations are synthetic and finite. Passing this gate cannot establish live 32K inference speed, live activation coverage or the full 262,144-token model lifecycle.

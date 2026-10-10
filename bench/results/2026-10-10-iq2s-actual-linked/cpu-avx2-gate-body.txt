@@ -1,0 +1,68 @@
+
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-nt1-index-spread-20261010/build-iq2s-actual-cohort-release-v1/native_service_calibration:     file format elf64-x86-64
+
+
+Disassembly of section .init:
+
+Disassembly of section .plt:
+
+Disassembly of section .plt.got:
+
+Disassembly of section .text:
+
+000000000041b890 <_ZZN6strata7kernels3cpu11cpu_avx2_okEvENK3$_0clEv>:
+  41b890:	push   %rbx
+  41b891:	movzbl 0x348810(%rip),%eax        # 7640a8 <_ZGVZN6strata7kernels3cpu11cpu_isa_capEvE3cap>
+  41b898:	test   %al,%al
+  41b89a:	je     41b8f9 <_ZZN6strata7kernels3cpu11cpu_avx2_okEvENK3$_0clEv+0x69>
+  41b89c:	xor    %esi,%esi
+  41b89e:	cmpl   $0x2,0x3487fb(%rip)        # 7640a0 <_ZZN6strata7kernels3cpu11cpu_isa_capEvE3cap>
+  41b8a5:	jl     41b8f5 <_ZZN6strata7kernels3cpu11cpu_avx2_okEvENK3$_0clEv+0x65>
+  41b8a7:	xor    %eax,%eax
+  41b8a9:	xor    %ecx,%ecx
+  41b8ab:	xchg   %rdi,%rbx
+  41b8ae:	cpuid
+  41b8b0:	xchg   %rdi,%rbx
+  41b8b3:	cmp    $0x7,%eax
+  41b8b6:	jb     41b8f5 <_ZZN6strata7kernels3cpu11cpu_avx2_okEvENK3$_0clEv+0x65>
+  41b8b8:	xor    %esi,%esi
+  41b8ba:	mov    $0x1,%eax
+  41b8bf:	xor    %ecx,%ecx
+  41b8c1:	xchg   %rdi,%rbx
+  41b8c4:	cpuid
+  41b8c6:	xchg   %rdi,%rbx
+  41b8c9:	not    %ecx
+  41b8cb:	test   $0x38001000,%ecx
+  41b8d1:	jne    41b8f5 <_ZZN6strata7kernels3cpu11cpu_avx2_okEvENK3$_0clEv+0x65>
+  41b8d3:	xor    %esi,%esi
+  41b8d5:	xor    %ecx,%ecx
+  41b8d7:	xgetbv
+  41b8da:	not    %eax
+  41b8dc:	test   $0x6,%al
+  41b8de:	jne    41b8f5 <_ZZN6strata7kernels3cpu11cpu_avx2_okEvENK3$_0clEv+0x65>
+  41b8e0:	xor    %ecx,%ecx
+  41b8e2:	mov    $0x7,%eax
+  41b8e7:	xchg   %rsi,%rbx
+  41b8ea:	cpuid
+  41b8ec:	xchg   %rsi,%rbx
+  41b8ef:	and    $0x20,%esi
+  41b8f2:	shr    $0x5,%esi
+  41b8f5:	mov    %esi,%eax
+  41b8f7:	pop    %rbx
+  41b8f8:	ret
+  41b8f9:	mov    $0x7640a8,%edi
+  41b8fe:	call   405a10 <__cxa_guard_acquire@plt>
+  41b903:	test   %eax,%eax
+  41b905:	je     41b89c <_ZZN6strata7kernels3cpu11cpu_avx2_okEvENK3$_0clEv+0xc>
+  41b907:	call   41b4a0 <_ZZN6strata7kernels3cpu11cpu_isa_capEvENK3$_0clEv>
+  41b90c:	mov    %eax,0x34878e(%rip)        # 7640a0 <_ZZN6strata7kernels3cpu11cpu_isa_capEvE3cap>
+  41b912:	mov    $0x7640a8,%edi
+  41b917:	call   405340 <__cxa_guard_release@plt>
+  41b91c:	jmp    41b89c <_ZZN6strata7kernels3cpu11cpu_avx2_okEvENK3$_0clEv+0xc>
+  41b921:	mov    %rax,%rbx
+  41b924:	mov    $0x7640a8,%edi
+  41b929:	call   405320 <__cxa_guard_abort@plt>
+  41b92e:	mov    %rbx,%rdi
+  41b931:	call   4059d0 <_Unwind_Resume@plt>
+
+Disassembly of section .fini:

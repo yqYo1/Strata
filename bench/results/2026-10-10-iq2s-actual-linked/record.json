@@ -1,0 +1,221 @@
+{
+  "active": false,
+  "complete": true,
+  "passed": true,
+  "scope": "Root CPU offline exact new linked symbol capture; no executable/model/GPU run",
+  "controller_sha256": "89bc28803e973b01164f0a90041be5a653e981444f7751fcbda5b9064da42a6e",
+  "build_receipt_sha256": "292849fedd2f0b9460304f3c3f317d3b9fcab483734e3d95103d23e4c1131de1",
+  "binary": {
+    "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-nt1-index-spread-20261010/build-iq2s-actual-cohort-release-v1/native_service_calibration",
+    "bytes": 3737208,
+    "sha256": "3b09b5cf3df1e0bebc3607297d10117142fa53d680bf5230fed47f474ce4c7fe"
+  },
+  "source_commit": "1d35cb957f8abdb3ba1527a2abb6f53daffd409b",
+  "commands": [
+    {
+      "argv": [
+        "/usr/bin/nm",
+        "--defined-only",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-nt1-index-spread-20261010/build-iq2s-actual-cohort-release-v1/native_service_calibration"
+      ],
+      "label": "nm-mangled",
+      "exit_code": 0,
+      "stdout_sha256": "ead72558df7b988805cfaf380710a27857ac462c8bae0ee110fd5b3cdc129df0",
+      "stdout_bytes": 153290,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/usr/bin/nm",
+        "-C",
+        "--defined-only",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-nt1-index-spread-20261010/build-iq2s-actual-cohort-release-v1/native_service_calibration"
+      ],
+      "label": "nm-demangled",
+      "exit_code": 0,
+      "stdout_sha256": "7e3179f9634cbc374edc5fc2710989d4d73df538cc12e74db603c98995962851",
+      "stdout_bytes": 197484,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/usr/bin/objdump",
+        "-d",
+        "--no-show-raw-insn",
+        "--disassemble=_ZN6strata7kernels3cpu14q8k_quant_avx2EPKfPvl",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-nt1-index-spread-20261010/build-iq2s-actual-cohort-release-v1/native_service_calibration"
+      ],
+      "label": "custom-q8k",
+      "exit_code": 0,
+      "stdout_sha256": "ea53b26805559b9fa9a5beec60e96c4cc2a7d097e7cecd4e66500751cf8ce98d",
+      "stdout_bytes": 8598,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/usr/bin/objdump",
+        "-d",
+        "--no-show-raw-insn",
+        "--disassemble=_ZN6strata7kernels3cpu16native_quant_actERKNS1_9NativeFmtEPKfPv",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-nt1-index-spread-20261010/build-iq2s-actual-cohort-release-v1/native_service_calibration"
+      ],
+      "label": "native-quant-act",
+      "exit_code": 0,
+      "stdout_sha256": "058e517d86be8ac05a2a4a0540923d2ef801732b7b12110704ac3b6bec11bdca",
+      "stdout_bytes": 2907,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/usr/bin/objdump",
+        "-d",
+        "--no-show-raw-insn",
+        "--disassemble=_ZN13isolated_iq2s14direct_controlEiPK11block_iq2_sPK10block_q8_K",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-nt1-index-spread-20261010/build-iq2s-actual-cohort-release-v1/native_service_calibration"
+      ],
+      "label": "direct-control",
+      "exit_code": 0,
+      "stdout_sha256": "e96fdf17ae51f300f24f2d784f9343018b1136a752a7ce44f060fdae94f7b678",
+      "stdout_bytes": 6358,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/usr/bin/objdump",
+        "-d",
+        "--no-show-raw-insn",
+        "--disassemble=_ZN13isolated_iq2s15index_candidateEiPK11block_iq2_sPK10block_q8_K",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-nt1-index-spread-20261010/build-iq2s-actual-cohort-release-v1/native_service_calibration"
+      ],
+      "label": "register-index",
+      "exit_code": 0,
+      "stdout_sha256": "f7d39dc4d87de9d065168eeec682f31b11cde6ec92a0db432be6026f4c1703ca",
+      "stdout_bytes": 5891,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/usr/bin/objdump",
+        "-d",
+        "--no-show-raw-insn",
+        "--disassemble=ggml_vec_dot_iq2_s_q8_K",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-nt1-index-spread-20261010/build-iq2s-actual-cohort-release-v1/native_service_calibration"
+      ],
+      "label": "trait-iq2s",
+      "exit_code": 0,
+      "stdout_sha256": "959379821f3478fe9102001c9ef37f6a66fdba78bdd5fc7fef5a8b1fec4a2b99",
+      "stdout_bytes": 5516,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/usr/bin/objdump",
+        "-d",
+        "--no-show-raw-insn",
+        "--disassemble=quantize_row_q8_K_ref",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-nt1-index-spread-20261010/build-iq2s-actual-cohort-release-v1/native_service_calibration"
+      ],
+      "label": "reference-q8k",
+      "exit_code": 0,
+      "stdout_sha256": "d72b4afbe60648b436c2c0ba709dd46caa685f9f5e3a9ab661f8703cdeeabab9",
+      "stdout_bytes": 15739,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/usr/bin/objdump",
+        "-d",
+        "--no-show-raw-insn",
+        "--disassemble=quantize_row_q8_K",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-nt1-index-spread-20261010/build-iq2s-actual-cohort-release-v1/native_service_calibration"
+      ],
+      "label": "trait-q8k-wrapper",
+      "exit_code": 0,
+      "stdout_sha256": "dfab891d42d0af54f51dea96e40c8dd81716ad2883b086ab223317ef05609721",
+      "stdout_bytes": 430,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/usr/bin/objdump",
+        "-d",
+        "--no-show-raw-insn",
+        "--disassemble=_ZN6strata7kernels3cpu11cpu_avx2_okEv",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-nt1-index-spread-20261010/build-iq2s-actual-cohort-release-v1/native_service_calibration"
+      ],
+      "label": "cpu-avx2-gate",
+      "exit_code": 0,
+      "stdout_sha256": "987d457fdcc2c18dcbde9262bf3b2344ed8589ff691d3ce3c14c217287ce7044",
+      "stdout_bytes": 1497,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "cleanup": [],
+  "survivors": [],
+  "started_utc": "2026-10-10T00:30:54.785048+00:00",
+  "gpu_work_submitted": false,
+  "model_opened": false,
+  "performance_eligible": false,
+  "adopted": false,
+  "symbol_inventory": {
+    "custom-q8k": {
+      "mangled": "_ZN6strata7kernels3cpu14q8k_quant_avx2EPKfPvl",
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/iq2s-actual-linked-capture-v3/custom-q8k.txt",
+      "sha256": "ea53b26805559b9fa9a5beec60e96c4cc2a7d097e7cecd4e66500751cf8ce98d",
+      "bytes": 8598,
+      "lines": 216
+    },
+    "native-quant-act": {
+      "mangled": "_ZN6strata7kernels3cpu16native_quant_actERKNS1_9NativeFmtEPKfPv",
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/iq2s-actual-linked-capture-v3/native-quant-act.txt",
+      "sha256": "058e517d86be8ac05a2a4a0540923d2ef801732b7b12110704ac3b6bec11bdca",
+      "bytes": 2907,
+      "lines": 74
+    },
+    "direct-control": {
+      "mangled": "_ZN13isolated_iq2s14direct_controlEiPK11block_iq2_sPK10block_q8_K",
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/iq2s-actual-linked-capture-v3/direct-control.txt",
+      "sha256": "e96fdf17ae51f300f24f2d784f9343018b1136a752a7ce44f060fdae94f7b678",
+      "bytes": 6358,
+      "lines": 176
+    },
+    "register-index": {
+      "mangled": "_ZN13isolated_iq2s15index_candidateEiPK11block_iq2_sPK10block_q8_K",
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/iq2s-actual-linked-capture-v3/register-index.txt",
+      "sha256": "f7d39dc4d87de9d065168eeec682f31b11cde6ec92a0db432be6026f4c1703ca",
+      "bytes": 5891,
+      "lines": 156
+    },
+    "trait-iq2s": {
+      "mangled": "ggml_vec_dot_iq2_s_q8_K",
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/iq2s-actual-linked-capture-v3/trait-iq2s.txt",
+      "sha256": "959379821f3478fe9102001c9ef37f6a66fdba78bdd5fc7fef5a8b1fec4a2b99",
+      "bytes": 5516,
+      "lines": 155
+    },
+    "reference-q8k": {
+      "mangled": "quantize_row_q8_K_ref",
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/iq2s-actual-linked-capture-v3/reference-q8k.txt",
+      "sha256": "d72b4afbe60648b436c2c0ba709dd46caa685f9f5e3a9ab661f8703cdeeabab9",
+      "bytes": 15739,
+      "lines": 490
+    },
+    "trait-q8k-wrapper": {
+      "mangled": "quantize_row_q8_K",
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/iq2s-actual-linked-capture-v3/trait-q8k-wrapper.txt",
+      "sha256": "dfab891d42d0af54f51dea96e40c8dd81716ad2883b086ab223317ef05609721",
+      "bytes": 430,
+      "lines": 16
+    },
+    "cpu-avx2-gate": {
+      "mangled": "_ZN6strata7kernels3cpu11cpu_avx2_okEv",
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/iq2s-actual-linked-capture-v3/cpu-avx2-gate.txt",
+      "sha256": "987d457fdcc2c18dcbde9262bf3b2344ed8589ff691d3ce3c14c217287ce7044",
+      "bytes": 1497,
+      "lines": 38
+    }
+  },
+  "exit_pin_gate_passed": true,
+  "elapsed_seconds": 0.187108943995554,
+  "finished_utc": "2026-10-10T00:30:54.967689+00:00"
+}

@@ -1,0 +1,176 @@
+
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-iq2s-nt1-index-spread-20261010/build-iq2s-actual-cohort-release-v1/native_service_calibration:     file format elf64-x86-64
+
+
+Disassembly of section .init:
+
+Disassembly of section .plt:
+
+Disassembly of section .plt.got:
+
+Disassembly of section .text:
+
+00000000004d6060 <_ZN13isolated_iq2s14direct_controlEiPK11block_iq2_sPK10block_q8_K>:
+  4d6060:	push   %rbp
+  4d6061:	push   %r15
+  4d6063:	push   %r14
+  4d6065:	push   %r13
+  4d6067:	push   %r12
+  4d6069:	push   %rbx
+  4d606a:	sub    $0x28,%rsp
+  4d606e:	lea    -0x100(%rdi),%eax
+  4d6074:	cmp    $0x1f00,%eax
+  4d6079:	ja     4d6318 <_ZN13isolated_iq2s14direct_controlEiPK11block_iq2_sPK10block_q8_K+0x2b8>
+  4d607f:	test   %dil,%dil
+  4d6082:	jne    4d6318 <_ZN13isolated_iq2s14direct_controlEiPK11block_iq2_sPK10block_q8_K+0x2b8>
+  4d6088:	shr    $0x8,%edi
+  4d608b:	vpxor  %xmm0,%xmm0,%xmm0
+  4d608f:	xor    %eax,%eax
+  4d6091:	vmovdqu 0x20a447(%rip),%xmm1        # 6e04e0 <_IO_stdin_used+0x4e0>
+  4d6099:	vmovdqu 0x20a44f(%rip),%xmm2        # 6e04f0 <_IO_stdin_used+0x4f0>
+  4d60a1:	vmovdqu 0x218417(%rip),%ymm4        # 6ee4c0 <_ZTSNSt6thread11_State_implINS_8_InvokerISt5tupleIJZN6strata7kernels3cpu10ExpertPoolC1EibbNS5_12PoolAffinityEiE3$_0EEEEEE+0x148>
+  4d60a9:	vpbroadcastq 0x20bc7e(%rip),%ymm5        # 6e1d30 <_zero_none+0x80>
+  4d60b2:	vxorps %xmm3,%xmm3,%xmm3
+  4d60b6:	cs nopw 0x0(%rax,%rax,1)
+  4d60c0:	imul   $0x52,%rax,%r9
+  4d60c4:	movzwl (%rsi,%r9,1),%r8d
+  4d60c9:	vmovss 0x7683c0(,%r8,4),%xmm6
+  4d60d3:	imul   $0x124,%rax,%r10
+  4d60da:	vmovss (%rdx,%r10,1),%xmm7
+  4d60e0:	lea    (%rsi,%r9,1),%r8
+  4d60e4:	add    $0x2,%r8
+  4d60e8:	vmovups 0x22(%rsi,%r9,1),%ymm8
+  4d60ef:	vmovups %ymm8,(%rsp)
+  4d60f4:	lea    0x4(%rdx,%r10,1),%rbx
+  4d60f9:	vmovq  0x4a(%rsi,%r9,1),%xmm8
+  4d6100:	vpsrlq $0x4,%xmm8,%xmm9
+  4d6106:	vpunpcklqdq %xmm9,%xmm8,%xmm8
+  4d610b:	vpaddw %xmm8,%xmm8,%xmm8
+  4d6110:	vpand  %xmm1,%xmm8,%xmm8
+  4d6114:	vpor   %xmm2,%xmm8,%xmm8
+  4d6118:	vpmovzxbw %xmm8,%ymm8
+  4d611d:	xor    %r9d,%r9d
+  4d6120:	mov    %r8,%r10
+  4d6123:	mov    %rsp,%r11
+  4d6126:	vpxor  %xmm9,%xmm9,%xmm9
+  4d612b:	vpxor  %xmm10,%xmm10,%xmm10
+  4d6130:	movzbl 0x40(%r8,%r9,1),%r13d
+  4d6136:	lea    0x0(,%r13,4),%r15d
+  4d613e:	mov    0x3(%r10),%r15b
+  4d6142:	movzbl 0x7(%r10),%ebp
+  4d6147:	movzbl 0x2(%r10),%r12d
+  4d614c:	mov    %r13d,%ecx
+  4d614f:	and    $0x30,%ecx
+  4d6152:	shl    $0x4,%ecx
+  4d6155:	or     %r12d,%ecx
+  4d6158:	movzbl 0x1(%r10),%r12d
+  4d615d:	mov    %r13d,%r14d
+  4d6160:	and    $0xc,%r14d
+  4d6164:	shl    $0x6,%r14d
+  4d6168:	or     %r12d,%r14d
+  4d616b:	movzbl (%r10),%r12d
+  4d616f:	and    $0x3,%r13d
+  4d6173:	shl    $0x8,%r13d
+  4d6177:	or     %r12d,%r13d
+  4d617a:	vmovq  0x6fe0d0(,%r15,8),%xmm11
+  4d6184:	vmovq  0x6fe0d0(,%rcx,8),%xmm12
+  4d618d:	vpunpcklqdq %xmm11,%xmm12,%xmm11
+  4d6192:	vmovq  0x6fe0d0(,%r14,8),%xmm12
+  4d619c:	vmovq  0x6fe0d0(,%r13,8),%xmm13
+  4d61a6:	vpunpcklqdq %xmm12,%xmm13,%xmm12
+  4d61ab:	vinserti128 $0x1,%xmm11,%ymm12,%ymm11
+  4d61b1:	movzbl 0x41(%r8,%r9,1),%r14d
+  4d61b7:	lea    0x0(,%r14,4),%ecx
+  4d61bf:	mov    %bpl,%cl
+  4d61c2:	movzbl 0x6(%r10),%ebp
+  4d61c7:	mov    %r14d,%r15d
+  4d61ca:	and    $0x30,%r15d
+  4d61ce:	shl    $0x4,%r15d
+  4d61d2:	or     %ebp,%r15d
+  4d61d5:	movzbl 0x5(%r10),%ebp
+  4d61da:	mov    %r14d,%r12d
+  4d61dd:	and    $0xc,%r12d
+  4d61e1:	shl    $0x6,%r12d
+  4d61e5:	or     %ebp,%r12d
+  4d61e8:	movzbl 0x4(%r10),%ebp
+  4d61ed:	and    $0x3,%r14d
+  4d61f1:	shl    $0x8,%r14d
+  4d61f5:	or     %ebp,%r14d
+  4d61f8:	vmovq  0x6fe0d0(,%rcx,8),%xmm12
+  4d6201:	vmovq  0x6fe0d0(,%r15,8),%xmm13
+  4d620b:	vpunpcklqdq %xmm12,%xmm13,%xmm12
+  4d6210:	vmovq  0x6fe0d0(,%r12,8),%xmm13
+  4d621a:	vmovq  0x6fe0d0(,%r14,8),%xmm14
+  4d6224:	vpunpcklqdq %xmm13,%xmm14,%xmm13
+  4d6229:	vpbroadcastd (%r11),%ymm14
+  4d622e:	vinserti128 $0x1,%xmm12,%ymm13,%ymm12
+  4d6234:	vpshufb %ymm4,%ymm14,%ymm13
+  4d6239:	vpand  %ymm5,%ymm13,%ymm13
+  4d623d:	vpcmpeqb %ymm0,%ymm13,%ymm13
+  4d6241:	vpxor  (%rbx),%ymm13,%ymm14
+  4d6245:	vpsubb %ymm14,%ymm13,%ymm13
+  4d624a:	vpmaddubsw %ymm13,%ymm11,%ymm11
+  4d624f:	vpbroadcastd 0x4(%r11),%ymm13
+  4d6255:	vpshufb %ymm4,%ymm13,%ymm13
+  4d625a:	vpand  %ymm5,%ymm13,%ymm13
+  4d625e:	vpcmpeqb %ymm0,%ymm13,%ymm13
+  4d6262:	vpxor  0x20(%rbx),%ymm13,%ymm14
+  4d6267:	add    $0x40,%rbx
+  4d626b:	lea    0x1(%r9),%rcx
+  4d626f:	add    $0x8,%r10
+  4d6273:	vpsubb %ymm14,%ymm13,%ymm13
+  4d6278:	vpmaddubsw %ymm13,%ymm12,%ymm12
+  4d627d:	mov    %r9,%r14
+  4d6280:	shl    $0x5,%r14
+  4d6284:	vpshufb 0x7008d0(%r14),%ymm8,%ymm13
+  4d628d:	add    $0x8,%r11
+  4d6291:	vpmaddwd %ymm13,%ymm11,%ymm11
+  4d6296:	vpaddd %ymm9,%ymm11,%ymm9
+  4d629b:	shl    $0x5,%rcx
+  4d629f:	vpshufb 0x7008d0(%rcx),%ymm8,%ymm11
+  4d62a8:	vpmaddwd %ymm11,%ymm12,%ymm11
+  4d62ad:	vpaddd %ymm10,%ymm11,%ymm10
+  4d62b2:	cmp    $0x6,%r9
+  4d62b6:	lea    0x2(%r9),%r9
+  4d62ba:	jb     4d6130 <_ZN13isolated_iq2s14direct_controlEiPK11block_iq2_sPK10block_q8_K+0xd0>
+  4d62c0:	vmulss %xmm7,%xmm6,%xmm6
+  4d62c4:	vbroadcastss %xmm6,%ymm6
+  4d62c9:	vpaddd %ymm10,%ymm9,%ymm7
+  4d62ce:	vcvtdq2ps %ymm7,%ymm7
+  4d62d2:	vfmadd231ps %ymm7,%ymm6,%ymm3
+  4d62d7:	inc    %rax
+  4d62da:	cmp    %rdi,%rax
+  4d62dd:	jne    4d60c0 <_ZN13isolated_iq2s14direct_controlEiPK11block_iq2_sPK10block_q8_K+0x60>
+  4d62e3:	vextractf128 $0x1,%ymm3,%xmm0
+  4d62e9:	vaddps %xmm3,%xmm0,%xmm0
+  4d62ed:	vshufpd $0x1,%xmm0,%xmm0,%xmm1
+  4d62f2:	vaddps %xmm1,%xmm0,%xmm0
+  4d62f6:	vmovshdup %xmm0,%xmm1
+  4d62fa:	vaddss %xmm1,%xmm0,%xmm0
+  4d62fe:	vmulss 0x209d2e(%rip),%xmm0,%xmm0        # 6e0034 <_IO_stdin_used+0x34>
+  4d6306:	add    $0x28,%rsp
+  4d630a:	pop    %rbx
+  4d630b:	pop    %r12
+  4d630d:	pop    %r13
+  4d630f:	pop    %r14
+  4d6311:	pop    %r15
+  4d6313:	pop    %rbp
+  4d6314:	vzeroupper
+  4d6317:	ret
+  4d6318:	mov    $0x10,%edi
+  4d631d:	call   405260 <__cxa_allocate_exception@plt>
+  4d6322:	mov    %rax,%rbx
+  4d6325:	mov    $0x6e29b6,%esi
+  4d632a:	mov    %rax,%rdi
+  4d632d:	call   4051d0 <_ZNSt13runtime_errorC1EPKc@plt>
+  4d6332:	mov    $0x7619f0,%esi
+  4d6337:	mov    $0x405510,%edx
+  4d633c:	mov    %rbx,%rdi
+  4d633f:	call   4059a0 <__cxa_throw@plt>
+  4d6344:	mov    %rax,%r14
+  4d6347:	mov    %rbx,%rdi
+  4d634a:	call   4053e0 <__cxa_free_exception@plt>
+  4d634f:	mov    %r14,%rdi
+  4d6352:	call   4059d0 <_Unwind_Resume@plt>
+
+Disassembly of section .fini:
