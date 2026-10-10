@@ -1,0 +1,42 @@
+# R232 — ZFS record granularity and Direct-I/O counter accounting
+
+Date: 2026-10-10 (Asia/Tokyo). Read-only source audit for the PLE page-reader workload, using root-supplied runtime facts and the pinned R221/R226 reader contract. This report is the only workspace/state file written. No device/runtime query, benchmark, build, test, process inspection, Git operation, source edit, or cleanup was performed.
+
+## Finding
+
+OpenZFS 2.4.1's `direct_read_bytes` is not necessarily the application `pread()` byte count. For a true DMU Direct-I/O read, the counter is incremented once per uncached DMU data block with `size=db->db_size` and `iops=1`. Thus it reports logical DMU block bytes, not the caller's requested slice and not lower-level or NAND bytes. The call is in `dmu_read_abd()` in `module/zfs/dmu_direct.c`; Linux `zfs_racct_read()` forwards that same size to `spa_iostats_read_add()`, which adds it to the pool direct counter when `DMU_DIRECTIO` is set. The regular `zfs_read()` path passes the caller's bounded range into this DMU function. [Pinned `dmu_direct.c`](https://github.com/openzfs/zfs/blob/zfs-2.4.1/module/zfs/dmu_direct.c), [Linux `zfs_racct.c`](https://github.com/openzfs/zfs/blob/zfs-2.4.1/module/os/linux/zfs/zfs_racct.c), [pinned `spa_stats.c`](https://github.com/openzfs/zfs/blob/zfs-2.4.1/module/zfs/spa_stats.c), [pinned `zfs_vnops.c`](https://github.com/openzfs/zfs/blob/zfs-2.4.1/module/zfs/zfs_vnops.c).
+
+If the target file's actual data blocks are 128 KiB, a 4 KiB O_DIRECT read touching one block can therefore add 128 KiB to `direct_read_bytes` (32× its application bytes). An 8 KiB read touching one such block can add 128 KiB (16×); if it straddles a 128 KiB boundary, it can touch two records and add up to 256 KiB (32×). A 1 MiB sequential read spanning eight full records adds 1 MiB to this DMU counter, absent cache hits or short blocks. These are logical DMU-accounting ratios conditional on the actual blocks and successful direct path, not measured device amplification. Holes and already-cached DMU blocks do not issue/count a direct ZIO in `dmu_read_abd()`; errors and fallback paths also alter the observed totals.
+
+The supplied `recordsize=131072` is the dataset's current record-size setting, not proof that this existing shard's data blocks are all 128 KiB. It controls maximum record size for newly written data; actual block pointers can reflect earlier settings, smaller writes/tail blocks, holes, or other history. `compression=off` and `compressratio=1.00` reduce one source of logical/physical size divergence but do not reveal the per-block geometry or make the DMU counter a physical-byte counter. The supplied single-leaf NVMe topology removes mirror/RAIDZ multiplication at the pool layout level, but does not equate DMU bytes with leaf block-layer bytes or NAND traffic.
+
+## What the current PLE request pattern implies
+
+R221/R226 establish that PLE deduplicates identical 4 KiB page starts, sorts the remaining page jobs by file offset within a ticket, and issues aligned 4 KiB or 8 KiB O_DIRECT `pread()` calls. The bytes recorded by the reader are actual successful `pread()` return bytes (including a short EOF tail), so they are the application-request denominator for a cross-layer amplification ratio.
+
+With 128 KiB actual data blocks, page deduplication reduces repeated requests for the same 4 KiB page. Sorting changes issue order. Neither operation combines distinct pages in one 128 KiB record into one large request. Under the supplied `primarycache=metadata` and `secondarycache=none`, independent direct reads of several pages in the same record can each cause a full-block DMU read if they are not concurrent reads of the same dbuf; in-flight same-dbuf waiters may share a read, but later direct reads should not be assumed to reuse data. Sorting can improve locality/queue behavior, but it reduces bytes only if it also enables actual same-record coalescing (read a record once, then scatter requested subpages), or if the active path provides a cache/in-flight overlap that removes duplicate block reads. The present per-page `pread()` loop by itself does not perform that coalescing.
+
+The useful amplification measures are separate ratios over the same timed interval: (1) `direct_read_bytes / reader pread-return bytes` for DMU logical-block amplification, alongside direct count; (2) leaf-vdev read bytes / DMU direct bytes for ZFS-to-vdev effects; and (3) block-device read sectors/bytes / leaf-vdev bytes for Linux block-layer effects. They require deltas over a quiet baseline and the same finite workload. Pool counters include all pool activity, so metadata/background traffic and concurrent readers contaminate attribution. The root-supplied counters are suitable for testing whether 4 KiB requests are accounted as 4 KiB or full records; they are not per-file counters. Use the one-leaf vdev and partition block statistics as independent lower-layer views. None of these establish SSD NAND writes/reads or controller-cache behavior.
+
+## Confirming extant block geometry
+
+A read-only `zdb` object/block-pointer dump is the direct way to inspect block sizes for this file, if the installed build supports a path/object query and the invoking user already has the required pool/device access. `zdb` is a pool-inspection tool and commonly requires privileges; do not assume it is available without root. The old `zfs` CLI rejecting `direct` does not by itself prevent a compatible `zdb` from examining file blocks, but with no existing permission to inspect the pool there is no reliable unprivileged property/stat substitute for exact per-block geometry. `stat`, dataset `recordsize`, and `compressratio` do not provide that map. Do not elevate or open raw devices for this audit. If unprivileged `zdb` is unavailable, leave geometry as unknown and use the already-planned bounded workload's pool direct-byte deltas plus leaf and block-device counters to measure observed amplification without claiming exact file geometry.
+
+## Pinned source identity
+
+All code references below are the upstream `zfs-2.4.1` tag, matching the supplied loaded module's upstream version component (`2.4.1-1ubuntu5.1`). Ubuntu packaging may carry patches, so this is a pinned upstream contract, not a byte-for-byte audit of the packaged module. SHA-256 of retrieved raw upstream source files:
+
+- `module/zfs/dmu_direct.c`: `ccfb46d338f3a5fcbbfbf2ac5ca75dd788784bc7f5623ca8336d654ba4fbd58e`
+- `module/os/linux/zfs/zfs_racct.c`: `fbf2cb34b2975ea3fb7deb292c7eae6485eff3e8e25af1d4ac1af4c0e44d65fd`
+- `module/zfs/spa_stats.c`: `a2e4a8a94edc569381336a4e1cf7bef207b4d1473eea779bcc5fccf0340c5e9a`
+- `module/zfs/zfs_vnops.c`: `8342b09c9e7982bd4ebc23c662c221bfc4a52d5a97d16a0f28e19fbd08907f83`
+- `module/zfs/dmu.c`: `bffae5cd82e54b015a386a9498012d7172ad80b09072f1c2ff30a4857cc95f58`
+
+## Primary references
+
+- [OpenZFS 2.4.1 `dmu_direct.c`](https://github.com/openzfs/zfs/blob/zfs-2.4.1/module/zfs/dmu_direct.c): `dmu_read_abd()` loops over dbufs, skips holes and cached blocks, issues `zio_read()` with `db->db_size`, and calls `zfs_racct_read(spa, db->db_size, 1, flags)` for each issued direct block read.
+- [OpenZFS 2.4.1 Linux `zfs_racct.c`](https://github.com/openzfs/zfs/blob/zfs-2.4.1/module/os/linux/zfs/zfs_racct.c): `zfs_racct_read()` passes its `size` argument to `spa_iostats_read_add()` unchanged.
+- [OpenZFS 2.4.1 `spa_stats.c`](https://github.com/openzfs/zfs/blob/zfs-2.4.1/module/zfs/spa_stats.c): `spa_iostats_read_add()` adds its `size` argument to `direct_read_bytes` only when `DMU_DIRECTIO` is set; otherwise it adds to ARC-read bytes.
+- [OpenZFS 2.4.1 `zfs_vnops.c`](https://github.com/openzfs/zfs/blob/zfs-2.4.1/module/zfs/zfs_vnops.c): Linux `zfs_read()` sets `DMU_DIRECTIO`, passes bounded `nbytes` into `dmu_read_uio_dbuf()`, and sends a non-page-sized EOF remainder through the non-direct path.
+- [OpenZFS 2.4.1 `dmu.c`](https://github.com/openzfs/zfs/blob/zfs-2.4.1/module/zfs/dmu.c): `dmu_read_uio_dnode()` forwards direct reads to `dmu_read_uio_direct()` with the requested byte range.
+- [OpenZFS `recordsize` property documentation](https://openzfs.github.io/openzfs-docs/man/master/7/zfsprops.7.html): defines `recordsize` as the maximum block size used for files in a dataset and describes its effect on newly written files; it is not a dump of existing block-pointer geometry.

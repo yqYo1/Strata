@@ -1,0 +1,155 @@
+{
+  "active": false,
+  "complete": true,
+  "passed": true,
+  "source": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/storage_capacity_v2.cpp",
+    "bytes": 27880,
+    "sha256": "5d32e4fb69adae2c85cdc48967132a7297bea8e8e2e8d7f5adc866f2fec280e9"
+  },
+  "controller": {
+    "bytes": 2515,
+    "sha256": "34585f884b1ce9e7a9e3ea4eee899ce73993f8f249c6b73c1e1d890289fb348d"
+  },
+  "parent_owner": {
+    "bytes": 24299,
+    "sha256": "7df012ee4d9bd047a6094ccedb37fddb3d56d4b054d9fdf468534b0fb6e94e1f"
+  },
+  "commands": [
+    {
+      "label": "compile",
+      "argv": [
+        "/usr/bin/g++",
+        "-std=c++20",
+        "-O3",
+        "-pthread",
+        "-Wall",
+        "-Wextra",
+        "-Wpedantic",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/storage_capacity_v2.cpp",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/storage-capacity-v2-build/storage-capacity"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T09:51:20.704241+00:00",
+      "wall_seconds": 120,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1365479,
+          "start_ticks": 31555981,
+          "sid": 1365479,
+          "pgid": 1365479
+        },
+        {
+          "pid": 1365480,
+          "start_ticks": 31555981,
+          "sid": 1365479,
+          "pgid": 1365479
+        }
+      ],
+      "pid": 1365479,
+      "direct_identity": {
+        "pid": 1365479,
+        "state": "R",
+        "ppid": 1365475,
+        "pgid": 1365479,
+        "sid": 1365479,
+        "start_ticks": 31555981,
+        "rss_bytes": 475136
+      },
+      "peak_session_rss_bytes": 194990080,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T09:51:22.561415+00:00",
+      "elapsed_seconds": 1.8569970039534383,
+      "logs": {
+        "compile.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "compile.stderr": {
+          "bytes": 2011,
+          "sha256": "6a58bdaf01f4398f33019b67a182ceb597feaf476870a89aa56244e3f6b291a1"
+        }
+      }
+    },
+    {
+      "label": "dependencies",
+      "argv": [
+        "/usr/bin/readelf",
+        "-d",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/storage-capacity-v2-build/storage-capacity"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-10T09:51:22.561730+00:00",
+      "wall_seconds": 30,
+      "normal_exit": true,
+      "session_empty": true,
+      "observation_complete": true,
+      "cleanup": [],
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1365580,
+          "start_ticks": 31556167,
+          "sid": 1365580,
+          "pgid": 1365580
+        }
+      ],
+      "pid": 1365580,
+      "direct_identity": {
+        "pid": 1365580,
+        "state": "R",
+        "ppid": 1365475,
+        "pgid": 1365580,
+        "sid": 1365580,
+        "start_ticks": 31556167,
+        "rss_bytes": 339968
+      },
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "direct_child_reaped": true,
+      "finished_utc": "2026-10-10T09:51:22.751266+00:00",
+      "elapsed_seconds": 0.18931079999310896,
+      "logs": {
+        "dependencies.stdout": {
+          "bytes": 1592,
+          "sha256": "e9314d53861f44dc46196b5cf0cd85f077364e691c7cc9e2e1a83f7c97f293e8"
+        },
+        "dependencies.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "compiler": "g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+  "gpu_work_submitted": false,
+  "model_inference": false,
+  "adopted": false,
+  "source_review": "Rootfull source-only handoff+source read; v1 originalkept unchanged. v2 aligns sequentialstart to1MiB toavoid unnecessarycrossrecordboundary vs4KiB start beforeanyfixture run.",
+  "memory_scope": "Sourceownedbuffers/stacks/metadata<256MiB; separate runtimeRSS bound.",
+  "dependencies": "\nDynamic section at offset 0xdc28 contains 29 entries:\n  Tag        Type                         Name/Value\n 0x0000000000000001 (NEEDED)             Shared library: [libstdc++.so.6]\n 0x0000000000000001 (NEEDED)             Shared library: [libgcc_s.so.1]\n 0x0000000000000001 (NEEDED)             Shared library: [libc.so.6]\n 0x000000000000000c (INIT)               0x2000\n 0x000000000000000d (FINI)               0xad34\n 0x0000000000000019 (INIT_ARRAY)         0xebb0\n 0x000000000000001b (INIT_ARRAYSZ)       8 (bytes)\n 0x000000000000001a (FINI_ARRAY)         0xebb8\n 0x000000000000001c (FINI_ARRAYSZ)       8 (bytes)\n 0x000000006ffffef5 (GNU_HASH)           0x3b0\n 0x0000000000000005 (STRTAB)             0xa88\n 0x0000000000000006 (SYMTAB)             0x410\n 0x000000000000000a (STRSZ)              1709 (bytes)\n 0x000000000000000b (SYMENT)             24 (bytes)\n 0x0000000000000015 (DEBUG)              0x0\n 0x0000000000000003 (PLTGOT)             0xee38\n 0x0000000000000002 (PLTRELSZ)           1152 (bytes)\n 0x0000000000000014 (PLTREL)             RELA\n 0x0000000000000017 (JMPREL)             0x14e0\n 0x0000000000000007 (RELA)               0x12d0\n 0x0000000000000008 (RELASZ)             528 (bytes)\n 0x0000000000000009 (RELAENT)            24 (bytes)\n 0x000000000000001e (FLAGS)              BIND_NOW\n 0x000000006ffffffb (FLAGS_1)            Flags: NOW PIE\n 0x000000006ffffffe (VERNEED)            0x11c0\n 0x000000006fffffff (VERNEEDNUM)         3\n 0x000000006ffffff0 (VERSYM)             0x1136\n 0x000000006ffffff9 (RELACOUNT)          7\n 0x0000000000000000 (NULL)               0x0\n",
+  "binary": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/storage-capacity-v2-build/storage-capacity",
+    "bytes": 68296,
+    "sha256": "3e0c914ba343c41d1921e01daf3230ee164ec8f2a980bff4af6054cbedf5e704"
+  }
+}

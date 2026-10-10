@@ -1,0 +1,84 @@
+{
+  "commands": {
+    "filesystem": {
+      "argv": [
+        "findmnt",
+        "-T",
+        "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00002-of-00002.gguf",
+        "-J",
+        "-o",
+        "SOURCE,TARGET,FSTYPE,OPTIONS"
+      ],
+      "exitcode": 0,
+      "stdout": "{\n   \"filesystems\": [\n      {\n         \"source\": \"rpool/USERDATA/yayoi\",\n         \"target\": \"/home/yayoi\",\n         \"fstype\": \"zfs\",\n         \"options\": \"rw,noatime,xattr,posixacl,casesensitive\"\n      }\n   ]\n}\n",
+      "stderr": ""
+    },
+    "versions": {
+      "argv": [
+        "zfs",
+        "--version"
+      ],
+      "exitcode": 0,
+      "stdout": "zfs-2.2.2-0ubuntu9.5\nzfs-kmod-2.4.1-1ubuntu5.1\n",
+      "stderr": ""
+    },
+    "pool": {
+      "argv": [
+        "zpool",
+        "status",
+        "-P",
+        "rpool"
+      ],
+      "exitcode": 0,
+      "stdout": "  pool: rpool\n state: ONLINE\n  scan: scrub repaired 0B in 00:21:47 with 0 errors on Sun Sep 13 00:45:50 2026\nconfig:\n\n\tNAME                                                              STATE     READ WRITE CKSUM\n\trpool                                                             ONLINE       0     0     0\n\t  /dev/disk/by-id/nvme-CSSD-M2L2TRGAXN_2000GB_231500008461-part3  ONLINE       0     0     0\n\nerrors: No known data errors\n",
+      "stderr": ""
+    },
+    "dataset": {
+      "argv": [
+        "zfs",
+        "get",
+        "-Hp",
+        "-o",
+        "property,value",
+        "recordsize,compression,compressratio,primarycache,secondarycache,checksum,copies",
+        "rpool/USERDATA/yayoi"
+      ],
+      "exitcode": 0,
+      "stdout": "recordsize\t131072\ncompression\toff\ncompressratio\t1.00\nprimarycache\tmetadata\nsecondarycache\tnone\nchecksum\ton\ncopies\t1\n",
+      "stderr": ""
+    },
+    "direct_property": {
+      "argv": [
+        "zfs",
+        "get",
+        "-Hp",
+        "-o",
+        "property,value",
+        "direct",
+        "rpool/USERDATA/yayoi"
+      ],
+      "exitcode": 2,
+      "stdout": "",
+      "stderr": "bad property list: invalid property 'direct'\n"
+    }
+  },
+  "fields": {
+    "/sys/module/zfs/parameters/zfs_dio_enabled": "1",
+    "/sys/module/zfs/parameters/zfs_dio_strict": "0",
+    "NVMe_sysfs_path": "/sys/devices/pci0000:00/0000:00:01.3/0000:11:00.0/nvme/nvme0",
+    "/sys/block/nvme0n1/dev": "259:4",
+    "/sys/block/nvme0n1/queue/logical_block_size": "512",
+    "/sys/block/nvme0n1/queue/physical_block_size": "512",
+    "/sys/block/nvme0n1/queue/max_sectors_kb": "128",
+    "/sys/devices/pci0000:00/0000:00:01.3/0000:11:00.0/nvme/nvme0/model": "CSSD-M2L2TRGAXN 2000GB",
+    "/sys/devices/pci0000:00/0000:00:01.3/0000:11:00.0/nvme/nvme0/firmware_rev": "VC2S038D",
+    "/sys/devices/pci0000:00/0000:00:01.3/0000:11:00.0/nvme/nvme0/address": "0000:11:00.0",
+    "/sys/devices/pci0000:00/0000:00:01.3/0000:11:00.0/current_link_speed": "8.0 GT/s PCIe",
+    "/sys/devices/pci0000:00/0000:00:01.3/0000:11:00.0/current_link_width": "4",
+    "/sys/devices/pci0000:00/0000:00:01.3/0000:11:00.0/max_link_speed": "8.0 GT/s PCIe",
+    "/sys/devices/pci0000:00/0000:00:01.3/0000:11:00.0/max_link_width": "4"
+  },
+  "page_size": 4096,
+  "boot_id": "0a908c16-e292-4299-80ff-082da39f4bb9",
+  "note": "Read-only observations, unchanged properties. Older userland cannot query direct property; pertrialdirect/ARC counters govern path evidence. No physicalNAND/cache/SSDabsolute ceiling claim."
+}

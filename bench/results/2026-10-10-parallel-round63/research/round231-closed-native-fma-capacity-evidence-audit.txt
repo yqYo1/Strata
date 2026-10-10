@@ -1,0 +1,48 @@
+# R231 — Closed native CPU capacity and FMA-control evidence audit
+
+Date: 2026-10-10. Scope: independent read-only review of the v85 registry, corrections through R62, R220/R224/R227/R229/R230, and the immutable closed CPU-capacity archive at `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-10-cpu-capacity`. Storage worktree HEAD is `792bb6f694088c14bb3e62c4eb4df6db94926a62`; the native fixture pins source commit `dba6bea90192f907cbeecdb75c29aa0e7d1fa449`. Registry v85 SHA-256: `056bd7f8f92f7b18ffedd650a9c5c99b0a973c095832382052b37be4a063a3d7`.
+
+I reviewed the closed normalized records and preserved original receipts, not live process or hardware state. I did not execute a fixture, build, test, profile, modify source, inspect services, or clean artifacts. The v85 R62 corrections are applied: R229's denominators are accepted but do not establish traffic/cause; R227's hot set is an unequal-work/different-expert comparison and its object assertion is not a process-memory ceiling; R224's NT4 spills are emitted-code evidence, not measured dominance. R230 concerns storage and does not alter the CPU evidence.
+
+## Finding
+
+These timings support two bounded results on the recorded Ryzen 5 5600X host and this frozen native fixture: grouping tokens through NT4 reduces direct service time per expert-token relative to the NT1 fallback, and the existing five-worker pool plus host uses available parallel CPU capacity substantially better than a single pinned caller. They do not show whether the remaining time is dominated by integer decode/dot instructions, register spills, cache/DRAM latency, or worker coordination. The native hot-versus-streaming direct contrast is small at NT2–4; that weakens a claim that larger packed-weight footprint alone explains the native timing, but it does not prove an instruction bottleneck. Pool hot-versus-streaming differences are larger and remain confounded by active-set size, expert identity, row work, and pool scheduling. No before/after kernel change was tested, so these are capacity observations, not evidence that an instruction-side or data-movement optimization improved performance.
+
+## Closed-data audit
+
+The archive contains 24 distinct, complete `measure` receipts (three fresh processes for each NT1–4 × hot/streaming condition), all `passed:true`, `complete:true`, inactive, exit 0, and pinned to one native binary hash (`36bd02ed7a471febaa15d5d73611662c27e3701e4bd33bf000f622f438108889`). Each has 250 timed rows and 30 warmups: 6,000 timed rows and 720 warmups total. Each process covers both cohorts and all five arms; the archived summary retains the per-process/per-cohort results. The clean matrix has no profiler instrumentation. Its measures include GU, FF quantization, Down, direct complete, and pool complete; only GU/Down/full have dot-work and packed-byte normalizations.
+
+All four fresh correctness qualifiers pass and are closed, with full 384-payload coverage, normal exit, direct/pool checks, and the predeclared numeric gates. The timing receipts repeat reference comparisons and guards. Their scope is actual packed weights with deterministic synthetic prequantized activations; this is not a model call or full-context qualification. The initial NT1 correctness-only run's original controller receipt remains `passed:false`, `complete:false` with `AssertionError` after it emitted the correctness-pass marker. The later controller2 receipts are separate runs using the same frozen fixture/gates and pass. Preserve the original FAIL; the archive's correction note attributes the failure to final-marker parsing, but it is not rewritten as a pass.
+
+The separate FMA control has three fresh processes at one and six physical cores, each with one warmup and seven measured samples. The full 96 outputs compare with scalar-FMA references. The archived disassembly has twelve independent YMM FP32 FMA accumulators, no loop spill and no memory operand. Process-median aggregate is 146.85 GFLOP/s for one core (process medians 146.65–147.23) and 818.22 GFLOP/s for six cores (792.51–819.01). This verifies attained register-only arithmetic capacity for that FMA loop and host/compiler configuration. It is not the IQ2_S/IQ4_NL instruction mix, and dense-equivalent native FLOP/s must not be divided by it to estimate native-kernel utilization.
+
+## Native service observations
+
+The table is the median of the six process/cohort medians (3 processes × 2 disjoint cohorts). Values are microseconds per active expert-token; `direct` is one pinned caller and `pool` is five workers plus host, with `tasks=0` producing 18 row partitions. Hot8 uses eight selected expert blobs (about 15.04 MiB combined); streaming192 uses 192 selected blobs (about 360.94 MiB combined). The packed extents are logical workload sizes, not measured cache or physical DRAM traffic.
+
+| NT | Set | GU | Down | Direct complete | Pool complete |
+|---:|---|---:|---:|---:|---:|
+| 1 | hot8 | 181.971 | 78.108 | 261.405 | 72.204 |
+| 1 | streaming192 | 201.152 | 83.925 | 286.466 | 90.978 |
+| 2 | hot8 | 139.496 | 61.718 | 198.422 | 48.452 |
+| 2 | streaming192 | 137.526 | 61.863 | 197.137 | 54.215 |
+| 3 | hot8 | 110.070 | 54.482 | 163.160 | 39.076 |
+| 3 | streaming192 | 110.439 | 54.139 | 161.989 | 42.931 |
+| 4 | hot8 | 95.919 | 50.760 | 147.419 | 34.736 |
+| 4 | streaming192 | 96.966 | 50.722 | 148.362 | 38.738 |
+
+At NT4 versus NT1, direct complete time per token is 1.77× lower on hot8 and 1.93× lower on streaming192. This is consistent with useful work amortized by grouped decode and a different NT kernel path; it cannot isolate the source of the gain. At a fixed NT, direct complete streaming is about 9.6% slower at NT1, while NT2–4 are within about 0–1% of their hot medians. This is evidence against a large, uniform working-set penalty in this direct fixture at NT2–4, not evidence that the 360.94 MiB working set stayed out of cache or avoided DRAM. The different selected experts remain a confounder.
+
+Pool complete is 3.15–4.24× faster per token than the corresponding direct medians across these cells. That is evidence that this workload benefits from the existing pool's parallel work, not a worker-efficiency or coordination measurement: the comparison changes from one caller to five workers plus host, and has no per-worker CPU-time or wait counters. Pool streaming medians are 10–26% slower than hot8 across NT1–4, unlike direct NT2–4. The pool difference may reflect memory-system behavior, dispatch/partition/tail effects, expert selection, or their combination. Its wall time and logical bytes/s do not prove any one cause.
+
+Rates in `native-three-process-summary.json` use one MAC = two dense-equivalent FLOPs and logical packed operand extents. They are valid workload-normalization measures only. They are not executed instruction counts, cache-hit rates, physical bandwidth, or a comparison with the register-FMA control. R224's NT4 GU stack spill stays a credible candidate mechanism, but NT4 is fastest in these direct per-token service medians; neither that fact nor static spill instructions measures their cost.
+
+## Smallest useful next discriminator
+
+If a mechanism-level answer is needed, run one separate, narrowly sampled matched direct-GU comparison on this frozen binary: NT3 and NT4, each on hot8 and streaming192, with AMD uProf/PMU core cycles and retired instructions plus available Zen3 L3 miss and Data Fabric/memory-controller byte counters. Keep it separate from the clean timing archive. More core work/instructions without a corresponding cache/memory-traffic increase would favor decode/instruction/register pressure; a streaming-specific rise in L3 misses or controller bytes and cycles would support a data-movement contribution. Use only events verified for this Ryzen 5000/F19h stepping and report unavailable events; counter collection does not itself prove model-level causality. If the specific question changes to pool coordination, this direct-kernel discriminator is insufficient; the existing pool results lack per-thread CPU-time versus wall-time attribution.
+
+AMD's uProf guide documents core PMCs, IBS, Zen L3 counters, and Data Fabric counters, while AMD uProf 4.2 release notes list Ryzen 5000 support. Use its processor-specific event references/PPR and verify actual event availability on the target. Intel VTune's current system-requirements page says hardware event-based sampling requires a genuine Intel processor, so it is not the appropriate AMD PMU collector. Sources: [AMD uProf 4.2 release notes](https://www.amd.com/content/dam/amd/en/documents/developer/version-4-2-documents/uprof/uprof-release-note-v4.2.pdf), [AMD uProf hardware sources](https://docs.amd.com/r/en-US/57368-uProf-user-guide/Hardware-Sources), [AMD Family 19h optimization guide](https://docs.amd.com/v/u/en-US/56665), [Intel VTune system requirements](https://www.intel.com/content/www/us/en/developer/articles/system-requirements/vtune-profiler-system-requirements.html).
+
+## Durable evidence
+
+The frozen archive retains the matrix plan, full native timing rows and summaries, correctness qualifiers including the original failed receipt, FMA source/build/three process records, selected-payload identities, and an archive-file identity manifest. No artifact cleanup was performed. This report is the compact interpretation and should be committed alongside the existing structured archive at the root-owned work boundary.
