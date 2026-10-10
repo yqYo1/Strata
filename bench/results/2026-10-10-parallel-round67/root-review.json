@@ -1,0 +1,34 @@
+{
+  "created_utc": "2026-10-10T10:54:22.727875+00:00",
+  "original_reports": [
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round239-offline-ple-census-independent-evidence-audit.txt",
+      "bytes": 7111,
+      "sha256": "0e98a86b99adbc3408b25fd5337b1fe849ea8b63ec61960aa31161daa7edfc39",
+      "agent": "/root/research_bottleneck_evidence_audit_v203",
+      "model": "gpt-6-luna",
+      "scope": "Independent source/receipt/geometry audit of completed CPU-only PLE census",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round240-cpu-expert-stager-capacity-and-route-limits.txt",
+      "bytes": 9206,
+      "sha256": "526dbb9c5183ae0f9a8568a36e7a3cbbefda09733487c56800b8082c5a347007",
+      "agent": "/root/research_native_iq4nl_esimd_k640_v202",
+      "model": "gpt-6-luna",
+      "scope": "Actual packed host staging and device dequant/GEMM route capacity gaps",
+      "status": "completed-read-only",
+      "root_full_report_reviewed": true
+    }
+  ],
+  "corrections": {
+    "R239": "Narrow independent evidence audit accepted. Metadata kind retains v1 label although source digest/commands are v2; original results unchanged. Final agent message mistyped report directory research-202609; actual verified report path is research-20261009.",
+    "R240": "Host Stager packed copying and GPU IQ dequant route accepted. The384 experts are selected native-service fixture cohort, NOT production graph n_expert; types22/20 and1971200B are this selected fixture, not every model layer. Prior actual-copy analysis shows mixed perlayer blobbytes1510400–2662400 and uses an explicitly512-expert all-layer scenario. Proposed4-worker host control is a distinct test arm, not this machine default: source max(2,min(4,hw/4)) gives3 if hw12; actual effective env/source-transient branch must be pinned. File-transient32-thread/ring128 differs from residentRAM defaults. A CPU-only OS-locked ring is not SYCLhostUSM and cannot reproduce DMA acknowledgment. No production capacity/adoption proof from recipe."
+  },
+  "registry_identity": {
+    "bytes": 248828,
+    "sha256": "295f1e768c32cc3103e65dd3bee495eead4af60c2b2bde51049b0f87737e3e5a"
+  },
+  "adopted": false
+}
