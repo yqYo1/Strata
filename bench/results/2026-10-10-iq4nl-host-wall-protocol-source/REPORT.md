@@ -1,0 +1,7 @@
+# Separate IQ4NL host-wall component protocol
+
+Original device-profile fixture and failed timestamp sample remain unchanged. This new default-OFF target uses an in-order queue without profiling. It retains/validates exact submit-return events and all prior numerical/guard/completion checks, but performs no event timestamp queries. Host steady-clock batch begin to normal wait return measures inclusive instrumented submission and completion wall time; per-call submission duration and wait are separate. It does not measure pure device kernel service.
+
+Eight fixed blocks repeat four Williams orders: 0132,1203,2310,3021. Every cell occupies each position twice; every directed within-block predecessor pair occurs twice. Cross-block predecessors are recorded and can remain unbalanced; no randomization claim. Each cell contains64 helper calls,64 equal-byte source addresses or one repeated address, two output slots. Untimed full64-input plus two-output D2H/oracle checks occur after every cell and condition subsequent cache history. Full independent-RNE replay precedes and follows warmup/cells. No timing-loop log/allocation/copy/query is added beyond existing exact-event retention and clock reads.
+
+Production source/default path and IQ4NL library implementation remain unchanged. Scope is synthetic direct helper components, not actual32K-model prefill, physical262144 lifecycle or decode. No build, runtime, improvement or adoption is established by this source commit.
