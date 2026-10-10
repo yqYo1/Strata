@@ -5,6 +5,7 @@
 #include "strata/sycl_queue.hpp"
 #include "strata/sycl_allocation.hpp"
 #include "strata/prefill/prefill.hpp"
+#include "iq4nl_dequant.hpp"
 #include "strata/core/gguf_expert_source.hpp"
 #include "../../../src/prefill/mmq_resident_sort.hpp"
 #include "../../../src/prefill/wmma_gemm.h"
@@ -42,6 +43,7 @@
 #include "strata/prefill/kernels.hpp"
 
 #include <algorithm>
+#include <cstdlib>
 #include <chrono>
 #include <cmath>
 #include <cstdio>
@@ -642,6 +644,9 @@ struct PeerPrefill {
 };
 
 struct Prefill::Impl {
+#ifdef STRATA_SYCL_PREFILL_IQ4NL_DEQUANT
+    bool iq4nl_down_dequant = false; // frozen by init, never read from env during runs
+#endif
     const core::WeightTable* wt = nullptr;
     const core::ModelGeometry* g = nullptr;
     core::SessionState* ss = nullptr;
@@ -1049,7 +1054,23 @@ bool Prefill::init(const core::WeightTable &wt, const core::ModelGeometry &g,
                    const core::ExpertCache *cache, const int32_t *host_res,
                    int64_t chunk, void *stream, std::string &err, void *borrow,
                    uint64_t borrow_bytes) try {
+    // Validate before any Prefill allocation or submission, including split handoffs.
+    const char* iq4nl_env = std::getenv("STRATA_SYCL_PREFILL_IQ4NL_DEQUANT");
+    const bool iq4nl_enabled = iq4nl_env && iq4nl_env[0] == '1' && iq4nl_env[1] == '\0';
+    if (iq4nl_env && !((iq4nl_env[0] == '0' || iq4nl_env[0] == '1') && iq4nl_env[1] == '\0')) {
+        err = "prefill: STRATA_SYCL_PREFILL_IQ4NL_DEQUANT must be 0 or 1";
+        return false;
+    }
+#ifndef STRATA_SYCL_PREFILL_IQ4NL_DEQUANT
+    if (iq4nl_enabled) {
+        err = "prefill: IQ4NL dequant specialization was not built";
+        return false;
+    }
+#endif
     Impl& m = *impl_;
+#ifdef STRATA_SYCL_PREFILL_IQ4NL_DEQUANT
+    m.iq4nl_down_dequant = iq4nl_enabled;
+#endif
     m.wt = &wt; m.g = &g; m.ss = &ss; m.src = src; m.cache = cache; m.host_res = host_res;
     m.T = chunk; m.cs = strata::q_of(stream); m.stats = &stats_;
     if (!m.cs->is_in_order()) {
@@ -4780,6 +4801,12 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
                                 const auto& f = lay.fmt[(size_t) l];
                                 strata::kernels::iq_dequant_gu_f16(f.gu_type, blob_dev, blob_dev + f.up_off, f.n_ff, f.n_embd,
                                                                    m.dq_gu[q], m.cs);
+#ifdef STRATA_SYCL_PREFILL_IQ4NL_DEQUANT
+                                if (m.iq4nl_down_dequant && f.d_type == 20) {
+                                    strata::kernels::iq_dequant_f16_prefill_iq4nl(f.d_type, blob_dev + f.down_off,
+                                                                             f.n_embd * f.n_ff, m.dq_d[q], m.cs);
+                                } else
+#endif
                                 strata::kernels::iq_dequant_f16(f.d_type, blob_dev + f.down_off, f.n_embd * f.n_ff, m.dq_d[q], m.cs);
                             } else {
                                 blob_dequant_f16(blob_dev, m.dq_gu[q], m.dq_d[q], m.cs);

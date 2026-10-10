@@ -10,6 +10,9 @@
 #include "strata/sycl_math.hpp"
 #include "strata/sycl_queue.hpp"
 #include "strata/kernels/iq_kernels.hpp"
+#include "../../prefill/iq4nl_dequant.hpp"
+#include <limits>
+#include <stdexcept>
 #include "strata/kernels/dp4a.hpp"
 #include "strata/kernels/q8_1_finite.hpp"
 #include "s26_tsum.dp.hpp"
@@ -4288,6 +4291,29 @@ void iq_mmvq(int t, const void* w, const void* x_q8_1, float* y, int n_in, int n
     }
     check("iq_mmvq");
 }
+
+#ifdef STRATA_SYCL_PREFILL_IQ4NL_DEQUANT
+// Only the prefill native-down caller owns this opt-in. No generic retry after submit.
+void iq_dequant_f16_prefill_iq4nl(int type, const void* src, int64_t n,
+                               uint16_t* dst, void* stream) {
+    if (type != 20 || !src || !dst || n <= 0 || n % 256 != 0 ||
+        n / 256 > std::numeric_limits<unsigned>::max())
+        throw std::invalid_argument("prefill IQ4NL dequant: bad arguments");
+    auto exp_props = sycl::ext::oneapi::experimental::properties{};
+    dpct::has_capability_or_fail(strata::q_of(stream)->get_device(), {sycl::aspect::fp16});
+    strata::q_of(stream)->submit([&](sycl::handler &cgh) {
+        cgh.parallel_for<dpct_kernel_name<class prefill_iq4nl_flat_kernel, sycl::half>>(
+            sycl::nd_range<3>(sycl::range(1, 1, (unsigned)(n / 256)) * sycl::range(1, 1, 32),
+                              sycl::range(1, 1, 32)),
+            exp_props, [=](sycl::nd_item<3> item_ct1) {
+                const int64_t i = item_ct1.get_group(2);
+                dq_iq4_nl<sycl::half>(src, i, (sycl::half*)dst + i * QK_K,
+                                     item_ct1.get_local_id(2));
+            });
+    });
+    check("iq_dequant_f16");
+}
+#endif
 
 void iq_dequant_f16(int t, const void* src, int64_t n, uint16_t* dst, void* stream) {
     if (n % 256 != 0 || !is_iq(t)) { std::fprintf(stderr, "iq_dequant_f16: bad arguments\n"); std::exit(1); }

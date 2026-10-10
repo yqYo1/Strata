@@ -280,6 +280,12 @@ target_compile_options(strata_prefill PUBLIC -qmkl=sequential)
 target_link_options(strata_prefill PUBLIC -qmkl=sequential)
 target_link_libraries(strata_prefill PUBLIC strata_engine)
 
+option(STRATA_SYCL_PREFILL_IQ4NL_DEQUANT "Private prefill native-down IQ4_NL dispatch experiment" OFF)
+if(STRATA_SYCL_PREFILL_IQ4NL_DEQUANT)
+  target_compile_definitions(strata_prefill PRIVATE STRATA_SYCL_PREFILL_IQ4NL_DEQUANT=1)
+  target_compile_definitions(strata_kernels PRIVATE STRATA_SYCL_PREFILL_IQ4NL_DEQUANT=1)
+endif()
+
 strata_resolve(_main src/program/generate.cpp)
 add_executable(strata ${_main})
 target_link_libraries(strata PRIVATE strata_engine strata_prefill strata_spec)

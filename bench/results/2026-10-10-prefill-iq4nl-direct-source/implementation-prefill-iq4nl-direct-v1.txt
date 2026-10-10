@@ -1,0 +1,39 @@
+Private prefill IQ4_NL direct-dispatch source-only handoff v1
+2026-10-10. Implementation only; UNBUILT, UNTESTED, no runtime/correctness/performance/adoption claim.
+
+Owner worktree: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-sycl-prefill-iq4nl-direct-20261010
+Owner supplied base: 609a270daac23c9b1a26d26ec092b2f60d2da335.
+Read AGENTS and full R148/R151/R156. Latest owner registry v61 SHA04a5a59986bbebb8cd0b5afa7351a0cba54b7848bf22565cc2e2fcd5706877d6 is provenance, not runtime evidence. No compiler, build, syntax check, executable, import, tests, model payload, device query, profiling, Git, lock, cleanup, services or recovery operation was performed. Only assigned source reads/writes and this report were done. No fixture added, as requested. Root owns every subsequent qualification.
+
+Changed sources (relative to this worktree; bytes / lines / SHA256):
+sycl/src/prefill/prefill.cpp: 321142 / 5375 / b3b8cab8394be20065c1a5671d0268a6a294e6f0887589e52636232c3db655fd
+sycl/src/kernels/cuda/iq_kernels.dp.cpp: 268264 / 5373 / df880d310c4dc880d8ae187da7adbb0af35548e168dc6cb1c4930802d64e2731
+sycl/CMakeLists.txt: 26659 / 418 / 408bc0728eb666c3abaf760860ee6f251fd46164c58cfd299a223c1152bcac9c
+sycl/src/prefill/iq4nl_dequant.hpp: 407 / 10 / 264ff084967db8b7f8ad3173ec5ac4beba82c17af55236808b3c7b7bac70cc32
+Original source pins from reviewed R151/R156: prefill f3c9bb38b46cdc111e9e663cc606d655f60f07c05873aff5499d51895e886c77; IQ kernels22c2fb9c379804c2fc20ae302be05ad0f1c66bc623c6134bd7822057ffbba13a; CMake5911b38ff78b7d185ffd92ee34d0360f272e003b558ae7a3fa0707a1e684f9b6.
+
+Build ownership/default:
+CMake lines283-287 add STRATA_SYCL_PREFILL_IQ4NL_DEQUANT OFF. ON applies PRIVATE definition=1 to exactly strata_prefill and strata_kernels together. No public usage definition/header or changed floating flags. Private header carries declaration only under the guard. The helper and new named device specialization are guarded in the IQ TU. OFF therefore has no additional kernel specialization and no Impl field/workspace-layout change. Existing public iq_dequant_f16 function, generic runtime dispatch, dq_iq4_nl/store_run, GU decoder and all other production functions are unchanged. OFF still validates the setting in Prefill init: malformed or requested unsupported ON must fail explicitly, so host init source is intentionally different.
+
+Runtime admission:
+Prefill::init lines1057 onward reads environment before touching instance initialization fields, obtaining queues, checking device or allocating split handoffs/workspaces/submitting work. Unset or exact '0' is OFF; exact '1' is ON; empty/string/whitespace/other values are rejected through err and false. BuildOFF with1 returns false. ON stores bool in guarded Impl field, frozen for that initialized instance; no per-expert environment read and no process-static cache. Reinitialization validates again, before work for the new initialization. This does not promise to validate before a caller independently allocates a borrowed workspace outside Prefill. No additional allocations or accounting needed.
+
+Call contract and scope:
+Only the already admitted lay.native branch at existing ordinary MoE down site (around4804) selects helper, only if frozen bool and f.d_type==20. GU remains iq_dequant_gu_f16. All other types use the original public iq_dequant_f16 statement. Non-native blob fallback, MMQ/fused decisions, expert source/ring events, GEMM dimensions, swiglu and ordered combination remain unchanged. No decode, embedding, head, cache preload, or generic dense/helper caller gets environment-dependent behavior.
+
+Private symbol strata::kernels::iq_dequant_f16_prefill_iq4nl(type,src,n,dst,stream), IQ TU around4295:
+- rejects type other than20, null src/dst, nonpositive n, n%256!=0, or n/256 beyond unsigned max with invalid_argument before device capability/submission. This narrowly avoids zero-range launch and generic unsigned truncation; valid existing model n1638400 is6400 groups. Caller retains responsibility for valid nonaliasing/live device buffers and full packed/destination extents, just as generic helper; no pointer extent inference or overlap claim.
+- same selected queue q_of(stream), same fp16 capability check, identical experimental empty properties and local size32, grid (unsigned)(n/256)*32;
+- group i and local lane feed unchanged dq_iq4_nl<sycl::half>(src,i,dst+i*QK_K,lane). Thus same eight32-value blocks, nibble/index/scale expressions and store_run<half,8>. Only runtime dq_dispatch switch is absent from this new kernel.
+- same check("iq_dequant_f16") boundary after submission, no added event/wait/buffer. Exceptions propagate through existing caller handling; no generic retry after any submission. This report does not prove existing asynchronous error ownership, only preserves it.
+
+Lifetimes:
+Existing blob_dev and two-slot dq_d[j%DQ] ownership, compute queue ordering and m.used slot barrier remain unchanged. Neither borrowed scratch size nor carve changes. No extra decoded cache/full-context buffer and no alias overlay. The private declaration is internal src/prefill, not installed/public. Source decoder copyright/provenance stays in original TU; no new table/decoder implementation copied.
+
+Root gates, all pending:
+1 Review full source diff and compile both optionOFF/ON under exact existing precise flags. Check featureOFF linked device image absent/private target definition ownership and public helper/default math unchanged. Invalid env and buildOFF/env1 before any Prefill allocation/submission; init freeze after environment mutation; private type/shape/null/overflow rejection.
+2 Separate root-owned exact dequant fixture: all low/high nibbles/lanes/eightblocks, finite scale/signedzero/subnormal/boundary cases and explicit exceptional classifications. Every FP16 bit generic versus helper; representative full actual type20 matrices/rows. Types42/21/22/23 and non-native continue generic path. No fixture/test has been implemented or run here.
+3 Actual >=32768 model qualification with frozen source/build/input/pack/profile: observe native type20 reachability, exact dequant bits, downstream GU/down outputs and residual/state/logits, lifecycle/fault/normal exit. Existing ring/source/GEMM must remain matched. Cold module/JIT distinct from warm samples; separate validation from timing, no added per-call synchronization. Paired repeated root timing only after correctness. No speed estimate from switch removal.
+4 Physical256K/chunk carry/resource/complete-model gates remain required for qualification; this prototype does not establish them. Decline if absent, mismatching or performance within noise/regressing. Primitive/GDN gates or previous source audits do not qualify this candidate. GDN factor and rejected CPU/quad candidates remain independent and unadopted.
+
+Root-only recipe: use separate new build/output directories, existing frozen configure recipe plus -DSTRATA_SYCL_PREFILL_IQ4NL_DEQUANT=OFF or ON; keep all other flags identical. ON baseline run env0 and candidate env1, frozen >=32K request and identical model/chunk/cache settings, under owner's serialized measurement lock/resources. No invented binary/build hash or claimed execution.
