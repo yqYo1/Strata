@@ -1,0 +1,79 @@
+# R133 — exact PCI admission source audit
+
+Date: 2026-10-10. Static-only review of immutable root-v4 source snapshot, installed SYCL/Level Zero headers and prior R127–R129/R128/R131 reports. No implementation, compiler, build, test, executable, runtime, SYCL/device/GPU query, profiler, model/payload, Git action, cleanup, or active output was used. This establishes neither compile success nor runtime identity/admission.
+
+## Source identity and files inspected
+
+The immutable snapshot manifest is `/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-source-snapshots/gdn-gate-factor-probe-root-v4/manifest.json`, SHA-256 `4b488ae17f57bf791594af87dcd93485f00704d10d0cd3d8c2459125a0585f6f`. Manifest file identities:
+
+- `sycl/tools/gdn-gate-factor-probe/gdn_gate_factor_probe.cpp`, 13,969 bytes, SHA-256 `90ea82156b8be58aa59d64c1c0cf70552f5e2cdc0a47c91a6cf81a238711bfc9`.
+- `sycl/tools/gdn-gate-factor-probe/CMakeLists.txt`, 1,233 bytes, SHA-256 `ef0482284ca72f1a86a71edaed0cf9cc2abec3dcc65af353dd3aeb404212c756`.
+- `sycl/tools/gdn-gate-factor-probe/README.md`, 7,684 bytes, SHA-256 `c3ebe8cadf56a53f46e20b6d7109eb09dd98eaa3795b3b5b18d26b74045b89d7`.
+
+The worktree handoff `implementation-gdn-probe-exact-pci-v1.txt` was reviewed as requested; its bytes/hash are 6,333 / `366333bdf3c1339dded73bf515f3cdd28acb14a1228dc71aa30b676cd0bcdc6f`. I did not read the mutable worktree source.
+
+Installed headers directly checked: `/opt/intel/oneapi/compiler/2026.1/include/sycl/backend.hpp` SHA-256 `9cd1f90ee9e8847cad017c821a53a7ebf0b28590d0add44141b5e0234ce9b748`; `/opt/intel/oneapi/compiler/2026.1/include/sycl/detail/backend_traits_level_zero.hpp` `3307be81e73cdc1dd6149bac1a4b9e351f74641130aa6a4d720330f65c496711`; `/usr/include/level_zero/ze_api.h` `095a0eb442ae21946f29147c209f270b93dd0eb5b12a2d0c67e5f4138b533712`; `/usr/include/level_zero/ze_ddi.h` `c68e9bb4e725b1c8e75a63bcb6570cdfe3567269a3b2845eb4c9245839f47654`.
+
+## Admission path is tied to the selected queue device
+
+At C++ source lines 128–131, the program creates one `sycl::queue` with `gpu_selector_v`, an async handler, and `in_order`, confirms its backend is Level Zero and its device is a GPU, confirms in-order, then calls `exact_identity(q)`. In `exact_identity` lines 43–46, it binds `selected=q.get_device()`, obtains `ze_device_handle_t` from that exact device and `ze_driver_handle_t` from `selected.get_platform()`, and rejects null handles. The installed SYCL traits map Level Zero `device` to `ze_device_handle_t` and `platform` to `ze_driver_handle_t` (`backend_traits_level_zero.hpp:62–76`); `backend.hpp:124–132` checks `Obj.get_backend()` and throws `backend_mismatch` before returning the native handle. This is the correct SYCL-object association: the PCI query later receives the same `device` handle obtained from `q.get_device()`, and extension discovery/function lookup use the driver from that selected device's platform. There is no explicit `device::get_devices`, `zeDriverGet`, ordinal loop, or search for a BDF in this probe.
+
+Selection is nevertheless by `gpu_selector_v`, not by PCI address (`probe.cpp:128`). The exact assertion is post-selection and fails closed if the selected device is not the desired B570/BDF; it does not itself select the intended board. The source cannot guarantee that SYCL's selector implementation avoids internal candidate enumeration. Therefore a deterministic target run still depends on the owner's selector/environment setup; a wrong selector result should be an admission refusal, never a retry/search.
+
+## API types, structures, statuses and exact comparisons
+
+The source initializes each output structure and checks each call:
+
+- `ze_device_properties_t{}` then `stype=ZE_STRUCTURE_TYPE_DEVICE_PROPERTIES`, `pNext=nullptr`; `zeDeviceGetProperties(device, &properties)` must return success (`probe.cpp:47–50`). It requires `vendorId==0x8086`, `deviceId==0xe20c`, and no `ZE_DEVICE_PROPERTY_FLAG_SUBDEVICE`. These compare fields returned for the selected native handle. It does not translate a tile or other subdevice.
+- `ze_driver_properties_t{}` then `stype=ZE_STRUCTURE_TYPE_DRIVER_PROPERTIES`, `pNext=nullptr`; `zeDriverGetProperties(driver, ...)` is checked and `driverVersion!=0` required (`:51–53`).
+- Level Zero extension enumeration starts with count 0 and null output (`:54–56`), rejects 0 or >256, allocates a fixed `std::array<...,256>`, preserves the first result as capacity, then calls again. All used extension-name buffers must contain a NUL within their fixed array (`:56–63`). The function checks every `ze_result_t` and checks the returned count is nonzero and no greater than the passed capacity (`:57–58`). `ze_api.h:1683–1692` defines `pCount` as in/out and says a zero count reports total; if capacity is less than total, only that many entries are retrieved. Thus the fixed bound prevents overflow. A shrinking list on the second call is accepted if the PCI extension remains in the returned prefix; growth beyond capacity is not guaranteed to be detectable if the API returns only the supplied capacity. Driver extension lists are expected to be stable for a loaded driver, so this is optional hardening rather than an observed path; a post-call recount/equal-count check can make the intended complete-list contract clearer.
+- The code rejects duplicate PCI extension advertisements, requires the name `ZE_PCI_PROPERTIES_EXT_NAME`, and accepts version `>= ZE_PCI_PROPERTIES_EXT_VERSION_1_0` (`:59–64`). Installed header defines this name and current version as exactly 1.0 (`ze_api.h:11323–11336`). This meets the present header contract. The comparison would also accept a future higher major; the current extension has only v1.0, so major-version policy is optional future hardening, not a current failure.
+- It obtains `zeDevicePciGetPropertiesExt` by name from the same driver, checks result and non-null address, then casts to `ze_result_t (ZE_APICALL *)(ze_device_handle_t, ze_pci_ext_properties_t*)` (`:65–70`). This matches the installed DDI typedef `ze_pfnDevicePciGetPropertiesExt_t` (`ze_ddi.h:602–607`) and exported declaration (`ze_api.h:11410–11414`). The cast preserves the Level Zero calling-convention macro.
+- `ze_pci_ext_properties_t{}` has its PCI extension `stype` set to `ZE_STRUCTURE_TYPE_PCI_EXT_PROPERTIES` and `pNext=nullptr` (`:69`). This matches the struct's installed `[in] stype`, optional `[in,out] pNext`, and address `[out]` fields (`ze_api.h:11370–11379`). The call is made on the same selected device and must succeed. All four typed integer fields must equal domain 0, bus 5, device 0, function 0 (`:70–71`). No string parsing is involved.
+
+`ze_ok` throws on every non-success result and includes fixed operation text plus numeric result (`:33–35`). Missing/duplicate/old extension, null function pointer, native-handle failure, unsupported API status, wrong IDs/BDF, or subdevice status all reach the outer `main` catch, emit `TERMINAL,fail`, return 1, and do so before application USM allocation or kernel submission (`main :124–141`). This is fail-closed. It makes no runtime claim about whether the installed driver's function lookup or the direct loader linkage works; that still requires the owner's separately controlled build/qualification.
+
+### One unresolved numeric check
+
+The installed Level Zero header explicitly says `ze_device_properties_t.deviceId` uses little-endian format (`ze_api.h:1981–1985`). The code compares the returned integer directly with `0xe20c` (`probe.cpp:49`). A mismatch only refuses the run; it cannot pass a different ID through that equality. But this static review cannot confirm how the installed driver numerically reports the B570 ID, because querying it is prohibited. Before treating the check as a successful qualification, the owner must confirm the intended value with the permitted exact-device runtime admission. Do not byte-swap speculatively.
+
+## Receipt order, escaping, truncation and partial startup
+
+`exact_identity` emits one `IDENTITY` record containing typed vendor/device/BDF, `root,1`, flags, driver version, PCI extension version, sanitized name and `passed,1` (`probe.cpp:72–75`), then three `IDENTITY_ENV` records for `ZE_FLAT_DEVICE_HIERARCHY`, `ZE_AFFINITY_MASK`, and `ONEAPI_DEVICE_SELECTOR` (`:76–78`). It flushes and checks `std::cout` before returning (`:79`). The caller performs remaining SYCL name/vendor/aspect/subgroup/workgroup checks only after that (`main :132–140`), and USM allocation starts after those checks at line 141. Thus a complete identity/environment receipt is ordered before those device checks, every allocation and all kernel stages. The existing response/read design has no allocation or submitted kernel before exact identity.
+
+`identity_text` bounds strings and rejects a string without a terminator before capacity; for environment values the maximum accepted length is 511 (`:37–40`, `:77`). It replaces commas and every non-printable/non-ASCII byte with `_` to preserve the comma-delimited record. This is safe against record injection, and it rejects rather than truncates oversized environment strings. But it is not lossless: a comma-containing selector/affinity value is rewritten, non-ASCII bytes are lost, and a set value literally equal to `unset` is indistinguishable from an absent variable (`:77`). The environment lines therefore cannot by themselves prove the exact launch environment. **Blocking for exact environment reproducibility** unless the owner captures the exact environment independently, or the receipt uses an invertible encoding (for example length-prefixed hex/JSON escaping plus an explicit present/unset bit). This does not weaken the typed PCI comparison itself.
+
+The `IDENTITY` line includes `passed,1` before environment formatting and the final flush. If a later environment value exceeds the limit or output fails, an outer exception prints `TERMINAL,fail` and returns 1 (`main :173`); the process may have emitted a partial identity record depending on stream buffering. The owner must require all expected environment records, no failure terminal, intact output and normal exit—not treat `IDENTITY,...passed,1` alone as run admission. The handoff README already states this parser/owner requirement (`README.md:96–112`).
+
+## Startup and lifetime hazards
+
+`Errors errors` is constructed before the queue at `main :126–128`, and the queue handler captures it by reference. If backend/device/identity checks fail, no work has been submitted; unwinding destroys the queue before `Errors` because locals are destroyed in reverse declaration order. That matches the earlier R128 lifetime finding. The driver queries and `get_native` calls are synchronous startup checks; no USM or kernel endpoint exists yet. The queue constructor/selector does initialize/select the backend before the PCI assertion, but the later PCI API calls are tied to the selected queue object. There is no source call to reset/recover/retry.
+
+After identity and remaining device checks, USM allocation begins at line 141. The existing stage path's async-error sticky state, per-stage `wait_and_throw`, and `_Exit(2)` on submitted-stage errors remain unchanged from R128; this audit found no interaction that changes those source-level safeguards. The admission code itself has no internal deadline around API calls; R128/README correctly assigns a finite session wall deadline to the owner. No runtime latency or driver-health guarantee follows from the source.
+
+## Blocking vs optional findings
+
+**Blocking for qualification:**
+
+1. This source is static and identified as unbuilt/untested in the pinned README (`:3–5, :108–115`); there is no compile/ABI proof or observed runtime identity here.
+2. The exact numerical `deviceId` representation/value remains unobserved for the selected B570; if the driver returns a differently represented integer, code safely refuses but the expected target admission is unresolved.
+3. `gpu_selector_v` only picks a candidate; exact BDF verification is a post-selection assertion. To guarantee the desired board is selected, the owner must supply a deterministic selection environment and require the in-process BDF check; no ordinal or name fallback is acceptable.
+4. Current `IDENTITY_ENV` encoding is lossy for values containing commas/non-ASCII and conflates set literal `unset` with absence. Preserve exact environment independently or change to an invertible format before claiming the source receipt proves exact environment.
+
+**Optional hardening / no demonstrated unsafe path:**
+
+- After the fixed-capacity extension call, a third count-only query and equality check could make count-change detection explicit. Present API semantics and startup driver-list stability make growth a theoretical completeness edge; the fixed array and returned-count guard prevent out-of-bounds reads.
+- Restrict future extension versions to a reviewed major if later versions change semantics; installed header advertises current=1.0, so current v1 comparison is exact.
+- Device name requires `B570` again after typed identity (`main :132–135`); this can cause a conservative false refusal if names change, but it does not weaken the vendor/device/BDF check.
+- The IDENTITY line is emitted before environment lines, and stream buffering can expose a partial `passed` record on later failure. Existing owner receipt rule must bind all lines to complete normal exit.
+
+No source-level mismatch was found in the selected-handle association, extension function signature/calling convention, structure initialization, typed BDF checks, or placement before allocation/submission. This is a source-only finding, not runtime identity, binary ABI, device health, uniqueness-per-tile, numerical, or safety qualification.
+
+## Primary references
+
+- Installed Intel SYCL 2026.1 backend interop: `backend.hpp:124–132`; `detail/backend_traits_level_zero.hpp:58–77, 96–102`.
+- Installed Level Zero declarations: `/usr/include/level_zero/ze_api.h` (device properties `1973–2013`; extension query count semantics `1683–1692`; PCI extension name/version/address/struct/function `11323–11414`) and `/usr/include/level_zero/ze_ddi.h:602–607`.
+- Intel [Level Zero PCI Properties extension](https://oneapi-src.github.io/level-zero-spec/level-zero/latest/core/EXT_PCIProperties.html) documents BDF as typed `ze_pci_address_ext_t` returned for the supplied device handle.
+- Level Zero [Driver API](https://oneapi-src.github.io/level-zero-spec/level-zero/latest/core/api/apis/driver.html) documents extension query/function lookup and failures.
+- Intel SYCL [Level Zero backend interoperability](https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/supported/sycl_ext_oneapi_backend_level_zero.md) documents native device/platform handle interop.
+- Previous contract and ownership limits: R129 `round129-b570-exact-pci-admission.txt`; R128 `round128-gdn-probe-async-source-admission.txt`; implementation handoff `implementation-gdn-probe-exact-pci-v1.txt`.
