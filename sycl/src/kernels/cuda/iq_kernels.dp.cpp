@@ -11,6 +11,15 @@
 #include "strata/sycl_queue.hpp"
 #include "strata/kernels/iq_kernels.hpp"
 #include "../../prefill/iq4nl_dequant.hpp"
+#ifdef STRATA_SYCL_PREFILL_IQ4NL_EVENT_RECEIPT
+#include "../../prefill/iq4nl_event_receipt.hpp"
+namespace strata::kernels::detail {
+Iq4nlReceiptSink*& iq4nl_receipt_sink() noexcept {
+    static thread_local Iq4nlReceiptSink* sink=nullptr;
+    return sink;
+}
+}
+#endif
 #include <limits>
 #include <stdexcept>
 #include "strata/kernels/dp4a.hpp"
@@ -4301,6 +4310,9 @@ void iq_dequant_f16_prefill_iq4nl(int type, const void* src, int64_t n,
         throw std::invalid_argument("prefill IQ4NL dequant: bad arguments");
     auto exp_props = sycl::ext::oneapi::experimental::properties{};
     dpct::has_capability_or_fail(strata::q_of(stream)->get_device(), {sycl::aspect::fp16});
+#ifdef STRATA_SYCL_PREFILL_IQ4NL_EVENT_RECEIPT
+    detail::iq4nl_receipt_submit([&]() { return
+#endif
     strata::q_of(stream)->submit([&](sycl::handler &cgh) {
         cgh.parallel_for<dpct_kernel_name<class prefill_iq4nl_flat_kernel, sycl::half>>(
             sycl::nd_range<3>(sycl::range(1, 1, (unsigned)(n / 256)) * sycl::range(1, 1, 32),
@@ -4311,6 +4323,9 @@ void iq_dequant_f16_prefill_iq4nl(int type, const void* src, int64_t n,
                                      item_ct1.get_local_id(2));
             });
     });
+#ifdef STRATA_SYCL_PREFILL_IQ4NL_EVENT_RECEIPT
+    }, detail::Iq4nlArm::private_down, type, n, stream, src, dst);
+#endif
     check("iq_dequant_f16");
 }
 #endif
@@ -4325,6 +4340,9 @@ void iq_dequant_f16(int t, const void* src, int64_t n, uint16_t* dst, void* stre
             strata::q_of(stream)->get_device(),
             {sycl::aspect::fp16});
 
+#ifdef STRATA_SYCL_PREFILL_IQ4NL_EVENT_RECEIPT
+    detail::iq4nl_receipt_submit([&]() { return
+#endif
         strata::q_of(stream)
             ->submit([&](sycl::handler &cgh) {
 
@@ -4338,6 +4356,9 @@ void iq_dequant_f16(int t, const void* src, int64_t n, uint16_t* dst, void* stre
                             t, src, (sycl::half *)dst);
                     });
             });
+#ifdef STRATA_SYCL_PREFILL_IQ4NL_EVENT_RECEIPT
+    }, detail::Iq4nlArm::generic, t, n, stream, src, dst);
+#endif
     }
     check("iq_dequant_f16");
 }

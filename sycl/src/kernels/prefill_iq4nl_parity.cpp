@@ -5,6 +5,9 @@
 #include <level_zero/ze_api.h>
 #include "strata/kernels/iq_kernels.hpp"
 #include "../prefill/iq4nl_dequant.hpp"
+#ifdef STRATA_SYCL_PREFILL_IQ4NL_EVENT_RECEIPT
+#include "../prefill/iq4nl_event_receipt.hpp"
+#endif
 #include <algorithm>
 #include <array>
 #include <atomic>
@@ -157,8 +160,35 @@ void run(sycl::queue& q,Async& async) {
         }
         for(unsigned repeat=0;repeat<2;++repeat) {
             stage(q,async,"upload",[&]{q.memcpy(dev.input,input.data(),inputbytes);q.memcpy(dev.a,initial.data(),outputwords*2);q.memcpy(dev.b,initial.data(),outputwords*2);});
+#ifdef STRATA_SYCL_PREFILL_IQ4NL_EVENT_RECEIPT
+            // Slots/scopes are host-owned before submit and survive both existing drains.
+            std::array<strata::kernels::detail::Iq4nlReceipt,2> receipts{};
+            strata::kernels::detail::Iq4nlReceiptSink sink{receipts.data(),receipts.size(),0,cases+1};
+            strata::kernels::detail::Iq4nlReceiptScope receipt_scope(sink);
+#endif
             stage(q,async,"generic",[&]{strata::kernels::iq_dequant_f16(20,dev.input+inputpad,int64_t(n),dev.a+pad,&q);});
             stage(q,async,"private",[&]{strata::kernels::iq_dequant_f16_prefill_iq4nl(20,dev.input+inputpad,int64_t(n),dev.b+pad,&q);});
+#ifdef STRATA_SYCL_PREFILL_IQ4NL_EVENT_RECEIPT
+            // Both stages have already completed successfully; profiling queries add no waits.
+            require(!sink.invalid&&sink.count==2&&sink.serial==2,"receipt missing/overflow/retention failure");
+            for(size_t r=0;r<receipts.size();++r) {
+                const auto& receipt=receipts[r];
+                require(receipt.event.has_value()&&receipt.scope_id==cases+1&&receipt.serial==r+1&&
+                    receipt.type==20&&receipt.n==int64_t(n)&&receipt.queue==&q&&
+                    receipt.src==dev.input+inputpad&&receipt.dst==(r==0?dev.a:dev.b)+pad&&
+                    receipt.arm==(r==0?strata::kernels::detail::Iq4nlArm::generic:
+                                      strata::kernels::detail::Iq4nlArm::private_down),"receipt metadata");
+                const auto submit=receipt.event->get_profiling_info<sycl::info::event_profiling::command_submit>();
+                const auto start=receipt.event->get_profiling_info<sycl::info::event_profiling::command_start>();
+                const auto end=receipt.event->get_profiling_info<sycl::info::event_profiling::command_end>();
+                require(submit<=start&&start<=end,"receipt timestamp ordering");
+                std::printf("RECEIPT,scope=%llu,serial=%llu,arm=%s,type=20,n=%zu,metadata_match=1,submit=%llu,start=%llu,end=%llu\n",
+                    (unsigned long long)receipt.scope_id,(unsigned long long)receipt.serial,
+                    r==0?"generic":"private",n,(unsigned long long)submit,
+                    (unsigned long long)start,(unsigned long long)end);
+            }
+            require(std::fflush(stdout)==0,"receipt flush");
+#endif
             stage(q,async,"readback",[&]{q.memcpy(restored.data(),dev.input,inputbytes);q.memcpy(a.data(),dev.a,outputwords*2);q.memcpy(b.data(),dev.b,outputwords*2);});
             require(restored==input,"input immutability/guards");
             size_t ab=0,oracle_a=0,oracle_b=0;bool first=true;
@@ -186,8 +216,18 @@ int main(int argc,char** argv) {
         {
         sycl::queue q(sycl::gpu_selector_v,[&](sycl::exception_list errors) noexcept {
             for(const auto& ignored:errors){(void)ignored;unsigned v=async.errors.load();while(v<1024&&!async.errors.compare_exchange_weak(v,v+1)){} }
-        },sycl::property_list{sycl::property::queue::in_order{}});
-        identity(q);run(q,async);
+        },sycl::property_list{sycl::property::queue::in_order{}
+#ifdef STRATA_SYCL_PREFILL_IQ4NL_EVENT_RECEIPT
+            ,sycl::property::queue::enable_profiling{}
+#endif
+        });
+        identity(q);
+#ifdef STRATA_SYCL_PREFILL_IQ4NL_EVENT_RECEIPT
+        require(q.has_property<sycl::property::queue::enable_profiling>(),"receipt requires profiling queue");
+        std::puts("RECEIPT_QUEUE,profiling=1,in_order=1,backend=level_zero");
+        require(std::fflush(stdout)==0,"receipt queue flush");
+#endif
+        run(q,async);
         stage(q,async,"post_USM_teardown_drain",[]{});
         }
         require(async.errors.load()==0,"queue teardown async error");
