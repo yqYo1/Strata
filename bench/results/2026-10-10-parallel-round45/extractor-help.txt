@@ -1,0 +1,25 @@
+OVERVIEW: 
+
+A utility to extract all the target images from a
+linked fat binary, and store them in separate files.
+
+USAGE: clang-offload-extract [options] <input file>
+
+OPTIONS:
+
+Generic Options:
+
+  --help          - Display available options (--help-hidden for more)
+  --help-list     - Display list of available options (--help-list-hidden for more)
+  --version       - Display the version of this program
+
+Utility-specific options:
+
+  -q              - Do not print the names of generated files
+  --stem=<string> - Specifies the stem for the output file(s).
+                    The default stem when not specified is "target.bin".
+                    The Output file name is composed from this stem and
+                    the sequential number of each extracted image appended
+                    to the stem:
+                      <stem>.<index>
+                          
