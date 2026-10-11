@@ -1,0 +1,90 @@
+{
+  "registry_version": 134,
+  "research_completed": 553,
+  "created_utc": "2026-10-11T12:15:22.014177+00:00",
+  "registry_format": "incremental; follow previous_committed_registry",
+  "previous_committed_registry": {
+    "path": "bench/results/2026-10-11-xe-preload-disabled-diagnostic/report-registry-v133.json",
+    "sha256": "ef0ff7ccb303d9c08743dcccc4180bcca9d3f446d7a9c3addebcc71d3c206ed1",
+    "reports": 551,
+    "note": "Co-committed with this incremental boundary"
+  },
+  "new_reports": [
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-xe-current-h2d-pass-budget-1000tps-next-v1.txt",
+      "archive": "bench/results/2026-10-11-xe-preload-disabled-diagnostic/research-xe-current-h2d-pass-budget-1000tps-next-v1.txt",
+      "bytes": 7269,
+      "sha256": "e9f8367cc3a3f63838637f0ba085fc1281ae34dcde7f28ecfece48d510ff2b91",
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "status": "completed",
+      "main_full_report_review": true,
+      "qualification": "Readonly source and closed-record analysis; no new execution/measurement/full-context qualification"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-xe-post-prefill-owned-workspace-live-byte-census-next-v1.txt",
+      "archive": "bench/results/2026-10-11-xe-preload-disabled-diagnostic/research-xe-post-prefill-owned-workspace-live-byte-census-next-v1.txt",
+      "bytes": 9386,
+      "sha256": "3771d4f5cafa114f540d2ec065a91df165bf8448cf8ebaa8cff18a2064487586",
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "status": "completed",
+      "main_full_report_review": true,
+      "qualification": "Readonly source and closed-record analysis; no new execution/measurement/full-context qualification"
+    }
+  ],
+  "reports": [
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-xe-current-h2d-pass-budget-1000tps-next-v1.txt",
+      "archive": "bench/results/2026-10-11-xe-preload-disabled-diagnostic/research-xe-current-h2d-pass-budget-1000tps-next-v1.txt",
+      "bytes": 7269,
+      "sha256": "e9f8367cc3a3f63838637f0ba085fc1281ae34dcde7f28ecfece48d510ff2b91",
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "status": "completed",
+      "main_full_report_review": true,
+      "qualification": "Readonly source and closed-record analysis; no new execution/measurement/full-context qualification"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-xe-post-prefill-owned-workspace-live-byte-census-next-v1.txt",
+      "archive": "bench/results/2026-10-11-xe-preload-disabled-diagnostic/research-xe-post-prefill-owned-workspace-live-byte-census-next-v1.txt",
+      "bytes": 9386,
+      "sha256": "3771d4f5cafa114f540d2ec065a91df165bf8448cf8ebaa8cff18a2064487586",
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "status": "completed",
+      "main_full_report_review": true,
+      "qualification": "Readonly source and closed-record analysis; no new execution/measurement/full-context qualification"
+    }
+  ],
+  "live_agent_snapshot": {
+    "source": "actual collaboration.list_agents immediately before archive",
+    "observed_utc": "2026-10-11T12:15:22.014305+00:00",
+    "agents": [
+      {
+        "agent": "/root/implement_optional_kernel_preload_control",
+        "model": "gpt-6.1-sol",
+        "status": "completed",
+        "scope": "Source-only counterbalanced quiet32K v2; report reviewed, code review and tests pending"
+      },
+      {
+        "agent": "/root/research_native_batch_driver_lowering",
+        "model": "gpt-6-luna",
+        "status": "running",
+        "scope": "Counterbalanced quiet v2 order and numerical gates; readonly"
+      },
+      {
+        "agent": "/root/research_quiet32k_publication_gates",
+        "model": "gpt-6-luna",
+        "status": "running",
+        "scope": "Counterbalanced quiet v2 publication/runtime/predecessor gates; readonly"
+      }
+    ],
+    "note": "Snapshot; check actual status on resume. Each new assignment shares past reports and the then-latest committed registry."
+  },
+  "dependency": "Main must review full source and qualify both order directions on CPU before any quiet model run",
+  "next_research_scopes": [
+    "Counterbalanced v2 ordering and strict numerical pairing",
+    "Counterbalanced v2 actual provenance and predecessor validation"
+  ]
+}

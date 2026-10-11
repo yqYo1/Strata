@@ -1,0 +1,45 @@
+Research: long-input H2D pass budget for 1,000 tokens/s
+Date: 2026-10-11
+
+Question and scope
+
+Estimate the H2D burden implied by the pinned production prefill path for an actual 65,535-position request (the 65,536-token input fixture submits one fewer batched position), and compare that lower bound with the 1,000 tokens/s wall-time budget. This is a source-and-closed-receipt calculation, not a new run or a throughput claim. No build, test, GPU query, profiler, source edit, or Git mutation was performed.
+
+Pinned evidence
+
+- Immutable source: MistVVK/XeStrata worktree `fix-xestrata-e32-host-handoff-20261011`, commit `0740b43488d812117f021ccbe4bd0e15d223f955`; `src/prefill/prefill.cpp` SHA-256 `c5cfa727302d334e2f6a8aaad8c1bf59e7d581dd8c2cec2af0d031faf807272d`.
+- Closed diagnostic receipts: `xe-native-dequant-prefill-model-root-v6/n32768-g16-off/record.json` SHA-256 `01992f0ba3b15a135636e97ff4dd37fc03f1137486df948ff7631edc96a1c9d1` and `.../n32768-g16-on/record.json` SHA-256 `8f7ad6c80553ac091388f5146ae6e93571115b6f6831f5f01e3458f3d6cd9a54`. Both are complete, passed diagnostic runs; actual batched positions are 32,767 in six chunks, group 16, performance-ineligible, not full-model quality or 262K qualified.
+- Recorded H2D component samples: `2026-10-10-parallel-round54/hardware/validated-three-process-summary.json`, SHA-256 `21a86b9324f0b28a08fc4790661fd9a44bac8f63d943e818b7586082e5b49a29`. Direct H2D from `sycl::malloc_host` memory, 256 MiB payload, three process repeats and seven measured samples per process; repeat medians 6.448533, 6.445987 and 6.446834 decimal GB/s. The 6.446834 figure is one measured component rate, not a production rate or guaranteed bound.
+- Recorded physical path reference: `2026-10-10-hardware-architecture-decisions/physical-bandwidth-reference.json`, SHA-256 `5bd8ccdfe50bdfe6f3afaf68d4861ac831ae54dc49eb7c9b8fd4f716d4d834fc`. It records an external Gen4 x4 path with a 7.876923 GB/s encoded ideal one-way ceiling. This is a topology ceiling, not measured application bandwidth; packet overhead and protocol behavior reduce usable throughput.
+
+What the production counter means
+
+The pinned source sets `STREAM_ALL_MIN=2048`. For a chunk at or above that size, `stream_all` is enabled when the selected ring exceeds the eight-slot staging ring and an expert source exists. The stream enumerates every nonresident expert in each layer, in layer/expert order (around lines 1353-1394). The issuer submits a `copy_async_after` of that expert's `blob_bytes` into the device staging slot and increments the transfer counters only after the copy submission succeeds (around lines 1418-1434; the threaded issuer duplicates the same accounting around 1478-1494). The final ledger labels these values “request extents, not PCIe-exclusive bytes or DMA service” and reports checked completion (around lines 3000-3017).
+
+Thus ledger bytes are submitted logical copy extents, not a PCIe hardware byte counter. The path copies from source-backed expert blobs or from host staging buffers into device staging memory. Host staging may be pinned directly or first copied by the stager. The counters do not measure the exact physical-link traffic, link utilization, or time. They also do not include Q/KV, dense weights/activations, attention, host-side stager copies, or other work that can affect total request time.
+
+Closed 32K anchor
+
+Both OFF and ON receipts report the same totals for 32,767 batched positions: six chunks; 22,479 routed calls / 45,968,076,800 bytes; 122,160 full-nonresident-stream calls / 249,988,224,000 bytes; 144,639 submitted calls / 295,956,300,800 bytes. Five chunks are at least 2,048 positions; the final 2,047-position tail is below the full-stream threshold. Dividing the full-stream total by five gives 49,997,644,800 bytes for one full-stream pass through the pack. The actual prefill was about 257.1 tokens/s OFF and 250.7 tokens/s ON; these are diagnostic, performance-ineligible measurements, not qualified results. Their transfer ledger is useful as traffic evidence only.
+
+Conditional 64K geometry and transfer-only budget
+
+For 65,535 batched positions, the source geometry gives:
+
+- Chunk 6,144: ten full chunks plus a 4,095-position tail, eleven chunks total. Every chunk meets the 2,048 threshold, so under the same source/residency conditions the full-stream component is eleven passes: 549,974,092,800 bytes (549.974 decimal GB).
+- Chunk 8,192: seven full chunks plus an 8,191-position tail, eight chunks total. All eight chunks meet the threshold: 399,981,158,400 bytes (399.981 decimal GB).
+
+At 1,000 tokens/s, 65,535 positions allow 65.535 seconds total. The full-stream component alone would need the following service times if each counted byte traverses the same one-way path:
+
+| Chunk geometry | Full-stream bytes | At recorded 6.446834 GB/s component median | At recorded 7.876923 GB/s ideal Gen4 x4 ceiling |
+| --- | ---: | ---: | ---: |
+| 6,144, 11 passes | 549.974 GB | 85.31 s | 69.82 s |
+| 8,192, 8 passes | 399.981 GB | 62.04 s | 50.78 s |
+
+These are transfer-only service calculations, not predictions of wall time. At the recorded component median, the 6,144 case exceeds the entire 65.535-second budget; even the topology's ideal ceiling puts it at 69.82 seconds. Therefore 1,000 tokens/s is infeasible for this geometry if the current nonresident full-stream logical extents all require one-way service across that Gen4 x4 link. This is a conditional physical lower-bound argument, not evidence that a 64K run was attempted. For the 8,192 case the full-stream component alone is below the budget, but at the measured component rate it consumes about 62.04 seconds, leaving only 3.49 seconds; even at the ideal link ceiling it consumes 50.78 seconds, leaving 14.76 seconds. Those margins must also cover routed expert copies and all other unhidden work, unless actual overlap hides some of it. A full-stream count does not establish that other work is hidden.
+
+Limits and interpretation
+
+The 32K measurements show 49,997,644,800 bytes per full stream pass for this particular pack and residency state. Scaling that pass count to 64K assumes the same pack, nonresident set, cache state, source layout, and chunk dispatch. A 64K receipt could differ, especially if residency changes. Routed bytes are additional; their 64K value is not extrapolated because routing and resident/cache state have not been measured for that input. Conversely, these calculations do not prove that every logical byte becomes a separate PCIe transaction: they use the source's submitted host-to-device extents as a demand proxy and compare them with recorded path rates. The component sample used large direct `malloc_host` transfers and differs from Strata's expert stager and copy sequence. The physical ceiling is an external recorded topology reference, not a present live link query.
+
+The defensible conclusion is narrow: the 6,144-chunk, eleven-pass full stream alone exceeds the target budget under the recorded Gen4 x4 path assumption. The 8,192-chunk, eight-pass geometry is not ruled out by this component alone, but has little measured-rate margin before routed traffic and the rest of prefill are counted. Neither arithmetic result establishes attainable end-to-end throughput.

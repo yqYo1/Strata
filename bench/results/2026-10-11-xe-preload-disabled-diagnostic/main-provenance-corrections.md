@@ -39,3 +39,7 @@ The published preload guard changes only source publication identity after the
 historical builds. It is not a new build or new model result. Extra mapped
 compiler/libc files are hashed provenance; filtering them from the original
 core validator is not a claim that those extra files received its qualification.
+
+The event-lifetime report labels the 40-hex prefill Git blob ID as SHA-256; it is a Git SHA-1 blob ID. Its actual content SHA-256 is c5cfa727302d334e2f6a8aaad8c1bf59e7d581dd8c2cec2af0d031faf807272d. The event destructor source link truncates the LLVM commit; the correct pinned commit is 504366f4b82ff00bbac7b0c956635eed8bc599d8. Main read the local event/shared-command ownership and release sites.
+
+The original cold-decode report inspected the documentation worktree instead of WX. Main rechecked the explicit immutable WX commit and source hashes; the native batch switch is present at prefill.cpp:2099 and build/publication content matches. Its missing-switch and source-mismatch findings are rejected. The original and separate corrective addendum remain preserved. Corrected scope supports a prefill-only dispatch change; a single cold decode duration still cannot justify a decode-kernel adoption claim.

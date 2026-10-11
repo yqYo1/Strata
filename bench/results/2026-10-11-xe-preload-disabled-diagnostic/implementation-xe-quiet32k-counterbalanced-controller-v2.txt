@@ -1,0 +1,118 @@
+Quiet32K counterbalanced controller v2 — SOURCE ONLY
+Date: 2026-10-11
+Status: UNEXECUTED, UNQUALIFIED; Main owns full-source review and every actual test.
+
+Provenance:
+B=/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007
+Original B/xe-native-dequant-prefill-quiet-timing-controller-source-v1/run_root.py
+SHA256 10a999af9554cab6dc85113486f24229a022341659bfe465653c9500a1b195a6.
+v1 remains untouched and is still Main-unexecuted/unreviewed.
+New B/xe-native-dequant-prefill-quiet-timing-controller-source-v2/run_root.py
+SHA256 a2c7c348625b880539a7d9ccb7bd7f9100f47e76a841036536a7c322e50beafb.
+candidate.patch SHA256 c56781ab633415d847883d3ca85b2d2223e4251fafc5af134f0a15dadb8c6d7e.
+qualification.pending.json SHA256 56b034f9254ac54b4aa8edb9d72fcf143ea84b60edb1c20771a1676ef5e4ca3f.
+manifest.json records all eight unchanged helper hashes; all match v1/v8.
+Order review read and hash-confirmed:
+B/research-20261009/research-xe-quiet32k-sample-order-and-publication-gates-next-v1.txt
+SHA256 93f0e20d7be0e4c40a22d492437ad74107d0ff58e2958d879de2726f84881bed.
+Registry-v131 (research_completed545) was read at the supplied WS retention worktree:
+bench/results/2026-10-11-xe-preload-disabled-diagnostic/report-registry-v131.json.
+Main supplied WS HEAD f0124f1. No Git operation was performed on that workspace.
+Existing terminal source-publish-root-v1/record.json was read textually to use its
+actual schema: published_revision, source_pins, published_device_sha256, closed
+commands/PASS. No deleted raw model logs were read; no diagnostic receipt changed.
+
+Complete planned campaign order:
+Main's resolved manifest must contain sample_indices and full sample_order consisting
+of adjacent pairs. There are an even number of distinct indices, minimum4/maximum100;
+each index appears in one adjacent pair, exactly one OFF and one ON. First-arm OFF
+count must equal first-arm ON count. Main explicitly hashes the full order using
+SHA256(json.dumps(order, sort_keys=True, separators=(',', ':')).encode()).
+The pending template gives0 OFF->ON,1 ON->OFF,2 OFF->ON,3 ON->OFF as a plan only.
+There is no completed sample, automatic orchestrator, warmup, retry/reset or outlier
+discard. Main invokes each arm serially in exactly the pinned campaign sequence.
+Outputs use only the new namespace:
+B/xe-native-dequant-prefill-quiet-timing-root-v2/<campaign>/sample-NNN/n32768-g16-<arm>.
+
+Pre-output order and identity admission:
+Before creating any arm output, under the existing exclusive measurement lock,
+the controller verifies every earlier ordinal's actual immutable receipt. Missing,
+active, failed, abnormally closed, out-of-order or already-existing current/future
+arm directories reject. Unknown/cross-plan arm directories reject. Aliased receipt
+files/symlinked parent paths reject. Prior receipts must be same campaign/order/hash,
+ordinal/pair position/first arm, exact qualification hash/path/controller, current
+published HEAD, historical source diff,38 production source content, binary and
+Main campaign_identity. Actual input/model inputs/argv/CPU proof/caller qualification/
+helper/review/health/quiet policy fields are checked, not only the identity summary.
+Actual quiet environment differs only by the arm switch. Actual effective settings
+excluding observed vram_free_mib match Main config; reserve is independently >=512MiB.
+All commands are normalclosed/exit0; strict16 protocol is independently revalidated,
+corresponding diagnostic-reference equality/pins retained, severe-error fields empty,
+fresh kernel/boot/health gates passed and all adoption/full-model/performance flags
+false. Both complete mapping phases are required. Original runtime.py independently
+revalidates the six required/two optional exact libraries against pinned health libs;
+core and compiler-extra files are checked against canonical path/stat/hash/build-id.
+Predecessor receipt hashes are checked again before output and at finalization.
+Admission bounds: each receipt <=8MiB, aggregate <=64MiB; <=128 distinct mapped files,
+each <=512MiB and total file hash reads <=4GiB with1MiB chunks. Repeated compiler/core
+paths are hashed once and all later identity claims must match. Records are not
+rewritten, logs are not read, and no libraries are loaded.
+
+Reference CLI semantics and numerical join:
+Existing --reference is retained but now follows position, not the batch label.
+First arm (OFF or ON) forbids --reference and does not require a not-yet-created
+opposite arm. Second arm (OFF or ON) requires --reference naming the exact fresh
+same-index first-arm record from the order. Ambiguous/missing/wrong reference use
+raises parser error before output creation after the qualification/order is resolved.
+Both arms still gate strict16/T/LP5 equality to their corresponding immutable Main
+qualified32K diagnostic record; explicit diagnostic_reference_comparison is saved.
+Second arm additionally keeps the original full source/binary/input/env/controller/
+helpers/health/runtime/caller/settings and strict16/T/LP5 checks against the fresh
+first arm. Completed predecessor pairs are independently joined again during the
+next admission. Thus ON-first is allowed without weakening completed-pair parity.
+Some inherited error labels still say OFF although they now validate either first
+arm; conditions use first_arm and the actual matching batch environment.
+
+Receipt order/cache metadata and conservative scope:
+Every record saves full sample_order/order hash, zero-based ordinal, pair position,
+first arm, all predecessor receipt hashes, cold_cache_sensitive=true, warmup=false,
+and a statement that filesystem/driver/JIT/cache/temperature effects are not removed.
+timing_sample also saves ordinal/pair/first-arm/order hash/cache sensitivity alongside
+separate actual DONE prefill/decode values and raw DONE/PP. These are observations,
+not a histogram, population-completion claim or corrected clock/cache estimate.
+The sample namespace requires exactly32768/G16; eight helpers still support that
+boundary only. Larger lengths require a separately reviewed validator/controller.
+performance_eligible, adopted, full_model_quality_qualified and full262144_qualified
+remainfalse unconditionally; no speed/adoption claim follows from balanced order.
+
+Publication/build and all existing fault gates:
+Actual published HEAD is explicitly pinned0740b43488d812117f021ccbe4bd0e15d223f955,
+with current clean tracked HEAD/content checks and Main publication review unchanged.
+An additional exact-hash actual normalclosed source-publish-root-v1 receipt must
+bind published_revision, identical38 sources and device.cpp hash, and show no GPU/
+model execution. Historical builds stay fa3e20e842fbed6986a69bade8afe3edabedee07 plus
+their retained working patch; publication does not rewrite release-v22/ASANv19/lintv17
+qualification. New quiet CPU-root-v2 and Main-review-v2 paths are explicitly pending.
+The pending qualification also requires a full Main campaign_identity built from
+the actual reviewed current config/helpers/reviews/diagnostic qualification/runtime
+list and effective settings without vram. It is not fabricated from future outcomes.
+All existing strict known ERROR regex, READY pre-GEN and final error checks, normal/
+finite QUIT and primary failure preservation, owner pidfd cleanup, log/wall/RSS and
+memory bounds, embedding-inactive check, input/source/binary/helper immutability,
+core8 plus separate compiler mapping/ELF identity, integer before/after health and
+fresh kernel/devcoredump/boot gates are retained. Quiet trace/API-validation/census/
+GPU-timer switches stay absent; warning/error logging and actual environment check
+remain. Mapping observations stay outside request phase times but their CPU/I/O/cache
+costs and full predecessor preflight costs are not calibrated away. Balancing the
+pair first arm reduces the fixed-order confound; it does not eliminate drift.
+
+Remaining work and execution boundary:
+The pending template has status pending and unresolved order/config/receipt/review
+hashes; default manifest hash is also a placeholder, so launch is refused before
+output. Main must perform full source review, validate schemas and actually test
+the controller, order rejection paths, both pair directions and all gates serially.
+No syntax/AST/import/dlopen/test/build/profile/GPU query/controller/service execution,
+Git mutation or cleanup was performed. Only source/report text reads, copying,
+editing, diff and SHA256 were used. Source-only artifacts are not tested receipts.
+Only the NEW source-v2 directory and this report were written. Main owns retention,
+registry and commit at the work boundary. No capture/log/fixture was deleted.

@@ -1,0 +1,47 @@
+# SYCL event-wrapper destruction versus pending queue work and USM lifetime
+
+Read-only source/spec audit — 2026-10-11
+
+## Result
+
+Destroying the local timer `Event` wrapper while a submitted command is unfinished is not, by itself, evidence of a use-after-free or undefined behavior in this path. The wrapper owns an `std::optional<sycl::event>`; it does not hold or directly destroy a Level Zero event handle. SYCL defines `event` with common reference semantics, and the Intel DPC++ runtime at the same pinned compiler commit represents its event implementation by `shared_ptr`; the scheduler's command object also holds an `EventImplPtr` for the command event. The SYCL queue specification separately says that destroying a queue with uncompleted commands is nonblocking and that those commands continue and signal their event objects normally. The project’s normal release/free paths add explicit queue drains before the USM buffers they back are freed.
+
+This conclusion is about the code path and runtime-source ownership reviewed, not a guarantee about arbitrary direct `zeEventDestroy` calls, foreign queue teardown, a poisoned runtime, or hardware failure. It identifies no pending source call that destroys the timer's direct event backing object while the queued timer command still needs it.
+
+## Exact project call path
+
+The audit used immutable WX commit `0740b43488d812117f021ccbe4bd0e15d223f955`. In `src/prefill/prefill.cpp`, `PfTimer::mark` allocates a project `strata::gpu::Event` and calls `event_record`; the wrapper is `struct Event { std::optional<sycl::event> ev; bool timing; }` in `src/core/gpu.cpp:23-26`. `event_record` assigns either `sx::submit_profiling_tag(queue)` or an in-order queue barrier to that optional (`gpu.cpp:339-345`). `event_destroy` at `gpu.cpp:337` is only `delete e`; it does not call a Level Zero event-destroy function. Therefore deleting the project wrapper releases its contained SYCL event value.
+
+The engine’s DPC++ source is pinned here to Intel LLVM commit `504366f4b82ff00bbac7b0c956635eed8bc599d8`, the compiler source identity used in the parent investigation. At that commit, `sycl/source/detail/event_impl.hpp` aliases `EventImplPtr` to `std::shared_ptr<event_impl>`, and `sycl/source/detail/scheduler/commands.hpp` stores `EventImplPtr MEvent` in each `Command`. `commands.cpp` constructs each command event and sets that command on the event implementation; the command's enqueue state and post-enqueue cleanup are managed in the scheduler. Thus, dropping the caller’s `sycl::event` copy is not equivalent to directly invalidating the scheduler’s shared event implementation while its command is still owned. At last-reference destruction, `event_impl::~event_impl` releases the Unified Runtime event handle (`event_impl.cpp`); the relevant object is the SYCL/UR wrapper lifecycle, not an application-issued raw Level Zero destroy.
+
+The pinned compiler/runtime-source relationship is pertinent evidence, but installed runtime binary identity for a particular run is a separate fact. This audit did not inspect a new run’s mapped libraries.
+
+## Normative and implementation evidence
+
+The [SYCL 2020 specification, revision 12](https://registry.khronos.org/SYCL/specs/sycl-2020/html/sycl-2020.html) lists `event` among classes with common reference semantics: copies behave as the same underlying object, and per-object destruction behavior occurs only when the last host copy is destroyed (section 4.5.2). The same specification says an event represents the status of an operation executed by the runtime (4.6.6), and says a queue may be destroyed while commands are incomplete: destruction does not block, commands continue when requisites are met, and their event objects signal normally on completion (4.6.5). These statements rule out the broad claim that destroying any host event or queue wrapper while work is pending automatically invalidates that work.
+
+In the [Intel LLVM source at commit 504366f](https://github.com/intel/llvm/tree/504366f4b82ff00bbac7b0c956635eed8bc599d8/sycl/source/detail), `event_impl.hpp` uses `std::shared_ptr<event_impl>` for `EventImplPtr`; `scheduler/commands.hpp` retains an `EventImplPtr MEvent`; and `event_impl.cpp` releases the UR handle from the implementation destructor. This source makes the reference semantics concrete for that DPC++ runtime. The [Unified Runtime event API](https://oneapi-src.github.io/unified-runtime/core/api.html) specifies that `urEventRelease` decrements the event reference count and deletes the event object only when that count reaches zero. It does not imply that the application may directly destroy an in-use Level Zero event pool.
+
+The distinction matters because the [Level Zero Event Pool specification](https://oneapi-src.github.io/level-zero-spec/level-zero/latest/core/api/apis/event_pool.html) explicitly requires the application to ensure that the device is not currently referencing an event in a pool before destroying the pool; it also says the pool destroy may immediately free the pool’s host and device allocations. That rule applies to direct event-pool teardown. `PfTimer` does not call `zeEventPoolDestroy` or `zeEventDestroy`; it drops a SYCL event reference, whose runtime owns that backend lifecycle.
+
+## Separate USM / queue teardown boundary
+
+Pending commands using USM memory are a different lifetime obligation from pending event wrappers. SYCL’s `sycl::free(ptr, context)` precondition explicitly requires that there be no in-progress or enqueued commands using the pointer. Strata’s `Runtime::free` satisfies this by calling `finish()` across compute, transfer and engine streams before `sycl::free` (`src/core/device.cpp:341-357`). `Prefill::release` also cancels and drains its compute and copy streams before freeing CPU scratch or owned device allocations (`src/prefill/prefill.cpp:535-557`). `Runtime::destroy_stream` calls `finish(*stream)` before removing the queue (`device.cpp:228-235`), and `Runtime::~Runtime` calls `finish()` before its queue members are destroyed (`device.cpp:276-287`).
+
+`Prefill::run` can return early before its normal final compute-stream sync, so `PfTimer` can release its local event references while work is still in flight. But that return does not itself free the `Prefill::Impl` buffers or destroy the engine streams. Subsequent `Prefill::release` drains the compute/copy streams before releasing them. The actual relevant free callsites are the release loop over `impl_->owned` and the scratch frees inside `release`; they are downstream of the drains. The public Runtime free is an additional all-queues barrier. No source path was found in this audit that frees those USM allocations at the same time as the exceptional `PfTimer` wrapper destruction.
+
+The distinction should remain explicit in any future finding: a direct queue/event wrapper drop has SYCL lifetime rules; a USM free has a separate no-pending-command precondition, which Strata enforces with queue synchronization at its release boundary. A future path that bypassed those drains and freed `m.stage_dev`, `m.dq_gu`, `m.dq_d`, or other scratch still in use would be a valid lifetime concern, but no such callsite was identified here.
+
+## Source facts and inference
+
+**Source/spec facts:** project event destruction deletes only the wrapper; wrapper contains `sycl::event`; DPC++ event implementation is reference-counted and scheduler commands hold an implementation reference; SYCL queue destruction with incomplete commands is specified to leave those commands running; `sycl::free` forbids outstanding command use; Strata drains before its frees and stream removal.
+
+**Inference:** for the reviewed event-recording path on the pinned DPC++ implementation, destroying `PfTimer`’s wrapper during an exceptional early return drops one host reference and does not invalidate a command’s event. It is therefore not a justified timer-lifetime defect. For the project’s own release paths, freeing prefills’ USM scratch after early return is protected by explicit queue drains. This does not establish correctness of all third-party UR/Level Zero adapter implementations or unreviewed teardown paths; it is sufficient to reject the specific claim that `event_destroy(pt.ev)` alone makes this path undefined.
+
+## Evidence pins
+
+- WX source: commit `0740b43488d812117f021ccbe4bd0e15d223f955`; `src/prefill/prefill.cpp`, blob SHA-256 `a5971752d742a430e477792bf9e1f807344c0dfe`; `src/core/gpu.cpp` and `src/core/device.cpp` from that immutable tree.
+- Intel LLVM source: commit `504366f4b82ff00bbac7b0c956635eed8bc599d8`, corresponding to the compiler source identity used in the earlier task.
+- Primary references: [SYCL 2020 rev. 12](https://registry.khronos.org/SYCL/specs/sycl-2020/html/sycl-2020.html), [DPC++ event implementation](https://github.com/intel/llvm/blob/504366f4b82ff00bbac7b0c956635eed8bc599d8/sycl/source/detail/event_impl.hpp), [DPC++ event destructor](https://github.com/intel/llvm/blob/504366f4b82ff00bbac7b0c956635eed8/sycl/source/detail/event_impl.cpp), [DPC++ scheduler command ownership](https://github.com/intel/llvm/blob/504366f4b82ff00bbac7b0c956635eed8bc599d8/sycl/source/detail/scheduler/commands.hpp), [Unified Runtime event API](https://oneapi-src.github.io/unified-runtime/core/api.html), and [Level Zero event-pool lifecycle](https://oneapi-src.github.io/level-zero-spec/level-zero/latest/core/api/apis/event_pool.html).
+
+No timer-on measurement, profiler, test, or code change was part of this review.
