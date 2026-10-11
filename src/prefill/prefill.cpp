@@ -406,6 +406,7 @@ struct Prefill::Impl {
     int64_t T = 0, T_max = 0;
     bool borrowed = false;
     bool compact_moe = false;   // experimental T-row FP16 fallback scratch; no MMQ layers
+    bool emb_ple_alias = false;   // embedding broadcast completes before PLE overwrites this FP32 plane
     strata::gpu::Stream cs = nullptr, copy = nullptr;
     Gemm gemm;
     std::vector<void*> owned;
@@ -637,6 +638,13 @@ bool compact_moe_enabled() {
     const MmqPlan& mp = mmq_plan();
     return compact_moe_requested() && !mp.any && mp.fallback && !dbg;
 }
+bool emb_ple_alias_requested() {
+    static const bool on = [] {
+        const char* v = std::getenv("STRATA_PREFILL_EMB_PLE_ALIAS");
+        return v != nullptr && std::strcmp(v, "1") == 0;
+    }();
+    return on;
+}
 uint64_t moe_set_bytes(size_t T, int64_t n_expert) {
     const MmqPlan& mp = mmq_plan();
     Alloc a; a.count_only = true; bool ok = true;
@@ -662,7 +670,31 @@ bool Prefill::init(const core::WeightTable& wt, const core::ModelGeometry& g, co
                    void* stream, std::string& err, void* borrow, uint64_t borrow_bytes) {
     Impl& m = *impl_;
     m.wt = &wt; m.g = &g; m.ss = &ss; m.src = src; m.cache = cache; m.host_res = host_res;
-    m.T = chunk; m.cs = stream; m.stats = &stats_;
+    m.T = chunk; m.stats = &stats_;
+    m.emb_ple_alias = emb_ple_alias_requested();
+    if (m.emb_ple_alias) {
+        // All embedding writes, the final gr_broadcast read, ple_land's overwrite and every PLE reader use m.cs.
+        // Host call order alone is insufficient: refuse an unavailable queue contract before any allocation.
+        try {
+            auto& runtime = core::Runtime::get();
+            auto& queue = runtime.stream(stream);
+            if (queue.get_device() != runtime.device() || queue.get_context() != runtime.context()) {
+                err = "prefill: STRATA_PREFILL_EMB_PLE_ALIAS requires the current device/context's compute queue";
+                return false;
+            }
+            if (!queue.has_property<sycl::property::queue::in_order>()) {
+                err = "prefill: STRATA_PREFILL_EMB_PLE_ALIAS requires an in-order compute queue";
+                return false;
+            }
+        } catch (const std::exception& e) {
+            err = std::string("prefill: STRATA_PREFILL_EMB_PLE_ALIAS queue contract unavailable: ") + e.what();
+            return false;
+        } catch (...) {
+            err = "prefill: STRATA_PREFILL_EMB_PLE_ALIAS queue contract unavailable";
+            return false;
+        }
+    }
+    m.cs = stream;
     // Reject unsupported opt-ins before allocating anything: MMQ GU stays route-sized, and the existing NaN
     // diagnostic needs all GU rows at once. A compact run must use the ordered queue contract of Runtime.
     m.compact_moe = compact_moe_enabled();
@@ -871,10 +903,13 @@ bool Prefill::carve(size_t T, void* alloc) {
             m.used_of[i] = i;
         }
     }
-    m.ple_emb = o.take<float>(T * N, ok);
+    m.ple_emb = m.emb_ple_alias ? m.emb : o.take<float>(T * N, ok);
     m.ple_norm = o.take<float>((size_t) strata::kernels::NG_HC_DIM, ok);
     take_stage(o, ss, s, m.stage, ok);
     m.T = (int64_t) T;
+    if (ok && m.emb_ple_alias)
+        std::fprintf(stderr, "strata prefill: STRATA_PREFILL_EMB_PLE_ALIAS=1 T=%lld requested_saving_bytes=%llu in_order=1\n",
+                     (long long) m.T, (unsigned long long) T * N * sizeof(float) + 256);
     return ok;
 }
 
@@ -1099,7 +1134,7 @@ uint64_t Prefill::bytes_needed(const core::ModelGeometry& g, const core::Session
         }
     }
     for (int i = 0; i < ring_slots(T); ++i) o.take<uint8_t>((size_t) MAXBLOB(), ok);
-    f(T * N);
+    if (!emb_ple_alias_requested()) f(T * N);
     f((size_t) strata::kernels::NG_HC_DIM);
     strata::kernels::KvHostPools stage;
     take_stage(o, ss, s, stage, ok);
