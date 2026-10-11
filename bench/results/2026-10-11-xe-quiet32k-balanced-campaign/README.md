@@ -65,3 +65,10 @@ Next: implement and qualify bounded fallback scratch reuse, then measure actual
 8K capacity and64K pass cost. Do not weaken the512MiB READY reserve or full-context
 requirements. A separate serve workspace-retirement candidate preserves session
 and decoder state; cache enlargement still needs its own pointer/graph contract.
+
+Closed-artifact review: successful cumulative journal/API/protocol logs and
+regenerated CPU admission fixtures were retired after exact evidence was committed.
+The original receipts/statuses and current real fixtures remain unchanged.
+[The executed deletion manifest](retention-executed-v1.json) records each path,
+hash, retained replacement and reason, with logical/allocation/available-space
+observations separated. No GPU/service/source/model operation was part of cleanup.
