@@ -1,0 +1,18 @@
+{
+  "main_reviewed": true,
+  "source_path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/src/prefill/prefill.cpp",
+  "source_sha256": "c5cfa727302d334e2f6a8aaad8c1bf59e7d581dd8c2cec2af0d031faf807272d",
+  "source_lines": {
+    "gdn_plan": 567,
+    "max_shared_allocation": 764,
+    "gdn_y_carved_view": 773,
+    "moe_view": 786
+  },
+  "report": "research/research-xe-prefill-8192-owned-byte-delta-low-precision-candidates-round135-v1.txt.lossless.json",
+  "report_original_preserved": true,
+  "source_T8192_gdn_requested": 1180698624,
+  "source_T8192_moe_requested": 1937018368,
+  "unconsumed_y_payload_bytes": 201326592,
+  "owned_allocation_saved_by_y_elision_alone_bytes": 0,
+  "scope": "Static allocation correction only; no new quality/physical-VRAM/model timing. GDN y is a carved view inside max(GDN,QSA,MoE). MoE remains largest, so y removal alone cannot reduce the actual owned region under current fallback recipe. It could reduce writes; that has not been measured."
+}

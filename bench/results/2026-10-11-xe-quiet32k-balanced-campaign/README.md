@@ -25,9 +25,11 @@ Full-model ability, RESTORE and full262144 completion remain unqualified.
 
 Research v135 contains 560 completed reports. The source-derived Prefill owned
 requests are 2952728320 B at T6144; T8192 adds765.672 MiB. These are requested
-extents, not measured physical VRAM. A redundant GDN FP32 output-copy candidate
-could save192 MiB at8192 if full call-graph review confirms no consumer. It is
-not implemented or tested. The width2 grouped schedule is an existing
+extents, not measured physical VRAM. The redundant GDN FP32 output copy is a carved view inside the shared region;
+removing its192 MiB payload alone saves0 owned allocation bytes in this current
+recipe because MoE remains the largest region. The original report overstated
+the capacity saving; see main-allocation-correction-v1.json. No such change was
+implemented or tested. The width2 grouped schedule is an existing
 conditional candidate selected against the measured full-stream pass budget;
 its 256K capacity and state parity remain unqualified.
 
