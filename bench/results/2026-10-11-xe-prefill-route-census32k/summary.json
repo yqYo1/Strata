@@ -1,0 +1,1781 @@
+{
+  "source_revision": "b3e1de06076b692614ef51512f5501838d4b6f2b",
+  "boot_id": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+  "input_sha256": "94cbdd7fdc6c9f32a08c0c4f8b50c1cc27a7ffc3f383d23c5c6ac24e8ec7f2c9",
+  "input_tokens": 32768,
+  "actual_batched_positions": 32767,
+  "chunk": 6144,
+  "rows": 288,
+  "diagnostic_request_timing": {
+    "prefill_tps": 269.1591487250507,
+    "cold_decode_tps": 8.271298593879239,
+    "prefill_ms": 121742.1,
+    "cold_decode_ms": 1934.4,
+    "input_tokens": 32768,
+    "actual_batched_positions": 32767,
+    "generated_tokens": 16,
+    "initialized_independent_process": true,
+    "restore_measured": false,
+    "settings_search": false
+  },
+  "route_aggregates": {
+    "routed_rows": 15728160,
+    "expected_rows": 15728160,
+    "active_experts": 137407,
+    "active_nonresident": 136574,
+    "zero_nonresident": 10018,
+    "gather_group_accepted_calls": 0,
+    "gather_group_declined_calls": 0,
+    "gather_individual_calls": 0,
+    "native_dequant_gu_calls": 136846,
+    "native_dequant_down_calls": 136846
+  },
+  "branch_layer_chunk_occurrences": [
+    {
+      "mmq_enabled": 0,
+      "plan_fallback": 1,
+      "mmq_direct": 0,
+      "group_gather": 0,
+      "occurrences": 288
+    }
+  ],
+  "transfer_total": {
+    "device": 0,
+    "lb": 0,
+    "le": 48,
+    "pos": 0,
+    "tokens": 32767,
+    "chunks": 6,
+    "routed_calls": 22479,
+    "routed_bytes": 45968076800,
+    "full_stream_calls": 122160,
+    "full_stream_bytes": 249988224000,
+    "calls": 144639,
+    "bytes": 295956300800
+  },
+  "ready_free_mib": 744,
+  "strict_selected16_ids_lp_top5_equal": true,
+  "fresh_before_after_health": true,
+  "new_faults": [],
+  "original_failed_lint_v10_preserved": true,
+  "all_mode_release_host_asan_and_mandatory_lints_passed": true,
+  "general_protocol_cpu": {
+    "actual": null,
+    "negative_protocol": 97,
+    "negative_trace": 8,
+    "positive_protocol": 12,
+    "positive_trace": 12
+  },
+  "performance_adopted": false,
+  "measurement_scope": "Actual host routing counts, successful wrapper returns and completed logical H2D extents. No exclusive GPU component service, physical bandwidth, attribution of elapsed time or optimal settings claim.",
+  "cold_decode_scope": "Single independent process, first16 outputs including initial graph capture. No warm/RESTORE/variance selection claim.",
+  "pending_group_api": "Main fully reviewed source-only candidate. Neither integrated, built, GPU byte-parity qualified nor adopted.",
+  "open_requirements": [
+    "Measure actual native dequant/group component service and submission overhead after byte parity",
+    "Quiet6144/64K independent prefill and decode measurements",
+    "Prefill-only VRAM lifetime/recreate and dtype quality",
+    "Actual full262144/RESTORE",
+    "Xe pristine evaluation then latest official required feature integration",
+    "Official independent parameter tuning and three independent decode validation runs per committed TODO"
+  ],
+  "logical_unused_expert_h2d": {
+    "scope": "Full-nonresident stream copies whose same-layer/chunk actual route count is zero. Logical request extents; not physical traffic or avoidable exclusive service.",
+    "calls": 8065,
+    "bytes": 16473728000,
+    "fraction_of_all_expert_h2d_bytes": 0.05566270410688955,
+    "per_layer_chunk": [
+      {
+        "offset": 0,
+        "layer": 0,
+        "zero_nonresident": 26,
+        "blob_bytes": 2176000,
+        "logical_unused_bytes": 56576000
+      },
+      {
+        "offset": 0,
+        "layer": 1,
+        "zero_nonresident": 18,
+        "blob_bytes": 1510400,
+        "logical_unused_bytes": 27187200
+      },
+      {
+        "offset": 0,
+        "layer": 2,
+        "zero_nonresident": 30,
+        "blob_bytes": 1971200,
+        "logical_unused_bytes": 59136000
+      },
+      {
+        "offset": 0,
+        "layer": 3,
+        "zero_nonresident": 47,
+        "blob_bytes": 1971200,
+        "logical_unused_bytes": 92646400
+      },
+      {
+        "offset": 0,
+        "layer": 4,
+        "zero_nonresident": 58,
+        "blob_bytes": 1971200,
+        "logical_unused_bytes": 114329600
+      },
+      {
+        "offset": 0,
+        "layer": 5,
+        "zero_nonresident": 44,
+        "blob_bytes": 1971200,
+        "logical_unused_bytes": 86732800
+      },
+      {
+        "offset": 0,
+        "layer": 6,
+        "zero_nonresident": 46,
+        "blob_bytes": 1971200,
+        "logical_unused_bytes": 90675200
+      },
+      {
+        "offset": 0,
+        "layer": 7,
+        "zero_nonresident": 46,
+        "blob_bytes": 2176000,
+        "logical_unused_bytes": 100096000
+      },
+      {
+        "offset": 0,
+        "layer": 8,
+        "zero_nonresident": 66,
+        "blob_bytes": 1510400,
+        "logical_unused_bytes": 99686400
+      },
+      {
+        "offset": 0,
+        "layer": 9,
+        "zero_nonresident": 78,
+        "blob_bytes": 1971200,
+        "logical_unused_bytes": 153753600
+      },
+      {
+        "offset": 0,
+        "layer": 10,
+        "zero_nonresident": 50,
+        "blob_bytes": 1510400,
+        "logical_unused_bytes": 75520000
+      },
+      {
+        "offset": 0,
+        "layer": 11,
+        "zero_nonresident": 63,
+        "blob_bytes": 1971200,
+        "logical_unused_bytes": 124185600
+      },
+      {
+        "offset": 0,
+        "layer": 12,
+        "zero_nonresident": 77,
+        "blob_bytes": 1715200,
+        "logical_unused_bytes": 132070400
+      },
+      {
+        "offset": 0,
+        "layer": 13,
+        "zero_nonresident": 45,
+        "blob_bytes": 1510400,
+        "logical_unused_bytes": 67968000
+      },
+      {
+        "offset": 0,
+        "layer": 14,
+        "zero_nonresident": 41,
+        "blob_bytes": 2176000,
+        "logical_unused_bytes": 89216000
+      },
+      {
+        "offset": 0,
+        "layer": 15,
+        "zero_nonresident": 72,
+        "blob_bytes": 1971200,
+        "logical_unused_bytes": 141926400
+      },
+      {
+        "offset": 0,
+        "layer": 16,
+        "zero_nonresident": 65,
+        "blob_bytes": 2176000,
+        "logical_unused_bytes": 141440000
+      },
+      {
+        "offset": 0,
+        "layer": 17,
+        "zero_nonresident": 59,
+        "blob_bytes": 2329600,
+        "logical_unused_bytes": 137446400
+      },
+      {
+        "offset": 0,
+        "layer": 18,
+        "zero_nonresident": 46,
+        "blob_bytes": 2176000,
+        "logical_unused_bytes": 100096000
+      },
+      {
+        "offset": 0,
+        "layer": 19,
+        "zero_nonresident": 33,
+        "blob_bytes": 1971200,
+        "logical_unused_bytes": 65049600
+      },
+      {
+        "offset": 0,
+        "layer": 20,
+        "zero_nonresident": 28,
+        "blob_bytes": 1715200,
+        "logical_unused_bytes": 48025600
+      },
+      {
+        "offset": 0,
+        "layer": 21,
+        "zero_nonresident": 21,
+        "blob_bytes": 1868800,
+        "logical_unused_bytes": 39244800
+      },
+      {
+        "offset": 0,
+        "layer": 22,
+        "zero_nonresident": 12,
+        "blob_bytes": 2176000,
+        "logical_unused_bytes": 26112000
+      },
+      {
+        "offset": 0,
+        "layer": 23,
+        "zero_nonresident": 12,
+        "blob_bytes": 1971200,
+        "logical_unused_bytes": 23654400
+      },
+      {
+        "offset": 0,
+        "layer": 24,
+        "zero_nonresident": 35,
+        "blob_bytes": 1971200,
+        "logical_unused_bytes": 68992000
+      },
+      {
+        "offset": 0,
+        "layer": 25,
+        "zero_nonresident": 49,
+        "blob_bytes": 2329600,
+        "logical_unused_bytes": 114150400
+      },
+      {
+        "offset": 0,
+        "layer": 26,
+        "zero_nonresident": 30,
+        "blob_bytes": 1971200,
+        "logical_unused_bytes": 59136000
+      },
+      {
+        "offset": 0,
+        "layer": 27,
+        "zero_nonresident": 34,
+        "blob_bytes": 2329600,
+        "logical_unused_bytes": 79206400
+      },
+      {
+        "offset": 0,
+        "layer": 28,
+        "zero_nonresident": 21,
+        "blob_bytes": 2329600,
+        "logical_unused_bytes": 48921600
+      },
+      {
+        "offset": 0,
+        "layer": 29,
+        "zero_nonresident": 26,
+        "blob_bytes": 2329600,
+        "logical_unused_bytes": 60569600
+      },
+      {
+        "offset": 0,
+        "layer": 30,
+        "zero_nonresident": 24,
+        "blob_bytes": 1715200,
+        "logical_unused_bytes": 41164800
+      },
+      {
+        "offset": 0,
+        "layer": 31,
+        "zero_nonresident": 28,
+        "blob_bytes": 2176000,
+        "logical_unused_bytes": 60928000
+      },
+      {
+        "offset": 0,
+        "layer": 32,
+        "zero_nonresident": 37,
+        "blob_bytes": 1971200,
+        "logical_unused_bytes": 72934400
+      },
+      {
+        "offset": 0,
+        "layer": 33,
+        "zero_nonresident": 23,
+        "blob_bytes": 2176000,
+        "logical_unused_bytes": 50048000
+      },
+      {
+        "offset": 0,
+        "layer": 34,
+        "zero_nonresident": 17,
+        "blob_bytes": 1971200,
+        "logical_unused_bytes": 33510400
+      },
+      {
+        "offset": 0,
+        "layer": 35,
+        "zero_nonresident": 29,
+        "blob_bytes": 2329600,
+        "logical_unused_bytes": 67558400
+      },
+      {
+        "offset": 0,
+        "layer": 36,
+        "zero_nonresident": 33,
+        "blob_bytes": 1510400,
+        "logical_unused_bytes": 49843200
+      },
+      {
+        "offset": 0,
+        "layer": 37,
+        "zero_nonresident": 34,
+        "blob_bytes": 2176000,
+        "logical_unused_bytes": 73984000
+      },
+      {
+        "offset": 0,
+        "layer": 38,
+        "zero_nonresident": 27,
+        "blob_bytes": 2176000,
+        "logical_unused_bytes": 58752000
+      },
+      {
+        "offset": 0,
+        "layer": 39,
+        "zero_nonresident": 43,
+        "blob_bytes": 1971200,
+        "logical_unused_bytes": 84761600
+      },
+      {
+        "offset": 0,
+        "layer": 40,
+        "zero_nonresident": 21,
+        "blob_bytes": 2329600,
+        "logical_unused_bytes": 48921600
+      },
+      {
+        "offset": 0,
+        "layer": 41,
+        "zero_nonresident": 33,
+        "blob_bytes": 2176000,
+        "logical_unused_bytes": 71808000
+      },
+      {
+        "offset": 0,
+        "layer": 42,
+        "zero_nonresident": 34,
+        "blob_bytes": 2176000,
+        "logical_unused_bytes": 73984000
+      },
+      {
+        "offset": 0,
+        "layer": 43,
+        "zero_nonresident": 31,
+        "blob_bytes": 2176000,
+        "logical_unused_bytes": 67456000
+      },
+      {
+        "offset": 0,
+        "layer": 44,
+        "zero_nonresident": 36,
+        "blob_bytes": 2329600,
+        "logical_unused_bytes": 83865600
+      },
+      {
+        "offset": 0,
+        "layer": 45,
+        "zero_nonresident": 50,
+        "blob_bytes": 2329600,
+        "logical_unused_bytes": 116480000
+      },
+      {
+        "offset": 0,
+        "layer": 46,
+        "zero_nonresident": 46,
+        "blob_bytes": 2176000,
+        "logical_unused_bytes": 100096000
+      },
+      {
+        "offset": 0,
+        "layer": 47,
+        "zero_nonresident": 53,
+        "blob_bytes": 2662400,
+        "logical_unused_bytes": 141107200
+      },
+      {
+        "offset": 6144,
+        "layer": 0,
+        "zero_nonresident": 18,
+        "blob_bytes": 2176000,
+        "logical_unused_bytes": 39168000
+      },
+      {
+        "offset": 6144,
+        "layer": 1,
+        "zero_nonresident": 7,
+        "blob_bytes": 1510400,
+        "logical_unused_bytes": 10572800
+      },
+      {
+        "offset": 6144,
+        "layer": 2,
+        "zero_nonresident": 15,
+        "blob_bytes": 1971200,
+        "logical_unused_bytes": 29568000
+      },
+      {
+        "offset": 6144,
+        "layer": 3,
+        "zero_nonresident": 20,
+        "blob_bytes": 1971200,
+        "logical_unused_bytes": 39424000
+      },
+      {
+        "offset": 6144,
+        "layer": 4,
+        "zero_nonresident": 33,
+        "blob_bytes": 1971200,
+        "logical_unused_bytes": 65049600
+      },
+      {
+        "offset": 6144,
+        "layer": 5,
+        "zero_nonresident": 47,
+        "blob_bytes": 1971200,
+        "logical_unused_bytes": 92646400
+      },
+      {
+        "offset": 6144,
+        "layer": 6,
+        "zero_nonresident": 32,
+        "blob_bytes": 1971200,
+        "logical_unused_bytes": 63078400
+      },
+      {
+        "offset": 6144,
+        "layer": 7,
+        "zero_nonresident": 45,
+        "blob_bytes": 2176000,
+        "logical_unused_bytes": 97920000
+      },
+      {
+        "offset": 6144,
+        "layer": 8,
+        "zero_nonresident": 55,
+        "blob_bytes": 1510400,
+        "logical_unused_bytes": 83072000
+      },
+      {
+        "offset": 6144,
+        "layer": 9,
+        "zero_nonresident": 52,
+        "blob_bytes": 1971200,
+        "logical_unused_bytes": 102502400
+      },
+      {
+        "offset": 6144,
+        "layer": 10,
+        "zero_nonresident": 47,
+        "blob_bytes": 1510400,
+        "logical_unused_bytes": 70988800
+      },
+      {
+        "offset": 6144,
+        "layer": 11,
+        "zero_nonresident": 63,
+        "blob_bytes": 1971200,
+        "logical_unused_bytes": 124185600
+      },
+      {
+        "offset": 6144,
+        "layer": 12,
+        "zero_nonresident": 67,
+        "blob_bytes": 1715200,
+        "logical_unused_bytes": 114918400
+      },
+      {
+        "offset": 6144,
+        "layer": 13,
+        "zero_nonresident": 46,
+        "blob_bytes": 1510400,
+        "logical_unused_bytes": 69478400
+      },
+      {
+        "offset": 6144,
+        "layer": 14,
+        "zero_nonresident": 49,
+        "blob_bytes": 2176000,
+        "logical_unused_bytes": 106624000
+      },
+      {
+        "offset": 6144,
+        "layer": 15,
+        "zero_nonresident": 59,
+        "blob_bytes": 1971200,
+        "logical_unused_bytes": 116300800
+      },
+      {
+        "offset": 6144,
+        "layer": 16,
+        "zero_nonresident": 53,
+        "blob_bytes": 2176000,
+        "logical_unused_bytes": 115328000
+      },
+      {
+        "offset": 6144,
+        "layer": 17,
+        "zero_nonresident": 43,
+        "blob_bytes": 2329600,
+        "logical_unused_bytes": 100172800
+      },
+      {
+        "offset": 6144,
+        "layer": 18,
+        "zero_nonresident": 33,
+        "blob_bytes": 2176000,
+        "logical_unused_bytes": 71808000
+      },
+      {
+        "offset": 6144,
+        "layer": 19,
+        "zero_nonresident": 27,
+        "blob_bytes": 1971200,
+        "logical_unused_bytes": 53222400
+      },
+      {
+        "offset": 6144,
+        "layer": 20,
+        "zero_nonresident": 17,
+        "blob_bytes": 1715200,
+        "logical_unused_bytes": 29158400
+      },
+      {
+        "offset": 6144,
+        "layer": 21,
+        "zero_nonresident": 18,
+        "blob_bytes": 1868800,
+        "logical_unused_bytes": 33638400
+      },
+      {
+        "offset": 6144,
+        "layer": 22,
+        "zero_nonresident": 6,
+        "blob_bytes": 2176000,
+        "logical_unused_bytes": 13056000
+      },
+      {
+        "offset": 6144,
+        "layer": 23,
+        "zero_nonresident": 6,
+        "blob_bytes": 1971200,
+        "logical_unused_bytes": 11827200
+      },
+      {
+        "offset": 6144,
+        "layer": 24,
+        "zero_nonresident": 22,
+        "blob_bytes": 1971200,
+        "logical_unused_bytes": 43366400
+      },
+      {
+        "offset": 6144,
+        "layer": 25,
+        "zero_nonresident": 34,
+        "blob_bytes": 2329600,
+        "logical_unused_bytes": 79206400
+      },
+      {
+        "offset": 6144,
+        "layer": 26,
+        "zero_nonresident": 23,
+        "blob_bytes": 1971200,
+        "logical_unused_bytes": 45337600
+      },
+      {
+        "offset": 6144,
+        "layer": 27,
+        "zero_nonresident": 26,
+        "blob_bytes": 2329600,
+        "logical_unused_bytes": 60569600
+      },
+      {
+        "offset": 6144,
+        "layer": 28,
+        "zero_nonresident": 18,
+        "blob_bytes": 2329600,
+        "logical_unused_bytes": 41932800
+      },
+      {
+        "offset": 6144,
+        "layer": 29,
+        "zero_nonresident": 14,
+        "blob_bytes": 2329600,
+        "logical_unused_bytes": 32614400
+      },
+      {
+        "offset": 6144,
+        "layer": 30,
+        "zero_nonresident": 24,
+        "blob_bytes": 1715200,
+        "logical_unused_bytes": 41164800
+      },
+      {
+        "offset": 6144,
+        "layer": 31,
+        "zero_nonresident": 24,
+        "blob_bytes": 2176000,
+        "logical_unused_bytes": 52224000
+      },
+      {
+        "offset": 6144,
+        "layer": 32,
+        "zero_nonresident": 19,
+        "blob_bytes": 1971200,
+        "logical_unused_bytes": 37452800
+      },
+      {
+        "offset": 6144,
+        "layer": 33,
+        "zero_nonresident": 16,
+        "blob_bytes": 2176000,
+        "logical_unused_bytes": 34816000
+      },
+      {
+        "offset": 6144,
+        "layer": 34,
+        "zero_nonresident": 20,
+        "blob_bytes": 1971200,
+        "logical_unused_bytes": 39424000
+      },
+      {
+        "offset": 6144,
+        "layer": 35,
+        "zero_nonresident": 19,
+        "blob_bytes": 2329600,
+        "logical_unused_bytes": 44262400
+      },
+      {
+        "offset": 6144,
+        "layer": 36,
+        "zero_nonresident": 22,
+        "blob_bytes": 1510400,
+        "logical_unused_bytes": 33228800
+      },
+      {
+        "offset": 6144,
+        "layer": 37,
+        "zero_nonresident": 47,
+        "blob_bytes": 2176000,
+        "logical_unused_bytes": 102272000
+      },
+      {
+        "offset": 6144,
+        "layer": 38,
+        "zero_nonresident": 28,
+        "blob_bytes": 2176000,
+        "logical_unused_bytes": 60928000
+      },
+      {
+        "offset": 6144,
+        "layer": 39,
+        "zero_nonresident": 24,
+        "blob_bytes": 1971200,
+        "logical_unused_bytes": 47308800
+      },
+      {
+        "offset": 6144,
+        "layer": 40,
+        "zero_nonresident": 14,
+        "blob_bytes": 2329600,
+        "logical_unused_bytes": 32614400
+      },
+      {
+        "offset": 6144,
+        "layer": 41,
+        "zero_nonresident": 24,
+        "blob_bytes": 2176000,
+        "logical_unused_bytes": 52224000
+      },
+      {
+        "offset": 6144,
+        "layer": 42,
+        "zero_nonresident": 32,
+        "blob_bytes": 2176000,
+        "logical_unused_bytes": 69632000
+      },
+      {
+        "offset": 6144,
+        "layer": 43,
+        "zero_nonresident": 28,
+        "blob_bytes": 2176000,
+        "logical_unused_bytes": 60928000
+      },
+      {
+        "offset": 6144,
+        "layer": 44,
+        "zero_nonresident": 31,
+        "blob_bytes": 2329600,
+        "logical_unused_bytes": 72217600
+      },
+      {
+        "offset": 6144,
+        "layer": 45,
+        "zero_nonresident": 49,
+        "blob_bytes": 2329600,
+        "logical_unused_bytes": 114150400
+      },
+      {
+        "offset": 6144,
+        "layer": 46,
+        "zero_nonresident": 48,
+        "blob_bytes": 2176000,
+        "logical_unused_bytes": 104448000
+      },
+      {
+        "offset": 6144,
+        "layer": 47,
+        "zero_nonresident": 59,
+        "blob_bytes": 2662400,
+        "logical_unused_bytes": 157081600
+      },
+      {
+        "offset": 12288,
+        "layer": 0,
+        "zero_nonresident": 24,
+        "blob_bytes": 2176000,
+        "logical_unused_bytes": 52224000
+      },
+      {
+        "offset": 12288,
+        "layer": 1,
+        "zero_nonresident": 11,
+        "blob_bytes": 1510400,
+        "logical_unused_bytes": 16614400
+      },
+      {
+        "offset": 12288,
+        "layer": 2,
+        "zero_nonresident": 13,
+        "blob_bytes": 1971200,
+        "logical_unused_bytes": 25625600
+      },
+      {
+        "offset": 12288,
+        "layer": 3,
+        "zero_nonresident": 19,
+        "blob_bytes": 1971200,
+        "logical_unused_bytes": 37452800
+      },
+      {
+        "offset": 12288,
+        "layer": 4,
+        "zero_nonresident": 27,
+        "blob_bytes": 1971200,
+        "logical_unused_bytes": 53222400
+      },
+      {
+        "offset": 12288,
+        "layer": 5,
+        "zero_nonresident": 35,
+        "blob_bytes": 1971200,
+        "logical_unused_bytes": 68992000
+      },
+      {
+        "offset": 12288,
+        "layer": 6,
+        "zero_nonresident": 31,
+        "blob_bytes": 1971200,
+        "logical_unused_bytes": 61107200
+      },
+      {
+        "offset": 12288,
+        "layer": 7,
+        "zero_nonresident": 43,
+        "blob_bytes": 2176000,
+        "logical_unused_bytes": 93568000
+      },
+      {
+        "offset": 12288,
+        "layer": 8,
+        "zero_nonresident": 58,
+        "blob_bytes": 1510400,
+        "logical_unused_bytes": 87603200
+      },
+      {
+        "offset": 12288,
+        "layer": 9,
+        "zero_nonresident": 80,
+        "blob_bytes": 1971200,
+        "logical_unused_bytes": 157696000
+      },
+      {
+        "offset": 12288,
+        "layer": 10,
+        "zero_nonresident": 58,
+        "blob_bytes": 1510400,
+        "logical_unused_bytes": 87603200
+      },
+      {
+        "offset": 12288,
+        "layer": 11,
+        "zero_nonresident": 72,
+        "blob_bytes": 1971200,
+        "logical_unused_bytes": 141926400
+      },
+      {
+        "offset": 12288,
+        "layer": 12,
+        "zero_nonresident": 79,
+        "blob_bytes": 1715200,
+        "logical_unused_bytes": 135500800
+      },
+      {
+        "offset": 12288,
+        "layer": 13,
+        "zero_nonresident": 54,
+        "blob_bytes": 1510400,
+        "logical_unused_bytes": 81561600
+      },
+      {
+        "offset": 12288,
+        "layer": 14,
+        "zero_nonresident": 65,
+        "blob_bytes": 2176000,
+        "logical_unused_bytes": 141440000
+      },
+      {
+        "offset": 12288,
+        "layer": 15,
+        "zero_nonresident": 90,
+        "blob_bytes": 1971200,
+        "logical_unused_bytes": 177408000
+      },
+      {
+        "offset": 12288,
+        "layer": 16,
+        "zero_nonresident": 67,
+        "blob_bytes": 2176000,
+        "logical_unused_bytes": 145792000
+      },
+      {
+        "offset": 12288,
+        "layer": 17,
+        "zero_nonresident": 46,
+        "blob_bytes": 2329600,
+        "logical_unused_bytes": 107161600
+      },
+      {
+        "offset": 12288,
+        "layer": 18,
+        "zero_nonresident": 29,
+        "blob_bytes": 2176000,
+        "logical_unused_bytes": 63104000
+      },
+      {
+        "offset": 12288,
+        "layer": 19,
+        "zero_nonresident": 26,
+        "blob_bytes": 1971200,
+        "logical_unused_bytes": 51251200
+      },
+      {
+        "offset": 12288,
+        "layer": 20,
+        "zero_nonresident": 29,
+        "blob_bytes": 1715200,
+        "logical_unused_bytes": 49740800
+      },
+      {
+        "offset": 12288,
+        "layer": 21,
+        "zero_nonresident": 14,
+        "blob_bytes": 1868800,
+        "logical_unused_bytes": 26163200
+      },
+      {
+        "offset": 12288,
+        "layer": 22,
+        "zero_nonresident": 12,
+        "blob_bytes": 2176000,
+        "logical_unused_bytes": 26112000
+      },
+      {
+        "offset": 12288,
+        "layer": 23,
+        "zero_nonresident": 16,
+        "blob_bytes": 1971200,
+        "logical_unused_bytes": 31539200
+      },
+      {
+        "offset": 12288,
+        "layer": 24,
+        "zero_nonresident": 26,
+        "blob_bytes": 1971200,
+        "logical_unused_bytes": 51251200
+      },
+      {
+        "offset": 12288,
+        "layer": 25,
+        "zero_nonresident": 36,
+        "blob_bytes": 2329600,
+        "logical_unused_bytes": 83865600
+      },
+      {
+        "offset": 12288,
+        "layer": 26,
+        "zero_nonresident": 29,
+        "blob_bytes": 1971200,
+        "logical_unused_bytes": 57164800
+      },
+      {
+        "offset": 12288,
+        "layer": 27,
+        "zero_nonresident": 43,
+        "blob_bytes": 2329600,
+        "logical_unused_bytes": 100172800
+      },
+      {
+        "offset": 12288,
+        "layer": 28,
+        "zero_nonresident": 20,
+        "blob_bytes": 2329600,
+        "logical_unused_bytes": 46592000
+      },
+      {
+        "offset": 12288,
+        "layer": 29,
+        "zero_nonresident": 21,
+        "blob_bytes": 2329600,
+        "logical_unused_bytes": 48921600
+      },
+      {
+        "offset": 12288,
+        "layer": 30,
+        "zero_nonresident": 24,
+        "blob_bytes": 1715200,
+        "logical_unused_bytes": 41164800
+      },
+      {
+        "offset": 12288,
+        "layer": 31,
+        "zero_nonresident": 39,
+        "blob_bytes": 2176000,
+        "logical_unused_bytes": 84864000
+      },
+      {
+        "offset": 12288,
+        "layer": 32,
+        "zero_nonresident": 35,
+        "blob_bytes": 1971200,
+        "logical_unused_bytes": 68992000
+      },
+      {
+        "offset": 12288,
+        "layer": 33,
+        "zero_nonresident": 13,
+        "blob_bytes": 2176000,
+        "logical_unused_bytes": 28288000
+      },
+      {
+        "offset": 12288,
+        "layer": 34,
+        "zero_nonresident": 21,
+        "blob_bytes": 1971200,
+        "logical_unused_bytes": 41395200
+      },
+      {
+        "offset": 12288,
+        "layer": 35,
+        "zero_nonresident": 30,
+        "blob_bytes": 2329600,
+        "logical_unused_bytes": 69888000
+      },
+      {
+        "offset": 12288,
+        "layer": 36,
+        "zero_nonresident": 35,
+        "blob_bytes": 1510400,
+        "logical_unused_bytes": 52864000
+      },
+      {
+        "offset": 12288,
+        "layer": 37,
+        "zero_nonresident": 48,
+        "blob_bytes": 2176000,
+        "logical_unused_bytes": 104448000
+      },
+      {
+        "offset": 12288,
+        "layer": 38,
+        "zero_nonresident": 25,
+        "blob_bytes": 2176000,
+        "logical_unused_bytes": 54400000
+      },
+      {
+        "offset": 12288,
+        "layer": 39,
+        "zero_nonresident": 43,
+        "blob_bytes": 1971200,
+        "logical_unused_bytes": 84761600
+      },
+      {
+        "offset": 12288,
+        "layer": 40,
+        "zero_nonresident": 21,
+        "blob_bytes": 2329600,
+        "logical_unused_bytes": 48921600
+      },
+      {
+        "offset": 12288,
+        "layer": 41,
+        "zero_nonresident": 27,
+        "blob_bytes": 2176000,
+        "logical_unused_bytes": 58752000
+      },
+      {
+        "offset": 12288,
+        "layer": 42,
+        "zero_nonresident": 31,
+        "blob_bytes": 2176000,
+        "logical_unused_bytes": 67456000
+      },
+      {
+        "offset": 12288,
+        "layer": 43,
+        "zero_nonresident": 26,
+        "blob_bytes": 2176000,
+        "logical_unused_bytes": 56576000
+      },
+      {
+        "offset": 12288,
+        "layer": 44,
+        "zero_nonresident": 38,
+        "blob_bytes": 2329600,
+        "logical_unused_bytes": 88524800
+      },
+      {
+        "offset": 12288,
+        "layer": 45,
+        "zero_nonresident": 50,
+        "blob_bytes": 2329600,
+        "logical_unused_bytes": 116480000
+      },
+      {
+        "offset": 12288,
+        "layer": 46,
+        "zero_nonresident": 44,
+        "blob_bytes": 2176000,
+        "logical_unused_bytes": 95744000
+      },
+      {
+        "offset": 12288,
+        "layer": 47,
+        "zero_nonresident": 54,
+        "blob_bytes": 2662400,
+        "logical_unused_bytes": 143769600
+      },
+      {
+        "offset": 18432,
+        "layer": 0,
+        "zero_nonresident": 18,
+        "blob_bytes": 2176000,
+        "logical_unused_bytes": 39168000
+      },
+      {
+        "offset": 18432,
+        "layer": 1,
+        "zero_nonresident": 9,
+        "blob_bytes": 1510400,
+        "logical_unused_bytes": 13593600
+      },
+      {
+        "offset": 18432,
+        "layer": 2,
+        "zero_nonresident": 20,
+        "blob_bytes": 1971200,
+        "logical_unused_bytes": 39424000
+      },
+      {
+        "offset": 18432,
+        "layer": 3,
+        "zero_nonresident": 24,
+        "blob_bytes": 1971200,
+        "logical_unused_bytes": 47308800
+      },
+      {
+        "offset": 18432,
+        "layer": 4,
+        "zero_nonresident": 37,
+        "blob_bytes": 1971200,
+        "logical_unused_bytes": 72934400
+      },
+      {
+        "offset": 18432,
+        "layer": 5,
+        "zero_nonresident": 40,
+        "blob_bytes": 1971200,
+        "logical_unused_bytes": 78848000
+      },
+      {
+        "offset": 18432,
+        "layer": 6,
+        "zero_nonresident": 35,
+        "blob_bytes": 1971200,
+        "logical_unused_bytes": 68992000
+      },
+      {
+        "offset": 18432,
+        "layer": 7,
+        "zero_nonresident": 49,
+        "blob_bytes": 2176000,
+        "logical_unused_bytes": 106624000
+      },
+      {
+        "offset": 18432,
+        "layer": 8,
+        "zero_nonresident": 56,
+        "blob_bytes": 1510400,
+        "logical_unused_bytes": 84582400
+      },
+      {
+        "offset": 18432,
+        "layer": 9,
+        "zero_nonresident": 65,
+        "blob_bytes": 1971200,
+        "logical_unused_bytes": 128128000
+      },
+      {
+        "offset": 18432,
+        "layer": 10,
+        "zero_nonresident": 42,
+        "blob_bytes": 1510400,
+        "logical_unused_bytes": 63436800
+      },
+      {
+        "offset": 18432,
+        "layer": 11,
+        "zero_nonresident": 72,
+        "blob_bytes": 1971200,
+        "logical_unused_bytes": 141926400
+      },
+      {
+        "offset": 18432,
+        "layer": 12,
+        "zero_nonresident": 67,
+        "blob_bytes": 1715200,
+        "logical_unused_bytes": 114918400
+      },
+      {
+        "offset": 18432,
+        "layer": 13,
+        "zero_nonresident": 52,
+        "blob_bytes": 1510400,
+        "logical_unused_bytes": 78540800
+      },
+      {
+        "offset": 18432,
+        "layer": 14,
+        "zero_nonresident": 58,
+        "blob_bytes": 2176000,
+        "logical_unused_bytes": 126208000
+      },
+      {
+        "offset": 18432,
+        "layer": 15,
+        "zero_nonresident": 65,
+        "blob_bytes": 1971200,
+        "logical_unused_bytes": 128128000
+      },
+      {
+        "offset": 18432,
+        "layer": 16,
+        "zero_nonresident": 52,
+        "blob_bytes": 2176000,
+        "logical_unused_bytes": 113152000
+      },
+      {
+        "offset": 18432,
+        "layer": 17,
+        "zero_nonresident": 46,
+        "blob_bytes": 2329600,
+        "logical_unused_bytes": 107161600
+      },
+      {
+        "offset": 18432,
+        "layer": 18,
+        "zero_nonresident": 26,
+        "blob_bytes": 2176000,
+        "logical_unused_bytes": 56576000
+      },
+      {
+        "offset": 18432,
+        "layer": 19,
+        "zero_nonresident": 25,
+        "blob_bytes": 1971200,
+        "logical_unused_bytes": 49280000
+      },
+      {
+        "offset": 18432,
+        "layer": 20,
+        "zero_nonresident": 19,
+        "blob_bytes": 1715200,
+        "logical_unused_bytes": 32588800
+      },
+      {
+        "offset": 18432,
+        "layer": 21,
+        "zero_nonresident": 11,
+        "blob_bytes": 1868800,
+        "logical_unused_bytes": 20556800
+      },
+      {
+        "offset": 18432,
+        "layer": 22,
+        "zero_nonresident": 11,
+        "blob_bytes": 2176000,
+        "logical_unused_bytes": 23936000
+      },
+      {
+        "offset": 18432,
+        "layer": 23,
+        "zero_nonresident": 6,
+        "blob_bytes": 1971200,
+        "logical_unused_bytes": 11827200
+      },
+      {
+        "offset": 18432,
+        "layer": 24,
+        "zero_nonresident": 26,
+        "blob_bytes": 1971200,
+        "logical_unused_bytes": 51251200
+      },
+      {
+        "offset": 18432,
+        "layer": 25,
+        "zero_nonresident": 38,
+        "blob_bytes": 2329600,
+        "logical_unused_bytes": 88524800
+      },
+      {
+        "offset": 18432,
+        "layer": 26,
+        "zero_nonresident": 27,
+        "blob_bytes": 1971200,
+        "logical_unused_bytes": 53222400
+      },
+      {
+        "offset": 18432,
+        "layer": 27,
+        "zero_nonresident": 35,
+        "blob_bytes": 2329600,
+        "logical_unused_bytes": 81536000
+      },
+      {
+        "offset": 18432,
+        "layer": 28,
+        "zero_nonresident": 20,
+        "blob_bytes": 2329600,
+        "logical_unused_bytes": 46592000
+      },
+      {
+        "offset": 18432,
+        "layer": 29,
+        "zero_nonresident": 24,
+        "blob_bytes": 2329600,
+        "logical_unused_bytes": 55910400
+      },
+      {
+        "offset": 18432,
+        "layer": 30,
+        "zero_nonresident": 20,
+        "blob_bytes": 1715200,
+        "logical_unused_bytes": 34304000
+      },
+      {
+        "offset": 18432,
+        "layer": 31,
+        "zero_nonresident": 32,
+        "blob_bytes": 2176000,
+        "logical_unused_bytes": 69632000
+      },
+      {
+        "offset": 18432,
+        "layer": 32,
+        "zero_nonresident": 28,
+        "blob_bytes": 1971200,
+        "logical_unused_bytes": 55193600
+      },
+      {
+        "offset": 18432,
+        "layer": 33,
+        "zero_nonresident": 25,
+        "blob_bytes": 2176000,
+        "logical_unused_bytes": 54400000
+      },
+      {
+        "offset": 18432,
+        "layer": 34,
+        "zero_nonresident": 19,
+        "blob_bytes": 1971200,
+        "logical_unused_bytes": 37452800
+      },
+      {
+        "offset": 18432,
+        "layer": 35,
+        "zero_nonresident": 35,
+        "blob_bytes": 2329600,
+        "logical_unused_bytes": 81536000
+      },
+      {
+        "offset": 18432,
+        "layer": 36,
+        "zero_nonresident": 44,
+        "blob_bytes": 1510400,
+        "logical_unused_bytes": 66457600
+      },
+      {
+        "offset": 18432,
+        "layer": 37,
+        "zero_nonresident": 43,
+        "blob_bytes": 2176000,
+        "logical_unused_bytes": 93568000
+      },
+      {
+        "offset": 18432,
+        "layer": 38,
+        "zero_nonresident": 27,
+        "blob_bytes": 2176000,
+        "logical_unused_bytes": 58752000
+      },
+      {
+        "offset": 18432,
+        "layer": 39,
+        "zero_nonresident": 38,
+        "blob_bytes": 1971200,
+        "logical_unused_bytes": 74905600
+      },
+      {
+        "offset": 18432,
+        "layer": 40,
+        "zero_nonresident": 16,
+        "blob_bytes": 2329600,
+        "logical_unused_bytes": 37273600
+      },
+      {
+        "offset": 18432,
+        "layer": 41,
+        "zero_nonresident": 26,
+        "blob_bytes": 2176000,
+        "logical_unused_bytes": 56576000
+      },
+      {
+        "offset": 18432,
+        "layer": 42,
+        "zero_nonresident": 35,
+        "blob_bytes": 2176000,
+        "logical_unused_bytes": 76160000
+      },
+      {
+        "offset": 18432,
+        "layer": 43,
+        "zero_nonresident": 27,
+        "blob_bytes": 2176000,
+        "logical_unused_bytes": 58752000
+      },
+      {
+        "offset": 18432,
+        "layer": 44,
+        "zero_nonresident": 31,
+        "blob_bytes": 2329600,
+        "logical_unused_bytes": 72217600
+      },
+      {
+        "offset": 18432,
+        "layer": 45,
+        "zero_nonresident": 42,
+        "blob_bytes": 2329600,
+        "logical_unused_bytes": 97843200
+      },
+      {
+        "offset": 18432,
+        "layer": 46,
+        "zero_nonresident": 54,
+        "blob_bytes": 2176000,
+        "logical_unused_bytes": 117504000
+      },
+      {
+        "offset": 18432,
+        "layer": 47,
+        "zero_nonresident": 63,
+        "blob_bytes": 2662400,
+        "logical_unused_bytes": 167731200
+      },
+      {
+        "offset": 24576,
+        "layer": 0,
+        "zero_nonresident": 19,
+        "blob_bytes": 2176000,
+        "logical_unused_bytes": 41344000
+      },
+      {
+        "offset": 24576,
+        "layer": 1,
+        "zero_nonresident": 11,
+        "blob_bytes": 1510400,
+        "logical_unused_bytes": 16614400
+      },
+      {
+        "offset": 24576,
+        "layer": 2,
+        "zero_nonresident": 13,
+        "blob_bytes": 1971200,
+        "logical_unused_bytes": 25625600
+      },
+      {
+        "offset": 24576,
+        "layer": 3,
+        "zero_nonresident": 18,
+        "blob_bytes": 1971200,
+        "logical_unused_bytes": 35481600
+      },
+      {
+        "offset": 24576,
+        "layer": 4,
+        "zero_nonresident": 15,
+        "blob_bytes": 1971200,
+        "logical_unused_bytes": 29568000
+      },
+      {
+        "offset": 24576,
+        "layer": 5,
+        "zero_nonresident": 21,
+        "blob_bytes": 1971200,
+        "logical_unused_bytes": 41395200
+      },
+      {
+        "offset": 24576,
+        "layer": 6,
+        "zero_nonresident": 26,
+        "blob_bytes": 1971200,
+        "logical_unused_bytes": 51251200
+      },
+      {
+        "offset": 24576,
+        "layer": 7,
+        "zero_nonresident": 29,
+        "blob_bytes": 2176000,
+        "logical_unused_bytes": 63104000
+      },
+      {
+        "offset": 24576,
+        "layer": 8,
+        "zero_nonresident": 42,
+        "blob_bytes": 1510400,
+        "logical_unused_bytes": 63436800
+      },
+      {
+        "offset": 24576,
+        "layer": 9,
+        "zero_nonresident": 33,
+        "blob_bytes": 1971200,
+        "logical_unused_bytes": 65049600
+      },
+      {
+        "offset": 24576,
+        "layer": 10,
+        "zero_nonresident": 26,
+        "blob_bytes": 1510400,
+        "logical_unused_bytes": 39270400
+      },
+      {
+        "offset": 24576,
+        "layer": 11,
+        "zero_nonresident": 47,
+        "blob_bytes": 1971200,
+        "logical_unused_bytes": 92646400
+      },
+      {
+        "offset": 24576,
+        "layer": 12,
+        "zero_nonresident": 50,
+        "blob_bytes": 1715200,
+        "logical_unused_bytes": 85760000
+      },
+      {
+        "offset": 24576,
+        "layer": 13,
+        "zero_nonresident": 31,
+        "blob_bytes": 1510400,
+        "logical_unused_bytes": 46822400
+      },
+      {
+        "offset": 24576,
+        "layer": 14,
+        "zero_nonresident": 33,
+        "blob_bytes": 2176000,
+        "logical_unused_bytes": 71808000
+      },
+      {
+        "offset": 24576,
+        "layer": 15,
+        "zero_nonresident": 54,
+        "blob_bytes": 1971200,
+        "logical_unused_bytes": 106444800
+      },
+      {
+        "offset": 24576,
+        "layer": 16,
+        "zero_nonresident": 28,
+        "blob_bytes": 2176000,
+        "logical_unused_bytes": 60928000
+      },
+      {
+        "offset": 24576,
+        "layer": 17,
+        "zero_nonresident": 32,
+        "blob_bytes": 2329600,
+        "logical_unused_bytes": 74547200
+      },
+      {
+        "offset": 24576,
+        "layer": 18,
+        "zero_nonresident": 14,
+        "blob_bytes": 2176000,
+        "logical_unused_bytes": 30464000
+      },
+      {
+        "offset": 24576,
+        "layer": 19,
+        "zero_nonresident": 10,
+        "blob_bytes": 1971200,
+        "logical_unused_bytes": 19712000
+      },
+      {
+        "offset": 24576,
+        "layer": 20,
+        "zero_nonresident": 10,
+        "blob_bytes": 1715200,
+        "logical_unused_bytes": 17152000
+      },
+      {
+        "offset": 24576,
+        "layer": 21,
+        "zero_nonresident": 17,
+        "blob_bytes": 1868800,
+        "logical_unused_bytes": 31769600
+      },
+      {
+        "offset": 24576,
+        "layer": 22,
+        "zero_nonresident": 6,
+        "blob_bytes": 2176000,
+        "logical_unused_bytes": 13056000
+      },
+      {
+        "offset": 24576,
+        "layer": 23,
+        "zero_nonresident": 7,
+        "blob_bytes": 1971200,
+        "logical_unused_bytes": 13798400
+      },
+      {
+        "offset": 24576,
+        "layer": 24,
+        "zero_nonresident": 16,
+        "blob_bytes": 1971200,
+        "logical_unused_bytes": 31539200
+      },
+      {
+        "offset": 24576,
+        "layer": 25,
+        "zero_nonresident": 16,
+        "blob_bytes": 2329600,
+        "logical_unused_bytes": 37273600
+      },
+      {
+        "offset": 24576,
+        "layer": 26,
+        "zero_nonresident": 15,
+        "blob_bytes": 1971200,
+        "logical_unused_bytes": 29568000
+      },
+      {
+        "offset": 24576,
+        "layer": 27,
+        "zero_nonresident": 24,
+        "blob_bytes": 2329600,
+        "logical_unused_bytes": 55910400
+      },
+      {
+        "offset": 24576,
+        "layer": 28,
+        "zero_nonresident": 18,
+        "blob_bytes": 2329600,
+        "logical_unused_bytes": 41932800
+      },
+      {
+        "offset": 24576,
+        "layer": 29,
+        "zero_nonresident": 12,
+        "blob_bytes": 2329600,
+        "logical_unused_bytes": 27955200
+      },
+      {
+        "offset": 24576,
+        "layer": 30,
+        "zero_nonresident": 23,
+        "blob_bytes": 1715200,
+        "logical_unused_bytes": 39449600
+      },
+      {
+        "offset": 24576,
+        "layer": 31,
+        "zero_nonresident": 27,
+        "blob_bytes": 2176000,
+        "logical_unused_bytes": 58752000
+      },
+      {
+        "offset": 24576,
+        "layer": 32,
+        "zero_nonresident": 19,
+        "blob_bytes": 1971200,
+        "logical_unused_bytes": 37452800
+      },
+      {
+        "offset": 24576,
+        "layer": 33,
+        "zero_nonresident": 16,
+        "blob_bytes": 2176000,
+        "logical_unused_bytes": 34816000
+      },
+      {
+        "offset": 24576,
+        "layer": 34,
+        "zero_nonresident": 17,
+        "blob_bytes": 1971200,
+        "logical_unused_bytes": 33510400
+      },
+      {
+        "offset": 24576,
+        "layer": 35,
+        "zero_nonresident": 24,
+        "blob_bytes": 2329600,
+        "logical_unused_bytes": 55910400
+      },
+      {
+        "offset": 24576,
+        "layer": 36,
+        "zero_nonresident": 31,
+        "blob_bytes": 1510400,
+        "logical_unused_bytes": 46822400
+      },
+      {
+        "offset": 24576,
+        "layer": 37,
+        "zero_nonresident": 36,
+        "blob_bytes": 2176000,
+        "logical_unused_bytes": 78336000
+      },
+      {
+        "offset": 24576,
+        "layer": 38,
+        "zero_nonresident": 19,
+        "blob_bytes": 2176000,
+        "logical_unused_bytes": 41344000
+      },
+      {
+        "offset": 24576,
+        "layer": 39,
+        "zero_nonresident": 31,
+        "blob_bytes": 1971200,
+        "logical_unused_bytes": 61107200
+      },
+      {
+        "offset": 24576,
+        "layer": 40,
+        "zero_nonresident": 13,
+        "blob_bytes": 2329600,
+        "logical_unused_bytes": 30284800
+      },
+      {
+        "offset": 24576,
+        "layer": 41,
+        "zero_nonresident": 23,
+        "blob_bytes": 2176000,
+        "logical_unused_bytes": 50048000
+      },
+      {
+        "offset": 24576,
+        "layer": 42,
+        "zero_nonresident": 33,
+        "blob_bytes": 2176000,
+        "logical_unused_bytes": 71808000
+      },
+      {
+        "offset": 24576,
+        "layer": 43,
+        "zero_nonresident": 16,
+        "blob_bytes": 2176000,
+        "logical_unused_bytes": 34816000
+      },
+      {
+        "offset": 24576,
+        "layer": 44,
+        "zero_nonresident": 27,
+        "blob_bytes": 2329600,
+        "logical_unused_bytes": 62899200
+      },
+      {
+        "offset": 24576,
+        "layer": 45,
+        "zero_nonresident": 43,
+        "blob_bytes": 2329600,
+        "logical_unused_bytes": 100172800
+      },
+      {
+        "offset": 24576,
+        "layer": 46,
+        "zero_nonresident": 44,
+        "blob_bytes": 2176000,
+        "logical_unused_bytes": 95744000
+      },
+      {
+        "offset": 24576,
+        "layer": 47,
+        "zero_nonresident": 73,
+        "blob_bytes": 2662400,
+        "logical_unused_bytes": 194355200
+      }
+    ]
+  },
+  "next_priority": "Actual FP16 branch GU/Down normal wrapper calls273692; qualify grouped dequant bytes and component service before integration. MMQ gather probe deferred for this measured configuration. Unused full-stream extent alone is a smaller measured subset, without assumed elapsed-time gain.",
+  "original_publication_v1_rejected_preserved": true,
+  "publication_source_normalization": {
+    "original_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-census32k-boundary-v1.py",
+    "original_sha256": "e8206c859c0a30ac1e396bfbfb126cf00c36ef2335edf9e7cb71c5b1645658d5",
+    "normalized_archive": "bench/results/2026-10-11-xe-prefill-route-census32k/recipes/xe-census32k-boundary-v1-case-label-normalized.py",
+    "normalized_sha256": "4ad308c1ce9233918cb3def200e2ce6fb2d5d3044fb89e3d61760eb37c07e032",
+    "normalization": "Only Python identifier key renamed to case_name. Reverse word-boundary replacement reconstructs exact original source bytes and hash. Semantics and numerical/measurement/controller policy unchanged.",
+    "reconstruction_verified": true,
+    "original_failed_status_preserved": true,
+    "reason": "Public run label falsely matched generic-api-key at source line41; keep scanner enabled without allowlisting or suppression."
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "main_reviewed": true,
+  "source_only": true,
+  "applied": false,
+  "adopted": false,
+  "fixtures_executed": false,
+  "build_test_gpu_qualified": false,
+  "agent_model": "gpt-6.1-sol",
+  "manifest_sha256": "bdec8fb6a13a1891a32bd97c55645a739a38e8216ceb2216d20fe15ca3fefeb0",
+  "artifact_pins": [
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-long-prefill-protocol-source-v1/protocol.py",
+      "bytes": 11742,
+      "sha256": "503878796d3a674b1c75a04fdd6e5e6da4e5cef0e7f145e148f7e80e4f7d0920"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-long-prefill-protocol-source-v1/selfcheck.py",
+      "bytes": 9220,
+      "sha256": "f85e25642f4945f64b661f30d01393e999cb78741e52514fddf8aae9d35201a6"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/implementation-xe-long-prefill-protocol-v1.txt",
+      "bytes": 11168,
+      "sha256": "2608cbbd43d6787902a3125d67eca7ed3c8859aa0dbecb07c86d187c5a0d0665"
+    }
+  ],
+  "review": "Read complete protocol/selfcheck/report/manifest. Mandatory caller geometry, bounded whole-request grammar and finite resource limits. Supports6144/64K without hard-coded eight chunks, explicit LP5 expectation and bounded earlyEOS. Accepted drafts may exceed emitted after EOS; no invented proportional counters. Capacity uses physical_context minus actual batched_n, and full prompt can have one verifier position; exhausted_zero is hypothetical explicit caller expectation, not asserted binary behavior. No GPU completion, numerical parity, throughput adoption or full-context/global quality claim. CPU selfcheck and actual-capture qualification are Main owned and unexecuted.",
+  "intended_cases": {
+    "positive_protocol": 12,
+    "negative_protocol": 97,
+    "positive_trace": 12,
+    "negative_trace": 8
+  }
+}

@@ -1,0 +1,86 @@
+{
+  "registry_version": 127,
+  "research_completed": 502,
+  "created_utc": "2026-10-11T07:39:25.344227+00:00",
+  "registry_format": "incremental; follow previous_committed_registry",
+  "previous_committed_registry": {
+    "path": "bench/results/2026-10-11-xe-chunk6144-and-ring96/report-registry-v126.json",
+    "sha256": "67228cf98fd2ebd87371edd064665c670f4c847aa17605fe5261d665eaa724d3",
+    "reports": 500
+  },
+  "new_reports": [
+    "implementation-xe-long-prefill-protocol-v1.txt",
+    "implementation-xe-native-dequant-group-api-v1.txt"
+  ],
+  "reports": [
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/implementation-xe-long-prefill-protocol-v1.txt",
+      "archive": "bench/results/2026-10-11-xe-prefill-route-census32k/implementation-xe-long-prefill-protocol-v1.txt",
+      "sha256": "2608cbbd43d6787902a3125d67eca7ed3c8859aa0dbecb07c86d187c5a0d0665",
+      "bytes": 11168,
+      "model": "gpt-6.1-sol",
+      "read_only": false,
+      "qualification": "Complete Main source/report/manifest review; grouped API remains unapplied and unqualified. General protocol actual Main CPU12/97 and trace12/8 plus completed6144 protocol PASS."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/implementation-xe-native-dequant-group-api-v1.txt",
+      "archive": "bench/results/2026-10-11-xe-prefill-route-census32k/implementation-xe-native-dequant-group-api-v1.txt",
+      "sha256": "eafab861727d0e26284cbcb5b4d64e4e81f64562dd4acc4960969c9c5956d159",
+      "bytes": 12611,
+      "model": "gpt-6.1-sol",
+      "read_only": false,
+      "qualification": "Complete Main source/report/manifest review; grouped API remains unapplied and unqualified. General protocol actual Main CPU12/97 and trace12/8 plus completed6144 protocol PASS."
+    }
+  ],
+  "live_agent_snapshot": {
+    "observed_utc": "2026-10-11T07:37:40.521595+00:00",
+    "source": "Actual collaboration.list_agents after Main model/CPU qualification and source reviews",
+    "root_status": "running",
+    "agents": [
+      {
+        "name": "/root/implement_native_dequant_group_api",
+        "status": "completed",
+        "model": "gpt-6.1-sol",
+        "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/implementation-xe-native-dequant-group-api-v1.txt"
+      },
+      {
+        "name": "/root/implement_prefill_route_census_observer",
+        "status": "completed",
+        "model": "gpt-6.1-sol",
+        "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/implementation-xe-long-prefill-protocol-v1.txt"
+      },
+      {
+        "name": "/root/implement_native_dequant_group_byte_probe",
+        "status": "running",
+        "model": "gpt-6.1-sol",
+        "assignment": "Concrete source-only all-format grouped dequant byte-parity/guard probe",
+        "requested_report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/implementation-xe-native-dequant-group-byte-probe-v1.txt",
+        "report_received": false,
+        "report_counted": false
+      }
+    ],
+    "research_dependency": "gpt-6-luna research quota until Oct14 2026 12:33PM; no running research agents or model substitution",
+    "main_current": "Actual census32K PASS: all288 FP16 fallback, GU/Down each136846 normal wrapper returns, MMQ gather0. Both release/host ASan/lints pass. General protocol CPU12/97 and trace12/8 plus actual6144 capture pass. Preserve original lint FAILED; commit compact evidence and retire only closed represented logs. Grouped dequant API still unapplied; independent concrete probe source being constructed."
+  },
+  "dependency": "Selected gpt-6-luna research quota until Oct14 2026 12:33PM; no substitute. Concrete implementation agents do not count as replacement research.",
+  "next_research_scopes": [
+    "Actual branch counts and component service",
+    "Official independent parameter tuning"
+  ],
+  "received_not_yet_main_reviewed": {
+    "observed_utc": "2026-10-11T07:45:40.674776+00:00",
+    "source": "Actual filtered collaboration.list_agents and final report notification",
+    "agent": "/root/implement_native_dequant_group_byte_probe",
+    "status": "completed",
+    "model": "gpt-6.1-sol",
+    "report_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/implementation-xe-native-dequant-group-byte-probe-v1.txt",
+    "report_sha256": "954fd78f2e6059b9c00ae5bee9b084c696b3111e853a2f99cf222b502a762518",
+    "report_bytes": 8659,
+    "source_artifact_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-native-dequant-group-byte-probe-source-v1",
+    "report_received": true,
+    "main_full_source_review_done": false,
+    "report_registered_in_completed_count": false,
+    "all_qualification_unexecuted": true,
+    "next_consumer": "Main complete source/report/manifest/build-plan review, then serial CPU/build/mandatory lint and bounded actual GPU byte/guard qualification. No performance or adoption inferred."
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "main_reviewed": true,
+  "base_revision": "9c0b291d85adecb6c1dc489c3e9965b82226b799",
+  "source_pins": {
+    "src/prefill/prefill.cpp": "1b30e3de22b30f4eb2160756c9fdde623abe87a2360fe029f0767be33aa9d664"
+  },
+  "applied": true,
+  "compile_build_lint_test_gpu_qualified": false,
+  "adopted": false,
+  "original_review_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-prefill-route-branch-census-main-review-v1.json",
+  "original_review_sha256": "6c9b92fac55720f05c375c5b0d45c1341610112119ed88be960f72c2a23e7ad2",
+  "exact_patch_sha256": "f51282af352ca8cefdd2304994308d7f95e4173eaa832809f3df2c9912235832",
+  "review": "Main reviewed single fprintf argument change: widen operands before addition instead of casting sum. LB is bounded layer start [0,48); i iterates stage census size <=8, therefore addition is exact and printed value identical. No computation/routing/copy/kernel/queue/allocation enablement change. Original v10 FAILED is immutable; new source requires both release, both host sanitizer, and actual mandatory baseline/current lints.",
+  "original_applied_review_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-prefill-route-census-applied-main-review-v1.json",
+  "original_applied_review_sha256": "d37ee8c17aa3f0476ce2416e4c5b153995d1d017c40d1bf7ab93fc1feda9b429",
+  "exact_delivered_patch_modified_by_main": true,
+  "main_followup_diff": "--- delivered/src/prefill/prefill.cpp\n+++ reviewed/src/prefill/prefill.cpp\n@@ -2623,7 +2623,7 @@\n                                      \"gather_group_accepted_calls=%llu gather_group_declined_calls=%llu gather_individual_calls=%llu \"\n                                      \"native_dequant_gu_calls=%llu native_dequant_down_calls=%llu completion=checked\\n\",\n                              m.device, (long long) LB, (long long) LE, (long long) chunk.offset, (long long) chunk.pos,\n-                             (long long) chunk.tokens, (long long) (LB + (int64_t) i),\n+                             (long long) chunk.tokens, (long long) LB + (long long) i,\n                              chunk.stream_all ? \"full_nonresident_stream\" : \"routed\", chunk.threaded ? \"thread\" : \"inline\",\n                              (int) c.routing_observed, (int) c.mmq_enabled, (int) c.plan_fallback,\n                              (int) c.mmq_direct, (int) c.group_gather, (unsigned long long) c.routed_rows,\n",
+  "lint_failure_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-e32-lints-baseline-compare-root-v10/record.json",
+  "lint_failure_sha256": "51beda9b6ece038d3706bf450eaecf77e31b8e05b099bf0b7bb7d94700b3649d"
+}

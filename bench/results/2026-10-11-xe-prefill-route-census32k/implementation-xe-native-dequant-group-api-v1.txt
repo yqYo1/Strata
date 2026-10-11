@@ -1,0 +1,64 @@
+Implementation — optional Xe grouped native dequant APIs v1
+2026-10-11; concrete source construction only; implementation agent gpt-6.1-sol.
+
+Decision and scope
+A reviewable candidate adds iq_dequant_gu_group_f16 and iq_dequant_down_group_f16. Each accepted nonempty call submits exactly one kernel for <=16 slots. No production file was changed, no Prefill integration was written, and no caller or candidate was enabled. No test, build, lint, AST/import of project code, GPU query, profiler, measurement, commit, push or cleanup was executed. The only executable construction was standard-library text reading/writing, diff generation and hashing; an initial `python` command was unavailable and construction used python3. All compiler/numerical/performance/fault results remain unverified. Main may defer or reject this candidate after the actual measured route census.
+
+Source pin and deliverables
+Immutable git-show base: 9c0b291d85adecb6c1dc489c3e9965b82226b799 in /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011.
+Artifacts: /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-native-dequant-group-api-source-v1/.
+Full replacements: replacement/src/kernels/xe/iq_kernels.cpp and replacement/include/strata/kernels/iq_kernels.hpp.
+Exact unified patch: candidate.patch. Identity and insertion-only byte recovery proof: manifest.json. Reproduction of text construction: construct.py. Immutable input copies: base/.
+This is a pin of these two committed files only; the live unrelated modified tree is not labeled a clean commit. Main's concurrent Prefill work is outside these artifacts.
+
+Instructions and evidence read
+Read the checkout AGENTS.md; LOCAL.md was absent. Read /home/yayoi/orca/workspaces/Strata/sycl/docs/ARTIFACT_RETENTION.md. Source-only assignment overrides its ordinary build/commit work boundaries; Main owns qualification and committed evidence. Preserved original LGPL SPDX and complete ggml MIT notice unchanged. No reformat.
+Read report-registry-v126.json in the supplied retention worktree (500 prior reports), followed previous registry pointers through 80 registry records ending at v47, and recorded each text hash in registry-chain.json. Older pointer formats were read as dicts or legacy commit/path strings; available paths were followed, not reinterpreted as new measurements. Read relevant round288-xestrata-b570-optimization-and-fp32-storage-audit.txt and implementation-xe-prefill-route-branch-census-v1.txt. Source default grouped gather does not group the per-expert native FP16 dequant fallback. No actual MMQ branch result exists in this assignment's evidence; no assertion that MMQ is inactive is made. Historical call/logical-byte counts do not establish component service or speedup.
+
+Public contract
+IqDequantGroup contains bounded gate/up/down address arrays and declared byte capacities, first and n. It is plain metadata captured by value; the kernel does not read a host pointer-array allocation. Active pointer slots are [first,first+n), and destination expert slots use the same indices. Separate GU and Down APIs allow refusal/fallback independently. A call takes a common format type, positive n_ff/n_embd, destination pointer, element stride and byte capacity. Active source addresses must already be device accessible on the Runtime stream's device, valid for the declared required payload, and alive until completion. Destination must be device accessible too. The API cannot establish actual allocation size or device residency from addresses alone; these are caller obligations. There are no allocations, extra queues, concurrent USM accesses or new synchronization.
+Destination GU slot e is dst+e*stride with interleaved [2*n_ff,n_embd] FP16; Down slot e is flat [n_embd,n_ff] FP16. Capacity covers all preceding slots as well as the last active payload. Padding and inactive slots are untouched. Stride is in uint16/half elements, capacity in bytes. Stride must cover the payload and be multiple 8; destination base is aligned to alignof(sycl::vec<sycl::half,8>) (normally 16 bytes), matching the existing widest vector store. Active sources conservatively require 4-byte alignment; this can refuse otherwise valid 2-byte-aligned native inputs and safely lets the caller use its old path. Source payload ranges may not overlap the destination span (including gaps/inactive preceding slots); independent source matrices may alias each other for reuse.
+Legal bounds: 0<=first<=16, 0<=n<=16-first. n==0 returns true after bounds only; type/dimensions/pointers/capacities/stream are not inspected, no Runtime access or launch occurs. Nonempty zero or negative dimensions return false. n_embd must be multiple 256. n_ff need not be multiple 256; this permits actual n_ff=640,n_embd=2560 Down flattening. All is_iq types are admitted, BF16/unknown types refused. GU and Down formats may differ by calling the respective API with their own type.
+False means refusal before submission, permitting individual API fallback. True with nonzero work means submission returned normally, and with null stream the existing wait returned normally too. A nonnull stream true is not completed output or asynchronous failure certification. The exact queue_for(stream) Runtime lookup and sync_if_needed(stream,event,what) convention are reused. Exceptions from Runtime/device-info/submission/wait propagate and are never rewritten as false; do not run fallback after an exception as though nothing submitted. Each API uses 256-work-item local size, checking reported max_work_group_size and last-axis max_work_item_sizes before submission. No vendor/name/ID selection occurs.
+
+Mapping and preserved arithmetic
+GU extends the existing 2D parity launch with one expert dimension. Per expert its i=global_last_axis/32, nsb=n_ff*(n_embd/256), row=i/per_row, column=i%per_row, parity is the middle group index. It calls the unchanged dq_dispatch(t, parity?up:gate, i, ToGlobal<half>{slot + ((2*r+parity)*per_row+c)*QK_K}, local_last_axis%32). This is the old address/arithmetic sequence with a checked expert base offset.
+Down extends the actual launch_dequant_flat rather than assigning one physical format block per work-item: nsb=(n_embd*n_ff)/QK_K, eight 256-value superblocks per 256-work-item group, i=global_last_axis/32, output slot+i*QK_K, tid=local_last_axis%32. iq_row_bytes(t,256)*nsb supplies payload capacity. Thus IQ4_NL's 32-value blocks and Q2_0's 64-value blocks retain their existing decoder semantics within each 256-value superblock. No decoder expression, FP16 conversion, operation order, ToGlobal/store implementation, or original launcher is edited. This is a source mapping argument, not executed byte parity.
+
+Checked refusal behavior
+Before queue lookup/submission the checks refuse illegal bounds, unsupported type, nonpositive dimensions, n_embd misdivisibility, dimension narrowing, matrix/GU payload overflow, short or misaligned stride, rounded global-range and full ND-range product overflow, signed-index/size_t/ptrdiff offset overflow, insufficient declared source/destination capacities, null or misaligned active addresses, address-span uintptr wrap, and overlap of required source payload with destination span. Product checks use a limit no larger than either int64_t or ptrdiff_t max; destination slot-end addition is checked before byte multiplication. The source pointer span is bounded by ptrdiff_t and uintptr. Padding on the last partial group is guarded by i>=nsb, just as existing kernels. The total ND-range product is checked even though no resulting product is used as a flat kernel index. Reported local workgroup/item limits refuse before submission after safe Runtime lookup. Missing actual allocation residency/capacity provenance remains a caller contract, not an unchecked claim of pointer validity.
+
+Unchanged old-function byte proof
+Construction inserts one <limits> include and one new block immediately before iq_gemm_grouped_ok, and a new header block immediately before its existing comment. Removing those exact inserted bytes recovers each immutable input byte-for-byte; manifest.json records equality and full hashes. Therefore every preexisting public function, private decoder, kernel body and public declaration remains byte-identical, including iq_dequant_gu_f16, launch_dequant_flat, dq_dispatch, ToGlobal and all format decoders. This text/hash proof was executed; it is not a syntax/build/run test.
+
+Qualification required — NOT EXECUTED
+Main must review complete replacements/patch, pin any rebased/applied sources separately, and compile with required warnings/lints/reuse in free and contrib-llvm. Keep CUDA/HIP APIs out of scope; these are optional declarations implemented only in the Xe source and must not be called from other backends without later backend work. Compile portability of SYCL 3D lambda capture and max_work_item_sizes info checks needs both-mode qualification. No build status is claimed.
+Focused argument fixtures should verify n=0, first=16/n=0, n=1/16, nonzero first, inactive null slots, exact and padded stride/capacity, trailing partial eight-superblock padding, every refusal listed above, and exception propagation. Count submissions to verify refusal/empty calls launch nothing and accepted nonempty call submits one kernel, not host-read pointer tables. Only truthful allocated capacities/device pointers belong to accepted fixtures; fake near-limit metadata is refusal-only.
+Byte-parity qualification should compare full FP16 payload bytes against existing individual iq_dequant_gu_f16 and iq_dequant_f16 for every is_iq type, not merely supported native decode pairs. Mandatory real geometry n_ff=640,n_embd=2560, real pairs 18/20,22/42,22/20,18/42,21/20,21/42,23/20, all group sizes 1..16 and first>0 where legal. Check exact bytes, unchanged guard/padding/inactive slots, finite/nonfinite and edge scales where fixture formats permit, both null and nonnull Runtime streams with explicit completion, and distinct/repeated source addresses. Record input/candidate/reference hashes and exact differing offsets; do not accept approximate numeric tolerance for FP16 byte parity. Exercise unusual valid dimensions and partial-group guards too. Subsequent same-model end-to-end checks and fresh fault boundaries must retain original failures and samples.
+Measured-path qualification first: actual route census needs to establish which GU/Down fallback wrapper calls and format pairs occur, instead of attributing dequant work to gather or inferring MMQ from zero dequant counts. Then measure component service/submission overhead and device dequant time for individual vs group with identical resident native inputs, destinations, dimensions, stream and synchronization boundary, grouped by actual sizes/format pairs, keeping all paired samples. Account for extra metadata checks/device-info reads and group filling cost. Only use actual counted branch service plus same-workload end-to-end quality/fault checks to decide integration. No performance, speedup, quality, 256K or RESTORE claim exists in this candidate.
+
+Retention
+No traces, raw tensors, profiles, diagnostic logs or successful API history were generated. No deletion occurred. Owner/consumer: Main's immediate source review and serial qualification. Next review: apply/rebase/reject decision; Main commits compact source/command/hash/qualification evidence and retains necessary comparison fixtures per artifact policy. These external artifacts are the requested concrete deliverable, not separate resume backups; retire only after consumer completion and a path/hash/reason manifest.
+{
+  "base_commit": "9c0b291d85adecb6c1dc489c3e9965b82226b799",
+  "qualification": "source-only, unbuilt and unexecuted",
+  "files": [
+    {
+      "path": "src/kernels/xe/iq_kernels.cpp",
+      "base_sha256": "c544667e90a4aac9f024c1140b9338de8cdf4398e9a6cb187d96ca016f399d0f",
+      "replacement_sha256": "7a109e4123bcd6c6cdf8b11ff411657eaf9cd8ed81b0d7f4fdab59285461cdf7",
+      "base_bytes": 102039,
+      "replacement_bytes": 108147,
+      "insertion_removal_recovered_exact_original": true
+    },
+    {
+      "path": "include/strata/kernels/iq_kernels.hpp",
+      "base_sha256": "67ad8482fcba88a135d7ba7e5b1a442e1a102b0418df26a4ffcbafd3b64fd887",
+      "replacement_sha256": "61513ccb71831d1065bd25829541c508adf3ae58e1e3df6d3bc0c9681cb54f6d",
+      "base_bytes": 5975,
+      "replacement_bytes": 7880,
+      "insertion_removal_recovered_exact_original": true
+    }
+  ],
+  "patch_sha256": "a89da857b6b8b93d4bd58c8850a8c5785c5b991109c8e234c05b9c7ed0cf69ad"
+}

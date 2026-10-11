@@ -1,0 +1,86 @@
+{
+  "active": false,
+  "commands": [
+    {
+      "label": "redacted-findings",
+      "argv": [
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/bin/gitleaks",
+        "detect",
+        "--no-git",
+        "--redact=100",
+        "--no-banner",
+        "--report-format",
+        "json",
+        "--report-path",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-census32k-archive-secret-diagnose-root-v1/redacted-findings.json",
+        "--source",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-11-xe-prefill-route-census32k"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-11T07:40:24.938358+00:00",
+      "wall_seconds": 30,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 3445483,
+          "start_ticks": 5318906,
+          "sid": 3445483,
+          "pgid": 3445483
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 53189.059760874,
+      "pid": 3445483,
+      "spawn_return_monotonic": 53189.061195836,
+      "direct_identity": {
+        "pid": 3445483,
+        "state": "R",
+        "ppid": 3445482,
+        "pgid": 3445483,
+        "sid": 3445483,
+        "start_ticks": 5318906,
+        "rss_bytes": 999424
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 53628928,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 1,
+      "finished_utc": "2026-10-11T07:40:25.576694+00:00",
+      "elapsed_seconds": 0.6381943000014871,
+      "logs": {
+        "redacted-findings.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "redacted-findings.stderr": {
+          "bytes": 131,
+          "sha256": "9a0d9705e22cd9d0d154d37f9431fff75ac6b90bc560d9fcf2ef201915e91170"
+        }
+      }
+    }
+  ],
+  "started_utc": "2026-10-11T07:40:24.938047+00:00",
+  "gpu_executed": false,
+  "model_executed": false,
+  "findings": [
+    {
+      "RuleID": "generic-api-key",
+      "File": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-11-xe-prefill-route-census32k/recipes/xe-census32k-boundary-v1.py",
+      "StartLine": 41,
+      "EndLine": 41,
+      "Description": "Detected a Generic API Key, potentially exposing access to various services and sensitive operations.",
+      "Fingerprint": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-11-xe-prefill-route-census32k/recipes/xe-census32k-boundary-v1.py:generic-api-key:41"
+    }
+  ],
+  "complete": true
+}
