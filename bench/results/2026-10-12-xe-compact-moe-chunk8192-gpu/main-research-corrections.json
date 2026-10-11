@@ -1,0 +1,73 @@
+{
+  "original_reports_modified": false,
+  "engine_pins": {
+    "src/prefill/kernels.cpp": "0e89bbb83220ad85257d17fc6b98f2332a5c17e8d2832937a98a1e3ae300ab81",
+    "src/kernels/xe/mma_gemm.cpp": "540a4366709b8a2caf43aae36bbaeefd21bf4290d5555557077c463754da2238",
+    "CMakeLists.txt": "577ebbd766568558ba43a64960854cdbcae712cbe961491b50ac7c204887e775",
+    "src/core/expert_source.cpp": "7915f5ceb462a5c14655bbe585408f72ef9abd581b95ed14f08d9533d20f2edc",
+    "src/core/pinned.cpp": "1d2beba41fc8864cae2cf433dfe618725f6455c430809622ac9dda69d7575356",
+    "include/strata/core/expert_source.hpp": "d54b627e363124c6cee733053b9c513f3493ff13f4335b2d54404d57a3d8b2eb",
+    "include/strata/core/pinned.hpp": "31bf40c8c12be0246a662fa92b47c77c471bf2779a54abf51377835c83818186",
+    "src/kernels/xe/kv_q8.cpp": "3294bf29b48ccfcd7c8e10b5673534aafa70d6c7f4bc3cb765e7d8546120dda6",
+    "src/kernels/xe/kv_stream.cpp": "cd3bb7877dd848497a1d7d50cbcf75ae28cffdd187b5c18b6234b917520f7fbf",
+    "src/kernels/xe/qsa.cpp": "a6bf5966f862adb188bc1ece52ebe668d02a29c4fa10a4aca33593deb2611c6a"
+  },
+  "llvm_pins": {
+    "sycl/include/sycl/ext/oneapi/experimental/profiling_tag.hpp": "8bf94c6e3c5006bdacd042c78293894823170cbd7db3930c7448c2124a9a8bd3",
+    "sycl/source/detail/event_impl.cpp": "d0abccb3f209afb46810f949efd31b33212512ab19211028179305d24c6a17a6",
+    "sycl/source/detail/scheduler/commands.cpp": "d9d46ea4a3c90868fd4fb7172d3becf8d4fd18587dbaef8af50669791768ebf6",
+    "sycl/unittests/Extensions/ProfilingTag.cpp": "2dbdd1b27d452cd6e6535f500d18353ea6ce737d8d102dbb727bbf0a3eab51f5",
+    "unified-runtime/source/adapters/level_zero/v2/event.cpp": "35cb322613492ac825ce2759c5c89a57df88eb5546c0d38ef28655d20aee10c2",
+    "unified-runtime/source/adapters/level_zero/v2/command_list_manager.cpp": "4e0ae5b72247a196668614836adbd5f3128ae8dc5d0f2da24b3db76a083af2a0",
+    "unified-runtime/source/adapters/level_zero/v2/queue_batched.cpp": "1acaeb74da378f52786f561023d04bc49cc1fb140ac53ce4faf1c341e04332a2",
+    "unified-runtime/source/adapters/native_cpu/event.cpp": "b2e517a338cfd722d5e26cbb4e44b63afe547d0f709db3a035d0b2db01d40aea"
+  },
+  "source_pins_independently_verified": true,
+  "R153_routezero": {
+    "host_staging_suppression_unqualified": true,
+    "correction": "R154 supersedes the host-staging part of R153: skipping wait/H2D does not stop jobs already started before route counts. Source-correct job suppression requires filtering before workers claim jobs; per-layer immutable generations and explicit completion/lifetime edges are unimplemented.",
+    "current_arena_host_usm_direct_source": true,
+    "current_transient_stager_not_inferred": true
+  },
+  "quality": {
+    "standalone_stop_eos_guard_confirmed": true,
+    "full_distribution_comparison_unimplemented": true,
+    "permission_note": "A report suggestion about an owner-approved numeric cutoff is not a permission requirement. Existing user authorization covers measuring and evaluating near-zero changes; current16-ID/LP5 parity does not establish broad quality."
+  },
+  "R155_gdn": {
+    "bounded_row_implementation_unimplemented": true,
+    "shared_region_delta_is_difference_of_maxima": true,
+    "persistent_state_remains_fp32": true,
+    "short_convolution_semantics_need_preservation": true,
+    "external_fla_refs_not_commit_pinned": true
+  },
+  "R155_gemm": {
+    "source_prefill_hash_typo_in_original": true,
+    "corrected_prefill_sha256": "c7a427dc58fd5f03732b4a807274f2cc5d406cd2f6c39d64a620c0cd3518cc67",
+    "top_k": 10,
+    "MS": 32,
+    "NS": 64,
+    "WM": 128,
+    "WN": 256,
+    "NSG": 16,
+    "local_work_items": 256,
+    "correction": "R155 grouped workgroup count is overcounted16x and128 subgroups/workgroup is incorrect. Actual NSG=(128/32)*(256/64)=16; global range is G*tiles_m*nN*16*16 workitems, local256, giving G*tiles_m*nN workgroups. Distinguish workitems from workgroups.",
+    "launched_grouped_workgroups": "G*ceil(max_rows/128)*ceil(N/256)",
+    "live_matrix_row_slots": "sum(ceil(rows_e/128)*128 for rows_e>0); unused grid workgroups return before matrix products",
+    "maximum_grid_reservation_not_actual_padded_FLOPs": true,
+    "dispatch_matched_measurement_pending": true,
+    "external_ark_pr_not_runtime_evidence": true,
+    "measurement_authorization": "Existing user goal authorizes measurements; the report phrase separately authorized creates no new approval step."
+  },
+  "profiling": {
+    "actual_llvm_files_inspected": true,
+    "llvm_base": "504366f4b82ff00bbac7b0c956635eed8bc599d8",
+    "llvm_worktree_has17_local_patches": true,
+    "inspected_profiling_files_base_unchanged": true,
+    "native_tag_source_eligible_without_queue_profiling": true,
+    "tag_start_end_are_point_not_work_duration": true,
+    "actual_tag_runtime_probe_pending": true,
+    "actual_memcpy_profiling_unqualified": true,
+    "current_compute_spans_not_exclusive_H2D_or_kernel_service": true
+  }
+}

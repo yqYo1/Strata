@@ -1,0 +1,69 @@
+# Free Xe prefill expert GEMM shapes and external kernel evidence (R155)
+
+## Scope and status
+
+This is a source-level dispatch/shape analysis at engine commit `39e395a103af36323262cdc0dbaea27cba81f3e4`, worktree `perf-xe-prefill-row-bounded-scratch-20261011`. It is not a benchmark, GPU run, build, or validation result. It makes no throughput or latency claim. The accompanying registry/correction state says `research_completed=594`, compact scratch remains opt-in, no GPU execution was performed, and performance eligibility is false. This note does not alter that state. It is intended to guide a later, separately authorized and serialized measurement.
+
+Relevant source hashes at inspection:
+
+```
+c7a427dc58fd5f03732b4a807274f2cc5d406dc2f6c39d64a620c0cd3518cc67  src/prefill/prefill.cpp
+bfa40846fddb46a3d03d8c58ef5209b181c46674939beeefe512db0073c9d648  src/prefill/gemm.cpp
+2d2144e7331b3dd66a2289a9c67b541b1c136332be53f31c935c9176880085d1  src/kernels/xe/xmx_gemm.cpp
+540a4366709b8a2caf43aae36bbaeefd21bf4290d5555557077c463754da2238  src/kernels/xe/mma_gemm.cpp
+577ebbd766568558ba43a64960854cdbcae712cbe961491b50ac7c204887e775  CMakeLists.txt
+```
+
+## Current shape and dispatch facts
+
+The prefill implementation uses `N=2560`, hidden channels `HC=4`, and top-k `K=10`; its expert batching group defaults to 16. In the fallback-products route, after the MMQ/direct-resident IQ paths do not apply, it forms expert row bounds for a group and calls `Gemm::f16_groups` for the gate/up product (`N=1280`, `K=2560`) and down product (`N=2560`, `K=640`). In the free build the grouped oneMath branch is not compiled, so `f16_groups` returns false and the caller invokes `xmx_gemm_grouped`. The input/weight storage is FP16 (`uint16_t` bit representation), and the output/accumulator is FP32.
+
+For a group of `G` experts, grouped launch uses `WM=128`, `WN=256`, `PD=3`, 16-lane subgroups, and a 256-lane workgroup. It reserves `ceil(max_rows/128)` row tiles per expert and launches a workgroup grid equivalent to `G * ceil(max_rows/128) * ceil(N/256) * 16` workgroups (128 subgroups per workgroup). Each expert tile whose row origin is beyond its true row count returns early; the last live tile is masked. For these model dimensions, GU has 5 N tiles and Down has 10. K divides both the kernel's 32-wide KC staging step and the 16-wide matrix multiply K chunk: GU has 80 KC steps / 160 DPAS-sized chunks; Down has 20 / 40. There is no K-tail padding for these two products.
+
+The grouping is at most 16 experts, but this does not imply 16 experts have equal rows. A sequence of routed rows can leave some experts empty or small. Because row-tile count is based on the largest expert in the group, heterogeneous groups reserve more row tiles than many experts use. At a hypothetical 20 rows/expert, one 128-row tile means 108 padded rows (84.4% of tile rows unused); at 128 rows it is full; at 129 rows two tiles reserve 256 rows (49.6% unused). This is a grid/padding calculation, not a claim about time. N tiles are exact (5 and 10), so there is no N edge padding for these widths.
+
+The dense `xmx_gemm` dispatcher is shape dependent. It chooses `WM=128,WN=256,PD=3` if `N<=512`, or if `T < fill_rows(1024)` and `N<2048`; otherwise its broad path is `WM=256,WN=256,PD=2` (with separate narrow-N and high-K cases). Thus per-expert dense GU (`N=1280`) uses the 128-row tile only at very small M, while per-expert dense Down (`N=2560`) uses 256 rows except the `T>=fill_rows(4096)` branch, which also selects 256. The grouped path stays at WM128 for both. A future comparison must label the actual selected shape and device-derived `fill_rows` thresholds, rather than calling all per-expert GEMMs equivalent.
+
+Per route row arithmetic is `2*1280*2560 = 6,553,600` FLOPs for GU and `2*2560*640 = 3,276,800` FLOPs for Down. Total is 9,830,400 FLOPs per routed row. Ten routes/token imply 98.304 MFLOP/token/layer when all ten routes are handled by this path. This arithmetic is independent of kernel speed and excludes routing/activation/other model work.
+
+Weights per expert are 6.25 MiB GU (`1280*2560*2`) and 3.125 MiB Down (`2560*640*2`), 9.375 MiB total; a 16-expert dequantized FP16 group is 150 MiB. In uncompact scratch, each route row's Xs is 5 KiB FP16, GU output 5 KiB FP32, Hh 1.25 KiB FP16, and Dm 10 KiB FP32. Compact mode bounds Xs/GU/Hh capacities by routed token rows, while Dm is still sized by `T*K`. This affects allocation pressure, not the arithmetic above.
+
+## Free-build and Intel matrix eligibility
+
+CMake enables Xe by default, but the free-license Intel path does not add oneMath: the MKL dependency is disabled outside contrib, and oneMath is only added when a dependency target exists. `STRATA_ONEMATH=1` is consequently not evidence of a oneMath backend. `Gemm::f16_groups`' oneMath code is further gated to the DP4a route; when the Intel matrix path is active it returns false to allow grouped XMX. Do not describe the current free grouped path as oneMKL or oneMath.
+
+With no explicit `-fsycl-targets`, the DPC++ wrapper/compiler uses its default SPIR-V target. The Intel device compile is not excluded by `STRATA_DEVICE_NOT_INTEL`. Runtime selection additionally requires subgroup size 16, the device-reported FP16 x FP16 -> FP32 matrix combination with 8x16x16 dimensions, and successful build of a representative large-register-file kernel bundle. A device or driver can therefore compile the source and still select the DP4a fallback at runtime. Record compiler version/flags, device/driver, runtime matrix-combination query, subgroup sizes, large-GRF bundle result, and actual `gemm_path` with any later measurement.
+
+## Later microbenchmark matrix (proposal, not run)
+
+Use the exact production K/N and FP16 inputs/FP32 outputs, then compare only implementations that preserve the same grouped-vs-dense semantics and output layout:
+
+| Case | Expert row counts | Implementations | What it isolates |
+|---|---|---|---|
+| G1 | 16 experts x 20 rows | grouped WM128; 16 dense calls | minimum-ish M and row-tile waste |
+| G2 | 16 x 64 | grouped WM128; dense calls | grouped launch vs many small products |
+| G3 | 16 x 128 | grouped WM128; dense calls | full grouped tile |
+| G4 | 16 x 129 | grouped WM128; dense calls | row tile boundary discontinuity |
+| G5 | 16 x 256 | grouped WM128; dense calls | two full tiles and amortization |
+| G6 | production-derived heterogeneous histogram with same total rows and max_rows | grouped; dense calls | imbalance/empty-expert effects |
+| G7 | same total rows and histogram as G6 but permuted expert order | grouped; dense calls | bound/order sensitivity and grouping-window effects |
+
+Run every case for GU (1280x2560) and Down (2560x640), using the actual `w_stride`, bounds, conversion/preparation and synchronization policy used by production. Include group sizes G=1, 4, 8, 16 as a separate axis only if the production controls permit them; otherwise do not reinterpret the fixed group-16 path. Include single-launch timing and end-to-end pair timing (GU then Down) so a per-product win is not mistaken for layer benefit. Warmup, repeats, raw samples, correctness comparison against the same reference, and fault outcomes must be preserved under the repository's artifact-retention rules. Capture per-expert row histogram, max_rows, sum rows, padded row slots, workgroup count, selected kernel shape, and all transfer/dequant costs. No synthetic result should be called a production result.
+
+Useful source-level derived counters for each case: `live_rows=sum(counts)`, `reserved_rows=G*ceil(max_rows/128)*128`, grouped row waste `1-live_rows/reserved_rows`; grouped workgroups `G*ceil(max_rows/128)*Ntiles*16`. A meaningful comparison must report both because two histograms with the same total rows can have different grouped reservation.
+
+## External evidence and transfer limits
+
+Intel's official oneAPI GPU optimization guide describes XMX matrix engines and DPAS-based matrix multiplication, and the official joint-matrix guide explains the subgroup collective and DPAS lowering. These support the statement that an XMX/joint-matrix route is the relevant hardware family, not that any proposed tile wins on this target:
+
+- Intel, “Boost Matrix Multiplication Performance with Intel® XMX”: https://www.intel.com/content/www/us/en/docs/oneapi/optimization-guide-gpu/2025-0/boost-matrix-multiplication-performance-with-intel.html
+- Intel, “Joint Matrix”: https://www.intel.com/content/www/us/en/docs/oneapi/optimization-guide-gpu/2024-1/joint-matrix.html
+- Intel LLVM experimental oneAPI matrix extension spec (runtime-supported combinations are queried; experimental API): https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/experimental/sycl_ext_matrix/sycl_ext_oneapi_matrix.asciidoc
+
+A pinned Intel-maintained heterogeneous MoE implementation is AutoRound's ARK extension, release `v0.15.0` (official release/tag); its documented `ark.moe_gemm` interface takes token activations, expert weights, and a per-expert token-count vector, covering the important heterogeneous-count/grouped-MoE problem shape. Reference: https://github.com/intel/auto-round/blob/v0.15.0/auto_round_extension/ark/README.md. Transferability is limited: it is a different engine/API, its documented examples do not establish the exact Strata FP16/FP32 accumulation, K/N shapes, 16-expert group, bound convention, or target-device dispatch. It is evidence that variable-count grouped MoE GEMM is a real kernel interface, not evidence for speed or correctness of a Strata replacement.
+
+AutoRound PR #2079 (closed, not merged; commit `8469d1e`) describes an N-dependent tile heuristic, choosing larger 256x256 workgroup tiles for wider N examples. The PR states that its implementation had not been locally compiled/performance tested. It is a design prompt only; do not treat it as a verified kernel or performance precedent. https://github.com/intel/auto-round/pull/2079
+
+## Decision
+
+The code provides a plausible utilization question: the grouped launch reserves WM128 row tiles based on a group's maximum expert count, while the dense dispatcher has different WM choices and incurs separate launches per expert. Which cost dominates is hardware-, histogram-, and driver-dependent. The next eligible work is a controlled shape benchmark using real production histograms, dispatch identifiers and correctness checks. Until such samples exist, retain `performance_eligible=false` and make no performance recommendation.

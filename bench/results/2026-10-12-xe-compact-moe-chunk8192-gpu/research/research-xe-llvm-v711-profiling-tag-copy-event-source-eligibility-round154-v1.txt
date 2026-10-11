@@ -1,0 +1,51 @@
+# LLVM 7.1.1 profiling-tag and copy-event source audit (R154)
+
+Read-only source audit; no build, tests, GPU/runtime run, process inspection, measurement, or artifact cleanup was performed. This report is source evidence, not a runtime support claim.
+
+## Trees inspected
+
+- Strata engine worktree: `/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/perf-xe-prefill-row-bounded-scratch-20261011`, HEAD `39e395a103af36323262cdc0dbaea27cba81f3e4`.
+- LLVM/SYCL worktree: `/home/yayoi/ghq/github.com/intel/llvm/.worktree/toolchain-sycl-v711-b570-20261011`, HEAD `504366f4b82ff00bbac7b0c956635eed8bc599d8`. It has 17 local patches. The local `sycl/source/detail/device_impl.hpp` patch concerns newer CUDA matrix capability selection, not profiling; the profiling-tag and UR files hashed below are unmodified relative to the checked-out base. Conclusions describe this exact source tree, without assuming the executable was built from it.
+
+## Eligibility and path selection
+
+`sycl/include/sycl/ext/oneapi/experimental/profiling_tag.hpp` dispatches by device aspect, not queue profiling property. If `aspect::ext_oneapi_queue_profiling_tag` is present, `submit_profiling_tag(queue)` submits a `CGType::ProfilingTag`, even on a queue without `enable_profiling`. If that aspect is absent, the extension falls back to `ext_oneapi_submit_barrier()` only when the queue has `enable_profiling`; otherwise it throws `errc::invalid`. Thus a native tag's profiling eligibility is an explicit exception to the normal `enable_profiling` precondition; it is not a general relaxation for arbitrary events.
+
+The scheduler marks the returned event as a profiling-tag event before submission. `event_impl::checkProfilingPreconditions()` accepts this flag without `MIsProfilingEnabled`. For this event, `command_submit` is fetched from the UR event; ordinary events on a non-profiling queue still fail the SYCL precondition. The extension's existing unit tests exercise supported native tags on default and in-order queues, and fallback behavior on unsupported devices (default queue throws, profiling queue uses a barrier). These are mock-UR tests, not physical-device checks.
+
+For a native tag, scheduler code issues `urEnqueueTimestampRecordingExp`. On an out-of-order queue it brackets the timestamp record with a marker/barrier sequence; in-order queues take a simpler path. The tag is therefore an ordered marker in the queue stream, not a timestamp attached to or duration measurement of the preceding copy. Tag events also require a real returned UR event to query later; the scheduler's discarded-event path passes a null event output. Do not expect profiling queries to work on an event that has been discarded.
+
+## What the inspected adapters expose
+
+The Level Zero v2 adapter treats a timestamp-recording event as profile-queryable even when the queue's ordinary profiling flag is off. Its timestamp recorder captures a device global timestamp before appending `zeCommandListAppendWriteGlobalTimestamp`; the latter writes the end timestamp on the command list. Timestamp queries return the captured start-side value for queued/submit, while start/end/complete return the recorded end timestamp in the timestamped-event branch. This is a point marker, not an operation start/end interval: `command_start` and `command_end` on the tag do not bound useful work. Batched queues can defer submission of the command list, so the gap between the two values can include batch-submission delay; the adapter source comments explicitly describe that behavior. The non-timestamped ordinary event path requires event profiling enabled and queries Level Zero kernel timestamps.
+
+The Level Zero legacy adapter has the same explicit “profiling enabled or timestamped” gate and returns its captured global start and recorded end timestamp for timestamped events. Adapter-specific details differ; avoid assuming every backend shares Level Zero's timestamp implementation.
+
+The native CPU UR adapter shown in this tree does not implement `urEnqueueTimestampRecordingExp` (`DIE_NO_IMPLEMENTATION`). Its event profiling values are populated by queue profiling's host-side `tick_start`/`tick_end` only when the queue reports profiling enabled. Its device does not establish the native profiling-tag aspect in the sources inspected, so extension dispatch would use the profiling-enabled barrier fallback there; a source audit cannot establish which adapter a future executable selects. In particular, do not infer native CPU support for native timestamp tags from the Level Zero path.
+
+## Strata event distinction
+
+`src/core/gpu.cpp::copy_async_after` submits a handler `memcpy` and stores the resulting `sycl::event` in `done->ev`. It uses the supplied prior event as a dependency; it does not create a timing event. `event_record` separately stores `submit_profiling_tag(queue)` (when selected by the runtime) or a barrier into an `Event`. `event_elapsed_ms` requires `Event::timing` and computes the difference of `command_end` values for two separately recorded tags; it does not query memcpy start/end. In `prefill.cpp`, `m.copied[]` events are created with the default `timing=false`, and the async-copy calls store the actual copy event there; they are then used as cross-queue dependencies. They are not timing-tag events and are not currently a per-copy profiling ledger. The API's “copied event” meaning must not be conflated with the distinct timing marker.
+
+## Smallest useful source/mock checks (not run)
+
+1. Extend the existing mock unit coverage in `sycl/unittests/Extensions/ProfilingTag.cpp` only if changed behavior needs protection: with a mocked native aspect, submit on a queue without `enable_profiling`, keep the returned event alive, and query `command_submit`, `command_start`, and `command_end`; with no aspect, confirm the default queue still throws and a profiling-enabled queue uses the fallback barrier. These establish SYCL dispatch/preconditions and UR call shape, not hardware timestamps.
+2. For a CPU-only source observer in Strata, use a small controlled queue sequence: record/capture the actual `memcpy` event, then separately submit and retain a profiling tag after it; wait before querying, log device aspect, queue properties, event status, and query success/error for each event. Assert only ordering and the fact that the copy event and tag are different events; do not assert a GPU duration or that the tag bounds memcpy execution. A fake/mock UR backend can cover timestamp support/failure deterministically; the native CPU adapter's current timestamp-recording stub should be expected to fail if called directly.
+3. A future per-copy timing feature needs explicit start/end markers around the copy or a runtime-returned copy event with valid profiling timestamps, plus backend-specific capability checks. The present `m.copied` event and a tag's point sample alone do not provide that evidence.
+
+No source was changed and no test result is claimed.
+
+## Source identities (SHA-256 of inspected live files)
+
+| File | SHA-256 |
+|---|---|
+| LLVM `sycl/include/sycl/ext/oneapi/experimental/profiling_tag.hpp` | `8bf94c6e3c5006bdacd042c78293894823170cbd7db3930c7448c2124a9a8bd3` |
+| LLVM `sycl/source/detail/event_impl.cpp` | `d0abccb3f209afb46810f949efd31b33212512ab19211028179305d24c6a17a6` |
+| LLVM `sycl/source/detail/scheduler/commands.cpp` | `d9d46ea4a3c90868fd4fb7172d3becf8d4fd18587dbaef8af50669791768ebf6` |
+| LLVM `sycl/unittests/Extensions/ProfilingTag.cpp` | `2dbdd1b27d452cd6e6535f500d18353ea6ce737d8d102dbb727bbf0a3eab51f5` |
+| LLVM UR `unified-runtime/source/adapters/level_zero/v2/event.cpp` | `35cb322613492ac825ce2759c5c89a57df88eb5546c0d38ef28655d20aee10c2` |
+| LLVM UR `unified-runtime/source/adapters/level_zero/v2/command_list_manager.cpp` | `4e0ae5b72247a196668614836adbd5f3128ae8dc5d0f2da24b3db76a083af2a0` |
+| LLVM UR `unified-runtime/source/adapters/level_zero/v2/queue_batched.cpp` | `1acaeb74da378f52786f561023d04bc49cc1fb140ac53ce4faf1c341e04332a2` |
+| LLVM UR `unified-runtime/source/adapters/native_cpu/event.cpp` | `b2e517a338cfd722d5e26cbb4e44b63afe547d0f709db3a035d0b2db01d40aea` |
+| Strata `src/core/gpu.cpp` | `9792966f6b2c84434a1dddafefb3286c3c5fcfa78e23065b455904f9cf6fcfb8` |
+| Strata `src/core/device.cpp` | `3e7523a2947af7c82d41fc9a7653f4f9aad0fa3cbb062999de19553659e0ec27` |
