@@ -1,0 +1,71 @@
+# JointMatrix unresolved builtin: provider-path mechanisms and discriminators
+
+Date: 2026-10-11
+Scope: static source, package, symlink, ELF metadata, bounded existing startup-error excerpt, and official Intel source review. No compiler/library was loaded; no app, build, test, GPU/device query, inference, service, profiler, cleanup, or Git/source mutation was performed. The original 27.9 MB trace was not reread; this uses the retained bounded excerpt and original FAIL receipts.
+
+## Finding
+
+The error is a device-module link failure for the exact internal name
+
+`__builtin_spriv_OpJointMatrixLoadINTEL_PackedA_RowMajor_SG16_16x16_i16_8_local_v8i8_pi32_i32`.
+
+The excerpt reports it repeatedly under `urProgramBuildExp` with `UR_RESULT_ERROR_PROGRAM_BUILD_FAILURE`; the listed callers include multiple `Kernel<2,...>` types and `PromptAttnMma<...>`. For these events, UR selects a device binary targeted as `spir64` and submits build options `-ze-fp32-correctly-rounded-divide-sqrt -ze-fp32-correctly-rounded-divide-sqrt -ze-opt-level=2`. Those are the available options in the retained trace; they do not expose IGC's resolved product, SIMD flags, builtins module or frontend/backend library identities.
+
+IGC v2.41.5 source includes generation for this exact 16-lane PackedA 16x16 i16 local-load form. The prior static review also confirmed the matching shape and local-address-space generation calls in v2.40.13. That rules out a simple omission from those two source generators. It does not prove that the loaded binary contains and supplies the provider to this module, or that the failing module asks for the same full signature as the linked provider.
+
+## Four distinct mechanisms and cheap discriminators
+
+### 1. Provider content or builtins-package/version mismatch
+
+IGC's matrix builtin generator source is a build-time generator: its README says the generated header is made when IGC is built and is not checked into the source tree. The installed package file lists do not show a separately installed JointMatrix `.bc`/`.ll` payload; the relevant implementation may be embedded/generated inside IGC or another module. An earlier bounded `strings` check did not find the exact symbol in the candidate shared libraries, but a negative string scan cannot show that generated bitcode is absent. Installed package names/versions alone also cannot establish the builtins content actually selected by the failed module.
+
+Cheap discriminator during the next bounded Main probe: preserve the smallest failing SPIR-V/device module plus IGC's targeted post-JointMatrix-resolution IR and the compiler's builtin-link/provider diagnostic. Check whether the provider definition is present in the precise builtin module offered to the linker. If absent there, the mismatch is in loaded package/module content or selection; if present with an exact matching signature, look at the remaining link path/ABI or transformation boundary. Keep the output bounded to the one failing module/symbol and record the artifact hash. Do not interpret a static `strings` miss as absence.
+
+### 2. FCL/IGC/OpenCL-Clang pairing mismatch
+
+The host contains two stacks with overlapping SONAMEs for IGC core (`libigc.so.2`) and FCL (`libigdfcl.so.2`): oneAPI 2.41.5 under `/usr/local/lib`, and distro 2.40.13 under `/usr/lib/x86_64-linux-gnu`. The driver package `libze-intel-gpu1` is version `26.31.39395.14` and declares lower-bound dependencies `libigc2 (>= 2.40.13)` and `libigdfcl2 (>= 2.40.13)`, rather than pinning an exact IGC release. Therefore its package dependency contract does not by itself prove a single matching compiler pair.
+
+The FCL ELF dependencies provide useful pair fingerprints. The oneAPI `libigdfcl.so.2.41.5+1788943183` has `DT_NEEDED libopencl-clang2.so.22.1`; the distro `libigdfcl.so.2.40.13+0` has `DT_NEEDED libopencl-clang.so.17`. The oneAPI `intel-igc-opencl-2` package declares an exact dependency on `intel-igc-core-2 (= 2.41.5)`. The distro FCL package does not declare an IGC-core dependency in the installed dpkg metadata. Both FCL files share the same `libigdfcl.so.2` SONAME, so a mixed FCL/core pair cannot be excluded from SONAME or driver package metadata alone. Their OpenCL-Clang SONAMEs differ, which makes the FCL-to-Clang side directly identifiable from maps.
+
+The driver ELF itself has no direct `DT_NEEDED` for IGC/FCL; its direct dependencies include `libigdgmm.so.12`, libc/libstdc++ and the loader, with no RPATH/RUNPATH. The official NEO source at the installed driver release tag `26.31.39395.14` uses configured bare library names and `dlopen`; its compiler interface loads FCL through `frontEndDllName` when requested and IGC through `igcDllName`. Its Linux loader calls `dlopen` on the supplied name. `loadCompiler` obtains the CIF entry point, checks interface compatibility, and stores the loaded library; `loadIgcBasedCompiler` records `getFullPath()`. This confirms dynamic selection and a source-level path-reporting mechanism, but does not prove what this past process mapped. In the specific `CompilerInterface::build` source, FCL performs the frontend translation for OpenCL C (`oclC`); non-OpenCL-C source proceeds directly as intermediate representation to IGC. Since the retained UR binary target is `spir64`, do not assume FCL was the component that handled the JointMatrix builtin on this SYCL path. Establish whether the driver initializes/uses FCL on this exact path before attributing the failure to it.
+
+Cheap discriminator: compare the next capture's loaded compiler tuple (`libigc`, `libigdfcl` if mapped, `libopencl-clang*`) to these SONAME/build-ID/package fingerprints, and inspect the compiler's reported resolved library path where available. A coherent 2.41.5 FCL should resolve its `.22.1` clang dependency; a coherent distro 2.40.13 FCL should resolve `.17`. A cross-generation core/FCL pairing is a concrete mismatch candidate, not proven root cause. If the path's source input bypasses FCL, deprioritize FCL for this symbol while retaining its identity as environment context.
+
+### 3. Compile options or target-feature gating
+
+IGC v2.41.5 `JointMatrixFuncsResolutionPass` has explicit target and shape gates. `checkSupportedParams` requires `platform->supportJointMatrixOCLExtension()`. SIMD resolution uses `platform.hasExecSize16DPAS()` and, for that platform class, accepts 16 or 32; `EnableOCLSIMD16/32` and `ForceCSSIMD16/32` can select or reject subgroup sizes. The load/store validator checks rows, columns, element width and layout before lowering. A target/flag rejection should be distinguishable from a provider miss: the reviewed pass emits an “Unsupported JointMatrix operation” or an explicit “sub group sizes ... disabled/not supported” diagnostic. The retained failure excerpt instead shows an undefined reference to the generated helper and does not show those gate diagnostics. This lowers, but does not eliminate, the likelihood of a plain feature rejection; a target choice could still affect which helper module is generated/selected.
+
+The existing UR options expose `-ze-opt-level=2` and FP32 divide/sqrt behavior only. They do not disclose the IGC `EnableOCLSIMD*` or `ForceCSSIMD*` flags. Target is `spir64`, not an explicit architecture string in the captured `urDeviceSelectBinary` entry. Thus the compile-option/target question remains open.
+
+Cheap discriminator: in the same bounded failing module preserve effective device product/stepping and IGC SIMD/JointMatrix feature/flag decisions alongside input and post-pass diagnostics. A clear rejection from `supportJointMatrixOCLExtension`/SIMD/shape validation separates this cause; successful validation followed by the same missing provider points elsewhere. Keep this focused on the failed module rather than running a hardware support query.
+
+### 4. LLVM-to-SPIR-V lowering or signature/address-space contract mismatch
+
+The v7.1.1 source proof is pinned to LLVM base `504366f4b82ff00bbac7b0c956635eed8bc599d8` plus the recorded 17 Xe patches. Its LLVM-SPIR-V backend allowlist includes `SPV_INTEL_joint_matrix`; the source tree includes the extension translator and tests. The extension contract permits a JointMatrix load pointer in Workgroup storage (the SPIR-V storage class corresponding to the local-memory case), and carries result type, pointer, stride, layout and optional memory operands. IGC's generated helper name further encodes layout, subgroup, shape, bit width, rows-per-work-item, address space and lowered vector/signature types. Consequently, extension/opcode revision, pointer storage class, layout/stride, and element/signature mismatch can cause the module to request a different helper or cause the resolver/provider naming to diverge even though a nearby generator shape exists.
+
+The failure's `...PackedA_RowMajor_SG16_16x16_i16_8_local...` spelling is specific and agrees with the prior v2.41.5 generator review; it is stronger than a generic JointMatrix failure, but does not prove that the incoming SPIR-V's opcode operands and address-space typing were lowered as intended. The retained log only supplies the final unresolved helper name and cannot inspect the module contract.
+
+Cheap discriminator: from the same failed module retain SPIR-V disassembly for the relevant load and the post-resolution LLVM IR call/provider declarations. Check the extension (`SPV_INTEL_joint_matrix` vs KHR cooperative matrix), opcode, Workgroup pointer storage class, layout constant, stride type/value, and helper declaration signature against the matching provider. If these disagree, isolate LLVM/SPIR-V lowering or IGC resolver naming. If they match and the provider is absent from the linked builtin payload, return to mechanism 1; if provider exists and matches, investigate ABI/link composition.
+
+## Static installed identities reviewed
+
+- Driver: `/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395`, package `libze-intel-gpu1 26.31.39395.14-1~24.04~ppa1`, ELF build ID `a150ba51180689c9ab166533b5d6503441b9e1c1`.
+- oneAPI IGC core: `/usr/local/lib/libigc.so.2.41.5+1788943183`, build ID `c3703ba4e94f826e60a5560b0287e32807adacaa`; package `intel-igc-core-2 2.41.5`.
+- oneAPI FCL: `/usr/local/lib/libigdfcl.so.2.41.5+1788943183`, build ID `1aee46cd4fcc0acb2751c3d570da39475a94d1e8`; package `intel-igc-opencl-2 2.41.5`; dependency `libopencl-clang2.so.22.1`.
+- oneAPI OpenCL Clang: `/usr/local/lib/libopencl-clang2.so.22.1`, build ID `ee1dde81de91140e3a91d8be4fb5c2da25e17a4e`.
+- distro IGC core: `/usr/lib/x86_64-linux-gnu/libigc.so.2.40.13+0`, build ID `9b5c386432e4bcb0f37e9a076983430e28a29962`; package `libigc2 2.40.13+ds1-1~24.04`.
+- distro FCL: `/usr/lib/x86_64-linux-gnu/libigdfcl.so.2.40.13+0`, build ID `ca58dd83dfcc4f66f690148133e476f74710efb7`; package `libigdfcl2 2.40.13+ds1-1~24.04`; dependency `libopencl-clang.so.17`.
+- distro OpenCL Clang: `/usr/lib/x86_64-linux-gnu/libopencl-clang.so.17`, build ID `37f765d8f4b7fec956b7cfe3af4355201fe1f7fd`.
+
+These are on-disk candidates, not the mapping used by the failed process. Keep the actual loaded tuple unresolved until Main's controlled capture records it; do not infer the cause from cache order, a source generator, or package coexistence alone.
+
+## Primary sources
+
+- [IGC v2.41.5 generated matrix builtin source](https://github.com/intel/intel-graphics-compiler/blob/v2.41.5/IGC/BiFModule/Languages/OpenCL/PreRelease/Matrix/IBiF_matrix_generator.cpp) and [generator README](https://github.com/intel/intel-graphics-compiler/blob/v2.41.5/IGC/BiFModule/Languages/OpenCL/PreRelease/Matrix/README.md).
+- [IGC v2.41.5 JointMatrixFuncsResolutionPass](https://github.com/intel/intel-graphics-compiler/blob/v2.41.5/IGC/Compiler/Optimizer/OpenCLPasses/JointMatrixFuncsResolutionPass/JointMatrixFuncsResolutionPass.cpp).
+- [NEO compiler interface](https://github.com/intel/compute-runtime/blob/26.31.39395.14/shared/source/compiler_interface/compiler_interface.cpp), [loader template](https://github.com/intel/compute-runtime/blob/26.31.39395.14/shared/source/compiler_interface/compiler_interface.inl), and [Linux `dlopen` implementation](https://github.com/intel/compute-runtime/blob/26.31.39395.14/shared/source/os_interface/linux/os_library_linux.cpp). These links are pinned to the installed driver release tag `.14`; they establish source behavior, not this past process’s resolved mapping.
+- Pinned local LLVM source: `/home/yayoi/ghq/github.com/intel/llvm/.worktree/toolchain-sycl-v711-b570-20261011/llvm-spirv/lib/SPIRV/SPIRVWriter.cpp`, `sycl/doc/design/spirv-extensions/SPV_INTEL_joint_matrix_legacy.asciidoc`, and the surrounding v7.1.1 source proof. The legacy extension source describes `OpJointMatrixLoadINTEL`; the writer lists `SPV_INTEL_joint_matrix` among supported extensions.
+
+## Receipt context and next decision
+
+The failed startup binary SHA-256 matches the passing v21 free-build executable, and its 37 pinned source files match the fixed engine snapshot; this does not identify the failing internal device image or compiler provider. The preceding report `research-xe-packed-a-builtin-provider-gap-next-v1.txt` already established that v2.40.13 and v2.41.5 source generators both cover the signature. This round narrows the next evidence needed: correlate the exact failing module's SPIR-V and post-pass call with the actual provider payload, effective target/flags, and mapped compiler tuple. No generic upgrade recommendation follows from the current evidence.

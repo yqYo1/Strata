@@ -1,0 +1,172 @@
+{
+  "original_log_sha256": "1ede5e0e9c4fc9049eaa56c24ecc333cd4a7586d8bb3716980a2fe02584f3154",
+  "whole_lines_scanned": 369878,
+  "progress_filter": "line starts with strata plus space",
+  "progress": [
+    {
+      "line": 381,
+      "text": "strata trace: kernel preload disabled by STRATA_PRELOAD_KERNELS=0"
+    },
+    {
+      "line": 534,
+      "text": "strata generate: GPU Intel(R) Arc(TM) B570 Graphics, 160 compute units, 9.9 GiB, prompt matrix products on XeStrata's own kernels (XMX)"
+    },
+    {
+      "line": 535,
+      "text": "strata generate: this CPU has no AVX-512: the expert kernels run on AVX-2 (multi-token for the i-quant gate/up rows)"
+    },
+    {
+      "line": 548,
+      "text": "strata generate: native pack: /home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s experts (largest blob 2.66 MB), token embedding IQ4_XS in mapped host memory (322 MiB, 0.2 s)"
+    },
+    {
+      "line": 8863,
+      "text": "strata generate: 1466 MiB of weights loaded from /home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s in 1.4 s (302 canonical tensors skipped: served natively)"
+    },
+    {
+      "line": 14768,
+      "text": "strata generate: 300 native projection matrices, 2018.88 MiB of weights, in 1.1 s"
+    },
+    {
+      "line": 16371,
+      "text": "strata generate: KV streaming: 32768 of 262144 cells per QSA layer in VRAM, the K/V in 3.09 GiB of pinned RAM"
+    },
+    {
+      "line": 16424,
+      "text": "strata generate: PLE table format IQ4_NL"
+    },
+    {
+      "line": 16425,
+      "text": "strata generate: the SSD is kept awake while rows are read: one page of the table after 100 ms without a read, until 60 s after the last request (STRATA_SSD_KEEPALIVE=0 turns it off)"
+    },
+    {
+      "line": 16438,
+      "text": "strata generate: PLE on, table 320001536 rows of /home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00002-of-00002.gguf"
+    },
+    {
+      "line": 17267,
+      "text": "strata mtp: draft layer loaded, 834 MiB of VRAM (experts 675, dense 111), files read in 0.82 s (958 MiB/s)"
+    },
+    {
+      "line": 17706,
+      "text": "strata generate: experimental native Q5_K head, 521472000 bytes, in 0.2 s"
+    },
+    {
+      "line": 18289,
+      "text": "strata generate: expert arena: host USM, one block per layer (48): pinned and readable by GPU kernels"
+    },
+    {
+      "line": 18290,
+      "text": "strata generate: loaded 46.84 GiB at 1.68 GiB/s"
+    },
+    {
+      "line": 18291,
+      "text": "strata generate: CPU pool tasks/phase: 18 (automatic), participating threads: 6"
+    },
+    {
+      "line": 18306,
+      "text": "strata trace: 4217 MiB free after the weights, the session and the drafter"
+    },
+    {
+      "line": 18307,
+      "text": "strata generate: profile /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-prefill-service-events-20261010/data/expert-profile.bin: 24576 ranked pairs, built for 24576 slots"
+    },
+    {
+      "line": 18322,
+      "text": "strata generate: per-layer slots use each layer's blob: 128 uniform slots (0.32 GiB) -> 144 slots, 3 per layer (0.27 GiB)"
+    },
+    {
+      "line": 18353,
+      "text": "strata generate: expert cache 144 slots, 0.27 GiB of VRAM; policy is"
+    },
+    {
+      "line": 18368,
+      "text": "strata trace: 3936 MiB free after opening the expert cache"
+    },
+    {
+      "line": 18369,
+      "text": "strata generate: the GPU computes the experts in the cache; it rounds differently from the CPU,"
+    },
+    {
+      "line": 19837,
+      "text": "strata trace: 3936 MiB free after the profile fill"
+    },
+    {
+      "line": 19838,
+      "text": "strata generate: pre-filled 144 of 144 slots from the profile in 0.1 s (3319 MB/s); slot 84 verified"
+    },
+    {
+      "line": 19877,
+      "text": "strata trace: 3936 MiB free after the R4 hit path"
+    },
+    {
+      "line": 19878,
+      "text": "strata generate: R4 hit path ON - resident experts are computed on the GPU"
+    },
+    {
+      "line": 19879,
+      "text": "strata generate: 5 expert-pool workers + the host thread"
+    },
+    {
+      "line": 19894,
+      "text": "strata trace: 3936 MiB free after the expert cache and the graphs"
+    },
+    {
+      "line": 184116,
+      "text": "strata generate: session is up (engine xe0.1.40.2.2)"
+    },
+    {
+      "line": 184139,
+      "text": "strata generate: expert residency table: 144 resident experts"
+    },
+    {
+      "line": 184140,
+      "text": "strata serve: the prompt path allocates its own buffers (too few cache slots to borrow)"
+    },
+    {
+      "line": 184409,
+      "text": "strata trace: 1036 MiB free after the head and the prompt path"
+    },
+    {
+      "line": 190582,
+      "text": "strata verify: queue-completed host/device handoff: each window runs as segments the host launches"
+    },
+    {
+      "line": 190611,
+      "text": "strata verify: window up to 4 tokens, 64.0 MiB of device buffers"
+    },
+    {
+      "line": 191212,
+      "text": "strata mtp: draft head over 106299 tokens (212.9 MiB)"
+    },
+    {
+      "line": 191247,
+      "text": "strata trace: 745 MiB free after the verifier and the drafter's binding"
+    },
+    {
+      "line": 191248,
+      "text": "strata generate: PCIe split: the share 0.00 of the missed experts (--pcie-frac is given)"
+    },
+    {
+      "line": 191267,
+      "text": "strata serve: 745 MiB of VRAM free with everything loaded"
+    },
+    {
+      "line": 191910,
+      "text": "strata trace: request 64 0"
+    },
+    {
+      "line": 191951,
+      "text": "strata trace: prompt start 63 -1"
+    },
+    {
+      "line": 191952,
+      "text": "strata trace: prompt chunk 0 of 63"
+    }
+  ],
+  "known_controller_error_regex": "UR_RESULT_ERROR_[A-Z_]+|ZE_RESULT_ERROR_[A-Z_]+|\\[(?:ERROR|FATAL)\\]|GPU completion unconfirmed|terminate called|Assertion .*failed|CAT error|fault response|out of resources",
+  "regex_flags": "IGNORECASE",
+  "known_runtime_errors": [],
+  "longjmp_matches": [],
+  "scope": "Bounded evidence for original incomplete aggregate-log-cap FAIL; no performance or GPU-no-fault inference"
+}

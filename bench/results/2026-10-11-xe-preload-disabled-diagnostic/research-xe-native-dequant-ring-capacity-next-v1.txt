@@ -1,0 +1,43 @@
+# Native dequant group width: ring setting and a bounded next candidate
+
+Read-only source/receipt review — 2026-10-11
+
+## Scope
+
+Reviewed the existing committed N64 group-join report, the closed N2049 G16 OFF/ON receipts, and the immutable `fa3e20e842fbed6986a69bade8afe3edabedee07:src/prefill/prefill.cpp` snapshot (blob `a5971752d742a430e477792bf9e1f807344c0dfe`). I did not inspect the active N32768 root. No GPU/runtime query, build, test, AST/import/dlopen, source edit, Git mutation, or cleanup was performed. This report is the only new artifact.
+
+The current explicit-zero device guard is orthogonal to the prefill ring: in the inspected prefill source, `STRATA_PREFILL_NATIVE_DEQUANT_BATCH` controls whether native batching is enabled, while ring sizing/allocation is a separate path. The guard does not itself raise the native group cap or ring capacity.
+
+## Finding: the existing `STRATA_PREFILL_RING=8` is not an 8-slot ring on long chunks
+
+In the pinned prefill source, `ring_slots(T)` reads the environment override, clamps the value to at least 16, and returns that result only for `T >= STREAM_ALL_MIN` (2048). Below that threshold it unconditionally returns `STAGE`, which is 8. Thus:
+
+- For N64-sized chunks, changing `STRATA_PREFILL_RING` to 16 (or any other value) does not change the ring: `m.ring` remains 8. The non-stream native-batch path also stages with `stage_next % STAGE` and uses `STAGE-1` lookahead. A larger environment value cannot alleviate its held-slot flushes.
+- For streamed chunks at or above 2048 positions, the existing requested value 8 becomes an effective `m.ring=16`; setting it to 16 is the same capacity. A real increase requires at least `STRATA_PREFILL_RING=32`.
+
+The closed N2049 G16 receipts match this distinction: both are complete PASS diagnostic requests with 2048 batched positions, chunk 6144, requested ring 8, effective full-stream/routed ring fields 16/8, G16 and zero group-buffer delta. They use the same ring setting in both arms and therefore do not establish the effect of widening it. They are not performance-eligible and do not qualify a 262144-token prompt.
+
+## What a wider ring changes, and what it cannot change
+
+The native batching path has an explicit maximum of 16 pointers per dequant API call (`nd_blob[16]`, `nd_slot[16]`, and the `nd_n == 16` flush). Grouped spans must also remain contiguous in destination indices (`q == nd_q0 + nd_n`). `native_flush` submits both GU and Down dequant readers, then records the per-slot `used` events and returns the producer prefix. The copy issuer waits on each slot's last-reader event before overwriting it. This ordering and event protocol is the lifetime protection; increasing the ring does not change it.
+
+For streamed chunks, `m.ring` is the number of staging slots and bounds how far the issuer can run ahead. The consumer flushes a pending batch when advancing to reuse an outstanding slot (`k - consumed >= m.ring`), and also at 16 entries, resident/skipped-entry boundaries, group boundaries, and end-of-layer. A 32-slot ring can therefore defer slot-pressure flushes; it cannot raise the 16-entry API limit, remove contiguity requirements, or guarantee that format/layer boundaries cease producing short groups. It could reduce held-reuse flushes in a streamed workload, but no effect size is established.
+
+The ring is a real allocation change. `Prefill::bytes_needed` counts `ring_slots(T) * MAXBLOB()` staging bytes; `carve` reserves the same number of per-slot `MAXBLOB()` buffers from the arena. Going from effective 16 to 32 adds `16 * MAXBLOB()` bytes (plus allocator alignment effects) to the prefill region. When that region is borrowed, those bytes reduce the available cache/borrowed space; an explicit override bypasses the normal auto cap based on device memory. The source comments specifically warn that larger rings can take slots from the expert cache.
+
+For N2049, the receipts record 744 MiB previous/estimated ready free memory and a 512 MiB admission floor, but do not run a 32-slot arm. That leaves 232 MiB of recorded headroom before any other change, not a blanket guarantee for the additional ring allocation or full 256K operation. The same receipts explicitly say G64 may fail preflight. Keep G16 fixed; do not combine a ring test with a group-size increase. Require the candidate's own READY-time free-memory check to remain at least 512 MiB at physical context 262144 before GEN.
+
+## Recommended next candidate
+
+For a streamed 32K diagnostic only, test `STRATA_PREFILL_RING=32` against the existing effective-16 setting with G16 and all other pins/settings fixed. First calculate the actual `MAXBLOB()` delta for that model/layout and pass the same READY-time 512 MiB memory gate; if it fails, do not launch GEN. This is a narrowly scoped test of the only existing setting that can increase ring capacity on a 6144-token chunk. It is a candidate, not a predicted speedup.
+
+Keep the OFF/ON protocol strict and require matching route order, transfer ledger, and selected outputs/LP5; reconcile each axis's admitted/declined/fallback expert counts. Add a bounded per-axis window-size histogram and held-reuse versus other flush counts to determine whether the larger ring actually changes group width. Compare quiet completed paired 32K wall samples only after those correctness and lifetime gates. Do not infer a benefit from the N64 or N2049 diagnostic receipts.
+
+## Provenance
+
+- N64 candidate report: `research-xe-native-dequant-n64-group-join-next-v1.txt` (SHA prefix supplied by parent: `5ccf`).
+- N2049 OFF receipt SHA-256: `fca4e11f4fdc284b2fe871ead1be534c89da6ac5bcf0b9ffe3f6769f56ce6717`.
+- N2049 ON receipt SHA-256: `941526cfe536485439988ba9bf50de918e506274e4e818a0b4cecdf2d95b0925`.
+- Relevant source lines in the immutable snapshot: ring constants/selection 67–73, 123, 157–173; native-batch cap and flush/lifetime 2097–2169; stage-slot allocation and byte accounting 820–837, 1028–1069; issuer credit and ring-slot reuse 1416–1498; native consumer hold/reuse logic 2344–2366, 2382–2453.
+
+The receipt memory numbers are carried from the named closed diagnostics; no claim is made that they predict the memory result for a widened ring or for a different workload.

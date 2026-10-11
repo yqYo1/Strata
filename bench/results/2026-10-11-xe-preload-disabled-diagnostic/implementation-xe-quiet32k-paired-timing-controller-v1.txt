@@ -1,0 +1,128 @@
+Quiet32K paired timing controller v1 — SOURCE ONLY
+Date: 2026-10-11
+Status: UNEXECUTED, UNQUALIFIED. Main alone reviews and manages all validation.
+
+Provenance and artifacts:
+Immutable Main source directory:
+/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-native-dequant-prefill-model-controller-source-v8
+Original run_root.py SHA256 fe4f7a476583ae5c5645892ba3e1fbd17ded776904ddf93fb782ad91b6d40da6
+New candidate directory:
+/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-native-dequant-prefill-quiet-timing-controller-source-v1
+Candidate run_root.py SHA256 10a999af9554cab6dc85113486f24229a022341659bfe465653c9500a1b195a6
+candidate.patch SHA256 53de6886f2c209533b23dfff8115d3e08df83983ffa4ee4aac23f463eaaf195a
+qualification.pending.json SHA256 b1965b398bfc44c00af0f84ce7d6750d20609e94e59794f5fa97d5c9d45e3856
+manifest.json records the eight unchanged helper SHA256 values. All match v8.
+Only the NEW candidate directory and this report were written. Existing controller,
+source, receipts, output, reports and registries were not edited.
+
+Evidence read:
+The previous research-xe-preload0-pass-scope-and-2049-kernel-boundary-v1.txt explains
+finite PASS scope versus full-context/specialization qualification. Registry-v130
+was located/read at:
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-11-xe-native-dequant-prefill-batch/report-registry-v130.json
+Its previous registry is v129 and research_completed=527. The initial attempted
+v130 path under native-dequant-group-v2 did not exist; discovery found the correct
+prefill-batch path. No model-root receipt or stderr was read, including active32K ON.
+Main's instruction reports closed64/2049 paired PASS and32K OFF PASS; this candidate
+does not turn those statements into new qualification receipts or performance data.
+
+Scope and repeated sample namespace:
+--input-tokens accepts32768 and --group accepts16, the existing supported32K boundary.
+Eight helpers stay unchanged; protocol.py explicitly accepts only64/2049/32768, so
+lengths above32768 are deliberately not enabled without separate validator/source
+review and actual diagnostics. Configured physical context262144 remains unchanged.
+New required --sample-index accepts0..99. Main qualification must plan at least
+three distinct indices, at most100, and the requested index must belong to that plan.
+Each invocation creates one fresh immutable arm directory:
+xe-native-dequant-prefill-quiet-timing-root-v1/<campaign>/sample-NNN/n32768-g16-off
+or n32768-g16-on. Existing directories refuse reuse. ON requires the exact same
+sample-index OFF record. This is a per-arm controller, not an automatic runner;
+Main schedules all planned pairs serially and reviews population completion.
+No retries, reset, histogram, population summary, confidence interval, benchmark
+adoption or performance promotion is generated. No sample has been run.
+
+Quiet model environment and output:
+STRATA_TRACE, STRATA_PREFILL_TRANSFER_COUNTS, STRATA_PREFILL_TIMING and
+STRATA_DRAFT_TIMING are absent, because these are presence-based source switches;
+setting0 would enable them. API trace/layer and ZE validation switches are absent.
+Warning/error-only loader logs remain so strict known ERROR detection is retained.
+The explicit model environment is read back exactly from /proc at READY. Detailed
+fresh integer health retains the original diagnostic environment outside the request.
+STRATA_PRELOAD_KERNELS=0, FUSED0, issuer0, INT8 KV/resident32768, chunk6144, fullstream16/
+routed8 rings, strict GEN16 LP5 and full physical262144 argv are unchanged.
+OFF/ON explicit environments differ only by STRATA_PREFILL_NATIVE_DEQUANT_BATCH.
+Quiet samples forbid actual trace, H2D/route/batch census and GPU timer text.
+Full phase/census validators are not applied to absent quiet captures; instead,
+Main-pinned actual closed32K diagnostics provide independent caller/numerical proof.
+The unchanged strict protocol checks all six PP progress lines, fresh RESUME/REUSED0,
+finite DONE phase times, ordered draft counts and16 T/LP5 pairs. The request retains
+the same derived input/task suffix. Each quiet arm must exactly match its diagnostic
+arm's16 T/LP5, and quiet ON must exactly match fresh same-index quiet OFF.
+The old print/save on each PP is removed from the request loop; PP lines remain in
+request_protocol and timing_sample.raw_pp. Owner resource/identity polling remains.
+timing_sample saves sample index/campaign/arm, separate prefill_ms/decode_ms from
+actual DONE, raw DONE and individual PP lines, plus false performance/population flags.
+Existing diagnostic_request_timing remains as a clearly ineligible per-run field.
+
+Required actual32K diagnostic/caller qualification:
+Pending manifest requires exact record hashes for root-v6/n32768-g16-off and -on,
+the immutable v8 controller hash, exact diagnostic OFF environment and a separately
+hashed Main caller/numerical review. At actual launch both diagnostic receipts must
+be complete/inactive/PASS with all commands normally owned/closed, same boot, current
+historically qualified38 source content/binary/input/model inputs/argv, actual explicit
+environment and normal model QUIT, fresh fault gate, before/after integer health,
+strict16/T/LP5 and actual qualified runtime mappings. All eight diagnostic helpers
+must match this candidate's unchanged helpers, and source review must match exactly.
+The records must expose all six trace chunk starts,48-layer census rows for every
+chunk, MMQ0 and exact transfer expectations. Pair environments differ only by batch,
+and actual ON recorded equivalence flags/T/LP5 must match. Main review must bind the
+exact pair hashes/source content and explicitly say caller_numerical_passed=true,
+performance_qualified=false. Old diagnostics are never samples in the new namespace.
+No active or future diagnostic PASS is inferred: the default pending manifest and
+default placeholder manifest SHA refuse launch before output/measurement lock.
+
+Historical build versus current publication:
+Release-v22 and host-ASANv19 in both modes, lintv17, reviewed working patch and exact
+four build binary identities remain required. Their source_base is historical fa3
+and their source_patch_sha256 stays the retained historical patch hash; commit does
+not retroactively change those receipts. The candidate records historical_build_base
+and historical working_diff_sha256 separately from pending published_head.
+Main must supply an actual40-hex published HEAD and separately hashed publication
+review binding that HEAD, historical fa3+patch and the identical38 production source
+pins. Runtime checks actual HEAD, empty git diff HEAD, empty tracked porcelain status,
+all38 pin paths tracked by Git, and hashes of every current production source equal
+all four historical builds/manifest. Final HEAD/clean-tracked/content checks remain.
+Untracked unrelated files are not covered by the clean-tracked assertion. No future
+HEAD is invented. The pending template describes the publication review schema.
+New quiet-controller CPU-root-v1 and Main-review-v1 paths are pending conventions;
+exact actual PASS/helper hashes/review hash must be supplied before measurement.
+All prerequisite receipts remain exact-hash pinned; only the newly produced exact
+current-sample quiet OFF receipt can be admitted without a prior Main receipt pin,
+and it must pass the full strict OFF eligibility checks and remain immutable.
+
+Retained fault/runtime/owner behavior and limitations:
+The strict known ERROR regex is unchanged. Existing READY startup/pre-GEN severe-error
+gates, no-GEN gate failure, finite QUIT for READY-before-GEN or already-DONE failure,
+primary failure preservation, bounded PID/start mapping hashes/ELF build-id reads,
+normal/forced owner-close recording, fresh kernel faults/devcoredump, before/after
+integer health, boot and input/source/binary/helper/receipt immutability checks remain.
+Original runtime.py still checks the six required/two optional exact qualified library
+identities; extra compiler/libc/loader mapping evidence remains separate. READY and
+after-DONE mapping observation is outside the engine request phase timers. New actual
+mapping wall durations are recorded when captures complete. These reads/polls add
+CPU/I/O/cache and startup/first-use costs that are not calibrated or corrected away.
+Optional validation layer mappings remain identity-checked even with activation off.
+Errors emitted between the final stderr gate and GEN remain the pre-existing timing
+race; complete post-model severe-error and fresh fault gates still apply.
+performance_eligible staysfalse in record, validation and sample, even if all planned
+samples later pass. Main must review measurements and observation costs separately.
+full_model_quality_qualified, full262144_qualified and adoption remainfalse. Strict
+finite fixture equivalence does not qualify global model quality or256K boundary.
+
+Execution boundary:
+No AST, syntax check, import, application run, build, test, GPU/device query, dlopen,
+service, cleanup or Git mutation was performed. Only source/report text reads,
+copy/edit/diff and SHA256 hashing were used. Main is sole test manager. This is not
+a tested controller, a measurement result or a qualification of any pending artifact.
+Main owns source review, actual qualification, retention/registry and commit at the
+work boundary. No traces/captures/fixtures were deleted or touched.

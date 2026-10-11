@@ -1,0 +1,94 @@
+Xe model preload-disabled diagnostic controller v4
+Date: 2026-10-11
+Status: SOURCE ONLY, UNEXECUTED, UNQUALIFIED. Main is sole test manager.
+
+Provenance:
+Immutable input directory:
+/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-native-dequant-prefill-model-controller-source-v3
+run_root.py original SHA256 b2c530ecfad0869da9b6c510e1c42023e6141868a4872e4b6f86bb8510fedba7
+New output directory:
+/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-native-dequant-prefill-model-controller-source-v4
+run_root.py candidate SHA256 82f02fd6dd4137454c802c0b4f98c142bc3fd4a39b5afd27aad8910433ddc0dc
+candidate.patch SHA256 a234f854886bb51139756ab4a1b8a19db3b6b1e0b4f5f365b057a74c554a7589
+qualification.pending.json SHA256 6d829d88b3c9c49623d40b1063349aed6a2388a23004a5d412147acf523923ed
+manifest.json records full hashes for all eight byte-identical shared helpers.
+No old artifact, live source, review, receipt or registry was modified.
+Production base fa3e20e842fbed6986a69bade8afe3edabedee07; device.cpp source-only
+candidate SHA256 3e7523a2947af7c82d41fc9a7653f4f9aad0fa3cbb062999de19553659e0ec27.
+Main supplied latest archive Git c0876e038addf58d01219398dd4023a7b2485e8c,
+registry v130527, under:
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-11-xe-native-dequant-prefill-batch
+Raw retired model.stderr was not accessed.
+
+Changed boundaries:
+1. Explicit model diagnostic STRATA_PRELOAD_KERNELS=0. Default model engine behavior
+   is not changed here; actual device.cpp application and build qualification belong
+   to Main. Existing strict ERROR regexp including UR_RESULT_ERROR/ZE_RESULT_ERROR
+   is unchanged. Existing stderr gate remains; bounded matching excerpts, stdout
+   startup gate and a final stderr gate immediately before GEN are added.
+2. Replace save-time unbounded mapping discovery with explicit READY-before-GEN and
+   completed-GEN snapshots. Failed GEN attempts try an additional snapshot where
+   the original PID/start identity and owner budgets permit it. Availability failure
+   is recorded separately and cannot replace the primary model failure.
+3. Original six required/two optional library identities remain in observed_libraries
+   and are passed to unchanged runtime.py. Other process mappings are recorded in
+   additional_process_mappings, never fed to the original eight-library matcher.
+   Selection includes IGC/FCL, opencl-clang/igc-clang, IGA, igdgmm, libc.so and
+   ld-linux. Names that are not actually mapped are not fabricated. All selected
+   files record canonical path, SHA256, stat, GNU ELF build-id and mapping count.
+   Reads use open(O_NOFOLLOW)/read/pread only; no library loading or execution.
+4. Mapping reads check direct PID/start_ticks before and after capture, and between
+   hashing chunks/ELF reads; original owner poll enforces existing wall/resource and
+   identity limits. Maps <=2MiB/8192 rows; <=64 selected paths per snapshot;
+   each file <=512MiB; aggregate reads <=4GiB across snapshots; ELF64 program
+   headers <=256; note bytes <=1MiB/file; GNU build-id <=128 bytes. File-descriptor
+   inode/device must match every selected map row. Stat is checked before/after
+   against the canonical path. Changed/deleted files or missing/ambiguous build-id
+   fail the gate. There is no retry/reset or permissive fallback.
+5. READY pre-GEN failure records primary_model_failure and never sends GEN. It first
+   requests QUIT (5s send), then waits finitely (10s exit), using original owner poll
+   so a detected GPU-dump failure does not itself prevent protocol shutdown. The
+   failure remains recorded. If exit cannot be observed, existing pidfd owner handles
+   cleanup. run() records QUIT outcomes, owner error/cleanup, exit code, normal and
+   forced close, then raises the original primary failure rather than generic
+   'normal closed model'. Completed-GEN QUIT remains 30s.
+6. Pending qualification is explicit. New --qualification/--qualification-sha256
+   demand exact manifest hash, status passed, Main review and immutable base revision.
+   Default pending template refuses launch, before diagnostic output/measurement lock.
+   Main supplies resolved exact 37 production source pins, four build binary
+   identities, free release binary, working diff hash, lint source pins, source review
+   pins/hash, controller review hash and absolute-path exact prerequisite receipt
+   hashes. The pending template enumerates required receipts. Every prerequisite
+   receipt retains actual complete/inactive/closed PASS checks and expected malformed
+   CLI rejection rules. Release v22/host-ASANv19 in both modes and lintv17 are required;
+   all current build binaries must match their actual receipts and Main manifest.
+   New source-review path v5 and controller CPU/review paths v4 are explicit pending
+   conventions, not assertions those artifacts already exist.
+7. v4 OFF output/reference root prevents using old controller outcomes as new OFF
+   eligibility. Existing strict OFF->ON exact controller/helpers/source/binary/input/
+   environment/boot/health/fault/output16/LP5 and independent route checks remain.
+   Full configured 262144 context, memory reserve and fault checks remain unchanged.
+   Full262144/model-quality/performance qualification remains false.
+
+Remaining limitations and required Main review:
+No syntax, AST, application import, selfcheck, test, build, device query, GPU run,
+service, cleanup or Git mutation was performed. Only text reading/editing/copying,
+textual diff and hashes were used. These source artifacts are not tested.
+Main must resolve pending receipt schema/pins and qualify the controller before use.
+Main must apply/qualify the production preload candidate and v22/v19/v17 first.
+Mapping hash reads add CPU/I/O and first-use timing effects; this remains diagnostic
+and performance-ineligible. Mappings that disappear between READY and completed GEN
+are not a full history. PID/start checks and inode/stat checks bound races but are
+not a process freeze; maps can change within a snapshot. Only ELF64 GNU build-id is
+supported; a selected library without one intentionally fails rather than inventing
+identity. Additional mappings are provenance observations, not independently
+CPU/GPU-qualified compiler/library receipts. After-GEN snapshot capture failures
+still fail diagnostic qualification and may invoke the original owner cleanup;
+the explicit finite QUIT guarantee applies to READY pre-GEN failures.
+Startup log regex sampling has the same unavoidable race with newly emitted errors
+between final gate read and GEN send; the post-run full severe-error gate remains.
+No claim that disabling background preload repairs JIT failures is made. Required
+kernels can still fail compilation on actual first use. User 256K boundary remains
+unverified; configured full context is not correctness qualification.
+Main owns retention/registry integration and commit at the work boundary. No logs,
+captures or fixtures were removed.

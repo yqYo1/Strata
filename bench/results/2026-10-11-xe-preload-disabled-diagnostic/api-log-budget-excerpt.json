@@ -1,0 +1,96 @@
+{
+  "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-native-dequant-prefill-model-root-v4/n64-g16-off/commands/model.stderr",
+  "original_bytes": 64623852,
+  "original_sha256": "1ede5e0e9c4fc9049eaa56c24ecc333cd4a7586d8bb3716980a2fe02584f3154",
+  "total_lines": 369878,
+  "error_filter": "UR_RESULT_ERROR|ZE_RESULT_ERROR|\\[(?:ERROR|FATAL)\\]|(?:Assertion|assertion).*failed|terminate called|longjmp",
+  "error_matches": [],
+  "progress": [
+    {
+      "line": 381,
+      "text": "strata trace: kernel preload disabled by STRATA_PRELOAD_KERNELS=0"
+    },
+    {
+      "line": 18306,
+      "text": "strata trace: 4217 MiB free after the weights, the session and the drafter"
+    },
+    {
+      "line": 18368,
+      "text": "strata trace: 3936 MiB free after opening the expert cache"
+    },
+    {
+      "line": 19837,
+      "text": "strata trace: 3936 MiB free after the profile fill"
+    },
+    {
+      "line": 19877,
+      "text": "strata trace: 3936 MiB free after the R4 hit path"
+    },
+    {
+      "line": 19894,
+      "text": "strata trace: 3936 MiB free after the expert cache and the graphs"
+    },
+    {
+      "line": 184409,
+      "text": "strata trace: 1036 MiB free after the head and the prompt path"
+    },
+    {
+      "line": 191247,
+      "text": "strata trace: 745 MiB free after the verifier and the drafter's binding"
+    },
+    {
+      "line": 191910,
+      "text": "strata trace: request 64 0"
+    },
+    {
+      "line": 191951,
+      "text": "strata trace: prompt start 63 -1"
+    },
+    {
+      "line": 191952,
+      "text": "strata trace: prompt chunk 0 of 63"
+    }
+  ],
+  "final_api_window": [
+    {
+      "line": 369871,
+      "text": "   ---> urEnqueueUSMMemcpy"
+    },
+    {
+      "line": 369872,
+      "text": "[2026-10-11 20:19:29.485] [thread-id: 127501627013440] [trace] zeCommandListAppendMemoryCopy(hCommandList, dstptr, srcptr, size, hSignalEvent, numWaitEvents, phWaitEventsLocal)"
+    },
+    {
+      "line": 369873,
+      "text": "[2026-10-11 20:19:29.485] [thread-id: 127501627013440] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListAppendMemoryCopy(hCommandList=0x28d88398, dstptr=0xffffd558dfd3c000, srcptr=0x73eff31b7000, size=2176000, hSignalEvent=0x29698d58, numWaitEvents=0, phWaitEvents=nullptr)"
+    },
+    {
+      "line": 369874,
+      "text": "   <--- urEnqueueUSMMemcpy(.hQueue = 0x28db2670, .blocking = 0, .pDst = 0xffffd558dfd3c000, .pSrc = 0x73eff31b7000, .size = 2176000, .numEventsInWaitList = 0, .phEventWaitList = nullptr, .phEvent = 0x7fff78f1e770 (0x29698780)) -> UR_RESULT_SUCCESS;"
+    },
+    {
+      "line": 369875,
+      "text": "   ---> urEventRelease"
+    },
+    {
+      "line": 369876,
+      "text": "   <--- urEventRelease(.hEvent = 0x29698780) -> UR_RESULT_SUCCESS;"
+    },
+    {
+      "line": 369877,
+      "text": "   ---> urEnqueueEventsWaitWithBarrierExt"
+    },
+    {
+      "line": 369878,
+      "text": "[2026-10-11 20:19:29.485] [thread-id: 127501627013440] [trace] zeCommandListAppendSignalEvent(hCommandList, hEvent)"
+    }
+  ],
+  "primary_failure": "RuntimeError('aggregate owner log cap')",
+  "ready_seen": true,
+  "gen_sent": true,
+  "done_seen": false,
+  "original_passed": false,
+  "conclusion": "Incomplete log-budget diagnostic; no captured severe runtime error. Not proof of absent GPU fault.",
+  "consumer": "Preserve original budget stop and last observed work; independent fresh health receipt is separate",
+  "whole_trace_consumer": null
+}

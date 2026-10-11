@@ -1,0 +1,55 @@
+# Six-pass chunk candidate for the 32K short tail
+
+Read-only source and closed-record review — 2026-10-11
+
+## Scope and evidence boundary
+
+Read immutable WX commit `0740b43488d812117f021ccbe4bd0e15d223f955` at `/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011`, the closed v6 32K OFF/ON receipts, registry-v130, and relevant prior reports on chunk admission and 32K timing. The immutable `src/prefill/prefill.cpp` and `src/program/generate.cpp` blobs match the supplied fa3 files. No active run, GPU/runtime query, build, test, AST/import/dlopen, cleanup, Git mutation, or implementation change was performed. This is a source/record feasibility analysis only.
+
+Native dequant batching remains opt-in and not adopted. The closed 32K G16 diagnostic receipts report 32768 prompt tokens / 32767 batched positions, requested chunk 6144, physical context 262144, complete PASS, and `performance_eligible=false`. Their prompt times were 127433.6 ms OFF and 130715.0 ms ON; this is a diagnostic pair, not quiet timing or adoption evidence. The later quiet-timing controller report is source-only and unexecuted. No performance claim is made for any alternative chunk.
+
+## Exact CLI, admission, and chunk geometry
+
+`--prefill CHUNK` is parsed with `std::atoll`; the fixed integer is stored as requested. `Prefill::run` then iterates `c0 += m.T` and sets each real chunk to `min(m.T, n-c0)`. There is no 256-token rounding of ordinary fixed chunks or padding of the prompt in that path. The 256-token round-up at generate.cpp:10132–10135 is only applied if a chunk is larger than the prompt span rounded up to 256; all candidates here are smaller than that rounded span for the exact 32K, 64K, and 262144-token cases.
+
+There is one admission caveat. With cache borrowing enabled, `plan_lend` tries a fixed request and then halves it by integer division until the buffers fit. A rejected 6140 request can become 3070 (then 1535, etc.), changing both pass count and routing regime. The realized chunk must therefore be checked from the selected/admitted value and prompt progress, not inferred from argv. The supplied 32K diagnostics explicitly use `--no-prefill-borrow`, so this halving path is skipped and fixed chunks are retained. Their explicit cache admission and actual READY free-memory check still matter. For this exact setup, 6140 uses no more chunk-sized storage than the admitted 6144 baseline; `Prefill::bytes_needed` counts the same allocations as carve, and both stay in the `T >= 2048` ring-allocation regime. The actual run must retain the 512 MiB READY-time reserve before GEN.
+
+The chunk geometry for batched positions `n = prompt_tokens - 1` is:
+
+| Requested fixed chunk | 32767 positions | 65535 positions (64K prompt) | 262143 positions (physical-context span) |
+|---:|---:|---:|---:|
+| 6144 (current) | 5×6144 + 2047; 6 passes | 10×6144 + 4095; 11 passes | 42×6144 + 4095; 43 passes |
+| 6140 | 5×6140 + 2067; 6 passes | 10×6140 + 4135; 11 passes | 42×6140 + 4263; 43 passes |
+| 5632 | 5×5632 + 4607; 6 passes | 11×5632 + 3583; 12 passes | 46×5632 + 3071; 47 passes |
+| 4096 | 7×4096 + 4095; 8 passes | 15×4096 + 4095; 16 passes | 63×4096 + 4095; 64 passes |
+
+At the immutable source's `STREAM_ALL_MIN=2048`, `ring_slots(T)` returns the configured clamped ring only for `T >= 2048`, and returns fixed `STAGE=8` otherwise. `stream_all` also requires the stream source to be nonnull. Thus 6144's 2047-position final chunk falls below the threshold, while 6140's exact-fixture tail of 2067 is above it. At 64K and the 262143-position span, 6144 itself already leaves a tail of 4095, so there is no short-tail regime to fix; the 6140 and 5632 alternatives also remain above threshold. This calculation for 262143 describes a batched span ending at the physical limit, not a prompt-plus-generation qualification; an exact-capacity prompt leaves no context for generated tokens.
+
+The 6140 margin over the threshold is only 19 positions. It is valid for the explicitly named 32767-position fixture because fixed chunks are used without rounding, but it should not become a general prompt default: a different input length can leave a tail below 2048. The 5632 alternative has more margin on this fixture, but increases 64K and physical-span pass counts by one and four respectively. Neither alternative has been run.
+
+## One narrow candidate, and why 4096 is excluded
+
+For the exact 32768-token/32767-batched-position 32K fixture, the least disruptive candidate is fixed `--prefill 6140`, keeping G16, the ring request, model, and all other controls unchanged. It preserves six chunk passes, fits beneath the already-admitted 6144 allocation, and changes only the last real chunk from 2047 to 2067 so the source condition selects the streaming path. It does not pad, duplicate, or drop any prompt token. The admission must preserve effective chunk 6140; if it resolves to another size, the six-pass comparison is invalid. Record the actual per-chunk positions and confirm the final 2067-position chunk uses the stream route. Keep the existing 512 MiB READY gate at physical context 262144, along with strict output/LP5, route/order, and completion/fault checks. This narrowly targets that fixture; it proves neither safe behavior for arbitrary prompt lengths nor qualification of a full 256K prompt.
+
+Do not blindly repeat 4096. The immutable source's own historical comment (generate.cpp:5603–5607) records an older 12 GB card, Q2_0, 32K prompt: 4096 gave 791 tok/s, 6144 878, and 8192 973 with 69% of cache slots lent. A nearby B70 comment also contrasts 32K 4096/default ring (565–617 tok/s) with 8192/96 (1046–1293), but changes both chunk and ring and is not an isolated comparison. These are source-recorded historical measurements on other configurations, not estimates for the current B570 native-dequant path. They do show why 4096 should not be proposed as a performance-free fix.
+
+A future 6140 result should be judged from matched quiet completed timing samples after correctness gates. The existing 127.4/130.7-second pair is diagnostic-only, while the new quiet controller is not executed; neither decides the chunk comparison.
+
+## Memory lifetime and operational limits
+
+The Prefill arena is sized for its maximum configured chunk, not resized for every short final chunk. `Prefill::bytes_needed` mirrors `carve` and includes T-scaled tensors/scratch plus `ring_slots(T) * MAXBLOB()` staging storage. `Prefill::init` reserves this arena before the prompt pass; `Prefill::run` reuses it across chunks. When borrowing is active, the buffers occupy a loan taken from the expert cache and mappings are marked nonresident for those slots; after the prompt, the saved experts are refilled before decode uses the cache again. With `--no-prefill-borrow`, the buffers are owned separately and the auto-cache reserve accounts for them. The 6140 candidate reduces the T-scaled arena slightly versus 6144 while retaining the same ring regime; this is a source-derived allocation comparison, not a fresh VRAM measurement.
+
+At the full-context span, physical session/KV memory remains the dominant independent constraint. A smaller Prefill arena does not establish full-262144 correctness, successful output generation at the exact context edge, or safety under different cache/pool settings. Require a READY-time admission result for the exact run and do not weaken the existing reserve or lifecycle checks.
+
+## Provenance
+
+- WX commit: `0740b43488d812117f021ccbe4bd0e15d223f955`.
+- Source blob IDs: `src/prefill/prefill.cpp` `a5971752d742a430e477792bf9e1f807344c0dfe`; `src/program/generate.cpp` `676d525f172609e6d67345b555b70a28eb73c6a9`.
+- Registry-v130 SHA-256: `38bcb49566f207bb4a6d626802ab983c831851451f6360b3b68417978c49f2ef`.
+- N32768 OFF receipt SHA-256: `01992f0ba3b15a135636e97ff4dd37fc03f1137486df948ff7631edc96a1c9d1`.
+- N32768 ON receipt SHA-256: `8f7ad6c80553ac091388f5146ae6e93571115b6f6831f5f01e3458f3d6cd9a54`.
+- Prior source/admission report `round367-official-independent-parameter-selection-matrix.txt`: `f4b3e18c8caab901bb69d0c0b8bc6dfa1a74d73f9fc2f4b8c6baee1aba8e97f4`.
+- Quiet timing controller report `implementation-xe-quiet32k-paired-timing-controller-v1.txt`: `96686928ea8d608955faaeb186ca06ab83200022901b2a01bba057268378a8b6` (source-only/unexecuted).
+- Prior tail-boundary report: `research-xe-native-dequant-stream-credit-and-tail-boundary-next-v1.txt`, SHA-256 `f08640c818c67f55099f0a87a99659d25b226f3180ad0eb6515bb9a27d75f9ae`.
+
+No fresh measurement, test, build, runtime query, or qualification was performed.

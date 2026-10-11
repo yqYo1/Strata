@@ -1,0 +1,47 @@
+# Production MMA parity-probe eligibility on B570
+
+Date: 2026-10-11
+Source pin: XeStrata `fa3e20e842fbed6986a69bade8afe3edabedee07` (read through `git show`; no live-worktree source was used).
+Scope: static source and primary documentation review only. No builds, tests, imports, inference, compiler/device queries, GPU/service work, profiling, cleanup, Git mutation or source edits.
+
+## Finding
+
+There is an existing no-model numeric parity executable, `prefill_dense_gemm_parity`, but no dedicated `mma_gemm_parity` target and no CLI option to select one fixture or force one particular `Kernel<S>`. The existing executable exercises the production `Gemm::f16`/`Gemm::bf16` dispatch and its CPU oracle, but it runs all six fixed shapes and both types, repeatedly. To make that path call MMA, oneMath must be disabled with `STRATA_NO_BLAS=1`, and the MMA route must be forced with `STRATA_MMA=1`; environment values must be set before process start because both gates are cached. Even then, an explicit shape assertion is needed to prove whether `shape()` chose `Kernel<0>` or `<1>`. Neither source nor the available committed reports establishes the current B570 matrix-combination result, so the exact selected index cannot be responsibly claimed from this read-only pass.
+
+A minimal *future* eligibility case is the parity program's existing `single-row` fixture: FP16, `T=1, N=32, K=32, ldy=32`, no offset. Its X/W/Y offsets are 64-byte aligned; `N >=16 && N%16==0`, `K>=32 && K%32==0`, and `ldy>=N && ldy%16==0`, so it passes `xmx_gemm_ok`. Under `STRATA_NO_BLAS=1 STRATA_MMA=1`, if the shape-report gate selects a supported shape, `Gemm::f16` reaches `xmx_gemm`, which calls `mma_gemm` before the ordinary XMX kernel. The small row count still launches a full tile and exercises the matrix load and MAD.
+
+The exact discriminator exposed by this revision is `mma_shape_is(q,8,16,16,16)` versus `mma_shape_is(q,8,8,16,8)` (and also check `mma_usable(q,false)`). `shape()` walks `kShapes` in order, so shape 0 wins when it is reported and its grouped layout fits; shape 1 is considered next. Source comments associate shape 0 with Xe2 (B570 generation) and shape 1 with Xe-HPG/Arc A, making shape 0 the expected candidate, not a measured fact for this driver. The production function also has shape 2 `{16,16,16,32}` as a fallback; it must be explicitly excluded by an assertion if the desired investigation is limited to 0/1. An official Intel overview describes joint-matrix use on Arc B-series, but does not supply this machine's SYCL runtime report; it cannot replace the gate check.
+
+## Actual report and layout gates
+
+`mma_gemm.cpp::reported()` requires the device's subgroup-size list to include the candidate `sg`, then a matrix combination with input A and B both FP16 (for this case), accumulator and output both FP32, and matching `m/n/k` (or a zero exact size with a reported maximum at least that large). `matrix_combinations()` filters BF16 and INT8 only when their corresponding environment switches are set. `shape()` tests candidates in array order and additionally requires `groups_layout_fits()`; that checks reported local memory and maximum work-group size for the grouped layout. `mma_usable()` also observes `STRATA_NO_XMX`, except that `STRATA_MMA=1` overrides that off switch. These are runtime properties. This assignment prohibited querying them.
+
+For S0, its grouped and dense layouts are both `2x2` sub-groups with `2x2` tiles per subgroup, `TMxTN=8x16`, subgroup 16. The work-group is 64 work-items; the declared local storage is 14,336 bytes. For S1, the grouped layout is `2x8` sub-groups with `2x2` tiles each, `TMxTN=8x8`, subgroup 8. The work-group is 128 work-items and grouped local storage is 24,576 bytes. Thus either candidate must pass the relevant device local-memory and work-group limits. S1's preferred dense layout additionally requests large GRF and 57,344 bytes/256 work-items; if that layout does not fit, the code falls back to the smaller grouped layout after launch/layout checks. Both packed shapes set `FR=true` and call `joint_matrix_load` on A from a `local_accessor` (`apb`) in the fragment branch. S0/S1 therefore exercise a local-address-space A matrix load, although the source's matrix dimensions differ from the previously observed internal `16x16` failing builtin. That difference means an S0/S1 pass alone would not demonstrate that the S2 case compiles.
+
+The shape-0 workspace calculation follows the source constants: `WM=32`, `WN=64`, `LDA=LDB=32`, two A and two B buffers, plus four `8x16` FP32 accumulator tiles: `(2*32*32 + 2*64*32)*2 + (4*8*16*4) = 14,336` bytes. Shape 1 grouped: `WM=32`, `WN=128`, `NSG=16`; `(2*32*32 + 2*128*32)*2 + (16*8*8*4) = 24,576` bytes.
+
+## Existing numerical oracle
+
+CMake defines `prefill_dense_gemm_parity` under `STRATA_BUILD_TESTS`, links it to `strata_prefill`, and compiles its host oracle with `-fno-fast-math -ffp-contract=off`. It accepts no parameters (`argc` must be 1). Its six shapes are single-row `(1,32,32,32)`, short/strided `(3,64,64,80)`, aligned `(16,64,128,64)`, row-tail `(65,32,64,48)`, column-tail `(3,129,64,137)`, and K-tail/offset `(3,32,33,39)`. For MMA eligibility, only fixtures that pass the alignment/shape predicate enter `xmx_gemm`; the N=129 and K=33 tails do not. The executable runs each type three times; FP16 is non-accumulating and BF16 also tests accumulation. It prints per-type path labels but not the selected MMA shape.
+
+Inputs are deterministic finite normal FP16/BF16 bit patterns, with signed zeros; an independent IEEE decoder converts them to double. The reference is a double-precision dot-product (plus initial Y only for accumulating BF16). For FP32-only rounding, the per-output limit is `1e-6 + gamma * sum_abs_products`, where `u=2^-24`, `steps=2*K+8`, and `gamma=4*steps*u/(1-steps*u)`. It checks every live output, finiteness, input preservation, guard and row-slack preservation, and repeat-to-repeat stale-output distinguishability. For the proposed `K=32` case, `steps=72`; this is a data-dependent error envelope, not a fixed relative tolerance. This oracle is suitable for checking the production GEMM result at small scale. It does not itself force a particular `Kernel<S>` or tell which shape passed.
+
+## Why a standalone target does not isolate the specialization
+
+In the immutable source, `by_shape()` has runtime branches that call `run<0>`, `run<1>`, and `run<2>`. For a non-AMD Intel build, `built<S>()` permits both packed shapes (S0/S1) and the S2 shape. The host-facing production API therefore references the device kernel variants even when the run-time shape chooser will pick just one. The runtime's `preload_kernels()` iterates every ID returned by `sycl::get_kernel_ids()` and requests an executable bundle for each. A standalone parity executable linked against this unchanged production TU consequently still registers/preloads IDs for all its kernel specializations; reducing the host workload to a single shape does not remove S2 from the eager compile set. Exact device-image grouping is not inferred here, but the source's all-ID loop makes per-call reachability irrelevant to preload.
+
+The smallest honest next probe would reuse the existing production path and oracle for the one `(1,32,32,32)` FP16 fixture, set `STRATA_NO_BLAS=1` and `STRATA_MMA=1` before process launch, assert/report the selected shape with `mma_usable` and `mma_shape_is`, then call `Gemm::f16` and compare the full output to the existing double reference. This yields a clean selected-kernel numeric check if module preload succeeds; it will not isolate the unrelated precompiled S2 ID. A narrow source-level reproduction or build that omits S2 would be a separate implementation/build change and would no longer be the unmodified all-ID production image. No such change or execution was made.
+
+## Source pins and references
+
+- `src/kernels/xe/mma_gemm.cpp` SHA-256 `540a4366709b8a2caf43aae36bbaeefd21bf4290d5555557077c463754da2238`
+- `src/kernels/xe/mma_gemm.hpp` SHA-256 `4403664d96e35675b3777aaffcae23fc90343155007c854630f02a88b11e2999`
+- `src/kernels/xe/xmx_gemm.cpp` SHA-256 `2d2144e7331b3dd66a2289a9c67b541b1c136332be53f31c935c9176880085d1`
+- `src/prefill/gemm.cpp` SHA-256 `bfa40846fddb46a3d03d8c58ef5209b181c46674939beeefe512db0073c9d648`
+- `src/core/device.cpp` SHA-256 `9e33dce3b3b55b00c5aee4db566ceb848b73273837c505b3c27b535a0b30ba2d`
+- `tools/test_prefill_dense_gemm.cpp` SHA-256 `b81f479c3e57d5312d37dd54492608d917e7ca64758706686b2b7930018fc251`
+- [Pinned mma_gemm.cpp](https://github.com/MistVVK/XeStrata/blob/fa3e20e842fbed6986a69bade8afe3edabedee07/src/kernels/xe/mma_gemm.cpp)
+- [Pinned dense GEMM parity executable](https://github.com/MistVVK/XeStrata/blob/fa3e20e842fbed6986a69bade8afe3edabedee07/tools/test_prefill_dense_gemm.cpp)
+- [Pinned runtime kernel preloader](https://github.com/MistVVK/XeStrata/blob/fa3e20e842fbed6986a69bade8afe3edabedee07/src/core/device.cpp)
+- [Pinned GEMM CMake target](https://github.com/MistVVK/XeStrata/blob/fa3e20e842fbed6986a69bade8afe3edabedee07/CMakeLists.txt)
+- [Intel IXPUG joint-matrix overview](https://www.intel.com/content/www/us/en/developer/articles/technical/ixpug-sycl-joint-matrix.html)

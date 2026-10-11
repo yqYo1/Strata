@@ -1,0 +1,52 @@
+# N=64 batch OFF/ON receipts: joined group admission and what 32K still needs
+
+Read-only receipt/source-report review — 2026-10-11
+
+## Scope and inputs
+
+Read only the named v6 receipts `xe-native-dequant-prefill-model-root-v6/n64-g16-off/record.json` and `n64-g16-on/record.json`, plus the existing reports `implementation-xe-native-dequant-group-api-v2.txt`, `implementation-xe-native-dequant-prefill-batch-v1.txt`, `implementation-xe-native-dequant-batch-census-observer-v2.txt`, `research-native-batch-prefill-service-bound-v1.txt`, and the earlier N=64 trace-volume report. No active 2049OFF root was read. No build, test, source edit, Git mutation, service/GPU/profiler work, raw trace, or cleanup occurred. Only this report was created.
+
+The receipts are for the same free-mode binary SHA-256 `7c8a86f9079aa0d1a63432b787a62a6b6ffa6e338e57533e5b9c0168ff3e3500`, same applied Prefill pin `c5cfa727302d334e2f6a8aaad8c1bf59e7d581dd8c2cec2af0d031faf807272d`, and same IQ-kernel API pin `75f2ac1dfdb337c424bba19e62c34159a1bde547a776b9b5d6cf7975dfc29d50`. Both set `STRATA_PRELOAD_KERNELS=0`; the arm switch is OFF versus ON. Both receipts mark source uncommitted. These are applied-worktree pins, not claims that the immutable fa3 commit contains those bytes.
+
+Each is a completed 64-token, group-16, physical-262144 diagnostic request with chunk 6144 and requested ring 8 (effective full-stream/routed rings 16/8). Both say PASS, complete, READY/GEN/DONE, normal QUIT observed at exit 0, no owner errors/cleanup, no runtime or pre-GEN error lines, and no new fault messages. Both have before/after health records and strict 16-output/LP5 validation; output IDs match. The receipts explicitly mark `performance_eligible=false` and `full262144_qualified=false`. Prompt times are 4939.9 ms OFF and 4744.5 ms ON; these short, diagnostic N=64 times are not performance evidence.
+
+## 48-layer OFF/ON join
+
+The OFF route census and ON route census have the same 48 layer/chunk rows after removing the expected OFF individual-wrapper counters and ON zero-valued legacy wrapper counters. Their complete transfer-ledger rows match exactly: 6,951 routed H2D requests, 14,257,561,600 logical bytes. Output IDs also match. Route totals in both arms are 30,240 routed rows, 7,063 active expert occurrences, and 6,951 active nonresident occurrences.
+
+Joined each ON group row to its OFF route row by device, layer range, chunk offset, tokens/position, and layer. All 48 joins satisfy:
+
+- ON `gpu_order` = OFF `active_experts`;
+- ON GU and Down coverage plus per-axis fallback equals that row's `gpu_order`;
+- ON `released_slots` = OFF `active_nonresident`.
+
+The OFF arm reports 7,063 normal-return individual GU wrappers and 7,063 Down wrappers. In the ON arm, all 7,063 logical occurrences on each axis were covered by admitted grouped calls: GU admitted 6,260, Down admitted 6,260; both axes declined zero calls and used zero individual fallbacks. Thus total grouped host API calls were 12,520 versus 14,126 old individual calls. With exactly matching route and H2D records, this is direct evidence that the optional group path was exercised for this request; it is not just a caller configuration bit.
+
+Each nonempty admitted group covers 1–16 experts. Per axis, the aggregate weighted width is 7,063 / 6,260 = **1.128 experts per admitted call**. The aggregate implies only 803 experts beyond one-per-call were merged. Given the 16-expert cap, between 54 and 803 calls can have been multi-expert; correspondingly between 5,457 and 6,206 calls (87.2%–99.1%) were single-expert. These are arithmetic bounds, not the measured histogram: the receipt explicitly says individual window sizes are not logged.
+
+The receipt records 6,260 flushes and 5,794 held-reuse flushes, with 6,951 released slots. That is a strong lifetime/slot-reuse signal in this run (held-reuse count is 92.6% of flush count), consistent with the candidate's documented need to flush pending readers before a routed stage reuses a held ring slot. It does not prove a particular window length or that every held-reuse flush contains one expert. The group receipt has only aggregate bounds, no per-window lengths or per-axis flush reasons. It also marks independent completion validation and GPU-execution inference false; the successful protocol and wrapper counters do not independently prove every submitted GPU operation completed correctly.
+
+## What to carry into 32K
+
+The N=64 result settles a narrow question: with this source/binary pair and these settings, the ON branch admitted groups on both axes, preserved the joined route/H2D census and outputs, and completed under the health/fault/QUIT gates. Its measured weighted grouping was weak (1.128×), with no refusals. Held-slot reuse dominated the counted flush reasons. It does not establish the 32K window mix, latency, or adoption benefit.
+
+For the required 32K ON arm, collect the existing strict OFF/ON comparison gates and make the group census diagnostic resolve the specific mechanism that N=64 leaves hidden:
+
+1. Join every group row to the exact route row by chunk offset, layer, mode, and `(gu_type, down_type)`; preserve the same route totals, old individual-wrapper totals in OFF, selected outputs/LP5, logical H2D rows/bytes, health and fault gates, and normal QUIT.
+2. Record per-axis admitted and declined group calls, covered experts, fallback individual calls, and flush count; reconcile both axes independently to eligible GPU experts. Do not force GU and Down outcomes to match.
+3. Add bounded `window_n=1..16` counts split by axis and outcome, plus held-slot-reuse versus other flush reasons, joined to the above format/chunk/layer keys. Aggregate averages alone can conceal a mostly-singleton population, as this N=64 census demonstrates.
+4. Judge speed only from matched quiet, completed OFF/ON 32K wall samples after correctness/lifetime gates. Keep the diagnostic census separate from quiet timings.
+
+## Do not transfer the v1 component timing to this v2 path
+
+The earlier component report's measured adverse checked-drain result belongs to the v1 group-kernel implementation with dynamic pointer-array indexing: at n=16 its host-submit time improved while checked-drain medians grew sharply. The separate group API v2 report changes the kernel-side pointer selection to an explicit constant-index switch. It labels all v2 compilation, optimized lowering, byte parity, health, and performance qualification **unexecuted**. The current v6 receipts pin the v2 IQ source SHA and demonstrate real ON caller admissions, but they do not validate or measure the v2 kernel component under the earlier component workload. Therefore neither the v1 checked-drain penalty nor the v2 source change can be treated as a model-speed conclusion. Requalify the current pinned API/source on the 32K path and use its own completed quiet timing samples.
+
+The earlier 32K service-bound report already required a joined window-length histogram and quiet paired wall; this report does not repeat its generic recommendation. The new evidence sharpens why the histogram is necessary: one successful 64-token run admitted 6,260 calls per axis yet achieved only 1.128 average coverage because the count alone hides singleton prevalence and held-slot pressure.
+
+## Provenance and limits
+
+Receipt SHA-256:
+- OFF: `b3041c64d43bcbf5d558e3faeac56b6102c8706a161b5a1742d05b1065364744`
+- ON: `e77dea4730644e54a5746f3a9cec4dde1f3f4252dbddf34df184a7e8011e1752`
+
+This is a compact receipt/candidate-report analysis, not a fresh source qualification. No raw logs were opened; no API kernel completion or performance is inferred from aggregate counts.

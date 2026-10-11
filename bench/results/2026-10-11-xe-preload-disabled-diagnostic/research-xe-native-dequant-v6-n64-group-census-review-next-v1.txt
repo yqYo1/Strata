@@ -1,0 +1,37 @@
+Xe native-dequant batching v6: N64 receipt join and 32K gate
+Read-only receipt/source review — 2026-10-11
+
+Scope and provenance
+
+Reviewed only the specified v6 N64 OFF and ON receipts, the pinned 32K counts PASS receipt, the named earlier source/service reports, and fixed source at candidate revision fa3e20e842fbed6986a69bade8afe3edabedee07. No build, test, source execution, GPU/service run, AST/import, or Git mutation was performed. The v6 run records identify the same binary SHA256 7c8a86f9079aa0d1a63432b787a62a6b6ffa6e338e57533e5b9c0168ff3e3500, candidate revision fa3e20e842fbed6986a69bade8afe3edabedee07, and prefill source pin c5cfa727302d334e2f6a8aaad8c1bf59e7d581dd8c2cec2af0d031faf807272d. Both receipts mark source_uncommitted=true; the ON/OFF pair differs in STRATA_PREFILL_NATIVE_DEQUANT_BATCH (1/0). They are paired diagnostic receipts, not a committed caller qualification.
+
+Receipt identity and result
+
+- OFF record: xe-native-dequant-prefill-model-root-v6/n64-g16-off/record.json, SHA256 b3041c64d43bcbf5d558e3faeac56b6102c8706a161b5a1742d05b1065364744.
+- ON record: xe-native-dequant-prefill-model-root-v6/n64-g16-on/record.json, SHA256 e77dea4730644e54a5746f3a9cec4dde1f3f4252dbddf34df184a7e8011e1752.
+- Both are passed/complete for the diagnostic protocol, saw READY and DONE, closed normally with QUIT and exit code 0, ran the same 64-token prompt/63 batched positions and generated 16 tokens. Their output token IDs match each other; ON also records equality against the strict-16 greedy-T and selected-LP5 reference. These narrow checks do not qualify model quality, full 262144 context, or performance. Both set performance_eligible=false and full262144_qualified/full_model_quality_qualified=false.
+- Both transfer censuses contain the same 48 routed layer rows and identical per-layer routing and H2D geometry. Joined on layer, all 48 OFF active_experts values equal ON logical_experts; total logical/active experts are 7,063 and nonresident occurrences 6,951. Rows each cover 63 tokens, offsets 0, layers 0–47, routed rows total 30,240. This is a direct same-input routing join, not a performance inference.
+
+What ON actually groups
+
+OFF returns 7,063 individual GU and 7,063 individual Down wrapper calls. ON's old individual-wrapper counters are zero, while its 48-row group census records, independently per axis, 6,260 normally admitted group calls covering 7,063 logical experts, zero declined calls and zero fallback experts. Thus the aggregate mean coverage per admitted call is 7,063/6,260 = 1.128 experts for GU and Down. This is a modest call-count reduction of 803 per axis (11.36% from the OFF individual count), not evidence that most batches contain multiple experts: individual windows are not logged. With API capacity 16 and no declines, the aggregate excess of 803 covered experts implies at least 54 multi-expert admissions and at most 803, but does not establish their lengths or distribution. Do not label 16 as the actual width.
+
+ON recorded 6,260 flushes and 5,794 held-reuse flushes (92.6%), plus 6,951 released slots. Those counters describe flush/release causes at layer scope. They support the source explanation that slot reuse often closes windows on this routed STAGE8 case; they do not reveal how many experts each individual flush carried. The per-layer logical total equals GU and Down covered total for all 48 rows; no axis fell back. Census metadata explicitly labels units as host normal-return admissions/logical expert coverage, window validation as aggregate bounds only, and performance inference false. It also does not independently prove GPU completion.
+
+The N64 run takes the routed path: 63 actual batched positions, prefill ring request 8, and active/nonresident expert counts above. It is not a proxy for the 32K path, whose existing PASS receipt is mostly full_nonresident_stream and has six chunks, including a 2,047-position tail.
+
+The existing 32K counts PASS is xe-source-llvm-census32k-root-v3/counts/record.json, SHA256 d705ee299d5f4e873f486647564180165a71980a41e4c3225ea6d1485183436f. It is a 32,768-token, 32,767-batched-position run with prefill chunk 6,144, six chunks, 121,742.1 ms diagnostic prefill, and 136,846 individual GU plus 136,846 individual Down wrapper returns. Its route census includes 137,407 active expert occurrences and 136,574 nonresident occurrences; H2D accounting is 144,639 requests/295,956,300,800 logical bytes. This is an OFF-era baseline receipt (group fields absent); it cannot say how the v6 caller batches 32K. It passes its existing counts/model protocol but performance_eligible and full quality are false.
+
+What a 32K ON review still needs
+
+A 32K ON receipt must re-establish the unchanged six-chunk routing/H2D counts and strict output/selected-logprob result while capturing the ON group census for every layer/chunk. In particular, report group admissions, declines, covered and fallback experts separately for GU and Down; check per-axis coverage plus fallback against the logical expanded-expert total; account for tail/skip flushes and held-slot reuse; and preserve the per-row bounds and capture-validity checks. Full-stream and routed phases need separate interpretation. For this v6 caller, a normal group-call return means submission only, and the aggregate observer does not report individual group sizes or independently establish device completion. A successful small N64 pair cannot fill these 32K coverage and lifetime gates.
+
+Performance claims remain separate. The previous service-bound report's component timing is from an earlier standalone API component experiment (resident inputs, n=1/8/16), not measured time inside v6 model prefill. The fixed v2 API source modifies pointer selection within two group kernels, not the prefill caller; current v6's uncommitted prefill source pin is a distinct caller revision. Neither the older component medians nor the old 32K OFF 269.159 t/s reference can be treated as ON latency, projected saving, or evidence of a win. v6 N64 diagnostic prompt times are 4,939.9 ms OFF and 4,744.5 ms ON, but each is a single short diagnostic and both receipts disqualify performance; no performance conclusion follows.
+
+Relevant prior records:
+- research-20261009/research-native-batch-prefill-service-bound-v1.txt: prior 32K OFF and old standalone component bounds; explicitly no model-caller attribution.
+- research-20261009/research-native-batch-compiled-call-path-v1.txt: source-derived batching admission and routed/full-stream lifetime bounds; its individual-window caveat remains applicable.
+- research-20261009/implementation-xe-native-dequant-batch-census-observer-v2.txt: aggregate census observer limitations.
+- research-20261009/implementation-xe-native-dequant-group-api-v2.txt: API v2 source delta and component qualification boundary.
+
+No artifacts were produced or deleted by this review. Main's next required evidence is a fresh, source-pinned 32K ON receipt with route/group coverage and existing correctness/lifetime gates; only after that can separately controlled service timing be considered.

@@ -1,0 +1,53 @@
+# Ryzen 5600X decode pool: next decision measurement
+
+Date: 2026-10-11. Read-only synthesis of the committed decode phase and caller/route census reports, plus primary implementation documentation. No source/live checkout inspection, code execution, AST/import, build, test, benchmark, CPU/GPU/device/service/profiler action, cleanup or Git operation was performed. No measured improvement is claimed. Only this report was written.
+
+## Decision
+
+Do not choose a new AVX2 row-kernel rewrite from the current data. The best next adoption decision is one bounded, clean model comparison of the already exposed `--pool-tasks 6` setting against `--pool-tasks 0` (auto), using the same diagnostic engine and its existing `STRATA_DECODE_TIMING` counters, on matched fresh-first decode requests at a qualified >=32,768 actual batched input positions. The 6-task setting is an existing candidate, but its completed 32K receipts are diagnostic-only and do not compare it to auto under a performance-eligible lifecycle; this proposed experiment is specifically a paired decision test, not another open-ended task-count sweep. Use a small fixed set of paired fresh processes (the past whole-model candidate comparisons use six process pairs) and preserve normal serving/outcome gates. A pass requires a repeatable improvement in physical request decode wall per emitted token with a paired interval excluding zero and no correctness, fault, or lifecycle regression; phase values explain the outcome but cannot substitute for it. If the interval crosses zero, retain auto and stop pursuing task=6 on this evidence.
+
+Why this is the only current one-shot decision candidate: the phase diagnostic has actually exercised task=6, while the default task-0 diagnostic gives a comparable family of phase counters, but they are not an eligible same-build paired performance comparison. There is no need to add another timer or invent a kernel factor to make the first adoption decision. If the task=6 versus auto comparison is negative or unresolved, a later per-worker service join may guide a different question; it should not be mixed into this decision test.
+
+## What is measured and what is still unknown
+
+The phase report and its source audit (R204, `round204-decode-pool-existing-counter-critical-path-seam.txt`) give the following exact interpretations:
+
+- `CPU` in the outer verifier/callback timing is host elapsed time around dispatch/pool/remote completion, not CPU core-time.
+- `GU` and `Down` are elapsed host spans around `run_phase`; each includes park/wakeup, publication, worker plus caller draining, completion wait and re-park. GPU work may overlap those spans.
+- `FF-quant` is the serial caller-thread quantization of the intermediate activation before Down. It is separate from input activation quantization.
+- The four task-6 phase requests reported GU 111.743–116.660 ms/window, FF-quant 0.349–0.675 ms/window, Down 40.617–43.898 ms/window. They establish that the phase clocks run and where elapsed phase spans sit in those requests. They do not establish CPU active time or clean task-6 performance.
+- A separate task-0 32,769-position receipt summarized fresh-first `CPU` callback at 138.41 ms/window, GU 98.911, FF-quant 0.332, Down 39.147 ms/window; restored requests had CPU 145.04–145.81, GU 104.009–104.159, FF-quant 0.330–0.363, Down 40.493–41.448. Whole window was 174.98–178.38 ms, with 2.37–2.56 emitted tokens/window. This receipt is a diagnostic, not full-lifecycle/performance qualified. The task-6 vs task-0 numbers are from different diagnostic receipts; they are not a controlled treatment effect and must not be compared as if paired.
+- In task-6, GU + FF-quant + Down sum to 153.823–160.918 ms/window, while a distinct fresh-first CPU-dispatch counter averaged 123.7767 ms/window in its own receipt. Their mismatch confirms that these are different scopes; do not subtract them, sum them into window time, or convert them to an exclusive CPU share.
+
+The task-6 caller census (R282) recorded actual route exposure for its diagnostic: GU IQ2_S/type22 NT1 11,184–12,476 jobs, NT2 2,945–3,487 jobs (5,890–6,974 expert-token rows); Down IQ4_NL/type20 NT1 21,761–24,493 jobs, NT2 5,583–6,625 jobs (11,166–13,250 rows). NT3 and NT4 were absent; maximum observed NT was 2. These are logical CPU-miss route jobs/rows, including speculative work later rejected, not worker task fragments, executed CPU time, physical bytes, or committed useful rows. GU and Down counts are marginal; the per-layer pair join is not recorded. This task-6 census has a different diagnostic source/binary and is not joined to default task-0 phase time.
+
+The closed task-0 phase receipt instead has aggregate callback/job exposure only (about 31–32 CPU experts and 37 entries per layer-window); it has no type/NT histogram. The task-6 histogram must not be used to annotate task-0 time. The exact NT/type/branch service, worker claims, thread CPU time, per-worker tail, wait/spin, cache/DRAM bytes, and exclusive critical path are all unobserved. CPU PMU access was previously unavailable, so logical expert bytes and a separate RAM stream cannot stand in for physical kernel traffic.
+
+The existing actual-weight component capacity data for `(GU22, Down20)` measures synthetic prequantized activations with five workers plus host; e.g. streaming-192 pool service medians of 90.978, 54.215, 42.931 and 38.738 microseconds per expert-token for NT1–4. These are a component fixture, not current model route rate, not measured request service, and not a CPU/DRAM roof. Since the route census reaches NT2 only, NT3/4 fixture rows cannot be weighted into serving performance.
+
+## Why no other candidate is selected
+
+The prior reports already screened generic task balancing, NT-weighted row boundaries, per-worker telemetry, AVX2 panel GEMM, paired GU, predecode cache, gather, prefetch, compiler substitution, index-spread changes and Q2/format-specific row experiments. R104 found no new external NT1 IQ2_S mechanism; R282's conditional gathered IQ2_S GU NT2 idea is deliberately not repeated here because the present evidence does not show that NT2 kernel service is the exposed critical path. R284's detailed per-worker CPU/wall instrumentation remains a later diagnostic contract, not a performance result and not the next change to adopt.
+
+External primary-source scope check:
+
+- oneDNN documents MatMul and batched MatMul for supported conventional data types and layouts; it does not document a drop-in kernel for GGUF IQ2_S's indexed grid representation or IQ4_NL's nonlinear lookup blocks. Replacing these routes with oneDNN would change format/dataflow and is not a one-measurement, exact-path candidate. See [oneDNN MatMul documentation](https://www.intel.com/content/www/us/en/docs/onednn/developer-guide-reference/2023-1/matmul.html).
+- Intel LLM Scaler's official repository describes a vLLM-based GenAI solution targeting Arc Pro B60/B70 GPUs, with quantization and MoE model support. That is a distinct GPU/runtime stack; it supplies no Ryzen 5600X local AVX2 CPU expert service implementation matching this GGUF path. See [Intel LLM Scaler](https://github.com/intel/llm-scaler).
+- The pinned GGML AVX2 quantized CPU source is the baseline/fallback implementation used by the path, not an independent alternative. KTransformers' prior reviewed MXFP4/BF16 AVX2 grouped implementation uses a different format and host/workload, as already recorded in R104.
+
+These sources inform applicability only; no external implementation's speed is transferred to this 5600X.
+
+## Single comparison protocol and stop rule
+
+Use one source/binary, one unchanged environment and model/context state recipe, with order-balanced auto vs six-task arms and fresh independent processes. Hold the pool workers, affinity, cache, KV, speculative settings, output length, and all other arguments fixed. Keep fresh-first separate from restored-continuation decode; use the actual-batched-position floor and output/correctness/lifecycle gates before accepting performance. At each completed request require exactly one request timing line and one pool-phase line with the same window denominator; retain raw values, stderr, process-level results and source/binary identities. The primary outcome is request wall divided by emitted tokens, not a sum of worker/phase counters. Report paired process-level change and interval.
+
+Decision: adopt `--pool-tasks 6` only if the paired physical output-rate interval shows a repeatable positive change and all gates pass. Otherwise leave auto unchanged; a lower GU/Down phase span alone is insufficient, and a noisy/cross-zero interval is unresolved, not equivalence. No hardware-level CPU/memory explanation follows from this comparison. If it resolves negative or unclear, then, and only then, use the R284-style per-worker CPU/wall join to distinguish useful service from task/barrier tail before considering any kernel candidate.
+
+## Evidence references
+
+- R204 `round204-decode-pool-existing-counter-critical-path-seam.txt`: measured task-6 phase lines, separate task-0 phase record, counter semantics, strict wall-vs-phase limits and lifecycle status.
+- R282 `round282-decode-cpu-capacity-current-service-join-gaps.txt`: task-6 route histogram, task-0 missing format/NT join, exact route meanings and component capacity scope.
+- R284 `round284-default-task0-decode-service-instrumentation-contract.txt`: per-worker CPU/wall/service joins and why existing phase spans cannot expose imbalance.
+- R286 `round286-current-native-cpu-service-capacity-fixture-join.txt`: exact 22/20 fixture limits, NT branch eligibility and denominator constraints.
+- Earlier external screens R25, R45, R104, R117, R147, R162, R213, R224 and R270; no candidate from those is presented as new or measured here.
+- Latest supplied catalog: `report-registry-v130.json`, read as supplied for research status; this report makes no registry edit.

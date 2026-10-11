@@ -1,0 +1,934 @@
+{
+  "active": false,
+  "complete": true,
+  "passed": true,
+  "commands": [
+    {
+      "label": "expanded-protocol-fixtures",
+      "argv": [
+        "/usr/bin/python3",
+        "-c",
+        "import json\nimport protocol, fixtures\nimport run_root\npositive=[]; negative=[]\nfor n in (64,2049,32768):\n    good=fixtures.protocol_case(n)\n    assert protocol.validate(good,n=n)['generated_tokens']==16\n    positive.append(dict(n=n,kind='complete_protocol'))\n    assert protocol.validate(fixtures.protocol_case(n,1,'stop'),n=n)['generated_tokens']==1\n    positive.append(dict(n=n,kind='normally_completed_early_EOS_not_strict16'))\n    trace=fixtures.trace_case(n)\n    assert len(protocol.validate_trace(trace,n=n)['chunk_start_positions'])==len(fixtures.GEOMETRY[n]['offsets'])\n    positive.append(dict(n=n,kind='exact_trace_geometry'))\n    cases=[good[:-1],good+[good[-1]],good+['ERR failed'],good+['T 123'],\n           [x for x in good if not x.startswith('PP ')],\n           [x.replace('T 123','T 248320') for x in good],\n           [x.replace('LP -0.1','LP nan') for x in good],\n           [x.replace('50000','nan') for x in good]]\n    for index,bad in enumerate(cases):\n        try: protocol.validate(bad,n=n)\n        except (ValueError,IndexError): negative.append(dict(n=n,kind='protocol',case=index))\n        else: raise AssertionError(('malformed protocol accepted',n,index))\n    for index,bad in enumerate([trace+trace,trace.replace('of '+str(n-1),'of '+str(n)),trace.replace('chunk 0','chunk 1')]):\n        try: protocol.validate_trace(bad,n=n)\n        except ValueError: negative.append(dict(n=n,kind='trace',case=index))\n        else: raise AssertionError(('malformed trace accepted',n,index))\nfor n in (True,65):\n    try: protocol.validate(fixtures.protocol_case(64),n=n)\n    except ValueError: negative.append(dict(n=n,kind='invalid_explicit_N'))\n    else: raise AssertionError('invalid N accepted')\nassert len(positive)==9 and len(negative)==35\nimport ast, copy, hashlib, os, re, subprocess, sys, time\nfrom pathlib import Path\nm=run_root.m\nextra=[]\nentry=dict(pid=os.getpid(),direct_identity=m.identity(os.getpid()))\nbudget=dict(bytes=0)\nsnap=run_root.mapping_snapshot(entry,lambda:None,budget)\nassert snap['complete'] and snap['selected_rows_stable'] and len(snap['files'])>=2\nfor path,value in snap['files'].items():\n    assert hashlib.sha256(Path(path).read_bytes()).hexdigest()==value['sha256']\n    out=subprocess.run(['/usr/bin/readelf','-n',value['canonical_path']],env=run_root.BASE,capture_output=True,text=True,timeout=10,check=True)\n    ids=set(re.findall(r'Build ID: ([0-9a-f]+)',out.stdout))\n    assert ids=={value['elf_build_id']}\nextra.append(dict(case='actual_live_CPU_maps_files_hash_build_id',files=snap['files'],snapshot_bytes=budget['bytes']))\npartial=[]\nbad=copy.deepcopy(entry);bad['direct_identity']['start_ticks']+=1\ntry: run_root.mapping_snapshot(bad,lambda:None,dict(bytes=0),lambda x:partial.append(copy.deepcopy(x)))\nexcept RuntimeError as e: assert 'PID/start identity' in str(e)\nelse: raise AssertionError('wrong PID identity accepted')\nassert partial and not partial[-1]['complete'] and partial[-1]['failed_stage']=='initial_maps'\nextra.append(dict(case='wrong_start_ticks_rejected_partial_retained',partial=partial[-1]))\noriginal_identity=m.identity\ntry:\n    m.identity=lambda pid:dict(original_identity(pid),state='Z')\n    try: run_root.mapping_snapshot(entry,lambda:None,dict(bytes=0))\n    except RuntimeError as e: assert 'PID/start identity' in str(e)\n    else: raise AssertionError('zombie snapshot accepted')\nfinally: m.identity=original_identity\nextra.append(dict(case='injected_zombie_state_rejected'))\npartial=[]; limited=dict(bytes=0)\ndef retain_then_limit(value):\n    partial.append(copy.deepcopy(value))\n    if value['files'] and not value.get('error'): limited['bytes']=4<<30\ntry: run_root.mapping_snapshot(entry,lambda:None,limited,retain_then_limit)\nexcept RuntimeError as e: assert 'aggregate mapped file read byte budget' in str(e)\nelse: raise AssertionError('mapping budget not enforced')\nassert partial[-1]['files'] and not partial[-1]['complete'] and partial[-1]['failed_path'] and partial[-1]['error']\nextra.append(dict(case='file_budget_rejected_completed_partial_files_retained',partial=partial[-1]))\noriginal_selection=run_root.mapping_selection; calls=0\ntry:\n    def changed_selection(e,p):\n        global calls\n        calls+=1\n        data,lines,selected=original_selection(e,p)\n        if calls==2:\n            selected=copy.deepcopy(selected)\n            key=next(iter(selected));selected[key][0][0]='changed-selected-address'\n        return data,lines,selected\n    run_root.mapping_selection=changed_selection\n    try: run_root.mapping_snapshot(entry,lambda:None,dict(bytes=0))\n    except RuntimeError as e: assert 'selected mapped rows stable' in str(e)\n    else: raise AssertionError('mapping change accepted')\nfinally: run_root.mapping_selection=original_selection\nextra.append(dict(case='injected_selected_mapping_change_rejected'))\nroot=Path(sys.argv[1]);candidate=Path(run_root.__file__)\nmodel_root=run_root.B/'xe-native-dequant-prefill-model-root-v4'/'n64-g16-off'\nassert not model_root.exists()\nfor explicit in (False,True):\n    argv=['/usr/bin/python3',str(candidate),'--input-tokens','64','--group','16','--batch','off']\n    if explicit: argv+=['--qualification-sha256',m.sha(candidate.with_name('qualification.pending.json'))]\n    reject=subprocess.run(argv,env=dict(run_root.BASE,PYTHONDONTWRITEBYTECODE='1'),capture_output=True,text=True,timeout=10)\n    assert reject.returncode==1 and not model_root.exists()\n    assert ('no pending launch' if explicit else 'manifest hash') in reject.stderr\n    extra.append(dict(case='pending_qualification_before_output_rejected',explicit_pending_hash=explicit,exit_code=reject.returncode,stderr=reject.stderr[-2048:]))\ntree=ast.parse(candidate.read_text())\nmain=next(n for n in tree.body if isinstance(n,ast.FunctionDef) and n.name=='main')\nwith_body=next(n for n in main.body if isinstance(n,ast.With)).body\nrun_fn=next(n for n in with_body if isinstance(n,ast.FunctionDef) and n.name=='run')\ntry_body=next(n for n in with_body if isinstance(n,ast.Try)).body\ninteraction_fn=next(n for n in try_body if isinstance(n,ast.FunctionDef) and n.name=='interaction')\nfor post in (False,True):\n    case_out=root/('owned-quit-after-DONE' if post else 'owned-quit-after-READY');case_out.mkdir()\n    r=dict(gen_send_attempted=post,mapping_snapshots={'after_gen':dict(complete=post)})\n    owner=m.Owner(case_out,lambda:None)\n    def model_interaction(io,e):\n        assert io.line(5)=='READY 262144';r['ready_seen']=True\n        if post:\n            assert io.line(5)=='DONE stop';r['request_done_seen']=True\n        raise ValueError('injected primary gate failure')\n    def forbidden_capture(*a):raise AssertionError('no unexpected capture')\n    ns=dict(m=m,r=r,owner=owner,begin=time.monotonic(),time=time,W=candidate.parent,BASE=run_root.BASE,\n            model_interaction=model_interaction,capture_maps=forbidden_capture,save=lambda:None)\n    fragment=ast.Module(body=[copy.deepcopy(run_fn),copy.deepcopy(interaction_fn)],type_ignores=[])\n    exec(compile(ast.fix_missing_locations(fragment),str(candidate),'exec'),ns)\n    child=\"import sys\\nprint('READY 262144',flush=True)\\n\"+(\"print('DONE stop',flush=True)\\n\" if post else '')+\"command=sys.stdin.readline();sys.exit(0 if command=='QUIT\\\\n' else 7)\\n\"\n    try: ns['run']('model',['/usr/bin/python3','-u','-c',child],wall=15,interaction=ns['interaction'])\n    except RuntimeError as e: assert 'injected primary gate failure' in str(e)\n    else: raise AssertionError('primary failure lost')\n    assert r['model_normal_close'] and not r['model_close']['forced']\n    assert all(m.closed(c) and c['exit_code']==0 for c in owner.commands)\n    assert r['model_close']['quit_send_outcome']=='sent' and r['model_close']['quit_exit_outcome']=='exit observed'\n    extra.append(dict(case='actual_owned_CPU_child_QUIT_preserves_primary_failure',post_DONE=post,result=r,commands=owner.commands))\nprint(json.dumps(dict(passed=True,positive_cases=positive,negative_cases=negative,extra_cases=extra,\n    controller_imported_without_main=True,gpu_executed=False,\n    limitations='CPU protocol, actual host maps, injected observer failures, and actual owned CPU child QUIT cases only; no GPU/model numerical or performance qualification.')))\n",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-native-dequant-prefill-model-controller-cpu-root-v4"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-11T11:17:48.499720+00:00",
+      "wall_seconds": 90,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 136135,
+          "start_ticks": 6623262,
+          "sid": 136135,
+          "pgid": 136135
+        },
+        {
+          "pid": 136142,
+          "start_ticks": 6623282,
+          "sid": 136135,
+          "pgid": 136135
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 66232.621220265,
+      "pid": 136135,
+      "spawn_return_monotonic": 66232.622850764,
+      "direct_identity": {
+        "pid": 136135,
+        "state": "R",
+        "ppid": 136133,
+        "pgid": 136135,
+        "sid": 136135,
+        "start_ticks": 6623262,
+        "rss_bytes": 573440
+      },
+      "peak_live_owned_identities": 2,
+      "peak_session_rss_bytes": 44974080,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-11T11:17:49.437904+00:00",
+      "elapsed_seconds": 0.9379565330018522,
+      "logs": {
+        "expanded-protocol-fixtures.stdout": {
+          "bytes": 12156,
+          "sha256": "2cf9cfe161ef7a0806832c5243b9fd36d6ec3dac85571855eb834d812f06958a"
+        },
+        "expanded-protocol-fixtures.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "invalid-cli-0",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-native-dequant-prefill-model-controller-source-v6/run_root.py",
+        "--input-tokens",
+        "64",
+        "--group",
+        "16",
+        "--batch",
+        "on"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-11T11:17:49.438612+00:00",
+      "wall_seconds": 90,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 136180,
+          "start_ticks": 6623356,
+          "sid": 136180,
+          "pgid": 136180
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 66233.560407003,
+      "pid": 136180,
+      "spawn_return_monotonic": 66233.562024047,
+      "direct_identity": {
+        "pid": 136180,
+        "state": "R",
+        "ppid": 136133,
+        "pgid": 136180,
+        "sid": 136180,
+        "start_ticks": 6623356,
+        "rss_bytes": 458752
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 13291520,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 2,
+      "finished_utc": "2026-10-11T11:17:49.605651+00:00",
+      "elapsed_seconds": 0.16651474000536837,
+      "logs": {
+        "invalid-cli-0.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "invalid-cli-0.stderr": {
+          "bytes": 340,
+          "sha256": "632730f050033c69545cbf2d4a25c30eb068f82c3af67f0d3afcd5a48661c9b2"
+        }
+      }
+    },
+    {
+      "label": "invalid-cli-1",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-native-dequant-prefill-model-controller-source-v6/run_root.py",
+        "--input-tokens",
+        "64",
+        "--group",
+        "16",
+        "--batch",
+        "off",
+        "--reference",
+        "/tmp/unused-no-open"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-11T11:17:49.606517+00:00",
+      "wall_seconds": 90,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 136188,
+          "start_ticks": 6623372,
+          "sid": 136188,
+          "pgid": 136188
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 66233.728311569,
+      "pid": 136188,
+      "spawn_return_monotonic": 66233.729940064,
+      "direct_identity": {
+        "pid": 136188,
+        "state": "R",
+        "ppid": 136133,
+        "pgid": 136188,
+        "sid": 136188,
+        "start_ticks": 6623372,
+        "rss_bytes": 458752
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 15495168,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 2,
+      "finished_utc": "2026-10-11T11:17:49.778125+00:00",
+      "elapsed_seconds": 0.17108787699544337,
+      "logs": {
+        "invalid-cli-1.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "invalid-cli-1.stderr": {
+          "bytes": 340,
+          "sha256": "632730f050033c69545cbf2d4a25c30eb068f82c3af67f0d3afcd5a48661c9b2"
+        }
+      }
+    },
+    {
+      "label": "invalid-cli-2",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-native-dequant-prefill-model-controller-source-v6/run_root.py",
+        "--input-tokens",
+        "65",
+        "--group",
+        "16",
+        "--batch",
+        "off"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-11T11:17:49.779035+00:00",
+      "wall_seconds": 90,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 136206,
+          "start_ticks": 6623390,
+          "sid": 136206,
+          "pgid": 136206
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 66233.900898317,
+      "pid": 136206,
+      "spawn_return_monotonic": 66233.902638132,
+      "direct_identity": {
+        "pid": 136206,
+        "state": "R",
+        "ppid": 136133,
+        "pgid": 136206,
+        "sid": 136206,
+        "start_ticks": 6623390,
+        "rss_bytes": 450560
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 14733312,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 2,
+      "finished_utc": "2026-10-11T11:17:49.953872+00:00",
+      "elapsed_seconds": 0.17426962600438856,
+      "logs": {
+        "invalid-cli-2.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "invalid-cli-2.stderr": {
+          "bytes": 351,
+          "sha256": "9f83efa3679a3dc20838b7e02097d16f93f0000bf5f366c4bb9ddabd2e978f3e"
+        }
+      }
+    },
+    {
+      "label": "invalid-cli-3",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-native-dequant-prefill-model-controller-source-v6/run_root.py",
+        "--input-tokens",
+        "64",
+        "--group",
+        "65",
+        "--batch",
+        "off"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-11T11:17:49.955005+00:00",
+      "wall_seconds": 90,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 136211,
+          "start_ticks": 6623407,
+          "sid": 136211,
+          "pgid": 136211
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 66234.076960677,
+      "pid": 136211,
+      "spawn_return_monotonic": 66234.078633957,
+      "direct_identity": {
+        "pid": 136211,
+        "state": "R",
+        "ppid": 136133,
+        "pgid": 136211,
+        "sid": 136211,
+        "start_ticks": 6623407,
+        "rss_bytes": 450560
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 15360000,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 2,
+      "finished_utc": "2026-10-11T11:17:50.125065+00:00",
+      "elapsed_seconds": 0.1693756239983486,
+      "logs": {
+        "invalid-cli-3.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "invalid-cli-3.stderr": {
+          "bytes": 349,
+          "sha256": "9723ed5e280bcaff0c297937cacd5391ec7f39d5ed0d737116213f543344508d"
+        }
+      }
+    }
+  ],
+  "started_utc": "2026-10-11T11:17:48.496281+00:00",
+  "controller_sha256": "407d46566dfa850351b45b563013ec968e56ad2d57723d0e4cc49c17ac730a96",
+  "owner_sha256": "a29d8257eecc77c4ad9ae6671d092b56f4c09a35c4247c125fed3a8c8bc1f95f",
+  "source_pins": {
+    "batch_census.py": "ce794be37f2aa670ba446cd8894ca9394a1be6a8b3a77f467cf77076d0d6f7e3",
+    "fixtures.py": "706274e56ae8dbc524142688336f9053bf786cd46c2436a4434f49b588fd6a08",
+    "hash_inputs.py": "25d21cfb5d9977fcabe7e1b036a7959bf8ca99d3ce797c44cacc6e56ef387df2",
+    "protocol.py": "f323da52a9f688c5d08aa45c9b0ab037f77e99d40ef577ec5ec2cd42974a6aa1",
+    "route_census.py": "95c511a6ebb2feac7f5a302ede193d6b9ef34c77055d2f959e76bb5e6bb1819e",
+    "run_root.py": "4784bb63fd1c34e46ac93e1ac6bd06c1217030f70241a0b8e43d840fa1e63862",
+    "runtime.py": "e3827641ab38ffa0d60db92153c614e7e4911c48b67f5bd841617272dd7d2fd0",
+    "timer_overhead.py": "13b62f3cc85c3b9b49e72c3e1838f7248d5c2530d3357c7a45a81dbdf439ac3e",
+    "transfer_ledger.py": "7e5e37467208c229eeda3c7367fa16f506c11fe502ad93b28bbcc70fa4e9ab6d"
+  },
+  "gpu_executed": false,
+  "model_executed": false,
+  "scope": "Actual protocol/trace, CLI and safe module import qualification; unchanged helper identities, not all runtime/fault gates",
+  "raw_log_budget_bytes": 67108864,
+  "whole_wall_budget_seconds": 180,
+  "main_review_sha256": "6c7181259bcb4c829cf63aaad96efe3756284d343bf9bbf23258b7bd32ebac2f",
+  "observer_qualification_sha256": "5924d09b3be32ca5c11f325134b5f2f69402ca69b98c77daffed2ad951f41b5a",
+  "fixtures": {
+    "passed": true,
+    "positive_cases": [
+      {
+        "n": 64,
+        "kind": "complete_protocol"
+      },
+      {
+        "n": 64,
+        "kind": "normally_completed_early_EOS_not_strict16"
+      },
+      {
+        "n": 64,
+        "kind": "exact_trace_geometry"
+      },
+      {
+        "n": 2049,
+        "kind": "complete_protocol"
+      },
+      {
+        "n": 2049,
+        "kind": "normally_completed_early_EOS_not_strict16"
+      },
+      {
+        "n": 2049,
+        "kind": "exact_trace_geometry"
+      },
+      {
+        "n": 32768,
+        "kind": "complete_protocol"
+      },
+      {
+        "n": 32768,
+        "kind": "normally_completed_early_EOS_not_strict16"
+      },
+      {
+        "n": 32768,
+        "kind": "exact_trace_geometry"
+      }
+    ],
+    "negative_cases": [
+      {
+        "n": 64,
+        "kind": "protocol",
+        "case": 0
+      },
+      {
+        "n": 64,
+        "kind": "protocol",
+        "case": 1
+      },
+      {
+        "n": 64,
+        "kind": "protocol",
+        "case": 2
+      },
+      {
+        "n": 64,
+        "kind": "protocol",
+        "case": 3
+      },
+      {
+        "n": 64,
+        "kind": "protocol",
+        "case": 4
+      },
+      {
+        "n": 64,
+        "kind": "protocol",
+        "case": 5
+      },
+      {
+        "n": 64,
+        "kind": "protocol",
+        "case": 6
+      },
+      {
+        "n": 64,
+        "kind": "protocol",
+        "case": 7
+      },
+      {
+        "n": 64,
+        "kind": "trace",
+        "case": 0
+      },
+      {
+        "n": 64,
+        "kind": "trace",
+        "case": 1
+      },
+      {
+        "n": 64,
+        "kind": "trace",
+        "case": 2
+      },
+      {
+        "n": 2049,
+        "kind": "protocol",
+        "case": 0
+      },
+      {
+        "n": 2049,
+        "kind": "protocol",
+        "case": 1
+      },
+      {
+        "n": 2049,
+        "kind": "protocol",
+        "case": 2
+      },
+      {
+        "n": 2049,
+        "kind": "protocol",
+        "case": 3
+      },
+      {
+        "n": 2049,
+        "kind": "protocol",
+        "case": 4
+      },
+      {
+        "n": 2049,
+        "kind": "protocol",
+        "case": 5
+      },
+      {
+        "n": 2049,
+        "kind": "protocol",
+        "case": 6
+      },
+      {
+        "n": 2049,
+        "kind": "protocol",
+        "case": 7
+      },
+      {
+        "n": 2049,
+        "kind": "trace",
+        "case": 0
+      },
+      {
+        "n": 2049,
+        "kind": "trace",
+        "case": 1
+      },
+      {
+        "n": 2049,
+        "kind": "trace",
+        "case": 2
+      },
+      {
+        "n": 32768,
+        "kind": "protocol",
+        "case": 0
+      },
+      {
+        "n": 32768,
+        "kind": "protocol",
+        "case": 1
+      },
+      {
+        "n": 32768,
+        "kind": "protocol",
+        "case": 2
+      },
+      {
+        "n": 32768,
+        "kind": "protocol",
+        "case": 3
+      },
+      {
+        "n": 32768,
+        "kind": "protocol",
+        "case": 4
+      },
+      {
+        "n": 32768,
+        "kind": "protocol",
+        "case": 5
+      },
+      {
+        "n": 32768,
+        "kind": "protocol",
+        "case": 6
+      },
+      {
+        "n": 32768,
+        "kind": "protocol",
+        "case": 7
+      },
+      {
+        "n": 32768,
+        "kind": "trace",
+        "case": 0
+      },
+      {
+        "n": 32768,
+        "kind": "trace",
+        "case": 1
+      },
+      {
+        "n": 32768,
+        "kind": "trace",
+        "case": 2
+      },
+      {
+        "n": true,
+        "kind": "invalid_explicit_N"
+      },
+      {
+        "n": 65,
+        "kind": "invalid_explicit_N"
+      }
+    ],
+    "extra_cases": [
+      {
+        "case": "actual_live_CPU_maps_files_hash_build_id",
+        "files": {
+          "/usr/lib/x86_64-linux-gnu/libc.so.6": {
+            "path": "/usr/lib/x86_64-linux-gnu/libc.so.6",
+            "canonical_path": "/usr/lib/x86_64-linux-gnu/libc.so.6",
+            "sha256": "3a15d66867d83762c7f2f1e37359cb8f6c5743edb369c65285cb0b1c4f7498bf",
+            "stat": {
+              "device": 29,
+              "inode": 4897558,
+              "bytes": 2129424,
+              "mtime_ns": 1788444912000000000,
+              "ctime_ns": 1790581622389680056
+            },
+            "elf_build_id": "a4a7992a8e66555c8141ab2a08a8465ff6e0ea65",
+            "mapping_rows": 5,
+            "mapped_rows": [
+              "76762f7db000-76762f803000 r--p 00000000 00:1d 4897558 /usr/lib/x86_64-linux-gnu/libc.so.6",
+              "76762f803000-76762f98c000 r-xp 00028000 00:1d 4897558 /usr/lib/x86_64-linux-gnu/libc.so.6",
+              "76762f98c000-76762f9db000 r--p 001b1000 00:1d 4897558 /usr/lib/x86_64-linux-gnu/libc.so.6",
+              "76762f9db000-76762f9df000 r--p 001ff000 00:1d 4897558 /usr/lib/x86_64-linux-gnu/libc.so.6",
+              "76762f9df000-76762f9e1000 rw-p 00203000 00:1d 4897558 /usr/lib/x86_64-linux-gnu/libc.so.6"
+            ],
+            "original_runtime": false
+          },
+          "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2": {
+            "path": "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+            "canonical_path": "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+            "sha256": "c20a2dc8917c755f02b94049356320fe1f62ac7d9f8994731f807d9df39302da",
+            "stat": {
+              "device": 29,
+              "inode": 4897554,
+              "bytes": 236616,
+              "mtime_ns": 1788444912000000000,
+              "ctime_ns": 1790581622387680043
+            },
+            "elf_build_id": "0d77dbd4379bf0b5af3e05be7fb6af1e4cea7c96",
+            "mapping_rows": 5,
+            "mapped_rows": [
+              "76762fb48000-76762fb49000 r--p 00000000 00:1d 4897554 /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+              "76762fb49000-76762fb74000 r-xp 00001000 00:1d 4897554 /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+              "76762fb74000-76762fb7e000 r--p 0002c000 00:1d 4897554 /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+              "76762fb7e000-76762fb80000 r--p 00036000 00:1d 4897554 /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+              "76762fb80000-76762fb82000 rw-p 00038000 00:1d 4897554 /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2"
+            ],
+            "original_runtime": false
+          }
+        },
+        "snapshot_bytes": 2367752
+      },
+      {
+        "case": "wrong_start_ticks_rejected_partial_retained",
+        "partial": {
+          "pid": 136135,
+          "start_ticks": 6623263,
+          "files": {},
+          "complete": false,
+          "failed_stage": "initial_maps",
+          "failed_path": null,
+          "error": "RuntimeError('mapping snapshot PID/start identity')"
+        }
+      },
+      {
+        "case": "injected_zombie_state_rejected"
+      },
+      {
+        "case": "file_budget_rejected_completed_partial_files_retained",
+        "partial": {
+          "pid": 136135,
+          "start_ticks": 6623262,
+          "files": {
+            "/usr/lib/x86_64-linux-gnu/libc.so.6": {
+              "path": "/usr/lib/x86_64-linux-gnu/libc.so.6",
+              "canonical_path": "/usr/lib/x86_64-linux-gnu/libc.so.6",
+              "sha256": "3a15d66867d83762c7f2f1e37359cb8f6c5743edb369c65285cb0b1c4f7498bf",
+              "stat": {
+                "device": 29,
+                "inode": 4897558,
+                "bytes": 2129424,
+                "mtime_ns": 1788444912000000000,
+                "ctime_ns": 1790581622389680056
+              },
+              "elf_build_id": "a4a7992a8e66555c8141ab2a08a8465ff6e0ea65",
+              "mapping_rows": 5,
+              "mapped_rows": [
+                "76762f7db000-76762f803000 r--p 00000000 00:1d 4897558 /usr/lib/x86_64-linux-gnu/libc.so.6",
+                "76762f803000-76762f98c000 r-xp 00028000 00:1d 4897558 /usr/lib/x86_64-linux-gnu/libc.so.6",
+                "76762f98c000-76762f9db000 r--p 001b1000 00:1d 4897558 /usr/lib/x86_64-linux-gnu/libc.so.6",
+                "76762f9db000-76762f9df000 r--p 001ff000 00:1d 4897558 /usr/lib/x86_64-linux-gnu/libc.so.6",
+                "76762f9df000-76762f9e1000 rw-p 00203000 00:1d 4897558 /usr/lib/x86_64-linux-gnu/libc.so.6"
+              ],
+              "original_runtime": false
+            }
+          },
+          "complete": false,
+          "failed_stage": "mapped_file",
+          "failed_path": "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+          "map_bytes": 7201,
+          "map_rows": 66,
+          "error": "RuntimeError('aggregate mapped file read byte budget')"
+        }
+      },
+      {
+        "case": "injected_selected_mapping_change_rejected"
+      },
+      {
+        "case": "pending_qualification_before_output_rejected",
+        "explicit_pending_hash": false,
+        "exit_code": 1,
+        "stderr": "Traceback (most recent call last):\n  File \"/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-native-dequant-prefill-model-controller-source-v6/run_root.py\", line 735, in <module>\n    raise SystemExit(main())\n                     ^^^^^^\n  File \"/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-native-dequant-prefill-model-controller-source-v6/run_root.py\", line 187, in main\n    m.require(re.fullmatch('[0-9a-f]{64}', args.qualification_sha256) and\n  File \"/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-llvm-v711-source-v5/direct_owner.py\", line 31, in require\n    raise RuntimeError(message)\nRuntimeError: actual Main exact qualification manifest hash\n"
+      },
+      {
+        "case": "pending_qualification_before_output_rejected",
+        "explicit_pending_hash": true,
+        "exit_code": 1,
+        "stderr": "Traceback (most recent call last):\n  File \"/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-native-dequant-prefill-model-controller-source-v6/run_root.py\", line 735, in <module>\n    raise SystemExit(main())\n                     ^^^^^^\n  File \"/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-native-dequant-prefill-model-controller-source-v6/run_root.py\", line 190, in main\n    m.require(qualification['status'] == 'passed' and qualification['main_reviewed'] is True and\n  File \"/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-llvm-v711-source-v5/direct_owner.py\", line 31, in require\n    raise RuntimeError(message)\nRuntimeError: actual Main qualification, no pending launch\n"
+      },
+      {
+        "case": "actual_owned_CPU_child_QUIT_preserves_primary_failure",
+        "post_DONE": false,
+        "result": {
+          "gen_send_attempted": false,
+          "mapping_snapshots": {
+            "after_gen": {
+              "complete": false
+            }
+          },
+          "ready_seen": true,
+          "primary_model_failure": "ValueError('injected primary gate failure')",
+          "model_failure_phase": "ready_before_gen",
+          "model_close": {
+            "quit_requested": true,
+            "quit_reason": "READY pre-GEN gate failure",
+            "quit_send_outcome": "sent",
+            "quit_exit_outcome": "exit observed",
+            "exit_code": 0,
+            "owner_error": null,
+            "owner_errors": [],
+            "cleanup": [],
+            "normal": true,
+            "forced": false
+          },
+          "model_normal_close": true
+        },
+        "commands": [
+          {
+            "label": "model",
+            "argv": [
+              "/usr/bin/python3",
+              "-u",
+              "-c",
+              "import sys\nprint('READY 262144',flush=True)\ncommand=sys.stdin.readline();sys.exit(0 if command=='QUIT\\n' else 7)\n"
+            ],
+            "environment": {
+              "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+              "HOME": "/home/yayoi",
+              "LANG": "C.UTF-8",
+              "LC_ALL": "C.UTF-8",
+              "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib",
+              "XDG_RUNTIME_DIR": "/run/user/1000"
+            },
+            "started_utc": "2026-10-11T11:17:49.072374+00:00",
+            "wall_seconds": 15,
+            "errors": [],
+            "owners": [
+              {
+                "pid": 136155,
+                "start_ticks": 6623319,
+                "sid": 136155,
+                "pgid": 136155
+              }
+            ],
+            "cleanup": [],
+            "observation_complete": true,
+            "direct_child_reaped": true,
+            "session_empty": true,
+            "session_anchored": true,
+            "spawn_begin_monotonic": 66233.19377708,
+            "pid": 136155,
+            "spawn_return_monotonic": 66233.195918962,
+            "direct_identity": {
+              "pid": 136155,
+              "state": "R",
+              "ppid": 136135,
+              "pgid": 136155,
+              "sid": 136155,
+              "start_ticks": 6623319,
+              "rss_bytes": 458752
+            },
+            "peak_live_owned_identities": 1,
+            "peak_session_rss_bytes": 7933952,
+            "survivors": [],
+            "ownership_status": "observed",
+            "exit_code": 0,
+            "finished_utc": "2026-10-11T11:17:49.204667+00:00",
+            "elapsed_seconds": 0.1322069440066116,
+            "logs": {
+              "model.stdout": {
+                "bytes": 13,
+                "sha256": "3cbda8d7208b2e5da74cf3b36b28da2b9c2e4a23658ddeac3b5ef498102cabf5"
+              },
+              "model.stderr": {
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "case": "actual_owned_CPU_child_QUIT_preserves_primary_failure",
+        "post_DONE": true,
+        "result": {
+          "gen_send_attempted": true,
+          "mapping_snapshots": {
+            "after_gen": {
+              "complete": true
+            }
+          },
+          "ready_seen": true,
+          "request_done_seen": true,
+          "primary_model_failure": "ValueError('injected primary gate failure')",
+          "model_failure_phase": "after_gen",
+          "model_close": {
+            "quit_requested": true,
+            "quit_reason": "completed GEN post-completion gate failure",
+            "quit_send_outcome": "sent",
+            "quit_exit_outcome": "exit observed",
+            "exit_code": 0,
+            "owner_error": null,
+            "owner_errors": [],
+            "cleanup": [],
+            "normal": true,
+            "forced": false
+          },
+          "model_normal_close": true
+        },
+        "commands": [
+          {
+            "label": "model",
+            "argv": [
+              "/usr/bin/python3",
+              "-u",
+              "-c",
+              "import sys\nprint('READY 262144',flush=True)\nprint('DONE stop',flush=True)\ncommand=sys.stdin.readline();sys.exit(0 if command=='QUIT\\n' else 7)\n"
+            ],
+            "environment": {
+              "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+              "HOME": "/home/yayoi",
+              "LANG": "C.UTF-8",
+              "LC_ALL": "C.UTF-8",
+              "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib",
+              "XDG_RUNTIME_DIR": "/run/user/1000"
+            },
+            "started_utc": "2026-10-11T11:17:49.207932+00:00",
+            "wall_seconds": 15,
+            "errors": [],
+            "owners": [
+              {
+                "pid": 136160,
+                "start_ticks": 6623332,
+                "sid": 136160,
+                "pgid": 136160
+              }
+            ],
+            "cleanup": [],
+            "observation_complete": true,
+            "direct_child_reaped": true,
+            "session_empty": true,
+            "session_anchored": true,
+            "spawn_begin_monotonic": 66233.32928068,
+            "pid": 136160,
+            "spawn_return_monotonic": 66233.331523651,
+            "direct_identity": {
+              "pid": 136160,
+              "state": "R",
+              "ppid": 136135,
+              "pgid": 136160,
+              "sid": 136160,
+              "start_ticks": 6623332,
+              "rss_bytes": 573440
+            },
+            "peak_live_owned_identities": 1,
+            "peak_session_rss_bytes": 7671808,
+            "survivors": [],
+            "ownership_status": "observed",
+            "exit_code": 0,
+            "finished_utc": "2026-10-11T11:17:49.337714+00:00",
+            "elapsed_seconds": 0.12972101499326527,
+            "logs": {
+              "model.stdout": {
+                "bytes": 23,
+                "sha256": "a498de574d2a8df48232e04248145aac3a16ebd63e6877808cbe8ee02bb92dba"
+              },
+              "model.stderr": {
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "controller_imported_without_main": true,
+    "gpu_executed": false,
+    "limitations": "CPU protocol, actual host maps, injected observer failures, and actual owned CPU child QUIT cases only; no GPU/model numerical or performance qualification."
+  },
+  "cli_rejections": [
+    {
+      "argv": [
+        "--input-tokens",
+        "64",
+        "--group",
+        "16",
+        "--batch",
+        "on"
+      ],
+      "exit_code": 2,
+      "stderr": "usage: run_root.py [-h] --input-tokens {64,2049,32768} --group\n                   {1,8,16,17,32,64} --batch {off,on} [--reference REFERENCE]\n                   [--qualification QUALIFICATION]\n                   [--qualification-sha256 QUALIFICATION_SHA256]\nrun_root.py: error: ON requires immutable OFF record.json; OFF forbids --reference\n"
+    },
+    {
+      "argv": [
+        "--input-tokens",
+        "64",
+        "--group",
+        "16",
+        "--batch",
+        "off",
+        "--reference",
+        "/tmp/unused-no-open"
+      ],
+      "exit_code": 2,
+      "stderr": "usage: run_root.py [-h] --input-tokens {64,2049,32768} --group\n                   {1,8,16,17,32,64} --batch {off,on} [--reference REFERENCE]\n                   [--qualification QUALIFICATION]\n                   [--qualification-sha256 QUALIFICATION_SHA256]\nrun_root.py: error: ON requires immutable OFF record.json; OFF forbids --reference\n"
+    },
+    {
+      "argv": [
+        "--input-tokens",
+        "65",
+        "--group",
+        "16",
+        "--batch",
+        "off"
+      ],
+      "exit_code": 2,
+      "stderr": "usage: run_root.py [-h] --input-tokens {64,2049,32768} --group\n                   {1,8,16,17,32,64} --batch {off,on} [--reference REFERENCE]\n                   [--qualification QUALIFICATION]\n                   [--qualification-sha256 QUALIFICATION_SHA256]\nrun_root.py: error: argument --input-tokens: invalid choice: 65 (choose from 64, 2049, 32768)\n"
+    },
+    {
+      "argv": [
+        "--input-tokens",
+        "64",
+        "--group",
+        "65",
+        "--batch",
+        "off"
+      ],
+      "exit_code": 2,
+      "stderr": "usage: run_root.py [-h] --input-tokens {64,2049,32768} --group\n                   {1,8,16,17,32,64} --batch {off,on} [--reference REFERENCE]\n                   [--qualification QUALIFICATION]\n                   [--qualification-sha256 QUALIFICATION_SHA256]\nrun_root.py: error: argument --group: invalid choice: 65 (choose from 1, 8, 16, 17, 32, 64)\n"
+    }
+  ],
+  "source_stable": true,
+  "finished_utc": "2026-10-11T11:17:50.127435+00:00"
+}

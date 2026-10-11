@@ -1,0 +1,54 @@
+# Streamed native-batch flushes and the 32K short-tail boundary
+
+Read-only source/closed-receipt review — 2026-10-11
+
+## Scope
+
+Reviewed the closed v6 N32768 G16 OFF/ON receipts, the prior ring-capacity report, and the immutable `fa3e20e842fbed6986a69bade8afe3edabedee07` source blobs for `src/prefill/prefill.cpp` and `src/program/generate.cpp`. No active run or root was read. No execution, build, test, AST/import/dlopen, GPU query, source edit, Git mutation, or cleanup occurred. This report is the only new artifact.
+
+## What zero `held_reuse_flushes` means
+
+It does not rule out streamed credit pressure. The counter (`nd_reuse`) increments only in the non-stream branch where the host stages routed experts through `stage_next % STAGE` and flushes before reusing a slot held by a pending native batch (prefill lines 2382–2395, specifically 2391–2392). That branch is not used for `stream_all` chunks. The counter is therefore structurally zero for the five 6144-token full-stream chunks; it is not an instrument of their producer-credit path.
+
+The streamed path has distinct flush sites (same immutable source):
+
+- Native window cap: flush before append if `nd_n == 16` and after append at 16 (2347–2364).
+- Stream-credit gates: before consuming a slot when `k - consumed >= m.ring` (2431), and after compute when `nd_consumed - consumed >= m.ring` (2364).
+- Skipped-entry boundary: `release_to` invokes `native_flush` before marking skipped source entries consumed (2412–2422).
+- Product/group boundary and end-of-layer: flush before the unchanged GEMMs (2365–2366) and at layer end (2452).
+
+`native_flush` submits GU and Down readers, records used-slot events, then returns the consumed prefix (2112–2169); the stream issuer does not overwrite a slot until its event allows it. The existing `flushes` total does not separate these causes. Thus zero held-reuse counts cannot be used to claim zero credit flushes or zero stream-slot pressure.
+
+However, ring 32 is not a source-supported way to widen the streamed native API window. The API accumulation is capped at 16 entries and flushes at 16. Skipped sequence entries flush and return their credits before the next selected stream entry; resident experts do not consume stream-ring credits. With the current sequence/consumer protocol, the `m.ring=16` credit gates appear to coincide with or follow the 16-entry group boundary rather than force a smaller group. Doubling to 32 cannot raise the `nd_n` cap. It may permit the copy producer to run farther ahead and could affect overlap, but that is a different, unmeasured hypothesis. The receipts do not expose a credit-flush count to validate it.
+
+## Closed 32K evidence and the partition boundary
+
+Both records are complete and PASS, with 32768 prompt tokens, 32767 batched positions, chunk size 6144, G16, requested ring 8, effective full-stream/routed ring fields 16/8, and a 512 MiB READY admission floor. They are diagnostic and `performance_eligible=false`; route census marks `capture_valid=true` but `independent_completion_validation=false`.
+
+The ON census groups exactly as supplied by the receipts:
+
+| Chunk offset | Positions | GU covered / admitted | Mean width | Flushes | Counted held-reuse |
+|---:|---:|---:|---:|---:|---:|
+| 0 | 6144 | 22696 / 3012 | 7.535 | 3012 | 0 |
+| 6144 | 6144 | 23048 / 2773 | 8.312 | 2773 | 0 |
+| 12288 | 6144 | 22792 / 2958 | 7.705 | 2958 | 0 |
+| 18432 | 6144 | 22890 / 2891 | 7.918 | 2891 | 0 |
+| 24576 | 6144 | 23363 / 2529 | 9.238 | 2529 | 0 |
+| 30720 | 2047 | 22618 / 21668 | 1.044 | 21668 | 20231 |
+
+The 6144 partition is `5 * 6144 + 2047 = 32767`. In `ring_slots(T)`, `STREAM_ALL_MIN` is 2048; it returns the clamped configured ring only for `T >= 2048`, otherwise it returns the fixed `STAGE=8` (prefill lines 67–73, 123, 157–173). Consequently the last chunk changes route/ring regime because its real length is 2047. The high held-reuse count there is consistent with the eight-slot non-stream staging path, while its association with that mechanism is directly instrumented. It is not evidence that the full-stream chunks had no other flush cause.
+
+## Narrow existing-setting candidate
+
+The source exposes a fixed `--prefill <integer>` option (generate lines 2291–2295); it also uses fixed chunks directly when they fit (10126–10142). For a 32767-position prefill, `--prefill 4096` partitions the same unpadded input as `7 * 4096 + 4095 = 32767`. Every chunk is at least 2048, so no final chunk falls below `STREAM_ALL_MIN`; with requested ring 8, all chunks use the same source-selected full-stream capacity as the current five long chunks. This is a single existing setting, keeps G16 and ring settings fixed, and targets the observed 2047-position regime change directly.
+
+Treat 4096 as a bounded diagnostic candidate, not a speed prediction. It changes the partition from six to eight chunks and may increase per-chunk overhead. `Prefill::bytes_needed` is evaluated at the selected chunk size, so the main per-chunk scratch request is smaller than at 6144, but the new partition must still pass its own READY-time admission check (at least 512 MiB before GEN) at the physical 262144 context. No inference about all 256K prompts follows from these receipts.
+
+For the comparison, hold model/binary, G16, ring request 8, and all other settings fixed; change only `--prefill 6144` to `--prefill 4096`. Require same 32767-position input without padding, strict completion and output/LP5 checks, OFF/ON route/order and H2D joins, and per-axis group coverage/fallback reconciliation. Existing census lacks the flush-reason and window histogram needed to decide whether a 32-slot ring addresses credit pressure; do not carry ring32 forward as a group-width remedy. Only completed quiet paired wall samples can answer whether the chunk change helps service time.
+
+## Provenance and limits
+
+- N32768 OFF receipt SHA-256: `01992f0ba3b15a135636e97ff4dd37fc03f1137486df948ff7631edc96a1c9d1`.
+- N32768 ON receipt SHA-256: `8f7ad6c80553ac091388f5146ae6e93571115b6f6831f5f01e3458f3d6cd9a54`.
+- Immutable source blob IDs: `src/prefill/prefill.cpp` `a5971752d742a430e477792bf9e1f807344c0dfe`; `src/program/generate.cpp` `676d525f172609e6d67345b555b70a28eb73c6a9`.
+- Previous ring note: `research-xe-native-dequant-ring-capacity-next-v1.txt` (SHA-256 `d7fb0e455ce32424b8d9969c06317ee7f433facc3accef81e183689f131c740b`). This report narrows that earlier candidate: ring32 remains an unmeasured producer-overlap possibility, not a justified batch-width change.

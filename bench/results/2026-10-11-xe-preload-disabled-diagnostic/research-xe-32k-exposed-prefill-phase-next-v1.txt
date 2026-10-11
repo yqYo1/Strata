@@ -1,0 +1,39 @@
+# A focused exposed-time measurement for the completed 32K batch comparison
+
+Read-only investigation — 2026-10-11
+
+## Completed run context
+
+Read only the closed v6 `n32768-g16-off` and `n32768-g16-on` receipts, the registry v130, existing native-batch service-bound/critical-path reports, the pinned `prefill.cpp`/`gpu.cpp` source text, and Intel's current primary VTune GPU Offload documentation. The active 32K root was not read. No profiling, build, test, source edit, GPU/service action, cleanup, or Git mutation occurred.
+
+Both 32K arms are complete PASS diagnostics with strict output validation, health/kernel gate pass, no new faults/runtime errors, and normal QUIT exit 0. The route/H2D ledgers match: 15728160 routed rows and 295,956,300,800 logical expert-blob bytes (22,479 routed plus 122,160 full-stream requests). ON records 35,831 admitted GU and 35,831 admitted Down groups covering 137,407 expert occurrences on each axis, no group refusals/fallbacks, and 20,231 held-reuse flushes. These are invocation/extent counters, not GPU service time or PCIe traffic measurements.
+
+Observed diagnostic PP walls are 127,433.6 ms OFF and 130,715.0 ms ON. Both receipts mark `performance_eligible=false`; the environment is bounded diagnostic warning/error logging and progress. In particular, `STRATA_PREFILL_TIMING` was not set: the receipt says the timer is disabled, so no phase breakdown can be recovered from these runs. The wall difference is not a performance verdict.
+
+## One question, using the existing timer
+
+Ask: **During the ON prefill's compute-stream critical interval, how much time is visibly exposed at copy waits versus native dequant and gate/up or down GEMM, and did ON move that balance relative to OFF?**
+
+The smallest measurement for that question is one matched OFF/ON diagnostic pair with existing `STRATA_PREFILL_TIMING=1`, preserving the pinned source/binary, input and all other settings. This is an existing event timer in the pinned `prefill.cpp` (SHA-256 `c5cfa727302d334e2f6a8aaad8c1bf59e7d581dd8c2cec2af0d031faf807272d`), so it needs no code or build change. Both arms should keep the current transfer/group census and strict health/fault/normal-close gates. Record for each arm the existing phase values `wait copy`, `dequant`, `gemm gate/up`, `gemm down`, plus `host grouping`, host wait/setup values, `GPU timeline`, and the timer's marker/fold overhead line. Compare the phase categories as a diagnosis of this event timeline only; do not reuse these instrumented walls as quiet performance samples.
+
+The timer records marks on the compute stream. Its code explicitly charges each interval between consecutive marks to the phase of the earlier mark: time waiting for a copy or for host grouping can be charged to that phase. `wait copy` therefore indicates exposed compute-stream wait at the marked dependency; it is not the transfer's complete DMA service duration. `dequant` and GEMM intervals are not exclusive GPU-kernel service, because they also inherit intervening stream gaps and can overlap a transfer on the copy stream. The printed percentages are shares of the timer's own event-timeline sum, not shares of prefill wall or a critical-path decomposition. The printed host marker/fold CPU counters quantify some instrumentation overhead; they do not fully correct GPU queue/timeline effects.
+
+Do not use a `native_flush` host-clock measurement to explain GPU kernel duration. It can answer CPU submission cost only. Likewise, H2D calls/bytes alone cannot establish copy duration or exposed wait. These distinctions are consistent with the earlier service-bound report and avoid treating phase accounting as independent additive service.
+
+## Why not start with VTune for this question
+
+Intel VTune GPU Offload is the appropriate next tool if the question changes to actual per-task host-to-device transfer time and overlap: its current guide documents H2D/D2H transfer and execution time in the Graphics view, per-task transfer sizes, and a GPU/CPU timeline; its CPU-GPU-bandwidth option displays bandwidth over time and requires Intel sampling drivers. The API-tracing option can affect CPU-side performance. That wider collection can answer whether transfer operations overlap compute, but is unnecessary for the narrower first question because this engine already has the required wait-copy/dequant/GEMM phase marks. Do not combine a VTune run with the existing timer in the first measurement; that would add two instrumentation sources and make attribution harder. If the first result shows a copy-wait concern that needs DMA service/overlap rather than compute-stream wait, specify a separate VTune collection and its overhead/prerequisites then.
+
+Intel primary references:
+- [VTune Profiler 2026.0 GPU Offload Analysis](https://www.intel.com/content/www/us/en/docs/vtune-profiler/user-guide/2026-0/gpu-offload-analysis.html) — task transfer/execution time, Graphics view, timeline, and CPU-GPU bandwidth prerequisite.
+- [VTune Profiler 2026.0 GPU Offload CLI](https://www.intel.com/content/www/us/en/docs/vtune-profiler/user-guide/2026-0/gpu-offload-command-line-analysis.html) — `gpu-offload` configuration and programming-API trace option.
+- [VTune Profiler 2026.1 command-line analysis](https://www.intel.com/content/www/us/en/docs/vtune-profiler/user-guide/2026-1/running-command-line-analysis.html) — `-target-pid` attach option for a controlled process if that later collection is selected.
+
+No timer or profiler run is proposed as completed evidence here. If Main authorizes the paired timer diagnostic, keep its compact phase values, timer overhead, source/binary/environment pins and correctness/fault result. No full API trace, repeated synchronization log or raw profiler timeline is needed for the first question.
+
+## Evidence pins
+
+- N=32768 OFF receipt SHA-256: `01992f0ba3b15a135636e97ff4dd37fc03f1137486df948ff7631edc96a1c9d1`
+- N=32768 ON receipt SHA-256: `8f7ad6c80553ac091388f5146ae6e93571115b6f6831f5f01e3458f3d6cd9a54`
+- Both receipts pin IQ API `75f2ac1dfdb337c424bba19e62c34159a1bde547a776b9b5d6cf7975dfc29d50`, Prefill `c5cfa727302d334e2f6a8aaad8c1bf59e7d581dd8c2cec2af0d031faf807272d`, and binary `7c8a86f9079aa0d1a63432b787a62a6b6ffa6e338e57533e5b9c0168ff3e3500`.
+- Committed registry v130 SHA-256: `38bcb49566f207bb4a6d626802ab983c831851451f6360b3b68417978c49f2ef`
