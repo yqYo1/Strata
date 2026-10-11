@@ -1,0 +1,139 @@
+{
+  "active": false,
+  "complete": true,
+  "passed": true,
+  "commands": [
+    {
+      "label": "protocol",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-source-llvm-model8k-v1/protocol.py"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8"
+      },
+      "started_utc": "2026-10-11T02:51:02.053483+00:00",
+      "wall_seconds": 10,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2340394,
+          "start_ticks": 3582617,
+          "sid": 2340394,
+          "pgid": 2340394
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 35826.175009778,
+      "pid": 2340394,
+      "spawn_return_monotonic": 35826.177397212,
+      "direct_identity": {
+        "pid": 2340394,
+        "state": "R",
+        "ppid": 2340392,
+        "pgid": 2340394,
+        "sid": 2340394,
+        "start_ticks": 3582617,
+        "rss_bytes": 458752
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-11T02:51:02.186963+00:00",
+      "elapsed_seconds": 0.13324715600174386,
+      "logs": {
+        "protocol.stdout": {
+          "bytes": 92,
+          "sha256": "4308aee9b3ae38e10d80a77dc02890618cf5e69c22a033c5d6599ee6b138cd22"
+        },
+        "protocol.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "hash",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-source-llvm-model8k-v1/hash_inputs.py",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-source-llvm-model8k-v1/protocol.py",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-source-llvm-model8k-v1/run_root.py"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8"
+      },
+      "started_utc": "2026-10-11T02:51:02.187465+00:00",
+      "wall_seconds": 10,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2340398,
+          "start_ticks": 3582630,
+          "sid": 2340398,
+          "pgid": 2340398
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 35826.308923619,
+      "pid": 2340398,
+      "spawn_return_monotonic": 35826.310958089,
+      "direct_identity": {
+        "pid": 2340398,
+        "state": "R",
+        "ppid": 2340392,
+        "pgid": 2340398,
+        "sid": 2340398,
+        "start_ticks": 3582630,
+        "rss_bytes": 573440
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 12632064,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-11T02:51:02.316323+00:00",
+      "elapsed_seconds": 0.12867900700075552,
+      "logs": {
+        "hash.stdout": {
+          "bytes": 867,
+          "sha256": "bf8f0eb5470164a7c3804e5b22609761989b5dbf678c3a0d4960e5492353bd91"
+        },
+        "hash.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "model_executed": false,
+  "gpu_executed": false,
+  "source_pins": {
+    "run_root.py": "6fff7ae7c8318ad46c62491fe6431ace3bd07e275f9b959bda44c6b093bb821c",
+    "hash_inputs.py": "25d21cfb5d9977fcabe7e1b036a7959bf8ca99d3ce797c44cacc6e56ef387df2",
+    "protocol.py": "56e3ffaa1643c27fa45d552b06a9cfed516b1c197ac510f7e43391be21ec0f89"
+  },
+  "protocol_output": [
+    "{'positive_protocol': 1, 'negative_protocol': 11, 'positive_trace': 1, 'negative_trace': 3}"
+  ],
+  "hash_output": [
+    "HASHED /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-source-llvm-model8k-v1/protocol.py",
+    "HASHED /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-source-llvm-model8k-v1/run_root.py",
+    "IDENTITIES [{\"path\": \"/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-source-llvm-model8k-v1/protocol.py\", \"sha256\": \"56e3ffaa1643c27fa45d552b06a9cfed516b1c197ac510f7e43391be21ec0f89\", \"stat\": {\"device\": 40, \"inode\": 7576084, \"bytes\": 4770, \"mtime_ns\": 1791686937633983229, \"ctime_ns\": 1791686937633983229}}, {\"path\": \"/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-source-llvm-model8k-v1/run_root.py\", \"sha256\": \"6fff7ae7c8318ad46c62491fe6431ace3bd07e275f9b959bda44c6b093bb821c\", \"stat\": {\"device\": 40, \"inode\": 7575622, \"bytes\": 19474, \"mtime_ns\": 1791687061789850360, \"ctime_ns\": 1791687061789850360}}]"
+  ],
+  "finished_utc": "2026-10-11T02:51:02.317366+00:00"
+}
