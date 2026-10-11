@@ -1,0 +1,47 @@
+R198 — fused IQ expert dequantization: Xe 256-lane mapping and parity contract
+Date: 2026-10-12
+Scope: source-only proof of adapting upstream v0143's fused gate/up + down IQ FP16 dequantizer to current W337 Xe's 256-work-item work-group mapping. Identify reusable parity inputs/oracles and the minimum Main-owned validation. No implementation, compile, AST, import, test, build, runtime, GPU, process query, Git mutation, cleanup, or scratch file was used.
+
+Decision
+--------
+The fused decode domain can be represented as one contiguous sequence of *superblocks* while retaining Xe's existing 256-work-item work-group and eight 32-lane subgroups. This gives the same gate/up and down output indices as the two W337 launches. A tail guard covers any total superblock count not divisible by eight, including `n_ff` values not divisible by eight. This is an adaptation proof only; it does not establish device correctness, compile/resource fit, or speed.
+
+Source mappings
+---------------
+W337 `src/kernels/xe/iq_kernels.cpp` has two relevant operations:
+
+- `iq_dequant_gu_f16` (around 1622) computes `per_row = n_embd / 256`, `nsb = n_ff * per_row` and launches an `nd_range<2>` with global range `{2, ceil(nsb/8)*256}` and local range `{1,256}`. The first dimension chooses gate vs up. In dimension 1, `i = global_id(1)/32`; thus each 256-work-item group contains eight 32-lane subgroups, and each subgroup handles one 256-value superblock. For `i < nsb`, `r = i/per_row`, `c = i%per_row`, `parity = group0`; it dispatches gate/up type `t` and writes to `((2*r+parity)*per_row+c)*256`. Lane is `local_id(1)%32`.
+- `iq_dequant_f16` calls `launch_dequant_flat<half>`. It requires `n % 256 == 0` and `is_iq(t)`. The flat decode domain is `n/256` superblocks; superblock `j` writes at `j*256`, with lane index 0..31.
+
+Upstream pristine v0143 `sycl/src/kernels/cuda/iq_kernels.dp.cpp` adds `iq_dequant_expert_f16`. Its work-group size is 32. For group ID `g < gu_wgs`, it reproduces GU with `i=g>>1`, `parity=g&1`, `r=i/per_row`, `c=i%per_row`, and the same interleaved output offset. For later IDs it uses `j=g-gu_wgs` for flat down. It defines `gu_wgs=2*n_ff*per_row`, `d_wgs=n_ff*n_embd/256`, and submits `gu_wgs+d_wgs` groups. Its upstream validation checks both IQ types, `n_embd%256==0`, and `(n_ff*n_embd)%256==0`, but products are expressed in signed 64-bit arithmetic and should not be copied without checked arithmetic.
+
+Xe combined-domain mapping
+--------------------------
+Let `P = n_embd/256`, `N = n_ff*P` (the GU superblocks per matrix), and `T = 3*N`. A 256-work-item group `b` contains local lanes `l=0..255`; each subgroup index `s=l/32` owns combined ID `x=8*b+s`, and each lane is `l%32`. Guard `x >= T` before reading source or writing output.
+
+- For `x < 2*N`, set `i=x/2`, `parity=x%2`, `r=i/P`, `c=i%P`; decode from gate when parity is zero and up when it is one, using the GU type and existing `dq_dispatch` lane behavior. Destination element offset is `((2*r+parity)*P+c)*256`.
+- Otherwise set `j=x-2*N`; decode from down using its independent type; destination element offset is `j*256`.
+
+The gate/up half has exactly `2*N` IDs, matching its two parity planes; the down half has `N`, matching `n_ff*n_embd/256`. The interleaving and flat row-major down order match the existing outputs. A one-dimensional range with local size 256 and group count `ceil(T/8)` suffices. For `n_ff` not divisible by eight, no special row-tail assumption is needed: `P` remains integral because `n_embd%256==0`, each expert matrix contains `N` complete 256-value superblocks, and only the last work-group can have invalid combined IDs; the guard prevents those accesses. This is not permission to drop the existing source-type row-block constraints.
+
+Before forming launch or pointer offsets, use checked nonnegative multiplication/addition for `P`, `N=n_ff*P`, `2*N`, `T=3*N`, `ceil(T/8)` without `T+7` overflow, and `groups*256`; reject values unrepresentable by the queue range/index types and by `ptrdiff_t`/`size_t`. Independently check source byte spans for each type and matrix and destination element/byte spans for GU (`2*n_ff*n_embd`) and down (`n_ff*n_embd`). A mathematically in-range ID is not enough if a byte-offset product wraps. Preserve W337's existing `is_iq` acceptance and each side's independent type dispatch; do not accidentally constrain down to GU type or widen accepted formats. The paired prefill caller already obtains tensor-format metadata and source offsets, but a kernel API still needs safe shape and representability validation.
+
+Reuse and parity contract
+-------------------------
+No file or named fixture `native_dequant_prefill_parity` exists in the searched W337 source, Xe source, or retained research directory. `native_expert_parity --synthetic GU/DOWN` is useful as an input-fixture/oracle component, but is not itself a sufficient test: its GPU path exercises grouped native expert computation and its synthetic direct dequant check compares FP32 `iq_dequant_f32` outputs for gate/down to GGML `to_float`; it does not compare the fused FP16 GU and down buffers against the two existing FP16 dequant calls. It can supply deterministic GGML-quantized IQ input bytes and the existing type-pair coverage, while a narrowly scoped direct dequant parity executable must compare complete FP16 buffer bytes from old pair vs fused operation. Include cases with supported type pairs and dimensions from shipped native packs, `n_ff` divisible and not divisible by eight, and distinct GU/down types where supported. Compare both buffers by `memcmp` and report each case and bytes compared. Also compare each output against the expected old-call result; GGML float dequant is a useful diagnostic but is not a substitute for FP16-bit equality because conversion/rounding path matters.
+
+Minimum Main validation list, after implementation exists (not performed here):
+
+1. CPU-only checked-arithmetic/eligibility validation for zero/negative dimensions, unsupported type, bad `n_embd` multiple, multiplication/addition overflow, invalid work-group rounding, byte-span overflow, and accepted non-multiple-of-eight `n_ff` cases. This tests host contract only and must not assert a device runtime result.
+2. On B570, synthetic deterministic IQ byte fixtures: old GU then old down vs fused call on identical sources; exact byte equality for all FP16 GU and down elements, including the final guarded subgroup. Cover every shipped supported pair plus at least one different GU/down pair and a non-multiple-of-eight `n_ff`. Keep device parity assertions separate from prefill/runtime assertions.
+3. Only after those pass, Main may validate production `--native-batch 0` prefill behavior and performance under the parent task's established controls. The parity harness does not prove production admission or speed; no throughput claim follows from one fewer submit.
+
+Do not run the full-model native expert parity as a substitute for item 2. Do not use the native-batch/drain call site to exercise this candidate: the proposed target is only the non-batched paired-call path.
+
+References and boundaries
+-------------------------
+- Current W337/WN snapshot: `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-xe-host-issuer-ledger-20261012/src/kernels/xe/iq_kernels.cpp` (GU and flat dequant functions; grouped validation helpers) and `src/prefill/prefill.cpp` (paired non-batched callers around 2489–2495 and 2770–2776).
+- Xe snapshot: `/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/bench-xestrata-xe0142-pristine-20261012/src/kernels/xe/iq_kernels.cpp` and `src/prefill/prefill.cpp`.
+- Upstream pristine v0143 snapshot: `/home/yayoi/ghq/github.com/Niko1221/Strata/.worktree/bench-upstream-v0143-pristine-20261012/sycl/src/kernels/cuda/iq_kernels.dp.cpp` (`iq_dequant_expert_f16`), `sycl/include/strata/kernels/iq_dequant_expert.hpp`, and `sycl/src/prefill/prefill.cpp`.
+- Existing W337 parity source: `src/kernels/native_expert_parity.cpp`; CMake registration at `CMakeLists.txt:895–914`. Reuse only its deterministic synthetic quantization approach and its GGML type-pair inventory as inputs; its current assertions do not cover fused FP16 dequant parity.
+- Existing caller/candidate context is recorded in R197, `research-v0143-xe0142-prefill-delta-transfer-eligibility-round197-v1.txt`. Registry v152 remains unchanged.

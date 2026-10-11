@@ -1,0 +1,52 @@
+# v0.1.43 remaining server/API and host-function integration contract (R192)
+
+Read-only comparison of immutable official v0.1.43 HEAD `7695859aa13afb248bdb4d36f9b2e95707db079d` at `/home/yayoi/ghq/github.com/Niko1221/Strata/.worktree/bench-upstream-v0143-pristine-20261012` with safe Xe W337 HEAD `337255086026f6eef21a861c297183d05a5f7a22` at `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-xe-host-issuer-ledger-20261012`. This is a narrow delta report for functional server/API/config/recovery work beyond request accounting and the separately tracked NaN and `logit_bias` changes. No source, tests, builds, runtime, GPU, Git, or cleanup actions were performed.
+
+## Findings and merge boundary
+
+### `reasoning_effort` config default and `effort_position=end` launcher detection — required API/config parity
+
+W337 already has the end-position rendering/config key, the engine `--tail-role-token` capability probe, and API request use. Its `effort_end_args` reads `exe` as a binary directly. That works for a native executable, but official v0.1.43 adds `engine_binary(exe, cfg)` to resolve the Intel `serve/strata-sycl.sh` launcher to the configured `STRATA_SYCL_BIN` (or the documented default under the launcher repository). Without this, W337 silently treats a capable Xe engine behind the launcher as too old and falls back to start-position behavior. Upstream's focused `tools/test_effort_end_args.py` covers launcher resolution, a config `env` override, absent/old binaries, native binary behavior, and `start`.
+
+W337 also lacks official's config-level reasoning default: `Service.config_effort`, `clean_shared_defaults` validation for that value, `lift_reasoning_effort_arg(cfg)` to translate `--reasoning-effort LEVEL`/`--reasoning-effort=LEVEL` out of `args`, and the OpenAI/Anthropic fallback after shared Chat settings. Upstream tests in `serve/test_server.py` cover request override, shared-settings precedence, `none`, and both flag forms. This closes a real startup compatibility failure when a user's config contains the UI-facing reasoning flag under engine `args`: it otherwise reaches the engine as an unknown option. Port the validation/lifting/default plumbing and tests with the option order preserved: explicit request > shared defaults > config default; `reasoning_effort=none` must remain meaningful.
+
+The existing W337 `effort_position` support and its functional 0.1.39 `--tail-role-token` path are already present. Keep that implementation; add only the upstream launcher resolver and focused tests. Do not regress the Xe launcher behavior by changing the capability probe to inspect the shell script itself.
+
+### SAVE cache reclaim and bounded retry — required only when explicitly opted in
+
+Official v0.1.43 joins three layers: native `--session-save-reclaim` opt-in calls the existing `strata::core::session_save_reclaim` cache helper on typed SAVE RAM preflight failure; the server records this option and, while holding its FIFO, wraps SAVE with `serve/session_save_retry.py`; and tests cover admission, wait/retry, HTTP response, and FIFO ordering. The helper retries only a `SessionRefused(kind="memory", published=False)` with the recognized native diagnostic, on the same live engine process/path, for at most 30 seconds, three retries, and only when portable `psutil.virtual_memory().available` is known to meet the reported need plus headroom. It never retries RESTORE, IO/storage/invalid errors, published files, unknown estimates/telemetry, process death/replacement, or engine restart. The FIFO remains held while waiting, so queued restore/generation cannot interleave with SAVE.
+
+W337 has `session_save_reclaim` core/header/test code and separate native host-memory/cgroup accounting, but the inspected W337 `generate.cpp` and `serve/server.py` do not expose/wire the official `--session-save-reclaim` opt-in, and W337 has neither `serve/session_save_retry.py` nor its test. Its typed `SessionRefused` category/publication protocol is already suitable. The official request therefore is not to rewrite the reclaim algorithm: wire its native flag/decision at the SAVE RAM preflight, expose the engine opt-in to the service, then add the bounded Python retry wrapper and HTTP/FIFO tests. Keep it opt-in and preserve existing immediate-refusal behavior by default. Do not reclaim or retry after file publication, and do not extend retry to RESTORE.
+
+Relevant official validation files: `serve/test_session_save_retry.py`, `serve/test_slots.py`, `src/core/session_save_reclaim_test.cpp`, and `src/core/conversation_file_test.cpp`. The HTTP tests prove successful retries retain the response schema and process, default refusal does not probe memory, and SAVE waiting blocks a queued RESTORE until the same FIFO is released. If `psutil` is absent or telemetry is invalid, fail closed and return the original refusal.
+
+### Host memory/cgroup awareness — do not duplicate; verify the contract while wiring SAVE
+
+Both compared trees already contain native Linux host availability accounting over `/proc/meminfo` and visible cgroup v2/v1 ancestor limits, including `memory.current`, `memory.max` (and applicable high limits), and conservative reclaim credit for clean inactive file cache. W337's `src/core/expert_source.cpp` contains the same family of parsing/limit logic and `include/strata/core/conversation_memory.hpp` contract; it is not an absent upstream host-memory feature. The SAVE reclamation path must continue using the native measured guard/floor and only free eligible unpinned host caches. Do not replace the native guard with Python `psutil`: Python telemetry is only the wait/retry gate, and unknown telemetry must stop retries. Preserve configured memory floor in the native admission/reclaim decision.
+
+### HTTP context overflow — keep W337's guard, add upstream classifier contract/test
+
+W337 already computes `room = ctx - CTX_SLACK - len(ids)`, rejects no-room and oversized explicit output budgets, honors `fit_max_tokens`, and maps a Responses preparation failure containing `context` to `code=context_length_exceeded`. Preserve these guards and the stronger W337 prompt/context handling. The behavior gap is the recognizable OpenAI wording and cross-route classifier test: the W337 error is phrased `prompt (...) leaves no room ...` / `prompt (...) + max tokens (...) exceeds ...`, while upstream starts both with `request exceeds the context window:`. The official `serve/test_context_overflow.py` is absent in W337. It checks HTTP 400 JSON before generation for chat completions, Anthropic messages, and Responses, streamed and non-streamed requests, full-prompt overflow even with fit enabled, prompt-plus-budget overflow, one-token room/zero-room boundaries, the canonical recognizable phrase, no truncation, and Responses `code`/`param` shape. Add that focused HTTP test and align wording/shape as needed without relaxing the W337 guards; verify Anthropic route mapping too, since the current focused test covers it explicitly.
+
+This is a client interoperability/diagnostic contract, not a new context safety algorithm. Existing W337 boundary tests in `serve/test_server.py` remain valuable and should stay.
+
+## Separate workstreams and non-goals
+
+Multi-GPU/layer-split changes are independent of the four contracts above. Keep their protocol/engine safety review separate; this report makes no claim that they are interchangeable with single-GPU Xe integration. Also keep the already tracked per-request accounting, NaN recovery, and full `logit_bias` engine-contract work as distinct units. In particular, do not pull official fatal RESTORE/self-heal behavior over the stronger W337 fatal native RESTORE and context guards without a separate contract review.
+
+## Recommended cohesive integration sequence
+
+1. Port reasoning config validation/lifting/default precedence and the `engine_binary` Intel launcher resolver with their focused server/helper tests. This is service-only and should be independently reviewable.
+2. Add the recognizable HTTP context-overflow contract test and wording update while retaining W337's guard logic.
+3. Integrate opt-in SAVE cache reclamation end-to-end: native flag and preflight hook, server opt-in detection, bounded same-process retry wrapper, tests for default-off/error/publication/FIFO behavior. Include native conversation-memory/cgroup tests already present in W337 in normal required validation.
+4. Keep multi-GPU as a distinct integration decision, and retain W337's fatal native RESTORE/context behavior.
+
+## Evidence commands
+
+All commands were read-only and scoped to the two immutable/safe worktrees named above:
+
+- `rg -n "session_save_reclaim|context.*overflow|max_model_len|context_length|remaining|tail-role-token|effort_position|effort_end_args|config_effort|lift_reasoning_effort_arg|warn_budget_over_ram" serve/server.py serve/runconfig.py serve/test_server.py serve/test_context_overflow.py tools/test_effort_end_args.py`
+- `sed` on official `serve/session_save_retry.py`, `serve/test_session_save_retry.py`, `serve/test_context_overflow.py`, `tools/test_effort_end_args.py`, the official `slot_action`, context error mapper, `effort_end_args`/`engine_binary`, `lift_reasoning_effort_arg`, and host RAM warning/accounting regions; corresponding W337 `Service.prepare`, `effort_end_args`, engine/server session handling, and native expert-source regions.
+- `rg -n "memory.current|memory.max|memory.high|cgroup" src/core/expert_source.cpp src/program/generate.cpp include` and `rg -n "session_save_reclaim|session-save-reclaim|session_save_retry" .` in both trees.
+
+No code or test was executed. Tests listed above are recommended validation, not claimed as run.

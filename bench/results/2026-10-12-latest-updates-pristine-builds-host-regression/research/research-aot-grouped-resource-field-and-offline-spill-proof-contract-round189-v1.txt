@@ -1,0 +1,30 @@
+R189 — AOT grouped-kernel resource fields and offline spill-evidence contract
+Date: 2026-10-12
+
+Scope and result
+
+This report interprets the already-recorded offline AOT build only. It does not establish runtime JIT equivalence, execution on the GPU, model invocation, performance, or actual runtime occupancy. The record explicitly leaves runtime/JIT equivalence and actual model invocation open, and says no GPU or model was executed.
+
+The offline record reports all three recorded offline commands successful, with `ocloc` 26.31.39395.14 and IGC revision `f05f218e6f0b888823c5678e1f64e91e597ea2dc`. The compile output selected target `bmg-g21` from device ID `0xe20c` and said “Build succeeded.” Loader evidence says the compile actually loaded `/usr/local/lib/libigc.so.2.41.5+1788943183`, SHA-256 `40badd8f1ee80ac844a8947f5e91e5654fbcd851caefe343b0e5ec4ce4d1b123`, matching the recorded production IGC reference. This reduces uncertainty about which compiler binary produced the offline artifact; it does not show that a live SYCL invocation chose the same target, options, or code path.
+
+The recorded native product is `.../xe-grouped-offline-aot-root-v1/native/image_bmg.bin`, 283440 bytes, SHA-256 `054c2332cf09f584ff19a8523e514f873a6a5bf9543fdd01857f34725b3a9f0b`. The selected native kernel symbol is `_ZTSN6strata7kernels12_GLOBAL__N_113GroupedKernelILi128ELi256ELi3EEE`. Its native `execution_env` reports `grf_count=256`, `simd_size=16`, `eu_thread_count=4`, and `has_dpas=true`. The record does not report `spill_size`, `private_size`, or `per_thread_memory_buffers`; its explicit convention is `missing_field_means: unreported, not zero`. Another same-name block is arguments metadata only, not a second native resource record.
+
+Field interpretation
+
+Intel Compute Runtime’s Zebin definitions identify these as separate metadata fields, and its decoder maps `grf_count` to `numGrfRequired`, `eu_thread_count` to `numThreadsRequired`, and `private_size`/`spill_size` to private-scratch/spill-fill-scratch descriptor values. Therefore the artifact reports a compiler-selected GRF requirement of 256 and an EU-thread-count descriptor value of 4 for this kernel. These are static compiler metadata, not measurements of live register pressure, actual running threads, occupancy, or spill traffic. `simd_size=16` describes the kernel’s SIMD width metadata; `has_dpas=true` reports the DPAS feature flag. Neither proves runtime execution of the kernel or a performance result.
+
+Spill and private-storage status is unknown from this record. An omitted `spill_size` is not an explicit zero-byte spill size; omitted `private_size` and `per_thread_memory_buffers` likewise do not establish absence of private/scratch use. Runtime decoder defaults, if any, are not evidence that the artifact explicitly emitted those values. Intel’s optimization guidance treats nonzero spill memory as evidence of spills and nonzero private memory as evidence of a private variable not promoted to registers; the converse can only be used when the corresponding compiler metadata is actually present and authoritative for this artifact.
+
+Minimal offline follow-up that can bound the question
+
+Use the already-hashed `image_bmg.bin` as the input to the matching installed `ocloc` disassembler, explicitly target `bmg-g21`, and save output in a fresh diagnostic directory. Extract the `.text` section for the exact mangled kernel and retain the disassembler identity/version, command, section identity, and output hash. Inspect the native ISA for compiler-generated scratch spill/fill accesses using the matching Intel ISA definitions, and distinguish these from ordinary program memory operations. If the disassembly unambiguously identifies spill/fill operations, report the positive evidence and its scope. If the disassembly cannot distinguish spills from other scratch or memory traffic, it only bounds the observation and the status remains unknown; absence of recognizable instructions alone is not proof of zero spills.
+
+If the existing native image cannot provide an attributable answer, an offline repeat of the exact recorded AOT compile can enable Intel Graphics Compiler shader dumps (`IGC_ShaderDumpEnable=1`, `IGC_DumpToCustomDir=<fresh-dir>`) while keeping the source input, target, compiler binary, and compile options fixed. Preserve the emitted final `.asm`, `.isa`, `.visaasm`, `.options`, and any `.ze_info` for this exact entry; compare hashes/options with the recorded compile before treating it as equivalent evidence. Prefer explicit emitted `spill_size`/private-size metadata or final native ISA spill/fill sequences. Do not infer zero from missing fields or from an intermediate representation that does not include final register allocation. This procedure remains offline and cannot close runtime/JIT or model-invocation questions.
+
+References (primary sources)
+
+- Intel Compute Runtime Zebin metadata definitions: https://github.com/intel/compute-runtime/blob/master/shared/source/device_binary_format/zebin/zeinfo.h
+- Intel Compute Runtime Zebin decoder and descriptor mappings: https://github.com/intel/compute-runtime/blob/master/shared/source/device_binary_format/zebin/zeinfo_decoder.cpp
+- Intel oneAPI GPU Optimization Guide 2024.2 (spill/private memory discussion): https://cdrdv2-public.intel.com/824351/oneapi_optimization-guide-gpu_2024.2-771772-824351.pdf
+- Intel Graphics Compiler shader dump instructions and output types: https://github.com/intel/intel-graphics-compiler/blob/master/documentation/shader_dumps_instruction.md
+- Intel Graphics Compiler configuration options: https://github.com/intel/intel-graphics-compiler/blob/master/documentation/configuration_flags.md

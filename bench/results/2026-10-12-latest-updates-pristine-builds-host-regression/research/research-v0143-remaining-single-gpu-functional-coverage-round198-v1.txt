@@ -1,0 +1,33 @@
+# R198 — remaining v0.1.43 server/API/setup coverage for one Linux GPU
+
+Read-only source audit. No compile, AST/import, tests, build, runtime, GPU/model/process query, Git mutation, cleanup, or temporary scratch file was used. CUDA/HIP implementation details were excluded. This report does not claim full v0.1.43 parity or runtime qualification.
+
+## Revisions and what was actually read
+
+- Official upstream U: `/home/yayoi/ghq/github.com/Niko1221/Strata/.worktree/bench-upstream-v0143-pristine-20261012`, HEAD `7695859aa13afb248bdb4d36f9b2e95707db079d`.
+- Xe source WN: `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-xe-v0143-nonfinite-20261012`, HEAD `337255086026f6eef21a861c297183d05a5f7a22`.
+- The WN HEAD is not the whole source snapshot. At read time, `git status --short` showed modified `serve/server.py` and `setup.py`, plus untracked `serve/cache_drop.py`, `serve/session_save_retry.py`, and `tools/strata_bench.py`. This report assesses those visible working-tree files as well as tracked WN source; they are not represented by HEAD 337.
+- SHA-256 of the read WN files: `serve/server.py` `f201668a9ea2ce0797782ebf57212ac6ff00e80556b7c49e3176bf6028514283`; `serve/runconfig.py` `f303263f51e54795e8dae3d75082322216d49993bd5536a0027a455e4fa82969`; `setup.py` `f9e6296043ef7601899b391028bdc163e2e53afbb7213cc646c9857854c7b453`; `src/program/generate.cpp` `c1aa7013725261c9a775211ae4f1513400dbf29d29d3fef32d68e2b2b29809b1`; `serve/cache_drop.py` `4957023310bc553cd704772c5999de618acb1c33b71e9a591c8abdc0c956fac3`; `serve/session_save_retry.py` `f27a35e1dec1c2a1a742593cdbd04403029987e32d415c0a7f81d462b3eaaafd`; `tools/strata_bench.py` `838ed6833aab4425d9569e7f97ba8678e04c3f170cc552dc2907d5db0389f7b6`.
+- SHA-256 of official comparison files: U `serve/server.py` `55ee9d1160f0da457cabe6f9dfea9884296b6d70fd3d14abd4ed42e6f79dd72b`; U `serve/logit_bias.py` `a11e00f358eb9f165c51488eeaad158767cc094ff264e64d07bdf10441ebf3e3`; U `src/program/generate.cpp` `23c2b4d0aba33b9f891f52ad10ef988e11b29ffe079aae6cbae1888900c1c47d`.
+
+## Remaining required single-GPU Linux API behavior
+
+One additional user-visible API gap remains in the inspected WN snapshot: non-empty OpenAI `logit_bias` is not implemented or explicitly rejected. WN `serve/server.py` has no `logit_bias` handling; its sampling conversion at about lines 4698–4702 forwards a fixed allowlist of temperature/top-p/top-k/min-p/seed/penalty fields that excludes `logit_bias`. WN `src/program/generate.cpp` has no `logit_bias` request parser/protocol, and WN has no `serve/logit_bias.py`. Thus a client can submit the OpenAI field without getting the requested bias or a clear unsupported-field error. This is an API semantic gap; no engine support is implied.
+
+Official v0.1.43 makes the boundary explicit in `serve/logit_bias.py` and calls its validator in the OpenAI request path (`serve/server.py` around lines 5340–5351): it normalizes IDs and values, checks vocabulary bounds, checks an engine capability bit and refuses unsupported engines with an error. The native request path consumes `logit_bias=id:value,...`, rejects malformed/all-vocabulary bans and continuous batching, and calls the verifier's bias setter. The helper's unsupported-engine text explicitly points clients to a supporting CUDA/HIP build, so porting full token-bias execution into the Xe engine is not the minimal integration required here.
+
+Smallest safe functional change for the B570 single-engine target: reject a non-empty `logit_bias` before generation with a clear HTTP 400 “unsupported by this engine” response, instead of silently omitting it. Reuse a normalizer/validator if useful, but do not claim support or add a cache key unless the Xe engine has a separately reviewed sampling contract. The focused request coverage should include OpenAI Chat Completions and Responses, malformed values, and empty/omitted bias remaining unchanged. If product requirements explicitly demand working token bias on Xe, that is a larger native sampler change and needs its own correctness work; this source review does not recommend or qualify it.
+
+R190 already flagged `logit_bias` as pending engine/API qualification, and R194 explicitly left that qualification outside its reconciliation. This R198 pass confirms the gap is still present in the current WN working-tree server/native sources.
+
+## Explicitly not required for this target
+
+- **`prevent_sleep` / keep-awake:** official `serve/keepawake.py` documents a Windows-only `SetThreadExecutionState` setting; on other platforms it logs that the setting is ignored. It is an optional Windows behavior, so its absence in WN does not block a single-GPU Linux B570 server.
+- **Replicas:** official `serve/replicas.py` implements opt-in data-parallel routing over two or more GPU groups, and official `setup.py` configures multiple groups. This target has one B570 and one engine; replicas are outside its product scope. WN's lack of `serve/replicas.py` does not block it.
+- **No missing legacy completion endpoint:** both servers advertise OpenAI Chat Completions, Anthropic Messages, and OpenAI Responses. The v0.1.43 endpoint dispatch examined in U and WN is aligned for those routes; no separate legacy `/v1/completions` addition was identified in this audit.
+
+## Named integration items and evidence limit
+
+In the inspected WN working tree, source markers/files are present for the named Main integration areas: nonfinite engine/server handling, context-overflow response/test, reasoning config defaults and effort launcher helper/test, SAVE reclaim and Python retry, memory cap parsing/flag, cache-drop hook/helper, corrupt-ZIP recovery/test, and the HTTP benchmark tool. The files are partly untracked or modified as listed above. This is presence-only source evidence; no tests ran, and it must not be read as proof those changes are complete or pass validation. R198 does not re-audit those contracts.
+
+The additional report is not a claim that all upstream v0.1.43 changes are complete. It identifies one remaining API behavior with a minimal fail-closed fix and classifies the Windows-only and multi-GPU items against the stated B570 scope.

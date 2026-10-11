@@ -1,0 +1,24 @@
+# R199 — SAVE retry deadline and lifecycle contract
+
+Read-only source audit of the Xe working tree. No compile, AST/import, tests, build, runtime, GPU/model/process query, Git mutation, cleanup or temporary scratch file was used. This report focuses on retry dispatch and FIFO lifecycle; it does not re-audit cache-reclaim correctness.
+
+## Snapshot
+
+- Xe WN: `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-xe-v0143-nonfinite-20261012`, HEAD `337255086026f6eef21a861c297183d05a5f7a22`; this is a dirty working tree, so HEAD alone does not describe the audited source.
+- Read-file SHA-256: `serve/session_save_retry.py` `f27a35e1dec1c2a1a742593cdbd04403029987e32d415c0a7f81d462b3eaaafd`; `serve/server.py` `f201668a9ea2ce0797782ebf57212ac6ff00e80556b7c49e3176bf6028514283`; `src/program/generate.cpp` `c1aa7013725261c9a775211ae4f1513400dbf29d29d3fef32d68e2b2b29809b1`.
+- Comparison reports read: R192 (retry contract), R194 (typed native refusal protocol), R198 (remaining API coverage). This is an additive finding, not a re-statement of their coverage list.
+
+## Finding: retry dispatch can cross the 30-second deadline
+
+`serve/session_save_retry.py:64–74` checks the deadline at the top of its polling loop, then calls `available_mib()` and `required_mib()`. If availability passes the threshold, the code breaks and checks process identity at lines 76–77, but does not re-check the deadline before calling `engine.session_file()` at line 79. If telemetry or scheduling consumes the remaining interval, it can submit another SAVE after `deadline`. The preceding sleep is capped at the remaining interval, but that does not close this path. The same check-to-dispatch gap exists if the deadline expires while `same_process()` runs.
+
+This is a narrow contract gap: retry count remains bounded at three; retries remain opt-in and limited to typed, unpublished memory preflight refusals; unknown telemetry fails closed; and the code checks the same engine/process before retry. `Service.slot_action` (`serve/server.py:2547–2563`) holds `self.fifo` across the retry wait and SAVE call. Thus queued RESTORE/generation cannot replace or interleave the engine during this operation; the identity check is additional protection. The native protocol is authoritative: `generate.cpp:7983–7997` samples memory and re-runs admission for every SAVE attempt, returning typed `SERR memory 0 ...` on preflight refusal. Python `psutil` is only a retry scheduling predicate; it cannot approve a SAVE that native admission rejects.
+
+Recommended bounded fix: check the deadline again after telemetry and process-identity checks, immediately before retry dispatch. If the contract requires a strict guarantee about when the command reaches the native process, enforce the deadline at the SAVE command write boundary inside `Engine.session_file` (the command is written/flushed at `server.py:1609–1614`); a check only in the helper still has a check-to-write scheduling window. This concerns retry initiation, not the duration of an already-started native SAVE.
+
+## What the audit supports
+
+- The inspected WN wires the helper only for `action == "save"` when the engine advertises `session_save_reclaim`; otherwise it calls `engine.session_file` directly (`server.py:2558–2562`).
+- Retry classification requires `kind == "memory"`, `published == False`, and a recognized native RAM-preflight diagnostic (`session_save_retry.py:20–40`). A memory error from later allocation failure does not match that exact diagnostic and is not retried.
+- The FIFO encloses the complete wait/retry lifecycle; no engine replacement through normal service request lifecycle can occur during the hold.
+- No runtime proof is claimed. The finding is static and should be covered with a deterministic monotonic-clock/telemetry boundary test before closing the contract.

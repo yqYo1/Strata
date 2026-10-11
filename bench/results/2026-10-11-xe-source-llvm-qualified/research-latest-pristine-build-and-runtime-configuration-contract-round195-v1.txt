@@ -1,0 +1,82 @@
+R195 — pristine SYCL/Xe build and runtime configuration contract
+Date: 2026-10-12 (Asia/Tokyo)
+Scope: read-only source/recipe audit. No configure, build, compiler, runtime, GPU, or model command was run.
+
+Question and conclusion
+-----------------------
+What is the smallest source-supported configuration for evaluating the pristine Strata SYCL port and XeStrata on this host, and can existing options avoid Xe's startup all-kernel PackedA module-build failure?
+
+Use the installed Intel LLVM 7.1.1 clang/clang++ as the compiler pair, explicitly select the already checked-out GGML dependency at commit 3cf03257f219afbe7334045ff7c6a06ac68c627d, and build only the `strata` target in separate build directories. For Xe, the least entangled first comparison is `STRATA_LICENSE=free`, Xe enabled, CUDA/HIP architectures empty, and oneMKL disabled. A separate `contrib` build with oneMKL enabled is the existing route for comparing the vendor dense backend. The pristine upstream SYCL port has no free/contrib mode: it uses one CMake project and unconditionally adds `-qmkl=sequential` to `strata_prefill` compile/link.
+
+No existing source option or target selection disables Xe's startup all-kernel bundle sweep. `STRATA_PRELOAD_KERNELS=0` is not implemented in either pristine tree. AOT and per-kernel code splitting do not remove the sweep. Thus source/recipe choices alone cannot establish that the Xe PackedA startup failure is avoided. Keep that startup limitation attached to any result; a narrowly scoped source change or a demonstrated fix would be needed to claim otherwise.
+
+Toolchain and dependency facts
+------------------------------
+The installed compiler pair is under:
+`/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/{clang,clang++}`.
+The existing receipt records LLVM source tag v7.1.1, source commit `504366f4b82ff00bbac7b0c956635eed8bc599d8`, and packaged DPC++ 7.1.0 prerelease / Clang 22.1.0. Do not substitute `icpx`: it is unavailable and Xe CMake's `contrib-icpx` mode explicitly requires it.
+
+Use `STRATA_GGML_DIR=/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011`. This avoids the default FetchContent path and pins evaluation to the present checkout. The path was checked to exist. oneMKL's `/opt/intel/oneapi/mkl/latest` resolves to 2026.1; this satisfies the known contrib recipe's root, but does not establish compiler-flag or runtime compatibility for a new build.
+
+Pristine upstream SYCL project (v0.1.43 source snapshot 7695859)
+-----------------------------------------------------------------
+The project is a separate CMake tree rooted at `sycl/`; it resolves migrated `.dp.cpp` files there and otherwise uses upstream sources from the parent. Its documented executable target is `strata`. Minimal evaluation configure/build commands, with paths filled in, are:
+
+    cmake -S /path/to/pristine/Strata/sycl -B /path/to/build/upstream-sycl -G Ninja \
+      -DCMAKE_BUILD_TYPE=Release \
+      -DCMAKE_C_COMPILER=/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang \
+      -DCMAKE_CXX_COMPILER=/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++ \
+      -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
+      -DSTRATA_GGML_DIR=/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011 \
+      -DSTRATA_SYCL_AOT=
+    cmake --build /path/to/build/upstream-sycl --target strata
+
+The CMake default is SPIR64/SPIR-V with runtime JIT. `STRATA_SYCL_AOT` is the existing AOT switch: nonempty values select `spir64_gen` and pass `-device <value>` to the AOT backend. For Xe2 BMG, the file adds `STRATA_XMX_SG16` for a `bmg...` target. The source comments cite `bmg-g31` for Arc Pro B70; do not infer an exact B570 AOT target or tool support from that example. Default SPIR-V is therefore the source-supported baseline, not a claim that runtime JIT is safe.
+
+Every translation unit and link uses `-fsycl`; both compile and link force `-fsycl-device-code-split=per_kernel`. The default JIT link also sets stateless addressing and correctly rounded divide/sqrt. These are existing correctness/configuration choices, not switches to exclude a kernel from the runtime's enumeration. `STRATA_SYCL_PARITY=OFF` can trim parity-only build work if present, but does not affect executable startup. There is no license/free/contrib switch in this CMake project. It unconditionally appends `-qmkl=sequential` for `strata_prefill`; whether this custom clang driver accepts that Intel driver option is unresolved by this source-only audit. The installed oneMKL alone does not prove that it does. Record the configure/build command and actual compiler diagnostics if this route is attempted later.
+
+XeStrata da3d426 source tree
+---------------------------
+The root CMake explicitly supports Intel LLVM (`clang`, `clang++`) in `free` and `contrib` modes; `contrib-icpx` is not applicable. The existing R348 recipe selects the following modes. Use separate binary directories and build only `strata`:
+
+    # free Xe kernels, no CUDA/HIP or oneMKL
+    cmake -S /path/to/pristine/XeStrata -B /path/to/build/xe-free -G Ninja \
+      -DCMAKE_BUILD_TYPE=Release \
+      -DCMAKE_C_COMPILER=/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang \
+      -DCMAKE_CXX_COMPILER=/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++ \
+      -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DSTRATA_GGML_DIR=/path/to/the/3cf03257.../llama.cpp \
+      -DSTRATA_LICENSE=free -DSTRATA_ENABLE_XE=ON \
+      -DSTRATA_CUDA_ARCHS= -DSTRATA_HIP_ARCHS= -DSTRATA_ONEMKL=OFF
+    cmake --build /path/to/build/xe-free --target strata
+
+    # distinct Intel-contrib dense backend comparison
+    cmake -S /path/to/pristine/XeStrata -B /path/to/build/xe-contrib -G Ninja \
+      -DCMAKE_BUILD_TYPE=Release \
+      -DCMAKE_C_COMPILER=/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang \
+      -DCMAKE_CXX_COMPILER=/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++ \
+      -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DSTRATA_GGML_DIR=/path/to/the/3cf03257.../llama.cpp \
+      -DSTRATA_LICENSE=contrib -DSTRATA_ENABLE_XE=ON \
+      -DSTRATA_CUDA_ARCHS= -DSTRATA_HIP_ARCHS= -DSTRATA_ONEMKL=ON \
+      -DMKL_ROOT=/opt/intel/oneapi/mkl/latest
+    cmake --build /path/to/build/xe-contrib --target strata
+
+Replace the abbreviated GGML argument with the full path above. Empty CUDA/HIP architecture settings prevent auto-detection and avoid irrelevant NVIDIA/AMD toolchains. Free and contrib do not have equivalent dense kernels: free uses XeStrata's own Xe kernels; contrib selects oneMKL through oneMath. Treat these as separate backend configurations, not a controlled comparison of an otherwise identical implementation. The existing R348 recipe used tests ON; test targets are unnecessary for the minimal `strata` executable build and were not run here.
+
+Runtime failure and available controls
+--------------------------------------
+In pristine Xe, startup launches a background routine which enumerates `sycl::get_kernel_ids()` and requests an executable bundle for each ID, catching individual exceptions as skips. `wait_preload()` synchronizes later probes; it is not a disable switch. No `STRATA_PRELOAD_KERNELS` environment handling exists in this source. The sweep is part of the `strata` runtime path, so choosing only target `strata`, disabling tests, selecting free/contrib, or disabling native experts cannot bypass it.
+
+The upstream port has no matching preload routine in its SYCL `src/` or `include/` tree, so the Xe-specific startup behavior should not be attributed to upstream without evidence. It still has device kernels that may be compiled on demand; this audit makes no runtime success claim for either tree.
+
+`-fsycl-device-code-split=per_kernel` is already active in upstream, but the runtime loop still enumerates every kernel ID. It limits image grouping; it does not filter the loop. AOT could move compilation into the build and may change runtime module behavior, but the existing source does not make it a supported workaround for this sweep, and AOT itself must be qualified against the installed compiler/backend/device. No Xe root-CMake AOT option was found. Therefore do not present AOT, per-kernel splitting, or a `strata`-only build as a fix for PackedA startup failure.
+
+Evidence/retention
+------------------
+This is source/recipe evidence only. No measurements, test status, generated binaries, or changed source are claimed. If a later authorized run is made, preserve configure/build commands, compiler and source identities, compile_commands, build/cache logs, executable hash and linked libraries, and separately record startup progress/fault status before using workload measurements. Keep failed startup evidence in line with `docs/ARTIFACT_RETENTION.md`.
+
+Primary source references:
+- Upstream snapshot CMake: `/home/yayoi/ghq/github.com/Niko1221/Strata/.worktree/bench-upstream-v0143-pristine-20261012/sycl/CMakeLists.txt` (7695859).
+- Xe snapshot root CMake: `/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/bench-xestrata-xe0142-pristine-20261012/CMakeLists.txt` (da3d426).
+- Existing Xe free/contrib commands: R348 recipe in the shared research records.
+- Intel LLVM source/build receipt: `xe-llvm-v711-source-root-v5.json` in this report directory.
+- Intel DPC++ compiler command and AOT model: https://www.intel.com/content/www/us/en/docs/dpcpp-cpp-compiler/developer-guide-reference/2025-2/compiler-options.html and https://www.intel.com/content/www/us/en/docs/dpcpp-cpp-compiler/developer-guide-reference/2025-2/ahead-of-time-compilation.html

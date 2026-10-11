@@ -1,0 +1,297 @@
+{
+  "derivative": true,
+  "original_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-v0143-host-functions-cpu-root-v1/record.json",
+  "original_sha256": "275824ce9834b836e3d7b4773429944b74e1c57772be7109806bf9f46ffb6fc0",
+  "original_bytes": 19034,
+  "original_result_passed": true,
+  "receipt": {
+    "active": false,
+    "complete": true,
+    "passed": true,
+    "gpu_executed": false,
+    "model_executed": false,
+    "commands": [
+      {
+        "label": "host-functional-regressions",
+        "argv": [
+          "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/venv/bin/python3",
+          "-B",
+          "-m",
+          "unittest",
+          "-v",
+          "serve.test_cache_drop",
+          "serve.test_config_effort",
+          "tools.test_effort_end_args",
+          "tools.test_strata_bench",
+          "serve.test_server.NonFiniteLogits",
+          "serve.test_request_accounting",
+          "serve.test_fatal_recovery",
+          "serve.test_lifecycle",
+          "tools.test_setup_llama_archive"
+        ],
+        "environment": {
+          "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/venv/bin:/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "USER": "yayoi",
+          "LOGNAME": "yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "PYTHONDONTWRITEBYTECODE": "1",
+          "HF_HUB_OFFLINE": "1",
+          "TRANSFORMERS_OFFLINE": "1"
+        },
+        "started_utc": "2026-10-11T21:54:34.043557+00:00",
+        "wall_seconds": 600,
+        "errors": [],
+        "owners": [
+          {
+            "pid": 2816991,
+            "start_ticks": 10443816,
+            "sid": 2816991,
+            "pgid": 2816991
+          },
+          {
+            "pid": 2818037,
+            "start_ticks": 10444748,
+            "sid": 2816991,
+            "pgid": 2816991
+          }
+        ],
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 104438.165044163,
+        "pid": 2816991,
+        "spawn_return_monotonic": 104438.166638368,
+        "direct_identity": {
+          "pid": 2816991,
+          "state": "R",
+          "ppid": 2816957,
+          "pgid": 2816991,
+          "sid": 2816991,
+          "start_ticks": 10443816,
+          "rss_bytes": 454656
+        },
+        "peak_live_owned_identities": 2,
+        "peak_session_rss_bytes": 66048000,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 0,
+        "finished_utc": "2026-10-11T21:54:49.112804+00:00",
+        "elapsed_seconds": 15.069041695998749,
+        "logs": {
+          "host-functional-regressions.stdout": {
+            "bytes": 3163,
+            "sha256": {
+              "sha256": "530714de04e501eb16044443f33483c53cdd5b435e672ee71a02533b118f27e2"
+            }
+          },
+          "host-functional-regressions.stderr": {
+            "bytes": 11022,
+            "sha256": {
+              "sha256": "86aceb22288656fca8232948c6eea95a0e3d502793ddd44128df4ce9989ce6ac"
+            }
+          }
+        }
+      }
+    ],
+    "command_evidence": {
+      "host-functional-regressions": {
+        "stdout_compact_derivative": {
+          "original_bytes": 3163,
+          "original_sha256": "530714de04e501eb16044443f33483c53cdd5b435e672ee71a02533b118f27e2",
+          "individual_test_lines": [],
+          "unique_diagnostic_lines": [],
+          "diagnostic_line_count": 0,
+          "first_lines": [
+            "[strata] STRATA_DROP_CACHE_ON_EXIT: released the page cache of 1 model files",
+            "[strata] 400 invalid request: fixture stops before engine generation",
+            "[strata] 400 invalid request: fixture stops before engine generation",
+            "[strata] 400 invalid request: fixture stops before engine generation",
+            "[strata] 400 invalid request: fixture stops before engine generation",
+            "[strata] thinking budget reached (20 tokens): wrapping up the thinking",
+            "[strata] done: 112 tokens in 0 s (86592.1 tok/s) (stop, cancel=False), expert cache 88.9% hit",
+            "[strata] thinking budget reached (20 tokens): wrapping up the thinking"
+          ],
+          "last_lines": [
+            "[strata] done: 7 tokens in 0 s (67494.5 tok/s) (stop, cancel=False)",
+            "[strata] done: 7 tokens in 0 s (87642.2 tok/s) (stop, cancel=False)",
+            "[strata] model unloaded; the next request loads it again",
+            "[strata] loading the model again (it was unloaded) ...",
+            "[strata] the engine is running again",
+            "[strata] done: 7 tokens in 0 s (7974.0 tok/s) (stop, cancel=False)",
+            "[strata] loading the model again (it was unloaded) ...",
+            "[strata] the engine is running again"
+          ],
+          "scope": "Repeated successful listings omitted; original immutable private receipt is the identity anchor."
+        },
+        "stderr_compact_derivative": {
+          "original_bytes": 11022,
+          "original_sha256": "86aceb22288656fca8232948c6eea95a0e3d502793ddd44128df4ce9989ce6ac",
+          "individual_test_lines": [
+            "test_default_off (serve.test_cache_drop.CacheDrop.test_default_off) ... ok",
+            "test_exited_engine_paths_use_spawn_cwd (serve.test_cache_drop.CacheDrop.test_exited_engine_paths_use_spawn_cwd) ... ok",
+            "test_files_and_advise (serve.test_cache_drop.CacheDrop.test_files_and_advise) ... ok",
+            "test_not_while_engine_runs_or_not_opted_in (serve.test_cache_drop.CacheDrop.test_not_while_engine_runs_or_not_opted_in) ... ok",
+            "test_on (serve.test_cache_drop.CacheDrop.test_on) ... ok",
+            "test_http_routes_receive_config_and_request_effort (serve.test_config_effort.ConfigEffort.test_http_routes_receive_config_and_request_effort) ... ok",
+            "test_invalid_migration_does_not_mutate_args (serve.test_config_effort.ConfigEffort.test_invalid_migration_does_not_mutate_args) ... ok",
+            "test_migration_and_key_priority (serve.test_config_effort.ConfigEffort.test_migration_and_key_priority) ... ok",
+            "test_precedence_and_default_identity (serve.test_config_effort.ConfigEffort.test_precedence_and_default_identity) ... ok",
+            "test_a_plain_engine_is_read_as_before (tools.test_effort_end_args.EffortEndArgs.test_a_plain_engine_is_read_as_before) ... ok",
+            "test_absolute_engine_override (tools.test_effort_end_args.EffortEndArgs.test_absolute_engine_override) ... ok",
+            "test_relative_launcher_uses_config_cwd (tools.test_effort_end_args.EffortEndArgs.test_relative_launcher_uses_config_cwd) ... ok",
+            "test_relative_plain_engine_uses_config_cwd (tools.test_effort_end_args.EffortEndArgs.test_relative_plain_engine_uses_config_cwd) ... ok",
+            "test_start_is_the_default (tools.test_effort_end_args.EffortEndArgs.test_start_is_the_default) ... ok",
+            "test_sycl_bin_from_the_config_env (tools.test_effort_end_args.EffortEndArgs.test_sycl_bin_from_the_config_env) ... ok",
+            "test_sycl_binary_missing_falls_back_to_the_launcher (tools.test_effort_end_args.EffortEndArgs.test_sycl_binary_missing_falls_back_to_the_launcher) ... ok",
+            "test_sycl_binary_without_the_option (tools.test_effort_end_args.EffortEndArgs.test_sycl_binary_without_the_option) ... ok",
+            "test_sycl_launcher_reads_the_binary (tools.test_effort_end_args.EffortEndArgs.test_sycl_launcher_reads_the_binary) ... ok",
+            "test_config_view_drops_secrets_and_cuts_paths (tools.test_strata_bench.RedactionTests.test_config_view_drops_secrets_and_cuts_paths) ... ok",
+            "test_objects_are_redacted_deeply (tools.test_strata_bench.RedactionTests.test_objects_are_redacted_deeply) ... ok",
+            "test_paths_names_ips_and_keys (tools.test_strata_bench.RedactionTests.test_paths_names_ips_and_keys) ... ok",
+            "test_compare (tools.test_strata_bench.ReportTests.test_compare) ... ok",
+            "test_main_writes_a_redacted_report (tools.test_strata_bench.ReportTests.test_main_writes_a_redacted_report) ... ok",
+            "test_names (tools.test_strata_bench.ReportTests.test_names) ... ok",
+            "test_no_server_is_an_error_not_a_crash (tools.test_strata_bench.ReportTests.test_no_server_is_an_error_not_a_crash) ... No Strata server answers at http://127.0.0.1:9.",
+            "test_agent_runs_when_the_context_fits_it (tools.test_strata_bench.SuiteTests.test_agent_runs_when_the_context_fits_it) ... ok",
+            "test_agent_session_reuses_the_conversation (tools.test_strata_bench.SuiteTests.test_agent_session_reuses_the_conversation) ... ok",
+            "test_failures_are_reported_not_hidden (tools.test_strata_bench.SuiteTests.test_failures_are_reported_not_hidden) ... ok",
+            "test_full_suite_shapes_and_medians (tools.test_strata_bench.SuiteTests.test_full_suite_shapes_and_medians) ... ok",
+            "test_small_context_skips_the_long_prompts (tools.test_strata_bench.SuiteTests.test_small_context_skips_the_long_prompts) ... ok",
+            "test_engine_done_line_raises (serve.test_server.NonFiniteLogits.test_engine_done_line_raises)",
+            "test_mid_reply_ends_without_retry (serve.test_server.NonFiniteLogits.test_mid_reply_ends_without_retry) ... ok",
+            "test_nonfinite_invalidates_all_slot_prefixes (serve.test_server.NonFiniteLogits.test_nonfinite_invalidates_all_slot_prefixes) ... ok",
+            "test_nothing_emitted_is_retried_once (serve.test_server.NonFiniteLogits.test_nothing_emitted_is_retried_once) ... ok",
+            "test_twice_is_an_error (serve.test_server.NonFiniteLogits.test_twice_is_an_error) ... ok",
+            "test_twice_over_http (serve.test_server.NonFiniteLogits.test_twice_over_http) ... /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-xe-v0143-nonfinite-20261012/serve/telemetry.py:333: ResourceWarning: unclosed file <_io.TextIOWrapper name='/proc/stat' mode='r' encoding='UTF-8'>",
+            "test_anthropic_nonstream_classifies_only_original_input_as_cached (serve.test_request_accounting.RequestAccounting.test_anthropic_nonstream_classifies_only_original_input_as_cached) ... ok",
+            "test_anthropic_stream_classifies_only_original_input_as_cached (serve.test_request_accounting.RequestAccounting.test_anthropic_stream_classifies_only_original_input_as_cached) ... ok",
+            "test_cancelled_continuation_keeps_original_input_and_counts_each_done_once (serve.test_request_accounting.RequestAccounting.test_cancelled_continuation_keeps_original_input_and_counts_each_done_once) ... ok",
+            "test_failed_continuation_does_not_count_the_first_done_twice (serve.test_request_accounting.RequestAccounting.test_failed_continuation_does_not_count_the_first_done_twice) ... ok",
+            "test_openai_nonstream_keeps_original_cache_and_all_segment_work (serve.test_request_accounting.RequestAccounting.test_openai_nonstream_keeps_original_cache_and_all_segment_work) ... ok",
+            "test_openai_stream_keeps_original_cache_and_all_segment_work (serve.test_request_accounting.RequestAccounting.test_openai_stream_keeps_original_cache_and_all_segment_work) ... ok",
+            "test_single_segment_keeps_its_own_usage_and_timings (serve.test_request_accounting.RequestAccounting.test_single_segment_keeps_its_own_usage_and_timings) ... ok",
+            "test_prompt_n_is_what_was_read (serve.test_request_accounting.SlotLegAccounting.test_prompt_n_is_what_was_read) ... ok",
+            "test_solo_leg_adds_to_the_slot_leg (serve.test_request_accounting.SlotLegAccounting.test_solo_leg_adds_to_the_slot_leg) ... ok",
+            "test_two_hand_backs_sum (serve.test_request_accounting.SlotLegAccounting.test_two_hand_backs_sum) ... ok",
+            "test_an_earlier_window_never_finished_is_fatal (serve.test_fatal_recovery.FatalRecovery.test_an_earlier_window_never_finished_is_fatal) ... ok",
+            "test_batch_timeout_signature_also_invalidates_engine (serve.test_fatal_recovery.FatalRecovery.test_batch_timeout_signature_also_invalidates_engine) ... ok",
+            "test_closed_serial_engine_rejects_without_accessing_closed_pipe (serve.test_fatal_recovery.FatalRecovery.test_closed_serial_engine_rejects_without_accessing_closed_pipe) ... ok",
+            "test_fatal_error_is_not_a_success_and_next_request_reloads (serve.test_fatal_recovery.FatalRecovery.test_fatal_error_is_not_a_success_and_next_request_reloads) ... ok",
+            "test_fatal_lines_are_checked_before_batch_routing (serve.test_fatal_recovery.FatalRecovery.test_fatal_lines_are_checked_before_batch_routing) ... ok",
+            "test_generate_batched_refuses_a_dead_engine (serve.test_fatal_recovery.FatalRecovery.test_generate_batched_refuses_a_dead_engine) ... ok",
+            "test_http_health_and_next_request_recovery (serve.test_fatal_recovery.FatalRecovery.test_http_health_and_next_request_recovery) ... ok",
+            "test_validation_error_does_not_kill_engine (serve.test_fatal_recovery.FatalRecovery.test_validation_error_does_not_kill_engine) ... ok",
+            "test_an_engine_that_died_on_load_is_reported_as_such (serve.test_lifecycle.Lifecycle.test_an_engine_that_died_on_load_is_reported_as_such) ... ok",
+            "test_busy_auth_and_foreign_origin_cannot_unload (serve.test_lifecycle.Lifecycle.test_busy_auth_and_foreign_origin_cannot_unload) ... ok",
+            "test_close_cleans_up_after_a_broken_stdin_pipe (serve.test_lifecycle.Lifecycle.test_close_cleans_up_after_a_broken_stdin_pipe) ... ok",
+            "test_close_does_not_forget_a_process_still_exiting (serve.test_lifecycle.Lifecycle.test_close_does_not_forget_a_process_still_exiting) ... ok",
+            "test_close_sends_eof_before_waiting (serve.test_lifecycle.Lifecycle.test_close_sends_eof_before_waiting) ... ok",
+            "test_close_terminates_before_it_kills (serve.test_lifecycle.Lifecycle.test_close_terminates_before_it_kills) ... ok",
+            "test_discover_chat_unload_and_stream_reload (serve.test_lifecycle.Lifecycle.test_discover_chat_unload_and_stream_reload) ... ok",
+            "test_explicit_load_and_model_matching (serve.test_lifecycle.Lifecycle.test_explicit_load_and_model_matching) ... ok",
+            "test_native_lazy_constructor_does_not_start_a_process (serve.test_lifecycle.Lifecycle.test_native_lazy_constructor_does_not_start_a_process) ... ok",
+            "test_a_bad_new_download_is_also_removed (tools.test_setup_llama_archive.LlamaSourceArchive.test_a_bad_new_download_is_also_removed) ... ok",
+            "test_bad_cached_zip_is_removed_and_the_next_call_recovers (tools.test_setup_llama_archive.LlamaSourceArchive.test_bad_cached_zip_is_removed_and_the_next_call_recovers) ... ok",
+            "test_cleanup_failure_does_not_replace_the_bad_zip_error (tools.test_setup_llama_archive.LlamaSourceArchive.test_cleanup_failure_does_not_replace_the_bad_zip_error) ... ok",
+            "test_crc_failure_during_extraction_is_removed_and_the_next_call_recovers (tools.test_setup_llama_archive.LlamaSourceArchive.test_crc_failure_during_extraction_is_removed_and_the_next_call_recovers) ... ok",
+            "test_installed_source_is_reused_without_downloading (tools.test_setup_llama_archive.LlamaSourceArchive.test_installed_source_is_reused_without_downloading) ... ok",
+            "test_missing_archive_or_mark_during_cleanup_is_harmless (tools.test_setup_llama_archive.LlamaSourceArchive.test_missing_archive_or_mark_during_cleanup_is_harmless) ... ok",
+            "test_original_bad_zip_exception_is_preserved (tools.test_setup_llama_archive.LlamaSourceArchive.test_original_bad_zip_exception_is_preserved) ... ok",
+            "test_permission_and_disk_errors_do_not_discard_a_valid_archive (tools.test_setup_llama_archive.LlamaSourceArchive.test_permission_and_disk_errors_do_not_discard_a_valid_archive) ... ok",
+            "test_success_uses_local_source_and_removes_archive_and_mark (tools.test_setup_llama_archive.LlamaSourceArchive.test_success_uses_local_source_and_removes_archive_and_mark) ... ok",
+            "test_truncated_cached_zip_is_removed (tools.test_setup_llama_archive.LlamaSourceArchive.test_truncated_cached_zip_is_removed) ... ok"
+          ],
+          "unique_diagnostic_lines": [
+            "Ran 73 tests in 14.624s",
+            "OK"
+          ],
+          "diagnostic_line_count": 2,
+          "first_lines": [
+            "test_default_off (serve.test_cache_drop.CacheDrop.test_default_off) ... ok",
+            "test_exited_engine_paths_use_spawn_cwd (serve.test_cache_drop.CacheDrop.test_exited_engine_paths_use_spawn_cwd) ... ok",
+            "test_files_and_advise (serve.test_cache_drop.CacheDrop.test_files_and_advise) ... ok",
+            "test_not_while_engine_runs_or_not_opted_in (serve.test_cache_drop.CacheDrop.test_not_while_engine_runs_or_not_opted_in) ... ok",
+            "test_on (serve.test_cache_drop.CacheDrop.test_on) ... ok",
+            "test_http_routes_receive_config_and_request_effort (serve.test_config_effort.ConfigEffort.test_http_routes_receive_config_and_request_effort) ... ok",
+            "test_invalid_migration_does_not_mutate_args (serve.test_config_effort.ConfigEffort.test_invalid_migration_does_not_mutate_args) ... ok",
+            "test_migration_and_key_priority (serve.test_config_effort.ConfigEffort.test_migration_and_key_priority) ... ok"
+          ],
+          "last_lines": [
+            "test_permission_and_disk_errors_do_not_discard_a_valid_archive (tools.test_setup_llama_archive.LlamaSourceArchive.test_permission_and_disk_errors_do_not_discard_a_valid_archive) ... ok",
+            "test_success_uses_local_source_and_removes_archive_and_mark (tools.test_setup_llama_archive.LlamaSourceArchive.test_success_uses_local_source_and_removes_archive_and_mark) ... ok",
+            "test_truncated_cached_zip_is_removed (tools.test_setup_llama_archive.LlamaSourceArchive.test_truncated_cached_zip_is_removed) ... ok",
+            "",
+            "----------------------------------------------------------------------",
+            "Ran 73 tests in 14.624s",
+            "",
+            "OK"
+          ],
+          "scope": "Repeated successful listings omitted; original immutable private receipt is the identity anchor."
+        }
+      }
+    },
+    "modules": [
+      "serve.test_cache_drop",
+      "serve.test_config_effort",
+      "tools.test_effort_end_args",
+      "tools.test_strata_bench",
+      "serve.test_server.NonFiniteLogits",
+      "serve.test_request_accounting",
+      "serve.test_fatal_recovery",
+      "serve.test_lifecycle",
+      "tools.test_setup_llama_archive"
+    ],
+    "source_pins": {
+      "serve/server.py": {
+        "sha256": "d0c01effcf29aeaad2a4c7e5f472a01a6a04ed859bd5527d21dc75339060c33a"
+      },
+      "serve/cache_drop.py": {
+        "sha256": "4957023310bc553cd704772c5999de618acb1c33b71e9a591c8abdc0c956fac3"
+      },
+      "serve/test_cache_drop.py": {
+        "sha256": "5322d20520bd955bcfcd09275e28996160a6ef6c8717d5e1fecfd0c31c59de95"
+      },
+      "serve/test_config_effort.py": {
+        "sha256": "beef99ab3a7268dd1b9dbd0236bc9d51b6836a55a463a7376032039aeaf8d18c"
+      },
+      "tools/test_effort_end_args.py": {
+        "sha256": "d240c9de2bbfccd56951c89e6496f8d51ac1d487a41b42873d93b3be4370bd9b"
+      },
+      "tools/strata_bench.py": {
+        "sha256": "838ed6833aab4425d9569e7f97ba8678e04c3f170cc552dc2907d5db0389f7b6"
+      },
+      "tools/serve_load.py": {
+        "sha256": "f33de08d9d4b1d4e3d080e782a15fd6f876b8d4f3d0210a25ff449016c9e2410"
+      },
+      "tools/strata_bench_fixtures.py": {
+        "sha256": "5e560e5388ee6a6ebffadaebd983866b11ab4045cd86f8937d34897b18899dcc"
+      },
+      "tools/test_strata_bench.py": {
+        "sha256": "154b8d96bc6b11e54ff20b3241a7f3a94f9d4d313814f29e9b3892cf91c728d5"
+      },
+      "setup.py": {
+        "sha256": "f9e6296043ef7601899b391028bdc163e2e53afbb7213cc646c9857854c7b453"
+      },
+      "tools/test_setup_llama_archive.py": {
+        "sha256": "fff54c63e240fe01fd5c5b08fb1a4d0b67c9e184631890a28271ad13d639728e"
+      }
+    },
+    "environment": {
+      "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/venv/bin:/usr/bin:/bin",
+      "HOME": "/home/yayoi",
+      "USER": "yayoi",
+      "LOGNAME": "yayoi",
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "HF_HUB_OFFLINE": "1",
+      "TRANSFORMERS_OFFLINE": "1"
+    },
+    "started_utc": "2026-10-11T21:54:34.043220+00:00",
+    "finished_utc": "2026-10-11T21:54:49.116237+00:00"
+  }
+}

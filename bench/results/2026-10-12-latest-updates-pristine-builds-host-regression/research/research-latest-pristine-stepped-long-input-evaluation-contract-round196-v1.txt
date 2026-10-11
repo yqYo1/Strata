@@ -1,0 +1,52 @@
+R196 — pristine long-input verifier-window evaluation contract
+Date: 2026-10-12
+Scope: source-only runtime-path audit for upstream Strata v0.1.43 and XeStrata da3d426. No build, AST, import, test, compiler, runtime, GPU, process query, or Git mutation was performed. This report does not claim device qualification or a measured result.
+
+Finding
+-------
+The R193 arguments do select a finite, deliberately slow control path for a text-only long prompt, with two qualifications. First, `--spec 4` is the verifier window capacity, not four-token decode speculation when `--mtp` is absent; ordinary output decode is one token per round if suffix lookup drafts are disabled. Second, `STRATA_VERIFY_STEPPED=1` does not remove volatile word accesses. It sequences them at drained queue boundaries so the host does not poll a device-written word while a kernel is running or let a running kernel wait on a host-written word. This is a source-derived safety candidate, not a claim validated on the B570.
+
+Recommended qualification arm
+-----------------------------
+For a fresh, text-only prompt of exactly 32,768 token IDs and a requested output cap of N tokens, use the same single-GPU engine/model/PLE/expert placement for each candidate and run the engine's server protocol with these options:
+
+    STRATA_VERIFY_STEPPED=1 STRATA_VERIFY_PIPE=0 \
+      ./strata --serve --spec 4 --short-read 65536 \
+        --max-context $((32768 + N + 8)) --prompt-cache 0 \
+        --conversation-cache-mib 0 --suffix-draft 0 \
+        --ple-gguf /path/to/the/model-ple.gguf
+
+Send the identical token IDs with the same output cap N and the same sampling parameters to each engine. Use the API's final tokenized prompt length, including template/special tokens, in place of 32768 if the stated “32K” is a pre-template text length. In both trees the serve request rejects `n + max_new + 8 > --max-context`; therefore the server context must be at least the final tokenized prompt length plus N plus 8. The generated model's supported context limit and available memory remain external prerequisites. The shell expansion above is only illustrative; use a numeric value within that model limit. Use the server request's generation cap (`GEN N ...` for the native protocol, or the equivalent API field), because the per-request limit is checked independently.
+
+Keep the CPU expert pool enabled: do not pass `--no-pool`. `--expert-cache 0` is the default and can be made explicit if the goal is for the CPU pool to serve every routed expert miss, rather than comparing GPU-hit cache placement. Use the same expert pack/layout, GPU cache count, CPU pool worker/affinity settings, and PLE shard in both builds. PLE must be supplied: help text in both programs warns that omitting `--ple-gguf` silently skips layer 1 PLE and changes subsequent values. Leave MTP absent and `--suffix-draft 0` to avoid additional drafted windows; `--spec 4` still sets the verifier's maximum window width. These settings make each prompt read a sequence of windows of at most four tokens; no four-token decode speculation is implied.
+
+`--prompt-cache 0` prevents previously read prompt checkpoints from bypassing this path on repeated requests. `--conversation-cache-mib 0` is the default and makes that intent explicit. Keep `--pipeline-windows` at its default zero; do not set `STRATA_PIPELINE_SWITCH`. On Xe, ensure `STRATA_CKPT_REREAD` is unset, since it forces the batched route. The command must use the same tokenization and content in every arm. Image-embedding rows are excluded: source routes those segments to batched prefill regardless of `--short-read`.
+
+Why the long prompt reaches the verifier windows
+------------------------------------------------
+Upstream v0.1.43 `sycl/src/program/generate.cpp` documents `--short-read` as a `--serve` threshold (default 64, zero disables it) and parses the explicit value. `windows_ok(a,b)` returns false when the segment is longer than that value or has image embeddings. The segment loop selects `read_windows(at,to,...)` when true and `read_part(at,to,...)` otherwise. `read_windows` advances in `min(--spec, remaining)` pieces and invokes `Verifier::run`; it does not call the batched `Prefill::run`. A fresh 32K text prompt split into parts no longer than 65536 therefore follows this path. The environment switch `STRATA_CKPT_REREAD` explicitly forces the non-window route; leave it unset.
+
+Xe da3d426 uses `ShortReadCost::windows`. For an explicitly supplied `--short-read`, the `given` condition bypasses the adaptive cost chooser and uses the explicit length limit. Thus 65536 is a deterministic ceiling even before the adaptive read history is trained. The non-explicit default may be adapted from timing samples, so do not omit the flag. Xe also honors the same `STRATA_CKPT_REREAD` override and rejects image-bearing segments from this route.
+
+Ordinary host handoff path and its limits
+-----------------------------------------
+In upstream `sycl/src/core/verify.cpp`, `STRATA_VERIFY_STEPPED=1` selects the segmented verifier when the cache is not all-resident (`!ar_on()`) and the segments for T exist. With CPU pool enabled and expert cache zero, that is the intended non-all-resident route. `STRATA_VERIFY_PIPE=0` disables the optional helper-thread path that concurrently runs the pool and waits on flag A. `STRATA_VERIFY_EAGER` must remain unset; eager replay is excluded from the stepped selection. For a stepped segment, the host waits for the queue, then checks the sequence, services the CPU pool, publishes the plan/flags, and submits the dependent segment. The ordinary post-graph loop that waits for device progress is bypassed for stepped runs. Volatile loads and stores still exist, but occur at ownership boundaries rather than as concurrent handoff polls. Keep test-stall/debug verifier environment controls unset.
+
+The generated prompt is verified and committed in small windows. With no MTP file, source gates MTP prefill/drafting on `use_mtp = !o.mtp.empty()`. In the serve decode loop, no-MTP mode sets T=1 unless suffix lookup creates a draft; `--suffix-draft 0` removes that optional lookup. So the output is a normal bounded one-token decode stream through the verifier, not MTP speculation. This is finite by the request cap N, but the 32K prompt involves 8,192 verifier windows at width four and can take many minutes. The route is a safety/correctness control arm, not a useful estimate of batched prefill speed.
+
+The all-resident verifier takes a separate `stepped_ar` branch: it publishes the PLE flag before graph launch and skips the ordinary host-handoff loop because the GPU has its own complete expert plan. That is not the intended CPU-pool arm. If the actual runtime selects all-resident mode, or if `seg_[T]` is unavailable, the non-all-resident source argument above does not apply; record the startup/INFO diagnostics and do not label the run qualified by configuration alone.
+
+This argument concerns verifier host handoffs, not startup compilation. Xe da3d426 unconditionally starts `Runtime::preload_kernels()` before serving; R195 found no existing option to disable that sweep. A Xe run can only enter this evaluation path if startup succeeds. Passing startup would not itself prove the correctness of every window or bypass the separate PackedA failure mechanism. Upstream's pristine SYCL tree has no matching all-ID preload routine, but its ordinary on-demand kernel/module behavior remains unqualified.
+
+Correctness and benchmark comparability
+----------------------------------------
+The path permits a controlled **output-correctness** comparison only if both runs use the exact tokenized prompt, model and shard hashes, PLE shard, sampler (greedy is simplest), output cap, context, expert placement/pack, and equivalent CPU-pool routing. Record whether output stopped at EOS or the cap and compare token IDs, not rendered text. This proves only the exercised prompt and generated prefix. R193's B570 capability assumption (`HOST_USM=1`, `ATOMIC_HOST_USM=0`) and source ordering are not a hardware test; retain device/runtime faults and do not claim validation until an actual run is completed.
+
+Do not compare this result's prompt throughput with batched `--prefill` or a default `--short-read 64` run as though the algorithms matched. The 32K prompt is deliberately processed through serial verifier windows and the CPU pool; batched prefill uses different kernels, buffer lending/refill, and (in pristine upstream) the Stager and PLE completion-word protocols. Xe's batched DMA/PLE paths use events, but Xe's separate startup preload remains a gate. A cold first run and a warmed repeat also have different module/cache costs; report them separately. To compare the stepped route's timings across source revisions, preserve per-request prompt and decode times, observed window count/width, startup time/status, first-run versus repeat, clock/power state, and all configuration/source hashes. Do not infer batched-prefill performance from this candidate.
+
+Source anchors
+--------------
+- Upstream v0.1.43, immutable source snapshot 7695859: `sycl/src/program/generate.cpp` option help near 810, `--short-read` parse near 1853, request limit near 10172, `windows_ok` and route selection near 9840 and 10300, `read_windows` near 9970, `use_mtp` near 6867 / output decode T selection near 11104; `sycl/src/core/verify.cpp` `g_stepped` near 103 and stepped branch near 2041–2190.
+- Xe da3d426, immutable source snapshot: `src/program/generate.cpp` parse near 2324, `ShortReadCost` near 1186–1250, request limit near 8258, window selection near 8586, route selection near 9052, one-token no-MTP decode near 9724; startup preload call near 2847. `src/core/verify.cpp` uses the corresponding stepped control flow.
+- Prior source reasoning: `research-pristine-latest-existing-config-host-handoff-proof-round193-v1.txt` (the predecessor candidate) and functional boundaries in `research-v0143-functional-gap-native-protocol-reconciliation-round194-v1.txt`.
+- Registry anchor requested for this review: `.../bench/results/2026-10-12-prefill-emb-ple-alias-source-qualification/report-registry-v152.json`, `research_completed: 663`.

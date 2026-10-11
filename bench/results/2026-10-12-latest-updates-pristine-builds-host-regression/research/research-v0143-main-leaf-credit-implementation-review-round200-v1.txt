@@ -1,0 +1,27 @@
+# R200 — review of conservative cgroup leaf credit implementation
+
+Read-only static review of Main's current WN implementation against R196's targeted-reclaim correction and R197's exact-leaf rules. No compile, AST/import, tests, build, runtime, GPU/model/process query, Git mutation, cleanup or temporary scratch file was used.
+
+## Snapshot
+
+- WN: `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-xe-v0143-nonfinite-20261012`, HEAD `337255086026f6eef21a861c297183d05a5f7a22`; working-tree source is newer than that commit.
+- Read-file SHA-256: `src/core/conversation_memory.cpp` `3fd83238671f3412259d6383f68472cd8304601802ff6f62fcb6f7a13c949541`; `include/strata/core/conversation_memory.hpp` `540597e63d997c4214edc40e38301cf69bf1d99906a40fda59f54b54301135cb`; `tests/core/memory_guard_test.cpp` `c718165462cd446aa51f150176ea086f5dd7f1338579d21151c21bf629be9b37`.
+- Baseline reports: `research-v0143-memory-min-targeted-reclaim-reconciliation-round196-v1.txt` and `research-v0143-conservative-leaf-cache-credit-proof-round197-v1.txt`.
+
+## Finding: path resolver accepts non-normalized membership paths as exact
+
+`group_dirs()` (`src/core/conversation_memory.cpp:180–205`) skips every empty component while splitting `group` and then sets `exact` by comparing only the number of resolved directories with the number of remaining names. Consequently `0:://a/b`, `0::/a//b`, and `0::/a/b/` resolve as `/a/b` and can set `exact=true`. When the resolved leaf is child-free, `scan_levels()` can then apply its `memory.stat` credit to the leaf's finite limit (`:165–172`).
+
+The expected kernel membership path is normally canonical, so this is a malformed-input/fail-closed gap rather than evidence that a normal `/proc/self/cgroup` value currently misattributes credit. It does conflict with R197's rule that credit requires an absolute normalized cgroup path and that malformed paths must not become an exact leaf. Reject empty interior/trailing components (and any spelling other than the single `/` root) before walking, or compare a canonicalized form only after proving the original representation was canonical. Add fixtures for repeated and trailing separators that assert zero cache credit while preserving raw limit accounting.
+
+## Checks that pass by source inspection
+
+- **Root and ancestors receive zero cache credit.** `scan_levels()` grants credit only when `exact_leaf && i + 1 == dirs.size()` and `child_free_leaf(dirs)`; each level's credit is independently set to zero otherwise (`:147–172`). The namespace root path `/` is explicitly inexact (`group_dirs`: `:205`) and `child_free_leaf()` also rejects fewer than two directories (`:130–132`). The operator cap uses `credit = 0` and raw root/host usage (`combine`: `:263–276`).
+- **Missing, partial, ambiguous, and incomplete membership do not receive leaf credit.** A missing membership file selects `/`, which is inexact (`:209–215`, `:205`). Partial component resolution leaves `exact=false` (`:197–205`). Exactness additionally requires a fully read membership file and exactly one v2 or v1 memory-controller entry (`:227–238`). Duplicate v2 membership is asserted zero-credit by the fixture at test lines 373–375.
+- **Child-free qualification fails closed on the listed directory cases.** It checks every root-to-leaf path element with `symlink_status`, rejects symlinks/non-directories, checks the directory-iterator constructor error, checks entry status errors, rejects symlink or directory entries, and returns false after increment errors (`:130–144`). This means a discovered child directory or symlink prevents credit.
+- **Leaf own-min/low behavior is retained.** The implementation does not read or subtract `memory.min` or `memory.low`; the fixture places both on a child-free exact leaf and expects its 512 MiB credit (`memory_guard_test.cpp:343–361`). This matches the R196 correction for reclaim targeted at that same leaf.
+- **Dirty/writeback and stats symlinks fail closed for credit.** `reclaimable_cache()` requires `memory.stat` itself to be a regular file under `symlink_status` (`:83–87`), requires a unique valid inactive counter, rejects malformed/duplicate dirty and writeback counters, and subtracts dirty/writeback while clamping credit to current usage (`:91–115`). The test covers dirty/writeback deduction and a symlink `memory.stat` with zero credit (`memory_guard_test.cpp:287–312, 382–385`).
+
+## Limits of this source review
+
+No fixture or runtime execution was performed. The implementation comments correctly describe this as a sampled estimate rather than a reservation; hierarchy changes after sampling and hidden ancestors remain outside the guarantee, as R197 documents. The path-normalization finding should be closed with a focused fixture and Main's normal validation.

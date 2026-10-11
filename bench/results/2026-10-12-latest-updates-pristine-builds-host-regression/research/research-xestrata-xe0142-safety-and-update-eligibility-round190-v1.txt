@@ -1,0 +1,72 @@
+R190 — XeStrata xe0.1.42 safety and update eligibility audit
+Date: 2026-10-12
+
+Scope and source pins
+
+Read-only comparison of XeStrata xe0.1.42 commit `da3d426079019daa6e01388d03b0d94ae67070b7` against the preceding xe0.1.40.2.2 commit `e32b8b0594095352365db0e140a68d5bf56d8b0f`, and the current local performance snapshot `39e395a103af36323262cdc0dbaea27cba81f3e4` plus Strata worktree HEAD `337255086026f6eef21a861c297183d05a5f7a22`. The compared worktrees are:
+
+- XeStrata xe0.1.42: `/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/bench-xestrata-xe0142-pristine-20261012`
+- Prior XeStrata: `/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/bench-xestrata-e32-pristine-20261011`
+- Current performance source: `/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/perf-xe-prefill-row-bounded-scratch-20261011`
+- Current Strata: `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-xe-host-issuer-ledger-20261012`
+
+The source diff was restricted to `src/`, `include/`, `CMakeLists.txt`, `setup.py`, and `serve/`. No `bench/` measurement diff was included. No builds, tests, compiler/runtime/GPU/model/process queries, Git mutations, cleanup, or source edits were performed. Prior related source audits are R338 (broad performance/build delta), R339 (prefill lifetime/fault controls), R162 (xe0.1.42 controls and safety), and R354 (official v0.1.42 prefill host-USM admission). This report adds only source facts and deltas needed for current update eligibility; it does not repeat their performance matrix.
+
+Decision
+
+The release is a genuine upstream-base change: its CMake version is `0.1.42`, upstream commit prefix `61b3fb5`, revision 1. The current local Strata and 39e performance source still identify upstream `0.1.40.2`/`e8ca9af`, with XeStrata revision 3 in the latter. Therefore the xe0.1.42 source is not an in-place update to the current source baseline. It can inform narrowly scoped fixes and policies, but do not bulk-import it or treat the release comparison as a performance result for W337/current Strata.
+
+No new grouped-GEMM arithmetic implementation is present in the audited scoped delta that merits a prefill-kernel speed claim. Many Xe kernel translation units gain `device_arch_tag.hpp` compile-time markers. The header embeds an architecture/source identity in device code so a package checker can compare the device image against the image filename/target. This is useful build-artifact provenance and can detect mis-bundled code; it does not change runtime dispatch, prove a B570 image was correctly built or packaged, show a kernel ran, or establish runtime/JIT equivalence. This guard is absent from both local snapshots and is a reasonable build-validation candidate. Keep it classified as build correctness, not a runtime speed optimization.
+
+Host-USM synchronization, preload and lifetimes
+
+The xe0.1.42 Stager has improved buffer ownership relative to the old sequence-poll protocol: `Stager::work` calls `event_sync(dma_done[b])` before a worker overwrites a pinned ring slot (`src/prefill/prefill.cpp:331`), and `issued_one` records the copy completion event after queuing the DMA (`:374`). The PLE double buffer similarly waits for the prior upload before host reuse and records the upload event (`:1304` and nearby PLE submission code). These event edges are a useful lifetime model and differ from volatile host polling. The current 39e local code has its own queue-event and host-handoff changes, but xe0.1.42 should not be substituted for the current source's already-reviewed publication/issuer protocol.
+
+This is not a fail-closed synchronization contract. The inspected critical paths ignore the bool result from `event_sync`, `event_record`, and relevant `stream_wait_event` calls. If an operation fails, source does not consistently abort before host reuse. The release also still has no `host_handoff_concurrent` capability predicate. In `src/core/mtp.cpp`, regular `MtpDrafter::draft` resets and polls mapped host-USM output/probability with volatile loads while device work can produce it; `stream_idle` is only a fault/exit hint, not an ownership handoff. Async-chain completion events do not repair this regular draft loop. This is already documented in R162, and independently the official long-prefill host-USM stager concern is in R354. Current 39e/W337 has `gpu::host_handoff_concurrent()` false, gates CPU sharing and session/verifier polling, and uses serialized/segmented fallback paths. Preserve that local gate; importing event calls alone does not qualify concurrent MTP or all prefill protocols.
+
+Kernel preload differs. Xe0.1.42's `Runtime::preload_kernels()` always launches the background thread; it removed the `STRATA_PRELOAD_KERNELS=0` guard present in current 39e. It adds `Runtime::wait_preload()` and calls it before CPU/memory-rate probes (`src/program/generate.cpp:1935,1948`) because concurrent kernel compilation was contaminating host-side timing. These are measurement-isolation/lifecycle controls, not faster kernels. On xe0.1.42, setting `STRATA_PRELOAD_KERNELS=0` does not disable preload; do not use that as a release A/B control. The new `wait_preload()` joins the thread but does not provide a user-facing preload-off mode.
+
+Context 262144 correctness
+
+The release adds explicit speculative-work bounds near the context edge:
+
+- MTP limits draft steps by available K/V cells: `src/core/mtp.cpp:1040`, `max_steps = min(max_t_-1, max_drafts_, st_.max_cells-(p+a))`.
+- The normal generation path limits the verification window by remaining context room: `src/program/generate.cpp:10821-10822`, where `room=min(spec,max_context-p)` and `T=min(T,room)`. The adjacent check at `:10841` rejects a remaining out-of-bounds window.
+- Input admission checks prompt + max-new + margin against max-context (`generate.cpp:8258`); the session allocation uses `max_context` as its capacity.
+
+These edge guards are absent by exact-symbol search in both current source snapshots; those loops instead retain a `p + T > max_context` break. This is a relevant full-context correctness/termination delta, not evidence that 262144 succeeds on any GPU. A source-level follow-up should exercise a host boundary helper and then, only under the already-required runtime safety gate, a context-edge case with MTP and a case without MTP; assert no write past the final K/V cell, no oversized verifier window, correct stop reason/output count, and unchanged logits/routes for an interior control. Also keep allocation feasibility separate: source acceptance of `--max-context 262144` does not show that session/model/cache/prompt buffers fit device or host memory.
+
+Prefill/decode policy deltas absent locally and their proper category
+
+1. **Embedding/output plane alias and accounting.** Latest `src/prefill/prefill.cpp:778` aliases `bo` to `emb` after the embedding rows are dead on the same in-order queue. `bytes_needed` still counts the old plane unless `STRATA_EMB_REUSE_ACCOUNT=1` (`:1063`), so the default retains the previous memory plan; the opt-in can spend the saved bytes on larger chunk/cache borrowing. The alias and accounting switch are absent from 39e/W337. Source comments cite an upstream RTX 3060 IQ3_XXS chunk change 6400→6656 and prompt +3.9%; this is a reported external configuration-specific result, not a current B570/Strata result. Candidate is memory capacity/chunk eligibility, not a new GEMM kernel. Review exact consumers, queue ordering, alias lifetime, and all buffer sizing paths before porting; compare correctness and peak bytes before timing.
+
+2. **Warm page-cache versus file-backed staging profile.** Latest `src/prefill/prefill.cpp:700-713` samples `src->cached_share(256)`; at >=90% resident pages it chooses the RAM profile unless `STRATA_STAGER_SSD` explicitly forces a profile. That changes staging thread/ring policy based on whether source reads are likely disk-backed or memory copies. It is absent in current 39e/W337. Source comments state 32 workers with a 128-deep ring were 4–7x slower in a warm-cache RAM-copy case; that comment is not a measured result for this machine or the current source. It is a viable controlled prefill policy candidate: compare cold and warm page-cache runs, fixed input/model, record selected profile/thread count/ring and correctness, then measure prefill separately. Do not present it as arithmetic-kernel acceleration.
+
+3. **CPU-share adaptive gate and host-memory guard.** Latest adds `STRATA_PREFILL_CPU_GATE=1`: it alternates shared/unshared eligible layers, compares a rolling median of per-expert layer wall costs, then chooses the lower-cost arm with recurring probes (`prefill.cpp:1790-1840`). Its own source comment reports 1K IQ3_XXS results moving 844→833 tok/s on B70 and 296→283 on RTX 4070 with the gate, four interleaved rounds. Treat that as a caution, not a winning candidate; no local W337 evidence supports enabling it. The new default-share rules also withhold opportunistic host work when free RAM is low or the input expert file pages exceed the stated margin (`include/strata/prefill/share_rules.hpp`). That is host-memory/session reliability, not GPU arithmetic speed. Local has its own CPU-share gate (`cpu_share_default_ok`) based on current device handoff capability; do not replace it with upstream heuristics without preserving the stricter capability check.
+
+4. **Auxiliary CPU affinity.** `include/strata/platform/aux_cpus.hpp`, `src/program/generate.cpp`, and worker entry points add `--aux-cpus`/`STRATA_AUX_CPUS` to move non-pool helpers/stagers away from pool/host CPUs. This is absent from both local snapshots. It is a CPU scheduling/session-pressure control that may change host contention and copy submission timing; it is not a GPU kernel or an automatic speed claim. Only test it when CPU contention is measured, compare thread placement and host-side timings, and keep CPU affinity results separate from GPU kernel timings.
+
+5. **Cache-conditioned routing.** Latest adds `STRATA_ROUTE_PRIOR` and `STRATA_ROUTE_RESIDENT` kernels in `src/kernels/xe/router.cpp:229-320`, absent locally. Both can alter selected experts and/or weights using residency. They are algorithm/output changes, not correctness-preserving kernel replacements. Any study requires full quality and route/logit validation under the actual model; do not count their potential cache hits as an equivalent speed-kernel update.
+
+6. **Serving/session-memory features.** `serve/cpu_affinity.py`, `serve/test_context_overflow.py`, `serve/session_save_retry.py`, `serve/telemetry.py`, and corresponding server/setup changes add CPU placement, request context overflow checks, opt-in reclaim of unpinned conversation caches before SAVE, and host-memory telemetry. These are service safety, admission, pressure, and usability functions. They should be reviewed against the serving API and RESTORE/save lifetime contracts, but must not be booked as prefill/decode kernel performance. In particular the context-overflow endpoint tests are host/API behavior; they do not prove that a C++ GPU verifier or MTP does not write beyond its context.
+
+Short-read policy and the already-known measured doorbell delta are not new candidates here: `ShortReadCost` exists in the local source, and R338 already compared the doorbell policy. No separate prefill-GEMM implementation change in the scoped release delta was found that is both absent locally and backed by a comparable current workload measurement.
+
+Eligibility/action order
+
+- Retain W337's conservative host-handoff gate and current publication/issuer fixes. Do not use xe0.1.42 Stager/PLE event wiring as proof of safe full prefill because failed event operations are ignored and regular MTP polling remains.
+- Review the release's context clamps as an isolated correctness fix; validate source helper behavior and boundary invariants before considering runtime evidence at `--max-context 262144`.
+- Assess the plane alias and page-cache-selected stager profile as separate prefill capacity/policy experiments. Keep the exact model, chunk, expert count, cache loan, page-cache condition, and correctness outcome visible; do not merge observations from RTX 3060/B70 comments into a local speed claim.
+- Keep aux CPU affinity as a CPU contention experiment; keep cache-biased routing outside performance-equivalent candidates until output/quality is qualified.
+- Keep build-image tagging as a package provenance check. Confirm tag-to-image checks in a build artifact before claiming compile/dispatch eligibility; no compiler or image package was inspected here.
+
+Primary source links
+
+- XeStrata xe0.1.42 tree: https://github.com/MistVVK/XeStrata/tree/da3d426079019daa6e01388d03b0d94ae67070b7
+- Scoped prior-to-latest compare: https://github.com/MistVVK/XeStrata/compare/e32b8b0594095352365db0e140a68d5bf56d8b0f...da3d426079019daa6e01388d03b0d94ae67070b7
+- Pinned prefill source: https://github.com/MistVVK/XeStrata/blob/da3d426079019daa6e01388d03b0d94ae67070b7/src/prefill/prefill.cpp
+- Pinned generation source: https://github.com/MistVVK/XeStrata/blob/da3d426079019daa6e01388d03b0d94ae67070b7/src/program/generate.cpp
+- Pinned MTP source: https://github.com/MistVVK/XeStrata/blob/da3d426079019daa6e01388d03b0d94ae67070b7/src/core/mtp.cpp
+- Pinned runtime/device source: https://github.com/MistVVK/XeStrata/blob/da3d426079019daa6e01388d03b0d94ae67070b7/src/core/device.cpp
+- Pinned device-image provenance marker: https://github.com/MistVVK/XeStrata/blob/da3d426079019daa6e01388d03b0d94ae67070b7/include/strata/kernels/device_arch_tag.hpp
+- Pinned service changes: https://github.com/MistVVK/XeStrata/tree/da3d426079019daa6e01388d03b0d94ae67070b7/serve

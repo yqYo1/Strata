@@ -1,0 +1,70 @@
+R191 — xe0.1.42 context clamps versus W337 boundary contracts
+Date: 2026-10-12
+
+Correction to R190
+
+R190 said that the latest Xe context-edge guards were absent in W337 because the exact `room` spelling was absent. That conclusion was wrong. The immutable W337 source already has equivalent and stronger behavior in `include/strata/core/context_bounds.hpp`, and its production callers use those helpers. Do not infer that a bound is absent because its implementation has a different symbol or spelling. Preserve R190 as written; this report records the correction separately.
+
+Pinned source and scope
+
+- Current W337: `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-xe-host-issuer-ledger-20261012`, HEAD `337255086026f6eef21a861c297183d05a5f7a22`; worktree status was clean at inspection.
+- Latest XeStrata: `/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/bench-xestrata-xe0142-pristine-20261012`, HEAD `da3d426079019daa6e01388d03b0d94ae67070b7`.
+- Read-only source and existing test-coverage review only. No tests, builds, AST tools, compiler/runtime/GPU/model/process queries, Git mutations, cleanup, or source edits were performed. No new runtime result or physical-fit claim is made.
+
+Conclusion
+
+There is no context-boundary behavior in the audited xe0.1.42 clamps that W337 still needs to acquire. W337 already proves the logical row, output, MTP candidate, and K/V bounds through shared overflow-safe predicates used by the verifier/generation and MTP callers. The xe release’s `room=min(spec,max_context-p)` and `max_steps=min(...,max_cells-(p+a))` express only capacity-oriented clamps; W337 additionally caps by remaining output budget, validates the original verification span even for partial catch-up, reserves the next verifier’s row 0 and bonus output before producing MTP candidates, and carries those bounds into chain launches. Bulk-importing the Xe source in place of W337’s helpers would remove stronger contracts, not add them.
+
+Logical equivalence and strict W337 coverage
+
+For logical capacity `C=262144` (or any valid capacity accepted by `context_bounds::capacity`), define `p` as the next verifier’s first cell, `r` as remaining output budget, and requested verifier width `s` (2 or 4). W337’s `verifier_window(C,p,s,r)` returns `min(s,C-p,r)` for a valid position and positive request/budget, and returns zero for `p=C` or `r=0` (`include/strata/core/context_bounds.hpp:13-28`). This directly handles both the physical end and the output end. MTP then validates the complete original row span before computing the accepted-prefix catch-up, and allows at most `next_rows-1` candidates so the following verifier retains a row 0 and one bonus output (`:36-49`).
+
+| Endpoint | Width 2 | Width 4 | MTP/chain consequence |
+|---|---|---|---|
+| `p=0` | At most 2 rows, further limited by `r` | At most 4 rows, further limited by `r` | With `r=0`, verifier rows and candidates are zero. At an interior position and positive `r`, only candidates supported by the next bounded verifier are retained. |
+| `p=C-2` | At most 2 rows | At most 2 rows | For `r=0`, no verifier rows. For `r=1`, one row. With a two-row verification span, whether `accepted=0` or `accepted=1`, the next verifier has at most one row before the boundary; its sole row is reserved for the bonus, so there are zero MTP candidates. `catchup_all` may retain both original rows, but both are within the validated span. |
+| `p=C-1` | At most 1 row | At most 1 row | After the last legal row there is no next verifier row, so candidate count is zero. No row is enqueued at `p=C`. |
+| `p=C` (full / one-past) | Zero rows | Zero rows | The generation caller stops/errors before submitting an empty window; direct MTP drafting rejects an invalid zero-row request. A zero-output MTP call yields no candidate writers; a zero-output chain cannot pass the positive `n_out`/candidate checks. |
+
+At the beginning (`p=0`) W337 is not weaker than the Xe room clamp; capacity does not bind, and the output-budget term simply prevents rows from being computed beyond the requested output count. At the tail, the capacity term produces the same physical cap as the Xe clamp, while the output term can shorten it further. For `r=0`, W337 explicitly returns no verifier rows and no candidate outputs; it does not treat zero as authority to enqueue at `p=C`.
+
+The common predicate is used in both main generation loops. Serving/pipelined generation bounds `T+chain_n` by both `o.max_context` and `max_new-produced` at `src/program/generate.cpp:9645`; the one-shot generation loop does the same at `:10718-10725`, then refuses `T==0`. In both sites, `chain_n` is reset to the portion left after the bounded MTP window. MTP’s `draft` receives remaining outputs and calls `mtp_window` before staging at `src/core/mtp.cpp:1167-1202`; `draft_first` clamps the bootstrap and treats exhausted outputs as a no-writer no-op at `:1425-1453`. `chain_launch` rejects any `n_out` beyond bounded candidates at `:1323-1354` (and, in the current W337 build, asynchronous chain launch also refuses the unsupported host handoff before submission at `:1328-1330`).
+
+For admission, `admission(C,prompt,outputs)` uses subtraction-safe span validation and requires a positive output request (`context_bounds.hpp:16-20`). Thus `prompt=C-1, outputs=1` is a valid exact-capacity request; `prompt=C, outputs=0` is not a normal generation request under that predicate. Zero-output behavior is nevertheless defined at the helper/MTP boundary: `verifier_window` yields zero, `mtp_window` permits `outputs=0` only with zero candidates, and `draft` avoids staging/queue writers for the exhausted budget. Special probe paths with no generation have separate admission rules and must not be conflated with a normal zero-output request.
+
+MTP catch-up and K/V contract
+
+`mtp_window` validates the original `[p,p+rows)` interval even when only the accepted prefix is caught up (`context_bounds.hpp:36-48`). Because `accepted<rows` and the span has passed, `first_cell=p+accepted` is within the capacity; candidates are then bounded using a next verifier starting at `first_cell+1`. This covers both `C-2` acceptance cases: rejected rows may be omitted from catch-up when policy says so, or all verified rows may be caught up, but neither policy writes outside the original span. A proposal cell is constrained by the next bounded verifier’s remaining rows minus its bonus row, so the proposal cannot make an unbacked next-window write.
+
+W337’s MTP completion state is a separate ownership guarantee, not part of the context arithmetic. `MtpCompletion` marks a mapped allocation pending before submission and exposes it to host only after checked queue completion; failed completion stays pending and sticky (`include/strata/core/mtp_completion.hpp`). Production MTP uses `complete(err)` before reusing or reading the mapped output at `src/core/mtp.cpp:1169-1171, 1239-1286` (draft path), and keeps queue faults from becoming success on a later drain. The bounds test also verifies that a rejected span is not submitted and cannot clear a sticky failure (`tools/test_context_bounds.cpp:128-133`). The host tests prove these predicates and state transitions only; they do not prove device execution or runtime fit.
+
+Xe0.1.42 compared literally
+
+The pinned Xe MTP code clips draft steps to remaining physical cells with `st_.max_cells-(p+a)` in `src/core/mtp.cpp:1038-1041`. Its one-shot generation loop clips the requested width to `min(spec,max_context-p)` at `src/program/generate.cpp:10817-10842`; the serving loop instead retains an explicit `p+T>max_context` stop check at `:9761` in the inspected pinned source. These expressions are meaningful within the release’s callers, but they do not supersede W337’s shared helpers: the MTP expression does not account for remaining outputs, partial verified-span validity, or next-verifier bonus reservation, while W337’s helper does. The direct room clamp is also not needed at `p=C-2` or `p=C-1`, because `verifier_window` already reduces those windows. There is no concrete endpoint case in which xe0.1.42 admits a safe row or proposal that W337 rejects, or W337 permits an out-of-range row that xe0.1.42 prevents.
+
+Existing host-only test coverage (audit, not a test run)
+
+`CMakeLists.txt:742-752` registers `context_bounds_test` and `mtp_completion_test` when `STRATA_BUILD_TESTS` is enabled. `tools/test_context_bounds.cpp` checks the real production helpers: maximum representable capacity and overflow-safe subtraction (`:76-81`), one-past and the exact `C=262144,p=C-1` verifier row (`:82-85`), invalid original spans and arithmetic inputs (`:87-96`), no candidates at the last cell, bonus-row reservation, configured candidate limits, and zero-output no-candidate behavior (`:97-106`). It tests both catch-up modes, a four-row window at `C-4`, and decode-budget simulations at `C=262144` for native and non-native bootstrap, accepted and rejected prefixes, one/three/four output requests (`:107-126`). It also exhaustively enumerates every short position, legal row width, partial acceptance, and remaining budget for capacities 1 through 11.
+
+`tools/test_mtp_completion.cpp` exercises successful ownership transfer, multiple submissions, failed enqueue/event cutpoints, failed waits, exceptions, sticky errors, and refusal to reuse failed storage (`:16-70`). These are host predicate/state tests, not end-to-end `generate.cpp`/`chain_launch` integration tests.
+
+Coverage precision: existing tests do not spell out the entire requested cross-product as separate 262144-sized cases. In particular, there is no direct `C-2` test at exactly widths 2 and 4 with `r=0/1/2`, no exact `p=0`/`p=C` zero-output pair, and no GPU-backed chain-run test. The generic production predicates plus short exhaustive sweep establish the arithmetic, and the exact C=262144 scenarios exercise 1/3/4 output boundaries and the final row; the tests should not be described as exhaustive integration coverage of every requested context/spec/chain combination. No new functional bounds implementation is justified by these coverage gaps. If future host-only coverage is added, the smallest useful additions are a table-driven direct helper matrix for `{p=0,C-2,C-1,C}`, `{s=2,4}`, `{r=0,1,2,4}`, both catch-up modes, plus explicit chain-row-count assertions; those add cases without replacing W337’s helpers or requiring GPU execution.
+
+Test and runtime boundary
+
+This is a source and existing-fixture audit, not a test pass. The caller-level behavior still needs a future end-to-end test if the active runtime contract permits one. Any 262144 test must keep logical boundary correctness separate from session/model/device allocation feasibility and from the HOST_USM handoff gate. Under current W337 `host_handoff_concurrent=false`, asynchronous MTP chain execution is intentionally unavailable; helper coverage for chain bounds does not qualify the chain runtime. The `MtpCompletion` contract and `context_bounds` contract must both be preserved if code is reconciled across branches.
+
+Primary local references
+
+- W337 context predicates: `include/strata/core/context_bounds.hpp:13-49`
+- W337 verifier call sites: `src/program/generate.cpp:9645-9646,10717-10725`
+- W337 MTP draft/catch-up: `src/core/mtp.cpp:1167-1209`
+- W337 chain bounds/host-handoff gate: `src/core/mtp.cpp:1323-1357`
+- W337 bootstrap bounds: `src/core/mtp.cpp:1425-1453`
+- W337 MTP queue ownership helper: `include/strata/core/mtp_completion.hpp`
+- Existing context arithmetic coverage: `tools/test_context_bounds.cpp:76-133`
+- Existing completion-fault coverage: `tools/test_mtp_completion.cpp:16-70`
+- Test registration: `CMakeLists.txt:742-752`
+- Pinned Xe release MTP physical-cell clamp: `src/core/mtp.cpp:1038-1041`
+- Pinned Xe release one-shot room clamp and check: `src/program/generate.cpp:10817-10842`
+- Pinned Xe release serving overflow stop: `src/program/generate.cpp:9761`

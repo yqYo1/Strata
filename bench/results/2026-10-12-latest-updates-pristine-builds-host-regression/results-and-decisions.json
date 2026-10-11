@@ -1,0 +1,45 @@
+{
+  "official_revision": "7695859aa13afb248bdb4d36f9b2e95707db079d",
+  "official_version": "v0.1.43",
+  "xe_revision": "da3d426079019daa6e01388d03b0d94ae67070b7",
+  "xe_version": "xe0.1.42",
+  "source_patch_applied_to_pristine": false,
+  "actual_pristine_builds": {
+    "official": "icpx 2026.1, successful after unchanged LLVM -fp-model rejection",
+    "xe": "source-built intel/llvm 7.1.1 free, successful"
+  },
+  "integrated_cpu": {
+    "tests": 558,
+    "passed": 547,
+    "skipped": 11,
+    "scope": "CPU/mock server/helper suite; no actual GPU or full-context inference"
+  },
+  "imports": [
+    "NaN guard/recovery adapted for SYCL",
+    "download archive recovery",
+    "reasoning config defaults and launcher resolution",
+    "opt-in cache drop",
+    "HTTP benchmark tooling pending lifecycle polish",
+    "opt-in session SAVE reclaim and bounded retry",
+    "memory limit and cgroup accounting with conservative leaf-only cache credit",
+    "context overflow API classifier",
+    "logit_bias validation: nonempty unsupported requests explicitly rejected"
+  ],
+  "native_logit_bias_sampler_adopted": false,
+  "corrections": {
+    "R195": "icpx is installed and the pristine official recommended icpx build actually succeeded. Earlier unavailable statement is false.",
+    "R192": "The latest overwritten R192 incorrectly attributes session_save_reclaim core and complete cgroup accounting to immutable W337. R194 and actual Main source/port receipts correct this. Original current report is preserved with its actual hash; overwritten earlier versions cannot be reconstructed from this path.",
+    "R199": "Xe pristine supports STRATA_VERIFY_SEGMENTED, not foreign STEPPED/PIPE controls. Startup compilation failures and unchecked event returns are separate, unqualified mechanisms; no runtime failure is asserted.",
+    "R201": "Decode performance comparison needs at least three independent samples, not merely three generated tokens. No new device timings exist.",
+    "session_merge_v2": "Patch applied successfully, then a Main postcondition wrongly expected void clear instead of existing size_t clear. Original FAILED remains; v3 independently confirms source."
+  },
+  "performance_measured": false,
+  "gpu_executed": false,
+  "full262144_runtime_qualified": false,
+  "next": [
+    "Main reviews HTTP benchmark package after FINAL, merges and tests affected helpers.",
+    "Build free and contrib-llvm integration plus host sanitizer CTest and mandatory lints.",
+    "Bounded read-only health and actual nonfinite kernel parity precede long model execution.",
+    "Evaluate unchanged official and Xe with at least 32K input and independent prefill/decode parameter selection; slow safety control is not an optimal-performance claim."
+  ]
+}
