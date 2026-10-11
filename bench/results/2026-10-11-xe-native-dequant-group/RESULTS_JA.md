@@ -1,0 +1,23 @@
+# Native expert FP16展開をまとめる候補の検証
+
+本家設定のTODO監査は完了。過去測定は箱出しだけではないが、本家単体の最適設定探索・独立検証は未完了。[TODO](../2026-10-11-upstream-parameter-audit/TODO.md)を継続する。
+
+実装元はb3e1de06。追加した任意API以外の既存関数は元のbyteのまま。free・contrib-llvmのrelease/CPUテストとhost ASan/UBSan、実際のbaseline/current lintを通過。元36件と同じで新規0件。
+
+18形式、GU/Down、null/明示Runtime stream、実640×2560と部分superblockを含む3×768を実行。n1..16、first、stride/capacity、共有/個別入力、inactive領域・全guard・全sourceを比較した。144区分18432ケース、3744拒否、初期化前34空呼び出し。前後health/最新kernel境界、所有processの正常終了・reap/session終了、実際のsourceLLVM runtime hashを確認。具体的な数・全case identity・fingerprintはgpu-fullのledger/record。通常のAPI戻りはcompletion/低level launch数の証明と扱わない。
+
+両モードで実際にビルドしたstandalone検査バイナリはSHA256まで同一。同じsource/binary/runtime/bootの明示proofでfree側の完全GPU検証を共有した。contrib-llvm側の別GPU実行を行ったとは記録しない。モード固有のdense GEMM性能はこの証明の範囲外。
+
+同一GU+Down作業のcomponentを7形式組合せ、n1/8/16で各arm6サンプル、ABBA順に測る。hostのみとproduction tagsの計測は別process・別sample。byte/guard/入力一致を各pairで確認し、全個別sampleと計算したばらつきを保持。完了したqueue区間は発行間隙も含み、exclusive kernel durationではない。具体値と限界はcomponent-analysis/各recordにある。
+
+時間測定の元sourceは、通常のenable_profiling queue属性を誤って要求していた。実際のRuntime computeはin_orderのみで、以前実測確認したexperimental profiling tagは利用可能なため、このguardをMain v2で修正した。元source/reportはUNEXECUTEDのまま保存。新しいqueueや失敗後fallbackは追加していない。成功時比較は全byteのmemcmp、異常時は元のbyte走査。補助fingerprintはnative-endian uint64 word FNV形式で標準byte FNV-1aとは異なる。実際のequality判定・guard範囲・SHA256ファイルidentityは変えていない。
+
+componentは性能面で不採用。n16では7形式組合せすべてでgroupの発行＋checked drain中央値が旧個別APIより29.799〜44.592倍遅かった。別processの完了queueタグ区間でも19.974〜44.904倍遅い。GU18/Down20の4反復ではhost発行が1.600007→0.159080msに短縮した一方、発行＋checked drainは4.419419→159.993150msに増えた。各条件の6個別sample、平均・中央値・標準偏差・範囲はanalysisに残した。host発行回数削減の効果をGPU側の増加が上回っており、現行callerへの採用を却下する。このcomponentからmodel全体の支配的割合は断定しない。
+
+捕捉したpointer配列の動的添字がprivate trafficを増やした可能性は原因候補であり未証明。最小APIv2は定数添字の16caseを選ぶhelperだけを追加し、元のgeometry・admission・decoder・個別APIをbyteのまま保つ。Mainが完全patch/reportと依存hashを確認したが、このv2は未適用・未compile・未GPU実行。compilerが動的loadへ戻す可能性もあるため、生成device IR/backendを確認してから、新たなbyte/service検証へ進む。v1の測定結果や拒否判断は変更しない。
+
+prefill caller候補はsource reviewだけで未適用。現行model処理は切り替えていない。追加任意APIのcommitは実験の保存であり性能採用ではない。改善したcomponentが確認できてからring lifetime・独立GU/Down fallback・G境界・32K厳密output/LP5/H2D、その後quiet速度比較を扱う。full262144/RESTORE・広い品質、本家の独立設定選別は引き続き未完了。
+
+Archiveの初回secret scanは、manifestに含まれる既知のsource review SHA256をJSONのfilename labelからkeyと誤判定してFAILとなった。原本・FAIL receiptは保持。参照先hashを確認した上で、archive内の1つのfield名だけをinterface表記へ可逆変換し、原本hashとarchive hashを分けて記録する。scannerの設定・allowlistは変更していない。
+
+502件の過去registryと今回4件の完全source報告を接続し、v128の506件を保存した。quota中のLuna調査に別モデルを代替していない。実装agentのテストはMainだけが直列実行した。

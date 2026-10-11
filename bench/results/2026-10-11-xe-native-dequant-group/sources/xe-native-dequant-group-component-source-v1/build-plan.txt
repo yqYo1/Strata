@@ -1,0 +1,58 @@
+SOURCE-ONLY PLAN. All builds/tests/launches are Main-owned and serial.
+
+Use Main's isolated qualification checkout of production HEAD
+b3e1de06076b692614ef51512f5501838d4b6f2b with only the exact optional API IQ
+cpp/header candidate applied. Compare all manifest pins before configure/build;
+the source-only agent has not configured, compiled, linked, imported or tested.
+
+In the isolated qualification checkout only, include this artifact's target.cmake
+at the end of production CMakeLists.txt, after strata_kernels/strata_core exist.
+The target links actual strata_kernels/strata_core, hence actual Runtime/device/gpu
+and strata_sycl. The production interface carries -fsycl, selected device targets,
+precise fp32 divide/sqrt, parallel device-link and integer-dot-product translator
+flags. The private GGML header include is explicit. No stub Runtime, private queue,
+replacement decoder, copied kernel or fake submission counter is permitted.
+
+Configure/build free and contrib-llvm separately with source-built Intel LLVM
+v7.1.1 from W/.tools/intel-llvm-v711/install/bin/clang++. Use the current qualified
+production configuration and dependency/toolchain pins, with STRATA_LICENSE=free
+or STRATA_LICENSE=contrib respectively and STRATA_WERROR=ON. Preserve the selected
+CUDA/HIP architecture settings and optional library closure from the corresponding
+production mode; do not substitute icpx. Compile target native_dequant_group_component
+and inspect actual verbose compile/device-link commands. Production CMake was not
+modified by the agent, and target compatibility/build success remains unverified.
+
+Main runs warning/lint and required host checks first. Runtime capability refusal
+fails the component; it does not silently run the individual arm alone or use a
+smaller geometry. Finish comprehensive all18 actual-geometry byte/source/output
+guard qualification before ANY component launch.
+
+Main-owned finite supervised launch selectors, from least to most work:
+  native_dequant_group_component --smoke-host
+  native_dequant_group_component --smoke-tags
+  native_dequant_group_component --full-host
+  native_dequant_group_component --full-tags
+Smoke always uses real 640x2560 and complete16-expert pre-timing oracle but times
+only first pair18/20 at n1. It is not a tiny-geometry correctness test. Full uses
+all7 recorded pairs and n1,8,16. Each selector is a separate process. Do not retry
+or fall back after admission, refusal, exception, deadline or abnormal exit.
+
+Host-only timing is the primary host-submit/submit-plus-checked-drain comparison.
+Tags are a separate instrumented comparison through qualified production helper
+src/core/gpu.cpp, not raw event profiling or a new queue. Production timing queue
+capability is required for tags. No UR tracing/profiler during clean timing.
+
+Main sets finite per-process deadline, private output directory, owned PID/start,
+boot identity, 64MiB total text budget, explicit effective environment allowlist,
+binary hash, toolchain/runtime/driver/hardware receipt and before/after health/fault
+checks. Record deadline/log-budget termination as incomplete. The component has
+finite exact loops but no internal wall watchdog; Runtime checked waits and Main's
+supervisor supply wait/deadline bounds. Payload budget excludes runtime/toolchain
+allocations. Serialize with every build/test/GPU workload and artifact cleanup.
+
+Keep every individual timing sample and original failed/rejected result. Compare
+host-only samples within mode and tags within mode; do not pool instrumentation
+or clocks. Derive summary/variation only from completed samples with full byte,
+guard, process-exit, cleanup and fresh health/fault evidence. Commit compact
+receipts in Main's work-boundary report registry. No component result establishes
+32K model fairness, quality, exclusive device throughput or submission tracing.

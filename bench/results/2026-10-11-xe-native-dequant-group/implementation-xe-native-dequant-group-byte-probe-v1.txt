@@ -1,0 +1,125 @@
+COMPLETE — implementation-xe-native-dequant-group-byte-probe-v1
+SOURCE ONLY. All tests, AST/lint, imports of project code, builds, GPU launches,
+numerical checks, tracing and performance measurements are UNEXECUTED.
+No production source edits, candidate application, commits, cleanup, model load,
+runtime/GPU query, process spawning or service-state changes were performed.
+Main exclusively owns subsequent serial execution and publication.
+
+DELIVERY
+/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-native-dequant-group-byte-probe-source-v1
+Files: native_dequant_group_byte.cpp, build-plan.txt, manifest.json,
+registry-chain.json, SHA256SUMS.
+Source SHA256: af5643e2ad59556dfb4d389b8ca8deea712bd6e1ec194f30fa658b09c167e2b0
+Manifest SHA256: 2e2ed60b554fb713cfd0fca1450ec7373f935ac8f02980c15d2691a54766b8c6
+Build-plan SHA256: 2a89a04b2d424c6806bdeab9d36d25f381cebef11efeff9f473984ad2198c290
+Treat this version directory as immutable after delivery; changes need a new version.
+The manifest pins all read dependency files and both complete candidate deliveries.
+Base HEAD supplied by Main: b3e1de06076b692614ef51512f5501838d4b6f2b.
+Exact original IQ cpp/header pins remain the supplied c544667e... / 67ad8482...
+(full identities in manifest/build plan); candidate is not applied.
+
+CONTEXT AND REVIEW INPUTS
+Read workspace AGENTS.md and artifact policy, candidate group declarations and
+complete validation/submission implementation, original GU/flat implementations,
+all native layout structures and IQ1_M packed-scale reconstruction, real Runtime
+public interface and existing gather probe checked-drain/ownership convention.
+Read Main's full source-review JSON. Main's diagnostic32K counts record is pinned;
+its completed route evidence is Main's result, not a result of this probe. That
+record establishes the observed FP16 fallback path, not exclusive service or group
+speed. No additional Luna research or alternative implementation was substituted.
+Followed committed registry pointers by standard-library JSON/text reads and
+stored 17 available historical registry identities. This is evidence provenance,
+not a new research assessment. No project imports or validation commands occurred.
+
+IMPLEMENTATION
+The C++ executable links the actual optional candidate group APIs and unchanged
+individual iq_dequant_gu_f16 / iq_dequant_f16. It constructs native block inputs
+using pinned ggml-common DECL_CPP layouts, never a second numerical decoder.
+All 18 is_iq formats are explicitly enumerated. All device sources use owned,
+actual aligned device allocations and declared source extents equal to generated
+payload extents. Every source has deterministic expert/projection/block/byte
+variation. Gate and up differ; down uses a distinct projection seed. Every native
+FP16 scale is overwritten with controlled small finite bits (including separate
+min/scale fields for two-half formats). IQ1_M replaces the high four nibbles of
+its scale words according to the actual decoder, preserving low integer scale
+bits. First blocks exercise signed zero, minimum/maximum subnormal, minimum
+normal, negative normal, maximum finite, infinity and quiet NaN. Largest finite
+scales may overflow decoded FP16 and nonfinite edge blocks are explicitly not
+assumed finite. Native code fields stay within their fixed-width decoder domains.
+
+Every format runs sequential GU and Down arms, null and explicit owned Runtime
+stream arms, actual 640x2560 geometry and unusual 3x768 geometry (nine superblocks,
+so the eight-superblock launch has a partial tail). Every arm covers n=1..16,
+first=0 and first=16-n, exact and padded strides/capacities, and distinct/reused
+expert sources. n=16 intentionally duplicates first=0 with identical case counting.
+Reused sources map e modulo 3, with references selected from the same arm's
+independent individual results. No result can come from another process.
+
+The unchanged individual functions compute all 16 reference slots once per arm,
+then an independent host layout reconstruction inserts those exact FP16 bytes
+into the active output spans. The group output is compared over the complete
+allocated output: active payload, GU row interleaving, Down flat layout, inactive
+slots, stride padding and both outer guards. Entire allocated source buffers
+including padding and guards are compared unchanged at arm closure. Individual
+reference output guards are checked before reference extraction.
+
+Each comparison reports FNV-1a-64 reference/output fingerprints; input fingerprints
+are printed before upload. These supplementary noncryptographic fingerprints do
+not substitute for full byte equality. Artifact and dependency hashes are SHA256.
+Every differing offset is emitted exactly, up to a finite 1,024-offset limit.
+Hitting that limit exits as an incomplete comparison, never PASS; smaller failures
+also fail after complete scan. No tensor/session/raw capture is created.
+
+REFUSAL AND LIFECYCLE
+34 n==0 calls occur before Runtime initialization, with invalid dimensions/type/
+stream and no pointers, proving the intended API contract only if a later run
+completes them. 26 refusal cases per arm cover invalid first/n and crossing bounds,
+zero/negative/unusual dimensions, unsupported BF16, null/misaligned destination,
+short/misaligned stride, short declared output/source capacities, null/misaligned
+active sources, GU up-specific refusal and source/destination overlap. Dimension
+and stride overflow metadata are clearly marked cases 20/21; no fake address is
+created or admitted. Their refusal-before-queue assumption is pinned to the exact
+candidate validation order and requires Main's source review before launch.
+Post-refusal output/source guard comparisons remain mandatory.
+
+The compute queue must be in-order, owned by Runtime, on its device/context with
+USM device support. No extra queue, unowned stream or device read of host pointer
+arrays exists. All copies wait through real Runtime and every operation boundary
+has a checked Runtime drain. Null-stream normal returns also receive explicit
+checked drains before read/free. Submission/drain/copy/allocation exceptions are
+fatal _Exit(74), never a false-fallback result. All exceptions at the outer arm
+level conservatively exit before host buffers can destruct or GPU storage can be
+freed, even for synchronous comparator errors. This avoids claiming quiescence
+when it is uncertain. A successful arm frees only after a checked terminal drain;
+final _Exit avoids unchecked Runtime destructor waits. _Exit is not a GPU fence
+or proof of device recovery. Main owns fresh health and fault checks afterwards.
+
+BOUNDS AND BUILD PLAN
+144 arms; 18,432 compared group cases; 2,304 individual API calls; 18,432 group API
+calls; 3,744 refusals; 34 pre-Runtime empty calls. Fixed finite loops, no CLI and no
+spawning. Runtime hard bounds are 512MiB device payload, 768MiB host array payload,
+1TiB cumulative readback and 1,024 exact difference records. Host budget explicitly
+includes source readback, three full output vectors and dense individual reference.
+Runtime/toolchain allocations are outside payload accounting. No large native model
+tensor is loaded. 64MiB raw text budget and finite supervisor deadline are owned
+by Main; neither a duration nor launch count has been measured.
+
+The explicit plan uses Main's isolated copy at the pinned HEAD, applies only the
+pinned optional candidate there, adds a local executable target linked to actual
+strata_kernels/strata_core, carries existing mode-specific SYCL compile/device-link
+flags and real dependency closure, and builds free and contrib-llvm separately
+using source-built Intel LLVM v7.1.1. Production CMake is untouched. Main must
+inspect real verbose commands and may need target-local flag propagation; no
+compile success or target compatibility is claimed from this source delivery.
+No hooks claim submission counts. Trace/LLVM runtime maps and component timing
+remain separate qualification stages. Logging/reference reuse is not timing.
+
+RETENTION AND NEXT STEP
+Owner/consumer: Main, complete source review then bounded all-format byte/guard
+qualification. Preserve immutable source, pins, exact commands/env, binary identity,
+compact sample/results/fault receipts and decisions at each boundary. Keep one
+representative diagnostic per unresolved mechanism; follow artifact policy after
+run closure. No cleanup was performed and no deletion manifest is needed.
+Main next reviews all files, builds both modes serially, and supervises a finite
+GPU run only when safe. No production integration, speed claim, launch-count
+claim, numerical pass or model qualification follows from this delivery.

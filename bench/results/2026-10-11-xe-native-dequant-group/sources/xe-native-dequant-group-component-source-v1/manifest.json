@@ -1,0 +1,186 @@
+{
+  "schema": "strata-source-only-implementation-v1",
+  "artifact": "xe-native-dequant-group-component-source-v1",
+  "agent_model": "gpt-6.1-sol",
+  "main_owned_qualification": true,
+  "source_only": true,
+  "production_edits": false,
+  "imports_ast_tests_builds": false,
+  "gpu_runtime_queries": false,
+  "gpu_executed": false,
+  "profiler_executed": false,
+  "cleanup_executed": false,
+  "git_commit_push_executed": false,
+  "built": false,
+  "tested": false,
+  "syntax_qualified": false,
+  "correctness_qualified": false,
+  "timing_qualified": false,
+  "adopted": false,
+  "provided_head": "b3e1de06076b692614ef51512f5501838d4b6f2b",
+  "worktree": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011",
+  "artifact_files": [
+    {
+      "path": "native_dequant_group_component.cpp",
+      "sha256": "c3a480137c5e5810126e8dc79c4db074c4f3051a4338127bc8f6651971024c8f"
+    },
+    {
+      "path": "target.cmake",
+      "sha256": "ba57c1b9ac9f380732212b5f994613b5149e827a1f17656fcc3d2593a20603be"
+    },
+    {
+      "path": "build-plan.txt",
+      "sha256": "7ccd5a4fdfccb47570d1ae35e62b58df2d4fd859804f466113e92afc7a0bce53"
+    }
+  ],
+  "report": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/implementation-xe-native-dequant-group-component-v1.txt",
+    "sha256": "7da2ccdc7932fb5e53341249c22feaa326a61f4a38203b909c820055dda47335"
+  },
+  "source_pins": {
+    "AGENTS.md": "0427d8d4f91c4cf5128e77d3d898ee20783b63394d24718d1ff0b16779424dd0",
+    "CMakeLists.txt": "040de957a32bd26c9b71ca476aa45060571b86c0bad72a545ed9dbba9f2394a9",
+    "src/core/gpu.cpp": "9792966f6b2c84434a1dddafefb3286c3c5fcfa78e23065b455904f9cf6fcfb8",
+    "src/core/device.cpp": "9e33dce3b3b55b00c5aee4db566ceb848b73273837c505b3c27b535a0b30ba2d",
+    "include/strata/core/gpu.hpp": "54b1a10524c9ee0c9b42979d75bd4f775ee0c45da2839d8129c2a2bd3daa552a",
+    "include/strata/core/runtime.hpp": "1a42ce02127727310614461b1dc2768eb2bce421e9d5e992c4df100c1817dd26",
+    "src/kernels/xe/iq_kernels.cpp": "7a109e4123bcd6c6cdf8b11ff411657eaf9cd8ed81b0d7f4fdab59285461cdf7",
+    "include/strata/kernels/iq_kernels.hpp": "61513ccb71831d1065bd25829541c508adf3ae58e1e3df6d3bc0c9681cb54f6d",
+    "src/prefill/prefill.cpp": "1b30e3de22b30f4eb2160756c9fdde623abe87a2360fe029f0767be33aa9d664",
+    "third_party/main/ggml/ggml-common.h": "0061131b615c5721fc88a78feeb22c1f8c450f1c2646a317d80796a653bf595c",
+    "third_party/main/ggml/VERSION.txt": "c6ee69e9acdf5b4a2f5b8e64191bd380baeaf00b1984de721d67d4698c96b5fb"
+  },
+  "evidence_pins": {
+    "xe-native-dequant-group-interface-main-review-v1.json": "fb84fa42d267fdd8dec90db9d4e50ed9208938e885a94a4767e46c0e59ac6dfa",
+    "xe-native-dequant-group-byte-probe-source-v2/native_dequant_group_byte.cpp": "d636ae64fd715e4b7d25629cc94e3b94acc69a1266914e6ce906d7498c3c81e7",
+    "xe-prefill-native-transfer-layout-v1.json": "c9b40d122d19f277280560a495ad0a1c6ce98376ef0660c1f75e9b3026bd642b",
+    "xe-source-llvm-profiling-tags-root-v1/record.json": "a55a759bd1b0baeb37ebdec32160400346813ac3c19779edba7d1fa6ff772a24",
+    "xe-source-llvm-census32k-root-v3/counts/record.json": "d705ee299d5f4e873f486647564180165a71980a41e4c3225ea6d1485183436f"
+  },
+  "registry_pin": {
+    "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-11-xe-prefill-route-census32k/report-registry-v127.json",
+    "sha256": "35dce06ce92c0ee019758a52421ae14fd3fb1e9b9751be78c0cea824e3257e2a",
+    "reviewed_report_count_provided_by_main": 502
+  },
+  "retention_policy": {
+    "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/docs/ARTIFACT_RETENTION.md",
+    "sha256": "a0fc2273543a3e8259f7a94ce477bb61ac5e8dbd23097a7d1b867f30689db580"
+  },
+  "selectors": [
+    "--smoke-host",
+    "--smoke-tags",
+    "--full-host",
+    "--full-tags"
+  ],
+  "geometry": {
+    "n_ff": 640,
+    "n_embd": 2560,
+    "slots": 16,
+    "n_sequence": [
+      1,
+      8,
+      16
+    ],
+    "pair_sequence": [
+      [
+        18,
+        20
+      ],
+      [
+        18,
+        42
+      ],
+      [
+        21,
+        20
+      ],
+      [
+        21,
+        42
+      ],
+      [
+        22,
+        20
+      ],
+      [
+        22,
+        42
+      ],
+      [
+        23,
+        20
+      ]
+    ],
+    "gu_stride_fp16": 3276824,
+    "down_stride_fp16": 1638424
+  },
+  "measurement": {
+    "order": "ABBA_ABBA_ABBA",
+    "samples_per_arm_per_pair_n": 6,
+    "repetitions_per_sample": 4,
+    "warmup_repetitions_per_sample": 1,
+    "normal_enqueue_return_is_completion": false,
+    "host_clock": "std::chrono::steady_clock",
+    "host_submit_excludes_production_tag_submits": true,
+    "drain": "Runtime::finish(compute)",
+    "tag_helper": "actual strata::gpu::event_create/event_record/event_elapsed_ms",
+    "tag_interval": "complete sequential queue interval between completed production tag command_end endpoints; includes queue issuance gaps and end tag work",
+    "host_and_tags_separate_processes": true,
+    "exclusive_kernel_service": false,
+    "low_level_submission_proof": false
+  },
+  "expected_finite_counts": {
+    "full_samples": 252,
+    "full_oracle_pairs": 7,
+    "full_individual_normal_returns": 10724,
+    "full_group_normal_returns": 1316,
+    "full_logical_expert_pairs": 10899,
+    "full_readbacks": 112,
+    "full_timed_expert_pairs": 8400,
+    "full_timed_logical_output_bytes": 82575360000,
+    "smoke_samples": 12,
+    "smoke_oracle_pairs": 1,
+    "smoke_individual_normal_returns": 92,
+    "smoke_group_normal_returns": 64,
+    "smoke_logical_expert_pairs": 93,
+    "smoke_readbacks": 8
+  },
+  "payload_bounds": {
+    "max_source_bytes": 42601600,
+    "output_bytes": 157288128,
+    "max_device_bytes": 199889728,
+    "max_host_bytes": 557067584,
+    "device_limit_bytes": 536870912,
+    "host_limit_bytes": 805306368,
+    "readback_limit_bytes": 1099511627776,
+    "runtime_resources_excluded": true
+  },
+  "failure_lifetime": {
+    "exception": "caught locally before owning host buffers unwind; _Exit(74)",
+    "refusal": "fatal, no fallback/retry",
+    "success": "checked drains before frees; final checked Runtime drain then _Exit(0)",
+    "exit_is_gpu_fence": false
+  },
+  "qualification_prerequisites": [
+    "Main comprehensive all18 actual-geometry byte/source/output guard qualification",
+    "Main source review and both-mode source LLVM v7.1.1 compile/lints/required checks",
+    "Main finite deadlines, 64MiB logs, binary/environment identity, supervision and health/fault checks"
+  ],
+  "limitations": [
+    "unexecuted source-only",
+    "logical API counts are not low-level submissions",
+    "fixture dispatch/bookkeeping included in host enqueue duration",
+    "tags and host clocks are not calibrated",
+    "component excludes model routing/GEMM/H2D",
+    "no model32K fairness or quality",
+    "no full262144 or RESTORE qualification"
+  ],
+  "retention": {
+    "owner": "Main",
+    "consumer": "review then gated component qualification",
+    "immutable_artifact": true,
+    "report_is_complete_delivery_record": true,
+    "no_extra_progress_snapshot": true,
+    "no_cleanup": true
+  }
+}

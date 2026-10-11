@@ -1,0 +1,51 @@
+SOURCE ONLY — every build/test/runtime/numerical/performance step below is UNEXECUTED.
+Main owns serial source review, builds, deadlines, GPU health checks and artifact publication.
+Do not apply candidate to the live worktree or change global CMake as part of this delivery.
+
+Base worktree:
+/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011
+HEAD pin b3e1de06076b692614ef51512f5501838d4b6f2b
+IQ original cpp SHA256 c544667e90a4aac9f024c1140b9338de8cdf4398e9a6cb187d96ca016f399d0f
+IQ original header SHA256 67ad8482fcba88a135d7ba7e5b1a442e1a102b0418df26a4ffcbafd3b64fd887
+Candidate delivery: ../xe-native-dequant-group-api-source-v1 (see manifest pins).
+
+1. Main reviews complete probe, candidate replacement, pinned original files and candidate.patch.
+   Refusal cases 0..25 require the currently pinned validation order. Re-review before changing API.
+   Verify all pins and freeze actual compiler/runtime/driver/environment identity before compiling.
+2. Create a Main-owned isolated worktree at the above HEAD. Apply only pinned candidate.patch
+   there, after verifying the original IQ bytes. Verify replacement byte hashes match manifest.
+   Preserve all other production source and original decoder/kernel bytes.
+3. Use existing source-built intel/llvm v7.1.1 at W/.tools/intel-llvm-v711/install.
+   Build independently for free and contrib-llvm with each existing target's exact SYCL compile,
+   link/device-link flags, definitions, dependency linkage and runtime library search paths.
+   Temporary local CMake target in that isolated tree (not the production global CMake):
+     add_executable(native_dequant_group_byte /absolute/delivery/native_dequant_group_byte.cpp)
+     target_include_directories(native_dequant_group_byte PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/third_party/main/ggml)
+     target_link_libraries(native_dequant_group_byte PRIVATE strata_kernels strata_core)
+   This intentionally links actual candidate iq_kernels.cpp and unchanged individual functions,
+   real Runtime and all their existing transitive dependencies. If these targets do not propagate
+   necessary SYCL flags to the executable, copy the actual engine executable target's settings;
+   inspect verbose compile/link commands and dependency closure. No Runtime stubs or extracted
+   replacement kernels are permitted. The ggml-common header is DECL_CPP only: layouts for host
+   input generation, not an alternate CPU numerical oracle.
+4. Compilation success is only compilation evidence. Main reviews warnings and source LLVM maps
+   separately. Capture exact commands, binary hash, source hashes, build mode and toolchain paths.
+5. No automatic execution. Main first confirms exclusive GPU ownership and fresh health/no-fault
+   boundaries, then supervises one process with an owned PID/start-time, finite deadline and
+   64MiB raw-text budget. Record chosen deadline before launch; missing completion or budget stop
+   is incomplete, never PASS. Probe takes no CLI arguments and spawns no processes or queues.
+   Full fixed matrix is 144 sequential arms, 18,432 admitted comparison cases, 2,304 individual
+   reference calls, 18,432 group API calls, 3,744 refusals plus 34 empty calls before Runtime.
+   Device payload <=512MiB, host payload upper bound <=768MiB, cumulative readback <=1TiB.
+   This is correctness qualification only; logging, copies and reference reuse prohibit timing
+   interpretation. The all-format matrix is intentionally comprehensive and may require a longer
+   supervised deadline than a health probe. No duration estimate has been measured.
+6. Read flushed progress and exact final counts. Check before/after health and fresh fault window.
+   _Exit(74) means uncertain completion and deliberately skips free/destructors; it does not prove
+   recovery. After any abnormal run Main owns process teardown and separate health qualification.
+7. Optional trace qualification is a separate Main-owned run with a bounded tracing question.
+   The bool API return does not prove launch/completion or one/zero submission counts. No hooks
+   were added. Preserve representative unresolved failures and full difference receipt (at most
+   1,024 exact offsets before incomplete comparison stop), not successful raw tensor dumps.
+8. Adopt no production caller based on this source delivery. Only after complete byte/guard pass,
+   actual trace qualification as needed, component timing and model checks may Main integrate.

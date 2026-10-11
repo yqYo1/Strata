@@ -1,0 +1,201 @@
+SOURCE-ONLY IMPLEMENTATION: native group GU+Down component v1
+2026-10-11; agent gpt-6.1-sol; owner and consumer Main.
+
+STATUS
+Complete standalone implementation artifact; NOT executed, built, linted, syntax-
+checked, imported, AST-parsed or tested. No production source edits, launches,
+GPU/profiler/runtime queries, service changes, cleanup, commits or pushes. No
+correctness pass, measured speed, one-submission proof, production adoption or
+model integration is claimed. Main alone owns all serial qualification work.
+No research agent was substituted for unavailable Luna research quota.
+
+Delivery directory:
+/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-native-dequant-group-component-source-v1
+Files: native_dequant_group_component.cpp, target.cmake, build-plan.txt,
+manifest.json. This report is the complete delivery record, not a progress backup.
+
+SOURCE IDENTITIES AND CONTEXT
+Main-provided W HEAD: b3e1de06076b692614ef51512f5501838d4b6f2b.
+W=/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011
+Actual live IQ source/header hashes match the optional candidate pins supplied
+by Main. Exact files read, with SHA256:
+AGENTS.md 0427d8d4f91c4cf5128e77d3d898ee20783b63394d24718d1ff0b16779424dd0
+CMakeLists.txt 040de957a32bd26c9b71ca476aa45060571b86c0bad72a545ed9dbba9f2394a9
+src/core/gpu.cpp 9792966f6b2c84434a1dddafefb3286c3c5fcfa78e23065b455904f9cf6fcfb8
+src/core/device.cpp 9e33dce3b3b55b00c5aee4db566ceb848b73273837c505b3c27b535a0b30ba2d
+include/strata/core/gpu.hpp 54b1a10524c9ee0c9b42979d75bd4f775ee0c45da2839d8129c2a2bd3daa552a
+include/strata/core/runtime.hpp 1a42ce02127727310614461b1dc2768eb2bce421e9d5e992c4df100c1817dd26
+src/kernels/xe/iq_kernels.cpp 7a109e4123bcd6c6cdf8b11ff411657eaf9cd8ed81b0d7f4fdab59285461cdf7
+include/strata/kernels/iq_kernels.hpp 61513ccb71831d1065bd25829541c508adf3ae58e1e3df6d3bc0c9681cb54f6d
+src/prefill/prefill.cpp 1b30e3de22b30f4eb2160756c9fdde623abe87a2360fe029f0767be33aa9d664
+third_party/main/ggml/ggml-common.h 0061131b615c5721fc88a78feeb22c1f8c450f1c2646a317d80796a653bf595c
+third_party/main/ggml/VERSION.txt c6ee69e9acdf5b4a2f5b8e64191bd380baeaf00b1984de721d67d4698c96b5fb
+GGML upstream revision recorded there: 3cf03257f219afbe7334045ff7c6a06ac68c627d.
+LOCAL.md is absent at W; no local instructions were assumed.
+
+Delivery SHA256:
+native_dequant_group_component.cpp c3a480137c5e5810126e8dc79c4db074c4f3051a4338127bc8f6651971024c8f
+target.cmake ba57c1b9ac9f380732212b5f994613b5149e827a1f17656fcc3d2593a20603be
+build-plan.txt 7ccd5a4fdfccb47570d1ae35e62b58df2d4fd859804f466113e92afc7a0bce53
+
+B=/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007.
+Evidence dependencies, each SHA256 (relative to B except registry/policy):
+xe-native-dequant-group-api-main-review-v1.json fb84fa42d267fdd8dec90db9d4e50ed9208938e885a94a4767e46c0e59ac6dfa
+xe-native-dequant-group-byte-probe-source-v2/native_dequant_group_byte.cpp d636ae64fd715e4b7d25629cc94e3b94acc69a1266914e6ce906d7498c3c81e7
+xe-prefill-native-transfer-layout-v1.json c9b40d122d19f277280560a495ad0a1c6ce98376ef0660c1f75e9b3026bd642b
+xe-source-llvm-profiling-tags-root-v1/record.json a55a759bd1b0baeb37ebdec32160400346813ac3c19779edba7d1fa6ff772a24
+xe-source-llvm-census32k-root-v3/counts/record.json d705ee299d5f4e873f486647564180165a71980a41e4c3225ea6d1485183436f
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-11-xe-prefill-route-census32k/report-registry-v127.json 35dce06ce92c0ee019758a52421ae14fd3fb1e9b9751be78c0cea824e3257e2a
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/docs/ARTIFACT_RETENTION.md a0fc2273543a3e8259f7a94ce477bb61ac5e8dbd23097a7d1b867f30689db580
+The registry v127 pointer and 502 reviewed reports are Main-provided context.
+Earlier candidate review recorded applied=false at its own boundary; the live
+IQ hashes now match the candidate. No historical receipt was rewritten.
+
+CONCRETE WORKLOAD
+Seven real layout pairs, in this fixed order:
+GU/Down 18/20,18/42,21/20,21/42,22/20,22/42,23/20.
+Every projection has ff640 x emb2560 = 1,638,400 weights. GU produces 3,276,800
+fp16 elements in the unchanged interleaved row layout; Down produces 1,638,400
+flat fp16 elements. GU stride is 3,276,824 fp16 elements, Down stride 1,638,424.
+GU/Down capacities cover all16 slots including their24-element padding. Source
+projections have real block extents from iq_row_bytes plus16-byte alignment and
+64-byte source gaps. Full64-byte external guards and all gaps/padding are checked.
+The two arms use identical device addresses, native bytes, destination strides,
+active slots and written bytes. No packed-cache/H2D timing or host decoder.
+
+The deterministic fixture generates native integer fields per expert/projection/
+block and rewrites each supported format's actual fp16 d field to a signed finite
+small normal scale in [0x1400,0x17ff] or the corresponding negative range. It
+checks full reference output fp16 finiteness without decoding native weights on
+the CPU. FNV-1a identities are aids; exact comparison scans every allocation
+byte and counts all differences. The authoritative comparison remains old versus
+optional production APIs. This fixture is not a model tensor capture.
+
+The unchanged individual arm enqueues GU then Down for each active expert.
+The group arm enqueues one optional GU API call for all active experts then one
+optional Down API call. This intrinsic ordering difference is explicit; each
+repetition reads and writes the same amounts. It is component service work only,
+with no GEMM, downstream consumers, token routes or model execution.
+
+Runtime::get().compute() is the only benchmark stream. Admission requires a GPU,
+device USM, Runtime/context/device ownership, in-order queue and256-work-item
+local shape supported in both APIs. Tags additionally require enable_profiling.
+Device choice never uses a vendor/name/device ID. No queue or host-USM protocol is
+created. The optional API has no automatic production caller switch. The broader
+engine retains its individual API path; this standalone benchmark fails rather
+than changing its comparison after capability refusal. No retry/fallback follows
+admission, exception or output mismatch. Returning normally is not completion.
+
+BYTE/GUARD GATE AND SAMPLE ORDER
+Before ANY timing for each pair, compute unchanged individual output for all16
+distinct experts, checked-drain, save all output bytes, check every output guard
+and padding byte, and require all live fp16 elements finite. Read/compare every
+source byte and guard. Reset output, enqueue group GU+Down for the same16 inputs,
+checked-drain and compare all output bytes exactly against old API reference;
+read/compare all source bytes again. This is a one-time complete per-pair oracle.
+It supplements, never replaces, Main's prior comprehensive all18-type fullbyte
+and guard probe. This component must remain unexecuted until that gate passes.
+
+For each n1,8,16, prepare the exact expected active/inactive/guard bytes outside
+timing. Three fixed ABBA blocks give6 independent samples per arm. Every sample
+has output reset and1 same-arm warmup GU+Down repetition followed by checked
+drain before its measured4 repetitions. No per-repetition scans, prints, copies,
+hashes or synchronization. The complete timing sequence is quiet; all12 sample
+records are emitted after the sequence and post-comparison checks. No adaptive
+repetition count, stopping threshold, cherry-picking or per-arm retry.
+The final ABBA sample is individual: full output and source readback follows.
+Then a separate untimed grouped repetition checks the same full expected bytes
+and full source bytes at that n. All active projections, inactive slots, source
+gaps and output guard/padding are included. Every byte difference fails.
+
+TIMING DEFINITIONS AND LIMITS
+Host-only selectors use steady_clock around actual enqueue loops and separately
+enqueue through checked Runtime::finish(compute). host_submit_ms ends immediately
+after normal enqueue returns; it is NOT completion. host_submit_checked_drain_ms
+ends after checked compute queue completion/async error handling. Normalize both
+by n*4 expert GU+Down pairs, recording4 repetitions, call counts and output bytes.
+This includes real production wrapper checks/submission, fixture loop dispatch
+and small logical-return bookkeeping, host-driver blocking and enqueue/device
+overlap. It does not isolate pure driver CPU cost or exclusive GPU kernel time.
+
+Separate tags selectors call actual production gpu::event_create(timing=true),
+event_record and event_elapsed_ms, backed by src/core/gpu.cpp. Its prior receipt
+qualified16 complete samples,8 each in free and contrib-llvm, including completed
+and reversed/control cases. The current helper source hash matches that receipt.
+The benchmark does not expose Event internals, directly fetch raw profiling data,
+use new queues, or replace the helper. A positive finite tag interval is required.
+
+Start-tag submission precedes the host enqueue clock; end-tag submission follows
+enqueue. host_submit excludes both mark submissions. submit+checked-drain starts
+at enqueue and includes the pending start tag and end-mark submission/wait;
+host_mark_enclosure separately includes both mark submissions. Begin/end mark
+submission durations are recorded separately. event_elapsed uses the difference
+of completed production tag command_end timestamps: complete sequential stream
+interval between tag positions, including GU+Down, queue bubbles, issuance gaps
+and end-mark work. It excludes elapsed time before the start tag's endpoint.
+It is not the sum of exclusive kernel durations, a calibrated CPU/GPU clock
+relation, an exclusive service roofline or a bandwidth bound. Tags alter work;
+compare host-only separately and never pool those samples with tags. Disabled
+tag fields have the sentinel -1. No tracing/profiler instrumentation is supplied.
+
+COUNTS, MEMORY AND LIFETIME
+Full selector:7 pairs x3 n x12 timing samples=252 samples. Each arm gets126;
+timed logical expert pairs=8,400, written bytes=82,575,360,000 across all samples.
+At n16, one measured sample writes629,145,600 logical bytes over4 repetitions,
+reusing the same bounded output allocation. It is neither a growing cache nor
+continuous power-duration test. All loops are fixed and finite.
+Including per-pair oracle, warmups and post-checks:10,724 individual normal API
+returns,1,316 grouped normal API returns,10,899 logical expert pairs,112 readbacks.
+Smoke selector: first real pair18/20 only, n1 timing only,12 samples, complete16-
+expert pre-timing oracle,92 individual returns,64 group returns,93 expert pairs,
+8 readbacks. Smoke does not claim all-pair/n coverage.
+These counters are logical normal-return API counts, NOT submission tracing.
+No one-submission or zero-submission proof follows from them.
+
+Payload: two device allocations, source and combined GU/Down output. Max fixture
+source42,601,600B and output157,288,128B give199,889,728B device payload (~190.6MiB).
+Host vectors are input/source_read and reference/read/expected: max557,067,584B
+(~531.3MiB). Runtime asserts512MiB device and768MiB host payload limits plus1TiB
+cumulative readback. Runtime/compiler/driver resources are outside those bounds.
+No source capture or extra queue can enlarge the finite fixture payload.
+
+Every GPU allocation, copy, reset, checked wait/drain, ownership query and submit
+is inside a local checked callback. Exceptions are caught while caller-owned
+host buffers remain alive; require/refusal/mismatch exits directly. Fatal _Exit74
+avoids uncertain frees/destructors even for comparator failure. Both synchronous
+and asynchronous exceptions fail; normal enqueue never stands in for completion.
+Success frees only after checked terminal drain and destroys timing events after
+that drain. Final checked Runtime drain precedes _Exit0 to avoid unchecked Runtime
+destructor waits. _Exit is neither a GPU fence nor device recovery evidence.
+Main's supervisor owns finite deadline64MiB log budget, PID/start/boot receipts,
+normal/abnormal exit, cleanup and fresh health/fault checks. Source itself does
+not implement an internal wall watchdog, and no timing duration is estimated.
+
+BUILD PLAN, DECISION AND RETENTION
+target.cmake is an optional isolated-checkout inclusion AFTER the actual production
+targets exist. It links strata_kernels/strata_core/strata_warnings and the public
+strata_sycl mode-specific SYCL compiler/device-link closure, explicit GGML layout
+header include and strict fp options. Main uses source-built Intel LLVM v7.1.1
+for separate free/contrib-llvm builds with production dependency/settings and
+WERROR, observes actual commands, then owns lints/required tests and supervised
+smoke/full runs. No contrib-icpx build or stripped/stub standalone link recipe.
+All target compatibility and compiler/lint findings remain unverified.
+
+Main-provided actual32K census: all288 fallback-FP16 routes, GU and Down136,846
+each, exact selected output/health pass; logical H2D295,956,300,800B and5.57%
+unselected full-stream bytes. These motivate measuring this component only.
+No exclusive elapsed bottleneck is inferred. This artifact neither changes those
+results nor establishes32K model fairness/quality, all18 numerical coverage,
+full262144-context or RESTORE behavior. Model integration remains a later gate.
+
+Read W/AGENTS.md and exact linked retention policy. This source-only artifact's
+current consumer is Main review, then gated component qualification. Preserve
+the immutable source/pins/report, actual commands/env/binary identities, every
+individual sample/correctness/fault result and decisions at each work boundary.
+Main commits compact receipts and registry updates. After run closure, retire
+successful verbose traces only once required evidence is extracted/verified;
+retain one representative diagnostic for each distinct unresolved mechanism.
+No cleanup was performed; no deletion manifest is needed for this delivery.
+Do not edit these immutable files; any correction is a new version. Next step:
+Main reviews source/pins and completes comprehensive byte/guards before builds
+and bounded component timing qualification; no user intervention requested.

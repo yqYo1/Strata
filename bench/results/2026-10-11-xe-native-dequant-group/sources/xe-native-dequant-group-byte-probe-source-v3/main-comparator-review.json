@@ -1,0 +1,10 @@
+{
+  "main_reviewed": true,
+  "source_only": true,
+  "unexecuted": true,
+  "parent_source_sha256": "d636ae64fd715e4b7d25629cc94e3b94acc69a1266914e6ce906d7498c3c81e7",
+  "source_sha256": "846ec8a718c22e7d8e4e49befe60ebd40a22428c3db80571c7dd9994d54a7761",
+  "review": "Only host success comparison and supplementary fingerprint changed. libc memcmp scans the complete allocated output/source extent. A nonzero result enters original exhaustive exact-byte-offset comparison with original1024 failure budget; mismatch is never PASS. Hash uses safe memcpy uint64 chunks plus byte tail, named native-endian word FNV-style (not standard byte FNV-1a and not SHA); not the equality oracle. This removes serial per-byte hashing/branch overhead from hundreds of GiB of diagnostic readback. All input construction, old/group kernel calls, guard extents/refusal matrices, queue dependencies/checked drains/free and smoke/small/full fixed coverage/counts remain unchanged. SHA256 artifact identities still independent.",
+  "fingerprint_algorithm": "native-endian uint64-word FNV-style; noncryptographic supplementary identity only",
+  "full_byte_oracle": "memcmp entire extents; exhaustive byte scan on any mismatch"
+}

@@ -1,0 +1,20 @@
+{
+  "main_reviewed": true,
+  "source_only": true,
+  "applied": false,
+  "adopted": false,
+  "build_test_gpu_qualified": false,
+  "report_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/implementation-xe-native-dequant-group-component-v1.txt",
+  "report_sha256": "7da2ccdc7932fb5e53341249c22feaa326a61f4a38203b909c820055dda47335",
+  "source_sha256": "c3a480137c5e5810126e8dc79c4db074c4f3051a4338127bc8f6651971024c8f",
+  "review": "Read full report, source, manifest, target and build plan; independently verified source/dependency pins. Real7 native GU/Down pairs640x2560 and bounded source/output/host extents, full output/source/guard oracles, ABBA six samples/arm with warmup and four fixed repeats, quiet sampling reviewed. Checked compute drain and local exception/fatal policy preserve source lifetimes. Host submit versus enqueue+checked drain and separately completed production tags clearly defined. Source has a concrete incorrect tags capability guard: Runtime compute has no queue enable_profiling property, while previously qualified experimental profiling-tag helper works on that queue. As written every tags selector refuses before pair allocation/timing. Fix this guard in a new Main source version before tags use; host-only path not affected. No actual timing, parity, fault-free run or compiler/lint inferred.",
+  "required_fixes": [
+    "Tags preflight must follow actual qualified experimental profiling-tag capability; do not require ordinary enable_profiling property or introduce a new queue"
+  ],
+  "open": [
+    "Prior comprehensive actual all18 byte/guards",
+    "Main v2 tags guard correction, build/warnings and finite execution",
+    "Actual individual/group host and tag timing samples and fresh health/fault receipts",
+    "No modelintegration/performanceadoption/globalquality/full262144/RESTORE qualification"
+  ]
+}

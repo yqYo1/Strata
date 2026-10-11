@@ -1,0 +1,20 @@
+{
+  "main_reviewed": true,
+  "applied": false,
+  "adopted": false,
+  "source_only": true,
+  "build_test_gpu_qualified": false,
+  "report_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/implementation-xe-native-dequant-prefill-batch-v1.txt",
+  "report_sha256": "62b0f0db445459636483f147bf61110e7366b773de4ea6d18969c5d725d1c702",
+  "candidate_sha256": "883d8f39a4e012eaf9d81cbaa4399893528085421882978fa29dbd67fb512d11",
+  "literal_off_block_verified": true,
+  "review": "Full report, manifest, added patch and preservation proof read. Independently verified every file hash and original literal OFF-arm bytes. ON spans/windows/source row extents and exact GU/down APIs reviewed, independent false fallback/exception propagation. Full-stream prefixes held through both reads and checked existing markers, skips flush before advancing; STAGE8 lookahead flushes held stage_next before overwrite. No changes applied. Source duplicate adds maintenance cost; routed full lookahead may make windows singleton. Needs actual API byte qualification and finite lifetime/admission and output tests before model integration. Off selection branch not timing equality proof.",
+  "open": [
+    "Optional API complete byte/guard qualification first",
+    "Both-mode compile/lint/host-sanitizer candidate qualification",
+    "Separate ON observer with per-axis logical totals (old paired wrapper counts may differ)",
+    "G1/8/16/17/32/64, skip/source reuse/event-failure lifetime and cleanup probes",
+    "Actual 32K strict output/LP5/H2D qualification then clean individual timing samples",
+    "Full 262144/RESTORE and global model quality remain open"
+  ]
+}

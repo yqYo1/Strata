@@ -1,0 +1,18 @@
+{
+  "main_reviewed": true,
+  "source_only": true,
+  "applied": false,
+  "adopted": false,
+  "build_test_gpu_qualified": false,
+  "report_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/implementation-xe-native-dequant-group-byte-probe-v1.txt",
+  "report_sha256": "954fd78f2e6059b9c00ae5bee9b084c696b3111e853a2f99cf222b502a762518",
+  "manifest_sha256": "2e2ed60b554fb713cfd0fca1450ec7373f935ac8f02980c15d2691a54766b8c6",
+  "source_sha256": "af5643e2ad59556dfb4d389b8ca8deea712bd6e1ec194f30fa658b09c167e2b0",
+  "review": "Read full source, report, manifest, build plan and registry chain. Verified every dependency pin. Allocated sources/device outputs, native layout scale generation, actual unchanged individual functions, all-byte expected reconstruction and guard/source scans reviewed. Exceptions before potentially live-buffer destruction terminate via _Exit; all successful readbacks/free require checked Runtime drains. Overflow/refusal metadata reviewed against exact API guard order. Full fixed matrix can read hundreds of GiB and CPU comparisons/hash scans are correctness overhead; needs staged selection and finite supervised wall deadline. No Runtime, compiler, numeric, launch count or performance result inferred.",
+  "open": [
+    "Build both modes and host sanitizer/lints before commit",
+    "Main finite small-first/full matrix selector without weakening full expected count",
+    "Actual complete byte equality and fresh health/fault boundaries",
+    "Component-service timing separate from correctness probe"
+  ]
+}

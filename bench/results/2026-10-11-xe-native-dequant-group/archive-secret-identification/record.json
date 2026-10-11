@@ -1,0 +1,88 @@
+{
+  "active": false,
+  "complete": true,
+  "passed": true,
+  "commands": [
+    {
+      "label": "redacted-findings",
+      "argv": [
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/bin/gitleaks",
+        "detect",
+        "--no-git",
+        "--redact",
+        "--no-banner",
+        "--exit-code",
+        "1",
+        "--report-format",
+        "json",
+        "--report-path",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-native-dequant-group-archive-secret-identify-root-v1/redacted-findings.json",
+        "--source",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-11-xe-native-dequant-group"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-11T08:42:29.254786+00:00",
+      "wall_seconds": 60,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 3681171,
+          "start_ticks": 5691337,
+          "sid": 3681171,
+          "pgid": 3681171
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 56913.376386536,
+      "pid": 3681171,
+      "spawn_return_monotonic": 56913.378119931,
+      "direct_identity": {
+        "pid": 3681171,
+        "state": "R",
+        "ppid": 3681169,
+        "pgid": 3681171,
+        "sid": 3681171,
+        "start_ticks": 5691337,
+        "rss_bytes": 999424
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 83144704,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 1,
+      "finished_utc": "2026-10-11T08:42:30.384549+00:00",
+      "elapsed_seconds": 1.1294729000001098,
+      "logs": {
+        "redacted-findings.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "redacted-findings.stderr": {
+          "bytes": 131,
+          "sha256": "4d95e4b8775ec40c8eac93865f77242bd0e7612b790da2fd099f31bbb10e0bf2"
+        }
+      }
+    }
+  ],
+  "gpu_executed": false,
+  "findings": [
+    {
+      "RuleID": "generic-api-key",
+      "Description": "Detected a Generic API Key, potentially exposing access to various services and sensitive operations.",
+      "StartLine": 54,
+      "EndLine": 54,
+      "File": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-11-xe-native-dequant-group/sources/xe-native-dequant-group-component-source-v1/manifest.json",
+      "Fingerprint": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-11-xe-native-dequant-group/sources/xe-native-dequant-group-component-source-v1/manifest.json:generic-api-key:54"
+    }
+  ],
+  "redacted_report_sha256": "63b37b9627db90ad46d020cc10dc18616ed9d30a852b7132fdaed2eadf2074d6"
+}
