@@ -1,0 +1,40 @@
+diff --git a/src/program/generate.cpp b/src/program/generate.cpp
+index c4735b6e..5a5033d2 100644
+--- a/src/program/generate.cpp
++++ b/src/program/generate.cpp
+@@ -5420,9 +5420,11 @@ int main(int argc, char** argv) {
+         return true;
+     };
+     strata::core::TokenHits thits;
+-    const bool graph_hits = hit_fn != nullptr && !profile.empty() && !o.no_pool;
+-    if (strata::gpu::host_handoff_concurrent(main_cs) && graph_hits && !o.no_capture && !o.no_token_graph &&
+-        layer_dump == nullptr && half_dump == nullptr) {
++    const bool cache_hits = hit_fn != nullptr && !profile.empty() && !o.no_pool;
++    // The segmented serve verifier also needs residency metadata. Staging it does not enable a concurrent
++    // host/device handoff; keep the ordinary token loop's hit setup tied to whole-token capture eligibility.
++    if (cache_hits && (o.serve || (strata::gpu::host_handoff_concurrent(main_cs) && !o.no_capture &&
++                                 !o.no_token_graph && layer_dump == nullptr && half_dump == nullptr))) {
+         host_res.assign((size_t) (g.n_layers * g.n_expert), strata::core::kNotResident);
+         int64_t resident = 0;
+         for (int64_t l = 0; l < g.n_layers; ++l)
+@@ -5476,7 +5478,7 @@ int main(int argc, char** argv) {
+         thits.scratch = drive.d.hit_scratch;
+         thits.hit_out = drive.d.hit_out;
+         drive.d.host_res = host_res.data();
+-        std::fprintf(stderr, "strata generate: token graph hit path: %lld resident experts, decided on the device\n",
++        std::fprintf(stderr, "strata generate: expert residency table: %lld resident experts\n",
+                      (long long) resident);
+     }
+     if (strata::gpu::host_handoff_concurrent(main_cs) && !o.no_capture && !o.no_token_graph &&
+@@ -5688,9 +5690,9 @@ int main(int argc, char** argv) {
+     if (o.adapt_async && !src.complement_ready()) adapt_async_off("the resident RAM mode is not running");
+     if (o.serve) {
+         if (o.spec < 2 || o.prefill_chunk <= 0 ||
+-            (graph_hits && (thits.d_res == nullptr || host_res.empty()))) {
++            (cache_hits && (thits.d_res == nullptr || host_res.empty()))) {
+             std::fprintf(stderr, "strata serve: needs --spec T and --prefill CHUNK (and a fillable "
+-                                 "--expert-cache; the graphed hit path additionally needs --expert-profile P)\n");
++                                 "--expert-cache; the verifier hit path additionally needs --expert-profile P)\n");
+             return 2;
+         }
+         // --mtp is optional (upstream 3216d271): without it the drafts come from the suffix / prompt-lookup drafter

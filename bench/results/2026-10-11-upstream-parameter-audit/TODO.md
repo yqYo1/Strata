@@ -20,3 +20,7 @@ XeStrata 更新版の評価後、本家 v0.1.42 の比較を確定する前に�
 履歴確認を拡張した [R361](../2026-10-11-parallel-round92/round361-historical-official-pristine-settings-search.txt) は、過去索引v113の465件のコンパクトレポートと直近の関連調査を対象にした。この保持範囲でも本家単体の設定候補・選択基準・最良設定の独立検証を確認できなかった。履歴確認は完了し、実際の本家単体の設定探索と選択後の検証は未完了として区別する。比較結果を「最適化済みの本家に対する性能差」とは表現しない。
 
 [R367](../2026-10-11-parallel-round93/round367-official-independent-parameter-selection-matrix.txt)に現行本家で対応する設定に絞った選別案を残した。prefillは固定4096/6144/8192と独立したauto方針、decodeは実効ワーカー数・推測幅・キャッシュを別軸として扱う。要求値、admission後の値、実使用値をそれぞれ保存し、選択後に独立した3回以上のdecode検証を行う。これは未実行の候補表であり、最適化完了ではない。
+
+2026-10-11の再確認では、上記6件の元の設定記録・実行controllerと、関連3報告のSHA-256がauditの保存値に一致することを確認した。[再確認記録](evidence-verification-v2.json)に元の個別statusを保持した。結論は同じで、箱出し設定だけではないが、本家単体の最適設定探索・独立検証は未完了。新しい性能測定は行っていない。
+
+「箱出し」の意味もソースで区別した。v0.1.41のsetupが生成する標準configはprefill=auto、expert-cache=auto、spec=4、spec-min-p=0.5。一方、過去の本家測定は8192/128/4/0に指定し、262144 contextで標準のprefill借用を無効化していたため、installer標準configそのままの測定でもない。spec=4は標準と同じで、workers=5やpcie=0も自動選択と一致し得る。[既定値のsource監査](default-source-audit-v1.json)を根拠として、設定を明示した事実と、標準値を変えた事実と、最適値を探索した事実を分ける。今後はinstallerの標準auto方針も比較対象に含める。

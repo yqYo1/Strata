@@ -1,0 +1,8 @@
+{
+  "observed_free_mib_before_serve_prefill_initialization": 3936,
+  "source_receipt": "xe-source-llvm-model8k-root-v2.json",
+  "evidence": "serve-admission-stderr.txt",
+  "limitation": "Startup point before serve-prefill allocations and no READY. It is not an admitted complete memory plan or actual long-input proof. Earlier 1565 MiB budget from the older corrected39 candidate must not be substituted for this e32 candidate.",
+  "hypothesis": "After serialized admission is corrected, measure actual INFO free VRAM and bytes_needed for 8K/16K fixed chunks. Larger chunks might reduce repeated full expert streaming without changing tensor precision or needing a graph lease.",
+  "next": "First actual two-chunk model correctness, then capacity admission and separate >=32K selection/verification; do not derive measured tps from the hypothesis."
+}

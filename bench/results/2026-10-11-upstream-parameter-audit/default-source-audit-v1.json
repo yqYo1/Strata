@@ -1,0 +1,69 @@
+{
+  "created_utc": "2026-10-11T03:26:58.275829+00:00",
+  "scope": "Source-only distinction between engine defaults and installer-generated default server configuration for historically measured v0.1.41",
+  "source_revision": "fb58e0dbc8399662c0e47c76578c6e878b14f6cf",
+  "source_worktree": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/bench-upstream-v0.1.41-20261009",
+  "source_pins": {
+    "setup.py": "e24db516dbe71e8cd16167bce2e84c9186c803f4390dc9f0941d2781775498f2",
+    "sycl/src/program/generate.cpp": "ac294c880aaa3641c7df815855b5e4df1123a9cfe6c2c36dedeb998621188141"
+  },
+  "setup_default_server_args_excerpt": {
+    "start_line": 5351,
+    "end_line": 5354,
+    "text": "    args = [\"--pack\", str(pack), \"--native\", str(shards[0]), *([\"--ple-gguf\", str(ple)] if len(shards) <= 2 else []),\n            \"--expert-profile\", str(ROOT / \"data\" / fam.get(\"profile\", \"expert-profile.bin\")), \"--expert-cache\", \"auto\",\n            \"--prefill\", \"auto\", \"--spec\", \"4\", \"--spec-min-p\", \"0.5\", \"--mtp\", str(rt),\n            \"--max-context\", str(ctx)]"
+  },
+  "settings": [
+    {
+      "knob": "prefill",
+      "setup_default": "auto",
+      "historical_requested": "8192",
+      "historical_effective": "6144",
+      "interpretation": "Fixed requested width replaces installer auto; same admitted chunk size would still not establish best setting"
+    },
+    {
+      "knob": "expert-cache",
+      "setup_default": "auto",
+      "historical_requested": "128 plus per-layer quota",
+      "historical_effective": "144 slots",
+      "interpretation": "Fixed requested cache differs from installer auto; compare admitted size rather than requested label"
+    },
+    {
+      "knob": "spec",
+      "setup_default": "4",
+      "historical_requested": "4",
+      "interpretation": "Same value as installer default; explicit flag is not evidence of tuning"
+    },
+    {
+      "knob": "spec-min-p",
+      "setup_default": "0.5",
+      "historical_requested": "0",
+      "interpretation": "Deliberate override; accepted-window activity and latency must be measured separately"
+    },
+    {
+      "knob": "pool-workers",
+      "engine_default": "0 => physical cores minus host",
+      "historical_requested": "5",
+      "interpretation": "May equal automatic hardware choice; no independent worker search demonstrated"
+    },
+    {
+      "knob": "pcie-frac",
+      "engine_default": "auto, defaults 0 on xe without stream-experts",
+      "historical_requested": "0",
+      "interpretation": "May equal resolved default; flag alone is not a tuning result"
+    },
+    {
+      "knob": "prefill-borrow",
+      "engine_default": "enabled by default above 32768 context unless overridden",
+      "historical_requested": "--no-prefill-borrow",
+      "interpretation": "Override at 262144 configured context; inspect supported safe policy separately"
+    }
+  ],
+  "not_executed": [
+    "installer",
+    "engine",
+    "runtime/GPU query",
+    "benchmark",
+    "service change"
+  ],
+  "decision": "Historical arm was not merely installer box defaults, but optimized pristine settings are still unproven. Require an installer-default/autotune arm as well as matched and independently selected arms after execution eligibility is satisfied."
+}

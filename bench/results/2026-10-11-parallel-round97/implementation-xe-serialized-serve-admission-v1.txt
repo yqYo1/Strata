@@ -1,0 +1,152 @@
+XeStrata serialized serve residency/admission implementation v1
+Date: 2026-10-11 (Asia/Tokyo)
+Role: gpt-6.1-sol source implementer. Main owns all qualification and integration.
+Status: source implementation delivered; not compiled, linted, tested or run.
+
+Owner source and isolation
+Base: ea395598c8e967c632a955dc43b77a9291286d49
+Read-only Main worktree:
+  /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011
+Own worktree created at that exact base:
+  /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-serialized-serve-admission-20261011
+Own branch: fix/xestrata-serialized-serve-admission-20261011
+Own final HEAD remains the base, with only src/program/generate.cpp modified.
+No parent/root checkout edits, commits, pushes, builds, compiler invocations, lint,
+tests, Runtime queries, GPU/model/service/reset operations, or cleanup occurred.
+Only the explicitly authorized worktree/branch creation, source reads/edits,
+source diff, hashes and report artifacts were performed.
+
+Read AGENTS.md and git-workflow SKILL.md; LOCAL.md was absent. Explicit task
+prohibition of commits/pushes overrides automatic publication in the skill.
+The Xe worktree lacks docs/ARTIFACT_RETENTION.md; read the policy from the supplied
+Strata documentation worktree instead. Main integrates these artifacts into its
+committed registry. No parallel measurement, raw trace collection or deletion
+was performed. The prohibited credential-bearing prefill contract record was
+never read.
+
+Resume evidence and observed failure
+Read prior implementation-xe-e32-serialized-handoff-v1.txt and R346 serialized
+session review; they intentionally gated concurrent TokenGraph admission while
+retaining completed per-layer SessionGraphs and segmented verifier execution.
+The supplied registry v119 (488 reports; preceding v118 had 487) and current
+source were used rather than repeating capability or parity investigations.
+Prior Main-owned small parity passes do not establish full-model correctness.
+
+Read the supplied closed diagnostic xe-source-llvm-model8k-root-v2/record.json.
+Its argv includes --serve --max-context 262144 --spec 4 --prefill 4096,
+--expert-profile, --expert-cache 128 --expert-cache-per-layer, --spec-split,
+--no-prefill-borrow, --pcie-frac 0 and --adapt-swaps 0. It exited 2 before READY
+with the spec/prefill/cache admission diagnostic despite those supplied flags.
+Main reported completed startup and no fresh GPU fault. This report does not
+turn that failed diagnostic into a pass or infer a model hang from it.
+
+Cause and smallest scoped repair
+The old local graph_hits variable meant cache-hit eligibility (hit_fn, loaded
+profile, CPU pool enabled), not that a graph had actually been captured. Its
+three consumers were its definition, residency setup, and the serve admission
+condition. The setup condition additionally required host_handoff_concurrent,
+which is universally false for the current unqualified volatile protocol.
+Therefore the real selected serve invocation had graph_hits=true but no
+host_res/d_res, and returned 2. Merely deleting that admission test would fail
+at Verifier::init instead: verify.cpp requires d_res, cache_base and blob for
+the profile-filled VRAM expert tier.
+
+Only generate.cpp changes (8 inserted lines, 6 removed):
+1. Rename the three local references to cache_hits, reflecting their meaning.
+2. Prepare the existing residency table when cache_hits and o.serve, independently
+   of concurrent handoff/token-graph flags. For non-serve invocations, preserve
+   the exact old concurrent-handoff/capture/dump predicate. The preparation body,
+   allocations, checked synchronous copies, stage tables, arena release/prefetch,
+   slot mappings and TokenHits bindings are unchanged.
+3. Replace the misleading "token graph hit path ... decided on the device" setup
+   log with "expert residency table: ... resident experts". No whole-token graph
+   success is claimed by metadata initialization.
+4. Preserve the spec/prefill/table admission predicates and exit status; rename
+   the cache diagnostic to the verifier hit path rather than the graphed hit path.
+
+The o.serve exception is deliberate. Making this setup unconditional for every
+cache_hits invocation would also assign drive.d.host_res in the ordinary
+one-token session_loop fallback. expert_pool_dispatch has a separate, unchanged
+local graph_hits meaning static host_res membership; expert_hit_run can dynamically
+admit experts in that ordinary loop. A startup static table is not a substitute
+for its per-layer d.is_hit decision. The scoped repair leaves those non-serve
+conditions unchanged and avoids that extra behavior change.
+
+Relevant consumers and execution paths (post-change source)
+- generate.cpp:5423-5484 prepares host_res from actual xcache/stage slot_of results,
+  with the original device copy/error checks, and exposes drive.d.host_res.
+- generate.cpp:5484 still requires host_handoff_concurrent for whole-token capture.
+  session_capture_token and session_run_token independently reject unqualified
+  handoffs in session.cpp. The ordinary non-serve dispatch around 10306 still
+  uses session_loop when no TokenGraph was captured. No refusal was removed.
+- generate.cpp:5691 retains serve admission; around 5794 builds VerifyHits from
+  thits/cache/host_res, and existing stage verifiers receive their own d_res.
+  Verifier::init retains max-window/model-layout checks and mandatory cache-tier
+  validation. The patch only supplies the prerequisite which the gated setup
+  previously omitted.
+- generate.cpp:6018 chooses drive_pool_multi or drive_pool_split for windows.
+  drive_pool_multi sets the layer and calls actual expert_pool_dispatch_multi.
+  Its unchanged bounds check n_tok and routing entries before plan work, classifies
+  each stable layer's IDs through host_res, maps resident slots to actual cache
+  pointers, and routes misses to the CPU/other existing tier. Residency is caching
+  metadata, not a host/device doorbell permission.
+- verify.cpp:414 forces segmented mode when the protocol gate is false even if
+  STRATA_VERIFY_SEGMENTED=0. Verifier::run waits before staging, checks segment
+  shape, completes each pre segment before reading sequence/payload, calls the
+  per-layer CPU pool, checks the copy queue/callback state, and only then submits
+  the following segment. Its final checked compute/copy drains and error/unwind
+  guard are untouched. This source ordering supports per-layer expert hit caching
+  without concurrent accesses to mutable host-USM controls.
+- The retained all-resident verifier graph has no CPU handoff. all_resident checks
+  every expert in the stage range, not just the current routed IDs. Supplying
+  residency may allow that existing path where all experts are resident; its
+  record_window omits host rings/waits. This is distinct from enabling TokenGraph.
+  No new graph route or permission gate was added.
+- Serve serial prefill/verification already calls ver.run/commit around 8619/8637;
+  serial decode uses ver.run around 9674, commit, then mtp.draft around 9746.
+  MtpDrafter::draft retains Operation/complete and physical context/output-window
+  bounds. prepare_chain, chain_launch and chain_outputs_ready retain their false
+  handoff-gate refusals. Batch/pipeline verifier refusal/fallback behavior is
+  unchanged; no asynchronous chain is silently enabled.
+
+Per-layer caching conclusion and limits
+The source provides an existing completed per-layer verifier path using the
+residency table. Preparing that table for serve satisfies its cache prerequisite;
+it does not make volatile concurrent controls legal. The selected single-device,
+non-batch, non-pipeline serve/MTP setup can now reach its existing verifier init
+instead of the premature missing-table admission return. This is a source-level
+conclusion, not a measured READY or model result.
+
+No kernel/model math, spec size, requested model/physical context, output budget,
+token ordering, host ownership check, completion check, graph/chain refusal or
+cache slot selection was changed. Ordinary non-serve speculative generation
+still has its existing residency requirements; this scoped patch does not repair
+its separate admission path. It does not newly qualify multi-GPU, adaptive refill,
+prefill borrowing, all-resident graphs, batched/pipelined serving, device planning,
+asynchronous fault handling, host-USM capability or private oneMath failures.
+Compilation, mandatory lint, CPU tests, fresh selected model admission/READY,
+bounded request correctness, fault checks, numerical equivalence and performance
+remain unverified by this implementer and must be qualified serially by Main.
+If a later error occurs after this prerequisite is supplied, retain its actual
+mechanism rather than relabeling this admission failure or bypassing more guards.
+
+Artifacts and SHA-256
+Staging root:
+  /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-serialized-serve-admission-source-v1
+Full replacement: src/program/generate.cpp
+  before d1005902a668f214ff08cbbfd570b77f34be2960d17bb932ba899e8cd3a70001
+  after  9e18752e4dd08bbdf5343ee6e1d26774466ccd5de2f4b05dc412f31d93188184
+Exact patch: serialized-serve-admission.patch
+  f91ca457d1419925edc8102ba0d071cd20b95094428f1fd463195014d5108573
+Manifest: manifest.json (includes companion source pins and this report's hash).
+Main worktree was reread at completion: HEAD ea395598, git status empty, and
+generate.cpp still has the exact before hash above. SPDX/copyright unchanged.
+
+Integration/qualification handoff
+Main may review the own-worktree diff or apply the staged patch to exact ea395598
+source, then run its required serialized free/contrib LLVM build/lint/CPU matrix.
+Only Main should re-run the selected bounded model diagnostic with unchanged
+spec/context/prefill settings and report actual progress to READY, request result,
+completion and fresh-fault outcome. Do not use oneAPI compilation to claim the
+required source-LLVM qualification. No commands were executed by this implementer
+to qualify the patch, and no network publication or automatic cleanup is pending.

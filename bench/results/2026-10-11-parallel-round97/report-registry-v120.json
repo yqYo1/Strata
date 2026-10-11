@@ -1,0 +1,35 @@
+{
+  "registry_version": 120,
+  "created_utc": "2026-10-11T03:08:37.014888+00:00",
+  "registry_format": "incremental; follow previous_committed_registry for earlier reports",
+  "research_completed": 489,
+  "previous_committed_registry": {
+    "path": "bench/results/2026-10-11-parallel-round96/report-registry-v119.json",
+    "sha256": "0e464f82f4b09b70dad56a078f94c75246d92bcba7e3ac2efea9f71b62fae21e",
+    "reports": 488
+  },
+  "reports": [
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/implementation-xe-serialized-serve-admission-v1.txt",
+      "archive": "bench/results/2026-10-11-parallel-round97/implementation-xe-serialized-serve-admission-v1.txt",
+      "sha256": "c99c44c930c2ec53c36c6580f8b993d64932b7fee1e7b667729585b249c57cfa",
+      "bytes": 10119,
+      "model": "gpt-6.1-sol",
+      "read_only": false,
+      "qualification": "Main source review applied exact patch; no new build/lint/model qualification yet"
+    }
+  ],
+  "new_reports": [
+    "implementation-xe-serialized-serve-admission-v1.txt"
+  ],
+  "recurring_research_policy": "Repeated distinct read-only Luna scopes with shared prior reports, no mid-task intervention; Main serializes build/test/GPU/cleanup; no model replacement when Luna usage limit prevents service execution",
+  "live_agent_snapshot": {
+    "observed_utc": "2026-10-11T03:08:37.014888+00:00",
+    "implementation_agent": "completed source-only correction returned; Main reviewed/applied",
+    "research_agents": "no active Luna; actual usage-limit error until Oct 14 2026 12:33 PM, not counted as a report; no replacement model",
+    "Main": "Both prior v9 release/v6 host-ASan/lint v4 qualified ea source; new source patch pending serial qualification"
+  },
+  "root_review_corrections": {
+    "scope": "Residency table is required by segmented serve, independent of concurrent TokenGraph eligibility; non-serve predicate and all handoff refusals preserved. No performance/math/context qualification inferred."
+  }
+}
