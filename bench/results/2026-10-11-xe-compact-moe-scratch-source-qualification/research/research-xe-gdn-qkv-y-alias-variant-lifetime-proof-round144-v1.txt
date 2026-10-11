@@ -1,0 +1,42 @@
+# Xe GDN FP32 output / QKV scratch alias lifetime proof (round 144)
+
+Date: 2026-10-11. Read-only source audit against immutable parent worktree `/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011`, HEAD `0740b43488d812117f021ccbe4bd0e15d223f955`. The worktree was clean when checked. Reviewed source identities: `src/prefill/prefill.cpp` SHA-256 `c5cfa727302d334e2f6a8aaad8c1bf59e7d581dd8c2cec2af0d031faf807272d`; `src/prefill/kernels.cpp` `2ead1511d2ecb6cb1cdc73ec3e6143ac097e0f0a715716631f351273371079d4`; `src/core/device.cpp` `3e7523a2...`; `include/strata/prefill/kernels.hpp` `08e2fd550d469a9a5e771d0c16a1ed1f90b207a434d938f552b978c7998c1bdc`. No source edits, builds, tests, runtime/model/device/process queries, profiling, cleanup, or Git mutations were performed. The existing compact MoE source difference is outside this audit; no capacity, performance, or device qualification is claimed.
+
+## Finding
+
+Reusing the beginning of `m.qkv` for `m.y` is source-safe for the current prompt path if (and only if) `m.y` is assigned the same base pointer and all other dimensions/owners remain unchanged. This removes no operation or precision: the recurrence still writes every FP32 `y` element; normalization still reads those FP32 values and writes the existing FP16 `y_h`; the output projection still consumes `y_h`. The proof depends on queue order and the current dead-after-convolution lifetime, not on kernel timing.
+
+`Prefill::carve` independently carves the GDN and QSA views from the same shared `region` (`prefill.cpp:763-781`). GDN currently takes `qkv = float[T*C]` at region offset 0 (`:771`) and `y = float[T*ZV]` later (`:773`). Constants are `C=10240`, `ZV=6144` (`prefill.cpp:64`); therefore the QKV allocation is large enough to hold Y at the same base for every T, with FP32 element alignment. QSA is a separate mutually exclusive view (`:774-781`), and its address assignments must not be altered as part of this alias.
+
+The only `m.qkv` reads are the QKV projection output and `gdn_conv` input (`prefill.cpp:1612,1618`); whole-source search finds no later, MTP, PLE, or callback consumer. The projection writes QKV, then `gdn_conv` reads it and writes `hbuf`; the recurrence is submitted afterward (`:1612-1620`). `gdn_conv` has a serial path and tiled/vectorized paths (`kernels.cpp:424-520`), but all complete before the subsequent recurrence because both receive `m.cs`. The GDN output projection reads `y_h`, not `qkv` or `y` (`prefill.cpp:1622`).
+
+## Recurrence branches and output lifetime
+
+`gdn_recurrence` has the following current runtime paths (`kernels.cpp:779-955`):
+
+- `STRATA_GDN_REC_HEADS` present selects the serial one-group-per-head kernel (`:781-814`). It writes the unnormalized FP32 output to `y[at]` and the normalized, rounded FP16 value to `y16[at]` (`:804-809`). Its recurrence reads `h`, `gate`, `beta`, `z`, `gamma`, and persistent state, not QKV. Since QKV's last read was the earlier convolution, writing Y over it is safe.
+- Otherwise, a supported device may select `GdnRecLane<16>` after checking SIMD width, optional `STRATA_GDN_REC_LANE=0`, and executable-kernel availability (`:754-775,908-910`). The lane kernel writes FP32 `y`; the following normalization kernel reads it and writes `y16` (`:940-955`).
+- If the lane form is unavailable/disabled, D-2 or key-head recurrence is selected. `STRATA_GDN_KEYHEAD=0` prevents key-head selection; `STRATA_GDN_PIPELINE=0` chooses the unpipelined D-2 input-load path. Both D-2 and key-head produce FP32 `y`, then share the separate normalization kernel (`:816-903,937-955`). Neither branch has a QKV read.
+- With `STRATA_GDN_REC_HEADS` unset, first call with T>=64 and key-head enabled may benchmark D-2 versus key-head (`:904-938`). It allocates its own device `st` and `yy`; each trial copies persistent state into `st`, launches into `yy`, waits, and does not modify real state or the caller's Y. Allocation failure selects D-2 (`:911-935`). Scratch is freed only after the waits. The chosen production kernel then writes caller Y. This temporary path does not need to borrow QKV and remains unchanged by the alias.
+
+Thus the alias must keep `y` FP32 and `y_h` disjoint. Do not replace Y with Y16, remove Y writes, or alias `y_h`: the serial kernel writes both values, and parallel paths normalize from FP32 Y in a later kernel. Current normalization reads `y` and writes a distinct buffer, so it is safe for `y == qkv`.
+
+## Queue, stream, and other consumers
+
+`Runtime` constructs both compute and transfer queues as in-order (`device.cpp:185-187`) and every created stream is also in-order (`:223-225`). `Prefill::init` stores its supplied compute stream as `m.cs` (`prefill.cpp:643-649`). `native_proj`, `gdn_conv`, and every recurrence launch resolve this same stream to the same SYCL queue (`kernels.cpp:32`; dispatch sites above). In-order submission therefore establishes QKV projection -> convolution read -> recurrence Y overwrite -> FP32 normalization read -> FP16 projection input, without needing a new barrier. Other QKV/QSA/MoE scratch phases are sequential in the prefill routine and use the same arena by design. The separate copy stream and its events manage expert staging; they do not own this QKV/Y dependency. Existing stream syncs on error/unwind and stage completion remain required and unchanged.
+
+PLE uses separate `ple_emb`/`ple_norm` and pinned host buffers (`prefill.cpp:457-464,838-839`); it does not refer to `m.qkv` or `m.y`. MTP draft K/V work uses distinct buffers and synchronizes its compute stream at completion (`:872-1015`). Whole-source references to `m.qkv` and `m.y` are limited to their declarations/carves and the GDN path; neither subsystem extends either lifetime.
+
+## Invariants for a code change
+
+1. Set `m.y` to exactly the base of `m.qkv`; preserve FP32 type and `T*ZV` extent. Confirm `T*ZV <= T*C` with checked dimensions before relying on it.
+2. Keep `m.qkv` as the output of QKV projection and input to `gdn_conv`; do not reorder the recurrence ahead of convolution or move either operation to another queue without an explicit event dependency.
+3. Keep all current GDN recurrence branches and first-call autotune behavior. Autotune must continue using independent `st`/`yy` allocations and wait before freeing them.
+4. Keep the later Y normalization ordered after recurrence, and keep `y_h` disjoint. Preserve existing projection input, state update, FP32 arithmetic and output rounding exactly.
+5. Keep QSA/MoE views and shared-region sizing/carve accounting consistent. If future code adds any QKV consumer after convolution or a cross-stream reader, this proof expires and the alias must be withdrawn or protected with an explicit lifetime/event design.
+
+Counterexamples that break the proof: recurrence submitted to a second queue without waiting for convolution; asynchronous QKV consumer retained past `gdn_conv`; an MTP/PLE callback given QKV/Y storage; in-place normalization that overwrites Y before its FP32 read completes; Y extent/layout changed beyond QKV capacity; or an autotune trial accidentally pointed at caller Y or real state. Mere equality of pointer types or current synchronous-looking host calls is not sufficient—the queue-order relation is the key condition.
+
+## Minimum device acceptance gates
+
+This is a source proof only. Before landing, validate on at least one device where `GdnRecLane<16>` is selected and one where it is rejected/falls back; exercise forced serial, forced D-2 (`STRATA_GDN_REC_LANE=0`, `STRATA_GDN_KEYHEAD=0`), key-head and D-2 autotune selection, both pipeline settings, T below and above 64, and autotune allocation-failure fallback if fault injection is available. For each supported branch, compare prefill residuals, final GDN state and downstream logits against the unaliased baseline using existing precision tolerances; verify exact FP16 `y_h` parity where deterministic. Include multiple chunks so convolution history and persistent state cross chunk boundaries. Run at the maximum supported chunk (including the 8192-token case) and at the full-context occupancy configuration used for qualification; check allocation, guards/sanitizers where available, and ensure autotune temporaries drain/free safely. Repeat with PLE and MTP enabled to catch scratch reuse interactions. Require successful parity and memory-safety evidence before describing the optimization as accepted; do not infer fit or speed from this lifetime proof.

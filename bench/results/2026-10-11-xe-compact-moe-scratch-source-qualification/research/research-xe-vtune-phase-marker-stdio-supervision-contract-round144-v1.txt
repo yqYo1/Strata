@@ -1,0 +1,76 @@
+# R144: VTune phase-marker, stdio, and supervision contract
+
+Date: 2026-10-11 (JST)
+Scope: read-only source and installed-file review plus Intel documentation. No profiler, model, runtime, GPU, or device command was run; no build/test was run. This is a collection design and admission contract, not a measurement or authorization to launch a profile.
+
+## Decision
+
+For a useful first VTune trace, launch the same server/engine as a child of VTune with XPU Offload collection initially paused. Wait for the engine's normal READY, then resume collection immediately before sending the exact recorded GEN request. This excludes process startup and the initialization path that occurs before READY. Keep the existing request untouched: wait for the usual final PP, then DONE, send normal QUIT, and let the server and VTune finalize normally.
+
+That external-only boundary is approximate. In current source, PP is flushed from the prefill chunk callback after chunk synchronization and the draft/MTP callback, but before Prefill::run completes its final bookkeeping/return. For a common prompt path, bulk prefill handles n_prompt - 1 tokens; the final prompt token is consumed in the first verification window. Thus the last PP does not mean that all prompt work has ended or that decode has begun. An external pause triggered after reading that line races the final prefill tail and can include early verification/decode. Treat such a trace as request-level/phase-nearby evidence, not an exact prefill-only window.
+
+If the question requires an exact bulk-prefill interval with cold decode excluded, add diagnostic-only source ITT pause/resume calls at explicit serving-path boundaries: resume immediately before the prompt Prefill::run work and pause only after the run has completed its queue synchronization, final fold/bookkeeping, and return. Keep stable ITT task/domain markers around host logical phases (for example Strata.Prefill and labels for chunk submit/wait, draft or MTP callback, and final fold). The marker must cover the actual submission thread and phase operations. A named task is only host-side attribution: it neither pauses collection nor establishes a GPU dependency by itself. Confirm with a test trace that the chosen task boundaries appear and device tasks link to their submitter. Keep the patch behind an opt-in diagnostic build/runtime gate; this source instrumentation does not exist in the inspected baseline.
+
+## Source and binary identity reviewed
+
+Immutable source checkout: /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011, HEAD 0740b43488d812117f021ccbe4bd0e15d223f955.
+
+- src/prefill/prefill.cpp, SHA-256 c5cfa727302d334e2f6a8aaad8c1bf59e7d581dd8c2cec2af0d031faf807272d. Prefill::run has opt-in STRATA_PREFILL_TIMING queue-event timing and reports phase GPU timeline, wall, host staging, plus mark/fold host costs. Chunk callback synchronization and PP reporting occur before function completion.
+- src/program/generate.cpp, SHA-256 c9b60ef079694302dfa1f8099ddffd5375d7dae503f6edec454c1d7de3d941ee. Serve emits READY after setup, handles GEN, reports progress and DONE, and processes QUIT only after the active generation returns to its command loop. The normal prefill.on_chunk callback performs draft-KV or MTP work. Startup warmups exist elsewhere in the program; starting collection only after READY excludes those that have already completed.
+- No ITT domain/task instrumentation was found in the reviewed source. The installed VTune SDK header declares ITT domain/string/task APIs and pause/resume APIs; source calls would still need to be added and qualified.
+
+The working tree and compiled executable identity must be rechecked by the operator immediately before any future run; this report does not attest that the binary matches these source hashes.
+
+## External CLI and control design
+
+Installed files were inspected statically under /opt/intel/oneapi/vtune/2026.4/; no VTune executable was run. Its analysis configuration defines the xpu-offload alias and exposes itt-domains, user task/event collection, GPU programming API collection, and target-GPU controls. The documented paused-collection flow is -start-paused, followed by vtune -command resume and vtune -command pause against the result. A bounded launch proposal is:
+
+    vtune -collect xpu-offload -start-paused -data-limit=64 \
+      -result-dir "$RESULT_DIR" -knob itt-domains=Strata.Prefill \
+      -- "$SUPERVISOR" -- "$ENGINE" <exact-frozen-serve-arguments>
+
+This is a proposal, not a command validated against this host. Verify locally that this analysis accepts the knob combination and that result-dir control commands target the launched collection. If using external resume/pause, issue them only after confirming the collection's state and recording timestamps. Do not pass target-pid to attach to a debugger-owned process: launch a fresh target under VTune ownership. Generic VTune attach documentation does not establish that attach is supported for this XPU Offload configuration.
+
+The installed XPU Offload default is CPU ITT plus GPU compute-runtime tracing; API-level tracing can add host overhead. Keep the first pass minimal, allow only the intended Strata ITT domain, and enable programming-API detail only if the initial trace cannot resolve submit/wait boundaries. Do not add GPU Hotspots characterization or hardware counter collection to this pass. Counter presets can require elevated permissions; no privilege, kernel module, device reset, or permission change is in scope. If the needed counter is denied or unavailable, record that fact and stop that pass. A second counter-oriented pass would require separate admission and must not be conflated with this timing trace.
+
+## Stdio and process ownership contract
+
+The server's protocol is line-oriented on engine stdout, with progress/status records and explicit flushes; timing diagnostics use stderr. VTune also emits its own status text. Directly merging VTune's stdout/stderr with engine stdout would corrupt the protocol, and this review did not establish that VTune launch preserves the target's three streams unchanged.
+
+Use a supervisor as the direct VTune child. It must preserve distinct engine stdin/stdout/stderr channels for the existing controller, send VTune/controller output to separately bounded files, and relay engine bytes without rewriting, reordering, buffering across protocol lines, or merging streams. Before any model run, qualify this relay using a harmless short-lived target: prove READY, a sample progress line, and exit status arrive on the expected channels with flush behavior intact, while VTune messages remain separate. If stream ownership or relay fidelity is unclear, do not start the model trace.
+
+The controller owns the engine protocol; VTune owns the launched collection and result directory; the supervisor owns stream relays and bounded logs. Keep PID plus process start time for the wrapper, engine, VTune, and any descendants so PID reuse cannot confuse ownership. Do not send QUIT before DONE. After DONE, send the normal QUIT, wait for engine exit and normal VTune finalization, then verify the result is closed before inspection. A finite wall deadline may prevent an indefinitely hung supervisor, but timeout recovery must preserve the failure status and diagnostic; do not silently kill a live target or label an interrupted run successful.
+
+## Same-workload and evidence requirements
+
+Use the same frozen source/build and executable hash, model pack/hash, effective environment allowlist, serve options, native/MTP/cache/chunk configuration, prompt token IDs and hash, fresh-session or restore state, and request limits as the selected quiet 32K reference. Record the actual context and position values, input token count, output limit, and final token/correctness status. Do not shorten max_new, replace the request with a prefill-only path, or change session state to make the profile easier. Keep the normal completion and compare against the matching quiet sample, not a different-context average. The 260.0258 prefill and 7.8578 decode figures in the current campaign are OFF-subgroup means (four OFF and four ON samples); neither mode has been adopted, and those values are not profiled results.
+
+Set an explicit result data cap (the proposal uses 64 MiB), plus separate bounded wrapper/VTune logs and a wall limit. Preserve the command, exact allowlisted environment, all individual samples, correctness/fault outcome, result size, source/binary hashes, effective knobs, and a concise summary. Record profile overhead separately; this trace cannot be used as a throughput comparison because instrumentation and API tracing perturb host timing. Keep raw VTune timelines only while a written question still needs them, with owner, byte budget, consumer, and review point. After evidence is recorded and verified, delete successful raw timelines and retain a path/hash/reason deletion manifest as required by docs/ARTIFACT_RETENTION.md.
+
+## Interpreting the trace
+
+A GPU device task linked to a host submitter helps attribute work, but does not alone prove what is on the response critical path. To distinguish hypotheses, look for a complete interval and its dependencies:
+
+- H2D/service limit: transfer intervals consume the relevant window, overlap is insufficient, and queue/request dependencies show the transfer gates the next useful work. The prior quiet campaign measured H2D at 6.446834 GB/s; that isolated number alone does not prove current request critical path.
+- Compute-service limit: kernels occupy the interval, compute throughput/occupancy metrics are actually supported and collected, and host gaps are not the dominant wait. Runtime task duration is not an occupancy counter.
+- Overlap limit: copy and compute tasks exist but execute serially or leave avoidable gaps; verify queue dependencies and concurrency before proposing a scheduling change.
+- Host enqueue/synchronization limit: CPU submit, waits, fences, or synchronization dominate while GPU queues are idle; correlate host call stacks/task regions with device idle intervals.
+- Profiler overhead: compare an identical quiet request and the profiled run, record added elapsed time and dropped/partial data, and do not interpret a slower trace as an engine regression. The quiet reference's prefill/decode numbers are not interchangeable with the profile's timing.
+
+VTune's offload view links device tasks to CPU submitter tasks, but idle/overlap views are diagnostic heuristics. Claims about a bottleneck or hardware maximum need supported per-device metrics and an unprofiled correctness/performance follow-up; a successful collection or visible GPU lane is not evidence of achieved maximum occupancy/bandwidth.
+
+## Evidence consulted
+
+Primary Intel documentation:
+
+- [XPU Offload analysis (2026.1 preview)](https://www.intel.com/content/www/us/en/docs/vtune-profiler/user-guide/2026-1/xpu-offload-analysis.html)
+- [XPU Offload view](https://www.intel.com/content/www/us/en/docs/vtune-profiler/user-guide/2026-1/xpu-offload-view.html)
+- [Pausing collection from the command line](https://www.intel.com/content/www/us/en/docs/vtune-profiler/user-guide/2026-0/pausing-collection-from-the-command-line.html)
+- [ITT collection control API](https://www.intel.com/content/www/us/en/docs/vtune-profiler/user-guide/2024-1/collection-control-api.html)
+- [Instrumenting your application with ITT](https://www.intel.com/content/www/us/en/docs/vtune-profiler/user-guide/2024-2/instrumenting-your-application.html)
+- [VTune knobs](https://www.intel.com/content/www/us/en/docs/vtune-profiler/user-guide/2026-1/knob.html)
+- [GPU Offload analysis limitations and interpretation](https://www.intel.com/content/www/us/en/docs/vtune-profiler/user-guide/2026-0/gpu-offload-analysis.html)
+- [GPU Hotspots command-line characterization privilege note](https://www.intel.com/content/www/us/en/docs/vtune-profiler/user-guide/2026-0/run-gpu-hotspots-analysis-command-line.html)
+- [Generic target-PID documentation](https://www.intel.com/content/www/us/en/docs/vtune-profiler/user-guide/2023-0/target-pid.html) (does not prove XPU Offload attach support)
+
+Items that remain unverified and belong to a later supervised qualification: exact local CLI acceptance of the proposed knob set; stdio relay fidelity; launch/stop behavior for this server; appearance and quality of ITT/GPU task links; which Arc B570 metrics the installed driver and VTune can collect without elevated permissions; and measured instrumentation overhead. Until these are tested safely, the design is a candidate protocol, not a qualified profiler recipe.

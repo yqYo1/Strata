@@ -1,0 +1,113 @@
+# R145 — reachable Xe native kernel path and conditional roofline census
+
+Date: 2026-10-11 (JST)
+Scope: static review of immutable source, earlier archived reports, and primary upstream implementation/specification sources. No build, test, runtime, model, profiler, GPU/device/process query, source edit, cleanup, or Git mutation was performed. No measured performance claim is made.
+
+## Decision
+
+Under the frozen FUSED=0 / MMQ=0 / kernel-preload=0 / native-BF16 recipe, the useful new work is a compact path-and-shape census, not another kernel design claim. Static reachability shows that the ordinary native-expert prefill materializes active IQ expert weights into FP16 scratch, then multiplies grouped routed rows. Native IQ direct-to-product and IQ-MMQ implementations exist in this source tree and are included in its kernel target, but the specified flags leave both unreachable. They cannot be treated as the measured path just because their code compiled.
+
+No new optimization kernel is admitted from the external sources. The narrow unresolved quantity is a phase-matched census of actual routed (format pair, expert rows, resident/streamed, GU/Down) shapes and bytes, joined to returned device-completion intervals and host staging/copy totals. That census can determine whether the next comparison should focus on host-to-device streaming, the FP16 materialize/read pass, or GEMM service. It must not assume that any one of these is currently the bottleneck.
+
+## Source identity and exact dispatch interpretation
+
+Immutable checkout: /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011, HEAD 0740b43488d812117f021ccbe4bd0e15d223f955.
+
+Relevant source hashes:
+
+- CMakeLists.txt: 040de957a32bd26c9b71ca476aa45060571b86c0bad72a545ed9dbba9f2394a9
+- src/prefill/prefill.cpp: c5cfa727302d334e2f6a8aaad8c1bf59e7d581dd8c2cec2af0d031faf807272d
+- src/prefill/gemm.cpp: bfa40846fddb46a3d03d8c58ef5209b181c46674939beeefe512db0073c9d648
+- src/kernels/xe/iq_kernels.cpp: 75f2ac1dfdb337c424bba19e62c34159a1bde547a776b9b5d6cf7975dfc29d50
+- src/kernels/xe/iq_mmq.cpp: dd71b2cf2281e234775a00e0853af72f384be26fbe61d6cc48a18606e75df304
+- src/kernels/xe/xmx_gemm.cpp: 2d2144e7331b3dd66a2289a9c67b541b1c136332be53f31c935c9176880085d1
+- src/program/generate.cpp: c9b60ef079694302dfa1f8099ddffd5375d7dae503f6edec454c1d7de3d941ee
+- src/core/layer.cpp: fefc457de582573a8f1132c02139a61161d90fe50dcacda46c8c64cf0b581c97
+- src/core/device.cpp: 3e7523a2947af7c82d41fc9a7653f4f9aad0fa3cbb062999de19553659e0ec27
+- src/kernels/xe/fused_gdn.cpp: 9b1a810dfedb2b66af812fef3a2ad1193708cf2daf0ee8e08ae84038eb8455a1
+- src/kernels/xe/native_gdn.cpp: d50d6f277add4789d210b8953db83e241f816ccd18432cbc1ae69ff8e7eb21ed
+- src/kernels/xe/native_qsa.cpp: ce9df4beac44999faf8d11ad58e14a725f38c76e11c88647e2f7ee8d5b0375ee
+
+The Xe CMake target lists the IQ dequant, IQ-MMQ, XMX/DP4a/joint-matrix GEMM, GDN and QSA sources. This proves source membership in the build target, not which runtime dispatch the built binary or a particular request used. The current executable/build identity and route flags still need their normal per-run receipt.
+
+For native MoE prefill:
+
+- STRATA_PREFILL_FUSED=0 sets fused_on false. fuse_res is then false, so even resident experts that otherwise meet the XMX and shape checks do not call iq_gemm_grouped_f16 directly on their GGUF IQ blocks. All active experts go through explicit GU and Down dequantization to FP16 buffers.
+- STRATA_PREFILL_MMQ=0 makes the MMQ plan disabled (on requires mmq::built(), native layout, and env unset/nonzero). MMQ's quantized-activation, direct-IQ matrix path is therefore not this run's product path.
+- The FUSED=0 fallback still groups contiguous expert products in a caller. Gemm::f16_groups sends separate oneMath/oneMKL calls per expert only when the local FP16 GEMM path reports DP4a; it is not a grouped oneMKL call. Otherwise it returns false and the caller uses xmx_gemm_grouped, which selects its joint-matrix, XMX, or DP4a implementation from the active device/path predicates. The B570 hardware specification advertises XMX engines, but it does not prove which of these predicates and compiled products the actual executable selected. Report the path string/runtime receipt; do not infer oneMKL from the build mode.
+- The IQ direct-product wrapper supports IQ3_S among other formats, but its production fusable predicate additionally requires FUSED on, MMQ off, resident weights, supported matrix shapes, and a per-expert row cap. The exact FUSED=0 arm excludes this path.
+- The source's iq_mmq implementation also has a compile-time supported-type switch including IQ3_S, but MMQ=0 excludes it. Source presence is not request-level evidence.
+- “Sparse IQ3_S experts” means sparsely routed expert selection here. IQ3_S is a packed grid/sign quantization format, not a structured zero-sparse matrix. In the frozen fallback, every active expert's full GU and Down matrices are dequantized to dense FP16 scratch. Count active experts and bytes by format and residency; do not report weight zero-skipping.
+- STRATA_PRELOAD_KERNELS=0 makes Runtime::preload_kernels() return without its background kernel-bundle prebuild. generate.cpp still calls that method. This flag changes warmup/JIT timing, not the compile-time kernel list or the MoE dispatch predicates.
+- --native-bf16 is scoped in generate.cpp to SSM gates, router, and indexer projections. It is not a request to convert all expert matrices to BF16. In layer.cpp, fused GDN has its own default-on flag plus native-GDN, state-size, and native-BF16 gates. --native-qsa and --native-qsa-indexer are separate CLI flags (default false in the options struct); only their exact run settings and counters establish those kernels ran. Do not conflate MoE STRATA_PREFILL_FUSED=0 with the separate GDN fusion gate.
+
+The active IQ3_S model-pack receipt in earlier report R46 records 48 layers/512 experts and format counts GU 18×17, 21×10, 22×20, 23×1; Down 20×39, 42×9. This is pack composition, not per-request activity or an executed type histogram. Match each actual format pair to route census rows.
+
+## External implementations and candidate screen
+
+llama.cpp's SYCL MMQ source has a type-specialized IQ3_S decoder and computes packed IQ weights against Q8_1 activation blocks inside its tiled kernel. It demonstrates that a direct quantized-dot implementation can avoid a full FP16 expert materialization. It does not establish Strata dispatch or a speedup: Strata's exact recipe explicitly disables MMQ, and using that idea would require changing the route/flag and satisfying Strata's numerical contract. Strata's own dormant iq_mmq and iq_gemm_grouped_f16 already occupy these nearby design spaces, so this is not a new port candidate.
+
+The vLLM XPU kernel implementation uses row-count grouped expert GEMM and Xe2 tiled matrix operations for its supported activation/weight formats; its README states the separate XPU kernel package uses SYCL/DPC++ and oneDNN. The current release notes describe Xe2 grouped GEMM support for MXFP8 and block-FP8. This supports the general importance of grouping/tile scheduling, but those formats, layouts and oneDNN/PyTorch dispatch differ from Strata IQ3_S-to-FP16 and its current grouped fallback. It does not nominate a new tile policy for this target.
+
+Intel's Arc B570 desktop specification lists 380 GB/s graphics-memory bandwidth, 203 peak INT8 TOPS, 144 XMX engines, and 10 GB GDDR6. Use 380 GB/s as a theoretical vendor ceiling for a conditional bandwidth bound only. The 203 INT8 TOPS is not an FP16/BF16 throughput roof and must not be converted to one. No public claim or result here qualifies achieved bandwidth, XMX utilization, or supported VTune metrics on this driver.
+
+Sources:
+- https://github.com/ggml-org/llama.cpp/blob/master/ggml/src/ggml-sycl/mmq.cpp
+- https://github.com/ggml-org/llama.cpp/blob/master/docs/backend/SYCL.md
+- https://github.com/vllm-project/vllm-xpu-kernels/blob/main/README.md
+- https://github.com/vllm-project/vllm-xpu-kernels/blob/main/csrc/xpu/grouped_gemm/xe_2/grouped_gemm_xe2.hpp
+- https://github.com/vllm-project/vllm-xpu-kernels/releases
+- https://www.intel.com/content/www/us/en/products/sku/241676/intel-arc-b570-graphics/specifications.html
+
+Earlier reports already screened broad grouped GEMM, full MoE fusion, stage overlap, XMX IQ4 and expert service; in particular R136 and R162 found no externally supported change to the active native-IQ route. The limited addition here is the exact FUSED=0 exclusion and runtime dispatch proof obligation, plus a shape-census contract that can separate weight-transfer, dense-materialization and product service on this recipe.
+
+## Conditional roofline and byte/FLOP accounting
+
+Use per-call shape rows from the real run, not average token count or peak-expert guesses. Let m_e be the routed rows for active expert e in one layer/chunk; K_h=2560, F=640 only where the pinned model metadata confirms those dimensions. GU is (2F × K_h) and Down is (K_h × F). For m_e rows and two FLOPs per multiply-add:
+
+- F_GU(e) = 2 m_e (2F) K_h
+- F_Down(e) = 2 m_e K_h F
+- F_total(e) = 2 m_e (3F K_h), excluding the separate SwiGLU, activation quantization, combine/scatter, QSA, and GDN work.
+
+At (K_h,F)=(2560,640), the conditional expert-dot total is 9,830,400 × m_e FLOPs. This is arithmetic from the admitted shape, not an executed operation count. Preserve actual per-expert m_e, and count launches separately; a single mean hides the shape distribution and tile tails.
+
+For FUSED=0, a lower-bound logical byte ledger per expert/chunk is:
+
+- B_source(e): packed IQ blob bytes read by the dequant kernel from its device-side source buffer, resident or staged; take exact blob_bytes per format pair. Keep host-to-device copies as the separate B_restage term.
+- B_dqwrite: 2 × (2F × K_h + K_h × F) bytes written to dense FP16 GU/Down scratch.
+- B_dqread: the same dense FP16 bytes read by products, before accounting for repeated cache-line traffic or output writes.
+- B_XY: activation reads, FP32 GU output, H intermediate/quantized H, FP32 Down output and final scatter/combine traffic, counted from actual strides and any extra materialization.
+- B_restage: actual repeated host-to-device bytes for nonresident experts, including retries/refills if any. Distinguish it from B_source so an expert copied once and read multiple times is not double counted.
+
+For the example dimensions, B_dqwrite + B_dqread = 19,660,800 bytes per active expert/chunk, before source, activation, output and alignment bytes. This is an unprofiled model of logical traffic for the explicit materialize-then-product route, not a physical VRAM transaction count. For each phase compute conditional arithmetic intensity I = FLOPs / logical_bytes. A bandwidth floor is logical_bytes / 380e9 seconds; it is a loose bound because effective bandwidth, cache reuse, memory transaction amplification, concurrency, and queue gaps are not known. A compute floor is FLOPs / P_FP16 only if the device's relevant FP16 matrix throughput is independently established; this report supplies no P_FP16. Do not use the vendor INT8 TOPS for this denominator.
+
+Keep H2D separate from VRAM traffic. The previously recorded 6.446834 GB/s was an isolated Host-USM copy microbenchmark, not H2D timing from the eight quiet 32K model runs. It can be shown as contextual isolated-copy evidence only. For a current request, report bytes copied and measured host-side staging, copy-event duration and dependency/wait duration from that run. Don't divide current expert bytes by 6.446834 GB/s and call it model's H2D time. Also record actual resident-vs-streamed expert bytes: the identical logical expert can have different transfer cost according to residency.
+
+For native GDN and QSA paths, use separate shape families. GDN's convolution, projection, recurrent state update, normalization and output projections have different state, activation and weight accesses; QSA's selector/indexer, KV append, page-table and attention kernels scale with actual cells/pages and selection widths. A layer-level total cannot discriminate them. Record only operations confirmed by the run's native-GDN/native-QSA flags and runtime counters. Do not sum overlapping stage durations as though they formed a serial path; preserve dependency order and the end-to-end phase wall.
+
+Conditional ranking, to be filled only after the census:
+1. If streamed B_restage plus measured staging/copy critical-path exposure is large, compare the dominant active format/residency cohort and its transfer boundary. Total H2D bytes alone do not prove H2D is gating progress.
+2. If dense B_dqwrite+B_dqread is large and the dequant interval is exposed on the dependency path, compare an already existing direct-IQ route only in a separately declared arm after its route is enabled and numerical gates pass. Under this exact MMQ0/FUSED0 baseline it is ineligible.
+3. If measured product service dominates and actual FP16 throughput/occupancy is weak, compare eligible oneMKL, joint-matrix/XMX or DP4a product paths at the same (m_e,N,K,format) histogram; state which path the source/runtime selects. Do not claim a GEMM roof from a synthetic square matrix.
+4. If QSA/GDN phases dominate, rank by exact operation and state/page extent plus measured waits; the MoE external kernels provide no evidence about those phases.
+
+These are decision rules, not a forecast or measured ordering.
+
+## Compact future census contract
+
+One bounded run receipt should add one row per (chunk, layer, phase, role, input type, output type, shape, residency, selected implementation) plus totals. At minimum record:
+
+- run/build/source/model-pack identity; effective command/flags and allowlisted environment; token/request and physical-position extent; device/compiler/runtime identity; warmup/preload completion state;
+- for each layer/chunk: T, top-k, total routed rows, active expert count, complete m_e histogram or exact per-expert row counts, format-pair counts, resident/nonresident/CPU expert counts; prove sum m_e = T × top_k;
+- per phase/role: calls, accepted/declined/fallback counts; (M,N,K,ld) and tail/tile counts; source blob bytes; dense dequant bytes written/read; activation and output logical bytes; H2D bytes and copy count; host staging/copy/wait time; device event submit/start/end and completion status; predecessor/successor events or other proven dependency links;
+- for GDN: native/fallback phase call counts and (channels, qk_heads, state_size, v_heads, d_conv) per op; recurrent-state bytes and input/weight/output bytes;
+- for QSA: native/fallback call counts, exact (cells, pages, selected rows, blocks, heads, head_dim, idx dimensions) and KV-cache mode/type/bytes; distinguish attention, select/indexer, append and page-table work;
+- output/state/logit correctness and completion/fault/close result; dropped/capped counters; per-phase elapsed/wall values and a separate quiet same-request endpoint.
+
+Do not log a full API trace, token content or raw tensors merely to build the census. Use compact integer counts, shape keys, hashes and bounded per-chunk rows. Counters must be opt-in and their host overhead measured against the quiet run. A returned event is a completion dependency; its timestamp span is not automatically the whole oneMKL call or the critical path. Keep returned-event duration, host submit/stage time, device intervals, interval union and request wall as separate fields.
+
+Stop/rank rules: fail the census if route totals do not reconcile, any dispatch falls back unexpectedly, event/call counts disagree, event completion fails, phase counters are capped/dropped, or actual flags differ from the frozen recipe. Compare only matching chunks, format pairs, residency and m_e rows. Report absolute bytes/FLOPs/call counts alongside conditional intensities and roof floors. Preserve sample-level quiet/profile outcomes and correctness; do not promote a faster partial phase to model speed or claim hardware max without supported per-device counters and a clean end-to-end follow-up.
+
+## Limits
+
+This read-only pass confirms source-level eligibility and conditional arithmetic only. It did not execute the selected dispatch, establish current binary linkage, count any run's expert shapes, verify B570 XMX/oneMKL/DP4a runtime selection, measure local bandwidth, inspect VTune metrics, or prove QSA/GDN path flags. Intel documentation's B570 memory-bandwidth and INT8 peak values are board specifications, not this workload's achieved roof. The current 32K mean numbers and isolated Host-USM bandwidth do not provide the missing per-kernel census.

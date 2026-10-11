@@ -1,0 +1,168 @@
+{
+  "active": false,
+  "complete": false,
+  "passed": false,
+  "commands": [
+    {
+      "label": "syntax-and-helper-selftests",
+      "argv": [
+        "/usr/bin/python3",
+        "-c",
+        "from pathlib import Path\nimport protocol,runtime\nfiles=sorted(Path('.').glob('*.py'))\nassert len(files)==11\nfor p in files:compile(p.read_text(),str(p),'exec')\nprotocol.selftest();runtime.selftest()\nprint('11 sources compile; unchanged protocol/runtime selftests PASS')\n"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-11T14:37:44.815559+00:00",
+      "wall_seconds": 90,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 946276,
+          "start_ticks": 7822893,
+          "sid": 946276,
+          "pgid": 946276
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 78228.936977788,
+      "pid": 946276,
+      "spawn_return_monotonic": 78228.938473687,
+      "direct_identity": {
+        "pid": 946276,
+        "state": "R",
+        "ppid": 946274,
+        "pgid": 946276,
+        "sid": 946276,
+        "start_ticks": 7822893,
+        "rss_bytes": 450560
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 11497472,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-11T14:37:44.960930+00:00",
+      "elapsed_seconds": 0.1452122549962951,
+      "logs": {
+        "syntax-and-helper-selftests.stdout": {
+          "bytes": 62,
+          "sha256": "242c0f4ae234788f5988be1563a22e1551dd21aa10023b626f5f1119dd9e2f4a"
+        },
+        "syntax-and-helper-selftests.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "exported-controller-fixtures",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-model-controller-source-v2/controller_cpu_fixtures.py",
+        "--output",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-model-controller-cpu-root-v1/exported-fixtures",
+        "--lint-receipt",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-lint-qualification-root-v2/record.json"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-11T14:37:44.961659+00:00",
+      "wall_seconds": 90,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 946279,
+          "start_ticks": 7822908,
+          "sid": 946279,
+          "pgid": 946279
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 78229.083118343,
+      "pid": 946279,
+      "spawn_return_monotonic": 78229.084731543,
+      "direct_identity": {
+        "pid": 946279,
+        "state": "R",
+        "ppid": 946274,
+        "pgid": 946279,
+        "sid": 946279,
+        "start_ticks": 7822908,
+        "rss_bytes": 458752
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 10641408,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 1,
+      "finished_utc": "2026-10-11T14:37:45.353075+00:00",
+      "elapsed_seconds": 0.39123413199558854,
+      "logs": {
+        "exported-controller-fixtures.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "exported-controller-fixtures.stderr": {
+          "bytes": 571,
+          "sha256": "30da4a24b3cb8ed5a552364009d2417bd9a4e742195374e21d935d05bd15ae4e"
+        }
+      }
+    }
+  ],
+  "started_utc": "2026-10-11T14:37:44.815108+00:00",
+  "source_pins": {
+    "admission.py": "d94ab77ca0079ed2cf1f24e6f5ccc940baf92b777c5a05f6b4a9e8a4cc665871",
+    "batch_census.py": "ce794be37f2aa670ba446cd8894ca9394a1be6a8b3a77f467cf77076d0d6f7e3",
+    "controller_cpu_fixtures.py": "077e0fdaf3e2a8793c325829350aea6c94fea3b5a9f73e7700feb85931654961",
+    "fixtures.py": "706274e56ae8dbc524142688336f9053bf786cd46c2436a4434f49b588fd6a08",
+    "hash_inputs.py": "25d21cfb5d9977fcabe7e1b036a7959bf8ca99d3ce797c44cacc6e56ef387df2",
+    "protocol.py": "f323da52a9f688c5d08aa45c9b0ab037f77e99d40ef577ec5ec2cd42974a6aa1",
+    "route_census.py": "95c511a6ebb2feac7f5a302ede193d6b9ef34c77055d2f959e76bb5e6bb1819e",
+    "run_root.py": "c4c25bb40374f61b5618815ec5623434c40859b2f535714bd0be605975595c65",
+    "runtime.py": "e3827641ab38ffa0d60db92153c614e7e4911c48b67f5bd841617272dd7d2fd0",
+    "timer_overhead.py": "13b62f3cc85c3b9b49e72c3e1838f7248d5c2530d3357c7a45a81dbdf439ac3e",
+    "transfer_ledger.py": "7e5e37467208c229eeda3c7367fa16f506c11fe502ad93b28bbcc70fa4e9ab6d"
+  },
+  "owner_sha256": "a29d8257eecc77c4ad9ae6671d092b56f4c09a35c4247c125fed3a8c8bc1f95f",
+  "main_review_sha256": "a9e207d61f5c697c3168e66e953aaa17742da1489f861108fb9b131141c47710",
+  "recipe_sha256": "45ec656725e44294839fe0cbfb1383a15beb6e9164c8738252fc6ef0605bd80e",
+  "gpu_executed": false,
+  "model_executed": false,
+  "full262144_qualified": false,
+  "restore_qualified": false,
+  "broad_quality_qualified": false,
+  "performance_eligible": false,
+  "adopted": false,
+  "raw_log_budget_bytes": 8388608,
+  "scope": "Actual source syntax/helper selftests, exported prerequisite/sequence/output/QUIT fixtures and real CLI refusals only",
+  "command_evidence": {
+    "syntax-and-helper-selftests": {
+      "stdout": "11 sources compile; unchanged protocol/runtime selftests PASS\n",
+      "stderr": ""
+    },
+    "exported-controller-fixtures": {
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-model-controller-source-v2/controller_cpu_fixtures.py\", line 229, in <module>\n    raise SystemExit(main())\n                     ^^^^^^\n  File \"/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-model-controller-source-v2/controller_cpu_fixtures.py\", line 218, in main\n    assert a.strong_closed_command(entry) and entry['exit_code']==0\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n"
+    }
+  },
+  "error": "RuntimeError('normal anchored CPU closure exported-controller-fixtures')",
+  "finished_utc": "2026-10-11T14:37:45.353813+00:00"
+}

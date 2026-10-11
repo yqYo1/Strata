@@ -1,0 +1,194 @@
+SOURCE-ONLY compact-MoE diagnostic MODEL controller candidate, v1
+Date: 2026-10-11. Implementer: delegated gpt6.1-sol source agent.
+Status: IMPLEMENTED SOURCE ONLY; syntax/import/CPU fixture/controller/model/GPU execution NOT PERFORMED by this agent.
+No quality, numerical, speed, memory-use, GPU, full-context or RESTORE qualification is claimed.
+
+AUTHORIZED WRITE SCOPE AND BASELINE
+New private directory only:
+/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-model-controller-source-v1
+This new report is the only report written. The implementation worktree, all original controllers,
+earlier reports and receipts were not modified. No Git mutations, cleanup or runtime queries were run.
+Main candidate source tree:
+/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/perf-xe-prefill-row-bounded-scratch-20261011
+Source base: 0740b43488d812117f021ccbe4bd0e15d223f955
+Actual applied Main review-v2 copied byte-exact as source-review.expected.json:
+3040ba6c87ed575ec8ea5f2452646c6cef77a74ea331f56b60a38b2d4e054eac
+It records 42 production pins and six changed files. It is an existing applied-source review;
+it is not approval of this controller or future publication/build qualification.
+
+DERIVATION AND IMMUTABLE HELPERS
+Eight helpers copied byte-exact from xe-native-dequant-prefill-model-controller-source-v6.
+Original v6 controller SHA: 4784bb63fd1c34e46ac93e1ac6bd06c1217030f70241a0b8e43d840fa1e63862
+Static provenance inspection found actual CPU-root-v6 and Main-review-v7 qualify source-v8,
+whose controller SHA is fe4f7a476583ae5c5645892ba3e1fbd17ded776904ddf93fb782ad91b6d40da6.
+This candidate derives its controller from that actual reviewed source-v8, preserving its
+after-GEN original_runtime filtering, stable mapped ELF/stat identities, normal QUIT handling
+of early EOS/post-completion failures, and bounded warning logs. The eight helpers remain v6 bytes.
+Actual old Main-review-v7 SHA: b974d05cb360ddd2f70be8af37b9279241b380610577834b4a70468074f00118
+Actual old controller CPU-root-v6 record SHA: c7dc150f4c533e8316830030f0763563bdd1d6b09f7ecc4f7af998a116c820ac
+Global owner unchanged:
+xe-llvm-v711-source-v5/direct_owner.py
+a29d8257eecc77c4ad9ae6671d092b56f4c09a35c4247c125fed3a8c8bc1f95f
+Owner hash is verified before its import. No forked owner, recovery helper or adapter is introduced.
+
+NEW FILES AND SHA-256 (14 FILES: 11 CODE, THREE JSON)
+6c730afe83edfd4755d10a0bf107456b132f107fd391e23d877b95a1092076f1 admission.py
+ce794be37f2aa670ba446cd8894ca9394a1be6a8b3a77f467cf77076d0d6f7e3 batch_census.py
+71556b06c684824a4391792300e8dbcbd2b561d9d213c70435f6ee5d207b5582 controller_cpu_fixtures.py
+706274e56ae8dbc524142688336f9053bf786cd46c2436a4434f49b588fd6a08 fixtures.py
+25d21cfb5d9977fcabe7e1b036a7959bf8ca99d3ce797c44cacc6e56ef387df2 hash_inputs.py
+f323da52a9f688c5d08aa45c9b0ab037f77e99d40ef577ec5ec2cd42974a6aa1 protocol.py
+0e3968061a99d1789c0aa493c1c1ebd7aa56169d4fbe2d468aaf9140aaa95656 publication.bridge.pending.json
+98c7989df176d8674a7f019984e9c4ce589944398080a16d83b2c64e52a9193f qualification.pending.json
+95c511a6ebb2feac7f5a302ede193d6b9ef34c77055d2f959e76bb5e6bb1819e route_census.py
+a350e4b8d620a4cbb174d7ea2bc54b3e5e7dc3dcfb0fb6001c2d248af8499407 run_root.py
+e3827641ab38ffa0d60db92153c614e7e4911c48b67f5bd841617272dd7d2fd0 runtime.py
+3040ba6c87ed575ec8ea5f2452646c6cef77a74ea331f56b60a38b2d4e054eac source-review.expected.json
+13b62f3cc85c3b9b49e72c3e1838f7248d5c2530d3357c7a45a81dbdf439ac3e timer_overhead.py
+7e5e37467208c229eeda3c7367fa16f506c11fe502ad93b28bbcc70fa4e9ab6d transfer_ledger.py
+
+FINITE CAMPAIGN AND ENVIRONMENT
+Only admitted sequence: N64 OFF, N64 ON, N2049 OFF, N2049 ON, N32768 OFF, N32768 ON.
+Only group16. OFF forbids --reference; ON requires the exact new same-N OFF record.
+Immutable actual roots under xe-compact-moe-model-root-v1/n{N}-g16-{off,on}.
+Existing root set must equal the exact preceding prefix. An existing failed root is not reused;
+there is no retry, recovery, reset, next-size skip or automatic alternate recipe.
+Both arms request and expect actual chunk6144, native-dequant-batch0, FUSED0, preload0,
+inline issuer0, hard CPUshare0 (capability/source proof), pcie0, no-prefill-borrow.
+Cache request128 with per-layer profile must expose/fill/reside actual144. MTP4, greedy GEN16,
+selected LP5, configured context262144, KV INT8 resident32768. Actual READY settings/argv/env verified.
+Short requests execute tails63 and2048; N32768 executes five full6144 chunks plus2047 tail.
+Exact trace positions, PP progression and transfer/census chunk_limit6144 verify recipe;
+automatic/reduced prompt chunk messages fail the gate.
+Explicit environment is composed from allowlisted constants, not inherited os.environ.
+The only new model environment entry is STRATA_PREFILL_COMPACT_MOE_SCRATCH=0/1.
+Fresh OFF/ON dictionaries must differ only in that flag. Historical same-N OFF environment
+must equal the new environment with this flag removed. LLVM location remains the original
+qualified install to preserve this exact environment requirement.
+Progress STRATA_TRACE1, parameter validation and loader/Level Zero warning/error logging stay
+enabled. No quiet mode or model full UR API trace is introduced. Fresh integer health probes
+retain their original diagnostic environment. All observations are performance-ineligible.
+
+STRICT COMPARISON CONSUMERS
+OFF compares exact16 T IDs and ordered LP5 text against the immutable same-N diagnostic v6 OFF.
+ON compares against its newly run same-N OFF. This is a strict output gate only, not evidence
+of general source/sampler equality, broad quality, larger context or RESTORE behavior.
+Historical retained record SHA-256 constants:
+N64 b3041c64d43bcbf5d558e3faeac56b6102c8706a161b5a1742d05b1065364744
+N2049 fca4e11f4fdc284b2fe871ead1be534c89da6ac5bcf0b9ffe3f6769f56ce6717
+N32768 01992f0ba3b15a135636e97ff4dd37fc03f1137486df948ff7631edc96a1c9d1
+Historical record status is not changed and retired raw logs are not reopened as consumers.
+Historical recipes/input/protocol/old controller review/helpers are checked; unchanged
+production components retain exact bytes. New changed source and executable need independent
+four-build qualification, not an assertion that the old binary/source equals the candidate.
+The original failed xe-source-llvm-model8k-root-v1 record remains failed: only its successful,
+strongly closed exit0 full-file model-input hash command is consumed, with complete file set
+and unchanged device/inode/size/mtime/ctime. No failed overall receipt is converted to PASS.
+Excluded prefill-gemm-only-contract-root-v1/record.json was NEVER read. Admission rejects
+that path and resolved symlink target, including malicious qualification receipt entries.
+
+PENDING QUALIFICATION AND PUBLICATION SCHEMAS
+qualification.pending.json and publication.bridge.pending.json are intentionally unlaunchable:
+status pending, Main approval false, unresolved future identities PENDING, publication clean false.
+Main writes SEPARATE immutable resolved files after all actual source/build/lint/CPU review work.
+No completed receipt or future Main approval was invented. Main must not weaken checks to launch.
+Resolved qualification requires base0740, applied-review SHA above, production_source_pins42,
+owner SHA, controller_source_pins for all eleven code files (eight immutable hashes exact),
+four actual build_receipts/build_receipt_sha256/qualified_build_binaries keyed free,
+contrib-llvm, free-asan, contrib-llvm-asan, exact free_release_binary, host_fixture_receipt,
+compiler_receipt/compiler_receipt_sha256, lint_receipt/lint_receipt_sha256,
+publication_bridge/publication_bridge_sha256, controller_cpu_receipt,
+controller_review/controller_review_sha256, qualified_additional_mappings for ready_before_gen
+and after_gen, first_predecessor, and receipt_sha256 pinning EVERY prerequisite absolute record.
+full262144_qualified, broad_quality_qualified, restore_qualified, performance_eligible must be false.
+Four build records must actually pass/complete/inactive with all strongly closed commands;
+phase/mode/source_tree/source_base/main_review_sha256/owner/source_stable/source_pins42 exact,
+actual CPU output 100% tests passed, actual binary path/bytes/hash matching qualification,
+host/compiler receipt hashes, retained build_recipe path/hash values, and real ninja recipe.
+CMakeCache must record proper free/contrib license, WERROR ON, BUILD_TESTS ON; C++20 recipe required.
+Release malformed-CLI cases are checked as exact expected exit2 exceptions, not generic failures.
+Actual compiler receipt must close PASS; lint must cover all six changed source files with exact hashes.
+New CPU fixture receipt must be a Main-owned closed PASS record with lifted source_pins from
+the runner's JSON output. The runner's synthetic dictionaries are NOT receipt inputs.
+Controller Main review must cover the same exact eleven source_pins and main_reviewed true.
+Existing CPU-root-v6 expected exit2 malformed CLI cases retain their exact old source-v8 argv.
+Resolved publication bridge requires Main-reviewed passed/clean candidate source_tree and an actual
+40-hex published revision distinct from base; its published42 source_pins must equal built_source_pins
+from the actual uncommitted builds and qualification42. Four build hashes, lint and controller pins agree.
+
+READY/DONE SOURCE, EXECUTABLE AND MAPPING GUARDS
+At admission, READY, DONE and final, hash all current42 source files, actual free binary,
+all eleven controller files, global owner/recovery helper, applied review, resolved admission,
+publication bridge, immutable Main prerequisite receipts and all actual build-recipe files.
+Owned read-only git HEAD/status --porcelain --untracked-files=all/diff HEAD must show exact
+resolved published revision and fully clean source. Source content equality uses the actual42
+built pins, so clean publication alone cannot approve different rebuilt source.
+READY/DONE Git children have a separate original Owner instance and separate guards directory:
+they are anchored and strongly closed without overwriting the concurrently active model owner state.
+Model /proc executable hash/path, cmdline and complete explicit environment are checked at READY.
+Mapping snapshots verify actual model PID/start/pgid/sid and stable selected rows, mapped
+path/canonical path/inode/device/stat/full SHA and GNU ELF build-id; partial failure evidence retained.
+Original core runtimes use unchanged strict runtime.py at READY and DONE. Compiler/driver/libc
+extras require exact Main-qualified per-phase sets and path/stat/hash/build-id identities.
+After-GEN runtime validation filters original_runtime files; compiler-only mappings cannot be
+misrepresented as the core-runtime set. Mapping reads capped4GiB total,512MiB/file,64 selected files.
+
+OWNERSHIP, NORMAL CLOSE AND FAULT GATES
+Same global lock owned-v0141-measurement.lock. Before every model, require preceding actual
+normal QUIT exit0 model receipt, strongly anchored empty session, direct child reaped, observation
+complete, no survivors/errors/cleanup signals, same boot, fault-free gate, retry0/resetfalse.
+Sequence successors require identical controller/admission. Existing same-N records also require
+normal closure and same boot. No stale dump allowed; journal cursor plus xe/PCI fault pattern
+checks before/after integer health, after model and final. Exact original integer health protocol.
+One fresh GEN16 only. On DONE, preserve mapping/source gates then send literal QUIT newline
+and observe exit0. Early EOS closes normally and fails strict16 qualification after closure.
+READY-before-GEN or DONE post-completion gate failures may close with finite normal QUIT;
+primary failure is preserved and the run remains failed. Mid-GEN/startup failure cannot claim
+normal completed request. Original owner retains bounded cleanup/error evidence; no recovery/retry.
+
+BUDGETS
+Per root: whole900s, model500s, model RSS88GiB, READY/DONE provenance child RSS2GiB,
+combined raw logs64MiB, combined artifacts96MiB, individual record8MiB.
+Original owner per-command bounds plus save() aggregate guards cover commands, provenance and
+record together; model/provenance byte budgets cannot silently become two independent allowances.
+Each Git guard wall<=20s constrained by remaining whole deadline. Health RSS4GiB/wall30s.
+Six finite roots imply campaign wall<=5400s and artifacts<=576MiB. Failed roots remain immutable.
+No long trace exception is created here. A needed trace exception must be named/budgeted by Main.
+
+SOURCE-ONLY FIXTURE COVERAGE
+admission.py exports actual production predicates used by run_root.py, not copied formulas.
+controller_cpu_fixtures.py exercises valid/invalid variant/ref/group/N, pending/Main qualification,
+owner/eight-helper/four-mode/42-pin rejection, publication cleanliness/source/binary identity,
+exact environment difference, sequence prefix/predecessor, anchored normal prior closure,
+boot/reset/retry/signal/QUIT failure, additional map mismatch, strict16 IDs/LP and early EOS.
+It also drives normal, early-EOS, READY failure and DONE failure through actual exported QUIT
+helpers and the unchanged global Owner using four tiny CPU /usr/bin/python3 children.
+No model or GPU child is part of these fixtures. No AST extraction or mock owner closure.
+Runner requires a new absolute output root, reports exact eleven pins and owner SHA; no inherited env.
+
+COMMANDS FOR MAIN ONLY, NOT EXECUTED HERE
+All qualification/test/build/model commands remain serial under Main's qualified owner and lock.
+First statically review all fourteen new files, applied review and actual receipt schema consumers.
+Run Main's bounded Python syntax/import/CLI negative qualification and eight unchanged helper fixtures.
+Then run the exported fixture/controller runner through Main's original owner:
+env -i PATH=/usr/bin:/bin HOME=/home/yayoi LANG=C.UTF-8 LC_ALL=C.UTF-8 PYTHONDONTWRITEBYTECODE=1 /usr/bin/python3 /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-model-controller-source-v1/controller_cpu_fixtures.py --output <NEW_ABSOLUTE_CPU_FIXTURE_ROOT>
+Retain actual outer owner closure and runner output in Main's CPU receipt, lifting source_pins;
+run_root receipt admission requires commands/PASS/complete/inactive fields and exact source pins.
+Complete all four actual build/CPU receipts, host fixture, six-file lint and clean source publication.
+Write separate actual publication bridge and qualification manifest plus exact hashes and controller review.
+Populate exact READY/DONE compiler/driver/libc identities from qualified retained evidence, not guesses.
+First MODEL launch must be the small logged diagnostic OFF; inspect/qualify before proceeding to ON.
+Using the actual resolved qualification path/hash and the same new controller path, serial commands:
+python3 run_root.py --input-tokens 64 --group 16 --compact off --qualification <RESOLVED> --qualification-sha256 <SHA256>
+python3 run_root.py --input-tokens 64 --group 16 --compact on --reference /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-model-root-v1/n64-g16-off/record.json --qualification <RESOLVED> --qualification-sha256 <SHA256>
+python3 run_root.py --input-tokens 2049 --group 16 --compact off --qualification <RESOLVED> --qualification-sha256 <SHA256>
+python3 run_root.py --input-tokens 2049 --group 16 --compact on --reference /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-model-root-v1/n2049-g16-off/record.json --qualification <RESOLVED> --qualification-sha256 <SHA256>
+python3 run_root.py --input-tokens 32768 --group 16 --compact off --qualification <RESOLVED> --qualification-sha256 <SHA256>
+python3 run_root.py --input-tokens 32768 --group 16 --compact on --reference /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-model-root-v1/n32768-g16-off/record.json --qualification <RESOLVED> --qualification-sha256 <SHA256>
+These are instruction examples with unresolved placeholders, NOT execution receipts.
+
+LIMITS AND HANDOFF
+Static source reads/hashes/writes only. All syntax/import/CPU controller tests remain unexecuted
+by this implementer; Main must review and qualify before any launch. Full262144 occupancy,
+broad quality, RESTORE and performance eligibility are explicitly false. Fixed actual request6144
+is preserved in both arms. No workspace retirement, cache enlargement or implementation edits.

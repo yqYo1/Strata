@@ -1,0 +1,98 @@
+# R143 — Intel Arc B570 profiler admission for the quiet 32K path
+
+Date: 2026-10-11 (Asia/Tokyo). Read-only installed-file and official-document screen. This is a collection admission plan, not a profiler run, hardware-counter qualification, performance result, or production recommendation.
+
+## Decision
+
+The best currently usable first profiler is the installed VTune GPU Offload / GPU Compute-Media Hotspots path. VTune GPU Offload can relate CPU activity, GPU computing tasks, and the time and size of host/device transfers; GPU Compute-Media Hotspots can report per-kernel execution/resource information and, when admitted by the driver, hardware counters such as EU occupancy and GPU memory bandwidth. These answer different questions and should be collected as two bounded diagnostic launches: first an offload/timeline pass to locate whether a selected decode/prefill window waits on transfers, kernel service, or host activity; then one counter pass against the largest demonstrated GPU kernel(s). A single all-metrics run is not justified before validating B570 counter access and metric availability.
+
+The installation contains `/opt/intel/oneapi/vtune/2026.4/bin64/vtune` and the VTune 2026.4 GPU-hotspots metric configuration. It also contains Intel PTI 1.1 headers and shared libraries, but no `unitrace` executable was found under `/opt/intel/oneapi`. Therefore, PTI unitrace is not the immediate runnable choice on this host. Do not install/build a profiler as part of this admission. If Main later has a separately approved unitrace executable, PTI's `--device-timeline`, `--kernel-submission`, `--chrome-kernel-logging`, and `--device-timing -v` options are a useful alternative for command/kernel timing and resource metadata, but the official documentation says hardware-metric groups vary by device/runtime and query mode is Level Zero-specific.
+
+VTune support is a workflow capability, not proof that a given B570 hardware event can be collected. The local `gpu_hotspots_base.cfg` has `gpu-hotspots` and exposes `characterization-mode` groups; `gpu_metric_sets.xsl` contains platform-index-27 examples including `GpuTime`, `XVE_ACTIVE`, `XVE_STALL`, `XVE_BUSY`, `XVE_THREADS_OCCUPANCY_ALL`, `GPU_MEMORY_BYTE_READ/WRITE`, and L3 bytes. Static presence in this catalog does not establish that the installed runtime advertises these events for the actual B570, nor that the platform index maps to this device. `gpu_offload.cfg` is explicitly marked deprecated. The newer local `offload.cfg` aliases `xpu-offload`; prefer the installed current `gpu-hotspots` alias for counter questions, and have the owner obtain the exact CLI/configuration for offload/timeline collection from the installed VTune interface before launch.
+
+A GPU profile can identify the hot kernels and achieved memory bandwidth/occupancy. It cannot by itself establish the GPU's theoretical peak or “hardware max.” Intel lists the B570 at 380 GB/s graphics-memory bandwidth, 203 INT8 peak TOPS, 144 Xe Vector Engines, and PCIe 4.0 x8. The 380 GB/s is a specification ceiling for graphics-memory bandwidth, not the expected bandwidth for a specific mixed workload, a measured PCIe transfer rate, or a compute ceiling for FP16/FP32. Report achieved counters alongside their exact metric definitions and unit; compare to the appropriate Intel spec or separate controlled ceiling measurement. Do not derive FP16/FP32 TOPS from the INT8 figure.
+
+## Existing workload and identity context supplied by Main
+
+- Arc B570 PCI address 0000:05:00.0, 10,666,115,072 bytes (9.936 GiB); measured H2D baseline 6.446834 GB/s.
+- Current source-built Intel LLVM 7.1.1, compiler commit `504366f4b82ff00bbac7b0c956635eed8bc599d8` plus 17 Xe patches; build banner says 7.1.0-pre / clang 22.1, `libsycl9`, system Level Zero. Kernel `7.0.0-38-generic`.
+- Eight quiet 32K samples all passed the same recipe (chunk 6144, cache 144, G16, MTP4, native batch off): prefill mean 260.0258 tokens/s; cold 16-token decode 7.8578 tokens/s. Current evidence does not establish that PCIe service alone is the critical path.
+- Main is running a serial build/test gate in a separate mutable worktree. Do not overlap any GPU collection with it. Use the immutable clean parent `0740b43488d812117f021ccbe4bd0e15d223f955` only after Main closes the gate and explicitly selects the workload/binary/receipt to profile. No source, binary, current process, or device state was queried for this report.
+
+Prior relevant reports read to avoid repeating generic advice:
+
+- `vtune-cpu-owned-collection-round13.txt` and `vtune-baseline-protocol-supervision-round14.txt`: do not attach to a GDB-owned process; VTune software Hotspots is a ptrace/signal sampling route and does not give GPU time/counters. Keep collection in its own child-launched diagnostic and preserve the app's stdio protocol. The reports describe earlier ptrace restrictions; do not retry CPU Hotspots or alter ptrace settings.
+- `round158-gdn-moe-profiler-discriminator.txt`: prior installed provenance records VTune 2026.4, B570 and Level Zero; no current counter query or profiler pass. An external B580 PTI metric-query failure is a compatibility warning only.
+- `round216-onemkl-returned-event-coverage-and-pti-qualification.txt`: SYCL event timestamps are not automatically a whole-library service span. Do not substitute event duration for all oneMKL internal device work without a full trace comparison.
+- `round190-onemkl-native-profiler-phase-attribution-plan.txt`: preserve operation identity and returned-event semantics, and do not infer expert-to-kernel links from wall-clock overlap alone.
+
+## Minimum safe collection sequence for Main to supervise
+
+This is a proposal only. Run after the serial work gate is closed, with no active build, test, inference, service, or other GPU owner. Use the exact quiet baseline binary, model, request/session fixture, environment, batch/scheduler settings, and correctness gates from a successful frozen receipt. Do not attach to an existing server or debugger. Launch a fresh diagnostic-owned target with VTune as parent. Do not change runtime queue properties, kernel code, copy path, cache policy, clocks, device reset state, driver, modules, permissions, or services. The profiled request must still pass the existing exact correctness/lifecycle gate; profiler outputs are diagnostic and are never throughput samples.
+
+1. **Target and scope.** Name one question before the run (for example, why the validated 32K prefill or cold decode wall time is long). Select one small, representative request window at the same workload position as the clean sample. Exclude model initialization/restore from the interval using VTune start-paused/control if validated for this collector. Include only the chosen request and its expected completion. Do not profile an entire repeated polling or long-serving lifecycle.
+2. **Offload/timeline pass.** Use installed VTune's current `xpu-offload` (or the current GUI-generated GPU Offload command if VTune presents it for this device) with a unique result directory and `-data-limit=64`; launch the test target under VTune rather than attach. Its job is request-window host/device task timing, transfer-size and transfer-time fields, CPU tasks while the GPU is idle, and visible GPU task intervals. Capture both transfer directions. The installed legacy `gpu-offload.cfg` says deprecated, so do not assume that legacy alias is accepted. Before the model launch, have Main validate the current CLI alias and paused/resume/stop controls against an already-safe tiny target, without starting an app service or touching live state. If no clean target stdin/stdout channel can be preserved, stop; do not parse profiler output as the engine protocol.
+3. **Counter/resource pass.** Only if the first pass identifies a specific expensive GPU kernel and counters are admitted, run a fresh, separate `gpu-hotspots` collection with characterization mode `overview` (or the smallest available relevant metric group), pinned to the B570 if multiple devices are reported. Example shape, to be checked against installed CLI syntax before use:
+
+   ```sh
+   /opt/intel/oneapi/vtune/2026.4/bin64/vtune \
+     -collect gpu-hotspots \
+     -knob gpu-profiling-mode=characterization \
+     -knob characterization-mode=overview \
+     -start-paused -data-limit=64 \
+     -result-dir <private-run>/vtune-gpu-hotspots \
+     -- <frozen-target argv>
+   ```
+
+   Resume immediately before the request; stop or pause immediately after the final response token. If `overview` does not expose a needed advertised metric, use one additional separate run for the relevant available set, such as `global-memory-accesses`, `compute-extended`, or `lsc-slm`, only after VTune itself shows that set applies. Do not enable full-compute/source-analysis/stall sampling speculatively. Save `GpuTime`, active/busy/stall, occupancy, device/L3 byte or bandwidth fields actually present, kernel ID/name, launch dimensions, workgroup size, SLM/thread private/spill/register metadata when available, and the collection warnings. Keep per-kernel observations separate from full request wall time.
+4. **Hardware counter gate.** If the collector reports missing permissions, missing metric library, unsupported B570 metric set, unsupported engine, or no counters, record the exact error and stop that pass. Do not invoke `sudo`, change `perf_event_paranoid`/driver permissions, install/rebuild kernel modules, load a driver, or alter services. GPU activity/timeline collection may still work without hardware counters; if it does, preserve that as timing evidence only. The VTune 2026 troubleshooting guide explicitly describes root privilege errors for some processor-graphics hardware-event cases; do not treat successful binary/tool presence as permission proof.
+5. **Hard bounds and ownership.** A supervising controller owns VTune and its launched process tree, records PID plus `/proc/<pid>/stat` start ticks, and verifies all recorded descendants exit before another GPU operation. Use one private result directory, a finite request/process deadline based on the existing controller, 64 MiB VTune data cap, and 64 MiB combined target/profiler text logs. Control commands run as separate short-lived subprocesses with stdout/stderr routed to bounded logs. Preserve all exit statuses, signals, target protocol offsets, device/driver/runtime versions from the existing inventory, build ID/binary hash, workload and fixture hashes, effective environment allowlist, collector command/knobs, timeline boundaries, metric list and errors.
+6. **Interpretation.** Transfer time overlapping compute means overlap exists; transfer time on the serialized end-to-end critical tail can support transfer limitation only if dependencies/order show it is on the request path. GPU kernel duration plus busy/occupancy/bytes can distinguish long compute service from low throughput, but GPU `% busy` alone cannot prove critical-path ownership. Host API/queue-submit time and GPU-idle spans suggest host enqueue/scheduling/waits only when host calls and dependencies align. Do not subtract unrelated host and device clocks. Compute “total compute time,” “transfer time,” and elapsed wall as distinct values; per-task inclusive/aggregate durations may overlap and should not be summed to reconstruct wall time without timeline dependencies.
+
+## Questions this can and cannot resolve
+
+| Evidence | Supported reading | Not established by itself |
+|---|---|---|
+| Host-to-device transfer operations with byte sizes, duration and request ordering | Whether measured H2D operations consume meaningful request time and overlap or sit on its tail | PCIe link saturation or bytes physically sent across PCIe; unified/host USM behavior and staging must be represented correctly |
+| GPU compute task timeline / per-kernel time and launch identifiers | Kernel service order, long kernels and visible gaps/overlap | That a named model operation maps to a kernel unless API/task/queue dependency evidence joins it |
+| `XVE_THREADS_OCCUPANCY_ALL` / VTune EU thread occupancy, if exposed | Actual occupancy/busy behavior during profiled kernels | Achievable maximum occupancy or occupancy as sole cause; registers-per-thread count is not the same as occupancy |
+| GPU-memory / L3 bytes or bandwidth counters, if exposed | Counter-reported traffic/rate for that selected task/window | Spec peak, PCIe throughput, or application-request traffic if counter scope includes unrelated kernels |
+| CPU API/host task intervals + device dependencies | Host enqueue cost and synchronization/wait candidates; CPU work while GPU idle | True wait duration by simple subtraction, or blocked-vs-useful CPU execution without appropriate call/thread data |
+| Hardware limit comparison | Intel B570 specs provide 380 GB/s graphics-memory BW and 203 INT8 peak TOPS as reference maxima | A universal model throughput ceiling; INT8 TOPS is not a FP16/FP32 ceiling and memory bandwidth does not bound PCIe |
+
+## Concrete fallbacks
+
+- If VTune offload can produce task/transfer timelines but counters are unavailable, keep one short timeline pass. Use the existing clean request wall-time receipt and existing H2D benchmark as independent comparison points. Report `hardware counters unavailable`; do not label the slowest kernel as bandwidth-bound or claim proximity to peak.
+- If GPU Offload/XPU timeline cannot launch cleanly or corrupts the target protocol, stop profiler integration. Use existing application phase wall timing and the already measured transfer baseline; Main may separately add approved host/event instrumentation in a future change, but this report authorizes no build/source change. Preserve host and device clock domains separately.
+- PTI fallback is unavailable on the current installation because only the PTI SDK/runtime library files were found and no `unitrace` executable. Do not execute tools from another worktree or install anything here. If a later owner-provided PTI binary is used, first collect only `--kernel-submission --device-timeline --chrome-kernel-logging` on a tiny allowed run, with no hardware metrics; only then check `--metric-list`/counter support. PTI's `-q`/`-k` metric examples are not B570 admission.
+- If only CPU Hotspots is available, it cannot answer GPU kernel time, transfer time, GPU occupancy or GPU bandwidth. Do not call it the requested profiler result.
+
+## Retention
+
+Retain the compact summary, collection receipt and any failed collector diagnostic required to explain a distinct unresolved failure. Delete a successful raw result directory after its measured fields, summary, hash, and conclusion are recorded and verified, with a path/hash/reason deletion manifest and serialized cleanup after GPU work closes. Keep a full trace only for a named unresolved timeline question with owner, byte budget, consumer and next review point. Do not keep repeated polling logs, full successful API traces, or duplicate timelines.
+
+## Installed-file evidence read (metadata/content only)
+
+The only installed/runtime tool paths examined were:
+
+- `/opt/intel/oneapi/vtune/2026.4/bin64/vtune`, 190,656 bytes, SHA-256 `7987d63d0e8ed24fdad6572d8f0873e709831463d202a7fb71c59b6709e9a05d`.
+- `/opt/intel/oneapi/vtune/2026.4/config/analysis_type/gpu_hotspots_base.cfg`, 34,694 bytes, SHA-256 `6d43760cf89d51a87972f6e4d806a26f6cbb076b5efeea898a65df223ef4d6bc`; contains `gpu-hotspots` alias and characterization modes.
+- `/opt/intel/oneapi/vtune/2026.4/config/analysis_type/offload.cfg`, SHA-256 `c91bae6749cccfd6f01fe29e96fec45733d87ddb57f108356cb48ff935fbf827`; contains current `xpu-offload` alias.
+- `/opt/intel/oneapi/vtune/2026.4/config/analysis_type/gpu_offload.cfg`, SHA-256 `8ca788cf31ba72a55925ef82d194b6b1866cea7ecc435205a4115f0315c661a1`; legacy alias has an explicit deprecated prerequisite.
+- `/opt/intel/oneapi/vtune/2026.4/config/analysis_type/include/gpu_metric_sets.xsl`, 80,662 bytes, SHA-256 `8c227173fdf1ab34871e88e2739173642e97af6878b8c4d94af80d9db83539e3`; metric names/platform-index examples only, not actual-device enumeration.
+- `/opt/intel/oneapi/pti/1.1/lib/pti/libpti.so`, 2,598,112 bytes, SHA-256 `0aa1424886e59a0cfc6808a4316471a28e7679b82c03c9e6cc895c0d072df46b`; `/opt/intel/oneapi/pti/1.1/include/pti/pti_version.h` identifies PTI 1.1.0 commit `875cdcde8d0a7ab9efb0c671a6e4f85f0b7384f6`. `unitrace` was absent from filesystem searches under `/opt/intel/oneapi` and the compiler install prefix `.tools/intel-llvm-v711/install`.
+
+No VTune executable, PTI tool, profiler query, `ze_info`, device/runtime, process state, compiler, build, test, inference, service operation, or Git mutation was run for this research.
+
+## Primary documentation read
+
+- Intel VTune Profiler GPU Offload Analysis, 2026.0: https://www.intel.com/content/www/us/en/docs/vtune-profiler/user-guide/2026-0/gpu-offload-analysis.html (SYCL with Level Zero, host/device task timing and transfer breakdown; BMG listed among media-metric architectures; metric catalog and availability vary by hardware).
+- Intel VTune GPU Offload command line: https://www.intel.com/content/www/us/en/docs/vtune-profiler/user-guide/2026-0/gpu-offload-command-line-analysis.html (collector command, start/pause and result controls).
+- Intel VTune GPU-hotspots CLI configuration: https://www.intel.com/content/www/us/en/docs/vtune-profiler/user-guide/2026-0/configuring-gpu-analysis-from-command-line.html (general command-line route and GPU collection setup).
+- Intel VTune GPU metric reference: https://www.intel.com/content/www/us/en/docs/vtune-profiler/user-guide/2026-0/gpu-metrics-reference.html (named GPU memory bandwidth, host-to-GPU bandwidth, EU occupancy, L3, SLM and stall metrics; support is architecture dependent).
+- Intel VTune hardware-metric troubleshooting: https://www.intel.com/content/www/us/en/docs/vtune-profiler/user-guide/2026-0/error-message-cannot-collect-gpu-hardware-metrics.html and https://www.intel.com/content/www/us/en/docs/vtune-profiler/user-guide/2026-0/error-root-privileges-for-gpu-analysis.html (metric library/access failure and root-privilege error class).
+- Intel PTI unitrace README: https://github.com/intel/pti-gpu/blob/master/tools/unitrace/README.md (host/device API timing, device/kernel timelines, queueing/submission/execution, occupancy-related resource fields, hardware metrics, runtime pause/resume; requirements and files).
+- Intel PTI Level Zero metric collection: https://github.com/intel/pti-gpu/blob/master/chapters/metrics_collection/LevelZero.md (Level Zero metric groups, device/runtime requirements, timestamp correlation).
+- Intel Arc B570 product specification: https://www.intel.com/content/www/us/en/products/sku/241676/intel-arc-b570-graphics/specifications.html (380 GB/s graphics-memory BW, 203 INT8 peak TOPS, 144 XVE, PCIe 4.0 x8).
+
+No B570-specific metric enumeration, permission admission, timeline, counter value, measured GPU maximum, profiler success, or actual critical-path attribution is established by this report. Main must validate the exact CLI syntax, actual counter list and safe target protocol before running any collection.

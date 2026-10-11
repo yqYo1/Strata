@@ -1,0 +1,71 @@
+{
+  "main_reviewed": true,
+  "original_reports_modified": false,
+  "measured_results_modified": false,
+  "source_only": true,
+  "source_pins": {
+    "src/prefill/prefill.cpp": "c7a427dc58fd5f03732b4a807274f2cc5d406cd2f6c39d64a620c0cd3518cc67",
+    "src/prefill/kernels.cpp": "0e89bbb83220ad85257d17fc6b98f2332a5c17e8d2832937a98a1e3ae300ab81",
+    "src/kernels/xe/xmx_gemm.cpp": "2d2144e7331b3dd66a2289a9c67b541b1c136332be53f31c935c9176880085d1",
+    "src/kernels/xe/qsa_decode_attn.cpp": "526194966d5d28bb2cba1d129bc42aa32c8aa4f69d0a288b4c192e01cb86be50"
+  },
+  "grouped_xmx_workgroups": "G*ceil(max_rows/128)*ceil(N/256); NSG counts subgroups per workgroup and cancels in global/local division",
+  "resident_iq_scope": "FUSED0 recipe makes fuse_res false and nf=0; conditional routed/resident counts in R142 are not observed resident-IQ dispatch in current samples",
+  "footprint": {
+    "allocator": "A(payload)=round_up256(payload+256)",
+    "conditional_geometry": {
+      "T": 8192,
+      "C": 10240,
+      "ZV": 6144,
+      "HV": 48,
+      "cap": 2051,
+      "max_blocks": 65538,
+      "sel_batch": 256,
+      "attn_batch": 32
+    },
+    "gdn_payloads": [
+      335544320,
+      201326592,
+      3145728,
+      1572864,
+      1572864,
+      335544320,
+      201326592,
+      100663296
+    ],
+    "qsa_payloads": [
+      16777216,
+      16777216,
+      402653184,
+      201326592,
+      4194304,
+      16777216,
+      201326592,
+      100663296,
+      67207168,
+      67110912,
+      26163200
+    ],
+    "gdn_takes": 8,
+    "qsa_takes": 11,
+    "gdn_original": 1180698624,
+    "qsa_raw_payload": 1120976896,
+    "qsa_aligned_requested": 1120979712,
+    "y_allocation_removed": 201326848,
+    "gdn_after_y_alias": 979371776,
+    "shared_after_gdn_only": 1120979712,
+    "gdn_only_shared_reduction": 59718912,
+    "attention_scratch_payload": 26163200,
+    "attention_scratch_allocation": 26163456,
+    "qsa_after_scratch_alias_keep_two_takes": 1094816256,
+    "qsa_after_merge_two_projections_and_scratch_alias": 1094816000,
+    "combined_shared_reduction_with_merge": 85882624,
+    "conservative_payload_only_threshold": 6388,
+    "scope": "Conditional source-request bytes only; no physical VRAM or fit/speed measurement. All GDN/QSA aliases unimplemented."
+  },
+  "qsa_pointer_correction": "R145 retaining original two takes differs from R143 merging them. Merge saves a further256B but moves Vc to Kc+T*512; retain logical extents and kernel values, not original byte addresses. Do not count allocator guards as payload.",
+  "profiler_campaign_scope": "Eight quiet32K samples are four OFF/four ON;260.0258/7.8578 are OFF subgroup means.",
+  "h2d_scope": "6.446834GB/s came from isolated HostUSM H2D microbenchmark, not measured H2D time in the eight quiet model samples.",
+  "native_bf16_scope": "Recorded quiet/model recipes do not include --native-bf16. R145 flag discussion is conditional, not evidence that this CLI flag ran; inspect actual per-role weight formats and dispatch.",
+  "logical_byte_roof_scope": "Logical dequant writes/reads divided by380GB/s is an illustrative quotient, not a guaranteed DRAM latency floor: cache-served reads and physical transactions must be established separately."
+}

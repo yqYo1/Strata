@@ -1,0 +1,74 @@
+# Experimental row-bounded fallback MoE scratch — source-only implementation v1
+
+Date: 2026-10-11. Owner and qualification consumer: Main. Next review: Main's serialized host checks, free/contrib-llvm builds, and differential runtime qualification before any commit/publication. This report records SOURCE ONLY. No tests, compiler/configure/build, project Python import/AST/dlopen, model execution, GPU/runtime/device/process query, profiling, install, service, reset, or cleanup was performed. No correctness, quality, speed, physical VRAM, or allocation-success result is claimed. No earlier report was edited.
+
+Implementation worktree: /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/perf-xe-prefill-row-bounded-scratch-20261011
+Branch: perf/xe-prefill-row-bounded-scratch-20261011
+Source baseline/unchanged HEAD: 0740b43488d812117f021ccbe4bd0e15d223f955
+Baseline src/prefill/prefill.cpp SHA-256: c5cfa727302d334e2f6a8aaad8c1bf59e7d581dd8c2cec2af0d031faf807272d
+Read the worktree's AGENTS.md; LOCAL.md was absent. docs/ARTIFACT_RETENTION.md was absent in this implementation snapshot. Main owns recording/commit boundaries and all qualification. No Git mutations, commit, push, fetch, worktree/config changes, or formatting tools were used. Static git diff --check reported no whitespace errors; this is not a compiler/lint/test result.
+
+Evidence read: NEW immutable research-xe-moe-gu-hh-reusable-scratch-capacity-round136-v1.txt, research-xe-fallback-xs-reusable-gather-capacity-round137-v1.txt, research-xe-fallback-one-expert-gemm-descriptor-lifetime-round138-v1.txt, and research-xe-fallback-row-capped-group-scratch-schedule-round139-v1.txt in this report directory. Registry v136 is bench/results/2026-10-11-xe-quiet32k-balanced-campaign/report-registry-v136.json in the docs-sycl-storage-retention-20261009 worktree; it records 568 research reports. R139's correction is applied: rows_gpu <= T*K, only individual cnt[e] <= T. A logical group can exceed T and must split by actual checked row sum. R136/R137/R138 are not treated as runtime qualification.
+
+Changed/new source files and SHA-256 (uncommitted):
+577ebbd766568558ba43a64960854cdbcae712cbe961491b50ac7c204887e775  CMakeLists.txt
+433897666aa6c93d645ead09eba04d872e67bdbce3b7aa232f553168595fac72  include/strata/prefill/compact_moe.hpp (new, 63 lines)
+60742f75378e88d473b6fe377dc596a9025f240d02abd4d58d4efa3c5240d97d  include/strata/prefill/kernels.hpp
+c7a427dc58fd5f03732b4a807274f2cc5d406cd2f6c39d64a620c0cd3518cc67  src/prefill/prefill.cpp
+0e89bbb83220ad85257d17fc6b98f2332a5c17e8d2832937a98a1e3ae300ab81  src/prefill/kernels.cpp
+7aea3e8f60f8132fbebb561dd533fcb9a6ccb3863753f8fc7db0d273b9a10fb6  tools/test_prefill_compact_moe.cpp (new, 117 lines)
+Tracked diff: 139 insertions, 32 deletions over four files; two additional new source files total 180 lines. All source edits are confined to the assigned new implementation worktree. This report is the only additional report artifact.
+
+## Exact opt-in and unsupported combinations
+
+STRATA_PREFILL_COMPACT_MOE_SCRATCH is default OFF. The environment is sampled once per process with strtol(base 10); a nonzero parsed value opts in. Unset, empty, zero, or a string with no numeric prefix remains OFF. This does not change STRATA_PREFILL_MMQ itself. Enable with STRATA_PREFILL_MMQ=0 STRATA_PREFILL_COMPACT_MOE_SCRATCH=1 for the intended fallback experiment.
+
+Eligibility is mp.any=false AND mp.fallback=true AND STRATA_DBG_NAN absent. Pure MMQ and any mixed MMQ/fallback plan are unsupported. STRATA_DBG_NAN presence (including a value of 0, matching the existing presence-based diagnostic) is unsupported. An unsupported explicit opt-in returns a descriptive init error before buffers/events/copy stream allocation; bytes_needed conservatively retains the ordinary layout for these rejected combinations. MMQ GU is never shrunk. Diagnostic behavior is not changed or silently limited to the final compact group. Without the opt-in, the existing full-route diagnostic remains as before.
+
+The compact init also rejects nonpositive chunks, route capacities exceeding int32, checked T*K*N FP32 size_t allocation limits, expert counts outside int32, and a compute queue without the in_order property. Runtime accepts only its own queues (src/core/device.cpp Runtime::stream); compute/transfer/additional runtime queues are constructed in-order at device.cpp:186-225. No vendor, model identifier, or device-ID decision is introduced. The shared source remains used by free and contrib-llvm modes. Both modes are unverified. No HIP/CUDA-specific work was added.
+
+## Schedule and precision
+
+Preserve existing order, off[e], src_dev, slot_dev, CPU routing tail, cpu_fut join/copy, combine and token/rank accumulation. The compact route validates all expert counts and total T*K coverage before prefix construction. GPU rows are explicitly checked in [0,T*K]. Logical native fallback dequant groups retain their existing q indices and --prefill-experts grouping (G16 by default, current setter up to 64); native_flush batching/window/ring/event handling is unchanged.
+
+Only after a complete logical group's weights have been expanded, compact_moe_groups validates the whole window, then partitions it into maximal contiguous positive-count subgroups. Every count must satisfy 0<cnt<=T; global bounds must match each count and lie inside rows_gpu; each local bound starts at 0 and ends at the checked sum nr<=T. Extension uses cnt<=cap-sum to avoid overflow. Bad counts/bounds produce runtime_error handled by the existing run catch/drain path; no clamping, truncation, or dummy zero-count GEMM is used. The host partition has no fixed G16/G32 limit, and its persistent descriptor is sized to n_expert+1, so an arbitrary future logical group up to the actual expert order remains row-cap safe.
+
+For subgroup [a,b) of logical [j0,j1), q0=a-j0 and r0=xb_host[a]. Gather mixed_h via src_dev+r0 into Xs[nr,N]. The existing gather copies FP16 bits without a new conversion. GU uses the existing FP16 product with FP32 output at compact row zero. The unchanged swiglu_interleaved writes saturated FP16 Hh; Down remains FP32 and writes Dm+r0*N. Weight bases are dq_gu+q0*GU_ELEMS and dq_d+q0*D_ELEMS, with expert strides unchanged. All bases are positive in-allocation offsets; no base-minus-offset trick exists. Dm remains full T*K*N FP32 and combine still reads original rank order. This is a grouped row-cap schedule, not a blanket G1 schedule; one-expert subgroups occur only when a row cap/window actually requires them.
+
+The same partition/gather/local-bound scheme covers resident fused IQ windows (original logical group <=kIqGemmGroup=32). The existing per-expert IQ tile-row limit is checked as well as cumulative nr<=T; host weight lists stay in expert order. Unsplit resident and native groups retain grouping. Both optional-native-batch and ordinary fallback compute branches share fallback_products; OFF performs the same full-route products as the baseline.
+
+Full-stream zero-count entries remain outside order. release_to/skipped_entry still wait for issued copies, flush pending native readers where required, record the original used event, advance consumed, and give back their original slots. No stream/copy issuer ownership, blob lifetime, or slot release edge was shortened. No serve workspace retirement/cache enlargement was implemented. Configured 262144 streamed-KV/session capacity, page tables and staging pools are not changed; runtime verification of the full-context configuration remains pending.
+
+## Descriptor and matrix lifetime
+
+compact_xb_dev is a persistent device-resident allocation/carved span of n_expert+1 int32 entries outside the shared GDN/QSA/MoE arena. Its capacity appears in BOTH carve/relayout and bytes_needed. Owned mode keeps it in Impl::owned until release drains queues and frees allocations. Borrowed mode keeps it within the borrowed layout; relayout first drains compute and copy queues, then recarves consistently. No stack host descriptor is asynchronously uploaded and reused.
+
+The original xb_host/xb_dev layer descriptors retain their existing lifetime. A new compact_moe_bounds kernel translates xb_dev+a into compact_xb_dev on m.cs; xb_dev is immutable through that layer's grouped products. Exact ordered sequence for each subgroup is device bounds translation -> compact gather -> GU -> unchanged SwiGLU -> Down -> next subgroup translation/gather. IQ/XMX device kernels read compact_xb_dev asynchronously on that same in-order m.cs; the next translation follows their last Down reader. Persistent Xs/GU/Hh allocations likewise survive all commands; subsequent writes follow all previous consumers. No per-subgroup host synchronization is added.
+
+Gemm::f16_groups consumes the subgroup vector's HOST bounds synchronously while looping oneMath products (gemm.cpp:343-363). Only its asynchronous matrices, not this host bounds vector, need survive return. blas obtains Runtime::stream(m.cs) and product submits oneMath gemm on that same queue (gemm.cpp:153-170); compact matrices/weights remain allocated and reuse is ordered there. IQ copies its host weight pointer list into IqGemmPtrs before launch (iq_kernels.cpp:1780+), while the pointed-to cache weights retain the unchanged cache lifetime. These are source contracts; all backend/runtime lifetime qualification is pending.
+
+## Requested-byte formulas, not physical VRAM
+
+Let A(payload)=round_up_to_256(payload+256), the actual Alloc::take request. Existing three planes are A(2*T*K*N)+A(4*T*K*1280)+A(2*T*K*640). Eligible compact planes are A(2*T*N)+A(4*T*1280)+A(2*T*640). FP32 Dm remains A(4*T*K*N). Raw interior payload reduction for aligned receipt T is T*(K-1)*(2*N+4*1280+2*640), i.e. 810 MiB at T8192. The actual shared arena still uses max(GDN,QSA,MoE), so the arena savings are capped by unchanged GDN/QSA, as corrected in R137/R139.
+
+For the retained 512-expert, K10, N2560, G16, BF16X2-OFF, no-borrow fallback formula with configured context262144: T8192 old MoE/shared set 1,937,018,368 B -> compact MoE 1,087,671,808 B; unchanged GDN 1,180,698,624 B becomes the max. Shared set/request decrease 756,319,744 B (721.283 MiB rounded), BEFORE the new descriptor. T6144 old 1,452,764,672 B -> compact MoE815,754,752 B; GDN885,524,480 B becomes max. Shared decrease567,240,192 B (540.962 MiB rounded).
+
+The NEW descriptor payload is 4*(n_expert+1) B and its actual requested extent is A(4*(n_expert+1)). At n_expert512 this is payload2052 B, requested2560 B, not merely 2052 B. Net requested-owned decreases are therefore756,317,184 B at T8192 and567,237,632 B at T6144. Applying these to the R137 baseline total source requests yields2,999,276,288 B and2,385,490,688 B respectively. These figures are conditional requested-buffer arithmetic from existing reports and this source change, not allocator receipts, free-VRAM deltas, or success guarantees.
+
+## Source fixtures and commands for Main (NOT RUN)
+
+CMake adds the host-only prefill_compact_moe_test alongside existing publication/context helpers, with assertions retained via -UNDEBUG. The fixtures exercise the production partition, exact order/coverage through compact gathered rows and absolute Down destinations, local weight q0 rebasing, unsplit and maximal split windows, one-token and 2047-token tails, arbitrary65-member groups, 4096 sparse routing patterns whose zero entries use production skipped_entry, malformed IDs/counts/prefix/caps/windows, and near-int32 checked sums. They are unexecuted fixtures, not passing results. They do not exercise device queue lifetimes or prove numerical parity.
+
+From the assigned worktree, Main may serialize these checks using its existing approved build environments:
+  c++ -std=c++17 -Wall -Wextra -Werror -UNDEBUG -Iinclude tools/test_prefill_compact_moe.cpp -o /tmp/strata-prefill-compact-moe-test
+  /tmp/strata-prefill-compact-moe-test
+  cmake --build build/free
+  ctest --test-dir build/free --output-on-failure
+  cmake --build build/contrib-llvm
+  ctest --test-dir build/contrib-llvm --output-on-failure
+  tools/lint/run.sh
+Build directories must first be configured by Main with its existing intel/llvm toolchain, STRATA_BUILD_TESTS=ON, STRATA_WERROR=ON and correct free/contrib-llvm license mode. No setup/build/test was attempted here. Also run the host fixture under Main's separate ASan/UBSan configuration.
+
+Before publication, Main should qualify exact enable/gating cases in separate processes; OFF baseline must retain behavior. Exercise ordinary and native-dequant-batch fallback, resident IQ unsplit/split prefixes, streamed/nonstreamed, zero-count ring entries, CPU tail when authorized by host-handoff policy, borrowed relayout if applicable, T8192 and short tails, and explicit no-XMX/small-memory configuration. Use Main's pinned corpus/serve commands with only STRATA_PREFILL_COMPACT_MOE_SCRATCH switched; establish per-route gathered FP16/GU/Hh/Dm/final-combine parity and requested-allocation receipts before any performance claims. Validate configured262144 streaming/session behavior as in existing receipts. Reject tests for MMQ+compact and DBG_NAN+compact must stop before shrink/allocation. NVIDIA/shared contrib-llvm path and all GPU correctness/performance/lifetime checks are unverified.
+
+No trace/tensor/profiler captures were generated, retained or removed. No cleanup manifest is needed because no deletion occurred. Main may archive this compact report and source at its next committed work boundary after qualification; earlier immutable evidence remains untouched.
