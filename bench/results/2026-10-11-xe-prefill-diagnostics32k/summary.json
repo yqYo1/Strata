@@ -1,0 +1,98 @@
+{
+  "source": "9c0b291d85adecb6c1dc489c3e9965b82226b799",
+  "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+  "input_sha256": "94cbdd7fdc6c9f32a08c0c4f8b50c1cc27a7ffc3f383d23c5c6ac24e8ec7f2c9",
+  "actual_batched_positions": 32767,
+  "chunk_tokens": 4096,
+  "requested_ring": 8,
+  "actual_ring_source_minimum": 16,
+  "effective_policy": "full_nonresident_stream",
+  "issuer": "inline",
+  "expert_h2d_logical_request_bytes": 399981158400,
+  "expert_h2d_calls": 195456,
+  "per_chunk_submitted_bytes": [
+    49997644800,
+    49997644800,
+    49997644800,
+    49997644800,
+    49997644800,
+    49997644800,
+    49997644800,
+    49997644800
+  ],
+  "transfer_scope": "Expert blob successful H2D request extents only, checked terminal production drain before diagnostic declaration; excludes startup/decode/KV/activation/D2H/D2D and physical PCIe-exclusive service.",
+  "counts_original_overall_result": {
+    "passed": false,
+    "error": "ValidationError('line 38: wrong mode, issuer or format')",
+    "model_normal_close": true,
+    "native_request_timing": {
+      "prefill_tps": 215.9047931549325,
+      "cold_decode_tps": 8.241899757894195,
+      "prefill_ms": 151770.6,
+      "cold_decode_ms": 1941.3,
+      "input_tokens": 32768,
+      "actual_batched_positions": 32767,
+      "generated_tokens": 16,
+      "initialized_independent_process": true,
+      "restore_measured": false,
+      "settings_search": false
+    },
+    "new_faults": [],
+    "original_posthealth_not_reached": true,
+    "subsequent_complete_capture_cpu_validation": true
+  },
+  "timer_actual_result": {
+    "passed": true,
+    "timing": {
+      "prefill_tps": 127.3744719292599,
+      "cold_decode_tps": 7.963368504877563,
+      "prefill_ms": 257257.2,
+      "cold_decode_ms": 2009.2,
+      "input_tokens": 32768,
+      "actual_batched_positions": 32767,
+      "generated_tokens": 16,
+      "initialized_independent_process": true,
+      "restore_measured": false,
+      "settings_search": false
+    },
+    "fresh_before_after_health": true,
+    "no_new_faults": true
+  },
+  "timer_overhead": {
+    "capture_valid": true,
+    "timing_enabled": true,
+    "overhead": {
+      "mark_ms": 61207.852,
+      "marker_calls": 383083,
+      "new_events": 1093,
+      "fold_ms": 307.515,
+      "fold_calls": 385,
+      "intervals": 383082
+    },
+    "independent_completion_validation": false
+  },
+  "phase_profile": {
+    "batched_positions": 32767,
+    "timeline_ms": 257185,
+    "wall_ms": 257242,
+    "host_staging_ms": 9971,
+    "phase_text": " embed+steps 433 (0.2%) hc read 2805 (1.1%) gdn 1475 (0.6%) qsa proj 3661 (1.4%) qsa indexer 4 (0.0%) qsa select 628 (0.2%) qsa attn 5980 (2.3%) router+shared 442 (0.2%) host grouping 97108 (37.8%) gather 452 (0.2%) wait copy 1064 (0.4%) dequant 112673 (43.8%) gemm gate/up 6056 (2.4%) gemm down 14653 (5.7%) combine 5825 (2.3%) ple 88 (0.0%) kv stage 357 (0.1%) gdn conv+gates 423 (0.2%) gdn recurrence 1470 (0.6%) gdn out proj 1587 (0.6%)",
+    "host_lines": [
+      "strata prefill timing: host: chunk setup (PLE rows, the expert stream plan) 14 ms, waiting for each chunk 0 ms, after each chunk (the draft layer, progress) 367 ms, PLE 3023 ms"
+    ],
+    "limitation": "Ordered event intervals include host/copy idle; nonexclusive and not independent profiler service. Host mark/fold overhead is not calibrated subtraction."
+  },
+  "same_full_transfer_ledger": true,
+  "same_selected16_outputs_and_lp": true,
+  "timer_minus_counts_prefill_ms": 105486.6,
+  "comparison_limit": "One diagnostic process per setting; original counts overall FAILED preserved and excluded from qualified performance. No calibrated/exclusive attribution, optimal-setting, capability or full-context/RESTORE claim.",
+  "correction": "Prior traffic-scope and quiet report claim that requested ring8 makes routed-only was wrong: ring_slots clamps to16 for T>=2048, so source and actual ledger both show full nonresident streaming. Historical performance/correctness outcomes remain unchanged.",
+  "performance_adopted": false,
+  "official_independent_settings_search_complete": false,
+  "next": [
+    "Measure admissible larger prefill chunks/VRAM lifetime choices to reduce full model traffic per token; keep decode decision separate",
+    "Use independent profiler/component service measurements before exclusive hardware bottleneck claims",
+    "Finish Xe evaluation then optimize and evaluate official pristine settings per tracked TODO",
+    "Actual full262144 and RESTORE remain required before adoption"
+  ]
+}

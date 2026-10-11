@@ -1,0 +1,104 @@
+{
+  "schema": "xe-prefill-diagnostic-observer-source-manifest-v1",
+  "date": "2026-10-11",
+  "status": "SOURCE_ONLY_UNQUALIFIED",
+  "implementation_model": "gpt-6.1-sol",
+  "artifact_directory": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-prefill-diagnostic-observer-source-v1",
+  "production_source_base": "ad41ad97b3a918727f89aace09b9a424b077bc8c",
+  "production_edits": false,
+  "new_worktree": false,
+  "diagnostic_patch_adoption_or_qualification_claimed": false,
+  "input_pins": [
+    {
+      "role": "exact transfer row and stage-run total grammar",
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-prefill-transfer-counts-source-v1/src/prefill/prefill.cpp",
+      "sha256": "94906966f9750504b2ce0db304cfa745667d02e60b60273793e4b84e431755f0"
+    },
+    {
+      "role": "exact distinct timer overhead grammar",
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-profiling-overhead-accounting-source-v1/src/prefill/prefill.cpp",
+      "sha256": "6a77f49d21f404b7a397052e562537ff4767fc387e3b93897b4394b803bdbf4b"
+    },
+    {
+      "role": "committed prior-report sharing point, count 496",
+      "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-11-xe-profile32k-quiet/report-registry-v124.json",
+      "sha256": "97a4b119bcc6ff3802276d2473e76dda34b9af5024e867d5523e8c4c71993907"
+    }
+  ],
+  "files": [
+    {
+      "path": "transfer_ledger.py",
+      "bytes": 11800,
+      "sha256": "7e5e37467208c229eeda3c7367fa16f506c11fe502ad93b28bbcc70fa4e9ab6d"
+    },
+    {
+      "path": "timer_overhead.py",
+      "bytes": 3751,
+      "sha256": "13b62f3cc85c3b9b49e72c3e1838f7248d5c2530d3357c7a45a81dbdf439ac3e"
+    },
+    {
+      "path": "selfcheck_driver.py",
+      "bytes": 16362,
+      "sha256": "e1d104739d64781e5313a06657d47737b172f1bf29366ee251802ccae3c476a9"
+    }
+  ],
+  "report": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/implementation-xe-prefill-diagnostic-observer-v1.txt",
+    "bytes": 15761,
+    "sha256": "4fadae7aee09fd363416b98179116780d3f0126570bb96887f0c3f3d63792db0"
+  },
+  "license": "LGPL-3.0-or-later",
+  "spdx_copyright": "2026 MistVVK and the XeStrata contributors",
+  "runtime_requirements": {
+    "python_minimum": "3.9",
+    "dependencies": "standard library only",
+    "runtime_sycl_gpu_or_model_dependency": false
+  },
+  "transfer_contract": {
+    "scope": "exactly one this_prefill_stage_run ledger",
+    "required_expectations": ["device", "stage", "pos0", "n", "chunk_limit", "mode", "issuer", "format"],
+    "optional_layer_pins": "all stage layers, blob_bytes/gu_type/down_type; partial pins rejected",
+    "mode_issuer_expectations": "single strings or explicit complete local chunk-offset maps",
+    "row_order": "chunk offset then ascending absolute stage layer, including zero rows",
+    "integer_arithmetic": "uint64 counters/products/per-mode sums/combined sums, overflow rejected",
+    "completion_declaration": "exact completion=checked explanatory suffix required",
+    "missing_ledger_is_zero": false,
+    "context_cap_inferred": false
+  },
+  "timer_contract": {
+    "enabled": "exactly one distinct overhead line",
+    "disabled": "absence required; overhead=None, no invented zero measurement",
+    "presence_semantics": "Main supplies explicit bool; env values 0 and empty still enabled",
+    "durations": "canonical three-decimal finite nonnegative mark/fold host milliseconds",
+    "counts": "uint64 marker/new-event/fold/interval counts",
+    "consistency": ["positive marker_calls", "new_events<=marker_calls", "intervals<=marker_calls-1", "nonzero intervals require a fold call"],
+    "endpoint_api_call_count_inferred": false,
+    "existing_phase_text_changed_or_parsed": false
+  },
+  "qualification": {
+    "helper_imports_or_execution": "NOT_RUN",
+    "selfchecks": "SOURCE_ONLY_NOT_RUN",
+    "actual_stderr_validation": "NOT_RUN",
+    "ast_parse_py_compile_lint": "NOT_RUN",
+    "build_test_runtime_gpu_model_profiler": "NOT_RUN",
+    "manual_source_reading": "DONE",
+    "artifact_byte_hashes": "DONE",
+    "main_owns_all_serial_qualification": true
+  },
+  "recommended_main_commands_not_executed": [
+    "python3 -B /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-prefill-diagnostic-observer-source-v1/selfcheck_driver.py",
+    "python3 -B /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-prefill-diagnostic-observer-source-v1/selfcheck_driver.py --actual-stderr /ABS/MAIN-SELECTED-STDERR --expected-json /ABS/MAIN-SELECTED-EXPECTATIONS.json --timing-disabled"
+  ],
+  "limits": [
+    "Capture validation is not independent proof of production submission/drain or physical completion.",
+    "Main validates full model/request/process/fault status separately.",
+    "No PCIe-exclusive traffic, DMA service, hardware bandwidth, bottleneck or calibrated timer claim.",
+    "Without external layer pins, internally consistent wrong types/extents cannot be independently detected.",
+    "Timer format carries no run/device/stage ID; Main supplies complete correctly scoped capture.",
+    "Unrelated logs are ignored; malformed recognizable diagnostic-family lines are rejected.",
+    "Missing bytes or an unrecognizable partial prefix cannot be reconstructed or ruled out by parsing.",
+    "Multiple stage/run ledgers in the input are deliberately rejected.",
+    "Synthetic capture fixtures test parser rejection only, with no Runtime stub or production algorithm mirror."
+  ],
+  "manifest_self_hash": "returned separately; intentionally not self-referential"
+}

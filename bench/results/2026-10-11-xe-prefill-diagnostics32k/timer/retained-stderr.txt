@@ -1,0 +1,46 @@
+strata generate: GPU Intel(R) Arc(TM) B570 Graphics, 160 compute units, 9.9 GiB, prompt matrix products on XeStrata's own kernels (XMX)
+strata generate: this CPU has no AVX-512: the expert kernels run on AVX-2 (multi-token for the i-quant gate/up rows)
+strata generate: native pack: /home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s experts (largest blob 2.66 MB), token embedding IQ4_XS in mapped host memory (322 MiB, 0.2 s)
+strata generate: 1466 MiB of weights loaded from /home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s in 1.4 s (302 canonical tensors skipped: served natively)
+strata generate: 300 native projection matrices, 2018.88 MiB of weights, in 1.2 s
+strata generate: KV streaming: 32768 of 262144 cells per QSA layer in VRAM, the K/V in 3.09 GiB of pinned RAM
+strata generate: PLE table format IQ4_NL
+strata generate: the SSD is kept awake while rows are read: one page of the table after 100 ms without a read, until 60 s after the last request (STRATA_SSD_KEEPALIVE=0 turns it off)
+strata generate: PLE on, table 320001536 rows of /home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00002-of-00002.gguf
+strata mtp: draft layer loaded, 834 MiB of VRAM (experts 675, dense 111), files read in 0.86 s (918 MiB/s)
+strata generate: experimental native Q5_K head, 521472000 bytes, in 0.3 s
+strata generate: expert arena: host USM, one block per layer (48): pinned and readable by GPU kernels
+strata generate: loaded 46.84 GiB at 1.48 GiB/s
+strata generate: CPU pool tasks/phase: 18 (automatic), participating threads: 6
+strata generate: profile /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-prefill-service-events-20261010/data/expert-profile.bin: 24576 ranked pairs, built for 24576 slots
+strata generate: per-layer slots use each layer's blob: 128 uniform slots (0.32 GiB) -> 144 slots, 3 per layer (0.27 GiB)
+strata generate: expert cache 144 slots, 0.27 GiB of VRAM; policy is
+strata generate: the GPU computes the experts in the cache; it rounds differently from the CPU,
+strata generate: pre-filled 144 of 144 slots from the profile in 0.2 s (1818 MB/s); slot 84 verified
+strata generate: R4 hit path ON - resident experts are computed on the GPU
+strata generate: 5 expert-pool workers + the host thread
+strata: GDN step forms for windows of 1..8 tokens: 11111111 (0 one group a head, 1 split, 2 prefetch)
+strata: the PCIe share's fetch runs 4 work-groups (6.3 GB/s; 320: 6.3 GB/s)
+strata: the 2560 x 10240 BF16 GEMV takes 4 rows a work-group for 2,3 rows
+strata: the 2560 x 2560 BF16 GEMV takes 4 rows a work-group for 2 rows
+strata generate: session is up (engine xe0.1.40.2.2)
+strata generate: expert residency table: 144 resident experts
+strata serve: the prompt path allocates its own buffers (too few cache slots to borrow)
+strata: graph side branches: 239.9 us in a row, 292.6 us branched: not used
+strata verify: queue-completed host/device handoff: each window runs as segments the host launches
+strata verify: window up to 4 tokens, 64.0 MiB of device buffers
+strata mtp: draft head over 106299 tokens (212.9 MiB)
+strata generate: PCIe split: the share 0.00 of the missed experts (--pcie-frac is given)
+strata serve: 1515 MiB of VRAM free with everything loaded
+strata prefill timing: 32767 tokens, GPU timeline 257185 ms, wall 257242 ms, host staging 9971 ms: embed+steps 433 (0.2%) hc read 2805 (1.1%) gdn 1475 (0.6%) qsa proj 3661 (1.4%) qsa indexer 4 (0.0%) qsa select 628 (0.2%) qsa attn 5980 (2.3%) router+shared 442 (0.2%) host grouping 97108 (37.8%) gather 452 (0.2%) wait copy 1064 (0.4%) dequant 112673 (43.8%) gemm gate/up 6056 (2.4%) gemm down 14653 (5.7%) combine 5825 (2.3%) ple 88 (0.0%) kv stage 357 (0.1%) gdn conv+gates 423 (0.2%) gdn recurrence 1470 (0.6%) gdn out proj 1587 (0.6%)
+strata prefill timing: host: chunk setup (PLE rows, the expert stream plan) 14 ms, waiting for each chunk 0 ms, after each chunk (the draft layer, progress) 367 ms, PLE 3023 ms
+strata prefill timer overhead: host wall CPU API overhead: mark 61207.852 ms (marker calls 383083, new event creations 1093), fold 307.515 ms (fold calls 385, completed intervals 383082); not GPU service or timer calibration
+strata verify: capturing the 1-token window (1471 MiB of VRAM free)
+strata verify: captured the 1-token window (sync ok)
+strata verify: capturing the 4-token window (1251 MiB of VRAM free)
+strata verify: captured the 4-token window (sync ok)
+strata verify: capturing the 2-token window (1128 MiB of VRAM free)
+strata verify: captured the 2-token window (sync ok)
+strata serve: prompt 32768 tokens = 0 reused + 32768 read in 257257 ms (127.4 tok/s), 16 generated in 2009 ms (8.0 tok/s), drafts accepted 10 of 13, 0 checkpoints
+strata serve: decode expert cache hit rate: 5.6% (513 hits / 9120 lookups)
+strata serve: KV streaming: 83.94% of 117072 block reads hit VRAM, 75.8 MiB read from RAM

@@ -1,0 +1,256 @@
+Xe Prefill diagnostic observers v1 — source-only implementation
+Date: 2026-10-11
+Owner: implementation agent, explicitly requested gpt-6.1-sol; Main owns qualification.
+Status: source delivered, NOT imported, executed, tested, linted, built or qualified.
+
+Result
+------
+Delivered three standard-library Python sources for strict validation of the
+exact stderr diagnostic formats in the two previously delivered optional
+Prefill patches. No production source, worktree, controller, receipt, previous
+artifact or existing report was changed. No new worktree is needed for these
+standalone observer artifacts. This is concrete implementation, not a substitute
+for user-selected Luna research.
+
+Artifacts (absolute staging directory)
+--------------------------------------
+/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-prefill-diagnostic-observer-source-v1
+
+transfer_ledger.py: 11800 bytes
+SHA256 7e5e37467208c229eeda3c7367fa16f506c11fe502ad93b28bbcc70fa4e9ab6d
+timer_overhead.py: 3751 bytes
+SHA256 13b62f3cc85c3b9b49e72c3e1838f7248d5c2530d3357c7a45a81dbdf439ac3e
+selfcheck_driver.py: 16362 bytes
+SHA256 e1d104739d64781e5313a06657d47737b172f1bf29366ee251802ccae3c476a9
+manifest.json: adjacent manifest pins these sources and this report. Its own
+hash is returned separately to Main; a manifest cannot contain its own hash.
+
+This report:
+/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/implementation-xe-prefill-diagnostic-observer-v1.txt
+
+Pinned production formats and prior decisions
+--------------------------------------------
+Both prior optional patches are based independently on immutable
+ad41ad97b3a918727f89aace09b9a424b077bc8c. Main states both remain unqualified and
+unapplied at task dispatch and is integrating/building them independently.
+This observer does not claim their application or qualification.
+
+Transfer format source:
+/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-prefill-transfer-counts-source-v1/src/prefill/prefill.cpp
+SHA256 94906966f9750504b2ce0db304cfa745667d02e60b60273793e4b84e431755f0
+Reviewed exact publication block at lines 2514-2554: rows after successful
+ownership/drains, followed by a single stage-run total with completion=checked.
+Previous patch SHA256 e24525069a370562ab447d3852911befa4981e804347345444c5b18d1f0be7fd
+Previous manifest SHA256 7453d4f28f04eba58aad636f9c8b1625fdfd4e9dc7f14e04d9e4a4cb579317a5
+Previous report SHA256 01fe55665a52df9598860b1b41654b7d3be12c8d52942b28831e311109cdc697
+
+Timer overhead format source:
+/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-profiling-overhead-accounting-source-v1/src/prefill/prefill.cpp
+SHA256 6a77f49d21f404b7a397052e562537ff4767fc387e3b93897b4394b803bdbf4b
+Reviewed exact distinct overhead fprintf at lines 2482-2486. Existing phase
+lines are not changed or parsed here. Optional later GDN diagnostics and overall
+model/request completion remain separate; the timer line cannot prove those.
+Previous patch SHA256 476ed453e8120ac80d32a3481427ff473ddf13e1e0001ba61731eef9ef611713
+Previous manifest SHA256 64ff5c0db8559c03d654554eb41559f2fd6c1163d5738077a3c320c2164f8789
+Previous report SHA256 a7870b90f83fc7b5aed2057102e899e4a292329240a0dde3c1c902a28fad3714
+
+Committed report sharing point supplied by Main, read during this task:
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-11-xe-profile32k-quiet/report-registry-v124.json
+SHA256 97a4b119bcc6ff3802276d2473e76dda34b9af5024e867d5523e8c4c71993907
+Registry count 496; its two new reports are the two source-only implementations
+above. No new measurement or repetition of the traffic/timer investigation was
+performed. Quiet 32K process results remain Main evidence, not observer results.
+Prior traffic-scope conclusion is unchanged: ring8=STAGE8 selects routed mode,
+and full arena minus residency does not measure actual H2D request traffic.
+Phase fractions are not exclusive service fractions. These parsers add no
+bandwidth, bottleneck, calibrated timer-domain or model-quality inference.
+
+transfer_ledger.validate API
+----------------------------
+validate(lines, *, expected_device, expected_stage, expected_pos0, expected_n,
+         expected_chunk_limit, expected_mode, expected_issuer, expected_format,
+         expected_layers=None)
+
+lines: one stderr text string or an iterable of text lines. Text lines may have
+LF/CRLF terminators. No byte decoding, whitespace normalization or log prefix
+stripping occurs. Non-text and embedded line boundaries are rejected. Unrelated
+stderr may occur before, between or after ledger lines; their text is ignored.
+Any line containing the recognizable 'strata prefill expert' diagnostic family
+must full-match one of the exact production row/total grammars; malformed,
+truncated, prefixed, extra-field and oversized diagnostic lines are rejected.
+The diagnostic-only line limit is 2048 characters, above the bounded production
+uint64/int64/int32 row/total sizes. It is not a model/context cap.
+
+Expected scope is mandatory and caller supplied. device is [0,INT32_MAX]; stage
+is the nonempty half-open [LB,LE) with nonnegative signed-int64 endpoints;
+pos0 is nonnegative signed-int64; n and chunk_limit are positive signed-int64.
+pos0+n must fit signed-int64. Boolean values are not accepted as integers.
+There is no hardcoded 262144 or 32768 model context cap. Empty Prefill runs do
+not emit the source ledger, so n=0 is outside this completed-ledger API.
+
+expected_mode is 'routed' or 'full_nonresident_stream'; expected_issuer is
+'inline' or 'thread'. Each can alternatively be an exact mapping from ALL
+local chunk offsets to the corresponding explicit string. The caller can thus
+pin a tail mode/issuer change without the observer reconstructing stream_all,
+STAGE, ring, worker policy or expert routing. Missing/extra/nonaligned map
+keys are rejected. Routed rows require inline issuer, as in delivered source.
+expected_format is 'native_gguf' or 'canonical_q2_0'.
+
+expected_layers, if supplied, must contain every absolute stage layer exactly
+once, keyed by integer layer number. Each record contains exactly blob_bytes,
+gu_type and down_type. blob_bytes is positive uint64. Native type fields are
+nonnegative signed-int32 values; this is not an enum whitelist or independent
+layout verification. Canonical records require both type fields -1, matching
+the diagnostic's no-native-type convention. Partial pin mappings are refused
+instead of appearing fully pinned. Main obtains pins from its actual immutable
+layout/configuration records; the parser does not inspect model blobs.
+
+Without layer pins, the parser still requires a positive extent, valid format
+type convention, and identical per-layer extent/type across all chunks. A
+consistently wrong extent/type cannot be independently detected without caller
+pins. The returned externally_pinned_layers boolean exposes this limitation.
+
+The required row grid has ceil(n/chunk_limit) chunks. Rows must occur in exact
+chunk-offset then ascending absolute-layer order. Each row's offset, pos0+offset,
+min(chunk_limit,n-offset) tokens, device and stage must match. This both detects
+duplicate/order errors and requires every layer, including calls=bytes=0 rows.
+No unobserved expected grid is allocated or iterated; row expectations derive
+from the observed row index, keeping malformed short captures cheap to reject.
+Actual returned rows are stored, so parser memory scales with capture row count.
+
+Counts, declared byte values and aggregate values must be nonnegative uint64,
+with canonical decimal grammar and no signs or leading zeros. Native/canonical
+type -1 is the sole signed exception. Each actual calls*blob_bytes product must
+fit uint64 and exactly equal declared submitted_bytes. Per-mode cumulative
+calls/bytes and their combined sums must also fit uint64. Python arbitrary-
+precision arithmetic is used only to detect overflow, never to admit a value
+the production uint64 accounting could not represent.
+
+Exactly one total is mandatory and must follow all expected rows. Its exact
+scope=this_prefill_stage_run, device, stage, pos0, n, chunks, per-mode totals,
+combined totals, completion=checked and explanatory suffix are all checked.
+Rows/another total after the first total, including a recognizable truncated
+second ledger, fail. Missing ledger is an error, never zero. A zero total is
+valid only with the complete exact zero-row grid and its one total.
+
+Return: JSON-compatible dict with capture_valid, scope, complete rows, validated
+total, per-layer metadata, external-pin coverage, completion_declaration and
+independent_completion_validation=False. ValidationError subclasses ValueError.
+The total's checked declaration is not independent verification of drains, DMA,
+GPU state, process exit, model/request status or fault gates.
+
+timer_overhead.validate API
+--------------------------
+validate(lines, *, timing_enabled)
+
+timing_enabled must be an explicit Python bool supplied from Main's known
+presence-based STRATA_PREFILL_TIMING expectation. Values '0' and '' still enable
+the production diagnostic. This parser never reads the environment itself.
+Recognizable 'strata prefill timer' lines require the exact distinct overhead
+grammar. Existing 'strata prefill timing:' phase lines are ignored unchanged.
+
+Enabled mode requires exactly one full completed overhead line, canonical
+three-decimal finite nonnegative mark/fold host ms, and bounded uint64 integer
+counts for marker_calls/new_events/fold_calls/intervals. Rounded 0.000 ms is
+valid; signs, negative zero, NaN/Inf, decimal-to-float overflow, malformed fields,
+missing/duplicate/second-run lines and integer overflow are rejected. Enforced
+consistency: positive marker_calls, new_events<=marker_calls,
+intervals<=marker_calls-1, and nonzero intervals require at least one fold call.
+No expected count of underlying timestamp endpoint/API/UR calls is invented.
+
+Disabled mode requires absence of the recognizable overhead diagnostic family,
+including malformed family lines. The returned overhead is None, not fabricated
+measured zeros. Return includes timing_enabled and capture_valid, with
+independent_completion_validation=False. ValidationError subclasses ValueError.
+
+The format has no device/stage/run identifier. Requiring one line rejects
+multiple visible runs but cannot bind one line independently to a particular
+run. Main must provide the complete, correct single-process/single-stage capture
+and separately validate its origin and final model/process/fault status. Neither
+observer can recover omitted bytes, prove no invisible second run, or identify
+an unrecognizable fragment shorter than its diagnostic-family prefix.
+
+Selfcheck source and Main-only instructions
+------------------------------------------
+Python >=3.9, standard library only; no package install or SYCL required.
+Source contains finite synthetic capture cases only, no Runtime stub, extracted
+production helper, kernel/copy implementation, scheduling algorithm or mock
+completion. Geometry checking is the required observer grid contract, not a
+simulation of expert routing. A 32767-position / 4096-limit / 48-layer fixture
+contains 384 mandatory zero rows and one total; those values are a finite
+capture-shape fixture, not the parser's general context limit or a real run.
+
+Positive source cases cover native pinned/unpinned capture, LF/string/CRLF
+inputs, canonical -1 types, explicitly mapped full/thread-to-routed/inline tail,
+full 32K row coverage, finite/rounded-zero timer values, and timing-off absence.
+Negative source cases cover missing/duplicate/out-of-order/extra/truncated and
+second-run records; zero-row removal; scope/device/stage/offset/position/tail/
+layer/mode/issuer/format/type/extents; negative/noncanonical/overflow counters;
+product, per-mode and combined overflow; wrong sums/chunks/completion; unpinned
+metadata instability; invalid expected scope/pins/policy; timer NaN/Inf,
+decimal overflow, negative/negative-zero values, count overflow/consistency and
+disabled-mode presence. No selfcheck result or PASS is claimed here.
+
+Recommended command for Main, NOT RUN by this agent:
+python3 -B /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-prefill-diagnostic-observer-source-v1/selfcheck_driver.py
+
+The -B option avoids bytecode artifacts. On success the driver prints positive/
+negative parser-case counts; on failure it raises, with nonzero process exit.
+The agent has not imported these modules, parsed their AST, run py_compile,
+run the driver, linted or performed any dynamic validation.
+
+Main-supplied actual capture mode, NOT RUN:
+python3 -B /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-prefill-diagnostic-observer-source-v1/selfcheck_driver.py --actual-stderr /ABS/MAIN-SELECTED-STDERR --expected-json /ABS/MAIN-SELECTED-EXPECTATIONS.json --timing-disabled
+
+Use --timing-enabled instead when the production timing env was present. Both
+file arguments and exactly one explicit timing flag are required together.
+Actual mode validates the supplied capture only; it does not also execute
+synthetic selfchecks or auto-discover receipts/controllers/environment. It
+requires an actual transfer ledger even when timing is disabled. Actual stderr
+read uses strict UTF-8; replacement decoding is not used.
+
+Expected JSON is a dict of the explicit expected_* kwargs above. For example,
+the small synthetic fixture (NOT a model layout expectation):
+{
+  "expected_device": 0,
+  "expected_stage": [2, 4],
+  "expected_pos0": 10,
+  "expected_n": 3,
+  "expected_chunk_limit": 2,
+  "expected_mode": "routed",
+  "expected_issuer": "inline",
+  "expected_format": "native_gguf",
+  "expected_layers": {
+    "2": {"blob_bytes": 16, "gu_type": 1, "down_type": 2},
+    "3": {"blob_bytes": 24, "gu_type": 3, "down_type": 4}
+  }
+}
+
+For Main's full single-stage 32K case use expected_n=32767,
+expected_chunk_limit=4096 and actual stage span of 48 layers, with explicitly
+known device/pos0/mode/issuer/format and Main's real per-layer pins if available.
+Do not use the synthetic types/extents or infer pos0 from prompt length. Optional
+expected_layers may be omitted/null, which is reported as unpinned. JSON layer
+and optional mode/issuer map keys are canonical decimal strings converted to
+integer keys. Duplicate JSON keys at any nesting level are refused instead of
+last-value-wins. Unknown/missing kwargs cause failure rather than implicit
+default device/stage/context. JSON output disallows NaN.
+
+Limits and Main qualification responsibility
+-------------------------------------------
+Only source reading, source writing, manual reading and byte hashes were done.
+No helper import/execution/selfcheck, compile, lint, build, model/Runtime/GPU,
+profiler, process/GPU-state query/control, service/reset, cleanup, git mutation,
+commit, push or publication was performed. Credential-bearing prohibited
+prefill-gemm-only-contract-root-v1/record.json was not read.
+
+Main must run parser selfchecks and integrate these observers with complete
+actual stderr captures after its independently owned source/build/lint/GPU
+qualification. Existing diagnostic patches remain original; this task changes
+no math, native blob layout, routing/cache/context, queue/event/wait/sync/copy,
+phase marker, timer behavior, controller or measurement receipt. Parser success
+does not make an unqualified patch qualified or a failed run successful.
+No model correctness, physical PCIe traffic, exclusive DMA service, attained
+hardware bandwidth, bottleneck, calibrated timestamps or performance claim is
+made. Multi-stage/multiple-run captures require Main to supply a documented
+single-stage capture; feeding multiple ledgers directly is deliberately rejected.

@@ -1,0 +1,9 @@
+診断用コードはfree・contrib-llvmのrelease/host ASan+UBSanとも既存CPUテスト12件PASS/1件native ISA skip。actual baseline/current mandatory lintは各mode既存10件、新規0件。source commit 9c0b291d85adecb6c1dc489c3e9965b82226b799。
+
+32768入力の32767位置を4096幅8チャンクで処理し、各48layer、合計384行を全モデルmetadataの型とblob extentで照合した。各layer/chunkは509個の非resident expertを転送し、1チャンク49,997,644,800 byte、合計399,981,158,400 byte（約400GB、195456コピー）だった。これは実際の成功したexpert blob H2D API要求のbyte数で、物理PCIe帯域や全GPU転送量ではない。
+
+以前のring8でrouted-onlyになるというsource解釈は誤りだった。ring_slotsは指定8を最低16へ補正するため、実際は全非resident streamingだった。最初のcountsは推論16token・QUITが正常完了しfaultなしだが、検証側の誤ったrouted期待により全体FAILED。FAILEDは保存し、実行後GPU health検査に到達していない範囲も明記した。complete stdout/stderrをCPUでsource由来の期待に照合して転送証拠を取り出した。検証期待だけを直した新controllerのtimer実行は推論・normal QUIT・全384行・正しいmapped runtime・新faultなし・fresh before/after GPU healthを含めPASS。
+
+両実captureの転送行・合計と16token/LP/top5は完全一致。timerのhost mark 61207.852 ms、fold 307.515 ms。markのevent APIとbookkeeping、foldのtimestamp query等のhost wallで、blocking/deschedulingも含み、exclusiveなCPU計算やGPU serviceではない。既存stream_sync中の待ちを含まず、差を較正値として引かない。phase event区間もhost/copy idleを含む。個別timeはsummary.json。性能採用・最適設定・広い能力の劣化率・実256K/RESTORE完了は主張しない。
+
+次はchunk拡大とprefill中に保持しているdecode用VRAMの寿命を検討して、token当たりの約400GBの往復を減らす。本家もprefill/decodeを個別に最適化して比較する[TODO](../2026-10-11-upstream-parameter-audit/TODO.md)を引き続き未完了として扱う。
