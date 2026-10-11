@@ -1,0 +1,651 @@
+{
+  "original_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-request-timing-python-lint-root-v1/record.json",
+  "original_sha256": "52e57f7894def3105e9f439925d053ea17193b81f67ce861feddde85a4e60b4c",
+  "original_passed": false,
+  "error": "RuntimeError('no new Python/text lint findings')",
+  "source_pins": {
+    "serve/server.py": "97a2901ef914fa43015680f9da6e3d5680109f6f516c561e4bd2e95fe2897f71",
+    "serve/test_parallel.py": "c090c65e7c4cd7b55e59ab62d028241f811fb7b328d0ab16509201104310f0e5",
+    "serve/test_request_accounting.py": "33f3c6c0bed0a3bb9852f4e8d3607563f7254eb7027ace82ae810d94d56e1d9d"
+  },
+  "commands": [
+    {
+      "label": "install-local-python-lints",
+      "argv": [
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/venv/bin/python3",
+        "-B",
+        "-m",
+        "pip",
+        "install",
+        "--no-input",
+        "--report",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-request-timing-python-lint-root-v1/pip-install.json",
+        "flake8",
+        "ruff",
+        "mypy"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/venv/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PIP_CONFIG_FILE": "/dev/null",
+        "PIP_INDEX_URL": "https://pypi.org/simple",
+        "PIP_DISABLE_PIP_VERSION_CHECK": "1"
+      },
+      "started_utc": "2026-10-11T17:38:02.889444+00:00",
+      "wall_seconds": 240,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1712201,
+          "start_ticks": 8904701,
+          "sid": 1712201,
+          "pgid": 1712201
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 89047.010994236,
+      "pid": 1712201,
+      "spawn_return_monotonic": 89047.012751729,
+      "direct_identity": {
+        "pid": 1712201,
+        "state": "R",
+        "ppid": 1712195,
+        "pgid": 1712201,
+        "sid": 1712201,
+        "start_ticks": 8904701,
+        "rss_bytes": 458752
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 99651584,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-11T17:38:10.328103+00:00",
+      "elapsed_seconds": 7.438387767004315,
+      "logs": {
+        "install-local-python-lints.stdout": {
+          "bytes": 3794,
+          "sha256": "6b2ed07ceed3325a776bed49d9ac9de3f5841e72f6e39e256f6d6ba436d4633a"
+        },
+        "install-local-python-lints.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "baseline-full-lint",
+      "argv": [
+        "/bin/bash",
+        "tools/lint/run.sh",
+        "serve/server.py",
+        "serve/test_parallel.py",
+        "serve/test_request_accounting.py"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/venv/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PIP_CONFIG_FILE": "/dev/null",
+        "PIP_INDEX_URL": "https://pypi.org/simple",
+        "PIP_DISABLE_PIP_VERSION_CHECK": "1"
+      },
+      "started_utc": "2026-10-11T17:38:10.329391+00:00",
+      "wall_seconds": 240,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1712540,
+          "start_ticks": 8905445,
+          "sid": 1712540,
+          "pgid": 1712540
+        },
+        {
+          "pid": 1712584,
+          "start_ticks": 8905455,
+          "sid": 1712540,
+          "pgid": 1712540
+        },
+        {
+          "pid": 1712602,
+          "start_ticks": 8905507,
+          "sid": 1712540,
+          "pgid": 1712540
+        },
+        {
+          "pid": 1712603,
+          "start_ticks": 8905507,
+          "sid": 1712540,
+          "pgid": 1712540
+        },
+        {
+          "pid": 1712604,
+          "start_ticks": 8905507,
+          "sid": 1712540,
+          "pgid": 1712540
+        },
+        {
+          "pid": 1712651,
+          "start_ticks": 8905579,
+          "sid": 1712540,
+          "pgid": 1712540
+        },
+        {
+          "pid": 1712711,
+          "start_ticks": 8905666,
+          "sid": 1712540,
+          "pgid": 1712540
+        },
+        {
+          "pid": 1713125,
+          "start_ticks": 8906146,
+          "sid": 1712540,
+          "pgid": 1712540
+        },
+        {
+          "pid": 1713131,
+          "start_ticks": 8906160,
+          "sid": 1712540,
+          "pgid": 1712540
+        },
+        {
+          "pid": 1713160,
+          "start_ticks": 8906200,
+          "sid": 1712540,
+          "pgid": 1712540
+        },
+        {
+          "pid": 1713187,
+          "start_ticks": 8906234,
+          "sid": 1712540,
+          "pgid": 1712540
+        },
+        {
+          "pid": 1713245,
+          "start_ticks": 8906273,
+          "sid": 1712540,
+          "pgid": 1712540
+        },
+        {
+          "pid": 1713268,
+          "start_ticks": 8906315,
+          "sid": 1712540,
+          "pgid": 1712540
+        },
+        {
+          "pid": 1713269,
+          "start_ticks": 8906315,
+          "sid": 1712540,
+          "pgid": 1712540
+        },
+        {
+          "pid": 1713271,
+          "start_ticks": 8906316,
+          "sid": 1712540,
+          "pgid": 1712540
+        },
+        {
+          "pid": 1713272,
+          "start_ticks": 8906316,
+          "sid": 1712540,
+          "pgid": 1712540
+        },
+        {
+          "pid": 1713273,
+          "start_ticks": 8906316,
+          "sid": 1712540,
+          "pgid": 1712540
+        },
+        {
+          "pid": 1713274,
+          "start_ticks": 8906316,
+          "sid": 1712540,
+          "pgid": 1712540
+        },
+        {
+          "pid": 1713275,
+          "start_ticks": 8906316,
+          "sid": 1712540,
+          "pgid": 1712540
+        },
+        {
+          "pid": 1713276,
+          "start_ticks": 8906316,
+          "sid": 1712540,
+          "pgid": 1712540
+        },
+        {
+          "pid": 1713277,
+          "start_ticks": 8906316,
+          "sid": 1712540,
+          "pgid": 1712540
+        },
+        {
+          "pid": 1713278,
+          "start_ticks": 8906316,
+          "sid": 1712540,
+          "pgid": 1712540
+        },
+        {
+          "pid": 1713279,
+          "start_ticks": 8906316,
+          "sid": 1712540,
+          "pgid": 1712540
+        },
+        {
+          "pid": 1713280,
+          "start_ticks": 8906316,
+          "sid": 1712540,
+          "pgid": 1712540
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 89054.450921414,
+      "pid": 1712540,
+      "spawn_return_monotonic": 89054.452792711,
+      "direct_identity": {
+        "pid": 1712540,
+        "state": "R",
+        "ppid": 1712195,
+        "pgid": 1712540,
+        "sid": 1712540,
+        "start_ticks": 8905445,
+        "rss_bytes": 442368
+      },
+      "peak_live_owned_identities": 14,
+      "peak_session_rss_bytes": 633298944,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 1,
+      "finished_utc": "2026-10-11T17:38:19.912056+00:00",
+      "elapsed_seconds": 9.582438135999837,
+      "logs": {
+        "baseline-full-lint.stdout": {
+          "bytes": 11961,
+          "sha256": "58f8c8356b0d20c67d4889cede8fe1aee06a29b985dd4f83b741884f32f14a9e"
+        },
+        "baseline-full-lint.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "changed-full-lint",
+      "argv": [
+        "/bin/bash",
+        "tools/lint/run.sh",
+        "serve/server.py",
+        "serve/test_parallel.py",
+        "serve/test_request_accounting.py"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/venv/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PIP_CONFIG_FILE": "/dev/null",
+        "PIP_INDEX_URL": "https://pypi.org/simple",
+        "PIP_DISABLE_PIP_VERSION_CHECK": "1"
+      },
+      "started_utc": "2026-10-11T17:38:19.912658+00:00",
+      "wall_seconds": 240,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1713305,
+          "start_ticks": 8906403,
+          "sid": 1713305,
+          "pgid": 1713305
+        },
+        {
+          "pid": 1713346,
+          "start_ticks": 8906407,
+          "sid": 1713305,
+          "pgid": 1713305
+        },
+        {
+          "pid": 1713352,
+          "start_ticks": 8906420,
+          "sid": 1713305,
+          "pgid": 1713305
+        },
+        {
+          "pid": 1713353,
+          "start_ticks": 8906420,
+          "sid": 1713305,
+          "pgid": 1713305
+        },
+        {
+          "pid": 1713354,
+          "start_ticks": 8906420,
+          "sid": 1713305,
+          "pgid": 1713305
+        },
+        {
+          "pid": 1713441,
+          "start_ticks": 8906506,
+          "sid": 1713305,
+          "pgid": 1713305
+        },
+        {
+          "pid": 1713641,
+          "start_ticks": 8906750,
+          "sid": 1713305,
+          "pgid": 1713305
+        },
+        {
+          "pid": 1713680,
+          "start_ticks": 8906799,
+          "sid": 1713305,
+          "pgid": 1713305
+        },
+        {
+          "pid": 1713704,
+          "start_ticks": 8906834,
+          "sid": 1713305,
+          "pgid": 1713305
+        },
+        {
+          "pid": 1713809,
+          "start_ticks": 8906872,
+          "sid": 1713305,
+          "pgid": 1713305
+        },
+        {
+          "pid": 1713823,
+          "start_ticks": 8906911,
+          "sid": 1713305,
+          "pgid": 1713305
+        },
+        {
+          "pid": 1713825,
+          "start_ticks": 8906911,
+          "sid": 1713305,
+          "pgid": 1713305
+        },
+        {
+          "pid": 1713826,
+          "start_ticks": 8906911,
+          "sid": 1713305,
+          "pgid": 1713305
+        },
+        {
+          "pid": 1713827,
+          "start_ticks": 8906911,
+          "sid": 1713305,
+          "pgid": 1713305
+        },
+        {
+          "pid": 1713828,
+          "start_ticks": 8906911,
+          "sid": 1713305,
+          "pgid": 1713305
+        },
+        {
+          "pid": 1713829,
+          "start_ticks": 8906911,
+          "sid": 1713305,
+          "pgid": 1713305
+        },
+        {
+          "pid": 1713830,
+          "start_ticks": 8906911,
+          "sid": 1713305,
+          "pgid": 1713305
+        },
+        {
+          "pid": 1713831,
+          "start_ticks": 8906911,
+          "sid": 1713305,
+          "pgid": 1713305
+        },
+        {
+          "pid": 1713832,
+          "start_ticks": 8906911,
+          "sid": 1713305,
+          "pgid": 1713305
+        },
+        {
+          "pid": 1713833,
+          "start_ticks": 8906911,
+          "sid": 1713305,
+          "pgid": 1713305
+        },
+        {
+          "pid": 1713834,
+          "start_ticks": 8906912,
+          "sid": 1713305,
+          "pgid": 1713305
+        },
+        {
+          "pid": 1713835,
+          "start_ticks": 8906912,
+          "sid": 1713305,
+          "pgid": 1713305
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 89064.034219891,
+      "pid": 1713305,
+      "spawn_return_monotonic": 89064.035868348,
+      "direct_identity": {
+        "pid": 1713305,
+        "state": "R",
+        "ppid": 1712195,
+        "pgid": 1713305,
+        "sid": 1713305,
+        "start_ticks": 8906403,
+        "rss_bytes": 425984
+      },
+      "peak_live_owned_identities": 14,
+      "peak_session_rss_bytes": 631164928,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 1,
+      "finished_utc": "2026-10-11T17:38:25.948590+00:00",
+      "elapsed_seconds": 6.035643217997858,
+      "logs": {
+        "changed-full-lint.stdout": {
+          "bytes": 14904,
+          "sha256": "1d1dffd6b165d395a8370d74ae5e6a7f7a9ada34d35bd2ce5d2898fd854aee03"
+        },
+        "changed-full-lint.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "installed": {
+    "pip_report_sha256": "08aec119ba031a830669049a79480b4549de53ebdbe6d3fc276ec270451efe38",
+    "packages": [
+      {
+        "name": "flake8",
+        "version": "7.4.1"
+      },
+      {
+        "name": "ruff",
+        "version": "0.17.0"
+      },
+      {
+        "name": "mypy",
+        "version": "2.4.0"
+      },
+      {
+        "name": "ast_serialize",
+        "version": "0.12.1"
+      },
+      {
+        "name": "librt",
+        "version": "0.16.0"
+      },
+      {
+        "name": "mccabe",
+        "version": "0.7.0"
+      },
+      {
+        "name": "mypy_extensions",
+        "version": "1.1.0"
+      },
+      {
+        "name": "pathspec",
+        "version": "1.1.1"
+      },
+      {
+        "name": "pycodestyle",
+        "version": "2.15.0"
+      },
+      {
+        "name": "pyflakes",
+        "version": "4.0.3"
+      },
+      {
+        "name": "typing_extensions",
+        "version": "4.16.0"
+      }
+    ]
+  },
+  "new_findings": [
+    {
+      "line": "serve/server.py:<position>: E501 line too long (122 > 120 characters)",
+      "count": 1
+    },
+    {
+      "line": "serve/server.py:<position>: E501 line too long (121 > 120 characters)",
+      "count": 2
+    },
+    {
+      "line": "serve/server.py:<position>: E501 line too long (127 > 120 characters)",
+      "count": 1
+    },
+    {
+      "line": "serve/server.py:<position>: E501 line too long (133 > 120 characters)",
+      "count": 1
+    },
+    {
+      "line": "serve/server.py:<position>: E501 line too long (124 > 120 characters)",
+      "count": 1
+    },
+    {
+      "line": "serve/server.py:<position>: E116 unexpected indentation (comment)",
+      "count": 1
+    },
+    {
+      "line": "serve/test_parallel.py:<position>: E501 line too long (124 > 120 characters)",
+      "count": 1
+    },
+    {
+      "line": "serve/test_parallel.py:<position>: E501 line too long (121 > 120 characters)",
+      "count": 3
+    },
+    {
+      "line": "serve/test_parallel.py:<position>: E501 line too long (123 > 120 characters)",
+      "count": 2
+    },
+    {
+      "line": "serve/test_parallel.py:<position>: E702 multiple statements on one line (semicolon)",
+      "count": 3
+    },
+    {
+      "line": "serve/test_request_accounting.py:<position>: E501 line too long (122 > 120 characters)",
+      "count": 1
+    },
+    {
+      "line": "serve/test_request_accounting.py:<position>: E501 line too long (121 > 120 characters)",
+      "count": 1
+    },
+    {
+      "line": "5124 |     except OSError:",
+      "count": 1
+    },
+    {
+      "line": "5125 |         pass",
+      "count": 2
+    },
+    {
+      "line": "5126 |     ok = lambda ip: ip and not ip.startswith((\"127.\", \"169.254.\", \"0.\"))",
+      "count": 1
+    },
+    {
+      "line": "5127 |     return ([first] if ok(first) else []) + sorted(ip for ip in ips if ok(ip) and ip != first)",
+      "count": 1
+    },
+    {
+      "line": "5126 +     def ok(ip):",
+      "count": 1
+    },
+    {
+      "line": "5127 +         return ip and not ip.startswith((\"127.\", \"169.254.\", \"0.\"))",
+      "count": 1
+    },
+    {
+      "line": "5128 |     return ([first] if ok(first) else []) + sorted(ip for ip in ips if ok(ip) and ip != first)",
+      "count": 1
+    },
+    {
+      "line": "E702 Multiple statements on one line (semicolon)",
+      "count": 3
+    },
+    {
+      "line": "   --> serve/test_parallel.py:<position>",
+      "count": 3
+    },
+    {
+      "line": "    |",
+      "count": 6
+    },
+    {
+      "line": "517 |             a = threading.Thread(target=lambda: res.setdefault(\"a\", self.chat(\"List three primes please\", 200)))",
+      "count": 3
+    },
+    {
+      "line": "518 |             b = threading.Thread(target=lambda: res.setdefault(\"b\", self.chat(\"Name two rivers in Germany\", 200)))",
+      "count": 3
+    },
+    {
+      "line": "519 |             a.start(); b.start(); a.join(30); b.join(30)",
+      "count": 3
+    },
+    {
+      "line": "    |                      ^",
+      "count": 1
+    },
+    {
+      "line": "520 |         self.assertEqual(len(self.svc.history), 2)",
+      "count": 3
+    },
+    {
+      "line": "521 |         for h in self.svc.history:",
+      "count": 3
+    },
+    {
+      "line": "    |                                 ^",
+      "count": 1
+    },
+    {
+      "line": "    |                                             ^",
+      "count": 1
+    }
+  ],
+  "derivative": true,
+  "scope": "Compact derivative: repeated full baseline/current warning listings are represented by command hashes; original FAILED status retained."
+}

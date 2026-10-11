@@ -72,6 +72,7 @@ def window():        # one batch window: every active slot one token
         else:
             active[b] = [left, max_new, produced]
 log = open(args[args.index("--log") + 1], "a") if "--log" in args else None
+READF = "--readfield" in args   # DONE field 15: prompt tokens read (one for a copied continuation).
 REUSE = "--reuse" in args     # DONE's reused field as the engine gives it: a continued prompt is all held but its last
 def reused(ids):              # token (the request's own output included), a fresh one the first 3 tokens
     return 0 if not REUSE else len(ids) - 1 if continued(ids)[1] else 3
@@ -142,7 +143,8 @@ while True:
             out += 1
             time.sleep(STEP)
         fin = "stop" if out and toks[out - 1] == 257 else ("cancel" if stop.is_set() else "length")
-        print(f"DONE {out} {len(ids)} 5.0 {out * STEP * 1000:.1f} {fin} 0 0 {reused(ids)}", flush=True)
+        print(f"DONE {out} {len(ids)} 5.0 {out * STEP * 1000:.1f} {fin} 0 0 {reused(ids)}" +
+              (f" 0 0 0 0 0.0 {len(ids) - reused(ids)}" if READF else ""), flush=True)
         if slot is not None:
             cont = fin == "length" and max_new > 1
             if cont:
@@ -252,7 +254,7 @@ class PickSlot(unittest.TestCase):
 class ParallelService(unittest.TestCase):
     """The real StrataEngine and Service over HTTP, the fake engine behind them."""
 
-    def start(self, slots, fit=None, slot_cache=False, fail=False, reuse=False):
+    def start(self, slots, fit=None, slot_cache=False, fail=False, reuse=False, more=()):
         import serve.server as server
         self.tmp = tempfile.TemporaryDirectory()
         script = Path(self.tmp.name) / "fake_strata.py"
@@ -263,6 +265,7 @@ class ParallelService(unittest.TestCase):
         extra += ["--slotcache"] if slot_cache else []
         extra += ["--fail-window"] if fail else []
         extra += ["--reuse"] if reuse else []
+        extra += list(more)
         with mock.patch.object(server.subprocess, "Popen",
                                lambda cmd, **kw: real([sys.executable, str(script), *cmd[1:]], **kw)):
             self.engine = StrataEngine("strata", extra)
@@ -503,6 +506,50 @@ class ParallelService(unittest.TestCase):
         self.assertGreaterEqual(u["input_tokens"], 1, u)
         self.assertEqual(u["input_tokens"] + u["cache_read_input_tokens"], prompt, u)
         self.assertEqual(u["cache_read_input_tokens"], 3, u)    # the first read's reuse, not the continuation's
+
+    def test_a_slot_request_ended_by_its_stop_token_reports_the_slot_leg(self):
+        """#1869: EOS leaves before BDONE. Use the slot leg's figures, rather than the admission's one token."""
+        import serve.server as server
+        self.start(2, slot_cache=True, reuse=True, more=("--readfield",))
+        res = {}
+        with mock.patch.object(server, "EOS_IDS", {257}):          # the fake engine's stop token
+            a = threading.Thread(target=lambda: res.setdefault("a", self.chat("List three primes please", 200)))
+            b = threading.Thread(target=lambda: res.setdefault("b", self.chat("Name two rivers in Germany", 200)))
+            a.start()
+            b.start()
+            a.join(30)
+            b.join(30)
+        self.assertEqual(len(self.svc.history), 2)
+        for h in self.svc.history:
+            self.assertEqual(h["engine_generated"], h["output_tokens"], h)
+            self.assertGreaterEqual(h["decode_ms"], 1.0, h)
+        for r in res.values():
+            t = r["timings"]
+            self.assertEqual(t["prompt_n"] + t["cache_n"], r["usage"]["prompt_tokens"], t)
+            self.assertEqual(t["predicted_n"], 10, t)
+        self.assertFalse(any(self.engine.slot_busy))                 # the slots are free (no BDONE left for a wait)
+
+    def test_a_request_moved_between_solo_and_slot_keeps_its_totals(self):
+        """#1869/#1870: a solo request promoted to a slot retains its first prompt read and all decode legs.
+        Slot admission copies the held prefix, reporting one prompt token and one generated token."""
+        self.start(2, slot_cache=True, reuse=True, more=("--readfield",))
+        res = {}
+        long = threading.Thread(target=lambda: res.setdefault("long", self.chat("LONGREPLY please", max_tokens=200)))
+        long.start()
+        time.sleep(0.25)                                   # a few solo tokens first
+        self.chat("short", max_tokens=200)
+        long.join(30)
+        kinds = [x.split()[0] for x in self.log.read_text().splitlines()]
+        self.assertEqual(kinds[:2], ["GEN", "BGEN"], kinds)           # solo, then a slot continuation
+        n = res["long"]["usage"]["completion_tokens"]
+        row = max(self.svc.history, key=lambda h: h["output_tokens"])
+        self.assertEqual(row["engine_generated"], n, row)
+        self.assertGreater(row["decode_ms"], 20.0 * 3, row)          # the solo leg's STEP-long tokens are in it
+        self.assertGreater(row["prompt_read"], 1, row)                # the first read, not the copy leg's 1
+        t = res["long"]["timings"]
+        self.assertEqual(t["prompt_n"] + t["cache_n"], res["long"]["usage"]["prompt_tokens"], t)
+        self.assertEqual(t["cache_n"], 3, t)                          # the first read's reuse only
+        self.assertGreater(t["predicted_ms"], 60.0, t)
 
 
 if __name__ == "__main__":

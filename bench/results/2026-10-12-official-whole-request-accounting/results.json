@@ -1,0 +1,42 @@
+{
+  "passed": true,
+  "source_base": "39e395a103af36323262cdc0dbaea27cba81f3e4",
+  "upstream_functional_commits": [
+    "0636c4642f2922e560c5c23ddca0cdd1247640ec",
+    "5f9bbf61c246b0166afbc107b87a60a4c860ae2e",
+    "85d90002b632d488ec2c46edf9bfd4dbe7e797da"
+  ],
+  "source_pins": {
+    "serve/server.py": "ab2eb7fc8b84536f2b4f4a451c3d49428a27959d7c5af0938a5c8895305b9a56",
+    "serve/test_parallel.py": "f5a41d1970c8c33b1018d7691918b5d729fcb910fd6703ff7173f520c245d0dd",
+    "serve/test_request_accounting.py": "d6fa5e5d1f81a37fd90e5d7519f6c3b02bbcb44b780029f5bef3ae2bbacdc85a"
+  },
+  "qualification_sha256": "d90ef692ce856f0517668d5f6437290319782317bb2ee9efd0c2b1ff33facb38",
+  "cpu_tests": {
+    "tests": 32,
+    "elapsed_s": 21.873,
+    "status": "PASS"
+  },
+  "lint": {
+    "baseline_exit": 1,
+    "changed_exit": 1,
+    "baseline_findings": 109,
+    "changed_findings": 109,
+    "added": [],
+    "all_tools_executed": true,
+    "baseline_source_pins": {
+      "serve/server.py": "5a1c10f1a40846a3c09590699ec42d061dbffc88eb51b870b2ef8dd8b7d61b06",
+      "serve/test_parallel.py": "eb97152cea784ce5d3dda8b1e6cce670db202e55c7f6b998aeb62fb0ee8d4c1f",
+      "serve/test_request_accounting.py": "9fdaff4fdd87d31d90089dac2a2d3da8c1d63a7fee04c222cbabe8afb7a18c91"
+    },
+    "normalization": "Only positions within unchanged SequenceMatcher source blocks are mapped. New/changed lines never inherit baseline findings."
+  },
+  "behavior": "Keep each solo/batch decode leg and original prompt-read accounting. Consume EOS-following BDONE before releasing its slot. Older DONE without prompt_read remains supported.",
+  "adaptation": "39e has slot_busy/CV ownership but no newer slot_claims. Port retains that protocol; fake-engine helper gains optional --readfield support.",
+  "engine_changed": false,
+  "gpu_executed": false,
+  "new_performance_measured": false,
+  "latest_release_fully_integrated": false,
+  "engine_published_revision": "39e395a103af36323262cdc0dbaea27cba81f3e4",
+  "next": "Integrate remaining mandatory Xe/official server and engine-backed API features without replacing qualified CPU/SYCL inference indiscriminately. Official independent parameter selection remains open."
+}
