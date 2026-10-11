@@ -1,0 +1,49 @@
+{
+  "artifact": "xe-parity-failure-host-source-v1",
+  "spdx_file_copyright_text": "2026 MistVVK and the XeStrata contributors",
+  "spdx_license_identifier": "LGPL-3.0-or-later",
+  "date": "2026-10-11",
+  "owner_consumer": "Main: host compilation, process supervision, validation and committed receipts",
+  "status": "source-only harness; not compiled, linted or run",
+  "source_base": "e32b8b0594095352365db0e140a68d5bf56d8b0f",
+  "source_identity_rule": "actual immutable snapshot hashes, not inferred commit bytes",
+  "source_snapshot": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-parity-failure-host-source-snapshot-v1",
+  "source_snapshot_manifest_sha256": "e0c53e8a18f11e17e59d245aec7fae59de5e0a45d11734b807643e3ba25dda41",
+  "source_pins": {
+    "src/kernels/parity_device.hpp": "0a29292188c155628a4f11b8a8a5cb147a3fc76ee428f8f65ba6f2420799a0de",
+    "include/strata/core/runtime.hpp": "1a42ce02127727310614461b1dc2768eb2bce421e9d5e992c4df100c1817dd26",
+    "include/strata/core/device.hpp": "5ef3d91e943c605baf2b011e77dcc61eeca005e54eff5ea0b86e9d98827ba886"
+  },
+  "harness": {
+    "path": "tools/test_parity_failure_host.cpp",
+    "sha256": "1c856cea9a385703753901730483d6053e9b4b43cc94a253aa33904a4e2e62d5",
+    "include": "parity_device.hpp via the pinned snapshot src/kernels include path",
+    "production_function": "strata::parity::checked_transfer",
+    "callback_body_duplicates_production_helper": false,
+    "runtime_stubs": false,
+    "runtime_or_sycl_calls": false,
+    "fork_or_child_process_calls": false,
+    "caller_host_staging_bytes": 1024,
+    "static_stderr_buffer_bytes": 4096,
+    "cases": {
+      "happy": {"expected_exit": 0, "callback_count": 1, "staging_destructor_expected": true, "atexit_expected": true},
+      "standard": {"expected_exit": 1, "pre_failure_marker_expected": true, "production_error": "injected standard failure", "caller_unwind_expected": false},
+      "unknown": {"expected_exit": 1, "pre_failure_marker_expected": true, "production_error": "unknown exception", "caller_unwind_expected": false}
+    },
+    "invalid_cli": {"expected_exit": 2, "callback_allowed": false, "atexit_registered": false}
+  },
+  "instructions": {
+    "path": "COMPILE_RUN.txt",
+    "sha256": "0364bf5af14cd0e08fece50ce1fdd8fb99afa523a78de0451605ce7187e817b7",
+    "build": "normal host C++20, source-built intel/llvm clang++, real SYCL header includes, no -fsycl or GPU runtime link",
+    "optional_sanitizers": "address,undefined using Main's matching installed host sanitizer runtimes",
+    "suggested_process_deadline_seconds": 10,
+    "suggested_text_budget_bytes_per_case": 16384,
+    "case_execution": "three independent supervised CLI processes with exact complete stderr/exit checks"
+  },
+  "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/implementation-xe-parity-failure-host-harness-v1.txt",
+  "prior_decision": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/implementation-xe-parity-transfer-failure-scope-v1.txt",
+  "not_performed": ["parent edit", "compile/build", "lint", "test/run", "Runtime or GPU query", "GPU/kernel/model", "Git", "cleanup"],
+  "secret_contract_read": false,
+  "scope_limit": "host template callback failure boundary only; no actual submission/wait/async GPU or private oneMath failure behavior"
+}

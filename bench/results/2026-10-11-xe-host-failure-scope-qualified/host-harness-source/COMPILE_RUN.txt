@@ -1,0 +1,74 @@
+# SPDX-FileCopyrightText: 2026 MistVVK and the XeStrata contributors
+# SPDX-License-Identifier: LGPL-3.0-or-later
+
+Main-only build/run instructions; these commands have NOT been run by the implementation agent.
+Compile normal host C++ against the pinned production header, without -fsycl, SYCL runtime libraries,
+engine libraries, Runtime stubs, replacement helpers or copied checked_transfer implementation.
+Main supplies the exact source-built intel/llvm host clang++ and its SYCL header-only include flags.
+Do not use icpx / the oneAPI compiler. Missing headers or host sanitizer runtimes are build failures,
+not permission to stub Runtime or silently switch to a different helper/header.
+
+For a bash/zsh command context, Main sets these variables from its closed toolchain identity:
+  XE_HOST_CXX: exact source-built intel/llvm clang++ executable
+  XE_SYCL_HEADER_FLAGS: array of -I or -isystem flags needed for that toolchain's real SYCL headers
+  XE_SNAPSHOT=/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-parity-failure-host-source-snapshot-v1
+  XE_STAGE=/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-parity-failure-host-source-v1
+The harness #include "parity_device.hpp" resolves from XE_SNAPSHOT/src/kernels; its Runtime/device
+headers resolve from XE_SNAPSHOT/include. Check all manifest hashes before compiling. Do not compile
+against a live worktree, a prior snapshot, a copied helper body or an inferred commit's source bytes.
+
+Proposed normal host compile (Main, after active work closes):
+  "$XE_HOST_CXX" -std=c++20 -O1 -g -Wall -Wextra -Werror -I "$XE_SNAPSHOT/src/kernels" -I "$XE_SNAPSHOT/include" "${XE_SYCL_HEADER_FLAGS[@]}" "$XE_STAGE/tools/test_parity_failure_host.cpp" -o "$XE_STAGE/parity_failure_host"
+Optional separate host ASan/UBSan compile, only with Main's installed matching host sanitizer runtimes:
+  "$XE_HOST_CXX" -std=c++20 -O1 -g -Wall -Wextra -Werror -fsanitize=address,undefined -fno-omit-frame-pointer -I "$XE_SNAPSHOT/src/kernels" -I "$XE_SNAPSHOT/include" "${XE_SYCL_HEADER_FLAGS[@]}" "$XE_STAGE/tools/test_parity_failure_host.cpp" -o "$XE_STAGE/parity_failure_host_asan"
+Neither command compiles SYCL device code or links libsycl. There is no CMake/CTest registration here.
+Record actual compiler, command, includes/header pins and binary hash. A link needing Runtime or libsycl
+is an unresolved host-only build problem; do not make it pass by providing stubs or adding GPU libraries.
+
+Three independent CLI cases; Main runs each as a separate supervised process, never forked by the harness:
+  "$XE_STAGE/parity_failure_host" happy
+  "$XE_STAGE/parity_failure_host" standard
+  "$XE_STAGE/parity_failure_host" unknown
+Use the corresponding _asan executable for a separate sanitizer arm if selected. Each arm is host-only
+and needs no runtime/device query. Keep a short finite process deadline, for example 10 seconds, and a
+small output budget (for example 16 KiB per case). Expected failure exit 1 must be captured as a tested
+outcome by the controller; a generic shell set -e or CTest success rule alone cannot qualify these cases.
+Compare both exit status and complete stderr, including forbidden markers. stdout must be empty.
+
+happy: expected exit 0; exact stderr in order:
+  START case=happy
+  CALLBACK case=happy count=1
+  CALLBACK_RETURN case=happy
+  AFTER_CALL case=happy
+  HAPPY_OK callback_count=1 checksum=130560
+  STAGING_DTOR case=happy bytes=1024
+  MAIN_RETURN case=happy status=0
+  ATEXIT
+
+standard: expected exit 1; exact stderr in order:
+  START case=standard
+  CALLBACK case=standard count=1
+  PRE_FAILURE case=standard
+  parity: host standard: injected standard failure; terminating before caller staging can unwind
+
+unknown: expected exit 1; exact stderr in order:
+  START case=unknown
+  CALLBACK case=unknown count=1
+  PRE_FAILURE case=unknown
+  parity: host unknown: unknown exception; terminating before caller staging can unwind
+
+For both failure cases, no STAGING_DTOR, ATEXIT, AFTER_CALL, MAIN_RETURN, ESCAPED_TO_CALLER,
+UNEXPECTED_FAILURE_RETURN, HAPPY_OK, HAPPY_CHECK_FAILED or HARNESS_SETUP_FAILED marker may appear.
+Missing pre-failure/production lines, extra lines, signal termination, timeout or any other status are
+failures/incomplete results. stderr is intentionally fully buffered with a static 4096-byte buffer;
+callbacks do not flush it. This exposes production fflush before _Exit, rather than relying on stderr's
+usual unbuffered behavior. Expected stderr is far below 4096 bytes, so capacity does not force a flush.
+Invalid/missing/extra CLI arguments return 2 with only the usage line, before callback, host staging
+construction or atexit registration. No invalid-CLI run was performed in the implementation task.
+
+Scope: host checked_transfer template callback success/failure boundary and diagnostics only. A pass
+does not qualify Runtime acquisition, actual copy/barrier submission, GPU wait, async errors, device
+cleanup, host-USM concurrency or the private oneMath prepare queue. It does not simulate any of these.
+Failure _Exit intentionally bypasses host vector cleanup and process-end leak checks; absence of a
+LeakSanitizer end-of-process report is not a leak qualification. Main owns actual run receipts,
+failure excerpts, serialized work and eventual committed retention. No result is claimed here.

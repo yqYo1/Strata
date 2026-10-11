@@ -1,0 +1,35 @@
+{
+  "registry_version": 119,
+  "created_utc": "2026-10-11T02:25:46.191433+00:00",
+  "registry_format": "incremental; follow previous_committed_registry for earlier reports",
+  "research_completed": 488,
+  "previous_committed_registry": {
+    "path": "bench/results/2026-10-11-parallel-round95/report-registry-v118.json",
+    "sha256": "e0b3dbce485d3faba329360f44ad8c1123a2416e0336f2feb433da2b4a01d268",
+    "reports": 487
+  },
+  "reports": [
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/implementation-xe-parity-failure-host-harness-v1.txt",
+      "archive": "bench/results/2026-10-11-parallel-round96/implementation-xe-parity-failure-host-harness-v1.txt",
+      "sha256": "a5126598e7d6ca4d44f235dda26ddc6fd53d18379d4b0a66eed0855456dafc7d",
+      "bytes": 7138,
+      "model": "gpt-6.1-sol",
+      "read_only": false,
+      "qualification": "Main reviewed and ran 8 supervised host callback/CLI cases, release and ASan/UBSan PASS; production template only, no actual Runtime/GPU/private oneMath fault qualification"
+    }
+  ],
+  "new_reports": [
+    "implementation-xe-parity-failure-host-harness-v1.txt"
+  ],
+  "recurring_research_policy": "Repeated distinct read-only Luna scopes with shared prior reports, no mid-task intervention; Main serializes build/test/GPU/cleanup; no model replacement when Luna usage limit prevents service execution",
+  "live_agent_snapshot": {
+    "observed_utc": "2026-10-11T02:43:10.674287+00:00",
+    "implementation_agent": "completed, source-only host harness returned and Main reviewed",
+    "research_agents": "no active Luna; service usage limit still errored with Oct 14 2026 12:33 PM retry; not counted as completed report",
+    "Main": "Lint v4, both full latest host ASan v6, host callback cases, GPU integer health v3 and six serial no-model GPU parity v2 cases closed PASS; candidate ea395598 committed/pushed; model performance/full context unverified"
+  },
+  "root_review_corrections": {
+    "host_harness": "Real production header template, buffered stderr proves fatal flush, caller vector destructor/atexit/after-call/caller-catch markers detect failure escaping helper. Release/sanitized host callback cases only; no actual submission, wait, asynchronous GPU, safe device cleanup or private oneMath fault proof."
+  }
+}

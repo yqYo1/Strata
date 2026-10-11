@@ -1,0 +1,929 @@
+{
+  "active": false,
+  "complete": true,
+  "passed": true,
+  "commands": [
+    {
+      "label": "compile-release",
+      "argv": [
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+        "-std=c++20",
+        "-O1",
+        "-g",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-I",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-parity-failure-host-source-snapshot-v1/src/kernels",
+        "-I",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-parity-failure-host-source-snapshot-v1/include",
+        "-isystem",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include",
+        "-isystem",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include/sycl",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-parity-failure-host-source-v1/tools/test_parity_failure_host.cpp",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-parity-failure-host-root-v1/parity_failure_host_release"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib"
+      },
+      "started_utc": "2026-10-11T02:26:06.016020+00:00",
+      "wall_seconds": 60,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2245318,
+          "start_ticks": 3433013,
+          "sid": 2245318,
+          "pgid": 2245318
+        },
+        {
+          "pid": 2245324,
+          "start_ticks": 3433014,
+          "sid": 2245318,
+          "pgid": 2245318
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 34330.137644143,
+      "pid": 2245318,
+      "spawn_return_monotonic": 34330.139164035,
+      "direct_identity": {
+        "pid": 2245318,
+        "state": "R",
+        "ppid": 2245160,
+        "pgid": 2245318,
+        "sid": 2245318,
+        "start_ticks": 3433013,
+        "rss_bytes": 307200
+      },
+      "peak_live_owned_identities": 2,
+      "peak_session_rss_bytes": 287567872,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-11T02:26:09.796395+00:00",
+      "elapsed_seconds": 3.7800644479939365,
+      "logs": {
+        "compile-release.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "compile-release.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "dependencies-release",
+      "argv": [
+        "/usr/bin/readelf",
+        "-d",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-parity-failure-host-root-v1/parity_failure_host_release"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib"
+      },
+      "started_utc": "2026-10-11T02:26:09.796948+00:00",
+      "wall_seconds": 20,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2245564,
+          "start_ticks": 3433391,
+          "sid": 2245564,
+          "pgid": 2245564
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 34333.918444567,
+      "pid": 2245564,
+      "spawn_return_monotonic": 34333.920982587,
+      "direct_identity": {
+        "pid": 2245564,
+        "state": "D",
+        "ppid": 2245160,
+        "pgid": 2245564,
+        "sid": 2245564,
+        "start_ticks": 3433391,
+        "rss_bytes": 131072
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-11T02:26:09.913618+00:00",
+      "elapsed_seconds": 0.11645683600363554,
+      "logs": {
+        "dependencies-release.stdout": {
+          "bytes": 1537,
+          "sha256": "f302581f88e04c411ef295f4a46e0652ef98d4b2ab816ee365791822bba32575"
+        },
+        "dependencies-release.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "release-happy",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-parity-failure-host-root-v1/parity_failure_host_release",
+        "happy"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib"
+      },
+      "started_utc": "2026-10-11T02:26:09.914409+00:00",
+      "wall_seconds": 10,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2245567,
+          "start_ticks": 3433403,
+          "sid": 2245567,
+          "pgid": 2245567
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 34334.035932154,
+      "pid": 2245567,
+      "spawn_return_monotonic": 34334.037595568,
+      "direct_identity": {
+        "pid": 2245567,
+        "state": "R",
+        "ppid": 2245160,
+        "pgid": 2245567,
+        "sid": 2245567,
+        "start_ticks": 3433403,
+        "rss_bytes": 303104
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-11T02:26:10.027135+00:00",
+      "elapsed_seconds": 0.11247999600163894,
+      "logs": {
+        "release-happy.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "release-happy.stderr": {
+          "bytes": 210,
+          "sha256": "d13781a48ba6b330430d48037e0bd736a5438e525d3548ce31915de94618b4fe"
+        }
+      }
+    },
+    {
+      "label": "release-standard",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-parity-failure-host-root-v1/parity_failure_host_release",
+        "standard"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib"
+      },
+      "started_utc": "2026-10-11T02:26:10.027954+00:00",
+      "wall_seconds": 10,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2245570,
+          "start_ticks": 3433414,
+          "sid": 2245570,
+          "pgid": 2245570
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 34334.149468259,
+      "pid": 2245570,
+      "spawn_return_monotonic": 34334.151213607,
+      "direct_identity": {
+        "pid": 2245570,
+        "state": "R",
+        "ppid": 2245160,
+        "pgid": 2245570,
+        "sid": 2245570,
+        "start_ticks": 3433414,
+        "rss_bytes": 270336
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 1,
+      "finished_utc": "2026-10-11T02:26:10.146316+00:00",
+      "elapsed_seconds": 0.1181147190000047,
+      "logs": {
+        "release-standard.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "release-standard.stderr": {
+          "bytes": 172,
+          "sha256": "6cd0be58aaf18b741f1dda7939947cd24076fdd937125373539cfe1f142e8dc3"
+        }
+      }
+    },
+    {
+      "label": "release-unknown",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-parity-failure-host-root-v1/parity_failure_host_release",
+        "unknown"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib"
+      },
+      "started_utc": "2026-10-11T02:26:10.147645+00:00",
+      "wall_seconds": 10,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2245585,
+          "start_ticks": 3433426,
+          "sid": 2245585,
+          "pgid": 2245585
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 34334.269442,
+      "pid": 2245585,
+      "spawn_return_monotonic": 34334.271229086,
+      "direct_identity": {
+        "pid": 2245585,
+        "state": "R",
+        "ppid": 2245160,
+        "pgid": 2245585,
+        "sid": 2245585,
+        "start_ticks": 3433426,
+        "rss_bytes": 434176
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 1,
+      "finished_utc": "2026-10-11T02:26:10.276843+00:00",
+      "elapsed_seconds": 0.12870586800272577,
+      "logs": {
+        "release-unknown.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "release-unknown.stderr": {
+          "bytes": 160,
+          "sha256": "bf0bc1446f358e1c75c11f395b2b4dcb9ea56a4c55591a5844d58e71427f579f"
+        }
+      }
+    },
+    {
+      "label": "release-invalid",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-parity-failure-host-root-v1/parity_failure_host_release",
+        "invalid"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib"
+      },
+      "started_utc": "2026-10-11T02:26:10.277892+00:00",
+      "wall_seconds": 10,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2245592,
+          "start_ticks": 3433439,
+          "sid": 2245592,
+          "pgid": 2245592
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 34334.399541854,
+      "pid": 2245592,
+      "spawn_return_monotonic": 34334.401228881,
+      "direct_identity": {
+        "pid": 2245592,
+        "state": "R",
+        "ppid": 2245160,
+        "pgid": 2245592,
+        "sid": 2245592,
+        "start_ticks": 3433439,
+        "rss_bytes": 270336
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 2,
+      "finished_utc": "2026-10-11T02:26:10.395574+00:00",
+      "elapsed_seconds": 0.11730173799878685,
+      "logs": {
+        "release-invalid.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "release-invalid.stderr": {
+          "bytes": 50,
+          "sha256": "f259217f0a6693f703ddc26e3dd867f066ca07e114ece79c97cdc4be1ff57ae1"
+        }
+      }
+    },
+    {
+      "label": "compile-asan-ubsan",
+      "argv": [
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+        "-std=c++20",
+        "-O1",
+        "-g",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-fsanitize=address,undefined",
+        "-fno-omit-frame-pointer",
+        "-I",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-parity-failure-host-source-snapshot-v1/src/kernels",
+        "-I",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-parity-failure-host-source-snapshot-v1/include",
+        "-isystem",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include",
+        "-isystem",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include/sycl",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-parity-failure-host-source-v1/tools/test_parity_failure_host.cpp",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-parity-failure-host-root-v1/parity_failure_host_asan-ubsan"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib"
+      },
+      "started_utc": "2026-10-11T02:26:10.396819+00:00",
+      "wall_seconds": 60,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2245598,
+          "start_ticks": 3433451,
+          "sid": 2245598,
+          "pgid": 2245598
+        },
+        {
+          "pid": 2245600,
+          "start_ticks": 3433452,
+          "sid": 2245598,
+          "pgid": 2245598
+        },
+        {
+          "pid": 2245795,
+          "start_ticks": 3433806,
+          "sid": 2245598,
+          "pgid": 2245598
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 34334.518489311,
+      "pid": 2245598,
+      "spawn_return_monotonic": 34334.52022467,
+      "direct_identity": {
+        "pid": 2245598,
+        "state": "R",
+        "ppid": 2245160,
+        "pgid": 2245598,
+        "sid": 2245598,
+        "start_ticks": 3433451,
+        "rss_bytes": 327680
+      },
+      "peak_live_owned_identities": 2,
+      "peak_session_rss_bytes": 297242624,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-11T02:26:14.442302+00:00",
+      "elapsed_seconds": 4.0450847940010135,
+      "logs": {
+        "compile-asan-ubsan.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "compile-asan-ubsan.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "dependencies-asan-ubsan",
+      "argv": [
+        "/usr/bin/readelf",
+        "-d",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-parity-failure-host-root-v1/parity_failure_host_asan-ubsan"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib"
+      },
+      "started_utc": "2026-10-11T02:26:14.443295+00:00",
+      "wall_seconds": 20,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2245834,
+          "start_ticks": 3433856,
+          "sid": 2245834,
+          "pgid": 2245834
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 34338.565028975,
+      "pid": 2245834,
+      "spawn_return_monotonic": 34338.566723036,
+      "direct_identity": {
+        "pid": 2245834,
+        "state": "R",
+        "ppid": 2245160,
+        "pgid": 2245834,
+        "sid": 2245834,
+        "start_ticks": 3433856,
+        "rss_bytes": 266240
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-11T02:26:14.557579+00:00",
+      "elapsed_seconds": 0.11383782299526501,
+      "logs": {
+        "dependencies-asan-ubsan.stdout": {
+          "bytes": 1719,
+          "sha256": "4d8a32add1d3acf2a041d0ac17f49c916322d92f83bee8a9d7660bdee1408a33"
+        },
+        "dependencies-asan-ubsan.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "asan-ubsan-happy",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-parity-failure-host-root-v1/parity_failure_host_asan-ubsan",
+        "happy"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib",
+        "ASAN_OPTIONS": "detect_leaks=1:halt_on_error=1",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+      },
+      "started_utc": "2026-10-11T02:26:14.560251+00:00",
+      "wall_seconds": 10,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2245843,
+          "start_ticks": 3433868,
+          "sid": 2245843,
+          "pgid": 2245843
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 34338.682018835,
+      "pid": 2245843,
+      "spawn_return_monotonic": 34338.683668101,
+      "direct_identity": {
+        "pid": 2245843,
+        "state": "R",
+        "ppid": 2245160,
+        "pgid": 2245843,
+        "sid": 2245843,
+        "start_ticks": 3433868,
+        "rss_bytes": 274432
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-11T02:26:14.675612+00:00",
+      "elapsed_seconds": 0.1148783620010363,
+      "logs": {
+        "asan-ubsan-happy.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "asan-ubsan-happy.stderr": {
+          "bytes": 210,
+          "sha256": "d13781a48ba6b330430d48037e0bd736a5438e525d3548ce31915de94618b4fe"
+        }
+      }
+    },
+    {
+      "label": "asan-ubsan-standard",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-parity-failure-host-root-v1/parity_failure_host_asan-ubsan",
+        "standard"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib",
+        "ASAN_OPTIONS": "detect_leaks=1:halt_on_error=1",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+      },
+      "started_utc": "2026-10-11T02:26:14.677096+00:00",
+      "wall_seconds": 10,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2245849,
+          "start_ticks": 3433879,
+          "sid": 2245849,
+          "pgid": 2245849
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 34338.798872117,
+      "pid": 2245849,
+      "spawn_return_monotonic": 34338.800497689,
+      "direct_identity": {
+        "pid": 2245849,
+        "state": "R",
+        "ppid": 2245160,
+        "pgid": 2245849,
+        "sid": 2245849,
+        "start_ticks": 3433879,
+        "rss_bytes": 409600
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 1,
+      "finished_utc": "2026-10-11T02:26:14.795289+00:00",
+      "elapsed_seconds": 0.11768649099394679,
+      "logs": {
+        "asan-ubsan-standard.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "asan-ubsan-standard.stderr": {
+          "bytes": 172,
+          "sha256": "6cd0be58aaf18b741f1dda7939947cd24076fdd937125373539cfe1f142e8dc3"
+        }
+      }
+    },
+    {
+      "label": "asan-ubsan-unknown",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-parity-failure-host-root-v1/parity_failure_host_asan-ubsan",
+        "unknown"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib",
+        "ASAN_OPTIONS": "detect_leaks=1:halt_on_error=1",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+      },
+      "started_utc": "2026-10-11T02:26:14.796571+00:00",
+      "wall_seconds": 10,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2245852,
+          "start_ticks": 3433891,
+          "sid": 2245852,
+          "pgid": 2245852
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 34338.918324034,
+      "pid": 2245852,
+      "spawn_return_monotonic": 34338.920035688,
+      "direct_identity": {
+        "pid": 2245852,
+        "state": "R",
+        "ppid": 2245160,
+        "pgid": 2245852,
+        "sid": 2245852,
+        "start_ticks": 3433891,
+        "rss_bytes": 409600
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 1,
+      "finished_utc": "2026-10-11T02:26:14.909450+00:00",
+      "elapsed_seconds": 0.11239380200277083,
+      "logs": {
+        "asan-ubsan-unknown.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "asan-ubsan-unknown.stderr": {
+          "bytes": 160,
+          "sha256": "bf0bc1446f358e1c75c11f395b2b4dcb9ea56a4c55591a5844d58e71427f579f"
+        }
+      }
+    },
+    {
+      "label": "asan-ubsan-invalid",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-parity-failure-host-root-v1/parity_failure_host_asan-ubsan",
+        "invalid"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib",
+        "ASAN_OPTIONS": "detect_leaks=1:halt_on_error=1",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+      },
+      "started_utc": "2026-10-11T02:26:14.910988+00:00",
+      "wall_seconds": 10,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2245855,
+          "start_ticks": 3433903,
+          "sid": 2245855,
+          "pgid": 2245855
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 34339.032809687,
+      "pid": 2245855,
+      "spawn_return_monotonic": 34339.034598667,
+      "direct_identity": {
+        "pid": 2245855,
+        "state": "R",
+        "ppid": 2245160,
+        "pgid": 2245855,
+        "sid": 2245855,
+        "start_ticks": 3433903,
+        "rss_bytes": 409600
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 2,
+      "finished_utc": "2026-10-11T02:26:15.026075+00:00",
+      "elapsed_seconds": 0.11453686900495086,
+      "logs": {
+        "asan-ubsan-invalid.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "asan-ubsan-invalid.stderr": {
+          "bytes": 50,
+          "sha256": "f259217f0a6693f703ddc26e3dd867f066ca07e114ece79c97cdc4be1ff57ae1"
+        }
+      }
+    }
+  ],
+  "started_utc": "2026-10-11T02:26:04.403135+00:00",
+  "controller_sha256": "e2579b6bd4657c379f27aad7c5e39823f3cce186448bec3ff9f5fa748b87edad",
+  "owner_sha256": "a29d8257eecc77c4ad9ae6671d092b56f4c09a35c4247c125fed3a8c8bc1f95f",
+  "source_sha256": "1c856cea9a385703753901730483d6053e9b4b43cc94a253aa33904a4e2e62d5",
+  "gpu_executed": false,
+  "model_executed": false,
+  "scope": "Actual production checked_transfer host template callback return/standard/unknown exception boundary and buffered stderr flush; no Runtime, actual GPU submission/wait/async, private oneMath or leak qualification of _Exit branches",
+  "raw_log_budget_bytes": 1048576,
+  "total_wall_budget_seconds": 240,
+  "cases": [
+    {
+      "arm": "release",
+      "case": "happy",
+      "exit_code": 0,
+      "stderr": [
+        "START case=happy",
+        "CALLBACK case=happy count=1",
+        "CALLBACK_RETURN case=happy",
+        "AFTER_CALL case=happy",
+        "HAPPY_OK callback_count=1 checksum=130560",
+        "STAGING_DTOR case=happy bytes=1024",
+        "MAIN_RETURN case=happy status=0",
+        "ATEXIT"
+      ],
+      "stdout_empty": true,
+      "passed": true
+    },
+    {
+      "arm": "release",
+      "case": "standard",
+      "exit_code": 1,
+      "stderr": [
+        "START case=standard",
+        "CALLBACK case=standard count=1",
+        "PRE_FAILURE case=standard",
+        "parity: host standard: injected standard failure; terminating before caller staging can unwind"
+      ],
+      "stdout_empty": true,
+      "passed": true
+    },
+    {
+      "arm": "release",
+      "case": "unknown",
+      "exit_code": 1,
+      "stderr": [
+        "START case=unknown",
+        "CALLBACK case=unknown count=1",
+        "PRE_FAILURE case=unknown",
+        "parity: host unknown: unknown exception; terminating before caller staging can unwind"
+      ],
+      "stdout_empty": true,
+      "passed": true
+    },
+    {
+      "arm": "release",
+      "case": "invalid",
+      "exit_code": 2,
+      "stderr": [
+        "usage: parity_failure_host happy|standard|unknown"
+      ],
+      "stdout_empty": true,
+      "passed": true
+    },
+    {
+      "arm": "asan-ubsan",
+      "case": "happy",
+      "exit_code": 0,
+      "stderr": [
+        "START case=happy",
+        "CALLBACK case=happy count=1",
+        "CALLBACK_RETURN case=happy",
+        "AFTER_CALL case=happy",
+        "HAPPY_OK callback_count=1 checksum=130560",
+        "STAGING_DTOR case=happy bytes=1024",
+        "MAIN_RETURN case=happy status=0",
+        "ATEXIT"
+      ],
+      "stdout_empty": true,
+      "passed": true
+    },
+    {
+      "arm": "asan-ubsan",
+      "case": "standard",
+      "exit_code": 1,
+      "stderr": [
+        "START case=standard",
+        "CALLBACK case=standard count=1",
+        "PRE_FAILURE case=standard",
+        "parity: host standard: injected standard failure; terminating before caller staging can unwind"
+      ],
+      "stdout_empty": true,
+      "passed": true
+    },
+    {
+      "arm": "asan-ubsan",
+      "case": "unknown",
+      "exit_code": 1,
+      "stderr": [
+        "START case=unknown",
+        "CALLBACK case=unknown count=1",
+        "PRE_FAILURE case=unknown",
+        "parity: host unknown: unknown exception; terminating before caller staging can unwind"
+      ],
+      "stdout_empty": true,
+      "passed": true
+    },
+    {
+      "arm": "asan-ubsan",
+      "case": "invalid",
+      "exit_code": 2,
+      "stderr": [
+        "usage: parity_failure_host happy|standard|unknown"
+      ],
+      "stdout_empty": true,
+      "passed": true
+    }
+  ],
+  "header_pins": {
+    "src/kernels/parity_device.hpp": "0a29292188c155628a4f11b8a8a5cb147a3fc76ee428f8f65ba6f2420799a0de",
+    "include/strata/core/runtime.hpp": "1a42ce02127727310614461b1dc2768eb2bce421e9d5e992c4df100c1817dd26",
+    "include/strata/core/device.hpp": "5ef3d91e943c605baf2b011e77dcc61eeca005e54eff5ea0b86e9d98827ba886"
+  },
+  "source_manifest_sha256": "532c76d3fcd60ab98e48ef63a1273773de5249a38670e5f9e61e8005238bc9ee",
+  "compiler_receipt_sha256": "3f1c3741f6b09b78377064a2b993b558a52b1b95ff30f5eb016ea8c6342d9e3a",
+  "host_sanitizer_receipt_sha256": "7a97853bf92a92755c4c64285887bdedcb4daaa5a4e77b072bcb607fbd215251",
+  "binaries": {
+    "release": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-parity-failure-host-root-v1/parity_failure_host_release",
+      "sha256": "5ff03d83c8e00d1283eb2e7f63523762b9f8b7b04168e155e2de089ff8a78b9d",
+      "bytes": 61272,
+      "needed": [
+        "libstdc++.so.6",
+        "libm.so.6",
+        "libgcc_s.so.1",
+        "libc.so.6"
+      ]
+    },
+    "asan-ubsan": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-parity-failure-host-root-v1/parity_failure_host_asan-ubsan",
+      "sha256": "dc4b175501c134a3e0f58bc8ef42e1a8b98407720afc6ec8f297d83578a2eebd",
+      "bytes": 3181384,
+      "needed": [
+        "libstdc++.so.6",
+        "libm.so.6",
+        "libresolv.so.2",
+        "libgcc_s.so.1",
+        "libc.so.6"
+      ]
+    }
+  },
+  "source_stable": true,
+  "finished_utc": "2026-10-11T02:26:15.030575+00:00"
+}

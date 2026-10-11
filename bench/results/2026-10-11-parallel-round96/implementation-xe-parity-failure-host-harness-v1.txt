@@ -1,0 +1,86 @@
+# SPDX-FileCopyrightText: 2026 MistVVK and the XeStrata contributors
+# SPDX-License-Identifier: LGPL-3.0-or-later
+
+Implementation: actual parity checked_transfer host harness v1
+Date: 2026-10-11, Asia/Tokyo
+Owner/consumer: Main; all host compilation/lint/run/supervision and committed evidence.
+Status: source implementation only. Host compilation, sanitizer and CLI results unverified.
+
+This is a distinct bounded host validation hook for the already implemented parity transfer failure
+boundary. The prior implementation-xe-parity-transfer-failure-scope-v1 report was read; its Runtime/
+submission/async and caller lifetime limits remain in force. No repeated GPU/lifecycle investigation
+was performed. This harness includes and instantiates the ACTUAL production checked_transfer template
+from the new immutable parity snapshot. It neither reproduces its body nor supplies Runtime stubs.
+Source has no Runtime/SYCL operation, device/runtime query, allocation on a device, fork, child process,
+model, test framework or parameterized workload. It requires real SYCL declarations only because the
+production header includes runtime.hpp; Main's normal host compile must not link a GPU runtime.
+
+Immutable inputs:
+  /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-parity-failure-host-source-snapshot-v1
+  manifest.json SHA256 e0c53e8a18f11e17e59d245aec7fae59de5e0a45d11734b807643e3ba25dda41
+  src/kernels/parity_device.hpp SHA256 0a29292188c155628a4f11b8a8a5cb147a3fc76ee428f8f65ba6f2420799a0de
+  include/strata/core/runtime.hpp SHA256 1a42ce02127727310614461b1dc2768eb2bce421e9d5e992c4df100c1817dd26
+  include/strata/core/device.hpp SHA256 5ef3d91e943c605baf2b011e77dcc61eeca005e54eff5ea0b86e9d98827ba886
+Base e32b8b0594095352365db0e140a68d5bf56d8b0f is task-supplied; the overlay hashes define actual bytes.
+
+Output root:
+  /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-parity-failure-host-source-v1
+  tools/test_parity_failure_host.cpp SHA256 1c856cea9a385703753901730483d6053e9b4b43cc94a253aa33904a4e2e62d5
+  COMPILE_RUN.txt SHA256 0364bf5af14cd0e08fece50ce1fdd8fb99afa523a78de0451605ce7187e817b7
+  manifest.json records source/input/instruction identities, case expectations and ownership.
+These are the only staged artifacts; no source replacement, patch, CMake registration or binary was
+created. Main supplies exact host clang++ and real SYCL include flags from its closed source-built
+intel/llvm identity. Instructions give normal C++20/WERROR and optional host ASan/UBSan compile
+commands without -fsycl, libsycl, engine links or Runtime stubs. A header/link problem must be recorded,
+not bypassed with a copied template or alternate implementation. No oneAPI compiler/icpx work is requested.
+
+Three independent CLI cases in one source:
+  happy: actual checked_transfer invokes a callback that writes caller-owned 1024-byte std::vector
+  staging with four 0..255 sequences. A counter, every byte and checksum 130560 are explicitly checked
+  after the wrapper returns. Expected exit is 0, callback count is exactly 1, then the caller staging
+  destructor and registered atexit witness print. No checks depend on NDEBUG/assert.
+  standard: the callback writes the same real staging, emits its pre-failure marker and throws
+  std::runtime_error("injected standard failure"). Expected actual production diagnostic names
+  operation host standard and that exact error. Expected exit is 1 through production _Exit.
+  unknown: the callback writes staging, emits its pre-failure marker and throws integer 17.
+  Expected production diagnostic names host unknown and unknown exception. Expected exit is 1.
+  Each valid case registers an atexit marker. A caller-owned staging object prints STAGING_DTOR in its
+  destructor. Top-level standard/unknown catch markers detect an exception escaping to the caller;
+  AFTER_CALL and UNEXPECTED_FAILURE_RETURN detect a wrapper accidentally returning on failure.
+  Neither failure case may print any destructor, atexit, after-call, main-return or escaped-catch marker.
+  Invalid/missing/extra CLI fails with usage/exit 2 before callback, staging or atexit registration.
+
+Flush witness:
+  Before a valid case, stderr is set fully buffered with a static 4096-byte buffer that remains alive
+  through atexit. All expected failure output is well below its capacity. The callback does not fflush
+  its pre-failure marker. _Exit performs no stdio cleanup, so visibility of the exact prefix plus
+  production diagnostic depends on the actual helper's stderr flush. This avoids relying on default
+  stderr buffering. A setup failure has its own marker/status and cannot qualify a case.
+  COMPILE_RUN.txt specifies exact complete stderr and exit status for every case; stdout is empty.
+  Exit 1 alone is not a pass. A signal, timeout, missing/extra diagnostic, forbidden marker or other
+  status rejects the case. The harness does not fork or evaluate its own child status; Main must run
+  each case independently with a finite process deadline and inspect the complete output/status.
+  Suggested per-case budget is 10 seconds / 16 KiB; no unbounded loops or large fixtures exist.
+
+Precise limits:
+  This exercises the host template's normal callback return and its two catch/fail-stop paths only.
+  It does not run copy_in, copy_out, sync, Runtime acquisition, compute barrier submission, transfer
+  copy_async, event/queue wait, asynchronous GPU handlers, private oneMath prepare failure, driver
+  behavior, safe GPU completion/cleanup, graphs, host-USM concurrency or model quality/performance.
+  Throwing a host callback is not an actual failed device submission or checked drain. Caller marker
+  absence shows the process boundary semantics for these cases, not a complete memory-safety proof.
+  Failure _Exit intentionally skips vector cleanup and end-of-process LeakSanitizer checking; silence
+  from LeakSanitizer on those cases cannot qualify leaks. Optional sanitizer results apply only to
+  the host paths actually reached. A link without Runtime/libsycl is a Main build gate, not claimed here.
+
+Task boundaries / prior evidence / retention:
+  Agent actions were immutable source/report/registry reads, staging/report writes and SHA256 receipts.
+  No parent source edit, compile/build, lint, test/run, Runtime/SYCL/GPU query, GPU kernel/model, Git or
+  cleanup occurred. The credential-bearing prefill-gemm-only-contract-root-v1/record.json was never read.
+  Main supplied release-v9 free/contrib-llvm WERROR and CPU10 PASS / 1 ISA SKIP each; those do not
+  qualify this harness and were not independently rerun. Active mandatory lint v4 and measurement
+  ownership were respected. Source-only staging does not substitute for user-selected Luna research.
+  Committed registry v118 metadata (487 reports; task-supplied ff52c761) was read and links v117.
+  No commit was used to infer snapshot bytes or to claim a new result. Main owns the next committed
+  source/instruction/individual-case receipts. No raw traces, tensor/session files, deletion manifest
+  or secondary progress backup was generated. Retain compact source/report until that work boundary.
