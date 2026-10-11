@@ -1,0 +1,530 @@
+{
+  "passed": true,
+  "complete": true,
+  "active": false,
+  "source_revision": "39e395a103af36323262cdc0dbaea27cba81f3e4",
+  "phase_qualification_sha256": "94f5b50b2b92c7e3e941567588af00cf6269e06c7d86de664c6d382be9631f0a",
+  "boot_id": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+  "records": {
+    "64": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-phase-observer-root-v1/n64-t8192-g16-on/record.json",
+      "sha256": "d3d07942bf08a7f2fba8cb9dfc28e31320ad32ef9f88132346877100812351e9",
+      "validation": {
+        "prompt_tokens": 64,
+        "actual_batched_positions": 63,
+        "generated_tokens": 16,
+        "prefill_chunk": 8192,
+        "mtp_counts": [
+          6,
+          26
+        ],
+        "finish_reason": "length",
+        "output_ids": [
+          40,
+          5125,
+          421,
+          279,
+          1970,
+          41643,
+          488,
+          24001,
+          7701,
+          310,
+          381,
+          7167,
+          494,
+          678,
+          1876,
+          13
+        ],
+        "prompt_ms": 9763.0,
+        "decode_ms": 3559.4,
+        "diagnostic_only": true,
+        "performance_eligible": false,
+        "full_model_quality_qualified": false
+      },
+      "raw_phase_lines": [
+        "strata prefill timing: 63 tokens, GPU timeline 9662 ms, wall 9753 ms, host staging 270 ms: embed+steps 210 (2.2%) hc read 91 (0.9%) gdn 92 (1.0%) qsa proj 163 (1.7%) qsa indexer 4 (0.0%) qsa select 6 (0.1%) qsa attn 13 (0.1%) router+shared 21 (0.2%) host grouping 201 (2.1%) gather 193 (2.0%) wait copy 45 (0.5%) dequant 3769 (39.0%) gemm gate/up 198 (2.0%) gemm down 4585 (47.5%) combine 19 (0.2%) ple 4 (0.0%) kv stage 0 (0.0%) gdn conv+gates 7 (0.1%) gdn recurrence 15 (0.2%) gdn out proj 29 (0.3%)",
+        "strata prefill timing: host: chunk setup (PLE rows, the expert stream plan) 209 ms, waiting for each chunk 0 ms, after each chunk (the draft layer, progress) 89 ms, PLE 4 ms",
+        "strata prefill timer overhead: host wall CPU API overhead: mark 2448.490 ms (marker calls 15937, new event creations 503), fold 14.242 ms (fold calls 49, completed intervals 15936); not GPU service or timer calibration"
+      ],
+      "observer": {
+        "capture_valid": true,
+        "batched_positions": 63,
+        "compute_adjacent_marker_timeline_ms": 9662.0,
+        "prefill_invocation_wall_ms": 9753.0,
+        "host_source_staging_ms": 270.0,
+        "observed_phases": {
+          "embed+steps": {
+            "ms": 210.0,
+            "percent": 2.2
+          },
+          "hc read": {
+            "ms": 91.0,
+            "percent": 0.9
+          },
+          "gdn": {
+            "ms": 92.0,
+            "percent": 1.0
+          },
+          "qsa proj": {
+            "ms": 163.0,
+            "percent": 1.7
+          },
+          "qsa indexer": {
+            "ms": 4.0,
+            "percent": 0.0
+          },
+          "qsa select": {
+            "ms": 6.0,
+            "percent": 0.1
+          },
+          "qsa attn": {
+            "ms": 13.0,
+            "percent": 0.1
+          },
+          "router+shared": {
+            "ms": 21.0,
+            "percent": 0.2
+          },
+          "host grouping": {
+            "ms": 201.0,
+            "percent": 2.1
+          },
+          "gather": {
+            "ms": 193.0,
+            "percent": 2.0
+          },
+          "wait copy": {
+            "ms": 45.0,
+            "percent": 0.5
+          },
+          "dequant": {
+            "ms": 3769.0,
+            "percent": 39.0
+          },
+          "gemm gate/up": {
+            "ms": 198.0,
+            "percent": 2.0
+          },
+          "gemm down": {
+            "ms": 4585.0,
+            "percent": 47.5
+          },
+          "combine": {
+            "ms": 19.0,
+            "percent": 0.2
+          },
+          "ple": {
+            "ms": 4.0,
+            "percent": 0.0
+          },
+          "kv stage": {
+            "ms": 0.0,
+            "percent": 0.0
+          },
+          "gdn conv+gates": {
+            "ms": 7.0,
+            "percent": 0.1
+          },
+          "gdn recurrence": {
+            "ms": 15.0,
+            "percent": 0.2
+          },
+          "gdn out proj": {
+            "ms": 29.0,
+            "percent": 0.3
+          }
+        },
+        "omitted_phase_labels": [],
+        "omitted_phase_semantics": "source suppresses nonpositive internal buckets; no expected-marker/phase-coverage proof",
+        "host_fields": {
+          "chunk_setup_ms": 209.0,
+          "chunk_wait_ms": 0.0,
+          "post_chunk_callback_ms": 89.0,
+          "ple_host_ms": 4.0
+        },
+        "reported_timer_cpu_api_overhead": {
+          "capture_valid": true,
+          "timing_enabled": true,
+          "overhead": {
+            "mark_ms": 2448.49,
+            "marker_calls": 15937,
+            "new_events": 503,
+            "fold_ms": 14.242,
+            "fold_calls": 49,
+            "intervals": 15936
+          },
+          "independent_completion_validation": false
+        },
+        "instrumentation_total_overhead_measured": false,
+        "event_query_success_implied_by_completed_report": true,
+        "hardware_timestamp_support_independently_qualified": false,
+        "exclusive_kernel_service": false,
+        "h2d_service": false,
+        "critical_path_complete": false,
+        "performance_eligible": false,
+        "scope": "ordered adjacent command_end profiling-tag differences on compute queue; queue idle/copy dependency/host submission gaps can be included; fields overlap and must not be added as service times"
+      },
+      "transfer_total": {
+        "device": 0,
+        "lb": 0,
+        "le": 48,
+        "pos": 0,
+        "tokens": 63,
+        "chunks": 1,
+        "routed_calls": 6951,
+        "routed_bytes": 14257561600,
+        "full_stream_calls": 0,
+        "full_stream_bytes": 0,
+        "calls": 6951,
+        "bytes": 14257561600
+      }
+    },
+    "32768": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-phase-observer-root-v1/n32768-t8192-g16-on/record.json",
+      "sha256": "038f32248000d48ec9ec2293bd5b09299bd8282f3725dd8bf8daa122c8acf537",
+      "validation": {
+        "prompt_tokens": 32768,
+        "actual_batched_positions": 32767,
+        "generated_tokens": 16,
+        "prefill_chunk": 8192,
+        "mtp_counts": [
+          10,
+          13
+        ],
+        "finish_reason": "length",
+        "output_ids": [
+          40,
+          3172,
+          22903,
+          411,
+          42903,
+          4560,
+          1970,
+          57710,
+          11,
+          20434,
+          383,
+          55404,
+          21851,
+          11,
+          5438,
+          7465
+        ],
+        "prompt_ms": 146757.0,
+        "decode_ms": 2252.2,
+        "diagnostic_only": true,
+        "performance_eligible": false,
+        "full_model_quality_qualified": false
+      },
+      "raw_phase_lines": [
+        "strata prefill timing: 32767 tokens, GPU timeline 146655 ms, wall 146747 ms, host staging 5323 ms: embed+steps 481 (0.3%) hc read 2690 (1.8%) gdn 1374 (0.9%) qsa proj 3791 (2.6%) qsa indexer 3 (0.0%) qsa select 631 (0.4%) qsa attn 5967 (4.1%) router+shared 402 (0.3%) host grouping 50866 (34.7%) gather 34 (0.0%) wait copy 555 (0.4%) dequant 55518 (37.9%) gemm gate/up 3739 (2.5%) gemm down 8183 (5.6%) combine 8709 (5.9%) ple 85 (0.1%) kv stage 185 (0.1%) gdn conv+gates 409 (0.3%) gdn recurrence 1471 (1.0%) gdn out proj 1561 (1.1%)",
+        "strata prefill timing: host: chunk setup (PLE rows, the expert stream plan) 194 ms, waiting for each chunk 0 ms, after each chunk (the draft layer, progress) 338 ms, PLE 6702 ms",
+        "strata prefill timer overhead: host wall CPU API overhead: mark 30852.558 ms (marker calls 200451, new event creations 1093), fold 176.250 ms (fold calls 193, completed intervals 200450); not GPU service or timer calibration"
+      ],
+      "observer": {
+        "capture_valid": true,
+        "batched_positions": 32767,
+        "compute_adjacent_marker_timeline_ms": 146655.0,
+        "prefill_invocation_wall_ms": 146747.0,
+        "host_source_staging_ms": 5323.0,
+        "observed_phases": {
+          "embed+steps": {
+            "ms": 481.0,
+            "percent": 0.3
+          },
+          "hc read": {
+            "ms": 2690.0,
+            "percent": 1.8
+          },
+          "gdn": {
+            "ms": 1374.0,
+            "percent": 0.9
+          },
+          "qsa proj": {
+            "ms": 3791.0,
+            "percent": 2.6
+          },
+          "qsa indexer": {
+            "ms": 3.0,
+            "percent": 0.0
+          },
+          "qsa select": {
+            "ms": 631.0,
+            "percent": 0.4
+          },
+          "qsa attn": {
+            "ms": 5967.0,
+            "percent": 4.1
+          },
+          "router+shared": {
+            "ms": 402.0,
+            "percent": 0.3
+          },
+          "host grouping": {
+            "ms": 50866.0,
+            "percent": 34.7
+          },
+          "gather": {
+            "ms": 34.0,
+            "percent": 0.0
+          },
+          "wait copy": {
+            "ms": 555.0,
+            "percent": 0.4
+          },
+          "dequant": {
+            "ms": 55518.0,
+            "percent": 37.9
+          },
+          "gemm gate/up": {
+            "ms": 3739.0,
+            "percent": 2.5
+          },
+          "gemm down": {
+            "ms": 8183.0,
+            "percent": 5.6
+          },
+          "combine": {
+            "ms": 8709.0,
+            "percent": 5.9
+          },
+          "ple": {
+            "ms": 85.0,
+            "percent": 0.1
+          },
+          "kv stage": {
+            "ms": 185.0,
+            "percent": 0.1
+          },
+          "gdn conv+gates": {
+            "ms": 409.0,
+            "percent": 0.3
+          },
+          "gdn recurrence": {
+            "ms": 1471.0,
+            "percent": 1.0
+          },
+          "gdn out proj": {
+            "ms": 1561.0,
+            "percent": 1.1
+          }
+        },
+        "omitted_phase_labels": [],
+        "omitted_phase_semantics": "source suppresses nonpositive internal buckets; no expected-marker/phase-coverage proof",
+        "host_fields": {
+          "chunk_setup_ms": 194.0,
+          "chunk_wait_ms": 0.0,
+          "post_chunk_callback_ms": 338.0,
+          "ple_host_ms": 6702.0
+        },
+        "reported_timer_cpu_api_overhead": {
+          "capture_valid": true,
+          "timing_enabled": true,
+          "overhead": {
+            "mark_ms": 30852.558,
+            "marker_calls": 200451,
+            "new_events": 1093,
+            "fold_ms": 176.25,
+            "fold_calls": 193,
+            "intervals": 200450
+          },
+          "independent_completion_validation": false
+        },
+        "instrumentation_total_overhead_measured": false,
+        "event_query_success_implied_by_completed_report": true,
+        "hardware_timestamp_support_independently_qualified": false,
+        "exclusive_kernel_service": false,
+        "h2d_service": false,
+        "critical_path_complete": false,
+        "performance_eligible": false,
+        "scope": "ordered adjacent command_end profiling-tag differences on compute queue; queue idle/copy dependency/host submission gaps can be included; fields overlap and must not be added as service times"
+      },
+      "transfer_total": {
+        "device": 0,
+        "lb": 0,
+        "le": 48,
+        "pos": 0,
+        "tokens": 32767,
+        "chunks": 4,
+        "routed_calls": 0,
+        "routed_bytes": 0,
+        "full_stream_calls": 97728,
+        "full_stream_bytes": 199990579200,
+        "calls": 97728,
+        "bytes": 199990579200
+      }
+    }
+  },
+  "reference_diagnostic": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-chunk8192-root-v1/n32768-t8192-g16-on/record.json",
+    "sha256": "5ce7716e4283fb5f0913a234b9644febaf63d05d09503f002ec6ed12a9d4e881",
+    "prompt_ms": 94070.8,
+    "generated_tokens": 16
+  },
+  "n32768": {
+    "prompt_ms": 146757.0,
+    "single_diagnostic_elapsed_change_percent": 56.006964966812234,
+    "mark_cpu_api_ms": 30852.558,
+    "fold_cpu_api_ms": 176.25,
+    "marker_calls": 200451,
+    "observed_span_ranking": [
+      [
+        "dequant",
+        {
+          "ms": 55518.0,
+          "percent": 37.9
+        }
+      ],
+      [
+        "host grouping",
+        {
+          "ms": 50866.0,
+          "percent": 34.7
+        }
+      ],
+      [
+        "combine",
+        {
+          "ms": 8709.0,
+          "percent": 5.9
+        }
+      ],
+      [
+        "gemm down",
+        {
+          "ms": 8183.0,
+          "percent": 5.6
+        }
+      ],
+      [
+        "qsa attn",
+        {
+          "ms": 5967.0,
+          "percent": 4.1
+        }
+      ],
+      [
+        "qsa proj",
+        {
+          "ms": 3791.0,
+          "percent": 2.6
+        }
+      ],
+      [
+        "gemm gate/up",
+        {
+          "ms": 3739.0,
+          "percent": 2.5
+        }
+      ],
+      [
+        "hc read",
+        {
+          "ms": 2690.0,
+          "percent": 1.8
+        }
+      ],
+      [
+        "gdn out proj",
+        {
+          "ms": 1561.0,
+          "percent": 1.1
+        }
+      ],
+      [
+        "gdn recurrence",
+        {
+          "ms": 1471.0,
+          "percent": 1.0
+        }
+      ],
+      [
+        "gdn",
+        {
+          "ms": 1374.0,
+          "percent": 0.9
+        }
+      ],
+      [
+        "qsa select",
+        {
+          "ms": 631.0,
+          "percent": 0.4
+        }
+      ],
+      [
+        "wait copy",
+        {
+          "ms": 555.0,
+          "percent": 0.4
+        }
+      ],
+      [
+        "embed+steps",
+        {
+          "ms": 481.0,
+          "percent": 0.3
+        }
+      ],
+      [
+        "gdn conv+gates",
+        {
+          "ms": 409.0,
+          "percent": 0.3
+        }
+      ],
+      [
+        "router+shared",
+        {
+          "ms": 402.0,
+          "percent": 0.3
+        }
+      ],
+      [
+        "kv stage",
+        {
+          "ms": 185.0,
+          "percent": 0.1
+        }
+      ],
+      [
+        "ple",
+        {
+          "ms": 85.0,
+          "percent": 0.1
+        }
+      ],
+      [
+        "gather",
+        {
+          "ms": 34.0,
+          "percent": 0.0
+        }
+      ],
+      [
+        "qsa indexer",
+        {
+          "ms": 3.0,
+          "percent": 0.0
+        }
+      ]
+    ]
+  },
+  "performance_eligible": false,
+  "observer_total_overhead_calibrated": false,
+  "exclusive_kernel_service": false,
+  "exclusive_H2D_service": false,
+  "critical_path_complete": false,
+  "default_adopted": false,
+  "full262144_qualified": false,
+  "restore_qualified": false,
+  "broad_quality_qualified": false,
+  "decision": "Current200451-marker diagnostic substantially changes request timing. Host-grouping/dequant named spans are observations in instrumented execution, not exclusive useful host/GPU service or quiet bottleneck shares. Do not subtract timerCPU overhead to infer uninstrumented service. Next qualify bounded profiler/sparser evidence before kernel prioritization.",
+  "limits": [
+    "Single same-chunk previous diagnostic comparison is not balanced total observer calibration.",
+    "Queued marker command_end intervals include host/copy waits and marker work.",
+    "Positive hardware timestamp access for these reports does not establish independent support/coverage for all kernels or other graph paths."
+  ]
+}
