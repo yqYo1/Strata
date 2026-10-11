@@ -1,0 +1,189 @@
+XeStrata profiling interval guard implementation v1
+Date: 2026-10-11 (Asia/Tokyo)
+Implementer: gpt-6.1-sol, source-only. Main owns integration and all qualification.
+Status: source change delivered; no build/lint/test/profiling/runtime/model result.
+
+Isolation and source pins
+Immutable base: 51436a0fe4c9588b0d3eaae921a7eae12343ce7e
+New own worktree:
+  /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-profiling-interval-guard-20261011
+New branch: fix/xestrata-profiling-interval-guard-20261011
+Own HEAD remains the base. Only src/core/gpu.cpp, src/prefill/prefill.cpp and
+src/core/session.cpp changed: 25 inserted lines, 11 removed.
+Read-only Main worktree:
+  /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011
+Main's active per-layer fill qualification and its source overlay were not touched.
+Previous own worktrees were not edited. The new worktree was created from the
+committed base, not copied from Main's live working files.
+
+Base source SHA-256, pinned from the commit:
+  src/core/gpu.cpp
+    a844eeb381e1cb9f1272f1f68f754a73640d44aa6d6e89b743ecfc793bc2a8ef
+  src/prefill/prefill.cpp
+    fe0b5939b1ebeb0a958f8deebbc6037c1c7ae3dce7de138ab51c08361ee9ea02
+  src/core/session.cpp
+    cfcbf3126dc41640d4c8b8a9f1a4994b94c051202126c83f9538d285d245f332
+
+Read repository AGENTS.md (same pinned instructions as prior tasks); LOCAL.md
+was absent. Used the already-read git-workflow skill only for the explicitly
+authorized isolated worktree/branch workflow. No commit/push follows, per task.
+No compiler, build/configure, lint, test, profiler, inference, Runtime/GPU-state
+or process query/control, service, reset, cleanup, network publication or root/
+Main checkout edit occurred. Source reads/edits, diff, hashes and requested
+artifacts only. No new mirror test or runtime stub was added. The prohibited
+credential-bearing prefill contract record was never read.
+
+Historical evidence and non-transferable conclusions
+Read full R205 and R207, plus the newer phase-timer-validity implementation and
+CPU-contract-harness reports. Read the supplied incremental registry v121; task
+pins docs HEAD 0b4ffe7a and cumulative count 490. Its local reports list is one
+new entry, not the complete chain; the cumulative count is not inferred from it.
+
+R205 identified silent query-failure omission and unsigned timestamp inversion
+in the older DPCT PfTimer, and restricted its labels to phase-attributed queue
+timeline including idle/host gaps. R207 explicitly excludes invalid/wrapped
+marker samples from demand/roofline interpretation and says not to clamp them.
+The later validity implementation was for a different Strata DPCT source and
+included queue admission/ledgers and a stub harness. Those reports are source/
+historical context; their old runtime findings do not prove the current source-
+LLVM Xe backend already has reversed timestamps. The old stub harness and its
+domain assumptions are not ported or treated as real-runtime qualification.
+
+Current event/helper behavior and change
+gpu::event_record uses submit_profiling_tag for timing events; non-timing events
+may use the measured barrier policy. event_elapsed_ms reads both events'
+command_end timestamps, as before. Timing-mark placement, queue factory and
+Runtime selection are untouched. The current Runtime constructs in-order
+queues; this review does not transplant the old DPCT enable_profiling assertion
+or invent a new timestamp-domain admission contract for profiling tags.
+
+The old helper subtracted unsigned b-a and then cast the result to int64_t.
+It now checks b<a before subtracting. On reversal it returns false and stores
+the exact decimal raw endpoints in thread-local last_error:
+  event_elapsed_ms: end < start (start=<raw a>, end=<raw b>)
+The failed interval does not write the caller's ms output. There is no clamp,
+repair, wrap correction, host-clock substitution, offset, retry or sample reuse.
+On ordered endpoints, convert the unsigned difference directly to double/float
+milliseconds, removing the unnecessary signed reinterpretation. Equal endpoints
+remain valid zero. No arbitrary duration ceiling or plausibility tolerance is
+introduced. Existing unrecorded/not-created-for-timing/query-exception failures
+remain false results with their existing last_error information.
+
+This is necessary timestamp-order validation, not proof of equal clock domains,
+counter width, profiling-tag semantics, timer resolution, actual device interval,
+phase coverage or independent elapsed-time correctness. An ordered but implausible
+interval is not certified by this check. Float conversion and existing accumulation
+precision are unchanged; no model arithmetic changed.
+
+PfTimer fail-closed propagation
+PfTimer::fold no longer conditionally drops a failed sample. It uses the existing
+publication::require contract for each event_elapsed_ms result, with operation
+"prefill phase timer interval", then adds only a successful sample.
+An unrecorded event, timing/query failure or reversed pair raises the existing
+runtime_error path. Prefill::run catches it and returns false with err containing
+the operation and underlying error (including raw endpoints for a reversal):
+  prefill: prefill phase timer interval: event_elapsed_ms: end < start (...)
+The current run's final phase timeline/percentages are not emitted. Earlier
+successful intervals may exist only in the local accumulator, which is discarded
+on that failed run; they do not become an apparently complete current phase report.
+The caller/observer must retain the failed request/run status. Serving need not
+terminate its process merely because a completed request's measurement failed;
+no request success or authoritative current timeline is returned by Prefill::run.
+
+Presence semantics remain: TIMING absent disables PfTimer, while
+STRATA_PREFILL_TIMING=0 still enables it. Disabled mark/fold paths return at the
+same guards and do not create markers or query elapsed intervals. This patch adds
+no wait per mark, per interval, or normal kernel launch and changes no phase labels,
+mark placement, successful accumulation, inference scheduling, tensors, kernel
+selection, cache, context or MTP logic. Independent event consumers may still use
+profiling during automatic CPU-share measurement/startup probes; TIMING absence
+does not imply the entire program never uses an event timer.
+
+Completion and ownership reasoning
+Both PfTimer folds already follow successful checked compute-stream completion:
+the MoE routing boundary uses publication::cleanup_require(stream_sync), and
+the final fold follows stream_sync success. A timestamp check is not used as a
+completion fence. No failed wait is relabeled as completion.
+
+At an inner fold failure, existing IssuerJoin cancels/joins the producer, then
+drains compute/copy queues; StagerDone cancels, drains and finishes the stager
+before the run-local PfTimer/event cleanup. The existing function catch drains
+both member queues again before returning false. At the final fold, chunk guards
+have completed, the next-stage future has been joined, and the compute markers
+have completed before any elapsed query or event destruction. The existing
+publication cleanup contract flushes a diagnostic and _Exit(74) if completion
+cannot be confirmed, before buffer release. Those guards/policies were not edited.
+These are source ordering conclusions, not a new asynchronous-fault injection
+or driver completion guarantee.
+
+All event_elapsed_ms consumers reviewed
+1. PfTimer::fold: hardened as above, current primary target.
+2. session_replay_stages_per_layer/session_replay_stages, stage_sweep and
+   stage_prefixes: previously ignored false and returned success with initialized
+   zero durations. Added small bool/error propagation in session.cpp. Each query
+   occurs after its existing successful checked stream_sync. A failure now returns
+   false with the actual last_error, instead of authorizing a zero-duration sample.
+   Sweep saves the error before destroying its two completed events. The other
+   methods retain their existing RAII cleanup. generate's --gpu-stages consumers
+   already check these bool returns and abort with the error, so no caller/API
+   signature or default generation path changed. Previously printed successful
+   sections in a multi-section diagnostic do not make its later failing run valid.
+   Existing prefix-difference arithmetic is untouched; this does not validate
+   negative/uncertain differences between separately measured prefix totals.
+3. Prefill's automatic CPU-sharing feedback: the existing conditional query skips
+   its adaptive update on false. New rejected reversed timestamps therefore do not
+   enter that update. Keep this existing policy/selection fallback unchanged;
+   it is not an emitted authoritative phase timeline or a successful sample claim.
+4. generate probe_pcie_h2d_gbps: existing ok chain rejects a failed interval and
+   returns its failure sentinel; no change needed for this new bool failure.
+5. Legacy layer stage_timing_report: still skips failed queries, and its complete-
+   wait result/expected-versus-unrecorded slots need a separate diagnostic receipt
+   design. It is not hardened or qualified by this patch. Treat it as unsuitable
+   for authoritative phase attribution until its sample/failure ledger is fixed.
+6. Legacy --hw-bench bench_copy_gbps: still picks surviving successful intervals
+   if another query fails. It needs whole-arm failure accounting before using it
+   as independent validated transfer/performance evidence. Its existing submission/
+   completion/failure cleanup also deserves its own audit. No benchmark/default
+   runtime-selection policy or broader lifecycle redesign was added here.
+
+Items 5 and 6 are explicit remaining measurement limitations, not claims that
+all timer consumers now fail closed or that any existing output is validated.
+The additional session change is confined to callers which unconditionally
+expect every elapsed interval and already expose bool/err propagation. Optional
+legacy stage slots and partial-best benchmark policy were not rewritten as an
+unrelated measurement/API refactor. Main should not use those unchanged reports
+to qualify this guard or a device roofline.
+
+Scope and Main-owned qualification
+No actual reversed interval, successful new timer run, domain agreement, device
+service duration, whole-model arithmetic/quality result or performance winner
+was established. No new mirror test was written. The old extracted/stub timer
+harness checks a different implementation and cannot stand in for this source.
+Main owns required free/contrib-llvm compilation/lint/CPU/host sanitizer checks
+and any direct production-helper fault exercise/real event diagnostic, all serially.
+Do not substitute contrib-icpx for source-LLVM qualification.
+
+For a later bounded timing diagnostic, preserve exact source/runtime/device and
+effective settings/input, count reports, require successful request/run completion,
+reject every query-error/reversal with its raw endpoints, and retain the original
+invalid sample. Keep timer-off throughput controls separate. Phase marks measure
+the covered queue timeline (including gaps), not exclusive kernel time; this guard
+does not turn phase totals into additive compute/copy/host/request shares. Runtime
+timer-domain qualification, plausible-duration/coverage reconciliation, legacy
+stage/hardware consumers, small-device behavior and actual GPU fault boundaries
+remain unverified. No cleanup or result-status rewrite occurred.
+
+Artifacts and SHA-256
+Staging root:
+  /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-profiling-interval-guard-source-v1
+Replacement src/core/gpu.cpp
+  9792966f6b2c84434a1dddafefb3286c3c5fcfa78e23065b455904f9cf6fcfb8
+Replacement src/prefill/prefill.cpp
+  3fedf41ff3d248c97a3ab479b5466c5310399b8f897f1e26b5f9d6ee48744f22
+Replacement src/core/session.cpp
+  d914f75a19022edd29f6fec0fd4df85f1b24b09d56bf014744be79d12e914ab6
+Exact patch: profiling-interval-guard.patch
+  0fb036f05bd67068aa556d1aaebb95a047bec89d3d01e5ae38d74ae4b3e29f16
+Manifest: manifest.json records base/replacement/patch/report and companion pins,
+historical report identities, explicit remaining limitations and Main ownership.
+All existing SPDX/LGPL headers remain unchanged. No header/CMake/test-source change.
