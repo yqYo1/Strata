@@ -1,0 +1,25 @@
+# Xe logit_bias empty-candidate fix v2
+Status: SOURCE_ONLY_UNTESTED_PENDING. Source edits only in new private v2 closure.
+Read R172 source review first. No tests, builds, application execution, imports, AST work, runtime/GPU/process queries, Git mutations, or cleanup. WI/WC/WS and v1 were not edited.
+
+Candidate: /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-logit-bias-functional-port-source-v2
+Target base remains supplied integration HEAD 69495a01443cb1fef41706b51514f5deb6f8a716. before/ snapshots copied byte-for-byte from v1; full patch includes all 14 original files.
+Parent full-patch SHA256: 730728ce882e278ff9465cac8cd73d8cb2d5038678c0ffbef67f2d9084b22fd6
+v2 full-patch SHA256: 5ab3f5240e76ae4f36252f42cff52b0171c7de736ca98f8b3fc33aa646bd4819 (62349 bytes)
+v1-to-v2 patch SHA256: 5da6ff8bd54a82d3385b24292a9632d38e17b004dc769b5716e692e7df1def4b (8158 bytes)
+
+Changes:
+- Device empty_candidate_id scans bias only when first candidate selection is empty; returns lowest permitted ID. Null bias returns the exact historical 0. Empty later slots reuse first selected permitted ID, avoiding repeated scans. Ordinary greedy, ordinary sampled top-k, and split stage2 share this policy.
+- Bias-active non-normalizable probability sum (including NaN from all -inf or +inf normalization) returns first permitted list ID and probability 0. Finite sums and null-bias arithmetic retain previous selection algorithm.
+- Explicit ban short-circuit before penalties remains unchanged. Neither empty fallback nor zero/negative penalties nor banned +inf resurrect an explicit exclusion.
+- Native parser accepts finite strtod underflow despite ERANGE. Complete parse and finite [-100,100] checks still reject overflow, NaN, infinity, malformed input and out-of-range values. Exactly -100 remains the only native hard ban.
+- CPU source fixture covers 1e-320, -1e-320, near-ban finite conversion, and positive/negative overflow.
+- GPU source fixtures cover all raw -inf with token0 banned/multiple permitted or exactly one permitted, ordinary/large vocab, greedy/sampled, both Gumbel modes and probability filters; additional banned +inf with zero/negative repeat penalty; null-bias all-inf greedy remains 0.
+
+Planned serialized qualification, not executed:
+1. CPU parser/lifetime test and existing server normalization tests.
+2. GPU sampler_parity in a fresh process with STRATA_OLD_SAMPLER absent: ordinary greedy and default split sampling, including large vocab 248320.
+3. Separate fresh process STRATA_OLD_SAMPLER=1 sampler_parity: one-group ordinary and large-vocab sampled fallback. This actual Xe switch is cached at first invocation; never toggle it in-process.
+4. Required build/lint/sanitizer/main review and publication gates remain pending.
+
+Limits: No observed runtime result or performance claim. Device scan is serial on lane0 only in rare first-empty selection and allocates nothing; existing candidate-list storage is reused. Invalid all-banned direct sampler calls remain outside the contract (native/API already reject). Probability 0 marks absence of a normalized distribution for bias-active degenerate lists. Captured draft bias is cleared as in v1. No artifacts retired; all files in this closure are source/evidence for Main's current comparison and qualification consumer.

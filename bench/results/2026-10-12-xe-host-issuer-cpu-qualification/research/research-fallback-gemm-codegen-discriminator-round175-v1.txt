@@ -1,0 +1,63 @@
+# R175 — fallback grouped GEMM route and codegen discriminator
+
+Date: 2026-10-12 (Asia/Tokyo). Read-only source, build-metadata and primary-documentation review. No Git command, compiler, binary extractor, disassembler, import, AST/code execution, test, build, profiler, process/device query, GPU run, cleanup or production edit was performed. The only write is this report. No Strata performance or runtime-route claim is made.
+
+## Result
+
+The active fallback is not inherently a oneMath grouped GEMM. `Gemm::f16_groups` is a dispatch shim: in a build with `STRATA_ONEMATH`, it attempts separate oneMath FP16 GEMMs per nonempty expert only when `gemm_path(FP16)` reports `DP4a`; if any per-expert call rejects, it returns false and the caller queues `xmx_gemm_grouped` for the entire group. In a free build (`STRATA_ONEMATH=0`) it always returns false, so the fallback directly selects XeStrata's grouped kernel. The supplied current `build/free/compile_commands.json` records the free-mode compile, `-O3 -DNDEBUG`, `-fno-fast-math`, `-ffp-contract=off`, `-fsycl`, and source-built clang++ under the v7.1.1 install. It points at an LLVM build in a different worktree; the supplied compiler provenance (v7.1.1 + 17 patches) is user-provided, not independently validated here.
+
+With free mode, the device-kernel choice remains runtime-dependent:
+
+* Intel XMX path: `xmx_gemm_grouped` selects `GroupedKernel<128,256,3>` when `xmx_available(f16)` is true and portable MMA is not forced. `xmx_available` requires a device-reported FP16 matrix combination (8x16x16, FP32 accumulator, subgroup 16) and a successful `large_grf_ok` executable-bundle check. The path can still fail at launch; the existing code has no catch-and-fallback around that grouped XMX launch.
+* Portable `joint_matrix` path: selected when `mma_usable(q,false)` and either `STRATA_MMA=1` or Intel XMX is unavailable. Admission checks the device-reported FP16+FP32 matrix combination/subgroup and the chosen grouped shape's local-memory/work-group bounds. `STRATA_NO_XMX=1` disables this route too unless `STRATA_MMA=1` forces it.
+* DP4a grouped path: fallback when neither selected matrix route applies. Its subgroup and tile choices are device-reported in `dp4a_gemm_grouped`; it does not use oneMath in free mode.
+
+The source's *advertised* `gemm_path(FP16)` can say `joint_matrix`, `XMX` or `DP4a`, but the grouped dispatcher uses a related, not identical, condition: the `STRATA_MMA` force flag can send grouped products to the portable implementation even when the ordinary path string is XMX. Thus the startup path string alone is not a complete receipt for `xmx_gemm_grouped` selection.
+
+This resolves the broad route uncertainty for the supplied free build, but the exact B570 branch is not established by this static audit: no device query was allowed, and no live selected kernel/image receipt exists here. `STRATA_PREFILL_FUSED=0` removes the resident packed-IQ path from this arm. Compact grouping only partitions the fallback rows; it does not change the FP16 dequant + dense product arithmetic. No new algorithm candidate is eligible from this evidence. Do not reopen the R173 staged packed-IQ fusion proposal or treat the R174 llama.cpp gather claim as compiler-only evidence.
+
+## Source map
+
+Primary current production tree supplied by Main: `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-xe-host-issuer-ledger-20261012`, stated base 69495 plus four observer files. The worktree bytes and stated base were not Git-verified.
+
+* `src/prefill/prefill.cpp:2188-2225`: compact groups gather rows, call `Gemm::f16_groups` for GU and Down, and on false enqueue `xmx_gemm_grouped`. For the active `FUSED=0` arm the earlier fused-resident selection is disabled; the compact grouped product call itself is not fused packed-IQ GEMM.
+* `src/prefill/gemm.cpp:343-360`; `include/strata/prefill/gemm.hpp:38-43`: oneMath-only branch, `gemm_path(...) == "DP4a"` gate and per-expert oneMath calls; otherwise false.
+* `src/prefill/gemm.cpp:125-179, 193-230`: oneMath backend readiness/trial, rejection disables that device's backend; product calls catch oneMath exceptions and return false. The backend is selected by SYCL device backend (oneMKL on Intel, cuBLAS on NVIDIA, rocBLAS on AMD) when compiled with oneMath.
+* `src/kernels/xe/xmx_gemm.cpp:204-265, 274-281, 316-341`: matrix capability and large-GRF test, advertised path, alignment/shape admission, then grouped dispatch and compile-time kernel dimensions.
+* `src/kernels/xe/mma_gemm.cpp:38-110, 167-188, 390-459, 541-570`: portable matrix shape table and kernel templates; runtime matrix-combination, subgroup, local-memory and work-group checks; `STRATA_MMA` and `STRATA_NO_XMX` controls.
+* `src/kernels/xe/dp4a_gemm.cpp:117-190`: grouped quantized fallback and subgroup selection.
+* `src/kernels/xe/matrix_report.cpp:18-35`: device matrix-combination query and BF16/INT8 exclusions.
+* `CMakeLists.txt:35-54, 481-499, 595-612`: license and backend options; oneMath definitions are conditional on enabled backend/license. `build/free/compile_commands.json` has entries for `xmx_gemm.cpp`, `mma_gemm.cpp`, `gemm.cpp` and says `STRATA_PARITY_ONEMATH=0` in its parity target. The compile command itself does not show `STRATA_ONEMATH=1` for the free `gemm.cpp` object.
+
+The immutable arithmetic reference `/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/perf-xe-prefill-row-bounded-scratch-20261011`, supplied pin `39e395a103af36323262cdc0dbaea27cba81f3e4`, has the same relevant `Gemm::f16_groups`, `gemm_path`, grouped dispatch, and portable matrix checks in the corresponding files. This is a targeted static cross-check, not a complete tree diff or independent commit verification.
+
+Existing artifacts seen by filesystem listing in the supplied production worktree include `build/free/strata`, `build/free/strata-device`, `build/free/libstrata_kernels.a`, `build/free/libstrata_prefill.a`, and `build/free/compile_commands.json`. The source-built LLVM install contains `clang-offload-extract`, `clang-offload-bundler`, `llvm-spirv`, and `sycl-post-link`; `ocloc-26.31.1` exists at `/usr/bin/ocloc-26.31.1`. No `spirv-dis` or `llvm-objdump` was found in the searched toolchain/system paths. No listed tool was invoked.
+
+## Minimal Main-owned discriminator (proposed commands; not run)
+
+1. First settle the build route without a GPU run: inspect the existing `build/free/compile_commands.json` entry for `src/prefill/gemm.cpp` and the matching `CMakeCache.txt` for `STRATA_LICENSE` and `STRATA_ONEMKL`. Compare the object command to CMake's conditional definitions. If it is free/`STRATA_ONEMATH=0`, oneMath is excluded for this binary and this question is closed. If the active binary is contrib-llvm, record `STRATA_ONEMATH` plus `STRATA_ONEMKL` from its cache/compile command; source alone cannot establish whether oneMath's first product trial succeeded on its selected device.
+2. Bind static device-image evidence to the actual existing executable, not just the archive: use the matching compiler's `clang-offload-extract build/free/strata --output=<fresh-evidence-prefix>`, inspect each extracted target bundle's text target list, then unbundle the `spir64` image with that exact target using matching `clang-offload-bundler`. Repeat on `strata-device` only if that is the executable Main actually launches. Archive members can establish object inclusion but are secondary to the final executable because link-time inclusion is authoritative.
+3. Decode the extracted SPIR-V with an installed SPIR-V disassembler if one is available; otherwise preserve it and use installed `llvm-spirv` only for supported IR translation. Search its kernel-entry metadata/names for the grouped entry corresponding to `GroupedKernel<128,256,3>` and portable `Kernel<S,sycl::half,false,true>` specializations; do not treat a kernel entry's presence as a runtime launch. The installed `clang-offload-extract` and bundler commands are documented by Intel. The compiler docs describe default SPIR-V as an intermediate image with native GPU compilation deferred to runtime, so this establishes image inclusion only.
+4. To discriminate codegen/register behavior with finite host-only work, feed the extracted SPIR-V to the installed matching `ocloc` in an offline AOT compile for the exact B570 target identifier already recorded in Main's approved device qualification artifacts. First read `ocloc compile --help` to use syntax supported by that installed build; capture compiler output/warnings, generated binary, disassembly if this build exposes it, and all exact flags. Intel documents that AOT uses the backend at compile time and the GPU compiler warns about spills for AOT kernels. If `ocloc` cannot produce native disassembly / spill evidence from the extracted image, stop at the SPIR-V result; do not substitute instruction-count claims from SPIR-V. This AOT output characterizes that offline compiler/backend and target only, not the JIT image chosen in production.
+5. One minimal runtime receipt, if Main later needs to close the device-selection gap, is a single ordinary existing quiet prefill with `STRATA_MMA`, `STRATA_NO_XMX`, and oneMath settings recorded, plus actual grouped kernel names from a supported launch trace. No unitrace retry: R171 recorded its host SIGSEGV after a PASS. This task did not authorize or perform that runtime step.
+
+The quickest decisive split is therefore compile metadata first: the supplied active free build excludes oneMath, and the residual question is XMX-vs-portable-MMA-vs-DP4a. Existing source and device-image inspection can identify compiled specializations; the host-only AOT step can compare native lowering without replaying the full prompt. Neither alone proves the runtime choice. The production question that remains is whether the branch taken on the qualified device and current flags is the XMX grouped kernel, portable grouped kernel, or DP4a, and whether the JIT lowering spills.
+
+## Limits and unsupported assumptions
+
+* No mapping from the label B570 to a `matrix_combinations` result, GRF compilation result, local-memory capacity, subgroup set, or `ocloc` target string was assumed or queried.
+* Existing compile commands are useful build evidence but their paths cross worktrees; binary/source/command hashes and matching build cache must be recorded before attributing those artifacts to the stated 69495+observer production snapshot.
+* The actual `strata` vs `strata-device` launch target and actual active build mode must be confirmed by Main's existing run recipe; listing files alone does not identify the executing program.
+* The static grouped-template name does not establish which image module Level Zero builds/launches. SPIR-V does not prove native ISA, register allocation, spills, occupancy, or performance.
+* Intel's AOT compilation can establish a controlled offline compiler/backend lowering only when target, compiler/IGC versions, options, and input image are pinned; it does not prove the normal JIT's generated bytes.
+* The root request mentions four observer files, but their names were not enumerated in the supplied task. This audit followed the source call chain and visible compile metadata; any observer-only change to those files should be checked against the same exact production base before treating the result as a full 69495+4 review.
+* R174 established that llama.cpp's reported 3.1x B570 prompt-processing result lacks compiler-only attribution and is not a forecast for this fallback. No compiler-upgrade, floating-point-flag, or fused/staged-kernel candidate follows from it.
+
+## Primary documentation consulted
+
+* Intel DPC++ compiler/runtime architecture: https://intel.github.io/llvm/design/CompilerAndRuntimeDesign.html — default JIT versus AOT and device code formats.
+* Intel DPC++ debugging: https://intel.github.io/llvm/developer/Debugging.html — `clang-offload-extract`, target bundle listing/unbundling, and target-specific code inspection.
+* Intel DPC++ users manual: https://intel.github.io/llvm/UsersManual.html — device-code outputs and `-save-offload-code` caveats.
+* Intel GPU Optimization Guide, “Finding Kernels with Register Spills”: https://www.intel.com/content/www/us/en/docs/oneapi/optimization-guide-gpu/2025-0/finding-kernels-with-register-spills.html — AOT compiler spill warning; runtime unitrace guidance deliberately not followed because the supplied phase forbids retry and R171 has a teardown failure.
+
+These are primary Intel documentation pages, but current `master` docs may be newer than installed v7.1.1/IGC 26.31.1. The local `ocloc` help and matching installed tools remain authoritative for supported syntax.

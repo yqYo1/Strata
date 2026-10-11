@@ -1,0 +1,42 @@
+# Bounded host issuer ledger source candidate v1
+
+Date: 2026-10-12. SOURCE ONLY. No build, fixture, project execution/import/AST, GPU, profiler, process query, Git operation or cleanup performed. Only stdlib text generation, hashing and source reads. Working checkouts untouched. Main owns all validation and application.
+
+Baseline WC /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/perf-xe-prefill-row-bounded-scratch-20261011, supplied HEAD 39e395a103af36323262cdc0dbaea27cba81f3e4; source SHA c7a427dc58fd5f03732b4a807274f2cc5d406cd2f6c39d64a620c0cd3518cc67 verified by stdlib hashing before generation. AGENTS and LOCAL read; LOCAL requires Main's owned-v0141-measurement.lock serialization and limits this worktree validation to CPU mock server tests. Artifact retention policy read from sycl/docs because baseline docs/ARTIFACT_RETENTION.md is absent. Prior R167 resubmission read first, original archived R167 and registry-v146 read for scope. The newer resubmission recommends host ledger before optional GPU spans; this candidate adds no spans.
+
+Enable exact STRATA_PREFILL_ISSUER_TIMING=1. Unset, 0, other numeric values and arbitrary strings disable. Disabled observer allocates no layer/bucket storage and reads no extra clock per entry. There remain branch/lambda calls and per-entry kind classification; zero overhead is not claimed. Existing Clock::now/ms_since statistics remain unchanged.
+
+Storage: three aggregate buckets per model layer in the current chunk only (pinned_direct, unpinned_staged, transient_staged). Each records entries/expert bytes and count/sum/min/max nanoseconds for existing host Stager::wait and raw copy call separately. Output exactly three fixed records per layer/chunk; no expert identifiers, route command records, histograms, GPU timing events or retained cross-chunk buffer. Includes chunk/layer position, inline/threaded and stream_all policy, allocated ring size, operation name. Local stage_one uses STAGE or MMQ_RING slot selection as before; reported ring is the allocated m.ring, not a claim about local stage_one's effective slot count.
+
+Coverage: all existing four nonresident issuer sites are instrumented: inline fullstream issue_until, threaded fullstream producer, compact/native stage_one, ordinary stage_one. Fullstream submit_op=copy_async_after includes the raw existing dependency/copy/completion-mark API implementation. Local submit_op=copy_async measures raw copy_async only; its separate existing wait_slot queue command and copied event_record are outside that span. These operation kinds must not be combined as identical submission spans. Existing Stager::issued_one and producer credit waits are excluded. No host launch-thread grouping, resident expert work, CPU expert execution, embeddings, PLE or KV transfers are claimed in scope. Dataset kind is source backing class, not a model/dataset identity; Main's receipt supplies model/prompt identity. Fullstream transient classification uses existing en.blob==nullptr for staged entries, because nontransient blobs are required nonnull before seq insertion; no additional source query or seq change.
+
+Closure: successful entries counted at the existing completion of stage issuance; compared at close against existing stats_.experts_streamed delta, after normal producer join, failure rethrow, stager failure check and chunk_stager_done.complete. Missing issuer entries or counter overflow make coverage_complete=0; invalid clock samples make clock_valid=0; empty traffic yields host_observation_eligible=0. Counter overflow is checked and invalidated without wrapping. Metric cardinalities also reconciled to successful entry counts. A chunk issuer failure exits/throws under unchanged fail-stop handling and does not emit its closed issuer ledger. Record is an issuer-scope close, not full-request success: later chunk handoff/request work may still fail; Main must pair ledger with original final result. performance_eligible=0 and overhead_calibrated=0 always. Main must not interpret sum as DMA service, exclusive critical path or measured speedup.
+
+Ownership proof by source review: ledger is declared before StagerDone/IssuerJoin so unwinding joins/drains before its storage destructs. Threaded fullstream writes exclusively on producer; local issuers are unreachable in stream_all path; consumer reads only after join. Existing seq order, m.stage_live, m.used_of, m.used/m.copied, slot credit frontiers and acquire/release stores, buffers, precision, compact policy, existing require calls, producer cancel/join/drains remain in place. Instrumentation calls no GPU API beyond executing the original lambda exactly once. No synchronization added. Normal non-fullstream local StagerDone still completes per layer before final emit.
+
+Main review/test boundary: compile header with CPU-only callbacks; verify disabled exact call-once behavior and empty storage path; enabled direct/staged cardinalities and min<=sum/max, zero wait for direct; callback exceptions propagate with no closed success; missing entry produces coverage_complete=0; empty ledger is ineligible; exact env opt-in parsing. Review producer exclusivity/destructor ordering and raw copy invocation arguments in patch; perform only serialized repository-permitted build/fixture/CPU mock checks. No GPU or unitrace launch is authorized by this source return. Current parent-supplied unitrace tiny all-operations PASS followed by host SIGSEGV remains unresolved and unchanged. Actual intended native loop batch=0,T8192,G16,CPU0,pcie0,context262144 is observation context only and has no new outcome here.
+
+Retention: keep this compact private candidate until Main applies/tests and commits compact source/report evidence. No raw traces generated or retired. Commit/push deferred to Main as explicitly instructed; this private bundle is the current source-review consumer, not independent progress history. Next review point: Main's serialized CPU fixture/build and source review.
+
+Hashes are in source-closure.json.
+
+Private bundle: /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-bounded-host-issuer-ledger-source-v1
+
+{
+  "before/src/prefill/prefill.cpp": {
+    "bytes": 208230,
+    "sha256": "c7a427dc58fd5f03732b4a807274f2cc5d406cd2f6c39d64a620c0cd3518cc67"
+  },
+  "after/src/prefill/prefill.cpp": {
+    "bytes": 210721,
+    "sha256": "2922806c8b56b64e1bc20096d93c852a105ed225ff3bf9dcf113436c79964d9c"
+  },
+  "after/include/strata/prefill/issuer_timing.hpp": {
+    "bytes": 4762,
+    "sha256": "535b6b9808e012979e9298c7112fe6c64148b7d9cb7662b1c092222c319a918e"
+  },
+  "issuer-ledger.patch": {
+    "bytes": 17567,
+    "sha256": "1a900ef3fcb788ab675295de70da010fdd349cb644000c059ee0206c27450fb9"
+  }
+}

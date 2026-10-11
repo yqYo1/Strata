@@ -1,0 +1,43 @@
+# R174 — llama.cpp SYCL gather claim and transferability to the current Xe fallback
+
+Date: 2026-10-12 (Asia/Tokyo). Read-only primary-doc and source review. No Git command, build, test, compiler/IR inspection, runtime/process/device query, inference, GPU work, profiler, cleanup, or implementation edit was performed. This report makes no Strata performance or correctness claim.
+
+## Finding
+
+The current llama.cpp SYCL page does document its September 2026 claim: oneAPI 2026.1 produced 1331 prompt-processing tokens/s versus 434 for its oneAPI 2025.3-based release build on Arc B570, reported as 3.1x with the same code. The ratio is 3.07 from the page's rounded inputs. This is a page-reported prompt-processing comparison; the page does not identify the model, prompt length, exact compiler/runtime package builds, binary flags, sample count, or run variance beside the claim. It supports a version-specific lead for that project and measurement, not a v7.1.1 prediction, a compiler-only causal attribution, or a 3x Strata forecast.
+
+The same page's short eligibility rule is incomplete for interpreting the current grouped MoE implementation. It says per-expert batches above 64 tokens use library GEMM. The current primary source instead has separate gates:
+
+- For the plain fused dequant-GEMM call, the fused kernel's N extent is at most 64 and the type/K dimensions must match the format block layout.
+- For `MUL_MAT_ID` grouped MoE, experts are tiled in N chunks up to 64, including a guarded tail. Admission requires total routed rows `<= active_experts * 64`, plus valid type, K dimension, precision, and a device-reported/allowed `joint_matrix` combination. This is an average-row bound across active experts, not a per-expert `<=64` bound. Therefore a single expert above 64 rows does not itself disqualify the grouped route if the aggregate bound still passes; conversely, meeting the average bound does not pass the other gates.
+- `GGML_SYCL_XMX_GATHER_TYPES` is an allow mask, not a force switch. The source checks it, the dynamic-precision request, the device combination list and shape mask, and format/layout support. A Qwen layer with an F32 source-1 precision request can still fall back under default required precision even with a type bit set. For `MUL_MAT_ID`, current source builds contiguous routed rows and schedules per-expert 64-column tiles; the outputs are scattered back afterward.
+
+The docs' K-row divisibility statement is consistent with the source's K block checks: most supported types require whole 256-value superblocks; IQ4_NL and Q8_0 require K multiples of 32. That K constraint is independent of the routed-row eligibility above.
+
+## What the kernel offers, and the B570 caveat
+
+`fused-gemm.cpp` describes the relevant design directly: decode each packed weight block into an on-chip A tile, pack activations into the B layout expected by `joint_matrix`, then issue XMX multiply-accumulates without materializing the full dequantized weight matrix. Format-specific A-stage routines exist, including IQ3_S. Grouped mode schedules only active experts and uses bounded per-expert tiles. This is a concrete kernel pattern that can remove the large FP16-weight write/read cycle; it is an algorithm and kernel-port opportunity, not a compiler flag.
+
+The same source contains a sharp counterexample to a naive tile-size transfer: it says a 32x64 FP32 accumulator takes 128 registers per lane, spills, and ran 13x slower on B60, so it marks TN>32 as inefficient. That is B60 evidence in a current llama.cpp source comment, not a measurement on B570 or Strata. Its B570-relevant implication is to inspect the actual generated kernel and register/spill behavior before widening tiles. No evidence here says the 2026.1 performance delta came from this gather kernel; the changelog attributes it broadly to SYCL build performance.
+
+## Crosswalk to the pinned Strata arm
+
+The supplied current production tree is the host-issuer-ledger worktree (caller source supplied as base 69495); the matching local guidance identifies Ryzen 5 5600X and Arc B570. At the active arm described by Main, `STRATA_PREFILL_NATIVE_DEQUANT_BATCH=0`, `STRATA_PREFILL_FUSED=0`, compact scratch is enabled, and the resident packed-IQ grouped GEMM prefix is therefore empty. `compact_moe_groups()` only partitions the existing logical dequant window so scratch scales with rows; fallback still materializes each expert's native GU and Down weights to FP16 and runs grouped dense GEMMs. Compact scratch is not a packed-weight XMX-gather route.
+
+Strata already has a distinct resident `iq_gemm_grouped_f16` kernel that decodes native GGUF weights into a local FP16 tile and computes with XMX. But this experiment explicitly sets its `FUSED` dispatch off, and that caller only admits resident experts with at most 256 rows. The current compact fallback groups can have different expert/row shapes and uses full dequant destinations. Llama.cpp's <=64-average MoE gate does not prove those current fallback groups are eligible, and changing `FUSED` would change the test arm. R173 already screened extending packed-IQ fused GEMM to staged experts and identified the ring-slot lifetime shift; this report does not reopen that proposal or claim the external kernel makes it safe.
+
+The concrete decision for this exact arm is therefore **no compiler-only or flag-only transfer candidate**. The kernel lesson is a future, separately controlled algorithm candidate only if a fresh route census shows a useful low-row population and the test intentionally changes from the current FP16 fallback. For the present fallback, a useful source/build discriminator is the generated code for the exact `Gemm::f16_groups`/`xmx_gemm_grouped` shape: establish whether the B570 path reaches FP16 `joint_matrix`/DPAS and whether it spills, with the same source-built LLVM v7.1.1 plus 17 local patches and exact build options. Do not infer that from XMX hardware availability, from the other disabled kernel, or from the llama.cpp 2026.1 timing. No compiler option or IR treatment change is recommended from this evidence.
+
+Strata's current CMake statically requests SYCL FP32 precise divide/sqrt and compiles `strata_kernels` with `-fno-fast-math -ffp-contract=off`; changing floating-point flags to chase the upstream rate would alter arithmetic semantics and has no supporting evidence here. The active exact fallback may still use a different product/GEMM route depending on build configuration, so generated-code inspection must be tied to the actual compiled image and source arm.
+
+## Evidence and limits
+
+Primary references:
+
+- llama.cpp SYCL page, 2026.09 benchmark claim and gather environment-variable summary: https://github.com/ggml-org/llama.cpp/blob/master/docs/backend/SYCL.md (news and `GGML_SYCL_XMX_GATHER_TYPES` / `GGML_SYCL_XMX_GATHER_SHAPES` entries).
+- llama.cpp grouped dispatch and routed-row construction: https://github.com/ggml-org/llama.cpp/blob/master/ggml/src/ggml-sycl/ggml-sycl.cpp (current `ggml_sycl_mul_mat_id`, including grouped dequant-GEMM gate and library fallback).
+- llama.cpp kernel implementation and shape/type gates: https://github.com/ggml-org/llama.cpp/blob/master/ggml/src/ggml-sycl/fused-gemm.cpp and https://github.com/ggml-org/llama.cpp/blob/master/ggml/src/ggml-sycl/fused-gemm.hpp.
+
+Static Strata reads: supplied production worktree `src/prefill/prefill.cpp`, `include/strata/prefill/compact_moe.hpp`, `src/kernels/xe/iq_kernels.cpp`, and CMake kernel/compiler flags; worktree `LOCAL.md`; worktree/research `AGENTS.md`; R172 and R173 reports. The live worktree bytes were not Git-verified and are identified by the supplied worktree/base context, not represented here as independently verified commit content. R173's prefix-active interpretation is corrected by the user's current arm: `FUSED=0` makes that resident prefix ineligible. The earlier R173 staged-expert proposal remains only a candidate with its stated source-lifetime risk.
+
+No access to llama.cpp benchmark raw data or version-pinned executable was made; current `master` source may change after this read. No exact B570 route census or `Gemm::f16_groups` codegen was inspected. The 64-row eligibility description does not cover all type, precision, layout, or device-combination gates, and its grouped average-row rule is specific to llama.cpp's implementation. There is no performance transfer claim.

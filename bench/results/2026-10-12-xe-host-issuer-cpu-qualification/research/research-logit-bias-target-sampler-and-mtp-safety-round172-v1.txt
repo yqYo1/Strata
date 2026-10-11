@@ -1,0 +1,25 @@
+# R172 read-only source review: logit_bias target sampler and MTP safety
+
+Status: SOURCE ONLY. No tests, builds, runtime/GPU/process queries, source edits, imports, AST work, Git mutations, or cleanup were performed.
+
+Reviewed the source-only candidate `xe-logit-bias-functional-port-source-v1` against the current read-only integration worktree at HEAD `69495a01443cb1fef41706b51514f5deb6f8a716`; candidate source snapshots are under its `after/` tree. Reviewed the associated implementation report for scope and earlier findings. No prior standalone logit-bias sampler review report was found in the named private research directory or results directory.
+
+## Finding: hard bans can be returned when every effective logit is `-inf`
+
+`biased_score` maps an explicit ban to `-inf` (`after/src/kernels/xe/sampler.cpp:87-92`). The argmax reduction initializes its best score to `-inf` and updates only on strict `s > bv`; therefore it reports “no candidate” when all effective scores are `-inf` (`:95-107`, with use at `:246-255`). The greedy fallback then returns token 0 (`:253-255`) regardless of its bias. This also affects sampled selection: single-group top-k stores token 0 for a no-candidate result (`:261-274`), while the split path uses `n_vocab` sentinels in stage 1 and converts an empty stage-2 slot to token 0 (`:375-392`). Thus, with token 0 banned and all remaining effective scores `-inf` (for example all raw logits `-inf`), the ban can be violated. The parser forbids banning the whole vocabulary, but it does not and cannot guarantee a finite model logit for an allowed token. This is an extreme/degenerate-logit condition, but the explicit ban handling and fallback make it a concrete contract edge case. A safe outcome needs to avoid returning a banned ID when the candidate set is empty (for example, surface an invalid-logits/error result if the interface supports it, or define a fallback among non-banned IDs).
+
+## Resource implication: ordinary top-k rereads the bias vector each selection round
+
+For the non-split sampled path, `sample_launch` performs `k` full vocabulary argmax rounds (`:258-269`); each score call reads `p.logit_bias[token]` (`:87-92`). At `n_vocab=248320` and `k=128`, that is up to 31,784,960 bias-float loads, or about 127.1 MB of requested read traffic per sampled row if each load reaches memory. This mirrors the repeated logits scan already present, while adding a second stream of reads and a persistent 4-byte-per-vocabulary allocation (the implementation report records 993,280 bytes at that vocabulary size). Cache reuse may reduce external-memory traffic; no cache or throughput claim can be made from source. The large-vocabulary split path instead computes the biased score once per vocabulary entry in stage 1 (`:321-353`), then operates on the reduced candidate list. This source-level difference makes the unsplit sampled path the main memory-pressure case to measure if performance qualification proceeds. Greedy also reads each bias entry once; null bias takes the original penalty path with no bias load (`:87-89`).
+
+## Semantic review notes
+
+- Bias is added to the raw logit before penalties (`:87-92`) in greedy and unsplit top-k (`:246-269`) and in split stage 1 (`:321-353`). The sampler takes `const float* logits` and only reads those logits on these target paths; it does not modify raw target logits.
+- The hard-ban special case occurs before penalty arithmetic, so zero/negative repeat-penalty values and positive-infinity raw scores do not revive a token explicitly marked `-inf` (`:90-92`). The all-effective-`-inf` fallback above is a distinct hole.
+- Large-vocabulary split selection carries the biased score and token ID from stage 1 through stage 2 (`:321-353`, `:375-392`); no source discrepancy in ordinary finite-score ordering was identified by inspection.
+- MTP’s mapped draft sampling parameters explicitly clear `logit_bias` before drafting (`after/src/core/mtp.cpp:545-547`); `coupled_draft_sample` applies draft penalties in place to its draft logits, but does not apply target bias (`after/src/kernels/xe/sampler.cpp:535+`). The target verifier owns and applies bias to target logits. This matches the intended proposal/target split described by the implementation report; source review found no additional bias-pointer leak into draft/subset sampling.
+- Request replacement/clear lifetime and capture handling were already analyzed in the implementation report; this review found no new pointer-lifetime issue. Dynamic correctness, cache behavior, and performance remain unqualified.
+
+## Evidence and limits
+
+Primary evidence is the candidate source snapshot named above, especially `src/kernels/xe/sampler.cpp`, `src/core/mtp.cpp`, `src/core/verify.cpp`, and `include/strata/core/logit_bias.hpp`. The integration source base reported by the parent is `39e395a103af36323262cdc0dbaea27cba81f3e4`, with server timing-source integration pinned separately. No behavior was executed or measured. This review does not establish an observed runtime failure, nor does it alter the candidate’s SOURCE_ONLY_UNTESTED_PENDING status.
