@@ -1,0 +1,318 @@
+{
+  "active": false,
+  "passed": false,
+  "complete": false,
+  "commands": [
+    {
+      "label": "compile-free",
+      "argv": [
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+        "-std=c++20",
+        "-O2",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-fsycl",
+        "-fsycl-targets=spir64",
+        "-pthread",
+        "-I/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/include",
+        "-DSTRATA_PROBE_MODE_FREE=1",
+        "-DSTRATA_NO_BLAS=1",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-profiling-tags-diagnostic-source-v1/profiling_tags_probe.cpp",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/src/core/gpu.cpp",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/src/core/device.cpp",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-source-llvm-profiling-tags-build-root-v1/profiling-tags-free"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib"
+      },
+      "started_utc": "2026-10-11T04:58:58.850305+00:00",
+      "wall_seconds": 120,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2831612,
+          "start_ticks": 4350297,
+          "sid": 2831612,
+          "pgid": 2831612
+        },
+        {
+          "pid": 2831614,
+          "start_ticks": 4350298,
+          "sid": 2831612,
+          "pgid": 2831612
+        },
+        {
+          "pid": 2831848,
+          "start_ticks": 4350661,
+          "sid": 2831612,
+          "pgid": 2831612
+        },
+        {
+          "pid": 2832069,
+          "start_ticks": 4351033,
+          "sid": 2831612,
+          "pgid": 2831612
+        },
+        {
+          "pid": 2832275,
+          "start_ticks": 4351413,
+          "sid": 2831612,
+          "pgid": 2831612
+        },
+        {
+          "pid": 2832546,
+          "start_ticks": 4351830,
+          "sid": 2831612,
+          "pgid": 2831612
+        },
+        {
+          "pid": 2832771,
+          "start_ticks": 4352202,
+          "sid": 2831612,
+          "pgid": 2831612
+        },
+        {
+          "pid": 2832975,
+          "start_ticks": 4352637,
+          "sid": 2831612,
+          "pgid": 2831612
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 43502.971869953,
+      "pid": 2831612,
+      "spawn_return_monotonic": 43502.973774769,
+      "direct_identity": {
+        "pid": 2831612,
+        "state": "R",
+        "ppid": 2831605,
+        "pgid": 2831612,
+        "sid": 2831612,
+        "start_ticks": 4350297,
+        "rss_bytes": 188416
+      },
+      "peak_live_owned_identities": 2,
+      "peak_session_rss_bytes": 346071040,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-11T04:59:22.659936+00:00",
+      "elapsed_seconds": 23.80937537200225,
+      "logs": {
+        "compile-free.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "compile-free.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "lint-free",
+      "argv": [
+        "/bin/bash",
+        "tools/lint/run.sh",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-profiling-tags-diagnostic-source-v1/profiling_tags_probe.cpp"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/venv/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/cppcheck/usr/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/cppcheck/usr/lib/x86_64-linux-gnu:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/compiler/2026.1/lib",
+        "STRATA_LINT_BUILD": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-source-llvm-profiling-tags-build-root-v1/lint-db-free"
+      },
+      "started_utc": "2026-10-11T04:59:22.660816+00:00",
+      "wall_seconds": 120,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2833010,
+          "start_ticks": 4352678,
+          "sid": 2833010,
+          "pgid": 2833010
+        },
+        {
+          "pid": 2833053,
+          "start_ticks": 4352687,
+          "sid": 2833010,
+          "pgid": 2833010
+        },
+        {
+          "pid": 2833288,
+          "start_ticks": 4353086,
+          "sid": 2833010,
+          "pgid": 2833010
+        },
+        {
+          "pid": 2833329,
+          "start_ticks": 4353124,
+          "sid": 2833010,
+          "pgid": 2833010
+        },
+        {
+          "pid": 2833381,
+          "start_ticks": 4353188,
+          "sid": 2833010,
+          "pgid": 2833010
+        },
+        {
+          "pid": 2833382,
+          "start_ticks": 4353188,
+          "sid": 2833010,
+          "pgid": 2833010
+        },
+        {
+          "pid": 2833383,
+          "start_ticks": 4353188,
+          "sid": 2833010,
+          "pgid": 2833010
+        },
+        {
+          "pid": 2833384,
+          "start_ticks": 4353188,
+          "sid": 2833010,
+          "pgid": 2833010
+        },
+        {
+          "pid": 2833385,
+          "start_ticks": 4353188,
+          "sid": 2833010,
+          "pgid": 2833010
+        },
+        {
+          "pid": 2833386,
+          "start_ticks": 4353189,
+          "sid": 2833010,
+          "pgid": 2833010
+        },
+        {
+          "pid": 2833387,
+          "start_ticks": 4353189,
+          "sid": 2833010,
+          "pgid": 2833010
+        },
+        {
+          "pid": 2833388,
+          "start_ticks": 4353189,
+          "sid": 2833010,
+          "pgid": 2833010
+        },
+        {
+          "pid": 2833389,
+          "start_ticks": 4353189,
+          "sid": 2833010,
+          "pgid": 2833010
+        },
+        {
+          "pid": 2833390,
+          "start_ticks": 4353189,
+          "sid": 2833010,
+          "pgid": 2833010
+        },
+        {
+          "pid": 2833391,
+          "start_ticks": 4353189,
+          "sid": 2833010,
+          "pgid": 2833010
+        },
+        {
+          "pid": 2833392,
+          "start_ticks": 4353189,
+          "sid": 2833010,
+          "pgid": 2833010
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 43526.78231343,
+      "pid": 2833010,
+      "spawn_return_monotonic": 43526.783843138,
+      "direct_identity": {
+        "pid": 2833010,
+        "state": "R",
+        "ppid": 2831605,
+        "pgid": 2833010,
+        "sid": 2833010,
+        "start_ticks": 4352678,
+        "rss_bytes": 282624
+      },
+      "peak_live_owned_identities": 14,
+      "peak_session_rss_bytes": 636473344,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 1,
+      "finished_utc": "2026-10-11T04:59:28.591266+00:00",
+      "elapsed_seconds": 5.930228650999197,
+      "logs": {
+        "lint-free.stdout": {
+          "bytes": 910,
+          "sha256": "4797963c17998e02f27e84aa7230ebc20d2ba431611d69634a252057b1e3ed57"
+        },
+        "lint-free.stderr": {
+          "bytes": 276,
+          "sha256": "970bec6099211e6a7037cb33851a3d13fa72c0ad8d97f3c0269eee1b6fcf619b"
+        }
+      }
+    }
+  ],
+  "started_utc": "2026-10-11T04:58:58.845289+00:00",
+  "controller_sha256": "f4bed52af3a5f33392e7de56f29cf94f9afbc3dffb02334112c2f50117747fef",
+  "owner_sha256": "a29d8257eecc77c4ad9ae6671d092b56f4c09a35c4247c125fed3a8c8bc1f95f",
+  "gpu_executed": false,
+  "source_revision": "32222cb535eefa0bd7b6cd2e670f81a8013dd1ba",
+  "scope": "Actual gpu.cpp/device.cpp and public headers linked directly; source-LLVM same diagnostic in two labels, no BLAS/oneMath proof; build/lint/CLI only",
+  "main_reviewed": true,
+  "model_executed": false,
+  "total_wall_budget_seconds": 900,
+  "raw_log_budget_bytes": 67108864,
+  "binaries": {
+    "free": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-source-llvm-profiling-tags-build-root-v1/profiling-tags-free",
+      "sha256": "b0a86d4e6c4eae3e07272501a4d9c345a2ab1708c5b071c1f5a0078547c19250",
+      "bytes": 217976
+    }
+  },
+  "source_publication_sha256": "d724682bdae99e8a383620f87c2a1d3c7e45432b61ec6ea6f381ab87d9d0bbd9",
+  "manifest_sha256": "cc3f2aebbcc36cd0e571d199ec03f6da4b2ba3f90563f81e3955cf5d7bcba7c8",
+  "probe_sha256": "bfcaef54fdc40e04234b3edd1131b47c5a89ec4eaab6a7f0ebe87246a98a79cb",
+  "source_pins": {
+    "AGENTS.md": "0427d8d4f91c4cf5128e77d3d898ee20783b63394d24718d1ff0b16779424dd0",
+    "CMakeLists.txt": "040de957a32bd26c9b71ca476aa45060571b86c0bad72a545ed9dbba9f2394a9",
+    "src/core/gpu.cpp": "9792966f6b2c84434a1dddafefb3286c3c5fcfa78e23065b455904f9cf6fcfb8",
+    "src/core/device.cpp": "9e33dce3b3b55b00c5aee4db566ceb848b73273837c505b3c27b535a0b30ba2d",
+    "include/strata/core/gpu.hpp": "54b1a10524c9ee0c9b42979d75bd4f775ee0c45da2839d8129c2a2bd3daa552a",
+    "include/strata/core/runtime.hpp": "1a42ce02127727310614461b1dc2768eb2bce421e9d5e992c4df100c1817dd26",
+    "include/strata/core/device.hpp": "5ef3d91e943c605baf2b011e77dcc61eeca005e54eff5ea0b86e9d98827ba886",
+    "include/strata/core/on_device.hpp": "579d519f33e7868a9546854dc227a329fa2af04877432fc8cfc8b50c2abecc2e",
+    "include/strata/prefill/publication.hpp": "c266156f02854f6578ca526203525249e6e9035ca56102a4aeb815280d42e2ee"
+  },
+  "build_proof_sha256": {
+    "free": "632b1679d3d1a9edf5335060f33f95c29bb9421fe555a9300dd5266df3558edf"
+  },
+  "lint": {
+    "free": {
+      "exit_code": 1,
+      "stdout": "== clang-tidy\n/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-profiling-tags-diagnostic-source-v1/profiling_tags_probe.cpp:168:39: warning: result of a `data()` call may not be null terminated, provide size information to the callee to prevent potential issues [bugprone-suspicious-stringview-data-usage]\n  168 |     auto start = std::from_chars(text.data(), finish, later);\n      |                                  ~~~~~^~~~\n/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-profiling-tags-diagnostic-source-v1/profiling_tags_probe.cpp:174:37: warning: result of a `data()` call may not be null terminated, provide size information to the callee to prevent potential issues [bugprone-suspicious-stringview-data-usage]\n  174 |     auto end = std::from_chars(text.data(), finish, earlier);\n      |                                ~~~~~^~~~\n== cppcheck\n== codespell\n== reuse\n",
+      "stderr": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-profiling-tags-diagnostic-source-v1/profiling_tags_probe.cpp:30:2: error: #error The free recipe must define STRATA_NO_BLAS. [preprocessorErrorDirective]\n#error The free recipe must define STRATA_NO_BLAS.\n ^\n",
+      "compile_db_sha256": "d6422648b2a76040b35319686352b56eab9a183debfa4e88c3cb6fa08bf3b71e"
+    }
+  },
+  "error": "RuntimeError('all mandatory probe lints passed free')",
+  "finished_utc": "2026-10-11T04:59:28.592138+00:00"
+}

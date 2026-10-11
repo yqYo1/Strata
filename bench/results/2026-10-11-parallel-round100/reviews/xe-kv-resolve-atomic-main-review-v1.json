@@ -1,0 +1,39 @@
+{
+  "main_reviewed": true,
+  "base_revision": "32222cb535eefa0bd7b6cd2e670f81a8013dd1ba",
+  "agent_artifact_base": "e188dd609b800ea78fb4afc0cc6dcf6ef7e02328",
+  "original_manifest_sha256": "7262b8a01cdb2a4736be73092a61910fc9583802d10dc57bd9753fb927e7da33",
+  "patch_sha256": "1fc04e9e339a51835588f8f1d796dd65c0664b853ee66180d2e93a8b00b5ddf4",
+  "source_pins": {
+    "src/kernels/xe/kv_stream.cpp": "cd3bb7877dd848497a1d7d50cbcf75ae28cffdd187b5c18b6234b917520f7fbf"
+  },
+  "original_source_sha256": "82c83a59525741c6d4f9cc644037b4a4cf87798d2d49fd4cca939a035ddc2ef7",
+  "scope": "Only first selection phase page_table load and resident slot_stamp/slot_ref stores use existing relaxed/device/global atomic_ref<int32_t>. Algorithm, barriers, launch dimensions, queues and pool formats unchanged.",
+  "phase_review": [
+    "Initial group barrier orders epoch reads and tid0 local shared initialization before selection/atomic increments. Temporary global atomic_ref objects end at each statement.",
+    "Queries processed in different work-items can access the same block at different selected-ID positions; CAS does not order concurrent ordinary reads, and identical stores are still races. Atomic load/stores remove these three mixed/duplicate access cases.",
+    "Selection-ending group barrier orders atomic global accesses before ordinary clock-sweep reads; relaxed device scope suffices for marker/identical-value operations within one work-group.",
+    "Legal n_slots>=RT means sweep j=(hand+tid)%n_slots is unique per work-item. Existing block_scan and cut/end-of-iteration barriers order candidate checks and subsequent plain slot updates.",
+    "CAS success makes miss_block unique; stamp protects selected/taken slots; legal inverse initial mapping and unique miss slots make placement accesses disjoint. Same in-order queue orders resolve and pool copy kernels."
+  ],
+  "preconditions": [
+    "valid ascending IDs within each query, valid inverse map, enough slot/miss capacity, legal integer/epoch lifetime",
+    "no overlapping resolves/appends on independent queues using the same map",
+    "host USM accesses occur only before submission or after checked completion"
+  ],
+  "not_established": [
+    "historical GPU hang causality",
+    "all queue/capacity/epoch preconditions globally enforced",
+    "actual GPU parity",
+    "full 262144-cell context and RESTORE",
+    "attention/global model quality",
+    "smaller/no-XMX/iGPU/NVIDIA configurations"
+  ],
+  "original_probe_review": {
+    "source_sha256": "2ce558d28f2b919455300249cf6c4319cb7984f5737a18ee360a0e9b69975ba5",
+    "main_read_full": true,
+    "status": "source-only; FP16 only, CLI and fail-closed uncertain-completion coverage need new v2 probe before execution",
+    "agent_followup": "source-only INT8 arm and fatal wait/cleanup contract; Main manages all tests"
+  },
+  "applied": false
+}

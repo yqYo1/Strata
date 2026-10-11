@@ -1,0 +1,904 @@
+{
+  "active": false,
+  "complete": true,
+  "passed": true,
+  "commands": [
+    {
+      "label": "source-head",
+      "argv": [
+        "/usr/bin/git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib"
+      },
+      "started_utc": "2026-10-11T05:16:44.877066+00:00",
+      "wall_seconds": 120,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2905078,
+          "start_ticks": 4456899,
+          "sid": 2905078,
+          "pgid": 2905078
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 44568.99850774,
+      "pid": 2905078,
+      "spawn_return_monotonic": 44569.000396199,
+      "direct_identity": {
+        "pid": 2905078,
+        "state": "R",
+        "ppid": 2905076,
+        "pgid": 2905078,
+        "sid": 2905078,
+        "start_ticks": 4456899,
+        "rss_bytes": 450560
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-11T05:16:45.002841+00:00",
+      "elapsed_seconds": 0.12560196800041012,
+      "logs": {
+        "source-head.stdout": {
+          "bytes": 41,
+          "sha256": "724c18a72e4fa4139c190b05905566af8fef76657e5389c35b672f4ebede3455"
+        },
+        "source-head.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "source-status",
+      "argv": [
+        "/usr/bin/git",
+        "status",
+        "--porcelain"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib"
+      },
+      "started_utc": "2026-10-11T05:16:45.003412+00:00",
+      "wall_seconds": 120,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2905082,
+          "start_ticks": 4456912,
+          "sid": 2905082,
+          "pgid": 2905082
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 44569.1248637,
+      "pid": 2905082,
+      "spawn_return_monotonic": 44569.126415114,
+      "direct_identity": {
+        "pid": 2905082,
+        "state": "R",
+        "ppid": 2905076,
+        "pgid": 2905082,
+        "sid": 2905082,
+        "start_ticks": 4456912,
+        "rss_bytes": 446464
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-11T05:16:45.151406+00:00",
+      "elapsed_seconds": 0.14782657100295182,
+      "logs": {
+        "source-status.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "source-status.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "compile-free",
+      "argv": [
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+        "-std=c++20",
+        "-O2",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-fsycl",
+        "-fsycl-targets=spir64",
+        "-pthread",
+        "-I/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/include",
+        "-DSTRATA_NO_BLAS=1",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-kv-resolve-bounded-source-v3/kv_resolve_bounded.cpp",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/src/core/device.cpp",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/src/core/gpu.cpp",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/src/kernels/xe/kv_stream.cpp",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-kv-resolve-bounded-build-root-v2/kv-resolve-bounded-free"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib"
+      },
+      "started_utc": "2026-10-11T05:16:46.815350+00:00",
+      "wall_seconds": 180,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2905211,
+          "start_ticks": 4457093,
+          "sid": 2905211,
+          "pgid": 2905211
+        },
+        {
+          "pid": 2905212,
+          "start_ticks": 4457095,
+          "sid": 2905211,
+          "pgid": 2905211
+        },
+        {
+          "pid": 2905374,
+          "start_ticks": 4457466,
+          "sid": 2905211,
+          "pgid": 2905211
+        },
+        {
+          "pid": 2905652,
+          "start_ticks": 4457854,
+          "sid": 2905211,
+          "pgid": 2905211
+        },
+        {
+          "pid": 2905840,
+          "start_ticks": 4458216,
+          "sid": 2905211,
+          "pgid": 2905211
+        },
+        {
+          "pid": 2906144,
+          "start_ticks": 4458664,
+          "sid": 2905211,
+          "pgid": 2905211
+        },
+        {
+          "pid": 2906360,
+          "start_ticks": 4459029,
+          "sid": 2905211,
+          "pgid": 2905211
+        },
+        {
+          "pid": 2906635,
+          "start_ticks": 4459458,
+          "sid": 2905211,
+          "pgid": 2905211
+        },
+        {
+          "pid": 2906846,
+          "start_ticks": 4459837,
+          "sid": 2905211,
+          "pgid": 2905211
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 44570.937008218,
+      "pid": 2905211,
+      "spawn_return_monotonic": 44570.939336917,
+      "direct_identity": {
+        "pid": 2905211,
+        "state": "R",
+        "ppid": 2905076,
+        "pgid": 2905211,
+        "sid": 2905211,
+        "start_ticks": 4457093,
+        "rss_bytes": 413696
+      },
+      "peak_live_owned_identities": 2,
+      "peak_session_rss_bytes": 349827072,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-11T05:17:18.468384+00:00",
+      "elapsed_seconds": 31.652676943995175,
+      "logs": {
+        "compile-free.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "compile-free.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "lint-free",
+      "argv": [
+        "/bin/bash",
+        "tools/lint/run.sh",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-kv-resolve-bounded-source-v3/kv_resolve_bounded.cpp"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/venv/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/cppcheck/usr/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/cppcheck/usr/lib/x86_64-linux-gnu:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/compiler/2026.1/lib",
+        "STRATA_LINT_BUILD": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-kv-resolve-bounded-build-root-v2/lint-db-free"
+      },
+      "started_utc": "2026-10-11T05:17:18.469395+00:00",
+      "wall_seconds": 120,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2907091,
+          "start_ticks": 4460259,
+          "sid": 2907091,
+          "pgid": 2907091
+        },
+        {
+          "pid": 2907133,
+          "start_ticks": 4460262,
+          "sid": 2907091,
+          "pgid": 2907091
+        },
+        {
+          "pid": 2907374,
+          "start_ticks": 4460620,
+          "sid": 2907091,
+          "pgid": 2907091
+        },
+        {
+          "pid": 2907430,
+          "start_ticks": 4460704,
+          "sid": 2907091,
+          "pgid": 2907091
+        },
+        {
+          "pid": 2907451,
+          "start_ticks": 4460743,
+          "sid": 2907091,
+          "pgid": 2907091
+        },
+        {
+          "pid": 2907490,
+          "start_ticks": 4460803,
+          "sid": 2907091,
+          "pgid": 2907091
+        },
+        {
+          "pid": 2907491,
+          "start_ticks": 4460803,
+          "sid": 2907091,
+          "pgid": 2907091
+        },
+        {
+          "pid": 2907493,
+          "start_ticks": 4460803,
+          "sid": 2907091,
+          "pgid": 2907091
+        },
+        {
+          "pid": 2907494,
+          "start_ticks": 4460804,
+          "sid": 2907091,
+          "pgid": 2907091
+        },
+        {
+          "pid": 2907495,
+          "start_ticks": 4460804,
+          "sid": 2907091,
+          "pgid": 2907091
+        },
+        {
+          "pid": 2907496,
+          "start_ticks": 4460804,
+          "sid": 2907091,
+          "pgid": 2907091
+        },
+        {
+          "pid": 2907498,
+          "start_ticks": 4460804,
+          "sid": 2907091,
+          "pgid": 2907091
+        },
+        {
+          "pid": 2907500,
+          "start_ticks": 4460804,
+          "sid": 2907091,
+          "pgid": 2907091
+        },
+        {
+          "pid": 2907501,
+          "start_ticks": 4460804,
+          "sid": 2907091,
+          "pgid": 2907091
+        },
+        {
+          "pid": 2907503,
+          "start_ticks": 4460804,
+          "sid": 2907091,
+          "pgid": 2907091
+        },
+        {
+          "pid": 2907504,
+          "start_ticks": 4460804,
+          "sid": 2907091,
+          "pgid": 2907091
+        },
+        {
+          "pid": 2907505,
+          "start_ticks": 4460805,
+          "sid": 2907091,
+          "pgid": 2907091
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 44602.590948834,
+      "pid": 2907091,
+      "spawn_return_monotonic": 44602.59247483,
+      "direct_identity": {
+        "pid": 2907091,
+        "state": "R",
+        "ppid": 2905076,
+        "pgid": 2907091,
+        "sid": 2907091,
+        "start_ticks": 4460259,
+        "rss_bytes": 462848
+      },
+      "peak_live_owned_identities": 14,
+      "peak_session_rss_bytes": 632926208,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-11T05:17:24.813431+00:00",
+      "elapsed_seconds": 6.3437467539988575,
+      "logs": {
+        "lint-free.stdout": {
+          "bytes": 1670,
+          "sha256": "a2410ca0956cad53878aa5077313271b00d0e2b2d5bfffb3175e1bd153f89ad6"
+        },
+        "lint-free.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "invalid-cli-free",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-kv-resolve-bounded-build-root-v2/kv-resolve-bounded-free",
+        "unexpected"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib"
+      },
+      "started_utc": "2026-10-11T05:17:24.815341+00:00",
+      "wall_seconds": 10,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2907553,
+          "start_ticks": 4460893,
+          "sid": 2907553,
+          "pgid": 2907553
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 44608.937127111,
+      "pid": 2907553,
+      "spawn_return_monotonic": 44608.939347405,
+      "direct_identity": {
+        "pid": 2907553,
+        "state": "D",
+        "ppid": 2905076,
+        "pgid": 2907553,
+        "sid": 2907553,
+        "start_ticks": 4460893,
+        "rss_bytes": 143360
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 2,
+      "finished_utc": "2026-10-11T05:17:24.938917+00:00",
+      "elapsed_seconds": 0.12307529299869202,
+      "logs": {
+        "invalid-cli-free.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "invalid-cli-free.stderr": {
+          "bytes": 57,
+          "sha256": "cd6fd624e5ea6cfd6915e718a77eb5eb8e50ba1416d069d065b374da4dbfe2f9"
+        }
+      }
+    },
+    {
+      "label": "compile-contrib-llvm",
+      "argv": [
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+        "-std=c++20",
+        "-O2",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-fsycl",
+        "-fsycl-targets=spir64",
+        "-pthread",
+        "-I/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/include",
+        "-USTRATA_NO_BLAS",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-kv-resolve-bounded-source-v3/kv_resolve_bounded.cpp",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/src/core/device.cpp",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/src/core/gpu.cpp",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/src/kernels/xe/kv_stream.cpp",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-kv-resolve-bounded-build-root-v2/kv-resolve-bounded-contrib-llvm"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib"
+      },
+      "started_utc": "2026-10-11T05:17:24.942944+00:00",
+      "wall_seconds": 180,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2907557,
+          "start_ticks": 4460906,
+          "sid": 2907557,
+          "pgid": 2907557
+        },
+        {
+          "pid": 2907558,
+          "start_ticks": 4460907,
+          "sid": 2907557,
+          "pgid": 2907557
+        },
+        {
+          "pid": 2907827,
+          "start_ticks": 4461274,
+          "sid": 2907557,
+          "pgid": 2907557
+        },
+        {
+          "pid": 2908018,
+          "start_ticks": 4461655,
+          "sid": 2907557,
+          "pgid": 2907557
+        },
+        {
+          "pid": 2908211,
+          "start_ticks": 4462031,
+          "sid": 2907557,
+          "pgid": 2907557
+        },
+        {
+          "pid": 2908511,
+          "start_ticks": 4462497,
+          "sid": 2907557,
+          "pgid": 2907557
+        },
+        {
+          "pid": 2908714,
+          "start_ticks": 4462872,
+          "sid": 2907557,
+          "pgid": 2907557
+        },
+        {
+          "pid": 2908973,
+          "start_ticks": 4463281,
+          "sid": 2907557,
+          "pgid": 2907557
+        },
+        {
+          "pid": 2909189,
+          "start_ticks": 4463665,
+          "sid": 2907557,
+          "pgid": 2907557
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 44609.065073764,
+      "pid": 2907557,
+      "spawn_return_monotonic": 44609.067356045,
+      "direct_identity": {
+        "pid": 2907557,
+        "state": "R",
+        "ppid": 2905076,
+        "pgid": 2907557,
+        "sid": 2907557,
+        "start_ticks": 4460906,
+        "rss_bytes": 327680
+      },
+      "peak_live_owned_identities": 2,
+      "peak_session_rss_bytes": 347504640,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-11T05:17:56.730065+00:00",
+      "elapsed_seconds": 31.786325405999378,
+      "logs": {
+        "compile-contrib-llvm.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "compile-contrib-llvm.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "lint-contrib-llvm",
+      "argv": [
+        "/bin/bash",
+        "tools/lint/run.sh",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-kv-resolve-bounded-source-v3/kv_resolve_bounded.cpp"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/venv/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/cppcheck/usr/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/cppcheck/usr/lib/x86_64-linux-gnu:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/compiler/2026.1/lib",
+        "STRATA_LINT_BUILD": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-kv-resolve-bounded-build-root-v2/lint-db-contrib-llvm"
+      },
+      "started_utc": "2026-10-11T05:17:56.731528+00:00",
+      "wall_seconds": 120,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2909495,
+          "start_ticks": 4464085,
+          "sid": 2909495,
+          "pgid": 2909495
+        },
+        {
+          "pid": 2909537,
+          "start_ticks": 4464089,
+          "sid": 2909495,
+          "pgid": 2909495
+        },
+        {
+          "pid": 2909705,
+          "start_ticks": 4464441,
+          "sid": 2909495,
+          "pgid": 2909495
+        },
+        {
+          "pid": 2909745,
+          "start_ticks": 4464520,
+          "sid": 2909495,
+          "pgid": 2909495
+        },
+        {
+          "pid": 2909807,
+          "start_ticks": 4464558,
+          "sid": 2909495,
+          "pgid": 2909495
+        },
+        {
+          "pid": 2909833,
+          "start_ticks": 4464619,
+          "sid": 2909495,
+          "pgid": 2909495
+        },
+        {
+          "pid": 2909834,
+          "start_ticks": 4464620,
+          "sid": 2909495,
+          "pgid": 2909495
+        },
+        {
+          "pid": 2909835,
+          "start_ticks": 4464620,
+          "sid": 2909495,
+          "pgid": 2909495
+        },
+        {
+          "pid": 2909836,
+          "start_ticks": 4464620,
+          "sid": 2909495,
+          "pgid": 2909495
+        },
+        {
+          "pid": 2909837,
+          "start_ticks": 4464620,
+          "sid": 2909495,
+          "pgid": 2909495
+        },
+        {
+          "pid": 2909838,
+          "start_ticks": 4464620,
+          "sid": 2909495,
+          "pgid": 2909495
+        },
+        {
+          "pid": 2909839,
+          "start_ticks": 4464620,
+          "sid": 2909495,
+          "pgid": 2909495
+        },
+        {
+          "pid": 2909840,
+          "start_ticks": 4464620,
+          "sid": 2909495,
+          "pgid": 2909495
+        },
+        {
+          "pid": 2909841,
+          "start_ticks": 4464620,
+          "sid": 2909495,
+          "pgid": 2909495
+        },
+        {
+          "pid": 2909842,
+          "start_ticks": 4464620,
+          "sid": 2909495,
+          "pgid": 2909495
+        },
+        {
+          "pid": 2909843,
+          "start_ticks": 4464620,
+          "sid": 2909495,
+          "pgid": 2909495
+        },
+        {
+          "pid": 2909844,
+          "start_ticks": 4464621,
+          "sid": 2909495,
+          "pgid": 2909495
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 44640.853343965,
+      "pid": 2909495,
+      "spawn_return_monotonic": 44640.855084615,
+      "direct_identity": {
+        "pid": 2909495,
+        "state": "R",
+        "ppid": 2905076,
+        "pgid": 2909495,
+        "sid": 2909495,
+        "start_ticks": 4464085,
+        "rss_bytes": 266240
+      },
+      "peak_live_owned_identities": 14,
+      "peak_session_rss_bytes": 632770560,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-11T05:18:02.913450+00:00",
+      "elapsed_seconds": 6.181369559999439,
+      "logs": {
+        "lint-contrib-llvm.stdout": {
+          "bytes": 1670,
+          "sha256": "a2410ca0956cad53878aa5077313271b00d0e2b2d5bfffb3175e1bd153f89ad6"
+        },
+        "lint-contrib-llvm.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "invalid-cli-contrib-llvm",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-kv-resolve-bounded-build-root-v2/kv-resolve-bounded-contrib-llvm",
+        "unexpected"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib"
+      },
+      "started_utc": "2026-10-11T05:18:02.915597+00:00",
+      "wall_seconds": 10,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2909902,
+          "start_ticks": 4464703,
+          "sid": 2909902,
+          "pgid": 2909902
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 44647.037567674,
+      "pid": 2909902,
+      "spawn_return_monotonic": 44647.039565418,
+      "direct_identity": {
+        "pid": 2909902,
+        "state": "D",
+        "ppid": 2905076,
+        "pgid": 2909902,
+        "sid": 2909902,
+        "start_ticks": 4464703,
+        "rss_bytes": 135168
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 2,
+      "finished_utc": "2026-10-11T05:18:03.028236+00:00",
+      "elapsed_seconds": 0.11195070500252768,
+      "logs": {
+        "invalid-cli-contrib-llvm.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "invalid-cli-contrib-llvm.stderr": {
+          "bytes": 57,
+          "sha256": "cd6fd624e5ea6cfd6915e718a77eb5eb8e50ba1416d069d065b374da4dbfe2f9"
+        }
+      }
+    }
+  ],
+  "started_utc": "2026-10-11T05:16:44.876273+00:00",
+  "controller_sha256": "64e759e0f29f97693b0380c8abd2899e99bdcb16f5199589b3c3c148d0774e76",
+  "owner_sha256": "a29d8257eecc77c4ad9ae6671d092b56f4c09a35c4247c125fed3a8c8bc1f95f",
+  "gpu_executed": false,
+  "model_executed": false,
+  "binaries": {
+    "free": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-kv-resolve-bounded-build-root-v2/kv-resolve-bounded-free",
+      "sha256": "5e541639e4e7f1a014a07dfa661b86096b60f93f75ea0ba00e7395eb092dc60a",
+      "bytes": 295872
+    },
+    "contrib-llvm": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-kv-resolve-bounded-build-root-v2/kv-resolve-bounded-contrib-llvm",
+      "sha256": "5e541639e4e7f1a014a07dfa661b86096b60f93f75ea0ba00e7395eb092dc60a",
+      "bytes": 295872
+    }
+  },
+  "scope": "Actual production device.cpp/gpu.cpp/atomic-patched kv_stream.cpp linked directly. Standalone FP16+INT8 format probe; not BLAS/oneMath coverage.",
+  "total_wall_budget_seconds": 900,
+  "raw_log_budget_bytes": 67108864,
+  "source_revision": "ad41ad97b3a918727f89aace09b9a424b077bc8c",
+  "source_publication_sha256": "a43ce8c0e80cd33c9f37359b7510ff342661294436048dc018ef7ce2b8100df0",
+  "probe_sha256": "d40975c8e0f15d01bab5e63fdef5ea3833dbc095af9193763214a4f35c737dc1",
+  "review_sha256": "6109d4bcd7b8750329bd475d4c76b078549cf0c0cba5f80217ec6a20407de47f",
+  "manifest_sha256": "bb37a8345b3be05a2d111daec5e5ac1944075ac5f4e7697725a394c30655417a",
+  "production_dependencies_pinned": {
+    "include/strata/core/runtime.hpp": "1a42ce02127727310614461b1dc2768eb2bce421e9d5e992c4df100c1817dd26",
+    "include/strata/kernels/kv_stream.hpp": "f364fc0cb9ffb6ddc1002f5251344d391d976cc8de2f5881b7c8790ef48ecf8f",
+    "include/strata/kernels/qsa.hpp": "b4cd8272a20d5fdca4c7090261a7acec175bc984cacb13f201846d12d39e8a79",
+    "include/strata/prefill/publication.hpp": "c266156f02854f6578ca526203525249e6e9035ca56102a4aeb815280d42e2ee",
+    "src/core/device.cpp": "9e33dce3b3b55b00c5aee4db566ceb848b73273837c505b3c27b535a0b30ba2d",
+    "src/kernels/xe/kv_stream.cpp": "cd3bb7877dd848497a1d7d50cbcf75ae28cffdd187b5c18b6234b917520f7fbf"
+  },
+  "additional_header_pins": {
+    "src/kernels/xe/device_caps.hpp": "4fbd77ac2ba184559dd7cd34855db73dd9cc91c490cbfb2919017586299ad3a2",
+    "include/strata/kernels/kv_q4.hpp": "839ef5ccef128b1897350c33c173e6cdbd21cd03529cdd73458cc15f593d8afd",
+    "include/strata/kernels/kv_q8.hpp": "3f0009d6fca6d9ce9ca5ddde6f5fe160aa7599dcb0231359dd4585d4e9cfeb69",
+    "include/strata/core/device.hpp": "5ef3d91e943c605baf2b011e77dcc61eeca005e54eff5ea0b86e9d98827ba886"
+  },
+  "source_pins": {
+    "AGENTS.md": "0427d8d4f91c4cf5128e77d3d898ee20783b63394d24718d1ff0b16779424dd0",
+    "CMakeLists.txt": "040de957a32bd26c9b71ca476aa45060571b86c0bad72a545ed9dbba9f2394a9",
+    "include/strata/core/commit_transaction.hpp": "52106d09b751d00a4ae1c85f555ba50bc10eb227f956423da94cb98cf7d850ad",
+    "include/strata/core/context_bounds.hpp": "30f66e36b2908518cfd5890f26d0efa9999cc6d52b70dcb635b6d4e865fa99ab",
+    "include/strata/core/gpu.hpp": "54b1a10524c9ee0c9b42979d75bd4f775ee0c45da2839d8129c2a2bd3daa552a",
+    "include/strata/core/layer.hpp": "93b34132db393b1a804c892ec7f7a1c1d4aeddd4f2fd885b464ddecfc93dbfb6",
+    "include/strata/core/mtp.hpp": "19c2bf0b8f89b45eefacd3479be78b79c00da7320bd6c668b37bec63999b872e",
+    "include/strata/core/mtp_completion.hpp": "8767f9807e1dd89971a49aa6195be44eb12ae54996ffcc2d9e4ad2819216a5d8",
+    "include/strata/core/session.hpp": "cf31a4c17ba0e29ca70f52ad435740d8cf59f11571e5e559b953af79b1e5ac02",
+    "include/strata/core/verify.hpp": "452c85060e68e94b7d9e0f039d25f3b9696972a50292e08bf6d69b9b96e454a7",
+    "include/strata/kernels/elementwise.hpp": "24062ca572b852cf03be537cdbfda58f3e35abffd25461d7f56a5a8775a2b78b",
+    "include/strata/kernels/verify_kernels.hpp": "27387500d0631ff694723c2ae165c61831f34ca06a2cb2fec8a064549a326885",
+    "include/strata/prefill/publication.hpp": "c266156f02854f6578ca526203525249e6e9035ca56102a4aeb815280d42e2ee",
+    "include/strata/program/full_context_probe.hpp": "c7463aee451e41d3b25c7dac12814b93aaa99443a7a78f851dd5cb6faf51f963",
+    "src/core/expert_cache.cpp": "83a8857e0f4be6efece62b49de7ca184d9213f702f2037a6d5eaf502987d9c07",
+    "src/core/expert_source.cpp": "7915f5ceb462a5c14655bbe585408f72ef9abd581b95ed14f08d9533d20f2edc",
+    "src/core/gpu.cpp": "9792966f6b2c84434a1dddafefb3286c3c5fcfa78e23065b455904f9cf6fcfb8",
+    "src/core/mtp.cpp": "11c00990bed018d9a4bf5cb658d97582875b969016d4af1e0bb38c6d5c951a8c",
+    "src/core/pinned.cpp": "1d2beba41fc8864cae2cf433dfe618725f6455c430809622ac9dda69d7575356",
+    "src/core/session.cpp": "d914f75a19022edd29f6fec0fd4df85f1b24b09d56bf014744be79d12e914ab6",
+    "src/core/verify.cpp": "44d8667e973c44d889afac2387cf7686a1b3785d31fa22f22cc5c7097927e27a",
+    "src/kernels/parity_device.hpp": "0a29292188c155628a4f11b8a8a5cb147a3fc76ee428f8f65ba6f2420799a0de",
+    "src/kernels/xe/elementwise.cpp": "ddbf6dd80363254349b12c926a61e51e630ed4ae6d683d1b160da3661b6ca68e",
+    "src/kernels/xe/kv_stream.cpp": "cd3bb7877dd848497a1d7d50cbcf75ae28cffdd187b5c18b6234b917520f7fbf",
+    "src/kernels/xe/verify_kernels.cpp": "8e9c8ef3e9ceb5e7de0711c0ccc658b9006a10ed796fc1652ed63fecdc58ecf6",
+    "src/prefill/gemm.cpp": "bfa40846fddb46a3d03d8c58ef5209b181c46674939beeefe512db0073c9d648",
+    "src/prefill/prefill.cpp": "3fedf41ff3d248c97a3ab479b5466c5310399b8f897f1e26b5f9d6ee48744f22",
+    "src/program/generate.cpp": "c9b60ef079694302dfa1f8099ddffd5375d7dae503f6edec454c1d7de3d941ee",
+    "tests/core/expert_profile_version_test.cpp": "e1369cda8de36268cec609941484b03a0c9c2f3ff68701cd7d619df2c0a6d0c1",
+    "tools/test_commit_transaction.cpp": "15fe42c25f5ab45f95fa6317dd428198c4cccf70d550be8cd9892e30c160a6d0",
+    "tools/test_context_bounds.cpp": "226d6649cea8aa67987b1759419f1401e64418b614bbf31ee313f570ac9fdaba",
+    "tools/test_full_context_probe.cpp": "72df5a4c916a81fa186db62de087c815b1e7922e43767d3d21a436eed8027d56",
+    "tools/test_mtp_completion.cpp": "b414eff5c0383f216d3a760d2b3dd35e2f949836a04a27b2b08158e589f3b1a0",
+    "tools/test_prefill_dense_gemm.cpp": "b81f479c3e57d5312d37dd54492608d917e7ca64758706686b2b7930018fc251",
+    "tools/test_prefill_publication.cpp": "aecf2d051b7138dfe8b21ba3993d5adcbd721032b7f8f19abc898b7f9f5ef9b1"
+  },
+  "proof_sha256": {
+    "free-full-build": "c95678209a79f24424e230040456e1b0076f858b3bafff8af4326c68e8f40d04",
+    "free-asan-full-build": "7237e0c296f365bcdb32b66863ad6570525fa883d909e35d6f29861b49eba11a",
+    "contrib-llvm-full-build": "8c0182070dba95a73af3a9a3d6c18b72a8638d69f961c98bd1308cc13f4d144e",
+    "contrib-llvm-asan-full-build": "0f6dc9f38186230e0541b4207f5aadc25d859edff2a473a8dd73979999169339"
+  },
+  "lint": {
+    "free": {
+      "exit_code": 0,
+      "stdout": "== clang-tidy\n/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/include/strata/kernels/kv_stream.hpp:83:92: warning: performing an implicit widening conversion to type 'uint64_t' (aka 'unsigned long') of a multiplication performed in type 'int' [bugprone-implicit-widening-of-multiplication-result]\n   83 | inline uint64_t kv_stream_map_bytes(int64_t n_slots) { return (uint64_t) n_slots * 4 * 5 + kKvCtlInts * 4; }\n      |                                                                                            ^\n/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/include/strata/kernels/kv_stream.hpp:83:92: note: make conversion explicit to silence this warning\n   29 | inline uint64_t kv_stream_map_bytes(int64_t n_slots) { return (uint64_t) n_slots * 4 * 5 + kKvCtlInts * 4; }\n      |                                                                                            ^~~~~~~~~~~~~~\n      |                                                                                            static_cast<uint64_t>( )\n/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/include/strata/kernels/kv_stream.hpp:83:92: note: perform multiplication in a wider type\n   83 | inline uint64_t kv_stream_map_bytes(int64_t n_slots) { return (uint64_t) n_slots * 4 * 5 + kKvCtlInts * 4; }\n      |                                                                                            ^~~~~~~~~~\n      |                                                                                            static_cast<long>( )\n== cppcheck\n== codespell\n== reuse\n",
+      "stderr": "",
+      "compile_db_sha256": "362e608832dda8394bcbd3ef8147d96ddff571bb0dad5d7781757bd3960128aa",
+      "baseline_header_proof_sha256": "9dd945fe261348703d5c40f432b04ca4614b9ca2d131a411f3571edff48b189a",
+      "new_probe_findings": []
+    },
+    "contrib-llvm": {
+      "exit_code": 0,
+      "stdout": "== clang-tidy\n/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/include/strata/kernels/kv_stream.hpp:83:92: warning: performing an implicit widening conversion to type 'uint64_t' (aka 'unsigned long') of a multiplication performed in type 'int' [bugprone-implicit-widening-of-multiplication-result]\n   83 | inline uint64_t kv_stream_map_bytes(int64_t n_slots) { return (uint64_t) n_slots * 4 * 5 + kKvCtlInts * 4; }\n      |                                                                                            ^\n/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/include/strata/kernels/kv_stream.hpp:83:92: note: make conversion explicit to silence this warning\n   29 | inline uint64_t kv_stream_map_bytes(int64_t n_slots) { return (uint64_t) n_slots * 4 * 5 + kKvCtlInts * 4; }\n      |                                                                                            ^~~~~~~~~~~~~~\n      |                                                                                            static_cast<uint64_t>( )\n/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/include/strata/kernels/kv_stream.hpp:83:92: note: perform multiplication in a wider type\n   83 | inline uint64_t kv_stream_map_bytes(int64_t n_slots) { return (uint64_t) n_slots * 4 * 5 + kKvCtlInts * 4; }\n      |                                                                                            ^~~~~~~~~~\n      |                                                                                            static_cast<long>( )\n== cppcheck\n== codespell\n== reuse\n",
+      "stderr": "",
+      "compile_db_sha256": "3983aec634c7e49641e3bc3818b0d47e30d43d897a25762f8668c27e62c84206",
+      "baseline_header_proof_sha256": "9dd945fe261348703d5c40f432b04ca4614b9ca2d131a411f3571edff48b189a",
+      "new_probe_findings": []
+    }
+  },
+  "finished_utc": "2026-10-11T05:18:03.033350+00:00"
+}

@@ -1,0 +1,51 @@
+{
+  "schema": 1,
+  "base_commit": "e188dd609b800ea78fb4afc0cc6dcf6ef7e02328",
+  "worktree": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-kv-resolve-atomic-20261011",
+  "branch": "fix/xestrata-kv-resolve-atomic-20261011",
+  "original_source_sha256": "82c83a59525741c6d4f9cc644037b4a4cf87798d2d49fd4cca939a035ddc2ef7",
+  "files": {
+    "kv_resolve_bounded.cpp": {
+      "sha256": "2ce558d28f2b919455300249cf6c4319cb7984f5737a18ee360a0e9b69975ba5",
+      "bytes": 7076
+    },
+    "kv-resolve-atomic.patch": {
+      "sha256": "1fc04e9e339a51835588f8f1d796dd65c0664b853ee66180d2e93a8b00b5ddf4",
+      "bytes": 1202
+    },
+    "src/kernels/xe/kv_stream.cpp": {
+      "sha256": "cd3bb7877dd848497a1d7d50cbcf75ae28cffdd187b5c18b6234b917520f7fbf",
+      "bytes": 14538
+    }
+  },
+  "status": "source-only; builds/lints/tests/GPU execution unverified and Main-owned",
+  "original_failure_status": "Main source race concern confirmed by source inspection; GPU hang causality not established; no prior result status changed",
+  "probe": {
+    "resolves": 6,
+    "n_q": [
+      2,
+      3,
+      4,
+      2,
+      3,
+      4
+    ],
+    "format": "FP16 byte-copy oracle, finite normal half values",
+    "n_slots": 8192,
+    "n_blocks": 8256,
+    "page_size": 4,
+    "kv_heads": 2,
+    "head_dim": 64,
+    "device_pool_bytes": 16777216,
+    "host_pool_bytes": 16908288,
+    "not_established": [
+      "attention parity",
+      "all KV formats",
+      "full 262144-cell physical context",
+      "full RESTORE",
+      "hang causality",
+      "runtime or completion capability"
+    ]
+  },
+  "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/implementation-xe-kv-resolve-atomic-v1.txt"
+}

@@ -1,0 +1,225 @@
+XeStrata production profiling-tags integration diagnostic implementation v1
+Date: 2026-10-11 (Asia/Tokyo)
+Implementer: gpt-6.1-sol, source-only implementation role.
+Status: standalone source and recommended compile/run receipt delivered.
+No compile, build, lint, test, Runtime/GPU/profiler/model result is claimed.
+
+Isolation and immutable inputs
+Base commit: e188dd609b800ea78fb4afc0cc6dcf6ef7e02328.
+All committed source reads used git show of that commit through the previous
+isolated profiling-guard worktree, not Main's live checkout. No worktree/source/
+CMake change, Git mutation, commit, push or publication occurred in this task.
+Only the requested standalone artifact directory and this report were written.
+Main worktree remained read-only and was not used as an uncommitted source pin.
+No compiler/configure/build/lint/test, Runtime/device/process/GPU-state query or
+control, inference/profiler/service/reset, cleanup or network action occurred.
+The prohibited credential-bearing prefill contract record was not read.
+
+Committed production source/header SHA-256 (full list/byte counts in manifest):
+  src/core/gpu.cpp (before guard overlay)
+    a844eeb381e1cb9f1272f1f68f754a73640d44aa6d6e89b743ecfc793bc2a8ef
+  src/core/device.cpp (actual Runtime implementation)
+    9e33dce3b3b55b00c5aee4db566ceb848b73273837c505b3c27b535a0b30ba2d
+  include/strata/core/gpu.hpp
+    54b1a10524c9ee0c9b42979d75bd4f775ee0c45da2839d8129c2a2bd3daa552a
+  include/strata/core/runtime.hpp
+    1a42ce02127727310614461b1dc2768eb2bce421e9d5e992c4df100c1817dd26
+  include/strata/core/device.hpp
+    5ef3d91e943c605baf2b011e77dcc61eeca005e54eff5ea0b86e9d98827ba886
+  include/strata/core/on_device.hpp
+    579d519f33e7868a9546854dc227a329fa2af04877432fc8cfc8b50c2abecc2e
+  include/strata/prefill/publication.hpp
+    c266156f02854f6578ca526203525249e6e9035ca56102a4aeb815280d42e2ee
+
+Production profiling overlay: B/xe-profiling-interval-guard-source-v1.
+  src/core/gpu.cpp
+    9792966f6b2c84434a1dddafefb3286c3c5fcfa78e23065b455904f9cf6fcfb8
+  src/prefill/prefill.cpp
+    3fedf41ff3d248c97a3ab479b5466c5310399b8f897f1e26b5f9d6ee48744f22
+  src/core/session.cpp
+    d914f75a19022edd29f6fec0fd4df85f1b24b09d56bf014744be79d12e914ab6
+Only actual overlaid gpu.cpp and committed device.cpp need direct compilation
+for this probe. Prefill/session overlays are part of the supplied candidate
+identity, but are not linked/exercised by the standalone diagnostic. Main owns
+review/application/qualification of all replacements. The recipe can instead
+link Main-owned actual release objects with matching source receipts; it must
+not mix direct sources and their duplicate objects or extract the event helper.
+
+Historical decision reuse
+Read the prior full profiling-guard implementation report and the R194/R196
+timer-clock/source conclusions. The preceding guard report already records full
+R205/R207 review and the distinction from the older DPCT timer harness. Reused
+those decisions rather than rerunning their investigations. Historical invalid/
+wrapped/submit-start evidence is not proof this source-LLVM tag path is already
+invalid, and older stubs cannot qualify the actual production event helper.
+Task pins latest committed registry v121, cumulative 490 reports, docs HEAD
+99e26270ec5fd7e49ed107ddffb9bc7d74c8ed4f. No new measured report or registry claim
+is inferred from a source implementation. This report belongs to Main's next
+source/evidence boundary; no unrelated past result is repeated as a fresh run.
+
+Actual integration path and controls
+The source includes the real public gpu/runtime headers and production
+publication::cleanup_require. It calls Runtime::get, uses &Runtime.compute as
+the explicit Stream for every record/copy, and checks the queue's in_order
+property. Runtime::get retains production engine device admission/selection,
+context construction, marker-policy measurement and watchdog. No Runtime stub,
+Event replacement, extracted helper, mirrored timestamp subtraction, fake
+completion, new kernel, graph, additional stream, preload or polling is present.
+The committed device.cpp carries the engine's existing ProbeKernel image for
+device admission; the probe adds/launches no unrelated kernel. Runtime startup
+can enumerate/query devices, obtain bundles and perform its own marker/barrier
+policy measurement. It is not represented as a zero-initialization-cost harness.
+
+The two timing Events are opaque actual production Events. Timing records always
+use submit_profiling_tag; normal production queues need not enable the old DPCT
+queue profiling property. Recorded non-timing Events retain Runtime's selected
+barrier/tag policy, and are still refused by event_elapsed_ms's timing guard.
+No environment marker-policy override is introduced to make this probe pass.
+
+Controls before the fixed samples:
+1. Two unrecorded timing Events form a refused pair: false, exact production
+   "event_elapsed_ms: an event was not recorded", bitwise unchanged float sentinel.
+   Neither Event owns a queued recording, so this negative query needs no invented
+   completion fence. The pair is checked without submitting it.
+2. Two non-timing Events are recorded on the same compute queue, followed by a
+   successful checked stream_sync before querying. The query must return false,
+   exact "event_elapsed_ms: an event was not created for timing", unchanged sentinel.
+
+Each of exactly eight planned samples (no CLI parameters) does:
+  - change all 4194304 source uint32_t words deterministically by sample index;
+    poison every destination word with the complement of its current source;
+  - start host steady_clock immediately before the first timing record;
+  - record start, copy 16 MiB H2D, copy 16 MiB D2H, record end, all on that same
+    actual in-order compute queue;
+  - checked production stream_sync; stop host wall immediately after return;
+  - compare every roundtrip word with the actual staged input;
+  - query normal completed start/end interval using production event_elapsed_ms;
+  - deliberately query the completed pair in reverse with a fixed float sentinel;
+  - query completed end/end and require actual zero.
+All host rewrites and Event reuse occur only after preceding checked completion.
+Event durations are queried after the current checked stream completion, never
+used as a wait or a proof of device completion themselves.
+
+Raw endpoints come solely from the real reversed query's last_error:
+  event_elapsed_ms: end < start (start=<later raw>, end=<earlier raw>)
+The bounded strict parser extracts decimal uint64 fields, without subtracting,
+scaling, correcting or replacing them. Output raw_start_ns/raw_end_ns restores
+the normal earlier/later labels; the original reversed error is also printed
+verbatim. It requires earlier>0 and later>earlier, false API result, and bitwise
+unchanged sentinel. At least one positive distinct reversed case is necessary;
+this implementation conservatively requires every one of its eight samples to
+establish that case. Equal/zero-resolution endpoints reject the arm, with the
+real API/result/error retained. A same-event zero never independently earns PASS.
+
+Coverage, plausibility and budgets
+Markers enclose both transfers by same-queue in-order sequencing. Successful
+checked completion and a fully changed/poisoned data roundtrip establish that
+the submitted transfer work completed within that ordering. Their interval is
+a queue timeline including applicable scheduling/host gaps, not exclusive kernel
+or DMA service. No phase/service additivity or PCIe/device roofline is claimed.
+Correct data/order is not independent proof that the implementation's profiling
+tag timestamps cover every nanosecond of those transfers correctly; that remains
+a contract/domain/adapter uncertainty, explicitly retained.
+
+Host wall is a separate monotonic-clock observation: first marker submit through
+successful compute stream_sync return, including host API/submission/wait cost.
+Pattern creation, data verification and postcompletion query/logging are outside
+that bracket. Success-path completion wrapper performs no output flush before
+the wall endpoint. Clock epochs are never correlated. The only duration sanity
+gate is finite positive event/host durations and:
+  event_ms <= host_wall_ms * 1.25 + 10 ms
+This deliberately loose ceiling rejects gross implausibility without an invented
+accuracy/clock-drift band. No lower bandwidth-derived bound, calibrated timer
+domain, division-derived speed, wrapped-counter repair, clamp, best-of sampling,
+retry, reset, backend fallback or host-clock replacement of a failed event exists.
+An ordered but subtly wrong duration can still pass this ceiling; report that
+limit instead of calling these timings independently validated performance.
+
+Fixed allocations: one 16 MiB device USM buffer, two 16 MiB host USM buffers,
+five Event wrappers; real Runtime/driver overhead is additional. These are actual
+SYCL allocations in the production Runtime device/context. Probe-owned allocation
+checks guard every partial construction. Direct SYCL free after terminal drain
+avoids inserting an additional Runtime::free wait during release; this is not an
+exercise of production allocator bookkeeping/DeviceArena or a mock allocation.
+Each sample moves 32 MiB, whole arm 256 MiB. Full comparisons total 33554432
+uint32_t words; pattern/poison writes are also finite. No runtime sample/size knob,
+model/context/cache/math change or unbounded submission loop exists. Runtime's
+preexisting watchdog has a 120-second hang limit. Finite probe work is not a
+guaranteed wall deadline for driver/initialization failures; Main owns supervision.
+
+Completion/failure ownership
+Owned exists before any probe allocation/Event construction and holds all partial
+state. A submission API false/exception, data mismatch or query-contract failure
+throws to this scope; no next sample or other work submission follows. Its sole
+cleanup terminal drain is actual gpu::device_sync (all queues owned by the current
+Runtime), checked through existing publication::cleanup_require before ANY
+probe Event or host/device USM is released.
+Every sample/control stream_sync is independently checked. If a completion call
+returns false or throws standard/unknown exception, the wrapper flushes output
+and uses actual cleanup_require(false) to print operation/error and _Exit(74)
+at that point, before scope unwind or another wait. Failed wait is never retried
+or treated as completion. The destructor is noexcept and takes this same policy.
+Successful drain precedes Event destruction and real USM free. A release exception
+gets a separate flushed "release failed after checked completion" diagnostic and
+_Exit(74), stopping any further release; it is not falsely described as a failed
+wait. No successful-path queue ordering or production wait/watch policy changes.
+
+Runtime initialization happens before any probe host storage is allocated. An
+initialization failure rejects the arm and retains the production constructor's
+own behavior; the diagnostic cannot repair/protect internals already unwound by
+that unchanged implementation. Normal Runtime static destruction still performs
+its own checked finish. Its existing fatal/watch path can exit 1, or startup may
+fail before Owned exists. Require actual normal exit 0 as well as printed PASS;
+a PASS line before a later production destructor fault is not an accepted arm.
+No actual asynchronous failure, unknown-completion event, hang or constructor/
+release fault was injected or qualified here. _Exit is fail-stop process teardown,
+not a GPU fence, reset or claim of recovery.
+
+API ledger and Main-owned acceptance
+The bounded source records PROBE, CONTROL, SAMPLE_BEGIN, completed SAMPLE and
+RESULT lines; errors preserve operation and actual exception/last_error text.
+Unexpected early submission failure can leave a SAMPLE_BEGIN without SAMPLE;
+it yields failure and attempted global counts, not an apparently complete arm.
+Expected false APIs (eight reverse queries and two negative controls) are printed
+on stderr as API result=0; Main must retain/classify them by exact operation and
+expected error instead of suppressing them or rejecting all stderr indiscriminately.
+On success the planned instrumented bool API attempts are:
+  api_calls=75, records=18, copies=16, compute_waits=9, cleanup_waits=1,
+  elapsed_queries=26, samples=8, positive_reversals=8, checked_words=33554432.
+Each full sample has 8 instrumented bool calls: 2 records, 2 copy_async, 1 checked
+stream_sync, 3 elapsed queries. These counters count attempts including expected
+false queries; allocations, releases, Runtime initialization and property check
+are outside that bool ledger. A run failure never rewrites earlier partial output.
+Invalid CLI exits 2 before Runtime; bounded check failure returns 1 after drain;
+unknown completion/release failure fail-stops 74 (production fatal exits retained).
+
+compile-recipe.txt gives concrete direct-production-source clang++ -fsycl compile/
+link argv for both free/source-LLVM and contrib-LLVM prefixes. Same probe source,
+same Intel spir64 target, explicit mode labels and free STRATA_NO_BLAS; no icpx.
+Mode label is not proof of compiler/runtime origin or BLAS backend. Main must
+pin compiler, source/object receipt and loaded runtime libraries and preserve its
+known selected device/settings. No full engine/kernel archive is needed by this
+two-source recipe, and no network/configure/FetchContent action is recommended.
+The compile recipe is unverified: Main may retain required qualified release
+driver/link flags, recording the exact final command. Main owns free/contrib
+build/lint/qualification and any serial no-argument GPU run. Keep full per-sample
+stdout/stderr/status and its fault/completion receipt; reject the entire arm on
+unexpected false/exception, missing counts, unconfirmed completion, data mismatch,
+invalid/zero interval or failed ceiling. No timer-on model performance winner,
+PfTimer fold/session propagation, native expert, oneMath, MTP, cache, model quality,
+phase additivity, independent timestamp-domain correctness or GPU recovery is
+established by this standalone diagnostic.
+
+Returned artifacts (B is the task's post-reboot-tuning-20261007 root)
+  B/xe-profiling-tags-diagnostic-source-v1/profiling_tags_probe.cpp
+    bytes 15812
+    SHA-256 bfcaef54fdc40e04234b3edd1131b47c5a89ec4eaab6a7f0ebe87246a98a79cb
+  B/xe-profiling-tags-diagnostic-source-v1/compile-recipe.txt
+    bytes 7820
+    SHA-256 1dfd108f34c46952e4bd247504371695b1cd69876fbdca010ea952c2410c84a8
+  B/xe-profiling-tags-diagnostic-source-v1/manifest.json
+    binds base/header/overlay/source/recipe/report identities and scope/ownership;
+    its own SHA and this report SHA are returned separately to avoid self-hash loops.
+  B/research-20261009/implementation-xe-profiling-tags-diagnostic-v1.txt
+New source retains the appropriate Xe LGPL-3.0-or-later SPDX/copyright header.
+No original result status, source safeguards or retained failure fixture changed.

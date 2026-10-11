@@ -1,0 +1,189 @@
+{
+  "schema": 2,
+  "status": "SOURCE ONLY: not compiled, linted, executed, or GPU-qualified",
+  "base_commit": "e188dd609b800ea78fb4afc0cc6dcf6ef7e02328",
+  "source": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-kv-resolve-bounded-source-v2/kv_resolve_bounded.cpp",
+    "sha256": "79fa8f4fbd29046267d7791180739577662789212b7a48d470cb5ab55d6fb697",
+    "bytes": 18938
+  },
+  "production_dependencies_pinned": {
+    "include/strata/core/runtime.hpp": {
+      "base_commit": "e188dd609b800ea78fb4afc0cc6dcf6ef7e02328",
+      "sha256": "1a42ce02127727310614461b1dc2768eb2bce421e9d5e992c4df100c1817dd26",
+      "bytes": 4198
+    },
+    "include/strata/kernels/kv_stream.hpp": {
+      "base_commit": "e188dd609b800ea78fb4afc0cc6dcf6ef7e02328",
+      "sha256": "f364fc0cb9ffb6ddc1002f5251344d391d976cc8de2f5881b7c8790ef48ecf8f",
+      "bytes": 6972
+    },
+    "include/strata/kernels/qsa.hpp": {
+      "base_commit": "e188dd609b800ea78fb4afc0cc6dcf6ef7e02328",
+      "sha256": "b4cd8272a20d5fdca4c7090261a7acec175bc984cacb13f201846d12d39e8a79",
+      "bytes": 25581
+    },
+    "include/strata/prefill/publication.hpp": {
+      "base_commit": "e188dd609b800ea78fb4afc0cc6dcf6ef7e02328",
+      "sha256": "c266156f02854f6578ca526203525249e6e9035ca56102a4aeb815280d42e2ee",
+      "bytes": 3535
+    },
+    "src/core/device.cpp": {
+      "base_commit": "e188dd609b800ea78fb4afc0cc6dcf6ef7e02328",
+      "sha256": "9e33dce3b3b55b00c5aee4db566ceb848b73273837c505b3c27b535a0b30ba2d",
+      "bytes": 21591
+    },
+    "src/kernels/xe/kv_stream.cpp": {
+      "base_commit": "e188dd609b800ea78fb4afc0cc6dcf6ef7e02328",
+      "sha256": "82c83a59525741c6d4f9cc644037b4a4cf87798d2d49fd4cca939a035ddc2ef7",
+      "bytes": 14355
+    }
+  },
+  "required_production_change": "Main-reviewed v1 three-atomic selection-phase patch; base kv_stream.cpp alone lacks that repair",
+  "v1_preserved_read_only": [
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-kv-resolve-atomic-source-v1/kv-resolve-atomic.patch",
+      "sha256": "1fc04e9e339a51835588f8f1d796dd65c0664b853ee66180d2e93a8b00b5ddf4",
+      "bytes": 1202
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-kv-resolve-atomic-source-v1/kv_resolve_bounded.cpp",
+      "sha256": "2ce558d28f2b919455300249cf6c4319cb7984f5737a18ee360a0e9b69975ba5",
+      "bytes": 7076
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-kv-resolve-atomic-source-v1/manifest.json",
+      "sha256": "7262b8a01cdb2a4736be73092a61910fc9583802d10dc57bd9753fb927e7da33",
+      "bytes": 1736
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-kv-resolve-atomic-source-v1/src/kernels/xe/kv_stream.cpp",
+      "sha256": "cd3bb7877dd848497a1d7d50cbcf75ae28cffdd187b5c18b6234b917520f7fbf",
+      "bytes": 14538
+    }
+  ],
+  "reviewed_evidence": [
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/implementation-xe-kv-resolve-atomic-v1.txt",
+      "sha256": "bf2fd3f248510f1214583f0469820832a6bb0304563d2ea87b6d7806e3c4d3b5",
+      "bytes": 6057
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/implementation-xe-e32-mtp-completion-v4.txt",
+      "sha256": "46df5b537ad739955eb63b51f07ca8c199b116459aacbba4c5d908b0ac4c9fe9",
+      "bytes": 13175
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round359-xe-mtp-v4-completion-and-caller-qualification.txt",
+      "sha256": "e0d9eec55d34d3411fbc35c0a7539a601829251e465789441f71d48a6d6f6129",
+      "bytes": 8186
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round353-xe-authoritative-host-kv-and-mtp-access-ownership.txt",
+      "sha256": "5f93b6e746e007231e52d224ee866a1c7cbd3e6c5ed012337d4d1160ee5aa581",
+      "bytes": 14084
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round313-retained-xe-devcoredump-and-postfault-health-admission.txt",
+      "sha256": "673f64d5f17fd800ebca074ff45e4ce370292145598c0047f10160afd1fe31c7",
+      "bytes": 7899
+    },
+    {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-kv-resolve-atomic-20261011/bench/results/2026-09-30-xe-kernels/kv_stream_parity.txt",
+      "sha256": "0b5661a9ddc13bec1629c5d65ee6b0b8d1b2f0f83219730db07dbda371a9d4b8",
+      "bytes": 425
+    },
+    {
+      "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-11-parallel-round99/RESULTS_JA.md",
+      "sha256": "285a56214a27c16fbb7065ad302cf752d2433aa7b354ee86e2a30f7eafec5436",
+      "bytes": 1717
+    }
+  ],
+  "formats_sequential": [
+    "kKvF16",
+    "kKvInt8"
+  ],
+  "geometry": {
+    "slots": 8192,
+    "blocks": 8256,
+    "page_size": 4,
+    "kv_heads": 2,
+    "head_dim": 64,
+    "cap": 512,
+    "n_q": [
+      2,
+      3,
+      4,
+      2,
+      3,
+      4
+    ],
+    "expected_new_misses": [
+      36,
+      8,
+      8,
+      0,
+      4,
+      8
+    ]
+  },
+  "probe_live_buffer_limit_bytes": 67108864,
+  "memory_scope": "probe-owned USM and ordinary container backing only; Runtime/driver/JIT memory is outside this buffer bound",
+  "expected_success_counts": {
+    "fp16": {
+      "resets": 1,
+      "resolves": 6,
+      "uploads": 18,
+      "upload_bytes": 16958080,
+      "readbacks": 30,
+      "readback_bytes": 101058432,
+      "drains": 8,
+      "released": 13,
+      "map_entries": 98688,
+      "selected_cells": 9216,
+      "pool_compares": 98304,
+      "oracle_bytes": 100663296,
+      "lookups": 2304,
+      "missed_pages": 64,
+      "production_copy_runs": 128,
+      "production_copy_bytes": 131072
+    },
+    "int8": {
+      "resets": 1,
+      "resolves": 6,
+      "uploads": 20,
+      "upload_bytes": 8831616,
+      "readbacks": 42,
+      "readback_bytes": 52299648,
+      "drains": 8,
+      "released": 17,
+      "map_entries": 98688,
+      "selected_cells": 9216,
+      "pool_compares": 196608,
+      "oracle_bytes": 51904512,
+      "lookups": 2304,
+      "missed_pages": 64,
+      "production_copy_runs": 256,
+      "production_copy_bytes": 67584
+    }
+  },
+  "expected_probe_stdout_lines": 33,
+  "completion_contract": "Every probe-issued submission/wait/finish boundary is checked; uncertain exception immediately publication::cleanup_require(false) then _Exit74, before buffer-owning frames unwind; no wait retry. Other exceptions perform one checked Runtime-wide drain before release. Normal formats each terminal-drain before all USM release. Final checked/released frames then _Exit0 avoids implicit Runtime destructor waits.",
+  "exit_codes": {
+    "0": "both finite format receipts passed; explicit _Exit after drains/releases",
+    "1": "noncompletion error after checked drain and safe release; explicit _Exit",
+    "2": "extra CLI arguments refused before Runtime initialization",
+    "74": "completion/submission/release exception; production fatal cleanup contract; no retries or destruction"
+  },
+  "claims_excluded": [
+    "runtime result",
+    "hang causality",
+    "performance",
+    "attention parity",
+    "all formats",
+    "full 262144 physical context",
+    "full RESTORE",
+    "runtime completion capability"
+  ],
+  "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/implementation-xe-kv-resolve-bounded-v2.txt"
+}

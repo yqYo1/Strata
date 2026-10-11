@@ -1,0 +1,26 @@
+{
+  "main_reviewed": true,
+  "full_source_report_manifest_read": true,
+  "source_sha256": "79fa8f4fbd29046267d7791180739577662789212b7a48d470cb5ab55d6fb697",
+  "manifest_sha256": "bb37a8345b3be05a2d111daec5e5ac1944075ac5f4e7697725a394c30655417a",
+  "allowed_source_files": [
+    "src/core/device.cpp",
+    "src/core/gpu.cpp",
+    "src/kernels/xe/kv_stream.cpp"
+  ],
+  "oracle": "Authoritative initialized host USM page bytes; full resident pools and both inverse-map directions; all selected cells; verified actual epoch/miss/lookup/call counts",
+  "conditions": [
+    "same owned in-order compute queue and correct context/type; checked aspect requirements",
+    "host inputs modified before any enqueue and after checked completion only",
+    "explicit non-null production stream; every submit/wait/drain boundary catches uncertain completion and uses production fatal cleanup before buffer unwind",
+    "all owners survive other-error handler; one terminal whole-runtime drain before releases; each format frame destroys before next",
+    "_Exit0 after successful terminal drains and all USM release, intentionally bypasses Runtime static destructor; process owner/fault gate must still complete normally"
+  ],
+  "fixture_review": [
+    "six nq2,3,4 repeated twice overlap pages at different work-item indices",
+    "union suffix miss counts independently checked:36,8,8,0,4,8; legal last8255 block; all slots>=RT",
+    "finite-normal FP16 and scale bit patterns; distinct INT8 code runs; finite<64MiB payload per format; no buffers grow after accounting"
+  ],
+  "scope": "No attention, global model quality, all formats, full262144 context/RESTORE, timing/roofline or historical hang-causality proof",
+  "status": "source independently reviewed; compile/lint/GPU unverified"
+}

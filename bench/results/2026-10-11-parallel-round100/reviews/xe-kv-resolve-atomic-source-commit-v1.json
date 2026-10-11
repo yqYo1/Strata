@@ -1,0 +1,85 @@
+{
+  "active": false,
+  "complete": true,
+  "passed": true,
+  "created_utc": "2026-10-11T05:14:26.787151+00:00",
+  "controller_sha256": "229f7ac88e37242064659dea011b85aa62f663e402773c7823064a119c7cf634",
+  "base_revision": "32222cb535eefa0bd7b6cd2e670f81a8013dd1ba",
+  "source_tree": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011",
+  "qualifications": {
+    "free-full-build": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-e32-free-full-build-root-v13/record.json",
+      "sha256": "c95678209a79f24424e230040456e1b0076f858b3bafff8af4326c68e8f40d04",
+      "cpu": "12 passed,1 native ISA skip; includes actual reader boundary regressions"
+    },
+    "free-asan-full-build": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-e32-free-asan-full-build-root-v10/record.json",
+      "sha256": "7237e0c296f365bcdb32b66863ad6570525fa883d909e35d6f29861b49eba11a",
+      "cpu": "12 passed,1 native ISA skip; includes actual reader boundary regressions"
+    },
+    "contrib-llvm-full-build": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-e32-contrib-llvm-full-build-root-v13/record.json",
+      "sha256": "8c0182070dba95a73af3a9a3d6c18b72a8638d69f961c98bd1308cc13f4d144e",
+      "cpu": "12 passed,1 native ISA skip; includes actual reader boundary regressions"
+    },
+    "contrib-llvm-asan-full-build": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-e32-contrib-llvm-asan-full-build-root-v10/record.json",
+      "sha256": "0f6dc9f38186230e0541b4207f5aadc25d859edff2a473a8dd73979999169339",
+      "cpu": "12 passed,1 native ISA skip; includes actual reader boundary regressions"
+    },
+    "lint": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-e32-lints-baseline-compare-root-v8/record.json",
+      "sha256": "9dd945fe261348703d5c40f432b04ca4614b9ca2d131a411f3571edff48b189a",
+      "scope": "Actual baseline and current run.sh on the changed KV selection file, both source-LLVM modes; no previous diagnostic reuse or suppression"
+    }
+  },
+  "model_executed": false,
+  "performance_qualified": false,
+  "full_model_quality_qualified": false,
+  "full_context_qualified": false,
+  "adopted": false,
+  "publication_target": "git@github.com:yqYo1/Strata.git",
+  "publication_branch": "fix/xestrata-e32-host-handoff-20261011",
+  "source_review_sha256": "971c8ee39065ea8985423e8b3549ceae963651fb97a7afa5cbe8ea94e08bee49",
+  "source_pins": {
+    "AGENTS.md": "0427d8d4f91c4cf5128e77d3d898ee20783b63394d24718d1ff0b16779424dd0",
+    "CMakeLists.txt": "040de957a32bd26c9b71ca476aa45060571b86c0bad72a545ed9dbba9f2394a9",
+    "include/strata/core/commit_transaction.hpp": "52106d09b751d00a4ae1c85f555ba50bc10eb227f956423da94cb98cf7d850ad",
+    "include/strata/core/context_bounds.hpp": "30f66e36b2908518cfd5890f26d0efa9999cc6d52b70dcb635b6d4e865fa99ab",
+    "include/strata/core/gpu.hpp": "54b1a10524c9ee0c9b42979d75bd4f775ee0c45da2839d8129c2a2bd3daa552a",
+    "include/strata/core/layer.hpp": "93b34132db393b1a804c892ec7f7a1c1d4aeddd4f2fd885b464ddecfc93dbfb6",
+    "include/strata/core/mtp.hpp": "19c2bf0b8f89b45eefacd3479be78b79c00da7320bd6c668b37bec63999b872e",
+    "include/strata/core/mtp_completion.hpp": "8767f9807e1dd89971a49aa6195be44eb12ae54996ffcc2d9e4ad2819216a5d8",
+    "include/strata/core/session.hpp": "cf31a4c17ba0e29ca70f52ad435740d8cf59f11571e5e559b953af79b1e5ac02",
+    "include/strata/core/verify.hpp": "452c85060e68e94b7d9e0f039d25f3b9696972a50292e08bf6d69b9b96e454a7",
+    "include/strata/kernels/elementwise.hpp": "24062ca572b852cf03be537cdbfda58f3e35abffd25461d7f56a5a8775a2b78b",
+    "include/strata/kernels/verify_kernels.hpp": "27387500d0631ff694723c2ae165c61831f34ca06a2cb2fec8a064549a326885",
+    "include/strata/prefill/publication.hpp": "c266156f02854f6578ca526203525249e6e9035ca56102a4aeb815280d42e2ee",
+    "include/strata/program/full_context_probe.hpp": "c7463aee451e41d3b25c7dac12814b93aaa99443a7a78f851dd5cb6faf51f963",
+    "src/core/expert_cache.cpp": "83a8857e0f4be6efece62b49de7ca184d9213f702f2037a6d5eaf502987d9c07",
+    "src/core/expert_source.cpp": "7915f5ceb462a5c14655bbe585408f72ef9abd581b95ed14f08d9533d20f2edc",
+    "src/core/gpu.cpp": "9792966f6b2c84434a1dddafefb3286c3c5fcfa78e23065b455904f9cf6fcfb8",
+    "src/core/mtp.cpp": "11c00990bed018d9a4bf5cb658d97582875b969016d4af1e0bb38c6d5c951a8c",
+    "src/core/pinned.cpp": "1d2beba41fc8864cae2cf433dfe618725f6455c430809622ac9dda69d7575356",
+    "src/core/session.cpp": "d914f75a19022edd29f6fec0fd4df85f1b24b09d56bf014744be79d12e914ab6",
+    "src/core/verify.cpp": "44d8667e973c44d889afac2387cf7686a1b3785d31fa22f22cc5c7097927e27a",
+    "src/kernels/parity_device.hpp": "0a29292188c155628a4f11b8a8a5cb147a3fc76ee428f8f65ba6f2420799a0de",
+    "src/kernels/xe/elementwise.cpp": "ddbf6dd80363254349b12c926a61e51e630ed4ae6d683d1b160da3661b6ca68e",
+    "src/kernels/xe/kv_stream.cpp": "cd3bb7877dd848497a1d7d50cbcf75ae28cffdd187b5c18b6234b917520f7fbf",
+    "src/kernels/xe/verify_kernels.cpp": "8e9c8ef3e9ceb5e7de0711c0ccc658b9006a10ed796fc1652ed63fecdc58ecf6",
+    "src/prefill/gemm.cpp": "bfa40846fddb46a3d03d8c58ef5209b181c46674939beeefe512db0073c9d648",
+    "src/prefill/prefill.cpp": "3fedf41ff3d248c97a3ab479b5466c5310399b8f897f1e26b5f9d6ee48744f22",
+    "src/program/generate.cpp": "c9b60ef079694302dfa1f8099ddffd5375d7dae503f6edec454c1d7de3d941ee",
+    "tests/core/expert_profile_version_test.cpp": "e1369cda8de36268cec609941484b03a0c9c2f3ff68701cd7d619df2c0a6d0c1",
+    "tools/test_commit_transaction.cpp": "15fe42c25f5ab45f95fa6317dd428198c4cccf70d550be8cd9892e30c160a6d0",
+    "tools/test_context_bounds.cpp": "226d6649cea8aa67987b1759419f1401e64418b614bbf31ee313f570ac9fdaba",
+    "tools/test_full_context_probe.cpp": "72df5a4c916a81fa186db62de087c815b1e7922e43767d3d21a436eed8027d56",
+    "tools/test_mtp_completion.cpp": "b414eff5c0383f216d3a760d2b3dd35e2f949836a04a27b2b08158e589f3b1a0",
+    "tools/test_prefill_dense_gemm.cpp": "b81f479c3e57d5312d37dd54492608d917e7ca64758706686b2b7930018fc251",
+    "tools/test_prefill_publication.cpp": "aecf2d051b7138dfe8b21ba3993d5adcbd721032b7f8f19abc898b7f9f5ef9b1"
+  },
+  "source_patch_sha256": "1fc04e9e339a51835588f8f1d796dd65c0664b853ee66180d2e93a8b00b5ddf4",
+  "committed_revision": "ad41ad97b3a918727f89aace09b9a424b077bc8c",
+  "build_provenance": "Qualified base32222 plus exact reviewed uncommitted KV selection patch is byte-identical to this committed source; no post-build source transition.",
+  "finished_utc": "2026-10-11T05:14:30.835913+00:00"
+}

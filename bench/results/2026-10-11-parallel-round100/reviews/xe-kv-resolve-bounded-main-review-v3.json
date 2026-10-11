@@ -1,0 +1,79 @@
+{
+  "main_reviewed": true,
+  "full_source_report_manifest_read": true,
+  "source_sha256": "d40975c8e0f15d01bab5e63fdef5ea3833dbc095af9193763214a4f35c737dc1",
+  "manifest_sha256": "bb37a8345b3be05a2d111daec5e5ac1944075ac5f4e7697725a394c30655417a",
+  "allowed_source_files": [
+    "src/core/device.cpp",
+    "src/core/gpu.cpp",
+    "src/kernels/xe/kv_stream.cpp"
+  ],
+  "oracle": "Authoritative initialized host USM page bytes; full resident pools and both inverse-map directions; all selected cells; verified actual epoch/miss/lookup/call counts",
+  "conditions": [
+    "same owned in-order compute queue and correct context/type; checked aspect requirements",
+    "host inputs modified before any enqueue and after checked completion only",
+    "explicit non-null production stream; every submit/wait/drain boundary catches uncertain completion and uses production fatal cleanup before buffer unwind",
+    "all owners survive other-error handler; one terminal whole-runtime drain before releases; each format frame destroys before next",
+    "_Exit0 after successful terminal drains and all USM release, intentionally bypasses Runtime static destructor; process owner/fault gate must still complete normally"
+  ],
+  "fixture_review": [
+    "six nq2,3,4 repeated twice overlap pages at different work-item indices",
+    "union suffix miss counts independently checked:36,8,8,0,4,8; legal last8255 block; all slots>=RT",
+    "finite-normal FP16 and scale bit patterns; distinct INT8 code runs; finite<64MiB payload per format; no buffers grow after accounting"
+  ],
+  "scope": "No attention, global model quality, all formats, full262144 context/RESTORE, timing/roofline or historical hang-causality proof",
+  "status": "Main derived source v3; compiler/lints/GPU unverified",
+  "original_source_sha256": "79fa8f4fbd29046267d7791180739577662789212b7a48d470cb5ab55d6fb697",
+  "original_probe_build": "xe-kv-resolve-bounded-build-root-v1 FAILED:15 new probe warnings,1 already-proven unchanged header warning; no GPU",
+  "changes": [
+    {
+      "before": "codes_per_page = 2 * 4 * 64, scales_per_page = 2 * 4",
+      "after": "codes_per_page = size_t{2} * 4 * 64, scales_per_page = size_t{2} * 4"
+    },
+    {
+      "before": "buffer_limit = 64 * 1024 * 1024",
+      "after": "buffer_limit = size_t{64} * 1024 * 1024"
+    },
+    {
+      "before": "queries * cap",
+      "after": "static_cast<size_t>(queries) * cap"
+    },
+    {
+      "before": "queries * k::kStepCount",
+      "after": "static_cast<size_t>(queries) * k::kStepCount"
+    },
+    {
+      "before": "a * 43",
+      "after": "static_cast<size_t>(a) * 43"
+    },
+    {
+      "before": "a * 113",
+      "after": "static_cast<size_t>(a) * 113"
+    },
+    {
+      "before": "run.host + b * run.page_bytes, run.page_bytes))",
+      "after": "run.host + b * run.page_bytes, run.page_bytes) != 0)"
+    },
+    {
+      "before": "static_cast<uint64_t>(16 + nruns)",
+      "after": "16 + static_cast<uint64_t>(nruns)"
+    },
+    {
+      "before": "static_cast<uint64_t>(6 * (3 + nruns))",
+      "after": "uint64_t{6} * (3 + nruns)"
+    },
+    {
+      "before": "static_cast<uint64_t>(6 * slots * nruns)",
+      "after": "uint64_t{6} * slots * nruns"
+    },
+    {
+      "before": "static_cast<uint64_t>(64 * nruns)",
+      "after": "uint64_t{64} * nruns"
+    },
+    {
+      "before": "static_cast<uint64_t>(9 + nruns * 2)",
+      "after": "9 + uint64_t{2} * nruns"
+    }
+  ],
+  "scope_correction": "All counts/fixtures/kernel arguments/control/completion semantics unchanged; widened integer products before multiplication, explicit memcmp !=0; existing header warning accepted only with actual committed-baseline evidence."
+}

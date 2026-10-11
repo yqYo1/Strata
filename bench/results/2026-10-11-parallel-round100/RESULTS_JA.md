@@ -1,0 +1,11 @@
+本家の設定監査は[TODO](../2026-10-11-upstream-parameter-audit/TODO.md)の通り、箱出しだけではないが、本家単体の設定探索と独立検証は未完了。新しい本家性能値はない。
+
+時間計測修正32222は両source-LLVM modeのrelease、host-ASan/UBSan、必須lint、変更したdenseの実GPU確認を完了。実production Event診断は各mode8回、合計16回で全ワードを比較し、未記録・非timing・逆順の期待された拒否と同一eventの0区間を確認した。これはqueue timelineと生の端点の整合性確認であり、時計domain校正、exclusive kernel/DMA service、帯域rooflineではない。
+
+KVの複数query selectionでplain/atomic混在と重複storeを既存device-scope relaxed atomic load/storeへ最小変更した。source ad41ad97b3a918727f89aace09b9a424b077bc8c。両modeのreleaseとhost-ASan/UBSanで12PASS・1native ISA skip。実baseline/current必須lintは各6件の既存指摘・新規0。旧6GPU数値確認の実行ファイルはbyte-identical、同じbootで再利用する。
+
+新しいproduction KV診断では8192slots/8256blocksのfull mapでFP16とINT8を順次処理し、各6resolve・nq2..4・重複page、hit/miss/CLOCK eviction、全resident poolのbyte oracleと双方向unique inverseを確認した。free/contrib-llvmとfree縮小指定環境でそれぞれ12resolveを完了、新しいkernel fault/dumpはない。縮小指定は8192MiB/最大4096MiB/no-XMXであり、RT256/512や別GPUを再現したものではない。
+
+元のtimer build v1とKV build v1のFAILED lint、KV GPU v1のobserver mapping FAILEDは維持した。後者の数値確認はPASS・exit0・fault0だが、0.7秒で終了しruntime mappingの採取が不足した。GPU v2ではFORMAT_ALLOCATED進捗で実mapsを読み取って確認した。新しいMain派生sourceで新規指摘を直した。既存headerの1指摘は実baseline証拠で区別した。実装agentはsourceだけを作成し、Mainが全実行を直列管理。Lunaは実quotaでactive0。
+
+32K phase診断v3は準備済み、この境界では未実行。timer componentのbyte一致と新しいKV確認を前提とする。phase割合とtransfer待ちを測り、その後quietな32K以上のprefillと独立3プロセス以上のdecodeで採用判断する。フル262144 context/RESTORE、attention/global model quality、過去ハングとの因果関係、未修正本家の独立設定最適化は未検証。

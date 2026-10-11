@@ -1,0 +1,120 @@
+XeStrata production profiling-tags integration diagnostic v1
+SOURCE-ONLY recipe; no command below was executed by the implementer.
+Main owns source integration, compile, serial run, fault/completion receipts and retention.
+
+Inputs
+  Base commit: e188dd609b800ea78fb4afc0cc6dcf6ef7e02328
+  Production overlay: xe-profiling-interval-guard-source-v1, all three files
+    named/pinned in this diagnostic's manifest. Only gpu.cpp is linked here;
+    PfTimer and session propagation are NOT exercised by this probe.
+  Actual Runtime/device implementation: committed src/core/device.cpp.
+    There is no src/core/runtime.cpp: Runtime is implemented in device.cpp.
+  Header-only production publication::cleanup_require is used as shipped.
+  No helper extraction, Runtime stub, replacement Event, CMake edit or model.
+
+Prepare a Main-owned immutable source root from the base plus reviewed overlays.
+Verify the manifest's exact production/header hashes before compilation. Do not
+substitute live working bytes merely because their HEAD matches the base. Keep
+the compiler/install/runtime-library receipt separately for each release mode.
+The source file is identical in free and contrib-llvm. Mode labels/macros are
+recipe labels; this probe neither links nor exercises oneMath/oneMKL.
+
+Recommended direct-production-source recipe (bash; Main executes only)
+
+  # Assign these to existing Main-owned pinned source/qualified source-LLVM paths.
+  # STRATA_SOURCE_LLVM_CXX must be that mode's source-LLVM clang++, never icpx.
+  : "${STRATA_PINNED_SOURCE_ROOT:?Main-owned immutable base source plus reviewed overlays}"
+  : "${STRATA_SOURCE_LLVM_CXX:?absolute qualified source-LLVM clang++ path for this mode}"
+  : "${STRATA_PROBE_OUTPUT:?Main-owned output path outside any frozen source checkout}"
+  STRATA_PROBE_ROOT=/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-profiling-tags-diagnostic-source-v1
+  STRATA_GUARD_ROOT=/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-profiling-interval-guard-source-v1
+
+  # FREE: actual production .cpp translation units, compiled and linked by DPC++.
+  "$STRATA_SOURCE_LLVM_CXX" -std=c++20 -O2 -Wall -Wextra -Werror \
+    -fsycl -fsycl-targets=spir64 -pthread \
+    -DSTRATA_PROBE_MODE_FREE=1 -DSTRATA_NO_BLAS=1 \
+    -I"$STRATA_PINNED_SOURCE_ROOT/include" \
+    "$STRATA_PROBE_ROOT/profiling_tags_probe.cpp" \
+    "$STRATA_GUARD_ROOT/src/core/gpu.cpp" \
+    "$STRATA_PINNED_SOURCE_ROOT/src/core/device.cpp" \
+    -o "$STRATA_PROBE_OUTPUT"
+
+  # CONTRIB-LLVM: use its own qualified source-LLVM compiler/install and output.
+  # Execute separately; replace the free command, do not append it to that command.
+  "$STRATA_SOURCE_LLVM_CXX" -std=c++20 -O2 -Wall -Wextra -Werror \
+    -fsycl -fsycl-targets=spir64 -pthread \
+    -DSTRATA_PROBE_MODE_FREE=0 -USTRATA_NO_BLAS \
+    -I"$STRATA_PINNED_SOURCE_ROOT/include" \
+    "$STRATA_PROBE_ROOT/profiling_tags_probe.cpp" \
+    "$STRATA_GUARD_ROOT/src/core/gpu.cpp" \
+    "$STRATA_PINNED_SOURCE_ROOT/src/core/device.cpp" \
+    -o "$STRATA_PROBE_OUTPUT"
+
+These compile commands target the selected Intel/Level Zero diagnostic, not
+CUDA/HIP qualification. Normal source-LLVM clang++ -fsycl driver linking selects
+its SYCL runtime. Main must preserve its qualified runtime search environment
+and record the actual loaded libraries; a successful compile/mode string alone
+does not prove which runtime loaded. No oneAPI compiler fallback is authorized.
+Use required known release driver/link options if Main's qualified compiler needs
+them, recording the exact changed argv. The above minimal recipe is recommended,
+not build-verified. No FetchContent/configure/download operation is required.
+
+Alternative: Main may compile the probe with its release SYCL compile flags and
+link ONLY its pinned, newly qualified gpu.cpp/device.cpp release objects (or the
+normal strata_core archive/link interface with matching source receipt). Retain
+the normal SYCL driver/device-link/runtime flags. Do not link the direct sources
+AND their existing objects, or an extracted event helper. Avoid pulling the full
+engine/kernel archive merely to satisfy these APIs. Direct source compilation
+above makes the implementation origin explicit and requires no archive inference.
+
+Serial execution, only after Main-owned qualification/admission
+  "$STRATA_PROBE_OUTPUT"
+
+No arguments. Extra arguments exit 2 before Runtime initialization. Run exactly
+one release mode at a time with Main's already selected device/runtime/settings,
+capture stdout, stderr, exit status and relevant fault/completion evidence. Do
+not add a probe retry, reset, alternate backend, clock adjustment or marker policy
+override to rescue a failed result. Record STRATA_EVENT_MARK and effective runtime
+environment: normal initialization retains Runtime::measure_marks and watchdog.
+No per-sample timer-policy toggle or automatic best-of selection exists.
+
+Acceptance receipt
+  Require normal process exit 0 AND RESULT status=PASS, eight SAMPLE lines with
+  normal_result=1, reversed_result=0, sentinel_unchanged=1, positive ordered raw
+  endpoints, same_result=1/same_ms=0, plausible=1, full checked data and expected
+  counts. Require both CONTROL refusal messages/sentinel checks. Expected false
+  API lines on stderr are the deliberate reverse/unrecorded/non-timing controls;
+  preserve their exact diagnostics instead of treating every stderr byte as a
+  failure or suppressing them. Any unexpected false/exception, incomplete sample,
+  zero resolution/zero raw endpoint, data mismatch or nonzero exit rejects the
+  whole arm, without deleting successful partial samples or repairing timestamps.
+  Expected successful totals: samples=8, positive_reversals=8, api_calls=75,
+  records=18, copies=16, compute_waits=9, cleanup_waits=1, elapsed_queries=26,
+  checked_words=33554432. api_calls counts instrumented bool API attempts only;
+  allocations/releases/Runtime initialization/property check are outside it.
+  Per successful sample: 8 bool API calls, 2 records, 2 copies, 1 checked compute
+  drain and 3 elapsed queries; full 4194304 uint32_t words checked.
+
+Completion failure uses actual publication::cleanup_require and flushed _Exit(74)
+before buffer release. Runtime's own preexisting initialization/destructor/watch
+failure policy remains unchanged and may exit 1 or otherwise prevent normal exit;
+none of those outcomes is PASS. Main owns supervision and any later diagnosis.
+
+Interpretation limits
+  Fixed 8 samples; one 16 MiB device USM and two 16 MiB host USM buffers; 32 MiB
+  transferred/sample, 256 MiB total. Runtime overhead/driver allocation is extra.
+  Markers bracket H2D then D2H on exactly the same in-order compute queue. Full
+  changed/poisoned data roundtrip plus checked completion establishes submitted
+  work/order coverage under the production profiling-tag contract; it does not
+  independently certify that contract, exclusive transfer/kernel service, timer
+  clock domains, finite counter wrap handling or timestamps against another clock.
+  host_submit_to_completion_wall_ms starts just before first marker submission
+  and ends on successful stream_sync return, before data/query/logging work.
+  The sole plausibility ceiling is elapsed_ms <= wall_ms*1.25+10 ms, with strictly
+  positive values. This deliberately loose anomaly check is not an accuracy band,
+  calibrated drift limit, roofline/PCIe bandwidth claim or lower-bound calibration.
+  Positive distinct raw endpoints must be obtained from the reversed completed
+  pair's actual production last_error. No timestamp-difference arithmetic is
+  duplicated in the probe. Same-event zero alone can never authorize PASS.
+  No PfTimer/model/MTP/cache/oneMath path, asynchronous-fault injection, hang
+  recovery, phase additivity or independently validated performance is tested.
