@@ -1,0 +1,51 @@
+{
+  "main_source_review": true,
+  "model_source_revision": "ad41ad97b3a918727f89aace09b9a424b077bc8c",
+  "source_path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/src/prefill/prefill.cpp",
+  "source_sha256": "3fedf41ff3d248c97a3ab479b5466c5310399b8f897f1e26b5f9d6ee48744f22",
+  "layout_path": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/native_experts.txt",
+  "layout_sha256": "d9ac2dfa3ee63c55c9c6a6db26f72da0cec0ee41733f007e5cbbbba71617aa5d",
+  "layers": 48,
+  "experts_per_layer": 512,
+  "arena_logical_bytes": 50292326400,
+  "cached_three_per_layer_logical_bytes": 294681600,
+  "conditional_all_nonresident_bytes_per_chunk": 49997644800,
+  "actual_diagnostic_ring_override": 8,
+  "source_STAGE": 8,
+  "source_STREAM_ALL_MIN": 2048,
+  "stream_all_condition": "m.ring > STAGE && T >= STREAM_ALL_MIN && m.src != nullptr",
+  "active_path": "Ring override8 equals STAGE, so stream_all is OFF. Actual staging is routed nonresident experts only. Full-arena transfer calculation is NOT current traffic or current roofline.",
+  "candidate_all_streaming_roofline": [
+    {
+      "assumed_bandwidth_GBps": 6.0,
+      "chunk_tokens": 4096,
+      "transfer_floor_seconds": 8.3329408,
+      "transfer_only_ceiling_tps": 491.54315364870945
+    },
+    {
+      "assumed_bandwidth_GBps": 6.0,
+      "chunk_tokens": 8192,
+      "transfer_floor_seconds": 8.3329408,
+      "transfer_only_ceiling_tps": 983.0863072974189
+    },
+    {
+      "assumed_bandwidth_GBps": 6.3,
+      "chunk_tokens": 4096,
+      "transfer_floor_seconds": 7.936134095238096,
+      "transfer_only_ceiling_tps": 516.120311331145
+    },
+    {
+      "assumed_bandwidth_GBps": 6.3,
+      "chunk_tokens": 8192,
+      "transfer_floor_seconds": 7.936134095238096,
+      "transfer_only_ceiling_tps": 1032.24062266229
+    }
+  ],
+  "limits": [
+    "6.0/6.3 are illustrative unqualified bandwidth assumptions, not fresh measurements",
+    "All-streaming demand applies only if that policy enabled and full-layer cache quota stays3",
+    "Current routed path needs actual per-layer streamed blob byte totals; aggregate expert counts alone lack heterogeneous format sizes",
+    "Queue phase timestamps include submission/copy idle and instrumentation, not exclusive kernels/DMA",
+    "No maximum compute/VRAM/RAM/PCIe measurement or performance adoption proven"
+  ]
+}

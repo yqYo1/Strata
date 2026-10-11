@@ -1,0 +1,114 @@
+{
+  "schema": "xe-profiling-overhead-accounting-source-v1",
+  "date": "2026-10-11",
+  "implementation_model": "gpt-6.1-sol",
+  "status": "source-only; compile/build/lint/test/GPU/runtime/performance unverified",
+  "base_commit": "ad41ad97b3a918727f89aace09b9a424b077bc8c",
+  "worktree": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-profiling-overhead-accounting-20261011",
+  "branch": "fix/xestrata-profiling-overhead-accounting-20261011",
+  "main_worktree_read_only": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011",
+  "base_source_pins": [
+    {
+      "relative_path": "AGENTS.md",
+      "bytes": 15190,
+      "sha256": "0427d8d4f91c4cf5128e77d3d898ee20783b63394d24718d1ff0b16779424dd0"
+    },
+    {
+      "relative_path": "src/prefill/prefill.cpp",
+      "bytes": 160613,
+      "sha256": "3fedf41ff3d248c97a3ab479b5466c5310399b8f897f1e26b5f9d6ee48744f22"
+    },
+    {
+      "relative_path": "src/core/gpu.cpp",
+      "bytes": 18649,
+      "sha256": "9792966f6b2c84434a1dddafefb3286c3c5fcfa78e23065b455904f9cf6fcfb8"
+    },
+    {
+      "relative_path": "include/strata/prefill/publication.hpp",
+      "bytes": 3535,
+      "sha256": "c266156f02854f6578ca526203525249e6e9035ca56102a4aeb815280d42e2ee"
+    }
+  ],
+  "changed_files": [
+    "src/prefill/prefill.cpp"
+  ],
+  "replacement": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-profiling-overhead-accounting-source-v1/src/prefill/prefill.cpp",
+    "bytes": 161604,
+    "sha256": "6a77f49d21f404b7a397052e562537ff4767fc387e3b93897b4394b803bdbf4b"
+  },
+  "own_source": {
+    "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-profiling-overhead-accounting-20261011/src/prefill/prefill.cpp",
+    "bytes": 161604,
+    "sha256": "6a77f49d21f404b7a397052e562537ff4767fc387e3b93897b4394b803bdbf4b"
+  },
+  "patch": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-profiling-overhead-accounting-source-v1/profiling-overhead-accounting.patch",
+    "bytes": 3221,
+    "sha256": "476ed453e8120ac80d32a3481427ff473ddf13e1e0001ba61731eef9ef611713"
+  },
+  "report": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/implementation-xe-profiling-overhead-accounting-v1.txt",
+    "bytes": 12099,
+    "sha256": "a7870b90f83fc7b5aed2057102e899e4a292329240a0dde3c1c902a28fad3714"
+  },
+  "input_closed_profile": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-source-llvm-profile32k-root-v3/record.json",
+    "bytes": 108407,
+    "sha256": "0f37a14abe6a3cfa1cdec615b1291f7593d86a1775a3fb962d13212171c5ab93"
+  },
+  "prior_registry": {
+    "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-11-parallel-round100/report-registry-v123.json",
+    "bytes": 2908,
+    "sha256": "a289a62312a065830c9e4a8c4a8479ee3b3469550c31997108a04ca0778c3ae9"
+  },
+  "prior_registry_cumulative_reports": 494,
+  "prior_profiling_reports": [
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/implementation-xe-profiling-interval-guard-v1.txt",
+      "bytes": 12337,
+      "sha256": "e3b2f4995d727d2dac327afc53f490591fc1ff692a5609b457f2eecd9ed71fe9"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/implementation-xe-profiling-tags-diagnostic-v1.txt",
+      "bytes": 14992,
+      "sha256": "9b0a648b879f67cc9278e50c3b8317bc2b2f3b6dae3762e00cd4055088947b10"
+    }
+  ],
+  "design": {
+    "enablement": "existing getenv presence only; absent off, present empty/0 on",
+    "clock": "existing std::chrono::steady_clock Clock/ms_since in same source",
+    "mark_host_ms": "enabled successful mark body: event creation if needed, vector/phase bookkeeping, existing record/require, used increment",
+    "fold_host_ms": "enabled successful fold body: all existing elapsed query/require/phase accumulation and retained-marker bookkeeping; enabled no-op folds included",
+    "marker_calls": "every enabled mark entry",
+    "new_events": "successful event_create calls only for newly needed Event objects",
+    "fold_calls": "every enabled fold entry, including used<2",
+    "completed_intervals": "increments only after actual event_elapsed_ms passes existing production require",
+    "endpoint_counts": "no endpoint/UR/driver counter; interval count is not endpoint getter count",
+    "stderr_prefix": "strata prefill timer overhead:",
+    "output": "one line after unchanged existing completed phase/host lines; host wall CPU API overhead explicitly not GPU service/calibration",
+    "failure": "existing require propagates; failed inner/final elapsed query skips both existing completed phase reports and new summary; no partial output in destructor/catch",
+    "gpu_events_waits_syncs_added": 0,
+    "phase_subtraction_or_reclassification": false,
+    "timer_off_new_clock_reads_or_counter_increments": 0
+  },
+  "limitations": [
+    "Source-only: all serial application/build/lint/test/GPU qualification belongs to Main.",
+    "Host wall is not CPU cycles/thread CPU service; includes API blocking, descheduling, allocation and local bookkeeping.",
+    "Clock/counter instrumentation can perturb timing-on queue timeline and is not fully self-measured or calibrated.",
+    "No disjoint-share, exclusive GPU/DMA service, phase additivity, timer-domain accuracy or performance winner claim.",
+    "No actual new overhead magnitude/count measurement; historical32K receipt unchanged and not retrofitted.",
+    "No endpoint count inferred as actual backend driver calls; failed query paths may stop between getters.",
+    "No GPU fault/query-failure injection, smaller hardware/NVIDIA or model quality/MTP/cache/context qualification.",
+    "Existing later optional GDN hash can still fail after phase report; Main must retain final run/process status.",
+    "No observer/parser edits; consumers rejecting unknown stderr must allow this optional distinct diagnostic prefix."
+  ],
+  "operations": {
+    "new_isolated_worktree_created": true,
+    "only_own_source_edited": true,
+    "main_source_or_old_artifact_edits": false,
+    "compiler_build_lint_test_gpu_runtime_process_service_reset_cleanup_commit_push_network": false,
+    "prohibited_credential_record_read": false,
+    "main_owns_qualification": true
+  }
+}

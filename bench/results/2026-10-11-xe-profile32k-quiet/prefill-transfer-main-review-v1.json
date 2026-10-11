@@ -1,0 +1,25 @@
+{
+  "main_reviewed": true,
+  "base_revision": "ad41ad97b3a918727f89aace09b9a424b077bc8c",
+  "source_pins": {
+    "src/prefill/prefill.cpp": "94906966f9750504b2ce0db304cfa745667d02e60b60273793e4b84e431755f0"
+  },
+  "artifact_pins": {
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-prefill-transfer-counts-source-v1/src/prefill/prefill.cpp": "94906966f9750504b2ce0db304cfa745667d02e60b60273793e4b84e431755f0",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-prefill-transfer-counts-source-v1/prefill-transfer-counts.patch": "e24525069a370562ab447d3852911befa4981e804347345444c5b18d1f0be7fd",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-prefill-transfer-counts-source-v1/manifest.json": "7453d4f28f04eba58aad636f9c8b1625fdfd4e9dc7f14e04d9e4a4cb579317a5"
+  },
+  "report_sha256": "01fe55665a52df9598860b1b41654b7d3be12c8d52942b28831e311109cdc697",
+  "applied": false,
+  "build_lint_test_gpu_qualified": false,
+  "adopted": false,
+  "review": [
+    "Full report/exact patch/manifest read and all input/source hashes verified. Six hooks use the actual successful nonzero production blob-copy extent; non-blob/D2D/host transfers explicitly excluded.",
+    "Only issuer worker writes full-stream threaded counters; consumer writes mutually exclusive inline/routed counters. Consumer reads/moves after join, failure rethrow and existing stager completion; counter vector declared before RAII join guards.",
+    "Counter overflow fails through existing issuer cancellation or Prefill exception drain paths; no partial local success ledger on failure.",
+    "Final aggregation occurs after terminal compute completion/next-stage result and optional diagnostics; checked sums precede any new completed ledger. Request/process status must still be checked, especially layer splits.",
+    "No extra GPU events, waits, syncs, copies, payload allocation or math/scheduler changes; optional host counters/ledger/output can perturb an instrumented arm.",
+    "Absent env has no hook updates/rows; 0 and empty presence enable independently of PfTimer. Source-level accepted request bytes are not physical PCIe or exclusive DMA service.",
+    "Extreme tiny chunks/other modes/layer splits/transient sources/full-context and numeric/model-quality validation remain unqualified; Main owns all builds/lints/serial test/GPU work."
+  ]
+}

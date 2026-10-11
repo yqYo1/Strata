@@ -1,0 +1,139 @@
+{
+  "source": "ad41ad97b3a918727f89aace09b9a424b077bc8c",
+  "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+  "input_sha256": "94cbdd7fdc6c9f32a08c0c4f8b50c1cc27a7ffc3f383d23c5c6ac24e8ec7f2c9",
+  "profile_actual_result": {
+    "prompt_tokens": 32768,
+    "actual_batched_positions": 32767,
+    "generated_tokens": 16,
+    "prefill_chunk": 4096,
+    "mtp_counts": [
+      10,
+      13
+    ],
+    "finish_reason": "length",
+    "output_ids": [
+      40,
+      3172,
+      22903,
+      411,
+      42903,
+      4560,
+      1970,
+      57710,
+      11,
+      20434,
+      383,
+      55404,
+      21851,
+      11,
+      5438,
+      7465
+    ],
+    "prompt_ms": 248930.9,
+    "decode_ms": 1962.2,
+    "diagnostic_only": true,
+    "performance_eligible": false,
+    "full_model_quality_qualified": false
+  },
+  "quiet_individual_samples": [
+    {
+      "prefill_tps": 217.14596983097098,
+      "cold_decode_tps": 8.210180623973727,
+      "prefill_ms": 150903.1,
+      "cold_decode_ms": 1948.8,
+      "input_tokens": 32768,
+      "actual_batched_positions": 32767,
+      "generated_tokens": 16,
+      "initialized_independent_process": true,
+      "restore_measured": false,
+      "settings_search": false
+    },
+    {
+      "prefill_tps": 216.74724353042416,
+      "cold_decode_tps": 9.05592030790129,
+      "prefill_ms": 151180.7,
+      "cold_decode_ms": 1766.8,
+      "input_tokens": 32768,
+      "actual_batched_positions": 32767,
+      "generated_tokens": 16,
+      "initialized_independent_process": true,
+      "restore_measured": false,
+      "settings_search": false
+    },
+    {
+      "prefill_tps": 214.59772749598875,
+      "cold_decode_tps": 8.547465142368717,
+      "prefill_ms": 152695.0,
+      "cold_decode_ms": 1871.9,
+      "input_tokens": 32768,
+      "actual_batched_positions": 32767,
+      "generated_tokens": 16,
+      "initialized_independent_process": true,
+      "restore_measured": false,
+      "settings_search": false
+    }
+  ],
+  "prefill_tps": {
+    "individual": [
+      217.14596983097098,
+      216.74724353042416,
+      214.59772749598875
+    ],
+    "mean": 216.1636469524613,
+    "sample_stddev": 1.3707018179773447,
+    "minimum": 214.59772749598875,
+    "maximum": 217.14596983097098,
+    "processes": 3
+  },
+  "cold_decode_tps": {
+    "individual": [
+      8.210180623973727,
+      9.05592030790129,
+      8.547465142368717
+    ],
+    "mean": 8.604522024747912,
+    "sample_stddev": 0.4257470130401371,
+    "minimum": 8.210180623973727,
+    "maximum": 9.05592030790129,
+    "processes": 3
+  },
+  "same_output_ids": true,
+  "selected_logprob_top5_equal": true,
+  "phase_timeline": {
+    "batched_positions": 32767,
+    "timeline_ms": 248866,
+    "wall_ms": 248926,
+    "host_staging_ms": 9432,
+    "phase_text": " embed+steps 417 (0.2%) hc read 2805 (1.1%) gdn 1491 (0.6%) qsa proj 3664 (1.5%) qsa indexer 4 (0.0%) qsa select 629 (0.3%) qsa attn 5982 (2.4%) router+shared 442 (0.2%) host grouping 96005 (38.6%) gather 455 (0.2%) wait copy 1040 (0.4%) dequant 106741 (42.9%) gemm gate/up 6051 (2.4%) gemm down 13075 (5.3%) combine 6123 (2.5%) ple 88 (0.0%) kv stage 352 (0.1%) gdn conv+gates 423 (0.2%) gdn recurrence 1470 (0.6%) gdn out proj 1611 (0.6%)",
+    "host_lines": [
+      "strata prefill timing: host: chunk setup (PLE rows, the expert stream plan) 16 ms, waiting for each chunk 0 ms, after each chunk (the draft layer, progress) 368 ms, PLE 3140 ms"
+    ],
+    "limitation": "Instrumented ordered-stream event intervals charge host/copy idle to the preceding phase; not exclusive kernel service times, quiet throughput, independent profiler verification, or model quality."
+  },
+  "phase_minus_quiet_prefill_ms_individual": [
+    98027.79999999999,
+    97750.19999999998,
+    96235.9
+  ],
+  "difference_scope": "One phase-on vs three quiet independent cold processes. Request difference also includes logging/parameter validation settings. No exclusive attribution or overhead calibration.",
+  "excluded_samples": [
+    {
+      "path": "xe-source-llvm-quiet32k-root-v1/1",
+      "passed": false,
+      "error": "RuntimeError('actual qualified runtime mapping')",
+      "normal_model_close": true,
+      "no_new_fault": true,
+      "reason": "Observer required disabled diagnostic validation layer; original overall status unchanged. Not in qualified mean/variance."
+    }
+  ],
+  "decode_repetitions_complete": 3,
+  "upstream_settings_search_complete": false,
+  "performance_adopted": false,
+  "full256K_context_or_restore_qualified": false,
+  "next": [
+    "Qualify optional mark/fold CPU-accounting implementation under Main serial control",
+    "Collect actual routed per-layer transfer bytes and independent profiler before bottleneck/adoption claims",
+    "Complete Xe evaluation then independently tune pristine official settings per committed TODO"
+  ]
+}

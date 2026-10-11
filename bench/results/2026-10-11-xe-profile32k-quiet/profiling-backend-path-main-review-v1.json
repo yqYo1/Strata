@@ -1,0 +1,46 @@
+{
+  "scope": "Main source-only profiling API path review; no new timing/count measurement, build or GPU operation.",
+  "toolchain_receipt": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-llvm-v711-source-root-v5/record.json",
+    "sha256": "3f1c3741f6b09b78377064a2b993b558a52b1b95ff30f5eb016ea8c6342d9e3a",
+    "passed": true,
+    "source_commit": "504366f4b82ff00bbac7b0c956635eed8bc599d8",
+    "source_tag": "v7.1.1"
+  },
+  "project_pins": {
+    "src/core/gpu.cpp": "9792966f6b2c84434a1dddafefb3286c3c5fcfa78e23065b455904f9cf6fcfb8",
+    "src/core/device.cpp": "9e33dce3b3b55b00c5aee4db566ceb848b73273837c505b3c27b535a0b30ba2d",
+    "src/prefill/prefill.cpp": "3fedf41ff3d248c97a3ab479b5466c5310399b8f897f1e26b5f9d6ee48744f22"
+  },
+  "backend_source": {
+    "sycl/source/detail/event_impl.cpp": {
+      "path": "/home/yayoi/ghq/github.com/intel/llvm/.worktree/toolchain-sycl-v711-b570-20261011/sycl/source/detail/event_impl.cpp",
+      "sha256": "d0abccb3f209afb46810f949efd31b33212512ab19211028179305d24c6a17a6",
+      "unchanged_from_recorded_tag_commit": true
+    },
+    "unified-runtime/source/adapters/level_zero/v2/event.cpp": {
+      "path": "/home/yayoi/ghq/github.com/intel/llvm/.worktree/toolchain-sycl-v711-b570-20261011/unified-runtime/source/adapters/level_zero/v2/event.cpp",
+      "sha256": "35cb322613492ac825ce2759c5c89a57df88eb5546c0d38ef28655d20aee10c2",
+      "unchanged_from_recorded_tag_commit": true
+    },
+    "unified-runtime/source/adapters/level_zero/v2/command_list_manager.cpp": {
+      "path": "/home/yayoi/ghq/github.com/intel/llvm/.worktree/toolchain-sycl-v711-b570-20261011/unified-runtime/source/adapters/level_zero/v2/command_list_manager.cpp",
+      "sha256": "4e0ae5b72247a196668614836adbd5f3128ae8dc5d0f2da24b3db76a083af2a0",
+      "unchanged_from_recorded_tag_commit": true
+    }
+  },
+  "facts": [
+    "gpu.cpp event_record uses submit_profiling_tag for every timing=true Event even when STRATA_EVENT_MARK=barrier; barrier override selects non-timing events only.",
+    "gpu.cpp successful elapsed interval reads command_end twice, once for each endpoint. These are helper calls, not a measured backend driver-call count.",
+    "SYCL event_impl command_end checks profiling preconditions and forwards an actual event handle to its adapter.",
+    "L0 v2 urEventGetProfilingInfo locks the Event. For a timestamped Event it calls getEventEndTimestamp; a nonzero cached adjusted value returns without a new status query, otherwise it checks zeEventQueryStatus and adjusts the recorded global timestamp.",
+    "appendTimestampRecordingExp records a start timestamp before zeCommandListAppendWriteGlobalTimestamp. Enqueue overhead and held-event wait costs are outside fold-only measurement.",
+    "Existing Runtime::measure_marks returns immediately for explicit STRATA_EVENT_MARK override; no per-launch calibration occurs on this controller path. Its source comment names B70/CUDA measurements that are not fresh B570 measurements."
+  ],
+  "limitations": [
+    "Mark/fold host wall alone need not explain time added inside existing stream_sync by held profiling events. Existing sync wall can include actual kernels and copies; no exclusive marker-cost inference.",
+    "The enabled profile and quiet samples differ in logging/validation as well as timing markers; do not subtract their wall difference as a calibrated timer cost.",
+    "No new calibration, exclusive GPU/DMA service, actual UR/ZE getter count or driver-hang causality assertion.",
+    "This checks these backend sources against the recorded tag commit and binds the installed compiler receipt; it is source path evidence, not a newly instrumented driver trace."
+  ]
+}

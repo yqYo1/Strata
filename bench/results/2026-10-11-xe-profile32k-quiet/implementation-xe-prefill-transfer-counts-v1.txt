@@ -1,0 +1,247 @@
+XeStrata optional per-layer/per-chunk expert H2D request accounting v1
+Date: 2026-10-11 (Asia/Tokyo)
+Implementation model: gpt-6.1-sol, source-only implementation role.
+Status: source/patch/manifest delivered; no build/lint/test/Runtime/GPU/run result.
+Main owns all serial application and qualification.
+
+Isolation and exact sources
+Immutable base: ad41ad97b3a918727f89aace09b9a424b077bc8c.
+New own ghq worktree:
+  /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-prefill-transfer-counts-20261011
+New branch: fix/xestrata-prefill-transfer-counts-20261011.
+Own HEAD remains the base. Only src/prefill/prefill.cpp is modified.
+Main worktree, root checkout, prior worktrees, previous timer accounting/guard/
+diagnostic artifacts and historical measurement records were not edited.
+This task starts directly from ad41, not the unadopted timer-overhead patch.
+No new phase timer overhead code is implicitly included in this replacement.
+
+Read own AGENTS.md in full; LOCAL.md is absent. Reused the already-read
+git-workflow skill for the explicitly requested isolated worktree/branch. The
+task's no-build/no-lint/no-test/no-commit/no-push instructions override normal
+skill/AGENTS work-boundary checks in this agent scope; Main owns those checks.
+No compiler/configure/build/lint/test, inference/profiler/GPU/Runtime/device-state
+or process query/control, service/reset, cleanup, commit/push or network action
+occurred. Only source/record reads, own worktree creation/edit/diff and requested
+artifact writes/hashes. The prohibited credential-bearing prefill contract record
+was not read. No intermediate clarification or intervention was requested.
+
+Base prefill.cpp: bytes160613,
+  SHA-256 3fedf41ff3d248c97a3ab479b5466c5310399b8f897f1e26b5f9d6ee48744f22
+Replacement prefill.cpp: bytes165441,
+  SHA-256 94906966f9750504b2ce0db304cfa745667d02e60b60273793e4b84e431755f0
+Exact patch: bytes11475,
+  SHA-256 e24525069a370562ab447d3852911befa4981e804347345444c5b18d1f0be7fd
+Original copyright/LGPL/SPDX headers remain unchanged. No CMake/header/math/
+Runtime/scheduler/buffer-layout/phase-marker changes are included.
+
+Concrete Main finding and historical scope
+Read B/xe-profile32k-traffic-scope-v1.json in full: bytes2387,
+  SHA-256 15d3dd53190453e775f9cd50d47f6f062d372dc7c612986ace3611a2c37bc412
+Read the relevant closed Main profile32k-v3 receipt fields: bytes108407,
+  SHA-256 0f37a14abe6a3cfa1cdec615b1291f7593d86a1775a3fb962d13212171c5ab93
+Main's scope receipt says actual ring override8 equals source STAGE8. The unchanged
+stream_all predicate is m.ring>STAGE && T>=2048 && m.src!=nullptr, so that diagnostic
+used routed staging, not a full nonresident stream. Its full native arena size,
+resident subtraction and illustrative6.0/6.3GB/s scenarios are not actual routed
+bytes or a current roofline. This implementation supplies the missing actual
+submitted request denominator instead of reusing that arena subtraction.
+The old phase receipt remains diagnostic_only=true/performance_eligible=false/
+full_model_quality_qualified=false, with closed normal model/kernel gate and no
+new fault messages. Its phase percentages are not exclusive service fractions.
+No new traffic magnitude is inferred or inserted into that closed receipt.
+
+Reused prior timer guard/tag/overhead-accounting findings, and read R267's full
+attained-versus-physical transfer distinction and R189's full layer-major-versus-
+ordinary-ring distinction. They prevent confusing conditional byte/rate scenarios
+with a request, or porting a different DPCT layer-major path into this Xe source.
+Registry v123 at WS/bench/results/2026-10-11-parallel-round100 has cumulative494
+reports (incremental, three additions after v122/count491). The previous overhead
+implementation is returned, not yet indexed/adopted/qualified per Main. This is
+the distinct concrete requested implementation, not substitute Luna research or
+a repeated measurement/investigation of schedule/roofline candidates.
+
+Optional enablement and exact output scope
+New variable: STRATA_PREFILL_TRANSFER_COUNTS. Presence enables accounting once
+per Prefill::run, including value0 or empty. It is independent of
+STRATA_PREFILL_TIMING. To count without heavy PfTimer queries, Main can leave
+STRATA_PREFILL_TIMING ABSENT and set STRATA_PREFILL_TRANSFER_COUNTS=1. Do not set
+TIMING=0 to turn phase timing off; its existing presence semantics stay unchanged.
+No extra clocks or GPU instrumentation are introduced. With transfer variable
+absent, all six hotpath counter branches short-circuit before any extent/counter
+update, allocation of layer rows, aggregation or output. Empty local diagnostic
+vector objects and one run-level getenv remain; there is no claim of byte-identical
+stack layout or measured zero host overhead. The routed copy argument is factored
+into the same size_t bytes value so the counted extent is exactly the API argument.
+
+One completed diagnostic row is retained for every executed chunk and every layer
+in this Prefill stage [LB,LE), including zero-count layers. It records:
+  device; stage range; local chunk_offset c0; session pos p0; actual chunk tokens;
+  absolute layer; mode=routed or full_nonresident_stream; issuer=inline/thread;
+  format=native_gguf or canonical_q2_0; native gu/down type IDs (otherwise -1);
+  layer layout blob_bytes; submitted_calls; submitted_bytes.
+Format IDs/blob_bytes are immutable layout metadata, while calls/bytes are actual
+success-path counters. They are not derived from routed expert count, capacity,
+arena size, resident slots or a theoretical all-expert pass. Per-chunk totals can
+be reconciled by summing that chunk's layer rows. A completed-run total line gives
+routed/full-stream calls/bytes and the combined calls/bytes, with
+scope=this_prefill_stage_run and completion=checked. Existing phase text is untouched.
+The prefixes are "strata prefill expert H2D:" and "strata prefill expert H2D total:".
+Main must preserve final request/process status and not treat a missing/truncated
+ledger as zero traffic or a successful run.
+
+Six exact H2D production call sites covered (base line numbers)
+1. Inline full-nonresident issue_until, direct pinned source:
+   prefill.cpp1362 copy_async_after(stage_dev, en.blob, bytes, copy,...).
+2. Inline full-nonresident issue_until, staged/unpinned/transient source:
+   1366 copy_async_after(stage_dev, hb, bytes, copy,...).
+3. Threaded full-nonresident issuer, direct pinned source:
+   1420 same actual copy_async_after with en.blob.
+4. Threaded full-nonresident issuer, staged/unpinned/transient source:
+   1424 same actual copy_async_after with hb.
+5. Routed stage_one, direct pinned source:
+   2053 copy_async(slot_ptr(sl), b, layer bytes, copy).
+6. Routed stage_one, staged/unpinned/transient source:
+   2060 copy_async(slot_ptr(sl), hb, layer bytes, copy).
+Each hook is immediately AFTER its existing production publication::require
+accepts the actual copy API result, before later marker/publication actions. It
+adds one call and the exact same size_t bytes argument, only when nonzero. Zero
+extents do not count as H2D work: production copy_async returns without memcpy
+for zero, and copy_async_after omits h.memcpy for zero. Legal pack extents are
+positive; this exclusion also avoids labeling an empty dependency submit as H2D.
+Failed submission is not counted, and a later failed marker/worker/drain prevents
+publication of the entire current run's diagnostic, even if earlier requests were
+successfully submitted. Counters are uint64_t; both call/byte updates and final
+mode/combined sums check overflow and fail rather than wrap/invent totals.
+
+The full-stream modes count every actually issued nonresident sequence entry,
+including entries routing later skips. That is intentional actual traffic; it
+does not claim these are all routed/used experts. Routed mode counts only actual
+stage_one H2D requests after residency/CPU-selection skips. Direct pinned and
+stager-backed uploads are BOTH included: existing experts_dma increments only
+the direct path and cannot substitute for this logical H2D call/byte ledger.
+MMQ-direct ring and ordinary STAGE targets share stage_one, so both routed target
+layouts are covered without changing slot pointers, extents, release order or math.
+
+Format coverage and exact exclusions
+The same machinery uses ExpertLayout::blob_bytes(layer): per-layer native raw
+GGUF blob sizes when layout.native, otherwise the canonical Q2_0 BLOB. Thus the
+ledger includes supported native format pairs and canonical Q2_0 when they use
+these six calls; it is explicitly labeled rather than claimed native-only.
+Native packing/typed sizes/offset checks remain in the production layout loader;
+no alternative arena estimate or extracted selector/copy body is introduced.
+Pinned, unpinned and transient/file-backed sources all converge here. The worker
+stager's host memcpy/read/copy_blob traffic is not an H2D request and is not counted.
+
+Excluded: resident cached reads/fused resident products; resident-to-MMQ-ring
+D2D copy at2124; native MMQ gather/dequant device reads/copies; CPU expert results
+activation H2D at2273; routing/token/row/bounds/PLE/embedding/QSA/KV/residual copies;
+D2H diagnostics/activations and all host memcpy/file IO. Startup/cache profile
+fill, post-prefill cache refill/restore, decode/MTP/expert-source/kernel-read alias
+traffic, a different layer-major implementation and transfers outside this
+Prefill::run are not part of the completed total. This is a complete source-level
+ledger for the six blob-staging calls in this implementation, not all engine/model
+traffic. A zero row means no successful nonzero expert-blob upload request for
+that layer/chunk; it does not mean no weights read from RAM/device/cache.
+
+Thread ownership, publication and failure safety
+A chunk_transfers vector is optionally sized to LE-LB BEFORE any issuer thread
+or its RAII join guard is constructed. Exactly one path writes it:
+  full stream + threaded_issue: only the existing issuer worker;
+  full stream + inline: only issue_until on the consumer thread;
+  routed: only stage_one on the consumer thread.
+The inline issue_until path is not invoked when threaded_issue is true: its
+initial call is in the existing else-if, and give_back selects atomic publication
+instead of inline issue. Routed staging is mutually exclusive with stream_all.
+The main thread performs NO live read/aggregation of worker counters, not even
+at each layer boundary. No worker increments a shared run-total or vector size,
+and no new atomics, mutexes, publications or polling are required.
+
+At the existing chunk end, issuer.join happens first, then issuer_failure.rethrow
+and existing stats merge, then stager failure checking, then
+chunk_stager_done.complete. Only AFTER those succeed is the vector moved into
+the completed-chunk ledger. Thread join establishes the host happens-before;
+checked existing stager compute/copy drains establish buffer completion ownership.
+Full-stream chunk_stager_done owns that drain/finish/rethrow path. Routed mode
+already calls stager_done.complete for each layer, draining compute/copy and
+finishing/rethrowing the stager before progressing. Its chunk guard is inactive
+because every routed layer's stager is already closed; no drain is invented.
+
+On exception/early return, IssuerJoin remains later in declaration order than
+chunk_transfers, so it cancels/joins/drains before the counter vector retires.
+Worker counter overflow propagates through the original issuer Failure/cancel
+contract, not through a new unsynchronized error flag. Existing StagerDone and
+run catch checked drains remain unchanged. Diagnostic allocation failures follow
+the same original guarded unwind. Unknown/failed completion keeps the original
+fail-stop policy; counters never establish completion or authorize buffer release.
+
+No rows/totals are printed at chunk/layer boundaries. After all chunks, the
+existing next-stage future has been obtained, final compute sync succeeded, any
+enabled final PfTimer fold/report succeeded, and optional GDN-hash checked copies
+succeeded. Only at the final path immediately before returntrue does accounting
+preflight all totals and print the layer/chunk rows plus completed total. Failed
+submission, worker, stager, callback, final sync, timer query or later GDN-hash
+diagnostic exits before this new ledger. Earlier collected successful chunks are
+discarded with a failed local run; no partial run is labeled complete. Output
+write errors/truncation are not a new IO durability protocol: Main must require
+the complete final line/rows and actual run status from its capture/observer.
+
+Layer-split stages have separate Prefill::run objects and local ledgers. The
+explicit device/stage/position scope prevents treating one local total as a full
+model/request total. A child stage can finish locally before another stage later
+fails; Main must qualify the overall request before aggregating stage-local
+receipts. Existing stdio serialization governs individual fprintf lines; no new
+global ordering/request-ID protocol is introduced. Repeated runs with identical
+metadata still need the Main-owned observer's request/log boundaries.
+
+Costs and interpretation limits
+No additional GPU Event/wait/sync/copy, phase-marker move, scheduler decision,
+payload buffer layout, typed extent, model math, cache/context/MTP/bounds or host
+handoff admission is changed. Diagnostic counters/allocation/retention/output do
+have optional host cost, so a count-enabled arm is an instrumented diagnostic,
+not an automatically comparable quiet performance baseline. It works with phase
+timing disabled but inherits any unrelated existing Runtime/startup/CPU-sharing
+timers selected by normal production policy; it does not globally eliminate them.
+
+Host ledger storage is O(ceil(n/chunk)*(LE-LB)): two uint64_t counters (16 bytes)
+per layer/chunk plus vector/chunk descriptors and allocator overhead. The supplied
+32767-position/4096-chunk/full48-layer geometry would have8 chunks384 rows and
+6144 raw counter bytes, not a prediction of H2D calls/bytes. Very small chunks at
+full262144 context can create a much larger host ledger/output; no hidden fixed
+VRAM payload, arbitrary chunk reduction or context cap is added to rescue it.
+Optional host allocation failure rejects the local run through existing drains.
+Extreme small-chunk/high-layer diagnostic memory/output remains unqualified.
+
+Submitted bytes count the logical extent of accepted application H2D requests.
+They do not measure physical PCIe packet bytes, DMA engines/service, memory bus
+traffic, driver staging/segmentation, protocol overhead, source fault/host copy
+traffic, bandwidth, overlap or the request critical-path bottleneck. Neither a
+native arena census nor this counter can establish a PCIe roofline/performance
+winner without a separately admitted transfer/timing experiment and request
+completion receipts. No new magnitude, GPU fault behavior, numerical equality,
+model-quality or speed claim is established here.
+
+Main-owned qualification and deliverables
+No new mirror test, Runtime stub or extracted copy/helper test was created.
+Main owns source review/application, free/contrib-llvm source-LLVM WERROR/lints/
+host checks, and all later serial GPU qualification. Do not substitute icpx.
+Meaningful qualification should distinguish absent/0-presence enablement,
+timing-absent counting, routed pinned/staged sources, full-stream inline/thread,
+heterogeneous native layer sizes/canonical scope and zero-H2D resident rows;
+reconcile layer rows with per-mode/combined totals and actual closed run status.
+Use existing accepted failure/cancel/drain paths to ensure no completed ledger
+after failure. No future GPU run or fault injection is performed/requested by
+this implementation agent. Smaller hardware/NVIDIA, full-stream/CPU sharing,
+transient sources/layer splits, actual traffic values, output comparisons and
+failure injection remain unverified pending Main's authorized serial qualification.
+
+Staging B/xe-prefill-transfer-counts-source-v1:
+  src/prefill/prefill.cpp
+    SHA-256 94906966f9750504b2ce0db304cfa745667d02e60b60273793e4b84e431755f0
+  prefill-transfer-counts.patch
+    SHA-256 e24525069a370562ab447d3852911befa4981e804347345444c5b18d1f0be7fd
+  manifest.json: exact base/worktree/source/patch/report and input/source pins,
+    coverage, counter ownership, enablement, scope/limits and Main qualification.
+Report R/implementation-xe-prefill-transfer-counts-v1.txt.
+Manifest/report own hashes are returned separately to avoid self-hash loops.
+B=/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007
+R=B/research-20261009; WS is the supplied docs-sycl-storage-retention worktree.

@@ -1,0 +1,204 @@
+{
+  "schema": "xe-prefill-transfer-counts-source-v1",
+  "date": "2026-10-11",
+  "implementation_model": "gpt-6.1-sol",
+  "status": "source-only; build/lint/test/Runtime/GPU/performance unverified",
+  "base_commit": "ad41ad97b3a918727f89aace09b9a424b077bc8c",
+  "worktree": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-prefill-transfer-counts-20261011",
+  "branch": "fix/xestrata-prefill-transfer-counts-20261011",
+  "main_worktree_read_only": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011",
+  "base_source_pins": [
+    {
+      "relative_path": "AGENTS.md",
+      "bytes": 15190,
+      "sha256": "0427d8d4f91c4cf5128e77d3d898ee20783b63394d24718d1ff0b16779424dd0"
+    },
+    {
+      "relative_path": "src/prefill/prefill.cpp",
+      "bytes": 160613,
+      "sha256": "3fedf41ff3d248c97a3ab479b5466c5310399b8f897f1e26b5f9d6ee48744f22"
+    },
+    {
+      "relative_path": "src/core/gpu.cpp",
+      "bytes": 18649,
+      "sha256": "9792966f6b2c84434a1dddafefb3286c3c5fcfa78e23065b455904f9cf6fcfb8"
+    },
+    {
+      "relative_path": "include/strata/prefill/publication.hpp",
+      "bytes": 3535,
+      "sha256": "c266156f02854f6578ca526203525249e6e9035ca56102a4aeb815280d42e2ee"
+    },
+    {
+      "relative_path": "include/strata/kernels/cpu/expert_layout.hpp",
+      "bytes": 5239,
+      "sha256": "6e84ccc039c33f207ef009dff4796a6f39b4c5d1c9a85314aecbf700cacea796"
+    },
+    {
+      "relative_path": "src/kernels/cpu/expert_layout.cpp",
+      "bytes": 12998,
+      "sha256": "19f8e71f2bb629a668ccba264add71931be9df948df1d4bfc60d391a34a77b6d"
+    },
+    {
+      "relative_path": "include/strata/core/expert_source.hpp",
+      "bytes": 48365,
+      "sha256": "d54b627e363124c6cee733053b9c513f3493ff13f4335b2d54404d57a3d8b2eb"
+    }
+  ],
+  "changed_files": [
+    "src/prefill/prefill.cpp"
+  ],
+  "replacement": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-prefill-transfer-counts-source-v1/src/prefill/prefill.cpp",
+    "bytes": 165441,
+    "sha256": "94906966f9750504b2ce0db304cfa745667d02e60b60273793e4b84e431755f0"
+  },
+  "own_source": {
+    "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-prefill-transfer-counts-20261011/src/prefill/prefill.cpp",
+    "bytes": 165441,
+    "sha256": "94906966f9750504b2ce0db304cfa745667d02e60b60273793e4b84e431755f0"
+  },
+  "patch": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-prefill-transfer-counts-source-v1/prefill-transfer-counts.patch",
+    "bytes": 11475,
+    "sha256": "e24525069a370562ab447d3852911befa4981e804347345444c5b18d1f0be7fd"
+  },
+  "report": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/implementation-xe-prefill-transfer-counts-v1.txt",
+    "bytes": 16690,
+    "sha256": "01fe55665a52df9598860b1b41654b7d3be12c8d52942b28831e311109cdc697"
+  },
+  "main_traffic_scope_input": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-profile32k-traffic-scope-v1.json",
+    "bytes": 2387,
+    "sha256": "15d3dd53190453e775f9cd50d47f6f062d372dc7c612986ace3611a2c37bc412"
+  },
+  "closed_profile_input": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-source-llvm-profile32k-root-v3/record.json",
+    "bytes": 108407,
+    "sha256": "0f37a14abe6a3cfa1cdec615b1291f7593d86a1775a3fb962d13212171c5ab93"
+  },
+  "prior_registry": {
+    "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-11-parallel-round100/report-registry-v123.json",
+    "bytes": 2908,
+    "sha256": "a289a62312a065830c9e4a8c4a8479ee3b3469550c31997108a04ca0778c3ae9"
+  },
+  "prior_registry_cumulative_reports": 494,
+  "prior_relevant_reports": [
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/implementation-xe-profiling-interval-guard-v1.txt",
+      "bytes": 12337,
+      "sha256": "e3b2f4995d727d2dac327afc53f490591fc1ff692a5609b457f2eecd9ed71fe9"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/implementation-xe-profiling-tags-diagnostic-v1.txt",
+      "bytes": 14992,
+      "sha256": "9b0a648b879f67cc9278e50c3b8317bc2b2f3b6dae3762e00cd4055088947b10"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/implementation-xe-profiling-overhead-accounting-v1.txt",
+      "bytes": 12099,
+      "sha256": "a7870b90f83fc7b5aed2057102e899e4a292329240a0dde3c1c902a28fad3714"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round267-attained-versus-physical-transfer-budget-limits.txt",
+      "bytes": 8905,
+      "sha256": "d912901a51b651c43806dfb074f23e9e1e3cc4b888fd2ba3f6c081995d47212f"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round189-external-long-prefill-weight-transfer-schedule-candidates.txt",
+      "bytes": 9185,
+      "sha256": "8eef2207bc5aaa39070121899ef3d7e0fb7a8ec3fdcea546f28c1aa3d15bd7a5"
+    }
+  ],
+  "design": {
+    "env": "STRATA_PREFILL_TRANSFER_COUNTS",
+    "semantics": "presence per run; absent off; 0/empty on; independent of STRATA_PREFILL_TIMING",
+    "successful_nonzero_blob_copy_sites": [
+      {
+        "base_line": 1362,
+        "mode": "full_nonresident_stream",
+        "issuer": "inline",
+        "source": "pinned/direct",
+        "api": "copy_async_after"
+      },
+      {
+        "base_line": 1366,
+        "mode": "full_nonresident_stream",
+        "issuer": "inline",
+        "source": "stager/unpinned/transient",
+        "api": "copy_async_after"
+      },
+      {
+        "base_line": 1420,
+        "mode": "full_nonresident_stream",
+        "issuer": "thread",
+        "source": "pinned/direct",
+        "api": "copy_async_after"
+      },
+      {
+        "base_line": 1424,
+        "mode": "full_nonresident_stream",
+        "issuer": "thread",
+        "source": "stager/unpinned/transient",
+        "api": "copy_async_after"
+      },
+      {
+        "base_line": 2053,
+        "mode": "routed",
+        "issuer": "inline",
+        "source": "pinned/direct",
+        "api": "copy_async"
+      },
+      {
+        "base_line": 2060,
+        "mode": "routed",
+        "issuer": "inline",
+        "source": "stager/unpinned/transient",
+        "api": "copy_async"
+      }
+    ],
+    "extent": "same size_t bytes argument passed to actual production API, counted only immediately after require success and bytes!=0",
+    "counter_type": "uint64_t calls/bytes with checked update and final sum overflow",
+    "format_scope": "native_gguf per-layer layouts and canonical_q2_0 sharing the six staging calls; exact format/type/extent labels",
+    "rows": "per chunk and executed stage layer, including zero rows; device/stage/local chunk offset/session pos/tokens/mode/issuer/types/blob extent/calls/bytes",
+    "total_scope": "this_prefill_stage_run; per-mode and combined actual submitted call/byte totals",
+    "writer_ownership": "threaded full stream has exclusive issuer writes; inline/routed exclusive consumer writes; modes mutually exclusive",
+    "consumer_boundary": "existing issuer.join and failure rethrow, stager failure check, chunk_stager_done.complete before moving counters into run ledger",
+    "output_boundary": "only final successful path after existing terminal compute sync, next-stage future result, optional PfTimer and GDN-hash diagnostics; no interim or unwind output",
+    "failure": "existing require/failure/cancel/join/checked-drain policy retained; failed submission/drain/worker/query/callback emits no completed local ledger",
+    "absent_hotpath_clock_or_counter_work": 0,
+    "extra_gpu_events_waits_syncs_copies_allocations": 0,
+    "diagnostic_host_memory": "O(chunks*stage_layers),16-byte raw uint64 counter pair per row plus descriptors/allocation overhead"
+  },
+  "exclusions": [
+    "host memcpy/copy_blob/file reads",
+    "D2H",
+    "resident cached reads and resident MMQ D2D",
+    "CPU expert activation-result upload",
+    "routing/token/PLE/embedding/row/bounds/KV/QSA/residual/unrelated copies",
+    "startup/profile-cache fill and post-prefill restore",
+    "decode/MTP/source device-alias traffic",
+    "other implementations including DPCT layer-major"
+  ],
+  "limitations": [
+    "No actual new traffic totals, byte/call measurement, numerical equality or performance result established; Main owns all serial qualification.",
+    "Source-level accepted request extent is not physical PCIe-exclusive traffic, packet bytes, hardware DMA calls/service, bandwidth, overlap or bottleneck proof.",
+    "Full-stream counts unrouted skipped sequence entries that were actually copied; routed mode excludes CPU-selected/resident experts by actual staging branch.",
+    "Layer-split child local success can precede another stage failure; stage-local receipts require overall Main request/process validation before aggregation.",
+    "No request-ID/global-output-order protocol; Main observer supplies repeated-request/log boundaries and complete output receipt.",
+    "Optional host ledger/output grows with tiny chunks and stage layer count; extreme diagnostic memory/output not qualified.",
+    "Accounting works with phase timing absent but does not disable inherited unrelated Runtime/startup/CPU-sharing timers.",
+    "No failed-submission partial diagnostic is published; incomplete/truncated output must not be treated as zero traffic/success.",
+    "Existing previous overhead patch is independent, returned but unadopted/unqualified, and not included in this ad41-based replacement.",
+    "Smaller devices/NVIDIA, full stream/thread/canonical/transient/CPU-sharing/layer-split and failure injection unverified."
+  ],
+  "operations": {
+    "new_isolated_worktree_created": true,
+    "only_own_source_edited": true,
+    "local_md_present": false,
+    "main_or_previous_source_artifact_edits": false,
+    "build_configure_lint_tests_runtime_gpu_model_process_service_reset_cleanup_commit_push_network": false,
+    "credential_record_read": false,
+    "main_owns_all_serial_qualification": true
+  }
+}

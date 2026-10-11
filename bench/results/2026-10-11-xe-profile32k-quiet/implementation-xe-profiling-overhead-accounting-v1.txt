@@ -1,0 +1,183 @@
+XeStrata optional prefill timer host-overhead accounting implementation v1
+Date: 2026-10-11 (Asia/Tokyo)
+Implementation: gpt-6.1-sol, source-only; Main owns all serial qualification.
+Status: replacement source and exact patch delivered; build/lint/test/run unverified.
+
+Isolation and input identities
+Immutable base: ad41ad97b3a918727f89aace09b9a424b077bc8c.
+New isolated ghq worktree:
+  /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-profiling-overhead-accounting-20261011
+New branch: fix/xestrata-profiling-overhead-accounting-20261011.
+Own HEAD remains the immutable base; only src/prefill/prefill.cpp is modified.
+Main worktree remains read-only. Existing own worktrees, previous guard/standalone
+timer artifacts and existing sources/records were not edited. No root checkout
+change, commit, push, cleanup or network publication occurred.
+
+Read AGENTS.md at the base in full; LOCAL.md is absent in the new worktree.
+Used the already-read git-workflow skill for the explicitly requested separate
+worktree/branch. Main's explicit source-only/no-build/no-lint/no-test/no-commit/
+no-push instruction overrides those normal skill/AGENTS completion steps here;
+Main owns them. No compiler/build/configure/lint/test, GPU/Runtime/profiler/model,
+process/service/reset/query/control operation was run. Only source/record reads,
+worktree creation, own source edits, diff/hash and requested artifact writes.
+The prohibited credential-bearing prefill contract record was never read.
+
+Base src/prefill/prefill.cpp:
+  bytes 160613
+  SHA-256 3fedf41ff3d248c97a3ab479b5466c5310399b8f897f1e26b5f9d6ee48744f22
+Replacement src/prefill/prefill.cpp:
+  bytes 161604
+  SHA-256 6a77f49d21f404b7a397052e562537ff4767fc387e3b93897b4394b803bdbf4b
+Original dual copyright and LGPL-3.0-or-later SPDX headers are unchanged.
+No GPU timing API/header/CMake/runtime/marker-placement change is included.
+
+Concrete closed-run input and prior decisions
+Read the explicitly authorized safe Main-owned profile receipt:
+  B/xe-source-llvm-profile32k-root-v3/record.json
+  bytes 108407
+  SHA-256 0f37a14abe6a3cfa1cdec615b1291f7593d86a1775a3fb962d13212171c5ab93
+Main reports this closed ad41 32K diagnostic PASS. Its stored phase_profile has
+32767 actual batched positions, timeline 248866 ms, wall 248926 ms, host grouping
+96005 ms (38.6%), dequant 106741 ms (42.9%), wait copy 1040 ms (0.4%). The receipt
+marks diagnostic_only=true, performance_eligible=false, full_model_quality_qualified
+=false; model_normal_close=true, kernel_gate_passed=true, new_fault_messages=[].
+These are retained Main receipt facts, not a new measurement by this agent.
+The preexisting receipt's own phase limitation remains in force. It is not a
+quiet throughput result, independently validated device service profile or full
+model-quality qualification. No new measurement of mark/fold overhead exists yet.
+
+Read committed incremental registry v123 at WS/bench/results/
+2026-10-11-parallel-round100/report-registry-v123.json: research_completed=494,
+three new implementation entries after committed v122/count491. This is not a
+flat list of all reports. Prior profiling interval guard and real-runtime tag
+diagnostic conclusions remain: failures must not become apparently valid phase
+timelines; same-queue tags describe covered queue timelines including gaps;
+positive/order/plausibility checks alone do not independently calibrate a timer
+domain. No historical invalid interval is asserted for this successful new run.
+This task implements Main's concrete attribution finding; it is not replacement
+research for the unavailable selected Luna agent and repeats no GPU investigation.
+
+Why the separate host metric is needed
+At base prefill.cpp:1779, kPfHostGroup is recorded BEFORE host routing data
+preparation/copy and the checked compute stream_sync at1798. PfTimer.fold at1799
+then queries the completed timestamps on the host. fold keeps the last mark as
+the next interval's first endpoint; host work after that retained mark and before
+the next marker can land in the host-grouping queue interval. Therefore the
+phase labeled host grouping includes the fold's host API work, not just routed
+pair grouping. Dequant similarly can include host/submission/transfer gaps between
+its surrounding marks. This patch moves none of those boundaries and does not
+subtract host costs from phase totals or relabel the fractions as GPU service.
+
+Minimal optional implementation
+PfTimer now holds two per-run host steady-clock accumulators:
+  mark_host_ms: entry after the enabled guard through completion of event creation
+    when needed, vector/phase bookkeeping, the existing event_record/require and
+    used increment. Uses the already existing Clock=steady_clock and ms_since.
+  fold_host_ms: entry after the enabled guard through all existing elapsed queries/
+    require calls, phase accumulation and retained-marker swaps/used reset.
+    Enabled no-op folds with fewer than two marks are timed/counted as well.
+No elapsed phase/query or arithmetic is changed. No new GPU Event, recording,
+wait, stream synchronization, kernel, polling, thread or queue operation is added.
+The two Clock reads per enabled successful call and local counter bookkeeping
+are the only added instrumentation before the final single stderr line.
+
+The metrics are host wall DURING these CPU API wrappers, not CPU cycles or thread
+CPU service time. They include possible API blocking, scheduler descheduling,
+allocation/vector work and local bookkeeping; they do not isolate bare runtime
+calls. The measured boundary excludes the accumulator update after the ending
+Clock read and the final report formatting. Clock/counter instrumentation itself
+has cost and can perturb a timer-on queue timeline; there is no calibration or
+claim that this cost is fully measured, zero, or safely subtractable from phases.
+Existing host staging/chunk counters can overlap these observations. Do not add
+all host/phase metrics as disjoint shares or subtract mark+fold from the GPU
+timeline to manufacture exclusive work/service totals.
+
+Counters and interval-versus-endpoint semantics
+  marker_calls: every PfTimer.mark entered while on, counted once per call.
+    It is not the number of distinct retained Event objects or unique endpoints.
+  new_events: successful actual production event_create calls when the vector
+    needs another Event wrapper; reused markers do not increment it.
+  fold_calls: every fold entered while on, including used<2 no-op calls.
+  completed_intervals: incremented ONLY after the existing production
+    publication::require(event_elapsed_ms) succeeds for that adjacent mark pair.
+    It is the number of successfully completed helper intervals, including a
+    permitted zero interval under the unchanged helper, not raw endpoint calls.
+
+For a work-bearing fold with used=U at entry, its existing loop queries U-1
+adjacent intervals and retains one last mark. Actual gpu.cpp event_elapsed_ms
+invokes two command_end get_profiling_info calls on a successful normal pair:
+one on each endpoint. A middle Event can therefore be queried as the end of one
+interval and the start of its neighbor. No endpoint/UR/Level Zero getter counter
+is added or printed by this patch. Do not interpret completed_intervals as that
+underlying API count; source-level two-getter behavior is not a measured driver
+call count, because the runtime may cache/implement queries differently. Failed
+getters can stop the helper before reaching its second endpoint, and failures
+are never represented in an emitted completed summary.
+
+Output and compatibility
+Both existing phase/host lines and their text/numeric formatting stay unchanged.
+Exactly one distinct line is appended after them in the completed pt.on branch:
+  strata prefill timer overhead: host wall CPU API overhead: mark <ms> ms
+  (marker calls <count>, new event creations <count>), fold <ms> ms
+  (fold calls <count>, completed intervals <count>); not GPU service or timer calibration
+The source prints this as ONE stderr line, with three decimal places for host
+milliseconds and %zu for actual size_t counters. The distinct prefix avoids
+changing the existing "strata prefill timing:" phase text parser. A consumer
+which rejects all unexpected stderr still needs to allow this optional diagnostic
+line; no observer/parser source was changed here.
+
+Presence semantics are untouched:
+  STRATA_PREFILL_TIMING absent: mark/fold return before ANY new Clock read,
+    counter increment, Event operation or overhead line.
+  STRATA_PREFILL_TIMING present, including value "0" or empty: enabled, as before.
+No second environment variable, duration threshold, runtime selection override or
+performance policy is introduced. New per-run scalar members are zero initialized
+even when off; no claim of byte-identical stack layout or measured zero host cost
+is made. Empty/rejected/cancelled runs keep their existing early-return behavior.
+
+Failure and completion safety
+All existing event_create/event_record/elapsed require checks remain in place.
+Completed interval count increases only after require, so a failed query throws
+through the original Prefill::run failure path instead of becoming a successful
+count/timeline. Every work-bearing fold still follows its original checked stream
+completion. If any inner or final fold query fails, control exits before the
+existing phase reports AND the new overhead summary. No destructor or catch emits
+partial overhead, a completed result or a second fold. Call timing which throws
+need not finish its local accumulator because that entire PfTimer is discarded.
+Existing issuer/stager cancellation/join/drains, catch queue drains and fail-stop
+completion policy are untouched. Timings are never used to authorize buffer
+release or infer completion. Earlier completed calls' local counters are discarded
+with a failed run; no apparently complete summary is published for that query failure.
+The report branch follows the same final stream_sync and successful final fold.
+The preexisting optional later GDN-hash diagnostic can still fail after a phase
+report; Main must retain final run/process status. This patch does not redefine
+the existing report as proof of all later optional diagnostics/model operations.
+
+Scope and Main-owned qualification
+Source review/diff only, not compile/lint/test validation. No new mirror test,
+Runtime stub or helper extraction was written. Main owns application, required
+free and contrib-llvm source-LLVM compilation/lints/host checks, and any later
+serialized timing-on diagnostic versus quiet timer-off control. Do not substitute
+contrib-icpx. Verify absent-variable behavior, presence=0 behavior, completed line
+counts/semantics and the existing failure propagation on Main's accepted test path;
+retain actual source/environment/completion/fault receipts for any measurement.
+No count totals or host-overhead magnitudes are predicted for the historical32K
+run; new numbers require a new qualified run and are not retroactively inserted
+into that receipt. Smaller devices/CPU configurations, NVIDIA, actual query failure
+injection and real overhead numbers remain unverified. Model math/scheduler,
+cache/context/MTP/physical bounds/host-handoff refusals, default timer-off paths,
+existing checked drains and prior timestamp guard were not changed.
+
+Artifacts and hashes
+Staging: B/xe-profiling-overhead-accounting-source-v1
+  src/prefill/prefill.cpp
+    SHA-256 6a77f49d21f404b7a397052e562537ff4767fc387e3b93897b4394b803bdbf4b
+  profiling-overhead-accounting.patch (exact own-worktree git diff)
+    bytes 3221
+    SHA-256 476ed453e8120ac80d32a3481427ff473ddf13e1e0001ba61731eef9ef611713
+  manifest.json binds base, branch/worktree, base/replacement/patch/report and
+    historical input hashes, counter definitions, scope and Main ownership.
+Report: R/implementation-xe-profiling-overhead-accounting-v1.txt
+Manifest/report self identities are returned separately to avoid hash loops.
+B=/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007
+R=B/research-20261009; WS is Main's docs-sycl-storage-retention-20261009 worktree.
