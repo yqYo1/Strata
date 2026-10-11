@@ -1,0 +1,57 @@
+# Ryzen 5600X AVX2 native expert decode pool: next discriminant (v1)
+
+Date: 2026-10-11. Read-only investigation. No live source checkout was opened. No build, test, benchmark, CPU/GPU/service query, profiler, source/config edit, cleanup, or Git mutation was performed. The only output written is this requested report. External sources were searched and opened through web search; links below lead to primary code/docs or implementer-authored material.
+
+## Scope and evidence identity
+
+Target supplied by the owner: Ryzen 5 5600X, 6C/12T, AVX2, DDR4; 48 MoE layers, IQ3-family/native CPU experts; pool of five workers; cache setting 3 slots/layer; cold decode about 8–9 output tokens/s against a 70 tokens/s goal. The speed gap motivates diagnosis but does not establish that CPU expert math is the exposed bottleneck. This report treats the target and rates as supplied context, not independently measured facts.
+
+Read the prior decode/kernel reports in `/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009`, especially `decode-pool-phase-critical-path-round7.txt`, `decode-cpu-new-mechanisms-round11.txt`, `decode-cpu-heterogeneous-expert-work-round12.txt`, `cpu-mixed-format-avx2-round3.txt`, `avx2-moe-implementation-blogs-round30.txt`, `zen3-moe-expert-optimization-round25.txt`, `zen3-native-pool-heterogeneous-tail-candidates-round86.txt`, `small-nt-worker-telemetry-minimum-contract-round57.txt` and `zen3-quantized-moe-implementer-blog-candidates-round104.txt`. These already cover phase timing, NT heterogeneity, dynamic row claims, phase task granularity, NT-weighted boundaries, GU/Down worker affinity, thread/wait/lead telemetry, AVX2 panel GEMM, paired kernels, prefetch, and previously rejected decoder alternatives. Their proposals/results are not repeated as new findings here.
+
+Latest committed registry examined: `report-registry-v129.json` (registry version 129, research_completed 508, created 2026-10-11 09:30:35 UTC), SHA256 recorded below. Its two new reports are GPU grouped-dequant controller implementations, not CPU decode research. Thus they do not supersede the above CPU evidence. The specified XeStrata commit was read with `git show`, no worktree source was inspected:
+
+- `b72640fff05098f1762cb3bf9c427a5f8d7db31c`, `experiment(xe): remove private pointer selection in grouped dequant`.
+- Its 32-line change adds an always-inline `dequant_group_pointer` switch with constant table subscripts, passed by reference, and uses it in grouped GU/Up and Down dispatch. The commit itself cautions that scalar replacement/private-array removal is an IR/component qualification question, not guaranteed by source. This is a Xe GPU grouped-dequant optimization and supplies no CPU AVX2 decoder or pool finding; it is explicitly excluded from CPU conclusions.
+
+## Cross-implementation comparison
+
+**llama.cpp / GGML CPU.** The upstream CPU pool uses a shared atomic chunk cursor for matrix-multiply chunks. This validates dynamic claiming as a common pattern, but Strata's reports already identify dynamic atomic row claiming; copying that mechanism is not a difference. Its IQ decoder baseline is also the source of Strata's NT=1 fallback and is not an alternative decoder. Primary references: [GGML CPU threadpool](https://github.com/ggml-org/llama.cpp/blob/master/ggml/src/ggml-cpu/ggml-cpu.c) and the pinned [IQ quantized AVX2 kernels](https://github.com/ggml-org/llama.cpp/blob/3cf03257f219afbe7334045ff7c6a06ac68c627d/ggml/src/ggml-cpu/arch/x86/quants.c).
+
+**KTransformers AVX2 grouped MoE.** Implementer commit `9481291` describes an AVX2 MXFP4 path that transforms activation rows into the fixed decoder order, amortizes decode across token groups, and falls back for large per-expert batches to bound per-thread FP32 staging. Its author reports EPYC 7452 / DeepSeek-V4-Flash / MXFP4 results. The transfer idea—batch shape can change whether weight decode should be amortized, and scratch capacity can require a fallback—is already represented by the prior R30 IQ row-panel screen. It does not create a new IQ3_S path: its fixed MXFP4 permutation and BF16 activations differ from Strata's indexed IQ grids and Q8 quantized activation data. Its measurements do not predict 5600X performance. Source: [commit and implementation details](https://github.com/kvcache-ai/ktransformers/commit/9481291).
+
+**vLLM and IPEX-LLM.** The vLLM sources surfaced by this search describe expert parallel placement/load balancing or grouped GPU kernels, not a Ryzen-local quantized IQ row pool. IPEX CPU LLM examples focus on conventional weight-only INT8/INT4 and dense operators; no matching IQ3 decoder/pool implementation was located. These are not evidence for porting their batching or scheduling policy into this exact AVX2 path. References: [vLLM CPU backend docs](https://github.com/vllm-project/vllm/blob/main/docs/getting_started/installation/cpu.md), [vLLM expert parallel/load-balancer docs](https://github.com/vllm-project/vllm/blob/main/docs/serving/expert_parallel_deployment.md), [IPEX CPU LLM examples](https://github.com/intel/intel-extension-for-pytorch/tree/main/examples/cpu/llm).
+
+**Other code and author material.** Hugging Face's experts interface distinguishes `batched_mm` (duplicate expert weights per token) from grouped expert matmul; it documents an operator/data-layout choice, but does not identify a better AVX2 IQ row kernel for this pool. KTransformers R104 and llama.cpp R30 are the closest prior implementer material and have already been screened. References: [Transformers expert interface](https://github.com/huggingface/transformers/blob/main/docs/source/en/experts_interface.md), [KTransformers AVX2 implementation commit](https://github.com/kvcache-ai/ktransformers/commit/9481291).
+
+## Decision: no new kernel or scheduler delta established
+
+The external comparison plus registry reconciliation yields no unreported, source-supported 1–3 implementation changes for this target. In particular, it does not support another row-order rewrite, generic batch/task knob, static worker affinity, different chunk scheduler, or AVX2 panel proposal. Those overlap with prior reports, and external implementations use different packed formats, batch regimes, hardware, or execution layers. That is a no-new-candidate finding, not a claim that the current kernel or pool is optimal.
+
+The remaining unknown that can still change the decision is narrower: during actual verify windows, does variable `ExpertJobMulti.nt` make one or more current equal-row tasks the tail, or are the phase intervals mostly useful balanced row work (or hidden behind GPU work)? R12/R86 already define NT-weighted boundaries and task-tail diagnostics; without actual worker-tail evidence, implementing the weighted policy again would be premature.
+
+## Minimum useful counter, if the owner asks for one
+
+Use the already-existing clean request/window wall outcome and GU / FF-quant / Down phase elapsed counters, then add only a compact per-phase-batch tuple:
+
+`(layer, NativeFmt, nt=1/2/3/4+ counts, task_count, per-worker claimed rows, per-worker row-call thread-CPU ns, last-finish minus first-finish ns)`.
+
+Aggregate over a fixed number of completed windows; do not store task timelines or per-row events. This is the minimum discriminator for the only surviving pool question: phase wall alone cannot distinguish useful row work from queue/barrier/tail, and row counts alone cannot show NT-skewed service. The `nt` bins and phase counters are already part of prior proposals; the incremental minimum is per-participant row-call CPU and finish skew, not the extensive per-wakeup/per-expert-ready telemetry from R57. Thread CPU is a participant-work proxy including code in the timed row call, not a hardware cycle or pure matmul counter. Keep this diagnostic instrumented and separate from clean decode throughput; compare emitted tokens over request wall time. Do not infer that CPU pool time is on the critical path merely because its phase total is large.
+
+Decision use: if rows/NT are balanced and worker finish skew is small, do not pursue weighted boundaries. If repeatable skew tracks NT while pool phase wall and clean output rate move together, a single equal-vs-NT-weighted boundary comparison becomes justified. If per-worker row-call CPU is balanced but physical decode remains slow, the pool scheduler is not selected by this counter; phase decomposition and wait/GPU overlap must direct the next question. No performance gain is predicted.
+
+## Sources searched and applicability notes
+
+- llama.cpp shared chunk source: https://github.com/ggml-org/llama.cpp/blob/master/ggml/src/ggml-cpu/ggml-cpu.c — primary implementation; confirms dynamic claim precedent only.
+- llama.cpp pinned CPU IQ source: https://github.com/ggml-org/llama.cpp/blob/3cf03257f219afbe7334045ff7c6a06ac68c627d/ggml/src/ggml-cpu/arch/x86/quants.c — primary implementation; exact quantizer-family source/baseline, not novel transfer.
+- KTransformers grouped AVX2 MXFP4 commit: https://github.com/kvcache-ai/ktransformers/commit/9481291 — implementer code/commit message and reported measurements; transfer limited by MXFP4 layout, BF16 activations, EPYC host and DeepSeek-V4 workload.
+- vLLM CPU docs: https://github.com/vllm-project/vllm/blob/main/docs/getting_started/installation/cpu.md — official project docs; no specific IQ3 AVX2 routed-row kernel contract found.
+- vLLM EPLB docs: https://github.com/vllm-project/vllm/blob/main/docs/serving/expert_parallel_deployment.md — placement across EP ranks, different scope from local pool workers.
+- IPEX-LLM CPU examples: https://github.com/intel/intel-extension-for-pytorch/tree/main/examples/cpu/llm — official implementation/docs; conventional weight-only formats, no matching IQ expert path found.
+- Hugging Face experts interface: https://github.com/huggingface/transformers/blob/main/docs/source/en/experts_interface.md — primary API docs; grouped-vs-batched operator semantics, no AVX2 IQ recommendation.
+
+## Artifact identities
+
+Registry: `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-11-xe-native-dequant-group-v2/report-registry-v129.json`
+SHA256: `52da32669a4dba3ed8afc7174676774efb50f4e5fa760da4894b6eeff634723a`
+
+Requested report: `/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-xe-avx2-native-decode-pool-next-v1.txt`

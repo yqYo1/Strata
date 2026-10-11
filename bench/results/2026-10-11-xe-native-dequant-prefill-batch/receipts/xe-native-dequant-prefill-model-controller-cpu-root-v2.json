@@ -1,0 +1,622 @@
+{
+  "active": false,
+  "complete": true,
+  "passed": true,
+  "commands": [
+    {
+      "label": "expanded-protocol-fixtures",
+      "argv": [
+        "/usr/bin/python3",
+        "-c",
+        "import json\nimport protocol, fixtures\nimport run_root\npositive=[]; negative=[]\nfor n in (64,2049,32768):\n    good=fixtures.protocol_case(n)\n    assert protocol.validate(good,n=n)['generated_tokens']==16\n    positive.append(dict(n=n,kind='complete_protocol'))\n    assert protocol.validate(fixtures.protocol_case(n,1,'stop'),n=n)['generated_tokens']==1\n    positive.append(dict(n=n,kind='normally_completed_early_EOS_not_strict16'))\n    trace=fixtures.trace_case(n)\n    assert len(protocol.validate_trace(trace,n=n)['chunk_start_positions'])==len(fixtures.GEOMETRY[n]['offsets'])\n    positive.append(dict(n=n,kind='exact_trace_geometry'))\n    cases=[good[:-1],good+[good[-1]],good+['ERR failed'],good+['T 123'],\n           [x for x in good if not x.startswith('PP ')],\n           [x.replace('T 123','T 248320') for x in good],\n           [x.replace('LP -0.1','LP nan') for x in good],\n           [x.replace('50000','nan') for x in good]]\n    for index,bad in enumerate(cases):\n        try: protocol.validate(bad,n=n)\n        except (ValueError,IndexError): negative.append(dict(n=n,kind='protocol',case=index))\n        else: raise AssertionError(('malformed protocol accepted',n,index))\n    for index,bad in enumerate([trace+trace,trace.replace('of '+str(n-1),'of '+str(n)),trace.replace('chunk 0','chunk 1')]):\n        try: protocol.validate_trace(bad,n=n)\n        except ValueError: negative.append(dict(n=n,kind='trace',case=index))\n        else: raise AssertionError(('malformed trace accepted',n,index))\nfor n in (True,65):\n    try: protocol.validate(fixtures.protocol_case(64),n=n)\n    except ValueError: negative.append(dict(n=n,kind='invalid_explicit_N'))\n    else: raise AssertionError('invalid N accepted')\nassert len(positive)==9 and len(negative)==35\nprint(json.dumps(dict(passed=True,positive_cases=positive,negative_cases=negative,controller_imported_without_main=True,\n    limitations='Protocol/import cases only. The 27 source rejection descriptions are not executed fault tests; no model numerical/lifetime/performance qualification.')))\n"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-11T10:07:00.785942+00:00",
+      "wall_seconds": 30,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 4026469,
+          "start_ticks": 6198490,
+          "sid": 4026469,
+          "pgid": 4026469
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 61984.907493649,
+      "pid": 4026469,
+      "spawn_return_monotonic": 61984.909486095,
+      "direct_identity": {
+        "pid": 4026469,
+        "state": "R",
+        "ppid": 4026467,
+        "pgid": 4026469,
+        "sid": 4026469,
+        "start_ticks": 6198490,
+        "rss_bytes": 573440
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 16171008,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-11T10:07:00.966457+00:00",
+      "elapsed_seconds": 0.18027528299717233,
+      "logs": {
+        "expanded-protocol-fixtures.stdout": {
+          "bytes": 2221,
+          "sha256": "4e1332d67e1e974ef4506f3bdadc154ca840e7061492dc87938f0ba40364148c"
+        },
+        "expanded-protocol-fixtures.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "invalid-cli-0",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-native-dequant-prefill-model-controller-source-v2/run_root.py",
+        "--input-tokens",
+        "64",
+        "--group",
+        "16",
+        "--batch",
+        "on"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-11T10:07:00.967065+00:00",
+      "wall_seconds": 30,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 4026485,
+          "start_ticks": 6198508,
+          "sid": 4026485,
+          "pgid": 4026485
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 61985.088641407,
+      "pid": 4026485,
+      "spawn_return_monotonic": 61985.090234881,
+      "direct_identity": {
+        "pid": 4026485,
+        "state": "R",
+        "ppid": 4026467,
+        "pgid": 4026485,
+        "sid": 4026485,
+        "start_ticks": 6198508,
+        "rss_bytes": 458752
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 14446592,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 2,
+      "finished_utc": "2026-10-11T10:07:01.135618+00:00",
+      "elapsed_seconds": 0.1682502059993567,
+      "logs": {
+        "invalid-cli-0.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "invalid-cli-0.stderr": {
+          "bytes": 224,
+          "sha256": "0122ac60a5c5c673fe9e25fa3d9bb27a7118844d82199b489215617e78a46caa"
+        }
+      }
+    },
+    {
+      "label": "invalid-cli-1",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-native-dequant-prefill-model-controller-source-v2/run_root.py",
+        "--input-tokens",
+        "64",
+        "--group",
+        "16",
+        "--batch",
+        "off",
+        "--reference",
+        "/tmp/unused-no-open"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-11T10:07:01.136300+00:00",
+      "wall_seconds": 30,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 4026494,
+          "start_ticks": 6198525,
+          "sid": 4026494,
+          "pgid": 4026494
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 61985.257959527,
+      "pid": 4026494,
+      "spawn_return_monotonic": 61985.260096875,
+      "direct_identity": {
+        "pid": 4026494,
+        "state": "R",
+        "ppid": 4026467,
+        "pgid": 4026494,
+        "sid": 4026494,
+        "start_ticks": 6198525,
+        "rss_bytes": 458752
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 14929920,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 2,
+      "finished_utc": "2026-10-11T10:07:01.308501+00:00",
+      "elapsed_seconds": 0.17186348699760856,
+      "logs": {
+        "invalid-cli-1.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "invalid-cli-1.stderr": {
+          "bytes": 224,
+          "sha256": "0122ac60a5c5c673fe9e25fa3d9bb27a7118844d82199b489215617e78a46caa"
+        }
+      }
+    },
+    {
+      "label": "invalid-cli-2",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-native-dequant-prefill-model-controller-source-v2/run_root.py",
+        "--input-tokens",
+        "65",
+        "--group",
+        "16",
+        "--batch",
+        "off"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-11T10:07:01.309732+00:00",
+      "wall_seconds": 30,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 4026510,
+          "start_ticks": 6198543,
+          "sid": 4026510,
+          "pgid": 4026510
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 61985.431616073,
+      "pid": 4026510,
+      "spawn_return_monotonic": 61985.433912612,
+      "direct_identity": {
+        "pid": 4026510,
+        "state": "R",
+        "ppid": 4026467,
+        "pgid": 4026510,
+        "sid": 4026510,
+        "start_ticks": 6198543,
+        "rss_bytes": 458752
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 14409728,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 2,
+      "finished_utc": "2026-10-11T10:07:01.488573+00:00",
+      "elapsed_seconds": 0.17826047500420827,
+      "logs": {
+        "invalid-cli-2.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "invalid-cli-2.stderr": {
+          "bytes": 235,
+          "sha256": "651d90c859458b307af6ae6ec589e23104b87bedf45ed6771c9a273073e59885"
+        }
+      }
+    },
+    {
+      "label": "invalid-cli-3",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-native-dequant-prefill-model-controller-source-v2/run_root.py",
+        "--input-tokens",
+        "64",
+        "--group",
+        "65",
+        "--batch",
+        "off"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-11T10:07:01.489696+00:00",
+      "wall_seconds": 30,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 4026522,
+          "start_ticks": 6198561,
+          "sid": 4026522,
+          "pgid": 4026522
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 61985.611613673,
+      "pid": 4026522,
+      "spawn_return_monotonic": 61985.614148631,
+      "direct_identity": {
+        "pid": 4026522,
+        "state": "R",
+        "ppid": 4026467,
+        "pgid": 4026522,
+        "sid": 4026522,
+        "start_ticks": 6198561,
+        "rss_bytes": 573440
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 14770176,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 2,
+      "finished_utc": "2026-10-11T10:07:01.676273+00:00",
+      "elapsed_seconds": 0.18595968699810328,
+      "logs": {
+        "invalid-cli-3.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "invalid-cli-3.stderr": {
+          "bytes": 233,
+          "sha256": "3d0e5f565f64b4f86de4131594146e86d6b503bf7c0a6d233dc9b44af69fbb3d"
+        }
+      }
+    }
+  ],
+  "started_utc": "2026-10-11T10:07:00.782898+00:00",
+  "controller_sha256": "85db7305cc227340b88a58eb5bf8b0a6b4714a8488872e88f8f0117765b8d24a",
+  "owner_sha256": "a29d8257eecc77c4ad9ae6671d092b56f4c09a35c4247c125fed3a8c8bc1f95f",
+  "source_pins": {
+    "run_root.py": "a524ad03038814bc8ffdc0194e1f856b7d4ee206c064c9a83e083df06f9b766f",
+    "protocol.py": "f323da52a9f688c5d08aa45c9b0ab037f77e99d40ef577ec5ec2cd42974a6aa1",
+    "runtime.py": "e3827641ab38ffa0d60db92153c614e7e4911c48b67f5bd841617272dd7d2fd0",
+    "transfer_ledger.py": "7e5e37467208c229eeda3c7367fa16f506c11fe502ad93b28bbcc70fa4e9ab6d",
+    "route_census.py": "95c511a6ebb2feac7f5a302ede193d6b9ef34c77055d2f959e76bb5e6bb1819e",
+    "batch_census.py": "ce794be37f2aa670ba446cd8894ca9394a1be6a8b3a77f467cf77076d0d6f7e3",
+    "timer_overhead.py": "13b62f3cc85c3b9b49e72c3e1838f7248d5c2530d3357c7a45a81dbdf439ac3e",
+    "hash_inputs.py": "25d21cfb5d9977fcabe7e1b036a7959bf8ca99d3ce797c44cacc6e56ef387df2",
+    "fixtures.py": "706274e56ae8dbc524142688336f9053bf786cd46c2436a4434f49b588fd6a08"
+  },
+  "gpu_executed": false,
+  "model_executed": false,
+  "scope": "Actual protocol/trace, CLI and safe module import qualification; unchanged helper identities, not all runtime/fault gates",
+  "raw_log_budget_bytes": 67108864,
+  "whole_wall_budget_seconds": 180,
+  "main_review_sha256": "b5c1920d0f3221e33e16abfef4527344e2fcfe66be29df319789a72b23f7e592",
+  "observer_qualification_sha256": "5924d09b3be32ca5c11f325134b5f2f69402ca69b98c77daffed2ad951f41b5a",
+  "fixtures": {
+    "passed": true,
+    "positive_cases": [
+      {
+        "n": 64,
+        "kind": "complete_protocol"
+      },
+      {
+        "n": 64,
+        "kind": "normally_completed_early_EOS_not_strict16"
+      },
+      {
+        "n": 64,
+        "kind": "exact_trace_geometry"
+      },
+      {
+        "n": 2049,
+        "kind": "complete_protocol"
+      },
+      {
+        "n": 2049,
+        "kind": "normally_completed_early_EOS_not_strict16"
+      },
+      {
+        "n": 2049,
+        "kind": "exact_trace_geometry"
+      },
+      {
+        "n": 32768,
+        "kind": "complete_protocol"
+      },
+      {
+        "n": 32768,
+        "kind": "normally_completed_early_EOS_not_strict16"
+      },
+      {
+        "n": 32768,
+        "kind": "exact_trace_geometry"
+      }
+    ],
+    "negative_cases": [
+      {
+        "n": 64,
+        "kind": "protocol",
+        "case": 0
+      },
+      {
+        "n": 64,
+        "kind": "protocol",
+        "case": 1
+      },
+      {
+        "n": 64,
+        "kind": "protocol",
+        "case": 2
+      },
+      {
+        "n": 64,
+        "kind": "protocol",
+        "case": 3
+      },
+      {
+        "n": 64,
+        "kind": "protocol",
+        "case": 4
+      },
+      {
+        "n": 64,
+        "kind": "protocol",
+        "case": 5
+      },
+      {
+        "n": 64,
+        "kind": "protocol",
+        "case": 6
+      },
+      {
+        "n": 64,
+        "kind": "protocol",
+        "case": 7
+      },
+      {
+        "n": 64,
+        "kind": "trace",
+        "case": 0
+      },
+      {
+        "n": 64,
+        "kind": "trace",
+        "case": 1
+      },
+      {
+        "n": 64,
+        "kind": "trace",
+        "case": 2
+      },
+      {
+        "n": 2049,
+        "kind": "protocol",
+        "case": 0
+      },
+      {
+        "n": 2049,
+        "kind": "protocol",
+        "case": 1
+      },
+      {
+        "n": 2049,
+        "kind": "protocol",
+        "case": 2
+      },
+      {
+        "n": 2049,
+        "kind": "protocol",
+        "case": 3
+      },
+      {
+        "n": 2049,
+        "kind": "protocol",
+        "case": 4
+      },
+      {
+        "n": 2049,
+        "kind": "protocol",
+        "case": 5
+      },
+      {
+        "n": 2049,
+        "kind": "protocol",
+        "case": 6
+      },
+      {
+        "n": 2049,
+        "kind": "protocol",
+        "case": 7
+      },
+      {
+        "n": 2049,
+        "kind": "trace",
+        "case": 0
+      },
+      {
+        "n": 2049,
+        "kind": "trace",
+        "case": 1
+      },
+      {
+        "n": 2049,
+        "kind": "trace",
+        "case": 2
+      },
+      {
+        "n": 32768,
+        "kind": "protocol",
+        "case": 0
+      },
+      {
+        "n": 32768,
+        "kind": "protocol",
+        "case": 1
+      },
+      {
+        "n": 32768,
+        "kind": "protocol",
+        "case": 2
+      },
+      {
+        "n": 32768,
+        "kind": "protocol",
+        "case": 3
+      },
+      {
+        "n": 32768,
+        "kind": "protocol",
+        "case": 4
+      },
+      {
+        "n": 32768,
+        "kind": "protocol",
+        "case": 5
+      },
+      {
+        "n": 32768,
+        "kind": "protocol",
+        "case": 6
+      },
+      {
+        "n": 32768,
+        "kind": "protocol",
+        "case": 7
+      },
+      {
+        "n": 32768,
+        "kind": "trace",
+        "case": 0
+      },
+      {
+        "n": 32768,
+        "kind": "trace",
+        "case": 1
+      },
+      {
+        "n": 32768,
+        "kind": "trace",
+        "case": 2
+      },
+      {
+        "n": true,
+        "kind": "invalid_explicit_N"
+      },
+      {
+        "n": 65,
+        "kind": "invalid_explicit_N"
+      }
+    ],
+    "controller_imported_without_main": true,
+    "limitations": "Protocol/import cases only. The 27 source rejection descriptions are not executed fault tests; no model numerical/lifetime/performance qualification."
+  },
+  "cli_rejections": [
+    {
+      "argv": [
+        "--input-tokens",
+        "64",
+        "--group",
+        "16",
+        "--batch",
+        "on"
+      ],
+      "exit_code": 2,
+      "stderr": "usage: run_root.py [-h] --input-tokens {64,2049,32768} --group\n                   {1,8,16,17,32,64} --batch {off,on} [--reference REFERENCE]\nrun_root.py: error: ON requires immutable OFF record.json; OFF forbids --reference\n"
+    },
+    {
+      "argv": [
+        "--input-tokens",
+        "64",
+        "--group",
+        "16",
+        "--batch",
+        "off",
+        "--reference",
+        "/tmp/unused-no-open"
+      ],
+      "exit_code": 2,
+      "stderr": "usage: run_root.py [-h] --input-tokens {64,2049,32768} --group\n                   {1,8,16,17,32,64} --batch {off,on} [--reference REFERENCE]\nrun_root.py: error: ON requires immutable OFF record.json; OFF forbids --reference\n"
+    },
+    {
+      "argv": [
+        "--input-tokens",
+        "65",
+        "--group",
+        "16",
+        "--batch",
+        "off"
+      ],
+      "exit_code": 2,
+      "stderr": "usage: run_root.py [-h] --input-tokens {64,2049,32768} --group\n                   {1,8,16,17,32,64} --batch {off,on} [--reference REFERENCE]\nrun_root.py: error: argument --input-tokens: invalid choice: 65 (choose from 64, 2049, 32768)\n"
+    },
+    {
+      "argv": [
+        "--input-tokens",
+        "64",
+        "--group",
+        "65",
+        "--batch",
+        "off"
+      ],
+      "exit_code": 2,
+      "stderr": "usage: run_root.py [-h] --input-tokens {64,2049,32768} --group\n                   {1,8,16,17,32,64} --batch {off,on} [--reference REFERENCE]\nrun_root.py: error: argument --group: invalid choice: 65 (choose from 1, 8, 16, 17, 32, 64)\n"
+    }
+  ],
+  "source_stable": true,
+  "finished_utc": "2026-10-11T10:07:01.679502+00:00"
+}

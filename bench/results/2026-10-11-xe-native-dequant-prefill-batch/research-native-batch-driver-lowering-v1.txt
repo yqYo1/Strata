@@ -1,0 +1,51 @@
+Native batch driver lowering — read-only research and correction addendum
+Date: 2026-10-11
+Status: source/documentation review only; no compiler, build, test, GPU/runtime, profiler, model, service, deletion, or git mutation was performed.
+
+## Provenance from the first response (preserved verbatim)
+
+一次資料に基づく調査結果です。提示された過去報告の要約を基準にし、pointer selectorの再提案は避けました。ローカルの過去報告とregistryは、指示の「コマンドを実行しない」に従い確認できていません。また同じ理由で、指定先への保存とSHA256算出も未実施です。
+
+最終ISAを低リスクで調べる候補は、GPUへdispatchせず、既存のSPIR-Vを`ocloc`でオフラインコンパイルし、IGCのshader dumpを有効にする方法です。IGC公式手順はstandalone shaderのコンパイルに`ocloc`を案内し、`-spirv_input`を含む例も示しています。`ShaderDumpEnable`はLLVM IR、vISA、GenISAなどのdumpを有効にし、設定形式は`IGC_<flag>=<value>`です。[IGC shader dump手順](https://github.com/intel/intel-graphics-compiler/blob/master/documentation/shader_dumps_instruction.md)、[IGC設定flags](https://github.com/intel/intel-graphics-compiler/blob/master/documentation/configuration_flags.md)、[IGCのSPIR-V入力例](https://github.com/intel/intel-graphics-compiler/issues/175)
+
+比較対象は、既存IRから得られる`.optimized.ll`、vISA段階の`.visaasm`、最終機械語表示の`.asm`です。IGC資料はこれらを別段階の成果物として列挙し、`.visaasm`と`.asm`をコンパイル出力として扱っています。オフライン結果は、実行時JITでのデバイス・driver構成と同一とは限らないため、selectorが最終ISAでどうlowerされるかの確認には使えても、実行時に同じISAが選択されたことの証明にはなりません。[IGC shader dump手順](https://github.com/intel/intel-graphics-compiler/blob/master/documentation/shader_dumps_instruction.md)
+
+scratchの確認にはIGCのvISA dumpとcompiler側のspill/scratch情報が使えます。IGC設定にはshader dump、RA metadata dump、spill関連設定があり、compute-runtime側にもscratch確保に関係する実装項目があります。ただし、compute-runtimeのdebug variablesは内部実装で変更される可能性があると同repository自身が注意しています。scratchサイズのoverrideやdebug keyは観測用の既定値ではなく、結果を変える介入として扱うべきです。[IGC設定flags](https://github.com/intel/intel-graphics-compiler/blob/master/documentation/configuration_flags.md)、[compute-runtime debug variables](https://github.com/intel/compute-runtime/blob/master/shared/source/debug_settings/debug_variables_base.inl)、[compute-runtimeの注意書き](https://github.com/intel/compute-runtime)
+
+776-byte byval captureについて、オフラインのISAだけでABI payloadの存在は確定できません。既存IRでbyval引数が残ることを確認したうえで、生成されたkernel metadataや引数配置情報も照合する必要があります。`.asm`や`.visaasm`でprivate scratch由来のload/storeがないことは、byval引数そのものが消えたことを意味しません。IGCがSPIR-V以降で複数の表現を出力することはshader-dump仕様に記載されています。[IGC shader dump手順](https://github.com/intel/intel-graphics-compiler/blob/master/documentation/shader_dumps_instruction.md)
+
+private scratch、GRF圧力、cross-thread payloadが実性能へ与える影響は、静的dumpだけでは判断できません。Intel VTuneのGPU Compute/Media Hotspots分析では、Compute Basic presetでOccupancyを含む分析ができ、GPUメモリ種別も調べられます。安全な段階分けは、まずオフラインでISAとscratch/GRF情報を採取し、その後に既存の安全なdispatch harnessを使う実測を別工程として計画することです。後者はGPU実行なので、今回の調査範囲では実施していません。VTuneの観測値も、特定runでの相関を示すもので、個々のpayload byteが遅延原因だと単独で証明するものではありません。[Intel VTune GPU occupancy分析](https://www.intel.com/content/www/us/en/docs/oneapi/optimization-guide-gpu/2024-1/vtune.html)、[GPU Compute/Media HotspotsとCompute Basic](https://www.intel.com/content/www/us/en/docs/vtune-profiler/user-guide/2023-1/gpu-application-analysis.html)
+
+なお、IGCのshader dump機能は既定で無害な記録だけとは限らず、コンパイルの再実行や大きなdumpの生成を伴います。指定されたartifact retentionルールに従い、採取する場合は対象kernelと出力先を限定し、必要なISA・metadata・比較結果を記録した後に不要なdumpを整理する必要があります。
+
+## Follow-up: prior-evidence reconciliation and corrections
+
+This is an append-only correction to the first response. The original response above and its stated provenance are unchanged.
+
+### Local evidence checked
+
+- The specified v129 registry is at `.../bench/results/2026-10-11-xe-native-dequant-group-v2/report-registry-v129.json`. It records 508 completed reports and two new v2 controller reports; it does not register a driver-lowering/ISA report. The v2 result states that production prefill caller integration and model-throughput qualification are still absent.
+- `research-native-batch-compiled-call-path-v1.txt` already covers caller eligibility, ring lifetime/window limits and aggregate census limitations.
+- `round131-exact-igc-single-kernel-capture-controls.txt` already provides the exact IGC v2.41.5 controls `IGC_ShaderDumpEnable`, `IGC_DumpToCustomDir`, and `IGC_ShaderDumpRegexFilter`; it documents the missing verified Level Zero/SYCL JIT filename/regex mapping, per-module output bound, and matching options receipt. Thus the initial recommendation to use offline `ocloc` for the exact selector path repeats the existing gap and cannot close it. It is withdrawn as evidence for the requested runtime lowering question.
+- `RESULTS_JA.md` and the v2 controller report say the v2 optimized LLVM IR removes the 776-byte private memcpy and alloca from both group kernels, while the byval kernel argument remains. They explicitly leave final IGC scratch/spill and GPU impact unmeasured. The old pointer-array selector's main concern is already addressed in committed fixed source `b72640fff05098f1762cb3bf9c427a5f8d7db31c`, where `dequant_group_pointer` uses a `switch(expert)` selecting constant array slots (source lines 1647 onward); this research does not propose it again.
+- Initial `git show` was directed at the Strata analysis worktree and returned `bad object`; the fixed source was then successfully read from the specified XeStrata worktree. Its commit summary is `experiment(xe): remove private pointer selection in grouped dequant`, changing only `src/kernels/xe/iq_kernels.cpp` (30 insertions, 2 deletions). No live working-tree source was inspected.
+
+### New concrete, bounded metadata lead
+
+The exact IGC v2.41.5 Release flags documentation lists `DumpZEInfoToConsole` as available and describes it as “Dump zeinfo to console” (tagged source lines 632–650). It also marks `ShaderDumpEnable`, `ShaderDumpRegexFilter`, and `DumpToCustomDir` Release-available (lines 644–681), but R131 already covers those. This `DumpZEInfoToConsole` flag is the only additional concrete acquisition lead found: it may expose kernel metadata without retaining the complete LLVM/ISA dump set. The tag's configuration preface explicitly warns that flags are debug/experimental and Intel does not guarantee performance or conformance when enabled (lines 192–210). Exact source: https://github.com/intel/intel-graphics-compiler/blob/v2.41.5/documentation/configuration_flags.md#L632-L681
+
+IGC's ZE-info content/field coverage for the SYCL Level Zero module-create route was not proven by documentation inspected here. In particular, do not assume the flag will print exact 776-byte cross-thread payload size or runtime scratch allocation for this kernel. An isolated metadata-only module-creation capture could be considered only after Main's serial safety controls, with one exact compiler/runtime/device identity, a fresh bounded output destination and a pre-recorded kernel identifier. Do not add a dispatch or alter queue/USM lifetime. If metadata-only module creation cannot be shown to stay within existing process/timeout/retention guards, stop and keep the gap open. This is a future gated possibility, not an instruction to run now.
+
+For actual impact measurement, Intel's PTI `unitrace` README explains that `--device-timing` (`-d`) reports per-kernel occupancy-related information: private memory per thread, spill memory per thread, register-file size per thread (possibly `unknown` with an older Level Zero runtime), plus device timing. It also offers `--include-kernels` to limit profiling to named kernels, reducing overhead and improving analysis efficiency. These fields require execution/profiling and therefore are not suitable for today's read-only/no-GPU scope; they also cannot isolate byval ABI bytes from other kernel payload. The tool docs distinguish these signals: nonzero private memory means some thread-private variables are outside registers, spill memory means register values were spilled, and register-file size is a capacity descriptor, not measured occupancy itself. Exact source lines 447–505: https://github.com/intel/pti-gpu/blob/master/tools/unitrace/README.md#L447-L505
+
+A safer next decision sequence is therefore: (1) preserve current LLVM-level evidence; (2) if Main later approves a narrowly bounded metadata-only JIT compilation, try only `IGC_DumpZEInfoToConsole=1` in a fresh process and record whether exact kernel/metadata are emitted; (3) only after normal isolated correctness/fault gates permit execution, use one targeted `unitrace --device-timing --include-kernels <verified-name>` comparison for static private/spill/register metadata plus measured timing; do not interpret the numbers as proof that the 776-byte byval is the causal factor. The third step executes GPU work and remains outside this task.
+
+No source establishes that private scratch, GRF usage or the remaining byval explains the old n16 regression. No ISA capture, scratch measurement, runtime metadata capture or performance evidence was collected here. Registry/old report statuses were not changed.
+
+## Sources
+
+- Intel IGC v2.41.5 configuration flags, exact names and Release availability: https://github.com/intel/intel-graphics-compiler/blob/v2.41.5/documentation/configuration_flags.md#L192-L210 and https://github.com/intel/intel-graphics-compiler/blob/v2.41.5/documentation/configuration_flags.md#L632-L681
+- Intel PTI `unitrace` kernel metrics and name filtering: https://github.com/intel/pti-gpu/blob/master/tools/unitrace/README.md#L447-L505
+- Existing local capture-control report: `round131-exact-igc-single-kernel-capture-controls.txt`
+- Existing local selector/caller report: `research-native-batch-compiled-call-path-v1.txt`
+- Fixed committed implementation: XeStrata commit `b72640fff05098f1762cb3bf9c427a5f8d7db31c`, `src/kernels/xe/iq_kernels.cpp`; inspected with `git show` from `/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011`.

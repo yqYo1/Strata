@@ -1,0 +1,48 @@
+Xe optional kernel preload control v1 — source-only candidate
+Date: 2026-10-11
+Status: UNEXECUTED. Not applied to the live worktree or committed.
+
+Base: XeStrata fa3e20e842fbed6986a69bade8afe3edabedee07
+Source: src/core/device.cpp, read with git show from the fixed base commit.
+Candidate directory:
+/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-optional-preload-control-source-v1
+Artifacts: device.cpp, candidate.patch, manifest.json.
+Original SHA-256: 9e33dce3b3b55b00c5aee4db566ceb848b73273837c505b3c27b535a0b30ba2d
+Candidate SHA-256: 3e7523a2947af7c82d41fc9a7653f4f9aad0fa3cbb062999de19553659e0ec27
+Patch SHA-256: c7a999c092325094f8793b51236e71a14652428fce1d859cd3e83f567eb38f7d
+
+Change and diagnostic scope:
+Five lines after the existing preload_.joinable() guard inspect STRATA_PRELOAD_KERNELS.
+Only the exact string "0" disables starting the background thread and its all-kernel-ID
+compile sweep. With STRATA_TRACE present, each disabled invocation emits one line:
+strata trace: kernel preload disabled by STRATA_PRELOAD_KERNELS=0
+Repeated calls while the option remains "0" return without creating a thread.
+The option is read on each call, not latched; changing the process environment later
+can enable a subsequent call. It does not stop a thread already started.
+Absent, empty, or any nonzero/nonexact value leaves the original path unchanged.
+The existing joinable guard, stop/join lifecycle, background exception handling,
+runtime asynchronous errors, global ERROR matcher, GPU math and kernel dispatch
+are unchanged. This is a diagnostic switch, not a fix for JIT compilation errors.
+
+Risk and remaining work:
+Disabling ahead-of-use compilation can shift JIT cost or failures to first actual
+kernel use, altering first-use latency and startup timing. No timing, numerical,
+correctness or fault results were obtained. Actual dispatch may still compile
+required kernels and fail. The user's 256K boundary requirement remains unverified.
+Main owns all build, test, service and GPU validation and any application/commit.
+
+Evidence and execution boundary:
+Only fixed-commit source reading, candidate artifact writes, textual unified diff
+generation and SHA-256 hashing were performed. No build, tests, AST checks,
+application imports, GPU execution, device queries, services, Git mutations or
+cleanup were performed. No live worktree files were changed. No captures or logs
+were deleted. Source artifacts and this report await Main's retention/registry
+integration at its work boundary.
+Registry reference supplied by Main:
+/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-11-xe-native-dequant-group-v2/report-registry-v129.json
+
+Commands used for evidence:
+git show fa3e20e842fbed6986a69bade8afe3edabedee07:src/core/device.cpp
+diff -u --label a/src/core/device.cpp --label b/src/core/device.cpp <(git show fa3e20e842fbed6986a69bade8afe3edabedee07:src/core/device.cpp) <candidate-directory>/device.cpp
+sha256sum <candidate-directory>/device.cpp <candidate-directory>/candidate.patch
+git show fa3e20e842fbed6986a69bade8afe3edabedee07:src/core/device.cpp | sha256sum

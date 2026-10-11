@@ -1,0 +1,19 @@
+{
+  "main_reviewed": true,
+  "base_revision": "b72640fff05098f1762cb3bf9c427a5f8d7db31c",
+  "source_pins": {
+    "src/kernels/xe/iq_kernels.cpp": "75f2ac1dfdb337c424bba19e62c34159a1bde547a776b9b5d6cf7975dfc29d50",
+    "include/strata/kernels/iq_kernels.hpp": "61513ccb71831d1065bd25829541c508adf3ae58e1e3df6d3bc0c9681cb54f6d",
+    "src/prefill/prefill.cpp": "883d8f39a4e012eaf9d81cbaa4399893528085421882978fa29dbd67fb512d11"
+  },
+  "applied": true,
+  "api_byte_component_qualified": true,
+  "production_build_lint_test_gpu_qualified": false,
+  "adopted": false,
+  "original_review_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-native-dequant-prefill-batch-main-review-v1.json",
+  "original_review_sha256": "20e78ef7d663708f8f8ee487959753157705af622cb34a851555a3e7c6eed778",
+  "api_byte_receipt_sha256": "1238c1b4d831ac7a32faf33a3ed1ba6b67e74d470eea78c3ec7f2e4b6016f9a8",
+  "component_analysis_sha256": "5250bf29341c10967fea477c5da70e3aca3209290520e00b1cd1aa1ff0ce879b",
+  "exact_patch_sha256": "76a2bca2ff7079c0eadfeacda2c56a9740785fa5b9acdeb0de22f9eaaf817ba8",
+  "review": "Only opt-in native prefill caller changes. Original OFF block literal unchanged; APIv2 freshly qualified. Main re-read full ON branch source reuse/saturation/skip/GEMM/tail/join guards. Independent GU/Down fallback and exceptions not retried. Both-mode host gates and actual caller lifetime/model output and long-input timing remain required."
+}

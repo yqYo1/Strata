@@ -1,0 +1,43 @@
+# XE IGC/FCL runtime provenance gap — next-v1
+
+Date: 2026-10-11 (Asia/Tokyo)
+Scope: read-only inspection of existing receipts, controller/protocol source, package metadata, symlinks, ELF metadata and official Intel NEO source. No workload, GPU query, build, import, test, service action, Git mutation or cleanup was performed.
+
+## Finding
+
+The current model and health receipts do not establish which IGC/FCL build compiled JIT device code. Their `observed_libraries` entries are not a complete process map: the capture controller explicitly filters `/proc/<pid>/maps` to paths whose basename contains `libsycl`, `libur_`, `libze_`, or `libumf`, and skips paths marked `(deleted)`. The separate validation protocol requires exactly six core SYCL/UR/UMF/ZE library names, with two optional Level Zero diagnostic layers. It rejects any extra mapped name. Consequently, absent IGC/FCL entries mean “not collected,” not “not loaded.”
+
+This is confirmed in `xe-source-llvm-model8k-v4/run_root.py` (the `save()` loop) and `xe-source-llvm-chunk6144-diagnostic32k-v2/runtime.py` (`CORE`, `OPTIONAL`, and `validate_runtime`). The root-v3 `n64-g16-off/record.json` and `xe-native-dequant-prefill-post-startup-health-root-v1/record.json` list the expected eight qualified runtime names, none of which can express IGC/FCL provenance. Existing R103/R130 inventory explicitly leaves the actually loaded IGC unresolved.
+
+## Host candidates and loader evidence
+
+Two distinct compiler stacks are installed and visible through static host metadata:
+
+- Debian `libigc2` and `libigdfcl2`, version `2.40.13+ds1-1~24.04`, own `/usr/lib/x86_64-linux-gnu/libigc.so.2.40.13+0` and `libigdfcl.so.2.40.13+0`. Their `.so.2` symlinks point to those files. Their ELF build IDs are respectively `9b5c386432e4bcb0f37e9a076983430e28a29962` and `ca58dd83dfcc4f66f690148133e476f74710efb7`.
+- Intel oneAPI `intel-igc-core-2` and `intel-igc-opencl-2`, version `2.41.5` (XB build 22716 per R103), install under `/usr/local/lib`. The `.so.2` symlinks point to `libigc.so.2.41.5+1788943183` and `libigdfcl.so.2.41.5+1788943183`. Their build IDs are respectively `c3703ba4e94f826e60a5560b0287e32807adacaa` and `1aee46cd4fcc0acb2751c3d570da39475a94d1e8`. R130/R131 recorded SHA-256 for the oneAPI core `40badd8f1ee80ac844a8947f5e91e5654fbcd851caefe343b0e5ec4ce4d1b123` and related compiler files; it is not evidence that this file was mapped by the tested run.
+
+`dpkg-query` confirms both package families installed, while package ownership assigns the `/usr/lib` pair to `libigc2`/`libigdfcl2`. `/sbin/ldconfig -p` reports both paths for SONAMEs `libigc.so.2` and `libigdfcl.so.2`, with `/usr/local/lib` listed before `/lib/x86_64-linux-gnu` for each. This makes the oneAPI copy a plausible resolution candidate, but does not establish the mapping for a past process. The model controller’s `BASE` sets `LD_LIBRARY_PATH` to the LLVM toolchain’s private `lib` directory; that does not itself identify which duplicate compiler SONAME the dynamic loader selected.
+
+Static ELF inspection of `/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395` found `DT_NEEDED` entries for `libigdgmm.so.12`, the standard C++/C/math/runtime libraries and the loader, but no IGC/FCL SONAME and no RPATH/RUNPATH entry. Its installed package version is `26.31.39395.14-1~24.04~ppa1`. Thus the IGC path is dynamically resolved rather than pinned by this driver ELF’s direct dependency list. The oneAPI FCL has a direct `DT_NEEDED` on `libopencl-clang2.so.22.1`; this is another mapped provider worth recording.
+
+## Official NEO source check
+
+Intel’s public `compute-runtime` source corroborates the dynamic-loading mechanism. In `compiler_interface.cpp`, `loadFcl()` calls `loadCompiler` with `Os::frontEndDllName`, while `initialize()` calls `loadIgcBasedCompiler` with `Os::igcDllName`; successful IGC loading records `getFullPath()`. The template in `compiler_interface.inl` passes that library name to `OsLibrary::load`. Linux `os_library_linux.cpp` passes the name to `dlopen(properties.libraryName.c_str(), ...)`; `createFullSystemPath()` simply returns the name. Thus NEO requests a library by configured name and delegates resolution to the platform loader; this source does not select `/usr/local` or `/usr/lib` itself. The current official source tree was inspected, but it is not a source pin to the installed `.14` driver build. The source establishes mechanism, not which library the prior process used.
+
+Sources: [NEO compiler interface](https://github.com/intel/compute-runtime/blob/master/shared/source/compiler_interface/compiler_interface.cpp) (`loadFcl`, `loadIgcBasedCompiler`, `initialize`); [NEO compiler loader template](https://github.com/intel/compute-runtime/blob/master/shared/source/compiler_interface/compiler_interface.inl) (`loadCompiler`); [NEO Linux library loader](https://github.com/intel/compute-runtime/blob/master/shared/source/os_interface/linux/os_library_linux.cpp) (`dlopen`, `getFullPath`). NEO’s [build documentation](https://github.com/intel/compute-runtime/blob/master/documentation/BUILD.md) separately notes that `ocloc` loads IGC at runtime via `dlopen`; this is corroborating documentation, not proof about the Strata process.
+
+## Minimal next-capture filter
+
+For the next already-controlled model capture, keep the existing eight-name checks and additionally retain mapped file paths whose basename matches the finite compiler/runtime families:
+
+- `libigc.so*`, `libigdfcl.so*`, `libopencl-clang*.so*`, `libigc-clang.so*`, and `libiga64.so*`;
+- `libc.so.6` and `ld-linux-x86-64.so.2`, to anchor signal/longjmp and loader provenance;
+- optionally `libigdgmm.so*`, which is a direct dependency of the installed ZE driver and is useful to close this driver-side chain.
+
+For each selected mapped path, save full maps rows (address range, permissions, offset, device, inode and pathname), canonical path, `stat` identity, SHA-256 and ELF build ID. Keep duplicate mappings deduplicated by file identity while retaining all map rows. Capture while the target PID/start-time identity is still valid and hash the mapped file before it can be replaced; preserve an explicit “unavailable/deleted mapping” entry rather than silently dropping it. This is a bounded allowlist expansion, not a request to collect every process mapping. The compiler mapping plus hash/build ID will decide between the installed 2.40.13 and 2.41.5 files and reveal any additional loaded compiler components.
+
+## Limits and decision
+
+The tested process’s actual IGC/FCL maps are unavailable in these receipts. The `/usr/local` cache entry order and installed symlink targets are useful static leads, not runtime proof. Do not attribute the prior JIT failure/result to either IGC version yet. The minimum evidence that closes this provenance gap is a same-process maps capture with the compiler SONAME family, full path, device/inode, SHA-256 and build ID.
+
+Evidence reviewed: R103 `bmg-installed-igc-neo-register-contract-round103.txt`; R130 `round130-installed-native-exp-lowering-provenance.txt`; R131 `round131-exact-igc-single-kernel-capture-controls.txt`; root-v3 model record and post-startup-health record; the v4 model controller and diagnostic32k runtime protocol. These records remain unchanged.

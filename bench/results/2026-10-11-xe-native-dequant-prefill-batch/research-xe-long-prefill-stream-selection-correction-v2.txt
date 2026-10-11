@@ -1,0 +1,50 @@
+# XE long-prefill stream-selection correction (v2)
+
+Date: 2026-10-11 (Asia/Tokyo)
+
+This is an independent addendum. The prior report `research-xe-long-prefill-stream-selection-next-v1.txt` remains unchanged. Scope was read-only fixed-source and archived-evidence review plus this report; no CPU/GPU execution, test, build, profiler, production source edit, or cleanup was performed.
+
+## Provenance reviewed
+
+- Fixed caller snapshot: `/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-native-dequant-prefill-batch-source-v3/prefill.cpp`, SHA-256 `c2c78fd15c0d5667256a2eeed8d8a72a5951612a74d4995ec7d1ba30daed2492` (verified by `sha256sum`). This is the fixed snapshot, not the mutable working tree.
+- v129 committed registry: `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-11-xe-native-dequant-group-v2/report-registry-v129.json`.
+- Latest six numbered reports in the shared research directory: R363 official MTP context counterexample, R364 Xe v5 context/caller bounds, R365 Xe e32 critical-path measurement controls, R366 Xe full-context probe/admission, R367 official independent parameter selection, and R368 Xe source-LLVM minimal GPU parity selection. They concern adjacent context/qualification/measurement decisions; none demonstrates selected-expert streaming on this fixed Strata caller.
+- MoE-specific evidence also reviewed: R142 route-transfer candidate screen, R267 attained-vs-physical transfer limits, `implementation-xe-native-dequant-prefill-batch-v1.txt` and `research-native-batch-prefill-service-bound-v1.txt`.
+- Public-source follow-up: llama.cpp issue #20757, current `src/llama-moe-cache.cpp`, and discussion #28248. These are precedent/contrast, not Strata benchmarks.
+
+## What the fixed source does
+
+At fixed snapshot `prefill.cpp:1353-1393`, `stream_all` is enabled for large chunks when the ring exceeds STAGE and a source exists. It builds `seq` by walking each layer and every expert ID, skipping only host-resident or otherwise excluded source entries; it creates the stager jobs and starts staging before consumer traversal. At `1468-1506` the issuer advances over `seq` and copies each entry into the ring. At `2407-2447` and `2686-2728`, the per-layer routed `order` consumes selected entries; `release_to` waits for outstanding issue and marks skipped entries used so their ring slots can be reused. Therefore selected routing determines compute, but all eligible nonresident sequence entries are still copied. The fallback or resident cases do not change that conclusion for entries in `seq`.
+
+The source's transfer census fields also distinguish transfer traffic from route selection; an unselected full-stream byte is a real submitted H2D copy in this path, not merely a logical model-weight attribution.
+
+## Route-count join and what selection could save
+
+The archived 32K census (chunk 6144, six chunks) records H2D total `295,956,300,800 B`, of which `16,473,728,000 B` were unused full-stream copies. This joins the full-stream and routed counters in the existing result; it is the strongest available direct estimate of avoidable copies for exact route-selected transfer on that specific run.
+
+- Unused copies / total H2D = `5.566%`.
+- Unused copies / full-stream bytes = `6.59%` (approximately; full-stream bytes are about `249.99 GB` from the same census).
+- If an exact selective-transfer implementation omitted every one of those bytes and incurred zero extra work or exposed wait, the H2D bytes would fall to `279,482,572,800 B`; that is an upper bound for this captured 32K route, not an achieved result.
+- At the historical R262 host-USM rate of 6.447 GB/s, 16.474 decimal GB is 2.56 s of serialized transfer time. This is a link-time ceiling only; it is not an end-to-end speedup estimate and does not account for overlap or added dependency wait.
+
+The earlier report's recommendation to prioritize per-layer exact route compaction is too strong for this evidence. Exact selection removes at most 5.566% of total captured H2D bytes here. To select a layer's expert IDs before issuing only those copies, the route must already be available. The current full stream can pre-issue future entries independently of that layer's selected order; a selected-only producer may wait on route production/host route handling and lose overlap. Consequently the measured byte ceiling does not establish the critical-path ceiling. If selection adds more than about 2.56 seconds of exposed H2D/link time over this prompt, even the idealized transfer-only gain is erased; the true break-even must use measured wait and overlap on a paired run.
+
+## Compare with fewer full-stream passes
+
+For the captured 32K run, six chunks each walk the eligible nonresident experts. Under an idealized proportional pass-count model, changing from six full walks to three would halve full-stream bytes, saving roughly `124.99 GB` (about `42.2%` of the recorded H2D total) before any secondary effects. That is about 7.6 times the maximum 16.47 GB saved by route selection in this particular census. This is arithmetic from the recorded aggregate, not a measured 12K-chunk result: larger chunks change activation/workspace size, overlap, allocation pressure, and potentially routing/copy scheduling. R281 and other capacity reports must govern whether a larger chunk is admissible; the ratio alone is not a recommendation to increase it.
+
+The actual requirement is a correctness and capacity-safe lifecycle through **262,144 positions**, not a generic “260K” label. None of these counts or calculations verifies that lifecycle. Either change must retain the same model/output and routing correctness and pass the full 262,144-position capacity/lifetime requirement before performance claims.
+
+## Correctly scoped llama.cpp comparison
+
+Current llama.cpp contains a real persistent expert cache implementation in `src/llama-moe-cache.cpp`; issue #20757 is the request that led to merged cache work, so it should not be called only a proposal. That implementation is a host-expert cache with GPU slots and ID remapping. It is not the same control point as Strata's full-nonresident stream ring.
+
+In the current source, `get_slot_map` returns no cache slot map when `n_tokens == 0`, `n_tokens > 32`, or the conservative upper bound `min(n_tokens * n_expert_used, n_expert)` exceeds available slots (source around lines 2268-2274). In the cache copy hook it reads selected expert IDs from an earlier graph split, synchronizes the backend, plans cache fills, and uploads misses (about 2380-2452). The discussion #28248 describes the same prefill boundary: if a ubatch can touch more distinct experts than the pool can hold, it bypasses the pool and uses the stock selective-copy route. That means broad-prefill fallback preserves existing selected-expert copies; it does not claim to remove Strata's per-chunk all-expert prefetch. It also illustrates why cache hits help repeated decode residency while a broad prefill may deliberately avoid cache admission.
+
+The earlier issue body also described runtime-ID selective copies into the original full tensor layout before proposing a persistent slot pool. That selective-copy behavior is a closer conceptual contrast, but its graph/backend synchronization and layout semantics still do not prove that an exact selected-only producer can preserve Strata's ring overlap. Public evidence supports comparing policies; it does not resolve Strata's route-before-copy dependency or its 262,144-position memory budget.
+
+## Revised ranking
+
+From existing evidence alone, do not prioritize exact route-selected streaming as the leading byte-reduction candidate. First compare a capacity-safe reduction in full-stream pass count, because its idealized saved bytes dominate the measured unused-copy ceiling by about 7.6× at the captured 32K point. Exact route selection remains a bounded second candidate if source-level scheduling can consume already-available route IDs without delaying the ring, and should be judged against its 5.566% H2D ceiling and exposed host/copy wait. Neither candidate is qualified; no implementation or run is authorized by this research note.
+
+Required discriminator for later owner-run work: same fixed model/input/device and correctness oracle; compare identical chunks/rings first, report per layer/chunk selected/unused bytes, actual copy calls, router-ready timestamp, host wait, copy-stream wait, and full prompt time; then separately test only memory-admitted chunk alternatives. Extend correctness, lifetime, and memory admission through exactly 262,144 positions. Keep end-to-end quiet timing separate from diagnostic census as R365 recommends.

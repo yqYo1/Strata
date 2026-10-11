@@ -1,0 +1,40 @@
+# Xe failed startup kernel reachability
+
+Date: 2026-10-11
+Scope: read-only source and receipt review. Fixed source snapshot `fa3e20e842fbed6986a69bade8afe3edabedee07`, inspected with `git show`. No GPU query, build, test, service/model run, source edit, Git mutation, or cleanup was performed.
+
+## Finding
+
+The startup failures do not establish that all named kernels were needed by the failed model request. `Runtime::preload_kernels()` enumerates every `sycl::get_kernel_ids()` entry and calls `get_kernel_bundle<executable>` for each. It is a joinable `std::thread`; the destructor sets `preload_stop_` and joins it before `finish()`. Thus those JIT failures can arise from speculative startup preload even if the model never dispatches that kernel. The prior report's phrase “detached precompiler thread” was inaccurate: only the separate stdin reader is detached; the preload thread is joined.
+
+### `mma_gemm::Kernel<2,...>`
+
+At the fixed snapshot, `kShapes[2]` is `{16,16,16,32,...,packed=false}`. `built<2>()` returns true for the non-AMD compile because subgroup 32 takes the unconditional `true` branch. `shape()` tests the candidates in array order, using `reported(device,type,shape)` and `groups_layout_fits`; if the B570 reports the S2 FP16/BF16 combination and its grouped layout fits, S2 can be selected. `mma_gemm()` then routes through `by_shape(2)` to `run<2,E>`, so S2 is not categorically unreachable. This conclusion is conditional on the fixed commit's reported-combination and layout-fit predicates; no fresh device query was made.
+
+However, S2 has `PACKED=false`, hence `FR=false`. Its A load is row-major and its B load column-major; the special FR branch that loads the packed A fragment is excluded. Therefore the internal symbol `...PackedA_RowMajor...local...` in the old module-build error is not directly explained by the S2 load source path. The kernel name identifies a compiled template specialization, but does not prove that this source site emitted that builtin. Other translation units/specializations remain candidates. The source evidence supports possible runtime S2 dispatch, not an attribution of the missing builtin to that dispatch.
+
+### `PromptAttnMma<0,0>`, `<1,1>`, `<1,2>`
+
+The integer template arguments are KV formats: `(F16,F16)`, `(I8,I8)`, and `(I8,Q4_0)`. The kernel requires the portable branch of `qsa_prompt_attn_batch`: valid 256-dimension / 12-query-head geometry, positive capacity, required ids/steps/page table, `!xmx_available(f16)`, `mma_shape_is(queue,16,16,16,32)`, and sufficient local memory. The branch then selects among these three template formats from the pool pointers and scales. `PromptAttnMma` uses subgroup size `pm::SG=32`, 16x16x16 joint matrices, and `CH=16`. Q4 K does not enter these three kernels, and the `(I8,Q4)` specialization is specifically the I8-K/Q4-V case. A normal Intel 32-lane shape S2 can satisfy the shape gate if runtime matrix reporting and local-memory test pass; xmx and pool format predicates still gate actual launch. If another engine path reports `xmx_available(f16)`, this portable dispatch is bypassed. Since preload enumerates all registered kernels, the failed module build itself does not show that any of these gates was reached.
+
+### What the records establish
+
+The Main record `xe-native-dequant-prefill-model-root-v3/n64-g16-off/record.json` records `candidate_revision=b72640fff05098f1762cb3bf9c427a5f8d7db31c`, `source_uncommitted=true`, `passed=false`, `complete=false`, `model_launch_attempted=true`, and `error=RuntimeError('normal closed model')`. Its scope was one finite native-batch-off diagnostic at physical context 262144, INT8 KV, chunk 6144; it explicitly says it is not full-model quality-qualified and not full-262144 qualified. The fixed commit adds the experimental prefill-v4 change; the relevant `device.cpp`, `mma_gemm.cpp`, and `qsa_prompt_attn.cpp` are unchanged from b726 per source comparison. This source comparison does not make the historical binary's exact working tree immutable: the record states uncommitted source.
+
+The subsequent `xe-native-dequant-prefill-post-startup-health-root-v1/record.json` passed a 16,384-word integer H2D/kernel/D2H check after startup had stopped. It explicitly says no model launch and no retry of failed matrix compilation. It is evidence of health for that integer path on that boot, not proof that matrix module compilation or model generation works.
+
+The existing `xe-source-llvm-census32k-root-v3/counts/record.json` passed its 32K diagnostic with chunk 6144 and ring 16, including six chunks, a routed tail of 2047, logical expert H2D request counts, selected-16 output equivalence, and fresh health checks. Its own scope disclaims physical bandwidth, exclusive service, performance adoption/optimal settings, and global/full-context quality equivalence. It does not prove the failed matrix specializations compile or are unused.
+
+### Build image grouping evidence and limits
+
+The pinned successful free-build receipt `xe-e32-free-full-build-root-v21/record.json` records DPC++ 7.1.0 pre-release based on Intel LLVM commit `504366f4...`, and the hashed CMake cache/compile database. Its compile recipe uses `-fsycl` for C++ sources, and the recorded link command links the object/archive inputs with `-fsycl`; the inspected commands show no explicit `-fsycl-device-code-split` option. The build evidence is for the successful v21 binary (SHA `59c99b...`), not a binary receipt for the failed startup run. The historical model record points to this `strata` path but does not carry a per-run binary hash tying the failure to the unchanged v21 artifact.
+
+This evidence does not prove whether Intel's default device-image policy groups kernels per translation unit or into a larger image, nor that a successful v21 build had the same source state as the failing binary. It therefore cannot establish that practical runtime kernels and an otherwise unused specialization were necessarily compiled in the same image. Conversely, the runtime's explicit all-kernel-ID executable-bundle loop is direct evidence that its warmup attempts reachability beyond model dispatch; image splitting may affect which attempt fails, but cannot be inferred from `-fsycl` alone. Exact grouping would need a captured binary/device-image inventory or the precise compiler/runtime behavior for that build.
+
+The registry v129 reviewed for the preceding reports is unchanged (SHA-256 `52da32669a4dba3ed8afc7174676774efb50f4e5fa760da4894b6eeff634723a`). The two prior reports remain background: startup-precompile-error-lifecycle-next-v1 (SHA-256 `814f1096758cef7817c834d2aa6cefe7f25c326eb80634c1b87bb7ec1005cbcb`) documents the all-ID preload/error swallowing and pre-GEN stop; joint-matrix-packed-a-lowering-next-v1 inventories source candidates but does not map the builtin to a particular source call.
+
+## Decision
+
+Do not classify the S2 or PromptAttn failures as proven unused, and do not label them proven necessary for this model run. S2 is conditionally selectable on the stated B570 shape-reporting premise; its non-packed source load does not match the failed PackedA builtin on its face. PromptAttn's runtime conditions can be met only under its XMX, geometry, pool-format, and local-memory gates; the startup preload bypasses the need for those gates. The model run stopped before generation and the subsequent health PASS did not retry matrix compilation, so the exact dispatch need remains unresolved.
+
+A useful next evidence item is a single-specialization reproducer or a captured mapping of the failing internal builtin to the SPIR-V/device image and source instantiation, paired with the exact failing binary/compiler/driver hashes. For reachability, log the chosen `shape()` index and PromptAttn gate values during a model request only after module compilation can proceed.

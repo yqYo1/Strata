@@ -1,0 +1,479 @@
+{
+  "active": false,
+  "complete": true,
+  "passed": true,
+  "commands": [
+    {
+      "label": "prefill-undefined-symbols-free",
+      "argv": [
+        "/usr/bin/nm",
+        "-C",
+        "-u",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/build/free/libstrata_prefill.a"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-11T10:02:40.332705+00:00",
+      "wall_seconds": 60,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 4009040,
+          "start_ticks": 6172445,
+          "sid": 4009040,
+          "pgid": 4009040
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 61724.454200426,
+      "pid": 4009040,
+      "spawn_return_monotonic": 61724.455730321,
+      "direct_identity": {
+        "pid": 4009040,
+        "state": "R",
+        "ppid": 4009032,
+        "pgid": 4009040,
+        "sid": 4009040,
+        "start_ticks": 6172445,
+        "rss_bytes": 311296
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-11T10:02:40.446754+00:00",
+      "elapsed_seconds": 0.1138216840045061,
+      "logs": {
+        "prefill-undefined-symbols-free.stdout": {
+          "bytes": 30013,
+          "sha256": "f7948739ffd547c0ab58c8a5607a28e0f93310e2c38d749a29372a10748e1d76"
+        },
+        "prefill-undefined-symbols-free.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "prefill-undefined-symbols-contrib-llvm",
+      "argv": [
+        "/usr/bin/nm",
+        "-C",
+        "-u",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/build/contrib-llvm/libstrata_prefill.a"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-11T10:02:40.639764+00:00",
+      "wall_seconds": 60,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 4009055,
+          "start_ticks": 6172476,
+          "sid": 4009055,
+          "pgid": 4009055
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 61724.761509523,
+      "pid": 4009055,
+      "spawn_return_monotonic": 61724.764687997,
+      "direct_identity": {
+        "pid": 4009055,
+        "state": "R",
+        "ppid": 4009032,
+        "pgid": 4009055,
+        "sid": 4009055,
+        "start_ticks": 6172476,
+        "rss_bytes": 2379776
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-11T10:02:40.771709+00:00",
+      "elapsed_seconds": 0.13151868800196098,
+      "logs": {
+        "prefill-undefined-symbols-contrib-llvm.stdout": {
+          "bytes": 38359,
+          "sha256": "7be272ce8bd66035a40245b990408e95d8f016075ce1ed84f7556f664587ebd7"
+        },
+        "prefill-undefined-symbols-contrib-llvm.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "observer-adversarial-fixtures",
+      "argv": [
+        "/usr/bin/python3",
+        "-c",
+        "import importlib.util, json, sys, unittest\nfrom collections import Counter\nfrom pathlib import Path\na, ledger = map(Path, sys.argv[1:])\nsys.path.insert(0, str(a))\ns = importlib.util.spec_from_file_location('observer_fixtures', a/'selfcheck.py')\nv = importlib.util.module_from_spec(s); s.loader.exec_module(v)\nv.Selfcheck.ledger = staticmethod(v.load_ledger(ledger))\nclass Results(unittest.TextTestResult):\n    def __init__(self,*args,**kwargs):\n        super().__init__(*args,**kwargs); self.subcases=[]\n    def addSubTest(self,test,subtest,error):\n        self.subcases.append(dict(method=test._testMethodName,parameters=str(subtest),passed=error is None))\n        super().addSubTest(test,subtest,error)\nr=unittest.TextTestRunner(verbosity=2,resultclass=Results).run(unittest.defaultTestLoader.loadTestsFromTestCase(v.Selfcheck))\ncounts=Counter(x['method'] for x in r.subcases)\nassert r.wasSuccessful() and r.testsRun==6 and len(r.subcases)==47\nassert counts==dict(test_all_context_corruptions=20,test_rejected_structures=20,test_rejected_independent_pins=7)\nprint(json.dumps(dict(passed=True,unittest_methods=r.testsRun,positive_cases=3,negative_cases=len(r.subcases),total_cases=50,negative_subcases=r.subcases)))\n",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-native-dequant-batch-census-observer-source-v2",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-source-llvm-census32k-v3/transfer_ledger.py"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-11T10:02:40.773727+00:00",
+      "wall_seconds": 60,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 4009060,
+          "start_ticks": 6172489,
+          "sid": 4009060,
+          "pgid": 4009060
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 61724.895415102,
+      "pid": 4009060,
+      "spawn_return_monotonic": 61724.897623076,
+      "direct_identity": {
+        "pid": 4009060,
+        "state": "R",
+        "ppid": 4009032,
+        "pgid": 4009060,
+        "sid": 4009060,
+        "start_ticks": 6172489,
+        "rss_bytes": 1024000
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 9523200,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-11T10:02:40.944422+00:00",
+      "elapsed_seconds": 0.1703570320023573,
+      "logs": {
+        "observer-adversarial-fixtures.stdout": {
+          "bytes": 8348,
+          "sha256": "5c201729efd2b0135cab54d246fb44c2c2c5306a9aaacfedf4acf9aae15dd9d0"
+        },
+        "observer-adversarial-fixtures.stderr": {
+          "bytes": 660,
+          "sha256": "3d50b24bfd2f585f059ae19e62adecaabbce33284d4004ec191f686bde31c01c"
+        }
+      }
+    }
+  ],
+  "started_utc": "2026-10-11T10:02:40.110137+00:00",
+  "boot_id": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+  "controller_sha256": "cb40a7b735c4dac28d04473774a4482b793115e2e91daa34703def7375af0e69",
+  "owner_sha256": "a29d8257eecc77c4ad9ae6671d092b56f4c09a35c4247c125fed3a8c8bc1f95f",
+  "scope": "Actual V2 parser adversarial fixtures and archive undefined references; no GPU/model or performance proof",
+  "gpu_executed": false,
+  "model_executed": false,
+  "adopted": false,
+  "source_pins": {
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-native-dequant-batch-census-observer-source-v2/batch_census.py": "ce794be37f2aa670ba446cd8894ca9394a1be6a8b3a77f467cf77076d0d6f7e3",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-native-dequant-batch-census-observer-source-v2/selfcheck.py": "89d6044df6a010298cff8c8a9546842d53cedf8ef59eb00b30a01b43ddd3cd30",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-source-llvm-census32k-v3/transfer_ledger.py": "7e5e37467208c229eeda3c7367fa16f506c11fe502ad93b28bbcc70fa4e9ab6d"
+  },
+  "build_proofs": {
+    "free": "07ff83d071311c86785202267b3965e2b658adc5bf0bbf503c8367020256c021",
+    "contrib-llvm": "af08c0d501370c3c5ca85697a0c0f8c2e7cfb59fc4b95ab4c61b64fed473c1f9"
+  },
+  "asan_proofs": {
+    "free": "f3adfda6af86501a94a25315bff73b2530ab06f1ada48ece3eb3e16b865ed218",
+    "contrib-llvm": "bcf0d6875f06b49ced5a230b326a8875c9e280f40b91054c5c854f2df2dc8790"
+  },
+  "linkage": {
+    "free": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/build/free/libstrata_prefill.a",
+      "sha256": "8c09f86dd1958477a696f814ca0c75342f465e92a8c0e965fea7f10dda75f092",
+      "undefined_group_references": [
+        "                 U strata::kernels::iq_dequant_gu_group_f16(int, strata::kernels::IqDequantGroup const&, long, long, unsigned short*, unsigned long, unsigned long, void*)",
+        "                 U strata::kernels::iq_dequant_down_group_f16(int, strata::kernels::IqDequantGroup const&, long, long, unsigned short*, unsigned long, unsigned long, void*)"
+      ]
+    },
+    "contrib-llvm": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/build/contrib-llvm/libstrata_prefill.a",
+      "sha256": "49fae0eb38a9109b1eec4be4bd667dd4c68912b16a64368b495d891711c35988",
+      "undefined_group_references": [
+        "                 U strata::kernels::iq_dequant_gu_group_f16(int, strata::kernels::IqDequantGroup const&, long, long, unsigned short*, unsigned long, unsigned long, void*)",
+        "                 U strata::kernels::iq_dequant_down_group_f16(int, strata::kernels::IqDequantGroup const&, long, long, unsigned short*, unsigned long, unsigned long, void*)"
+      ]
+    }
+  },
+  "raw_log_budget_bytes": 67108864,
+  "wall_budget_seconds": 180,
+  "review_sha256": "7b9b98ea92b52f643cf2650da00a452fc631f3005650da9526146b9d20b5e57d",
+  "fixtures": {
+    "passed": true,
+    "unittest_methods": 6,
+    "positive_cases": 3,
+    "negative_cases": 47,
+    "total_cases": 50,
+    "negative_subcases": [
+      {
+        "method": "test_all_context_corruptions",
+        "parameters": "test_all_context_corruptions (observer_fixtures.Selfcheck.test_all_context_corruptions) (field='device')",
+        "passed": true
+      },
+      {
+        "method": "test_all_context_corruptions",
+        "parameters": "test_all_context_corruptions (observer_fixtures.Selfcheck.test_all_context_corruptions) (field='lb')",
+        "passed": true
+      },
+      {
+        "method": "test_all_context_corruptions",
+        "parameters": "test_all_context_corruptions (observer_fixtures.Selfcheck.test_all_context_corruptions) (field='le')",
+        "passed": true
+      },
+      {
+        "method": "test_all_context_corruptions",
+        "parameters": "test_all_context_corruptions (observer_fixtures.Selfcheck.test_all_context_corruptions) (field='chunk_offset')",
+        "passed": true
+      },
+      {
+        "method": "test_all_context_corruptions",
+        "parameters": "test_all_context_corruptions (observer_fixtures.Selfcheck.test_all_context_corruptions) (field='pos')",
+        "passed": true
+      },
+      {
+        "method": "test_all_context_corruptions",
+        "parameters": "test_all_context_corruptions (observer_fixtures.Selfcheck.test_all_context_corruptions) (field='tokens')",
+        "passed": true
+      },
+      {
+        "method": "test_all_context_corruptions",
+        "parameters": "test_all_context_corruptions (observer_fixtures.Selfcheck.test_all_context_corruptions) (field='layer')",
+        "passed": true
+      },
+      {
+        "method": "test_all_context_corruptions",
+        "parameters": "test_all_context_corruptions (observer_fixtures.Selfcheck.test_all_context_corruptions) (field='fused_prefix')",
+        "passed": true
+      },
+      {
+        "method": "test_all_context_corruptions",
+        "parameters": "test_all_context_corruptions (observer_fixtures.Selfcheck.test_all_context_corruptions) (field='cpu_experts')",
+        "passed": true
+      },
+      {
+        "method": "test_all_context_corruptions",
+        "parameters": "test_all_context_corruptions (observer_fixtures.Selfcheck.test_all_context_corruptions) (field='gpu_order')",
+        "passed": true
+      },
+      {
+        "method": "test_all_context_corruptions",
+        "parameters": "test_all_context_corruptions (observer_fixtures.Selfcheck.test_all_context_corruptions) (overflow='device')",
+        "passed": true
+      },
+      {
+        "method": "test_all_context_corruptions",
+        "parameters": "test_all_context_corruptions (observer_fixtures.Selfcheck.test_all_context_corruptions) (overflow='lb')",
+        "passed": true
+      },
+      {
+        "method": "test_all_context_corruptions",
+        "parameters": "test_all_context_corruptions (observer_fixtures.Selfcheck.test_all_context_corruptions) (overflow='le')",
+        "passed": true
+      },
+      {
+        "method": "test_all_context_corruptions",
+        "parameters": "test_all_context_corruptions (observer_fixtures.Selfcheck.test_all_context_corruptions) (overflow='chunk_offset')",
+        "passed": true
+      },
+      {
+        "method": "test_all_context_corruptions",
+        "parameters": "test_all_context_corruptions (observer_fixtures.Selfcheck.test_all_context_corruptions) (overflow='pos')",
+        "passed": true
+      },
+      {
+        "method": "test_all_context_corruptions",
+        "parameters": "test_all_context_corruptions (observer_fixtures.Selfcheck.test_all_context_corruptions) (overflow='tokens')",
+        "passed": true
+      },
+      {
+        "method": "test_all_context_corruptions",
+        "parameters": "test_all_context_corruptions (observer_fixtures.Selfcheck.test_all_context_corruptions) (overflow='layer')",
+        "passed": true
+      },
+      {
+        "method": "test_all_context_corruptions",
+        "parameters": "test_all_context_corruptions (observer_fixtures.Selfcheck.test_all_context_corruptions) (overflow='fused_prefix')",
+        "passed": true
+      },
+      {
+        "method": "test_all_context_corruptions",
+        "parameters": "test_all_context_corruptions (observer_fixtures.Selfcheck.test_all_context_corruptions) (overflow='cpu_experts')",
+        "passed": true
+      },
+      {
+        "method": "test_all_context_corruptions",
+        "parameters": "test_all_context_corruptions (observer_fixtures.Selfcheck.test_all_context_corruptions) (overflow='gpu_order')",
+        "passed": true
+      },
+      {
+        "method": "test_rejected_independent_pins",
+        "parameters": "test_rejected_independent_pins (observer_fixtures.Selfcheck.test_rejected_independent_pins) (index=0)",
+        "passed": true
+      },
+      {
+        "method": "test_rejected_independent_pins",
+        "parameters": "test_rejected_independent_pins (observer_fixtures.Selfcheck.test_rejected_independent_pins) (index=1)",
+        "passed": true
+      },
+      {
+        "method": "test_rejected_independent_pins",
+        "parameters": "test_rejected_independent_pins (observer_fixtures.Selfcheck.test_rejected_independent_pins) (index=2)",
+        "passed": true
+      },
+      {
+        "method": "test_rejected_independent_pins",
+        "parameters": "test_rejected_independent_pins (observer_fixtures.Selfcheck.test_rejected_independent_pins) (index=3)",
+        "passed": true
+      },
+      {
+        "method": "test_rejected_independent_pins",
+        "parameters": "test_rejected_independent_pins (observer_fixtures.Selfcheck.test_rejected_independent_pins) (index=4)",
+        "passed": true
+      },
+      {
+        "method": "test_rejected_independent_pins",
+        "parameters": "test_rejected_independent_pins (observer_fixtures.Selfcheck.test_rejected_independent_pins) (index=5)",
+        "passed": true
+      },
+      {
+        "method": "test_rejected_independent_pins",
+        "parameters": "test_rejected_independent_pins (observer_fixtures.Selfcheck.test_rejected_independent_pins) (index=6)",
+        "passed": true
+      },
+      {
+        "method": "test_rejected_structures",
+        "parameters": "test_rejected_structures (observer_fixtures.Selfcheck.test_rejected_structures) (index=0)",
+        "passed": true
+      },
+      {
+        "method": "test_rejected_structures",
+        "parameters": "test_rejected_structures (observer_fixtures.Selfcheck.test_rejected_structures) (index=1)",
+        "passed": true
+      },
+      {
+        "method": "test_rejected_structures",
+        "parameters": "test_rejected_structures (observer_fixtures.Selfcheck.test_rejected_structures) (index=2)",
+        "passed": true
+      },
+      {
+        "method": "test_rejected_structures",
+        "parameters": "test_rejected_structures (observer_fixtures.Selfcheck.test_rejected_structures) (index=3)",
+        "passed": true
+      },
+      {
+        "method": "test_rejected_structures",
+        "parameters": "test_rejected_structures (observer_fixtures.Selfcheck.test_rejected_structures) (index=4)",
+        "passed": true
+      },
+      {
+        "method": "test_rejected_structures",
+        "parameters": "test_rejected_structures (observer_fixtures.Selfcheck.test_rejected_structures) (index=5)",
+        "passed": true
+      },
+      {
+        "method": "test_rejected_structures",
+        "parameters": "test_rejected_structures (observer_fixtures.Selfcheck.test_rejected_structures) (index=6)",
+        "passed": true
+      },
+      {
+        "method": "test_rejected_structures",
+        "parameters": "test_rejected_structures (observer_fixtures.Selfcheck.test_rejected_structures) (index=7)",
+        "passed": true
+      },
+      {
+        "method": "test_rejected_structures",
+        "parameters": "test_rejected_structures (observer_fixtures.Selfcheck.test_rejected_structures) (index=8)",
+        "passed": true
+      },
+      {
+        "method": "test_rejected_structures",
+        "parameters": "test_rejected_structures (observer_fixtures.Selfcheck.test_rejected_structures) (index=9)",
+        "passed": true
+      },
+      {
+        "method": "test_rejected_structures",
+        "parameters": "test_rejected_structures (observer_fixtures.Selfcheck.test_rejected_structures) (index=10)",
+        "passed": true
+      },
+      {
+        "method": "test_rejected_structures",
+        "parameters": "test_rejected_structures (observer_fixtures.Selfcheck.test_rejected_structures) (index=11)",
+        "passed": true
+      },
+      {
+        "method": "test_rejected_structures",
+        "parameters": "test_rejected_structures (observer_fixtures.Selfcheck.test_rejected_structures) (index=12)",
+        "passed": true
+      },
+      {
+        "method": "test_rejected_structures",
+        "parameters": "test_rejected_structures (observer_fixtures.Selfcheck.test_rejected_structures) (index=13)",
+        "passed": true
+      },
+      {
+        "method": "test_rejected_structures",
+        "parameters": "test_rejected_structures (observer_fixtures.Selfcheck.test_rejected_structures) (index=14)",
+        "passed": true
+      },
+      {
+        "method": "test_rejected_structures",
+        "parameters": "test_rejected_structures (observer_fixtures.Selfcheck.test_rejected_structures) (index=15)",
+        "passed": true
+      },
+      {
+        "method": "test_rejected_structures",
+        "parameters": "test_rejected_structures (observer_fixtures.Selfcheck.test_rejected_structures) (index=16)",
+        "passed": true
+      },
+      {
+        "method": "test_rejected_structures",
+        "parameters": "test_rejected_structures (observer_fixtures.Selfcheck.test_rejected_structures) (index=17)",
+        "passed": true
+      },
+      {
+        "method": "test_rejected_structures",
+        "parameters": "test_rejected_structures (observer_fixtures.Selfcheck.test_rejected_structures) (index=18)",
+        "passed": true
+      },
+      {
+        "method": "test_rejected_structures",
+        "parameters": "test_rejected_structures (observer_fixtures.Selfcheck.test_rejected_structures) (index=19)",
+        "passed": true
+      }
+    ]
+  },
+  "source_stable": true,
+  "finished_utc": "2026-10-11T10:02:40.945517+00:00"
+}

@@ -1,0 +1,30 @@
+{
+  "original_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-native-dequant-prefill-model-root-v3/n64-g16-off/commands/model.stderr",
+  "original_bytes": 27896909,
+  "original_sha256": "55470929e044eaf6192bddbeebe48c6884bbea5f8b059f2c893d405256ae7ed5",
+  "matching_line_numbers": [
+    149692,
+    149727,
+    168320,
+    168321,
+    173330,
+    173331
+  ],
+  "module_build_failures": 3,
+  "ur_program_build_failures": 3,
+  "longjmp_messages": 2241,
+  "first_longjmp_line": 199478,
+  "GEN_sent": false,
+  "native_batch": "off",
+  "ERROR_matcher_weakened": false,
+  "model_status_unchanged": "FAIL",
+  "model_cleanup": "owned SIGTERM; exit -11; child reaped; session empty",
+  "kernel_fault_messages": [],
+  "post_stop_integer_health": "PASS",
+  "open_questions": [
+    "Determine actually selected versus speculative preload specializations",
+    "Exact compiler/driver local-matrix lowering contract",
+    "Identify longjmp/termination origin; temporal order alone does not establish cause"
+  ],
+  "main_source_finding": "Runtime::preload_kernels iterates all get_kernel_ids and catches build exceptions locally; thread is joinable, not detached"
+}

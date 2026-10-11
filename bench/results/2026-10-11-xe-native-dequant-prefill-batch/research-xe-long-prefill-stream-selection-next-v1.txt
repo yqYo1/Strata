@@ -1,0 +1,39 @@
+# XE long-prefill stream selection: research note (v1)
+
+Date: 2026-10-11
+Scope: source/research only. No GPU, model, build, test, profile, or source changes performed.
+
+## Finding
+
+The current long-prefill `stream_all` path is deliberately a full expert walk, not a routed-expert transfer path. In `src/prefill/prefill.cpp`, it constructs `seq` by iterating every layer and every expert ID, skipping only experts already resident/on a peer. It then submits copies for all entries in `seq` in ring order. The consumer walks router `order`; entries skipped by routing merely release their slot. Thus routing controls expert compute but does not suppress the corresponding host-to-device transfer. This is confirmed by the comments and code around lines 1492-1540, 1614-1655 and 2541-2555. This source-level distinction is central: reducing per-token *logical routed bytes* is not evidence that the current full-nonresident transfer critical path is reduced.
+
+## Lower-bound arithmetic and qualification
+
+The archived R262 architecture budget records a historical B570 host-USM H2D rate of 6.447 GB/s, a 50.292 GB packed expert set, and a 7.80 s one-pass transfer estimate. Its old repeated-transfer estimate was 190.241 GB / 29.5 s. The contemporaneous 32K prefill diagnostic used chunk 6144 and ring 16, counted 295.956 GB H2D (45.968 GB routed plus 249.988 GB full-stream accounting) across 144,639 copy calls, and achieved 269.159 tokens/s in 121.742 s. These are historical measurements, not current performance guarantees.
+
+At 6.447 GB/s, 295.956 GB corresponds to 45.9 seconds of serialized link time (decimal GB). Linear doubling to a 64K prompt would imply roughly 592 GB and 91.8 seconds, before compute, CPU routing, synchronization, or other traffic; that cannot meet a 64-second target even under this deliberately simplified transfer-only model. This is a planning bound, not a prediction: measured H2D overlap and byte-accounting definitions matter, and the old 32K census contains both routed and full-stream accounting. If the target is 1000 tokens/s, 64K takes 65.536 s (use 64 s only as a rounded budget). A single 50.292 GB pass is about 7.8 s at that historical rate, so avoiding repeated full-set passes is the first-order opportunity. Chunk size, host pinning, ring depth and overlap affect achievable service time but cannot make bytes disappear.
+
+The 260K context safety constraint remains material: any route-selective scheme must preserve source-buffer lifetime, chunking, KV/activation headroom, and fallback behavior at maximum context. Do not infer a safe larger chunk from transfer arithmetic alone.
+
+## Candidate design to investigate (not validated)
+
+1. Precompute each chunk/layer's unique routed expert set from the router output, then stage only those nonresident experts. This requires routing to be available before the layer's copies are committed; if router logits depend on activations produced by the layer, there is no free global preplan. A two-pass router (or CPU-side route prediction) adds work, and any approximation creates a correctness risk. The practical exact variant is per-layer route -> unique-ID compaction -> transfer, which trades away the current early whole-ring prefetch and may expose H2D latency.
+2. Preserve overlap with a bounded lookahead: once layer l routing is known, start its selected transfers and possibly predict/select l+1 only if its router input is already available. Batch adjacent selected expert blobs into fewer DMA descriptors where physical layout permits. This attacks call/latency overhead, not total selected bytes; benchmark should separate descriptor count, bytes, copy wait and compute.
+3. Cache repeatedly selected experts in VRAM only if residency is tracked by model/session and eviction is safe. A cache helps when the working set is smaller than capacity and selection has temporal locality; it cannot avoid transfer for a one-shot, broad-coverage prefill. Capacity must be deducted from the same VRAM budget used for KV and scratch.
+4. Increase chunk size / amortize full model walks only as a measured alternative. Larger chunks reduce the number of full passes, but increase activation/workspace memory and can violate 260K headroom. Existing reports R281/R262/R243 should be treated as the project evidence boundary; do not assume a larger ring/chunk wins without a capacity-safe test.
+
+## Public implementation evidence and limits
+
+- llama.cpp issue #20757 describes selective copying from runtime expert IDs and copying expert subrows into their original tensor offsets; it also discusses persistent GPU slot caching/remapping. This is a useful implementation direction, but an issue thread is not a benchmark or proof of long-prefill throughput: https://github.com/ggml-org/llama.cpp/issues/20757
+- llama.cpp's `llama-moe-cache.cpp` is the relevant implementation source for cache behavior: https://github.com/ggml-org/llama.cpp/blob/master/src/llama-moe-cache.cpp. A cache is distinct from per-layer exact selected transfer; cache benefit depends on capacity and reuse.
+- The llama.cpp discussion #28248 describes bypass when a ubatch touches more unique experts than cache slots, and says prefill remains unchanged by that cache design. Treat as an explicit boundary: broad prefill coverage can defeat a decode-oriented cache: https://github.com/ggml-org/llama.cpp/discussions/28248
+- vLLM issue #41447 and #38256 are requests/RFC-level material, not evidence that a shipped path solves this workload: https://github.com/vllm-project/vllm/issues/41447 and https://github.com/vllm-project/vllm/issues/38256
+- IPEX-LLM/FlashMoE public material emphasizes hardware/model constraints; it does not establish selective expert transfer for this exact prefill workload. Avoid using it as performance validation.
+
+## Recommendation and evidence needed
+
+The most promising software experiment is exact per-layer routed-ID compaction feeding a bounded selected-expert ring, with a full-stream fallback retained. First establish that the current route order can be known before transfer for each layer and quantify unique selected IDs, selected bytes, copy descriptors and dependency wait per chunk on the existing captured route data. Then a capacity-safe implementation experiment can compare output correctness, bytes and H2D wait at the same prompt/model/device. If route production cannot precede copies, prioritize fewer full-set passes through chunking only when the 260K memory budget permits. Do not claim the 1000 t/s target from the arithmetic alone.
+
+## Provenance
+
+Local source inspected: `src/prefill/prefill.cpp` (working tree, stream construction/issue/consume sections cited above). Historical evidence: `round262-component-capacity-architecture-budget.txt`, `round281-chunk12k-chunk-major-correctness-and-prior-rejection-boundary.txt`, and archived 32K census/ledger in the task's research directory. Public links above are design/source leads, not validation of Strata behavior. Report deliberately excludes the prohibited `prefill-gemm-only-contract-root-v1/record.json` artifact.

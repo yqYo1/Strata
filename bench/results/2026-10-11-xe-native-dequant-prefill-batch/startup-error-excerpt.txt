@@ -1,0 +1,203 @@
+149684: [2026-10-11 19:09:07.791] [thread-id: 126290166159680] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeKernelSetArgumentValue(hKernel=0xf3e5068, argIndex=2, argSize=8, pArgValue=0x7ffe0be0d528)
+149685: [2026-10-11 19:09:07.791] [thread-id: 126290166159680] [trace] zeKernelSetArgumentValue(hKernel, argIndex, argSize, pArgValue)
+149686: [2026-10-11 19:09:07.791] [thread-id: 126290166159680] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeKernelSetArgumentValue(hKernel=0xf3e5068, argIndex=5, argSize=8, pArgValue=0x7ffe0be0d528)
+149687: [2026-10-11 19:09:07.791] [thread-id: 126290166159680] [trace] zeKernelSetArgumentValue(hKernel, argIndex, argSize, pArgValue)
+149688: [2026-10-11 19:09:07.791] [thread-id: 126290166159680] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeKernelSetArgumentValue(hKernel=0xf3e5068, argIndex=7, argSize=8, pArgValue=0x7ffe0be0d528)
+149689: [2026-10-11 19:09:07.791] [thread-id: 126290166159680] [trace] zeCommandListAppendLaunchKernel(hCommandList, hKernel, pLaunchFuncArgs, hSignalEvent, numWaitEvents, phWaitEventsLocal)
+149690: [2026-10-11 19:09:07.791] [thread-id: 126290166159680] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListAppendLaunchKernel(hCommandList=0xf7e9928, hKernel=0xf3e5068, pLaunchFuncArgs={groupCountX=10240, groupCountY=1, groupCountZ=1}, hSignalEvent=nullptr, numWaitEvents=0, phWaitEvents=nullptr)
+149691:    <--- urCommandBufferAppendKernelLaunchExp(.hCommandBuffer = 0xfce2ea0, .hKernel = 0xef96950, .workDim = 1, .pGlobalWorkOffset = nullptr, .pGlobalWorkSize = 0x7ffe0be0df40 (2621440), .pLocalWorkSize = 0x7ffe0be0df58 (256), .numKernelAlternatives = 0, .phKernelAlternatives = nullptr, .numSyncPointsInWaitList = 0, .pSyncPointWaitList = nullptr, .numEventsInWaitList = 0, .phEventWaitList = nullptr, .pSyncPoint = nullptr, .phEvent = nullptr, .phCommand = nullptr) -> UR_RESULT_SUCCESS;
+149692: [2026-10-11 19:09:07.791] [thread-id: 126289806444224] [trace] ERROR (ZE_RESULT_ERROR_MODULE_BUILD_FAILURE) in zeModuleCreate(hContext=0xef74888, hDevice=0xef5d6d8, desc={stype=0x72dc230c8c30, format=0x72dc230c8c40, inputSize=66248, pInputModule=3, pBuildFlags=" -ze-fp32-correctly-rounded-divide-sqrt -ze-fp32-correctly-rounded-divide-sqrt -ze-opt-level=2", pConstants={numConstants=0, pConstantIds=nullptr, pConstantValues=nullptr}}, phModule=0x72dc230c8c20, phBuildLog=0x72dc230c8c28)
+149693:    ---> urKernelSetArgValue
+149694: [2026-10-11 19:09:07.791] [thread-id: 126290166159680] [trace] zeKernelSetArgumentValue(hKernel, argIndex, argSize, pArgValue)
+149695: [2026-10-11 19:09:07.791] [thread-id: 126290166159680] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeKernelSetArgumentValue(hKernel=0xf3e5068, argIndex=0, argSize=8, pArgValue=0xf5f19e8)
+149696:    <--- urKernelSetArgValue(.hKernel = 0xef96950, .argIndex = 0, .argSize = 8, .pProperties = nullptr, .pArgValue = 0xf5f19e8) -> UR_RESULT_SUCCESS;
+149697:    ---> urKernelSetArgValue
+149698: [2026-10-11 19:09:07.791] [thread-id: 126290166159680] [trace] zeKernelSetArgumentValue(hKernel, argIndex, argSize, pArgValue)
+149699: [2026-10-11 19:09:07.791] [thread-id: 126290166159680] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeKernelSetArgumentValue(hKernel=0xf3e5068, argIndex=1, argSize=24, pArgValue=0xf5f19f0)
+149700:    <--- urKernelSetArgValue(.hKernel = 0xef96950, .argIndex = 1, .argSize = 24, .pProperties = nullptr, .pArgValue = 0xf5f19f0) -> UR_RESULT_SUCCESS;
+149701:    ---> urKernelSetArgPointer
+149702:    <--- urKernelSetArgPointer(.hKernel = 0xef96950, .argIndex = 2, .pProperties = nullptr, .pArgValue = 0xffffd55843000000) -> UR_RESULT_SUCCESS;
+149703:    ---> urKernelSetArgValue
+149704: [2026-10-11 19:09:07.791] [thread-id: 126290166159680] [trace] zeKernelSetArgumentValue(hKernel, argIndex, argSize, pArgValue)
+149705: [2026-10-11 19:09:07.791] [thread-id: 126290166159680] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeKernelSetArgumentValue(hKernel=0xf3e5068, argIndex=3, argSize=4, pArgValue=0xf5f1a10)
+149706:    <--- urKernelSetArgValue(.hKernel = 0xef96950, .argIndex = 3, .argSize = 4, .pProperties = nullptr, .pArgValue = 0xf5f1a10) -> UR_RESULT_SUCCESS;
+149707:    ---> urKernelSetArgLocal
+149708: [2026-10-11 19:09:07.791] [thread-id: 126290166159680] [trace] zeKernelSetArgumentValue(hKernel, argIndex, argSize, pArgValue)
+149709: [2026-10-11 19:09:07.791] [thread-id: 126290166159680] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeKernelSetArgumentValue(hKernel=0xf3e5068, argIndex=4, argSize=384, pArgValue=nullptr)
+149710:    <--- urKernelSetArgLocal(.hKernel = 0xef96950, .argIndex = 4, .argSize = 384, .pProperties = nullptr) -> UR_RESULT_SUCCESS;
+149711:    ---> urKernelSetArgPointer
+149712:    <--- urKernelSetArgPointer(.hKernel = 0xef96950, .argIndex = 5, .pProperties = nullptr, .pArgValue = 0xffffd5571fe08000) -> UR_RESULT_SUCCESS;
+149713:    ---> urKernelSetArgValue
+149714: [2026-10-11 19:09:07.791] [thread-id: 126290166159680] [trace] zeKernelSetArgumentValue(hKernel, argIndex, argSize, pArgValue)
+149715: [2026-10-11 19:09:07.791] [thread-id: 126290166159680] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeKernelSetArgumentValue(hKernel=0xf3e5068, argIndex=6, argSize=8, pArgValue=0xf5f1a40)
+149716:    <--- urKernelSetArgValue(.hKernel = 0xef96950, .argIndex = 6, .argSize = 8, .pProperties = nullptr, .pArgValue = 0xf5f1a40) -> UR_RESULT_SUCCESS;
+149717:    ---> urKernelSetArgPointer
+149718:    <--- urKernelSetArgPointer(.hKernel = 0xef96950, .argIndex = 7, .pProperties = nullptr, .pArgValue = 0xffffd5571fda8000) -> UR_RESULT_SUCCESS;
+149719:    ---> urKernelSetArgValue
+149720: [2026-10-11 19:09:07.791] [thread-id: 126290166159680] [trace] zeKernelSetArgumentValue(hKernel, argIndex, argSize, pArgValue)
+149721: [2026-10-11 19:09:07.791] [thread-id: 126290166159680] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeKernelSetArgumentValue(hKernel=0xf3e5068, argIndex=8, argSize=8, pArgValue=0xf5f1a50)
+149722:    <--- urKernelSetArgValue(.hKernel = 0xef96950, .argIndex = 8, .argSize = 8, .pProperties = nullptr, .pArgValue = 0xf5f1a50) -> UR_RESULT_SUCCESS;
+149723:    ---> urCommandBufferGetInfoExp
+149724:    <--- urCommandBufferGetInfoExp(.hCommandBuffer = 0xfce2ea0, .propName = UR_EXP_COMMAND_BUFFER_INFO_DESCRIPTOR, .propSize = 24, .pPropValue = 0x7ffe0be0df00 ((struct ur_exp_command_buffer_desc_t){.stype = UR_STRUCTURE_TYPE_EXP_COMMAND_BUFFER_DESC, .pNext = nullptr, .isUpdatable = false, .isInOrder = true, .enableProfiling = false}), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+149725:    ---> urCommandBufferAppendKernelLaunchExp
+149726: [2026-10-11 19:09:07.791] [thread-id: 126290166159680] [trace] zeKernelSetGroupSize(hKernel, groupSizeX, groupSizeY, groupSizeZ)
+149727:    <--- urProgramBuildExp(.hProgram = 0x72cf47bc9830, .numDevices = 1, .phDevices = 0x72dc16250570 {0xef729e0}, .flags = 0, .pOptions = 0x72dc17fdd250 ( -ze-fp32-correctly-rounded-divide-sqrt -ze-fp32-correctly-rounded-divide-sqrt -ze-opt-level=2)) -> UR_RESULT_ERROR_PROGRAM_BUILD_FAILURE;
+149728: [2026-10-11 19:09:07.791] [thread-id: 126290166159680] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeKernelSetGroupSize(hKernel=0xf3e5068, groupSizeX=256, groupSizeY=1, groupSizeZ=1)
+149729: [2026-10-11 19:09:07.791] [thread-id: 126290166159680] [trace] zeKernelSetArgumentValue(hKernel, argIndex, argSize, pArgValue)
+149730:    ---> urProgramGetInfo
+149731:    <--- urProgramGetInfo(.hProgram = 0x72cf47bc9830, .propName = UR_PROGRAM_INFO_DEVICES, .propSize = 0, .pPropValue = nullptr, .pPropSizeRet = 0x72dc230c8e88 (8)) -> UR_RESULT_SUCCESS;
+149732:    ---> urProgramGetInfo
+149733:    <--- urProgramGetInfo(.hProgram = 0x72cf47bc9830, .propName = UR_PROGRAM_INFO_DEVICES, .propSize = 8, .pPropValue = {0xef729e0}, .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+149734:    ---> urProgramGetBuildInfo
+149735: [2026-10-11 19:09:07.791] [thread-id: 126290166159680] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeKernelSetArgumentValue(hKernel=0xf3e5068, argIndex=2, argSize=8, pArgValue=0x7ffe0be0d528)
+149736: [2026-10-11 19:09:07.791] [thread-id: 126290166159680] [trace] zeKernelSetArgumentValue(hKernel, argIndex, argSize, pArgValue)
+149737: [2026-10-11 19:09:07.791] [thread-id: 126289806444224] [trace] zeModuleBuildLogGetString(hModuleBuildLog, pSize, pBuildLog)
+149738: [2026-10-11 19:09:07.791] [thread-id: 126289806444224] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogGetString(hModuleBuildLog=0x72dc17a6fc28, pSize=779, pBuildLog=nullptr)
+149739:    <--- urProgramGetBuildInfo(.hProgram = 0x72cf47bc9830, .hDevice = 0xef729e0, .propName = UR_PROGRAM_BUILD_INFO_LOG, .propSize = 0, .pPropValue = nullptr, .pPropSizeRet = 0x72dc230c8e90 (779)) -> UR_RESULT_SUCCESS;
+149740:    ---> urProgramGetBuildInfo
+149741: [2026-10-11 19:09:07.791] [thread-id: 126290166159680] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeKernelSetArgumentValue(hKernel=0xf3e5068, argIndex=5, argSize=8, pArgValue=0x7ffe0be0d528)
+149742: [2026-10-11 19:09:07.792] [thread-id: 126290166159680] [trace] zeKernelSetArgumentValue(hKernel, argIndex, argSize, pArgValue)
+149743: [2026-10-11 19:09:07.792] [thread-id: 126290166159680] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeKernelSetArgumentValue(hKernel=0xf3e5068, argIndex=7, argSize=8, pArgValue=0x7ffe0be0d528)
+149744: [2026-10-11 19:09:07.792] [thread-id: 126290166159680] [trace] zeCommandListAppendLaunchKernel(hCommandList, hKernel, pLaunchFuncArgs, hSignalEvent, numWaitEvents, phWaitEventsLocal)
+149745: [2026-10-11 19:09:07.792] [thread-id: 126289806444224] [trace] zeModuleBuildLogGetString(hModuleBuildLog, pSize, pBuildLog)
+149746: [2026-10-11 19:09:07.792] [thread-id: 126290166159680] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListAppendLaunchKernel(hCommandList=0xf7e9928, hKernel=0xf3e5068, pLaunchFuncArgs={groupCountX=10240, groupCountY=1, groupCountZ=1}, hSignalEvent=nullptr, numWaitEvents=0, phWaitEvents=nullptr)
+149747: [2026-10-11 19:09:07.792] [thread-id: 126289806444224] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogGetString(hModuleBuildLog=0x72dc17a6fc28, pSize=779, pBuildLog="
+149748: error: in function '__builtin_spriv_OpJointMatrixLoadINTEL_PackedA_RowMajor_SG16_16x16_i16_8_local_v8i8_pi32_i32' called by kernels: 'typeinfo name for strata::kernels::xe::(anonymous namespace)::Kernel<2, sycl::_V1::ext::oneapi::bfloat16, true, false>', 'typeinfo name for strata::kernels::xe::(anonymous namespace)::Kernel<2, sycl::_V1::ext::oneapi::bfloat16, false, true>', 'typeinfo name for strata::kernels::xe::(anonymous namespace)::Kernel<2, sycl::_V1::ext::oneapi::bfloat16, false, false>', 'typeinfo name for strata::kernels::xe::(anonymous namespace)::Kernel<2, sycl::_V1::ext::oneapi::bfloat16, true, true>': undefined reference to `__builtin_spriv_OpJointMatrixLoadINTEL_PackedA_RowMajor_SG16_16x16_i16_8_local_v8i8_pi32_i32'
+149749: error: backend compiler failed build.
+149750: ")
+149751: [2026-10-11 19:09:07.792] [thread-id: 126289806444224] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+149752: [2026-10-11 19:09:07.792] [thread-id: 126289806444224] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x72dc17a6fc28)
+149753:    <--- urProgramGetBuildInfo(.hProgram = 0x72cf47bc9830, .hDevice = 0xef729e0, .propName = UR_PROGRAM_BUILD_INFO_LOG, .propSize = 779, .pPropValue = 0x72dc16815a30 (
+149754: error: in function '__builtin_spriv_OpJointMatrixLoadINTEL_PackedA_RowMajor_SG16_16x16_i16_8_local_v8i8_pi32_i32' called by kernels: 'typeinfo name for strata::kernels::xe::(anonymous namespace)::Kernel<2, sycl::_V1::ext::oneapi::bfloat16, true, false>', 'typeinfo name for strata::kernels::xe::(anonymous namespace)::Kernel<2, sycl::_V1::ext::oneapi::bfloat16, false, true>', 'typeinfo name for strata::kernels::xe::(anonymous namespace)::Kernel<2, sycl::_V1::ext::oneapi::bfloat16, false, false>', 'typeinfo name for strata::kernels::xe::(anonymous namespace)::Kernel<2, sycl::_V1::ext::oneapi::bfloat16, true, true>': undefined reference to `__builtin_spriv_OpJointMatrixLoadINTEL_PackedA_RowMajor_SG16_16x16_i16_8_local_v8i8_pi32_i32'
+149755: error: backend compiler failed build.
+149756: ), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+149757:    ---> urDeviceGetInfo
+149758:    <--- urDeviceGetInfo(.hDevice = 0xef729e0, .propName = UR_DEVICE_INFO_NAME, .propSize = 0, .pPropValue = nullptr, .pPropSizeRet = 0x72dc230c8e98 (31)) -> UR_RESULT_SUCCESS;
+149759:    ---> urDeviceGetInfo
+149760:    <--- urDeviceGetInfo(.hDevice = 0xef729e0, .propName = UR_DEVICE_INFO_NAME, .propSize = 31, .pPropValue = 0x72dc1f1e82e0 (Intel(R) Arc(TM) B570 Graphics), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+149761:    <--- urCommandBufferAppendKernelLaunchExp(.hCommandBuffer = 0xfce2ea0, .hKernel = 0xef96950, .workDim = 1, .pGlobalWorkOffset = nullptr, .pGlobalWorkSize = 0x7ffe0be0df40 (2621440), .pLocalWorkSize = 0x7ffe0be0df58 (256), .numKernelAlternatives = 0, .phKernelAlternatives = nullptr, .numSyncPointsInWaitList = 0, .pSyncPointWaitList = nullptr, .numEventsInWaitList = 0, .phEventWaitList = nullptr, .pSyncPoint = nullptr, .phEvent = nullptr, .phCommand = nullptr) -> UR_RESULT_SUCCESS;
+149762:    ---> urProgramRelease
+149763:    <--- urProgramRelease(.hProgram = 0x72cf47bc9830) -> UR_RESULT_SUCCESS;
+149764:    ---> urKernelSetArgValue
+149765: [2026-10-11 19:09:07.792] [thread-id: 126290166159680] [trace] zeKernelSetArgumentValue(hKernel, argIndex, argSize, pArgValue)
+149766: [2026-10-11 19:09:07.792] [thread-id: 126290166159680] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeKernelSetArgumentValue(hKernel=0xf3e5068, argIndex=0, argSize=8, pArgValue=0xf3eab48)
+149767:    <--- urKernelSetArgValue(.hKernel = 0xef96950, .argIndex = 0, .argSize = 8, .pProperties = nullptr, .pArgValue = 0xf3eab48) -> UR_RESULT_SUCCESS;
+149768:    ---> urKernelSetArgValue
+168312: [2026-10-11 19:09:08.760] [thread-id: 126290166159680] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeEventHostSynchronize(hEvent=0xf2d8d78, timeout=18446744073709551615)
+168313: [2026-10-11 19:09:08.760] [thread-id: 126290166159680] [trace] zeCommandListImmediateAppendCommandListsExp(hCommandListImmediate, numCommandLists, phCommandListsLocal, hSignalEvent, numWaitEvents, phWaitEventsLocal)
+168314: [2026-10-11 19:09:08.760] [thread-id: 126290166159680] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListImmediateAppendCommandListsExp(hCommandListImmediate=0xfa4fc68, numCommandLists=1, phCommandLists=0x7ffe0be0d9b8, hSignalEvent=0xf2d9288, numWaitEvents=0, phWaitEvents=nullptr)
+168315:    <--- urEnqueueCommandBufferExp(.hQueue = 0xf0d6250, .hCommandBuffer = 0xfce2ea0, .numEventsInWaitList = 0, .phEventWaitList = nullptr, .phEvent = 0x7ffe0be0ddc8 (0xf2d8c70)) -> UR_RESULT_SUCCESS;
+168316:    ---> urEventRelease
+168317:    <--- urEventRelease(.hEvent = 0xf2d8c70) -> UR_RESULT_SUCCESS;
+168318:    ---> urQueueFinish
+168319: [2026-10-11 19:09:08.760] [thread-id: 126290166159680] [trace] zeCommandListHostSynchronize(hCommandList, timeout)
+168320: [2026-10-11 19:09:08.776] [thread-id: 126289806444224] [trace] ERROR (ZE_RESULT_ERROR_MODULE_BUILD_FAILURE) in zeModuleCreate(hContext=0xef74888, hDevice=0xef5d6d8, desc={stype=0x72dc230c8c30, format=0x72dc230c8c40, inputSize=57704, pInputModule=3, pBuildFlags=" -ze-fp32-correctly-rounded-divide-sqrt -ze-fp32-correctly-rounded-divide-sqrt -ze-opt-level=2", pConstants={numConstants=0, pConstantIds=nullptr, pConstantValues=nullptr}}, phModule=0x72dc230c8c20, phBuildLog=0x72dc230c8c28)
+168321:    <--- urProgramBuildExp(.hProgram = 0x72dc1fe050a0, .numDevices = 1, .phDevices = 0x72dc15364940 {0xef729e0}, .flags = 0, .pOptions = 0x72dc127455e0 ( -ze-fp32-correctly-rounded-divide-sqrt -ze-fp32-correctly-rounded-divide-sqrt -ze-opt-level=2)) -> UR_RESULT_ERROR_PROGRAM_BUILD_FAILURE;
+168322:    ---> urProgramGetInfo
+168323:    <--- urProgramGetInfo(.hProgram = 0x72dc1fe050a0, .propName = UR_PROGRAM_INFO_DEVICES, .propSize = 0, .pPropValue = nullptr, .pPropSizeRet = 0x72dc230c8e88 (8)) -> UR_RESULT_SUCCESS;
+168324:    ---> urProgramGetInfo
+168325:    <--- urProgramGetInfo(.hProgram = 0x72dc1fe050a0, .propName = UR_PROGRAM_INFO_DEVICES, .propSize = 8, .pPropValue = {0xef729e0}, .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+168326:    ---> urProgramGetBuildInfo
+168327: [2026-10-11 19:09:08.776] [thread-id: 126289806444224] [trace] zeModuleBuildLogGetString(hModuleBuildLog, pSize, pBuildLog)
+168328: [2026-10-11 19:09:08.776] [thread-id: 126289806444224] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogGetString(hModuleBuildLog=0x72dc15364d58, pSize=534, pBuildLog=nullptr)
+168329:    <--- urProgramGetBuildInfo(.hProgram = 0x72dc1fe050a0, .hDevice = 0xef729e0, .propName = UR_PROGRAM_BUILD_INFO_LOG, .propSize = 0, .pPropValue = nullptr, .pPropSizeRet = 0x72dc230c8e90 (534)) -> UR_RESULT_SUCCESS;
+168330:    ---> urProgramGetBuildInfo
+168331: [2026-10-11 19:09:08.776] [thread-id: 126289806444224] [trace] zeModuleBuildLogGetString(hModuleBuildLog, pSize, pBuildLog)
+168332: [2026-10-11 19:09:08.776] [thread-id: 126289806444224] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogGetString(hModuleBuildLog=0x72dc15364d58, pSize=534, pBuildLog="
+168333: error: in function '__builtin_spriv_OpJointMatrixLoadINTEL_PackedA_RowMajor_SG16_16x16_i16_8_local_v8i8_pi32_i32' called by kernels: 'typeinfo name for strata::kernels::(anonymous namespace)::PromptAttnMma<0, 0>', 'typeinfo name for strata::kernels::(anonymous namespace)::PromptAttnMma<1, 1>', 'typeinfo name for strata::kernels::(anonymous namespace)::PromptAttnMma<1, 2>': undefined reference to `__builtin_spriv_OpJointMatrixLoadINTEL_PackedA_RowMajor_SG16_16x16_i16_8_local_v8i8_pi32_i32'
+168334: error: backend compiler failed build.
+168335: ")
+168336: [2026-10-11 19:09:08.776] [thread-id: 126289806444224] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+168337: [2026-10-11 19:09:08.776] [thread-id: 126289806444224] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x72dc15364d58)
+168338:    <--- urProgramGetBuildInfo(.hProgram = 0x72dc1fe050a0, .hDevice = 0xef729e0, .propName = UR_PROGRAM_BUILD_INFO_LOG, .propSize = 534, .pPropValue = 0x72dc154fe9c0 (
+168339: error: in function '__builtin_spriv_OpJointMatrixLoadINTEL_PackedA_RowMajor_SG16_16x16_i16_8_local_v8i8_pi32_i32' called by kernels: 'typeinfo name for strata::kernels::(anonymous namespace)::PromptAttnMma<0, 0>', 'typeinfo name for strata::kernels::(anonymous namespace)::PromptAttnMma<1, 1>', 'typeinfo name for strata::kernels::(anonymous namespace)::PromptAttnMma<1, 2>': undefined reference to `__builtin_spriv_OpJointMatrixLoadINTEL_PackedA_RowMajor_SG16_16x16_i16_8_local_v8i8_pi32_i32'
+168340: error: backend compiler failed build.
+168341: ), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+168342:    ---> urDeviceGetInfo
+168343:    <--- urDeviceGetInfo(.hDevice = 0xef729e0, .propName = UR_DEVICE_INFO_NAME, .propSize = 0, .pPropValue = nullptr, .pPropSizeRet = 0x72dc230c8e98 (31)) -> UR_RESULT_SUCCESS;
+168344:    ---> urDeviceGetInfo
+168345:    <--- urDeviceGetInfo(.hDevice = 0xef729e0, .propName = UR_DEVICE_INFO_NAME, .propSize = 31, .pPropValue = 0x72dc1f1be9e0 (Intel(R) Arc(TM) B570 Graphics), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+168346:    ---> urProgramRelease
+168347:    <--- urProgramRelease(.hProgram = 0x72dc1fe050a0) -> UR_RESULT_SUCCESS;
+168348:    ---> urDeviceSelectBinary
+168349:    <--- urDeviceSelectBinary(.hDevice = 0xef729e0, .pBinaries = 0x72dc230c95c0 ((struct ur_device_binary_t){.stype = UR_STRUCTURE_TYPE_CONTEXT_PROPERTIES, .pNext = nullptr, .pDeviceTargetSpec = 0x72dc39a3f3f5 (spir64)}), .NumBinaries = 1, .pSelectedBinary = 0x72dc230c95ac (0)) -> UR_RESULT_SUCCESS;
+168350:    ---> urProgramRetain
+168351:    <--- urProgramRetain(.hProgram = 0xf0e7b00) -> UR_RESULT_SUCCESS;
+168352:    ---> urProgramRelease
+168353:    <--- urProgramRelease(.hProgram = 0xf0e7b00) -> UR_RESULT_SUCCESS;
+168354:    ---> urDeviceSelectBinary
+168355:    <--- urDeviceSelectBinary(.hDevice = 0xef729e0, .pBinaries = 0x72dc230c95c0 ((struct ur_device_binary_t){.stype = UR_STRUCTURE_TYPE_CONTEXT_PROPERTIES, .pNext = nullptr, .pDeviceTargetSpec = 0x72dc39a3f3f5 (spir64)}), .NumBinaries = 1, .pSelectedBinary = 0x72dc230c95ac (0)) -> UR_RESULT_SUCCESS;
+168356:    ---> urProgramRetain
+168357:    <--- urProgramRetain(.hProgram = 0xf0e7b00) -> UR_RESULT_SUCCESS;
+168358:    ---> urProgramRelease
+168359:    <--- urProgramRelease(.hProgram = 0xf0e7b00) -> UR_RESULT_SUCCESS;
+168360:    ---> urDeviceGetInfo
+168361:    <--- urDeviceGetInfo(.hDevice = 0xef729e0, .propName = UR_DEVICE_INFO_SUB_GROUP_SIZES_INTEL, .propSize = 0, .pPropValue = nullptr, .pPropSizeRet = 0x72dc230c9500 (8)) -> UR_RESULT_SUCCESS;
+168362:    ---> urDeviceGetInfo
+173322: [2026-10-11 19:09:08.895] [thread-id: 126290166159680] [trace] zeCommandListAppendLaunchKernel(hCommandList, hKernel, pLaunchFuncArgs, hSignalEvent, numWaitEvents, phWaitEventsLocal)
+173323: [2026-10-11 19:09:08.895] [thread-id: 126290166159680] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListAppendLaunchKernel(hCommandList=0xf486f78, hKernel=0xf3e5068, pLaunchFuncArgs={groupCountX=2560, groupCountY=1, groupCountZ=1}, hSignalEvent=nullptr, numWaitEvents=0, phWaitEvents=nullptr)
+173324:    <--- urCommandBufferAppendKernelLaunchExp(.hCommandBuffer = 0xff2dc00, .hKernel = 0xef96950, .workDim = 1, .pGlobalWorkOffset = nullptr, .pGlobalWorkSize = 0x7ffe0be0df70 (655360), .pLocalWorkSize = 0x7ffe0be0df88 (256), .numKernelAlternatives = 0, .phKernelAlternatives = nullptr, .numSyncPointsInWaitList = 0, .pSyncPointWaitList = nullptr, .numEventsInWaitList = 0, .phEventWaitList = nullptr, .pSyncPoint = nullptr, .phEvent = nullptr, .phCommand = nullptr) -> UR_RESULT_SUCCESS;
+173325:    ---> urKernelSetArgValue
+173326: [2026-10-11 19:09:08.895] [thread-id: 126290166159680] [trace] zeKernelSetArgumentValue(hKernel, argIndex, argSize, pArgValue)
+173327: [2026-10-11 19:09:08.895] [thread-id: 126290166159680] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeKernelSetArgumentValue(hKernel=0xf3e5068, argIndex=0, argSize=8, pArgValue=0xf484448)
+173328:    <--- urKernelSetArgValue(.hKernel = 0xef96950, .argIndex = 0, .argSize = 8, .pProperties = nullptr, .pArgValue = 0xf484448) -> UR_RESULT_SUCCESS;
+173329:    ---> urKernelSetArgValue
+173330: [2026-10-11 19:09:08.895] [thread-id: 126289806444224] [trace] ERROR (ZE_RESULT_ERROR_MODULE_BUILD_FAILURE) in zeModuleCreate(hContext=0xef74888, hDevice=0xef5d6d8, desc={stype=0x72dc230c8c30, format=0x72dc230c8c40, inputSize=66280, pInputModule=3, pBuildFlags=" -ze-fp32-correctly-rounded-divide-sqrt -ze-fp32-correctly-rounded-divide-sqrt -ze-opt-level=2", pConstants={numConstants=0, pConstantIds=nullptr, pConstantValues=nullptr}}, phModule=0x72dc230c8c20, phBuildLog=0x72dc230c8c28)
+173331:    <--- urProgramBuildExp(.hProgram = 0x72dc1779eb90, .numDevices = 1, .phDevices = 0x72cf482e7d30 {0xef729e0}, .flags = 0, .pOptions = 0x72cf471246a0 ( -ze-fp32-correctly-rounded-divide-sqrt -ze-fp32-correctly-rounded-divide-sqrt -ze-opt-level=2)) -> UR_RESULT_ERROR_PROGRAM_BUILD_FAILURE;
+173332:    ---> urProgramGetInfo
+173333:    <--- urProgramGetInfo(.hProgram = 0x72dc1779eb90, .propName = UR_PROGRAM_INFO_DEVICES, .propSize = 0, .pPropValue = nullptr, .pPropSizeRet = 0x72dc230c8e88 (8)) -> UR_RESULT_SUCCESS;
+173334:    ---> urProgramGetInfo
+173335:    <--- urProgramGetInfo(.hProgram = 0x72dc1779eb90, .propName = UR_PROGRAM_INFO_DEVICES, .propSize = 8, .pPropValue = {0xef729e0}, .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+173336:    ---> urProgramGetBuildInfo
+173337: [2026-10-11 19:09:08.895] [thread-id: 126289806444224] [trace] zeModuleBuildLogGetString(hModuleBuildLog, pSize, pBuildLog)
+173338: [2026-10-11 19:09:08.895] [thread-id: 126289806444224] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogGetString(hModuleBuildLog=0x72cf40e1ec38, pSize=787, pBuildLog=nullptr)
+173339:    <--- urProgramGetBuildInfo(.hProgram = 0x72dc1779eb90, .hDevice = 0xef729e0, .propName = UR_PROGRAM_BUILD_INFO_LOG, .propSize = 0, .pPropValue = nullptr, .pPropSizeRet = 0x72dc230c8e90 (787)) -> UR_RESULT_SUCCESS;
+173340:    ---> urProgramGetBuildInfo
+173341: [2026-10-11 19:09:08.895] [thread-id: 126289806444224] [trace] zeModuleBuildLogGetString(hModuleBuildLog, pSize, pBuildLog)
+173342: [2026-10-11 19:09:08.895] [thread-id: 126289806444224] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogGetString(hModuleBuildLog=0x72cf40e1ec38, pSize=787, pBuildLog="
+173343: error: in function '__builtin_spriv_OpJointMatrixLoadINTEL_PackedA_RowMajor_SG16_16x16_i16_8_local_v8i8_pi32_i32' called by kernels: 'typeinfo name for strata::kernels::xe::(anonymous namespace)::Kernel<2, sycl::_V1::detail::half_impl::half, false, false>', 'typeinfo name for strata::kernels::xe::(anonymous namespace)::Kernel<2, sycl::_V1::detail::half_impl::half, false, true>', 'typeinfo name for strata::kernels::xe::(anonymous namespace)::Kernel<2, sycl::_V1::detail::half_impl::half, true, true>', 'typeinfo name for strata::kernels::xe::(anonymous namespace)::Kernel<2, sycl::_V1::detail::half_impl::half, true, false>': undefined reference to `__builtin_spriv_OpJointMatrixLoadINTEL_PackedA_RowMajor_SG16_16x16_i16_8_local_v8i8_pi32_i32'
+173344: error: backend compiler failed build.
+173345: ")
+173346: [2026-10-11 19:09:08.895] [thread-id: 126289806444224] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)
+173347: [2026-10-11 19:09:08.895] [thread-id: 126289806444224] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x72cf40e1ec38)
+173348:    <--- urProgramGetBuildInfo(.hProgram = 0x72dc1779eb90, .hDevice = 0xef729e0, .propName = UR_PROGRAM_BUILD_INFO_LOG, .propSize = 787, .pPropValue = 0x72dc15ad3750 (
+173349: error: in function '__builtin_spriv_OpJointMatrixLoadINTEL_PackedA_RowMajor_SG16_16x16_i16_8_local_v8i8_pi32_i32' called by kernels: 'typeinfo name for strata::kernels::xe::(anonymous namespace)::Kernel<2, sycl::_V1::detail::half_impl::half, false, false>', 'typeinfo name for strata::kernels::xe::(anonymous namespace)::Kernel<2, sycl::_V1::detail::half_impl::half, false, true>', 'typeinfo name for strata::kernels::xe::(anonymous namespace)::Kernel<2, sycl::_V1::detail::half_impl::half, true, true>', 'typeinfo name for strata::kernels::xe::(anonymous namespace)::Kernel<2, sycl::_V1::detail::half_impl::half, true, false>': undefined reference to `__builtin_spriv_OpJointMatrixLoadINTEL_PackedA_RowMajor_SG16_16x16_i16_8_local_v8i8_pi32_i32'
+173350: error: backend compiler failed build.
+173351: ), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+173352:    ---> urDeviceGetInfo
+173353:    <--- urDeviceGetInfo(.hDevice = 0xef729e0, .propName = UR_DEVICE_INFO_NAME, .propSize = 0, .pPropValue = nullptr, .pPropSizeRet = 0x72dc230c8e98 (31)) -> UR_RESULT_SUCCESS;
+173354:    ---> urDeviceGetInfo
+173355:    <--- urDeviceGetInfo(.hDevice = 0xef729e0, .propName = UR_DEVICE_INFO_NAME, .propSize = 31, .pPropValue = 0x72dc17227fb0 (Intel(R) Arc(TM) B570 Graphics), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+173356:    ---> urProgramRelease
+173357:    <--- urProgramRelease(.hProgram = 0x72dc1779eb90) -> UR_RESULT_SUCCESS;
+173358:    ---> urDeviceGetInfo
+173359:    <--- urDeviceGetInfo(.hDevice = 0xef729e0, .propName = UR_DEVICE_INFO_SUB_GROUP_SIZES_INTEL, .propSize = 0, .pPropValue = nullptr, .pPropSizeRet = 0x72dc230c9500 (8)) -> UR_RESULT_SUCCESS;
+173360:    ---> urDeviceGetInfo
+173361:    <--- urDeviceGetInfo(.hDevice = 0xef729e0, .propName = UR_DEVICE_INFO_SUB_GROUP_SIZES_INTEL, .propSize = 8, .pPropValue = {16, 32}, .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+173362:    ---> urDeviceSelectBinary
+173363:    <--- urDeviceSelectBinary(.hDevice = 0xef729e0, .pBinaries = 0x72dc230c95c0 ((struct ur_device_binary_t){.stype = UR_STRUCTURE_TYPE_CONTEXT_PROPERTIES, .pNext = nullptr, .pDeviceTargetSpec = 0x72dc39a3f3f5 (spir64)}), .NumBinaries = 1, .pSelectedBinary = 0x72dc230c95ac (0)) -> UR_RESULT_SUCCESS;
+173364:    ---> urDeviceGetInfo
+173365:    <--- urDeviceGetInfo(.hDevice = 0xef729e0, .propName = UR_DEVICE_INFO_SUB_GROUP_SIZES_INTEL, .propSize = 0, .pPropValue = nullptr, .pPropSizeRet = 0x72dc230c9500 (8)) -> UR_RESULT_SUCCESS;
+173366:    ---> urDeviceGetInfo
+173367:    <--- urDeviceGetInfo(.hDevice = 0xef729e0, .propName = UR_DEVICE_INFO_SUB_GROUP_SIZES_INTEL, .propSize = 8, .pPropValue = {16, 32}, .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+173368:    ---> urProgramRetain
+173369:    <--- urProgramRetain(.hProgram = 0x72dc148b39b0) -> UR_RESULT_SUCCESS;
+173370:    ---> urProgramRelease
+173371:    <--- urProgramRelease(.hProgram = 0x72dc148b39b0) -> UR_RESULT_SUCCESS;
+173372:    ---> urDeviceSelectBinary
+199466: [2026-10-11 19:09:09.557] [thread-id: 126290166159680] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zesDeviceEnumMemoryModules(hDevice=0xed88588, pCount=1, phMemory=nullptr)
+199467: [2026-10-11 19:09:09.557] [thread-id: 126290166159680] [trace] zesDeviceEnumMemoryModules(hDevice, pCount, phMemory)
+199468: [2026-10-11 19:09:09.557] [thread-id: 126290166159680] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zesDeviceEnumMemoryModules(hDevice=0xed88588, pCount=1, phMemory=0xf31b480)
+199469: [2026-10-11 19:09:09.557] [thread-id: 126290166159680] [trace] zesMemoryGetProperties(hMemory, pProperties)
+199470: [2026-10-11 19:09:09.557] [thread-id: 126290166159680] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zesMemoryGetProperties(hMemory=0xef7b418, pProperties={stype=0x7ffe0be0df40, type=0x7ffe0be0df50, onSubdevice=0, subdeviceId=0, location=0x7ffe0be0df5c, physicalSize=10666115072, busWidth=-1, numChannels=-1})
+199471: [2026-10-11 19:09:09.557] [thread-id: 126290166159680] [trace] zesMemoryGetState(hMemory, pState)
+199472: [2026-10-11 19:09:09.557] [thread-id: 126290166159680] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zesMemoryGetState(hMemory=0xef7b418, pState={stype=0x7ffe0be0df10, health=0x7ffe0be0df20, free=781217792, size=10666115072})
+199473:    <--- urDeviceGetInfo(.hDevice = 0xef729e0, .propName = UR_DEVICE_INFO_GLOBAL_MEM_FREE, .propSize = 8, .pPropValue = 0x7ffe0be0e460 (781217792), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+199474:    ---> urDeviceGetInfo
+199475:    <--- urDeviceGetInfo(.hDevice = 0xef729e0, .propName = UR_DEVICE_INFO_GLOBAL_MEM_SIZE, .propSize = 8, .pPropValue = 0x7ffe0be0e470 (10666115072), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+199476:    ---> urDeviceGetInfo
+199477:    <--- urDeviceGetInfo(.hDevice = 0xef729e0, .propName = UR_DEVICE_INFO_IS_INTEGRATED_GPU, .propSize = 1, .pPropValue = 0x7ffe0be0e440 (false), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;
+199478: *** longjmp causes uninitialized stack frame ***: terminated
+199479: *** longjmp causes uninitialized stack frame ***: terminated
+199480: *** longjmp causes uninitialized stack frame ***: terminated
+199481: *** longjmp causes uninitialized stack frame ***: terminated

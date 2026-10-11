@@ -1,0 +1,32 @@
+# Correction: failed startup binary and source provenance
+
+Date: 2026-10-11
+Scope: read-only receipt and immutable Git object comparison. No GPU query, build, test, source edit, Git mutation, or cleanup was performed. This addendum corrects one provenance statement in `research-xe-failed-startup-kernel-reachability-next-v1.txt`; it does not revise its matrix reachability conclusions.
+
+## Correction
+
+The prior report incorrectly said that the failed model record did not carry a per-run binary hash. It does. `xe-native-dequant-prefill-model-root-v3/n64-g16-off/record.json` records the binary path, size (20,426,952 bytes), and SHA-256 `59c99b170d971d44e0f32494f2261d4ba3707978f82f638f38493f3cbe646082`. This exactly matches the `binary` object in the successful `xe-e32-free-full-build-root-v21/record.json`; a read-only hash of the recorded binary path also returned that SHA-256. The run record pins the v21 build receipt by SHA-256 `07ff83d071311c86785202267b3965e2b658adc5bf0bbf503c8367020256c021` (recomputed from the receipt).
+
+Thus the failed startup run is joined to the exact v21-built executable by recorded and rechecked binary hash. The v21 receipt says the build completed and passed. This corrects the previous report's claim that no per-run binary join was available. A successful build of the same executable does not imply that runtime device-module/JIT compilation of every registered kernel succeeds.
+
+## Source provenance
+
+The model record identifies base revision `b72640fff05098f1762cb3bf9c427a5f8d7db31c`, records `source_uncommitted=true`, and stores the 37-entry `source_pins` map plus `working_diff_sha256=a46c58948412f4990130d08320bb7bfcd95b4354955e4e4837a3cac2bc40590e`. Its captured `source-head.stdout` is b726; its captured working diff is 30,289 bytes and has the same SHA-256 as that field.
+
+The v21 build receipt has the same 37 source-pin paths and the same content hashes as the model record. It records the same source base, working-tree patch hash, and current `src/prefill/prefill.cpp` hash (`c5cfa727302d334e2f6a8aaad8c1bf59e7d581dd8c2cec2af0d031faf807272d`). Its own `source_stable=true` and `compiler_stable=true` fields apply to the build receipt.
+
+I then read each of the 37 pinned file contents from immutable commit `fa3e20e842fbed6986a69bade8afe3edabedee07` using `git show` and SHA-256 hashed the bytes. All 37 hashes match the model record's pins. The commit's parent is the recorded b726 base, and its stat is a single-file addition/change in `src/prefill/prefill.cpp`; that path's commit content hash equals the recorded current hash above. This gives a concrete source join: for all source files covered by the two receipts, the failed-run pins, successful-build pins, and fixed fa3 commit bytes agree. The source was marked uncommitted relative to b726, but it was not unpinned or represented only by a commit label: the run receipt includes file hashes and the working-diff hash.
+
+Precision about stability: the v21 build record explicitly reports `source_stable=true`. The model run record captures its base revision, diff, source pins, and pre-run source inspection, but has no explicit `source_stable` boolean or post-run source-pin recapture. Therefore do not claim an independent before/after source-stability check for the model-run interval. The hash join establishes the recorded source identity, not a missing stability assertion.
+
+## What this does and does not settle
+
+The corrected provenance now establishes that the module-build failure happened while running the same byte-identical host executable produced by the passing v21 free build, with 37 pinned source files matching the fixed fa3 snapshot. It does not establish the internal device image(s) present in that executable, whether those images group `mma_gemm`, PromptAttn, or unrelated kernels together, or which image/build unit produced the failing internal PackedA builtin. The v21 receipt's compile/link evidence and matching executable hash do not provide a device-image inventory. Consequently, the existing reachability conclusions remain: startup preload can attempt registered kernels independently of model dispatch; S2 is conditionally selectable but its `packed=false` body does not directly explain the PackedA builtin; PromptAttn dispatch remains gated; and exact specialization-to-builtin attribution and actual image grouping remain unresolved.
+
+## Reproducible receipt identities
+
+- Main failed model record SHA-256: `ed70bf0266ef168305cb21418522389b95ccba808f82734aa713723a27cc5a27`.
+- Pinned v21 free-build receipt SHA-256: `07ff83d071311c86785202267b3965e2b658adc5bf0bbf503c8367020256c021`.
+- Shared executable SHA-256: `59c99b170d971d44e0f32494f2261d4ba3707978f82f638f38493f3cbe646082`.
+- Shared recorded source-patch SHA-256: `a46c58948412f4990130d08320bb7bfcd95b4354955e4e4837a3cac2bc40590e`.
+- Fixed source commit: `fa3e20e842fbed6986a69bade8afe3edabedee07` (parent `b72640fff05098f1762cb3bf9c427a5f8d7db31c`).

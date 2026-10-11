@@ -1,0 +1,19 @@
+{
+  "main_reviewed": true,
+  "base_revision": "b72640fff05098f1762cb3bf9c427a5f8d7db31c",
+  "applied": true,
+  "adopted": false,
+  "source_pins": {
+    "src/kernels/xe/iq_kernels.cpp": "75f2ac1dfdb337c424bba19e62c34159a1bde547a776b9b5d6cf7975dfc29d50",
+    "include/strata/kernels/iq_kernels.hpp": "61513ccb71831d1065bd25829541c508adf3ae58e1e3df6d3bc0c9681cb54f6d",
+    "src/prefill/prefill.cpp": "c2c78fd15c0d5667256a2eeed8d8a72a5951612a74d4995ec7d1ba30daed2492"
+  },
+  "api_byte_component_qualified": true,
+  "production_build_lint_test_gpu_qualified": false,
+  "original_v1_source_sha256": "883d8f39a4e012eaf9d81cbaa4399893528085421882978fa29dbd67fb512d11",
+  "diagnostic_context_patch_sha256": "0743ec095df74324ecc95abdc262ca8b25d87fbcd44d7cfa514495df21e6b86e",
+  "literal_off_arm_sha256": "9d6c91d570e1df2d14048995feec108280899e27d423f478f7d057f4b8104d75",
+  "review": "Main full ON source lifetime review plus diagnostic-only context patch: exact device/stage/chunk position/count and observed existing nf/n_cpu/order.size host values. No numerical/GPU call/slot-release changes. Original OFF arm literal bytes unchanged. Added context prevents joining swapped same-layer rows across chunks. Independent configuration/route pins and actual model output remain required. Main corrected undefined STRATA_ENABLE_SYCL guards: this XeStrata TU unconditionally includes core/runtime.hpp with sycl/sycl.hpp and CMake creates strata_prefill only inside STRATA_ENABLE_XE. No cross-backend source build is promised. Existing v19 free CPU PASS elided ON branch and does NOT qualify caller. Source scope diagnostics unchanged. New both-mode compile/lint/host and actual GPU caller gates required.",
+  "previous_source_sha256": "443c921eed29cb973eb94b04c4377d22112d1bde747d25c12f09a6edfca410ef",
+  "backend_guard_patch_sha256": "9a1245fe41c9558e80dcd599857f228a2c326c2c94f593ddc18d6cdf93c0808e"
+}

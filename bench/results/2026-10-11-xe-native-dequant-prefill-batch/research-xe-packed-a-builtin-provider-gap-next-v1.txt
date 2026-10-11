@@ -1,0 +1,36 @@
+# PackedA local-load builtin provider gap: static source and package investigation
+
+Date: 2026-10-11
+Scope: official IGC source and static installed-package metadata/hash/string inspection. No library was loaded or executed; no compiler, GPU, test, build, profiler, model, or service operation was run. No repository source/Git state/run artifact was modified.
+
+## Result
+
+The official IGC v2.41.5 source does not show an omitted provider for the exact failing specialization. Its generated-builtin source explicitly requests the relevant shape and explicitly emits generic, local, and global address-space definitions. The observed unresolved symbol therefore cannot be explained simply as “IGC v2.41.5 has no implementation for SG16/PackedA/16x16/i16/local.” The gap is between the call emitted during this module build and the provider that the failing runtime actually made available, but the available evidence cannot distinguish an absent/mismatched embedded builtin module, a runtime component/version mismatch, or another link-path issue.
+
+In `IGC/BiFModule/Languages/OpenCL/PreRelease/Matrix/IBiF_matrix_generator.cpp`, v2.41.5 `DefineAllSmallLoads()` includes `DefineSmallLoad(MatrixSpec(SUB_GROUP_16, Layout_PackedA_RowMajor, 16, 16, BITS_16))` (around lines 1730–34). `DefineSmallLoad()` calls `DefineSmallLoadForAddressSpace` for `AddrSpace_Generic`, `AddrSpace_Local`, and `AddrSpace_Global` (1164–70). `GetMatrixFunctionName()` formats a non-checked load as `__builtin_spriv_OpJointMatrixLoadINTEL_` + `PackedA_RowMajor` + `_SG16` + shape/bitwidth/rows-per-work-item + address-space + `_v8i8_pi32_i32` (275–295). The resulting exact spelling matches the startup error excerpt. The generator README says the generated header is not checked in and is created automatically when IGC is built (lines 18–23), so source inclusion establishes intended generated provider coverage, not that a particular installed binary contains it.
+
+IGC v2.40.13’s tagged generator has the same exact shape entry and local-address-space generation call as v2.41.5 (both files fetched from the official tags; each 103,013 bytes). This similarly argues against a source-level omission in either release, without proving installed package contents or loaded runtime identity.
+
+## Static installed-package evidence and limits
+
+Package metadata reports `intel-igc-core-2` 2.41.5, `intel-igc-opencl-2` 2.41.5, and Ubuntu `libigc2` 2.40.13+ds1-1~24.04 installed. Disk artifacts include `/usr/local/lib/libigc.so.2.41.5+1788943183`, `/usr/local/lib/libigdfcl.so.2.41.5+1788943183`, `/usr/lib/x86_64-linux-gnu/libigc.so.2.40.13+0`, `/usr/local/lib/libopencl-clang2.so.22.1`. Their SHA-256 values respectively are:
+
+- `40badd8f1ee80ac844a8947f5e91e5654fbcd851caefe343b0e5ec4ce4d1b123`
+- `ece8bcd533a44cc1684c1f24eeeca3302e4d19307a806fad5f1b83171f9fc1c3`
+- `695dd19f5bef315da20ca791851472c1df897aafa43d6fd99af67ae57a54c073`
+- `02ba9fb0f16b7f02c012095c46f8053c4bc20f9b5bde3028eedff6dcfed94bfe`
+
+A bounded `strings` scan did not find the exact function spelling in any of these four ELF libraries. This is inconclusive: generated builtin IR may be embedded, transformed, stripped, or stored elsewhere, and no library was loaded. These installed paths and versions do not establish which libigc/libigdfcl image the failing process mapped. The failed run’s recorded library hashes do not include a direct `libigc` path/hash, as noted in the prior provenance report. The process-specific IGC identity remains unknown.
+
+## Interpretation and next discriminating evidence
+
+The exact caller/provider *contract* looks supported in both release sources, while the failing installed-provider/link path remains unresolved. Do not label this a demonstrated IGC source bug or a proven IGC runtime mismatch. The clean discriminator is an artifact captured from the actual failing module: SPIR-V plus post-`JointMatrixFuncsResolutionPass` IR and builtin-link diagnostics, correlated with the mapped `libigc`, `libigdfcl`, OpenCL clang and driver package hashes. Compare the provider function in the actual generated/embedded builtin module against the transformed call’s fully qualified name/address space. This is evidence collection guidance only; none was performed.
+
+## Primary references
+
+- [IGC v2.41.5 generated matrix builtin source](https://github.com/intel/intel-graphics-compiler/blob/v2.41.5/IGC/BiFModule/Languages/OpenCL/PreRelease/Matrix/IBiF_matrix_generator.cpp)
+- [IGC v2.41.5 generated matrix builtin README](https://github.com/intel/intel-graphics-compiler/blob/v2.41.5/IGC/BiFModule/Languages/OpenCL/PreRelease/Matrix/README.md)
+- [IGC v2.40.13 generated matrix builtin source](https://github.com/intel/intel-graphics-compiler/blob/v2.40.13/IGC/BiFModule/Languages/OpenCL/PreRelease/Matrix/IBiF_matrix_generator.cpp)
+- [IGC v2.41.5 joint-matrix resolution pass](https://github.com/intel/intel-graphics-compiler/blob/v2.41.5/IGC/Compiler/Optimizer/OpenCLPasses/JointMatrixFuncsResolutionPass/JointMatrixFuncsResolutionPass.cpp)
+
+Related saved investigation: `research-xe-exact-packed-a-builtin-contract-next-v1.txt`, SHA-256 `579cad706d656bfd2c4899af7869b787d71c4df95e390447c1f0cf6a6d1af8e7`.

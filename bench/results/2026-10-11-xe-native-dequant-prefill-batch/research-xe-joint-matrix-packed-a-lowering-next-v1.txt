@@ -1,0 +1,41 @@
+# Xe joint_matrix local PackedA lowering: evidence and next steps
+
+Date: 2026-10-11
+Scope: read-only investigation. No GPU, build, test, service, or model run was performed. No source or Git state was changed. The only run evidence inspected was the three previously designated `model.stderr` excerpts; this report does not claim the full log was reviewed.
+
+## Finding
+
+The failure is a device module compilation failure. The recorded backend error says the symbol
+
+`__builtin_spriv_OpJointMatrixLoadINTEL_PackedA_RowMajor_SG16_16x16_i16_8_local_v8i8_pi32_i32`
+
+is undefined, followed by `UR_RESULT_ERROR_PROGRAM_BUILD_FAILURE` and `ZE_RESULT_ERROR_MODULE_BUILD_FAILURE`. In the inspected excerpts it occurs while compiling three modules; kernel names include `xe::Kernel<2,bfloat16,...>`, `xe::Kernel<2,half,...>`, and `PromptAttnMma<...>`. This happens before kernel execution, so it is not evidence of a bad numerical result or a dispatch-time hardware fault. The symbol name points to an Intel joint-matrix PackedA row-major load variant with local address space. It is consistent with a missing/unmatched compiler builtin lowering or backend implementation for that specialization. The available excerpt does not identify which component introduced the mismatch, nor prove which oneDNN/Strata source kernel generated that exact symbol.
+
+## Exact inputs and confidence limits
+
+- Source snapshot: `/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-native-dequant-prefill-batch-source-v4/prefill.cpp`, SHA-256 `c5cfa727302d334e2f6a8aaad8c1bf59e7d581dd8c2cec2af0d031faf807272d`.
+- Fixed XeStrata API commit: `b72640fff05098f1762cb3bf9c427a5f8d7db31c`, read from `/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011` using `git show`.
+- Relevant inspected source hashes at that commit: `src/kernels/xe/mma_gemm.cpp` `540a4366709b8a2caf43aae36bbaeefd21bf4290d5555557077c463754da2238`; `src/kernels/xe/iq_mmq.cpp` `dd71b2cf2281e234775a00e0853af72f384be26fbe61d6cc48a18606e75df304`; `src/kernels/xe/qsa_prompt_attn.cpp` `6b5bb8c4b38245299bda06f2bce4fe785c4b4cc82dca7986389459cf8ff054b6`.
+- `mma_gemm.cpp` has a generic `Kernel<S,E,...>` path. For packed Intel shapes (`FR`), it stages A and B in `sycl::local_accessor` and calls `mx::joint_matrix_load` on A at lines 298–300. This is a source-level local A load worth isolating, but the logged template names and internal symbol do not establish it as the origin.
+- The same commit's `iq_mmq.cpp` has a local-accessor-backed int8 A load through `joint_matrix_load` around lines 359–366. `qsa_prompt_attn.cpp` has local half matrix loads in `PromptAttnMma`. These are additional source sites to inventory in a reproducer, not a proven one-to-one mapping to the unresolved builtin.
+- Commit `b72640f` changes `iq_kernels.cpp`; it does not alter the `mma_gemm.cpp`, `iq_mmq.cpp`, or `qsa_prompt_attn.cpp` source hashes above. Therefore that API fix does not itself repair the joint-matrix local-load lowering sites.
+- The inspected stderr excerpts have SHA-256 `55470929e044eaf6192bddbeebe48c6884bbea5f8b059f2c893d405256ae7ed5`. The excerpts do not provide the exact DPC++ compiler build, emitted SPIR-V hash, IGC/NEO/Level Zero runtime identity for this model run, or complete compiler input. An older R130 inventory reports installed DPC++ 2026.1.1-325, IGC 2.41.5, NEO 26.31.39395.14, and Level Zero loader 1.32.0 on the host; this is host inventory, not proof those exact binaries compiled these modules.
+
+## Prior work and public references
+
+The exact symbol was not found in the searched R reports or v129 delta registry. Closest prior records are R174 (runtime JIT artifact plan), R290/R295 (joint_matrix XMX eligibility), R345/R348 (7.1.1 build/runtime), and R130 (installed native stack inventory). They establish useful provenance, not a diagnosis or a known fix. v129 registry SHA-256: `52da32669a4dba3ed8afc7174676774efb50f4e5fa760da4894b6eeff634723a`.
+
+Intel LLVM's [v7.1.1 release](https://github.com/intel/llvm/releases/tag/v7.1.1) identifies commit `504366f4b82ff00bbac7b0c956635eed8bc599d8`, Clang 22.1.0 and SYCL runtime 9.0.0. It describes the release as bug-fix compatible with oneAPI 2026.1, not as guaranteed parity. The [joint_matrix extension at that exact commit](https://github.com/intel/llvm/blob/504366f4b82ff00bbac7b0c956635eed8bc599d8/sycl/doc/extensions/experimental/sycl_ext_matrix/sycl_ext_oneapi_matrix.asciidoc) is experimental and lists restrictions on matrix operations/layouts. This provides the compiler-side contract but does not document this undefined builtin or certify the B570 toolchain combination.
+
+IGC v2.41.5's [configuration flags](https://github.com/intel/intel-graphics-compiler/blob/v2.41.5/documentation/configuration_flags.md) document `IGC_JointMatrixLoadStoreOpt` values 0–3 as alternative joint-matrix load/store lowering modes (subgroup, block read/write, optimized block, 2D block). The docs do not promise that changing this flag resolves this missing builtin. Intel LLVM issues [#22926](https://github.com/intel/llvm/issues/22926) and [#21741](https://github.com/intel/llvm/issues/21741) concern other matrix capability / correctness topics and are not matches for this B570 local-load module-build failure. No public exact-symbol issue or confirmed fix was found in the inspected sources.
+
+## Practical next actions
+
+1. For a controlled diagnostic, reproduce with the exact installed compiler/runtime/driver tuple recorded alongside the failing command, compiler version output, device identity, and SPIR-V/module hash. Reduce to one local-memory `joint_matrix_load` with the same element type, shape, layout, subgroup size and stride; compare with a global-memory load and non-packed shapes. This separates compiler emission from IGC lowering and avoids attributing the error to a source path by name alone.
+2. As an unvalidated lowering experiment, run the reproducer with `IGC_JointMatrixLoadStoreOpt=0`, then compare compile success and generated output. Treat it only as a diagnostic; no evidence here says it is a workaround or preserves performance/correctness for the model.
+3. The dependable avoidance strategy, if startup must proceed before a driver fix is known, is a build-time dispatch that does not register or emit the affected local-load joint_matrix specializations and uses an existing non-joint-matrix fallback. A runtime branch alone may not help if startup background-compiles every registered specialization. Verify the fallback's model correctness and behavior separately before relying on it.
+4. Do not mix an independently downloaded compiler with arbitrary IGC/NEO binaries based solely on the 7.1.1 release note. First establish the actual compiler and driver tuple; then test a vendor-supported matched package or a driver/compiler update against the reduced reproducer.
+
+## Provenance
+
+This is an investigation note, not a validated remediation. No GPU compile, performance test, correctness test, or workaround was run. Source-site matches are leads only; the backend symbol's origin remains unproven until a minimal module reproduces it and its generated IR/SPIR-V is captured.

@@ -1,0 +1,81 @@
+# Xe JIT, SIGTERM, and checked-longjmp lifecycle
+
+Date: 2026-10-11
+Scope: read-only review of the fixed Strata source, recorded run/health receipts, compiler source proof, recorded runtime-library hashes, and static symbols/strings in installed library files. Official LLVM/glibc source and public issue reports were browsed. No process execution, shared-library loading/import, test, GPU query, build, debugger attach, service action, source/Git mutation, or cleanup was performed. The only new file is this report.
+
+## Finding
+
+The record establishes a sequence, not a cause: the failed model run encountered synchronous Level Zero module-build errors while its background SYCL preloader was active; the controller then sent owned SIGTERM; the process later produced 2,241 lines of `*** longjmp causes uninitialized stack frame ***: terminated` and was recorded with exit `-11` (SIGSEGV), not the ordinary shell-style SIGTERM status. The child was reaped and its session was empty. Those facts establish process termination and the order recorded by the controller; they do not prove that SIGTERM itself caused the longjmp warnings, identify the signal that invoked a longjmp, or prove that the compiler thread executed cleanup.
+
+The warning string is glibc's x86-64 `____longjmp_chk` diagnostic. Its implementation checks whether the saved jump target's stack relationship is safe (and checks alternate-stack bounds) before falling through to `__fortify_fail`. This makes an invalid/stale/out-of-scope jump target, stack corruption, or incompatible signal/recovery path plausible mechanisms. The message alone does not say which caller supplied the jump buffer, whether it was stale, or what earlier event caused it. In this process the record does not include a core/backtrace resolving the warning to a caller.
+
+There are two concrete reasons to investigate the compiler signal-recovery path while retaining uncertainty:
+
+1. At the exact recorded Intel LLVM source commit, LLVM `CrashRecoveryContext` uses thread-local recovery state and a saved `setjmp` environment; its POSIX crash signal set is `{SIGABRT, SIGBUS, SIGFPE, SIGILL, SIGSEGV, SIGTRAP}`. It is explicitly designed to `longjmp` out of those crash handlers. **SIGTERM is not in that list.** Thus stock LLVM's `CrashRecoveryContext` implementation at this commit does not by itself explain handling the controller's SIGTERM. Another handler/path (including IGC), a different signal during teardown, or a stale recovery context would need evidence.
+2. The local installed IGC candidate library has static evidence of signal/longjmp machinery: `libigc.so.2.40.13+0` exports `_Z13signalHandleriP9siginfo_tPv` and has undefined references to `__longjmp_chk`, `_setjmp`, and `sigaction`; `libigdfcl.so.2.40.13+0` exports the same handler name and LLVM `CrashRecoveryContext` symbols. This is suggestive of a path worth resolving. However, `libigc` and `libigdfcl` are not listed among the failed run's `observed_libraries`, so these host-installed files and hashes are not proof that those exact files were mapped in the failed process or that their handler caught this event. Static symbol presence also does not reveal which signals are installed or when the handler is active.
+
+A public OpenVINO report describes a similar *class* of symptom: an IGC compile-time SIGSEGV followed by the same glibc checked-longjmp warning, with a reported `libigc` `signalHandler` in the stack. That report is a different stack (OpenVINO, IGC 2.34.4) and its author proposes a signal-handler/longjmp explanation; it is not evidence for this run's IGC version, signal chronology, or root cause. It makes the hypothesis credible enough to test, not established.
+
+## Run, source, and library identity
+
+The Main model receipt is `xe-native-dequant-prefill-model-root-v3/n64-g16-off/record.json`, SHA-256 `ed70bf0266ef168305cb21418522389b95ccba808f82734aa713723a27cc5a27`. It records `complete=false`, `passed=false`, the binary SHA-256 matching v21, and the same boot as the subsequent health receipt. The model stderr SHA-256 is `55470929e044eaf6192bddbeebe48c6884bbea5f8b059f2c893d405256ae7ed5`; the first three module-build failures precede the repeated checked-longjmp lines. The controller's owned-signal record says SIGTERM was sent; the command ended `-11`; session cleanup completed (child reaped/session empty).
+
+The subsequent `xe-native-dequant-prefill-post-startup-health-root-v1/record.json` passed an integer H2D/kernel/D2H check, records `model_launched=false`, and says no failed matrix compilation retry. Its `newfaultempty`/health result supports that the later integer probe and boot health gate were clean. It does not exercise SIGTERM, the SYCL preloader, JIT compilation, crash recovery, or shutdown during an in-flight compiler call.
+
+Run-record `observed_libraries` pins these files and hashes:
+
+- `libsycl.so.9.0.0-0`: `74243bafb2766fd1a038cf80fd62632b4aad9ecfdc0d3ce8711e4515a93d7008`
+- `libur_loader.so.0.12.0`: `bb6e1311850e4b1a924e42acae80c2b3610934625a4985aaa67967abe31356fc`
+- `libur_adapter_level_zero_v2.so.0.12.0`: `05bcafc4a0d45d33f957f16ffb4ba4776da675e79ade1121b93b94b8549335d8`
+- `libze_loader.so.1.32.0`: `b764efda507f173560fa6055d433dd5c76140180b4a7c532e1cea813cde67363`
+- `libze_intel_gpu.so.1.17.39395`: `dfa844e5afd8e8f74bf5ce9da3ea2837706d9116bc8efeaed90efba5acaf7b1c`
+- `libze_tracing_layer.so.1.32.0`: `db1856f379706d51b6ded84ce028d4aa48740ef63793f60e8a1e027c6db6ffb5`
+- `libze_validation_layer.so.1.32.0`: `5b5ead80d98959d0f0a27a8981bb911c354720d39a4aa2125dc18266ad67d970`
+- `libumf.so.1.1.0`: `ebe65269abd5869010ab256375e8663f7a8f8b5453e0be0c78f615eb71581ab9`
+
+The observed list does not name glibc/libc, IGC, or `libigdfcl`; do not silently infer their exact runtime mapping from this list. Static reads of the installed IGC candidate found:
+
+- `/usr/lib/x86_64-linux-gnu/libigc.so.2.40.13+0` SHA-256 `695dd19f5bef315da20ca791851472c1df897aafa43d6fd99af67ae57a54c073`; dynamic symbols include `signalHandler`, undefined `__longjmp_chk`, `_setjmp`, and `sigaction`.
+- `/usr/lib/x86_64-linux-gnu/libigdfcl.so.2.40.13+0` SHA-256 `b2d2eb8a1c7d92f5d39d093615ff3f9571c809ddef4aa436cb5ead0b3ee4edaa`; dynamic symbols include `signalHandler` and LLVM `CrashRecoveryContext` methods.
+
+These hashes identify on-disk candidates inspected now; absent an observed mapping/core note, they must not be described as the exact libraries used by the failed child.
+
+The SYCL compiler receipt identifies DPC++ 7.1.0 pre-release based on Intel LLVM commit `504366f4b82ff00bbac7b0c956635eed8bc599d8`. The passing LLVM source-root-v5 proof receipt (SHA-256 `3f1c3741f6b09b78377064a2b993b558a52b1b95ff30f5eb016ea8c6342d9e3a`) pins that source commit and the 17 patch files for the toolchain build. At the immutable commit, `CrashRecoveryContext.cpp` implements the POSIX list and `HandleCrash()` jumps to the thread's saved buffer. This pins the LLVM mechanism under discussion, but does not prove that the exact IGC `CrashRecoveryContext` in the local driver candidate was built from that same LLVM commit; IGC may carry its own LLVM components.
+
+The fixed Strata snapshot `fa3e20e842fbed6986a69bade8afe3edabedee07` was inspected with `git show`. `Runtime::preload_kernels()` owns a joinable `std::thread`; it enumerates all kernel IDs and makes a synchronous executable-bundle request per ID. The stop flag is checked between IDs, not inside an in-flight `get_kernel_bundle()` call. `Runtime::~Runtime()` sets the flag, joins the preload thread, then calls `finish()` and joins its watchdog. The inspected project source contains no SIGTERM/sigaction registration and no `setjmp`/`longjmp` call. Consequently, the application has a cooperative path to join a compiler worker during ordinary teardown, but that code does not intercept a default SIGTERM or make an in-flight backend compile cancellable.
+
+## How QUIT can be tested as mitigation
+
+A protocol-level `QUIT` followed by normal close is a sound *mitigation experiment* because it allows the application to leave its serve loop through its ordinary control path and run C++ teardown, including the joinable preloader, instead of forcing a signal while JIT may be on the worker stack. It is not yet a proved fix for the observed warning. The preloader only notices its stop flag between synchronous builds, so a QUIT-triggered destructor can wait until the current bundle request returns; if the backend hangs, the join may hang too. If `QUIT` is only received by a separate stdin thread while main is blocked elsewhere, its actual effect must be verified in the protocol/lifecycle trace. Do not escalate to SIGTERM until the QUIT attempt has either exited normally or met a bounded timeout and its active child/compiler state is recorded.
+
+For a discriminating follow-up, retain the same input, executable hash, compiler/driver environment and JIT trigger, and record two independent outcomes: (A) ordinary QUIT during active preload, wait through destructor/join and capture final preload status; (B) only if A proves no in-flight worker remains or the bounded policy explicitly requires escalation, signal termination. A clean A with no checked-longjmp diagnostics would support “signal-time interruption of active compiler state is avoidable by orderly shutdown”; it would not prove the original source of the warnings. If A still produces the warning, the SIGTERM-interruption hypothesis weakens and a compiler/driver fault or unrelated cleanup handler becomes more likely. If A blocks, that establishes join waiting but not a crash-recovery cause.
+
+## Minimum additional evidence for causal separation
+
+Main should capture this from the next owned run; this investigation did not attach a debugger or generate a core:
+
+1. One core/backtrace from the **first** checked-longjmp warning, with signal number/name, timestamp, TID, PC, and module/build-id mapping for every frame from `__longjmp_chk` through its immediate caller, signal handler, and into IGC/LLVM/SYCL. Later repeated warnings add little unless they have a different caller.
+2. For that same process, the signal disposition/handler address for SIGTERM, SIGSEGV, SIGABRT, and SIGBUS (or equivalent `sigaction` audit before and during JIT), plus proof of which DSOs were mapped at the moment: `/proc/<pid>/maps` snapshot or core `NT_FILE` notes, file build IDs/hashes. This resolves whether local IGC/`libigdfcl` candidates participated and whether SIGTERM was caught or left default.
+3. A monotonic event trace for controller send, first warning, child wait status, and session teardown. Preserve the raw terminating signal/status (`WIFSIGNALED`, `WTERMSIG`, core-dump bit), not just a negative wrapper exit code. This distinguishes direct SIGTERM from a later SIGSEGV/SIGABRT or wait/translation artifact.
+4. If `__longjmp_chk` is confirmed, the caller's saved jump-buffer provenance and stack mapping/stack pointer at `setjmp` and `longjmp`, or an equivalent debug-symbol trace. This is the minimum needed to decide stale/out-of-scope jump target versus a correct jump blocked by stack-check conditions.
+
+An ordinary QUIT control run needs only the same event trace, final preload built/skipped line or explicit worker completion marker, normal wait status, and absence/presence of the first warning. Do not retain repeated stack copies once one representative causal stack has been recorded.
+
+## Official source and analogous reports
+
+- Intel LLVM [`CrashRecoveryContext.cpp` at commit `504366f4b82ff00bbac7b0c956635eed8bc599d8`](https://github.com/intel/llvm/blob/504366f4b82ff00bbac7b0c956635eed8bc599d8/llvm/lib/Support/CrashRecoveryContext.cpp) documents in code that the POSIX handler is for synchronous signals, enumerates ABRT/BUS/FPE/ILL/SEGV/TRAP (not TERM), stores `setjmp`, and invokes `longjmp` from `HandleCrash`. This is the exact compiler-source revision associated with the toolchain receipt.
+- glibc [`____longjmp_chk.S`](https://github.com/bminor/glibc/blob/master/sysdeps/unix/sysv/linux/x86_64/____longjmp_chk.S) contains the exact warning string and stack/alternate-signal-stack validation before `__fortify_fail`. This explains the diagnostic mechanism, not its caller in this incident.
+- OpenVINO issue [#36326](https://github.com/openvinotoolkit/openvino/issues/36326) reports an IGC compile SIGSEGV followed by the same glibc warning, includes `signalHandler` frames from IGC, and describes the author's longjmp-recovery hypothesis. It is a report on IGC 2.34.4/OpenVINO and was closed “not planned”; it is analogous evidence, not confirmation for the current B570 run or IGC 2.40.13 candidate.
+- Intel LLVM issue [#22853](https://github.com/intel/llvm/issues/22853) reports reproducible SIGSEGV during first Level-Zero V2 JIT compilation with persistent SYCL cache on other Xe2/Xe3 systems. It is a different failure path and says nothing about this longjmp; it establishes only that runtime JIT can itself be a crash site and needs a core for attribution.
+
+## Decision
+
+Do not attribute the 2,241 messages to SIGTERM, LLVM CrashRecoveryContext, or IGC based on current evidence. The exact glibc diagnostic and installed IGC signal/longjmp symbols make a compiler-side signal-recovery path plausible; LLVM's pinned POSIX CrashRecoveryContext explicitly excludes SIGTERM, and the recorded process exit is `-11`, so there is an unresolved signal/termination chain. Prefer cooperative QUIT and normal worker join as the next bounded shutdown experiment because it avoids injecting a termination signal into an active JIT stack, while recognizing that join cannot interrupt a stuck synchronous compiler call. The first warning's core stack, actual mapped DSOs, signal dispositions, and raw wait status are needed before any stronger causal claim.
+
+## Provenance
+
+- Model run record SHA-256: `ed70bf0266ef168305cb21418522389b95ccba808f82734aa713723a27cc5a27`.
+- Post-startup integer-health record SHA-256: `afb17e10e59f743367e23cb26fe17312166279a86d4778075be569cbb6318ba6`; it reports no matrix/JIT retry.
+- Registry v129 SHA-256: `52da32669a4dba3ed8afc7174676774efb50f4e5fa760da4894b6eeff634723a`.
+- LLVM source-root-v5 proof receipt SHA-256: `3f1c3741f6b09b78377064a2b993b558a52b1b95ff30f5eb016ea8c6342d9e3a`.
+- Fixed Strata source: `fa3e20e842fbed6986a69bade8afe3edabedee07`.

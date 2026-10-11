@@ -1,0 +1,21 @@
+--- a/src/prefill/prefill.cpp
++++ b/src/prefill/prefill.cpp
+@@ -2100,6 +2100,9 @@
+                         return v && std::strtol(v, nullptr, 10) != 0 && lay.native && !use_mmq;
+                     }();
+                     if (native_batch) {
++                    if (m.g->n_expert <= 0 || m.g->n_expert > std::numeric_limits<int32_t>::max())
++                        throw std::runtime_error("prefill native batch expert count outside int32");
++                    const int32_t nd_expert_end = (int32_t) m.g->n_expert;
+                     const uint8_t* nd_blob[16]{};
+                     int nd_slot[16]{};
+                     int nd_n = 0, nd_q0 = 0;
+@@ -2444,7 +2447,7 @@
+                                 if (!compute(j, m.cache->device_slot(m.host_res[(size_t) l * m.g->n_expert + e]), -1)) return false;
+                             }
+                         }
+-                        release_to(m.g->n_expert);
++                        release_to(nd_expert_end);
+                     }
+                     if (native_batch) native_flush();
+                     if (native_batch && transfer_counts)
