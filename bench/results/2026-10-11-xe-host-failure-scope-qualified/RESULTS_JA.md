@@ -9,3 +9,5 @@ source lint比較v4は通過した。freeのlint script exit 1はpristineにも�
 原本receipt・source・commands・hashと保持理由は[retention-review.json](retention-review.json)。全文の成功lint/compile/API logsやbinaryはGitにコピーしない。成功API履歴は個別結果、hash、結果token数、診断文の探索結果を検証・commitした後に整理する。
 
 候補commitは`ea395598c8e967c632a955dc43b77a9291286d49`。release/host ASan/lintはcommit前のe32+overlayを測った元receiptのまま保持し、32件のsource pinsが候補commitのbytesと一致することを確認した。性能採用はしていない。[qualification-summary.json](qualification-summary.json)と[api-trace-summary.json](api-trace-summary.json)に確認範囲を残した。denseは各モード54回・34299出力値を独立したdouble oracleと比較した。oneMathのglobal path表示は型ごとのBLAS backend証明として使わない。
+
+結果を436ec1e2でcommit・pushした後、閉じた7件の成功チェックから60件のraw text logを削除した。論理サイズ32,442,710 bytes、file allocation 33,382,400 bytes。直前・直後のfilesystem空きはともに1,022,114,791,424 bytesで、実際の空き増加は観測していない。元receipt・source・binary・fixtureは変更していない。各path/hash/理由は[deletion-manifest.json](deletion-manifest.json)。新規モデル測定用controllerはこの削除済みraw logに依存させない。
