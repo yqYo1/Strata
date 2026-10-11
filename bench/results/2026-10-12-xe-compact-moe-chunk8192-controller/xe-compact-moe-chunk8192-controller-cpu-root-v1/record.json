@@ -1,0 +1,1081 @@
+{
+  "active": false,
+  "complete": true,
+  "passed": true,
+  "commands": [
+    {
+      "label": "syntax-and-helper-selftests",
+      "argv": [
+        "/usr/bin/python3",
+        "-c",
+        "from pathlib import Path\nimport protocol,runtime\nfiles=sorted(Path('.').glob('*.py'))\nassert len(files)==12\nfor p in files:compile(p.read_text(),str(p),'exec')\nprotocol.selftest();runtime.selftest()\nprint('12 sources compile; unchanged qualified helpers PASS')\n"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-11T15:39:54.515828+00:00",
+      "wall_seconds": 90,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1212173,
+          "start_ticks": 8195863,
+          "sid": 1212173,
+          "pgid": 1212173
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 81958.637312735,
+      "pid": 1212173,
+      "spawn_return_monotonic": 81958.639014805,
+      "direct_identity": {
+        "pid": 1212173,
+        "state": "R",
+        "ppid": 1212167,
+        "pgid": 1212173,
+        "sid": 1212173,
+        "start_ticks": 8195863,
+        "rss_bytes": 589824
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 12275712,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-11T15:39:54.682071+00:00",
+      "elapsed_seconds": 0.16604117899260018,
+      "logs": {
+        "syntax-and-helper-selftests.stdout": {
+          "bytes": 53,
+          "sha256": "374522a4c3c6ffdd46bedec5575a82bbe8f181f4545dac9b267df379b341c0be"
+        },
+        "syntax-and-helper-selftests.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "exported-controller-fixtures",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-chunk8192-controller-source-v1/controller_cpu_fixtures.py",
+        "--output",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-chunk8192-controller-cpu-root-v1/exported-fixtures",
+        "--lint-receipt",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-lint-qualification-root-v2/record.json",
+        "--matrix-manifest",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-chunk8192-controller-cpu-root-v1/matrix.closed.json"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-11T15:39:54.707792+00:00",
+      "wall_seconds": 90,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1212182,
+          "start_ticks": 8195882,
+          "sid": 1212182,
+          "pgid": 1212182
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 81958.829293719,
+      "pid": 1212182,
+      "spawn_return_monotonic": 81958.831375319,
+      "direct_identity": {
+        "pid": 1212182,
+        "state": "R",
+        "ppid": 1212167,
+        "pgid": 1212182,
+        "sid": 1212182,
+        "start_ticks": 8195882,
+        "rss_bytes": 458752
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 27164672,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-11T15:39:55.833363+00:00",
+      "elapsed_seconds": 1.125330730996211,
+      "logs": {
+        "exported-controller-fixtures.stdout": {
+          "bytes": 11638,
+          "sha256": "8543750abb451ff0026bd2c12f154187675b4cdd72a8e21d93886bdb1cb5bc89"
+        },
+        "exported-controller-fixtures.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "actual-negative-cli-fixtures",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-chunk8192-controller-cpu-root-v1/negative_cli.py"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-11T15:39:55.834440+00:00",
+      "wall_seconds": 90,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1212232,
+          "start_ticks": 8195995,
+          "sid": 1212232,
+          "pgid": 1212232
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 81959.956223608,
+      "pid": 1212232,
+      "spawn_return_monotonic": 81959.957921511,
+      "direct_identity": {
+        "pid": 1212232,
+        "state": "R",
+        "ppid": 1212167,
+        "pgid": 1212232,
+        "sid": 1212232,
+        "start_ticks": 8195995,
+        "rss_bytes": 458752
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 14618624,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-11T15:39:57.383512+00:00",
+      "elapsed_seconds": 1.5485502039955463,
+      "logs": {
+        "actual-negative-cli-fixtures.stdout": {
+          "bytes": 10302,
+          "sha256": "a533cb4a70b0659f79dd5fa53187c3aa4f70b68d01771e41410cc5d7f61f285f"
+        },
+        "actual-negative-cli-fixtures.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "started_utc": "2026-10-11T15:39:54.515282+00:00",
+  "source_pins": {
+    "admission.py": "3f7925b7a5f47c1bb3e6dca5f74668b5fb173ca2c284c85479778a9fc95c9d34",
+    "batch_census.py": "ce794be37f2aa670ba446cd8894ca9394a1be6a8b3a77f467cf77076d0d6f7e3",
+    "controller_cpu_fixtures.py": "f2091abbba6953cae623d4005c3033a05134eaf7788c10380c02f1be48eba388",
+    "fixtures.py": "706274e56ae8dbc524142688336f9053bf786cd46c2436a4434f49b588fd6a08",
+    "hash_inputs.py": "25d21cfb5d9977fcabe7e1b036a7959bf8ca99d3ce797c44cacc6e56ef387df2",
+    "protocol.py": "f323da52a9f688c5d08aa45c9b0ab037f77e99d40ef577ec5ec2cd42974a6aa1",
+    "route_census.py": "95c511a6ebb2feac7f5a302ede193d6b9ef34c77055d2f959e76bb5e6bb1819e",
+    "run_root.py": "e56dfb1196b81e7fdc4b8c07b5cedad03fae47eff80bbb6d59dd28175e297b2a",
+    "runtime.py": "e3827641ab38ffa0d60db92153c614e7e4911c48b67f5bd841617272dd7d2fd0",
+    "timer_overhead.py": "13b62f3cc85c3b9b49e72c3e1838f7248d5c2530d3357c7a45a81dbdf439ac3e",
+    "transfer_ledger.py": "7e5e37467208c229eeda3c7367fa16f506c11fe502ad93b28bbcc70fa4e9ab6d",
+    "window_protocol.py": "b2d8e4782db570ec53d194268b788c868219d64c5aa0c361cd9a2ea3d6120788"
+  },
+  "owner_sha256": "a29d8257eecc77c4ad9ae6671d092b56f4c09a35c4247c125fed3a8c8bc1f95f",
+  "main_review_sha256": "5894930f4469e5df095c936eb4c5443d43ff79bc94113c878dc56e37ea9980a4",
+  "recipe_sha256": "78cde6639e1082aae3368b55d5609f2e07811737cb24364086eb62fac5835153",
+  "gpu_executed": false,
+  "model_executed": false,
+  "full262144_qualified": false,
+  "restore_qualified": false,
+  "broad_quality_qualified": false,
+  "performance_eligible": false,
+  "adopted": false,
+  "source_stable": true,
+  "scope": "Actual syntax, exported prerequisite/three-case/window/delta fixtures and anchored CPU-child QUIT; real CLI refusals only.",
+  "command_evidence": {
+    "syntax-and-helper-selftests": {
+      "stdout": "12 sources compile; unchanged qualified helpers PASS\n",
+      "stderr": ""
+    },
+    "exported-controller-fixtures": {
+      "stdout": "{\"passed\": true, \"gpu_executed\": false, \"model_executed\": false, \"scope\": \"CPU exported three-case admission/protocol/window/delta and actual retained prerequisite/owned QUIT fixtures only\", \"owner_sha256\": \"a29d8257eecc77c4ad9ae6671d092b56f4c09a35c4247c125fed3a8c8bc1f95f\", \"source_pins\": {\"admission.py\": \"3f7925b7a5f47c1bb3e6dca5f74668b5fb173ca2c284c85479778a9fc95c9d34\", \"batch_census.py\": \"ce794be37f2aa670ba446cd8894ca9394a1be6a8b3a77f467cf77076d0d6f7e3\", \"controller_cpu_fixtures.py\": \"f2091abbba6953cae623d4005c3033a05134eaf7788c10380c02f1be48eba388\", \"fixtures.py\": \"706274e56ae8dbc524142688336f9053bf786cd46c2436a4434f49b588fd6a08\", \"hash_inputs.py\": \"25d21cfb5d9977fcabe7e1b036a7959bf8ca99d3ce797c44cacc6e56ef387df2\", \"protocol.py\": \"f323da52a9f688c5d08aa45c9b0ab037f77e99d40ef577ec5ec2cd42974a6aa1\", \"route_census.py\": \"95c511a6ebb2feac7f5a302ede193d6b9ef34c77055d2f959e76bb5e6bb1819e\", \"run_root.py\": \"e56dfb1196b81e7fdc4b8c07b5cedad03fae47eff80bbb6d59dd28175e297b2a\", \"runtime.py\": \"e3827641ab38ffa0d60db92153c614e7e4911c48b67f5bd841617272dd7d2fd0\", \"timer_overhead.py\": \"13b62f3cc85c3b9b49e72c3e1838f7248d5c2530d3357c7a45a81dbdf439ac3e\", \"transfer_ledger.py\": \"7e5e37467208c229eeda3c7367fa16f506c11fe502ad93b28bbcc70fa4e9ab6d\", \"window_protocol.py\": \"b2d8e4782db570ec53d194268b788c868219d64c5aa0c361cd9a2ea3d6120788\"}, \"owned_quit_cases\": [{\"phase\": \"normal\", \"record\": {\"gen_send_attempted\": true, \"ready_seen\": true, \"request_done_seen\": true, \"model_close\": {\"quit_requested\": true, \"quit_reason\": \"completed GEN\", \"quit_send_outcome\": \"sent\", \"quit_exit_outcome\": \"exit observed\"}}, \"command\": {\"label\": \"normal\", \"argv\": [\"/usr/bin/python3\", \"-u\", \"-c\", \"import sys\\nprint('READY 262144',flush=True)\\nprint('DONE stop',flush=True)\\nsys.exit(0 if sys.stdin.readline()=='QUIT\\\\n' else 7)\\n\"], \"environment\": {\"PATH\": \"/usr/bin:/bin\", \"HOME\": \"/home/yayoi\", \"LANG\": \"C.UTF-8\", \"LC_ALL\": \"C.UTF-8\", \"PYTHONDONTWRITEBYTECODE\": \"1\"}, \"started_utc\": \"2026-10-11T15:39:55.238052+00:00\", \"wall_seconds\": 20, \"errors\": [], \"owners\": [{\"pid\": 1212199, \"start_ticks\": 8195936, \"sid\": 1212199, \"pgid\": 1212199}], \"cleanup\": [], \"observation_complete\": true, \"direct_child_reaped\": true, \"session_empty\": true, \"session_anchored\": true, \"spawn_begin_monotonic\": 81959.359429485, \"pid\": 1212199, \"spawn_return_monotonic\": 81959.362759087, \"direct_identity\": {\"pid\": 1212199, \"state\": \"R\", \"ppid\": 1212182, \"pgid\": 1212199, \"sid\": 1212199, \"start_ticks\": 8195936, \"rss_bytes\": 884736}, \"peak_live_owned_identities\": 1, \"peak_session_rss_bytes\": 7819264, \"survivors\": [], \"ownership_status\": \"observed\", \"exit_code\": 0, \"finished_utc\": \"2026-10-11T15:39:55.358634+00:00\", \"elapsed_seconds\": 0.12050889499369077, \"logs\": {\"normal.stdout\": {\"bytes\": 23, \"sha256\": \"a498de574d2a8df48232e04248145aac3a16ebd63e6877808cbe8ee02bb92dba\"}, \"normal.stderr\": {\"bytes\": 0, \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"}}}}, {\"phase\": \"early-eos\", \"record\": {\"gen_send_attempted\": true, \"ready_seen\": true, \"request_done_seen\": true, \"model_close\": {\"quit_requested\": true, \"quit_reason\": \"completed GEN\", \"quit_send_outcome\": \"sent\", \"quit_exit_outcome\": \"exit observed\"}}, \"command\": {\"label\": \"early-eos\", \"argv\": [\"/usr/bin/python3\", \"-u\", \"-c\", \"import sys\\nprint('READY 262144',flush=True)\\nprint('DONE stop',flush=True)\\nsys.exit(0 if sys.stdin.readline()=='QUIT\\\\n' else 7)\\n\"], \"environment\": {\"PATH\": \"/usr/bin:/bin\", \"HOME\": \"/home/yayoi\", \"LANG\": \"C.UTF-8\", \"LC_ALL\": \"C.UTF-8\", \"PYTHONDONTWRITEBYTECODE\": \"1\"}, \"started_utc\": \"2026-10-11T15:39:55.358986+00:00\", \"wall_seconds\": 20, \"errors\": [], \"owners\": [{\"pid\": 1212203, \"start_ticks\": 8195948, \"sid\": 1212203, \"pgid\": 1212203}], \"cleanup\": [], \"observation_complete\": true, \"direct_child_reaped\": true, \"session_empty\": true, \"session_anchored\": true, \"spawn_begin_monotonic\": 81959.480349407, \"pid\": 1212203, \"spawn_return_monotonic\": 81959.483156613, \"direct_identity\": {\"pid\": 1212203, \"state\": \"R\", \"ppid\": 1212182, \"pgid\": 1212203, \"sid\": 1212203, \"start_ticks\": 8195948, \"rss_bytes\": 458752}, \"peak_live_owned_identities\": 1, \"peak_session_rss_bytes\": 7852032, \"survivors\": [], \"ownership_status\": \"observed\", \"exit_code\": 0, \"finished_utc\": \"2026-10-11T15:39:55.470633+00:00\", \"elapsed_seconds\": 0.11157514899969101, \"logs\": {\"early-eos.stdout\": {\"bytes\": 23, \"sha256\": \"a498de574d2a8df48232e04248145aac3a16ebd63e6877808cbe8ee02bb92dba\"}, \"early-eos.stderr\": {\"bytes\": 0, \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"}}}}, {\"phase\": \"ready-failure\", \"record\": {\"gen_send_attempted\": false, \"ready_seen\": true, \"request_done_seen\": false, \"primary_model_failure\": \"synthetic primary gate failure\", \"model_close\": {\"quit_requested\": true, \"quit_reason\": \"READY pre-GEN gate failure\", \"quit_send_outcome\": \"sent\", \"quit_exit_outcome\": \"exit observed\"}}, \"command\": {\"label\": \"ready-failure\", \"argv\": [\"/usr/bin/python3\", \"-u\", \"-c\", \"import sys\\nprint('READY 262144',flush=True)\\nsys.exit(0 if sys.stdin.readline()=='QUIT\\\\n' else 7)\\n\"], \"environment\": {\"PATH\": \"/usr/bin:/bin\", \"HOME\": \"/home/yayoi\", \"LANG\": \"C.UTF-8\", \"LC_ALL\": \"C.UTF-8\", \"PYTHONDONTWRITEBYTECODE\": \"1\"}, \"started_utc\": \"2026-10-11T15:39:55.470940+00:00\", \"wall_seconds\": 20, \"errors\": [], \"owners\": [{\"pid\": 1212206, \"start_ticks\": 8195959, \"sid\": 1212206, \"pgid\": 1212206}], \"cleanup\": [], \"observation_complete\": true, \"direct_child_reaped\": true, \"session_empty\": true, \"session_anchored\": true, \"spawn_begin_monotonic\": 81959.59230656, \"pid\": 1212206, \"spawn_return_monotonic\": 81959.594695504, \"direct_identity\": {\"pid\": 1212206, \"state\": \"R\", \"ppid\": 1212182, \"pgid\": 1212206, \"sid\": 1212206, \"start_ticks\": 8195959, \"rss_bytes\": 458752}, \"peak_live_owned_identities\": 1, \"peak_session_rss_bytes\": 7630848, \"survivors\": [], \"ownership_status\": \"observed\", \"exit_code\": 0, \"finished_utc\": \"2026-10-11T15:39:55.584525+00:00\", \"elapsed_seconds\": 0.11351278900110628, \"logs\": {\"ready-failure.stdout\": {\"bytes\": 13, \"sha256\": \"3cbda8d7208b2e5da74cf3b36b28da2b9c2e4a23658ddeac3b5ef498102cabf5\"}, \"ready-failure.stderr\": {\"bytes\": 0, \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"}}}}, {\"phase\": \"done-failure\", \"record\": {\"gen_send_attempted\": true, \"ready_seen\": true, \"request_done_seen\": true, \"primary_model_failure\": \"synthetic primary gate failure\", \"model_close\": {\"quit_requested\": true, \"quit_reason\": \"completed GEN post-completion gate failure\", \"quit_send_outcome\": \"sent\", \"quit_exit_outcome\": \"exit observed\"}}, \"command\": {\"label\": \"done-failure\", \"argv\": [\"/usr/bin/python3\", \"-u\", \"-c\", \"import sys\\nprint('READY 262144',flush=True)\\nprint('DONE stop',flush=True)\\nsys.exit(0 if sys.stdin.readline()=='QUIT\\\\n' else 7)\\n\"], \"environment\": {\"PATH\": \"/usr/bin:/bin\", \"HOME\": \"/home/yayoi\", \"LANG\": \"C.UTF-8\", \"LC_ALL\": \"C.UTF-8\", \"PYTHONDONTWRITEBYTECODE\": \"1\"}, \"started_utc\": \"2026-10-11T15:39:55.584849+00:00\", \"wall_seconds\": 20, \"errors\": [], \"owners\": [{\"pid\": 1212209, \"start_ticks\": 8195970, \"sid\": 1212209, \"pgid\": 1212209}], \"cleanup\": [], \"observation_complete\": true, \"direct_child_reaped\": true, \"session_empty\": true, \"session_anchored\": true, \"spawn_begin_monotonic\": 81959.706203627, \"pid\": 1212209, \"spawn_return_monotonic\": 81959.709019038, \"direct_identity\": {\"pid\": 1212209, \"state\": \"R\", \"ppid\": 1212182, \"pgid\": 1212209, \"sid\": 1212209, \"start_ticks\": 8195970, \"rss_bytes\": 589824}, \"peak_live_owned_identities\": 1, \"peak_session_rss_bytes\": 7823360, \"survivors\": [], \"ownership_status\": \"observed\", \"exit_code\": 0, \"finished_utc\": \"2026-10-11T15:39:55.708611+00:00\", \"elapsed_seconds\": 0.12369138099893462, \"logs\": {\"done-failure.stdout\": {\"bytes\": 23, \"sha256\": \"a498de574d2a8df48232e04248145aac3a16ebd63e6877808cbe8ee02bb92dba\"}, \"done-failure.stderr\": {\"bytes\": 0, \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"}}}}], \"prerequisite_fixture_receipt_pins\": {\"/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-llvm-v711-source-root-v5/record.json\": \"3f1c3741f6b09b78377064a2b993b558a52b1b95ff30f5eb016ea8c6342d9e3a\", \"/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-host-qualification-root-v2/record.json\": \"3cdd1892e07767647ebaa956cc46f731f55030cac9f5685cb7da4adfd36674dd\", \"/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-free-qualification-root-v2/record.json\": \"6ca1c13e68f36e33dc228a4f4050b4c1a89e3f422d5b646e8b105ea75504e39f\", \"/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-contrib-llvm-qualification-root-v2/record.json\": \"c52451e7fd88e5ac52837345dfc6a087e829b4b7bf6ccc5b088331b7c1cda112\", \"/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-free-asan-qualification-root-v2/record.json\": \"0f1927d9a8dff7fadf74debdd4105fd108358e31e4e924884426d4dad879e6ec\", \"/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-contrib-llvm-asan-qualification-root-v2/record.json\": \"e9d7153c9a96bb4f9a5fcc787e73811b0cd3527602c2398616152e867e3a6e69\", \"/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-lint-qualification-root-v2/record.json\": \"f87af4ee461589be4c76d6e86b6ce12b727af70d70928cba780235d122e8e4c7\", \"/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-lint-qualification-root-v1/record.json\": \"7d0aa1513fd4bb24c5b919c1a4219ac63c3121d87b268987613d75513995d0cf\", \"/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-main-admission-converter-root-v1/qualification.resolved.json\": \"9a00ad8dbfa2ad5982c4745555ef6b9c86d44d0cd982c1a870aff1d50b2834e8\", \"/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-model-controller-cpu-root-v2/record.json\": \"1b7545c767b52dddabb0e410c01ab2f6ad90e70a0ce357eef0c19b153ce8ae2d\", \"/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-model-controller-main-review-v1.json\": \"a9e207d61f5c697c3168e66e953aaa17742da1489f861108fb9b131141c47710\", \"/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-main-admission-converter-root-v1/publication.bridge.resolved.json\": \"c4f66a0af24704aeb8ec4fd183f2c8a44fd39c04c98ba6bd26be523687a701f6\", \"/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-chunk8192-controller-cpu-root-v1/matrix.closed.json\": \"993ce98702940943939dce340e794fea0295b458ce42cb75b35b9c63edc4a03b\", \"/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-model-root-v1/n64-g16-off/record.json\": \"6e9e8c9adfda6d3c3a7c5269be99b8c33e5de43afd49ad5c3a10922f22059327\", \"/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-model-root-v1/n64-g16-on/record.json\": \"489661e5e003e3f8ecf62b90e694da0277d7739efd222c169213b38751766427\", \"/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-model-root-v1/n2049-g16-off/record.json\": \"9a91e9a4598e3b4400f22148346a58780eb984c445462ca9081ebd3ebbf91b21\", \"/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-model-root-v1/n2049-g16-on/record.json\": \"d34e29a414bf980a5b5ef10eeea2dd2dd7eb46a4c3d1dc853cc8684c12211df1\", \"/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-model-root-v1/n32768-g16-off/record.json\": \"88fff2bff8048508abbe64c6debdd0b4f032621cded55462d260086ca75f530f\", \"/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-model-root-v1/n32768-g16-on/record.json\": \"f8ffd0117a552eff1c2d88ccc30c37b7b2fad1b61a34181802f8ef77bc3bc0f8\"}}\n",
+      "stderr": ""
+    },
+    "actual-negative-cli-fixtures": {
+      "stdout": "{\"passed\": true, \"gpu_executed\": false, \"model_executed\": false, \"actual_cli_commands\": [{\"label\": \"invalid-cli-0\", \"argv\": [\"/usr/bin/python3\", \"/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-chunk8192-controller-source-v1/run_root.py\", \"--input-tokens\", \"32768\", \"--chunk\", \"8192\", \"--compact\", \"on\"], \"environment\": {\"PATH\": \"/usr/bin:/bin\", \"HOME\": \"/home/yayoi\", \"LANG\": \"C.UTF-8\", \"LC_ALL\": \"C.UTF-8\", \"PYTHONDONTWRITEBYTECODE\": \"1\"}, \"started_utc\": \"2026-10-11T15:39:55.875072+00:00\", \"wall_seconds\": 10, \"errors\": [], \"owners\": [{\"pid\": 1212234, \"start_ticks\": 8195999, \"sid\": 1212234, \"pgid\": 1212234}], \"cleanup\": [], \"observation_complete\": true, \"direct_child_reaped\": true, \"session_empty\": true, \"session_anchored\": true, \"spawn_begin_monotonic\": 81959.996418934, \"pid\": 1212234, \"spawn_return_monotonic\": 81959.998236691, \"direct_identity\": {\"pid\": 1212234, \"state\": \"R\", \"ppid\": 1212232, \"pgid\": 1212234, \"sid\": 1212234, \"start_ticks\": 8195999, \"rss_bytes\": 589824}, \"peak_live_owned_identities\": 1, \"peak_session_rss_bytes\": 16400384, \"survivors\": [], \"ownership_status\": \"observed\", \"exit_code\": 2, \"finished_utc\": \"2026-10-11T15:39:56.063644+00:00\", \"elapsed_seconds\": 0.18851995300792623, \"logs\": {\"invalid-cli-0.stdout\": {\"bytes\": 0, \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"}, \"invalid-cli-0.stderr\": {\"bytes\": 361, \"sha256\": \"1e51a420ad5fa8bf4812c5a6fc8f8b274ea5cf491b41d2633c644f72acd1a9e5\"}}}, {\"label\": \"invalid-cli-1\", \"argv\": [\"/usr/bin/python3\", \"/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-chunk8192-controller-source-v1/run_root.py\", \"--input-tokens\", \"65536\", \"--chunk\", \"6144\", \"--compact\", \"on\", \"--reference\", \"/tmp/unused-no-open\"], \"environment\": {\"PATH\": \"/usr/bin:/bin\", \"HOME\": \"/home/yayoi\", \"LANG\": \"C.UTF-8\", \"LC_ALL\": \"C.UTF-8\", \"PYTHONDONTWRITEBYTECODE\": \"1\"}, \"started_utc\": \"2026-10-11T15:39:56.064158+00:00\", \"wall_seconds\": 10, \"errors\": [], \"owners\": [{\"pid\": 1212251, \"start_ticks\": 8196018, \"sid\": 1212251, \"pgid\": 1212251}], \"cleanup\": [], \"observation_complete\": true, \"direct_child_reaped\": true, \"session_empty\": true, \"session_anchored\": true, \"spawn_begin_monotonic\": 81960.185506437, \"pid\": 1212251, \"spawn_return_monotonic\": 81960.187174735, \"direct_identity\": {\"pid\": 1212251, \"state\": \"R\", \"ppid\": 1212232, \"pgid\": 1212251, \"sid\": 1212251, \"start_ticks\": 8196018, \"rss_bytes\": 589824}, \"peak_live_owned_identities\": 1, \"peak_session_rss_bytes\": 16396288, \"survivors\": [], \"ownership_status\": \"observed\", \"exit_code\": 2, \"finished_utc\": \"2026-10-11T15:39:56.275946+00:00\", \"elapsed_seconds\": 0.21173980900493916, \"logs\": {\"invalid-cli-1.stdout\": {\"bytes\": 0, \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"}, \"invalid-cli-1.stderr\": {\"bytes\": 361, \"sha256\": \"1e51a420ad5fa8bf4812c5a6fc8f8b274ea5cf491b41d2633c644f72acd1a9e5\"}}}, {\"label\": \"invalid-cli-2\", \"argv\": [\"/usr/bin/python3\", \"/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-chunk8192-controller-source-v1/run_root.py\", \"--input-tokens\", \"32768\", \"--chunk\", \"6144\", \"--compact\", \"on\"], \"environment\": {\"PATH\": \"/usr/bin:/bin\", \"HOME\": \"/home/yayoi\", \"LANG\": \"C.UTF-8\", \"LC_ALL\": \"C.UTF-8\", \"PYTHONDONTWRITEBYTECODE\": \"1\"}, \"started_utc\": \"2026-10-11T15:39:56.276556+00:00\", \"wall_seconds\": 10, \"errors\": [], \"owners\": [{\"pid\": 1212260, \"start_ticks\": 8196039, \"sid\": 1212260, \"pgid\": 1212260}], \"cleanup\": [], \"observation_complete\": true, \"direct_child_reaped\": true, \"session_empty\": true, \"session_anchored\": true, \"spawn_begin_monotonic\": 81960.398026825, \"pid\": 1212260, \"spawn_return_monotonic\": 81960.400853658, \"direct_identity\": {\"pid\": 1212260, \"state\": \"R\", \"ppid\": 1212232, \"pgid\": 1212260, \"sid\": 1212260, \"start_ticks\": 8196039, \"rss_bytes\": 458752}, \"peak_live_owned_identities\": 1, \"peak_session_rss_bytes\": 13905920, \"survivors\": [], \"ownership_status\": \"observed\", \"exit_code\": 2, \"finished_utc\": \"2026-10-11T15:39:56.474099+00:00\", \"elapsed_seconds\": 0.1974467980035115, \"logs\": {\"invalid-cli-2.stdout\": {\"bytes\": 0, \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"}, \"invalid-cli-2.stderr\": {\"bytes\": 318, \"sha256\": \"19c428f75fa3bbb66156aa2eda7e19fdf90da861176980b69d7382b00dfa5e47\"}}}, {\"label\": \"invalid-cli-3\", \"argv\": [\"/usr/bin/python3\", \"/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-chunk8192-controller-source-v1/run_root.py\", \"--input-tokens\", \"32768\", \"--chunk\", \"8192\", \"--compact\", \"off\", \"--reference\", \"/tmp/unused-no-open\"], \"environment\": {\"PATH\": \"/usr/bin:/bin\", \"HOME\": \"/home/yayoi\", \"LANG\": \"C.UTF-8\", \"LC_ALL\": \"C.UTF-8\", \"PYTHONDONTWRITEBYTECODE\": \"1\"}, \"started_utc\": \"2026-10-11T15:39:56.474481+00:00\", \"wall_seconds\": 10, \"errors\": [], \"owners\": [{\"pid\": 1212269, \"start_ticks\": 8196059, \"sid\": 1212269, \"pgid\": 1212269}], \"cleanup\": [], \"observation_complete\": true, \"direct_child_reaped\": true, \"session_empty\": true, \"session_anchored\": true, \"spawn_begin_monotonic\": 81960.595824168, \"pid\": 1212269, \"spawn_return_monotonic\": 81960.597606389, \"direct_identity\": {\"pid\": 1212269, \"state\": \"R\", \"ppid\": 1212232, \"pgid\": 1212269, \"sid\": 1212269, \"start_ticks\": 8196059, \"rss_bytes\": 458752}, \"peak_live_owned_identities\": 1, \"peak_session_rss_bytes\": 14835712, \"survivors\": [], \"ownership_status\": \"observed\", \"exit_code\": 2, \"finished_utc\": \"2026-10-11T15:39:56.670848+00:00\", \"elapsed_seconds\": 0.19631653600663412, \"logs\": {\"invalid-cli-3.stdout\": {\"bytes\": 0, \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"}, \"invalid-cli-3.stderr\": {\"bytes\": 343, \"sha256\": \"a0777cfb65ab95883d9602344c372b53e2d02d3f9f0909acb522bd46e2385220\"}}}, {\"label\": \"invalid-cli-4\", \"argv\": [\"/usr/bin/python3\", \"/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-chunk8192-controller-source-v1/run_root.py\", \"--input-tokens\", \"65537\", \"--chunk\", \"8192\", \"--compact\", \"on\", \"--reference\", \"/tmp/unused-no-open\"], \"environment\": {\"PATH\": \"/usr/bin:/bin\", \"HOME\": \"/home/yayoi\", \"LANG\": \"C.UTF-8\", \"LC_ALL\": \"C.UTF-8\", \"PYTHONDONTWRITEBYTECODE\": \"1\"}, \"started_utc\": \"2026-10-11T15:39:56.671427+00:00\", \"wall_seconds\": 10, \"errors\": [], \"owners\": [{\"pid\": 1212280, \"start_ticks\": 8196079, \"sid\": 1212280, \"pgid\": 1212280}], \"cleanup\": [], \"observation_complete\": true, \"direct_child_reaped\": true, \"session_empty\": true, \"session_anchored\": true, \"spawn_begin_monotonic\": 81960.792835503, \"pid\": 1212280, \"spawn_return_monotonic\": 81960.794411027, \"direct_identity\": {\"pid\": 1212280, \"state\": \"R\", \"ppid\": 1212232, \"pgid\": 1212280, \"sid\": 1212280, \"start_ticks\": 8196079, \"rss_bytes\": 458752}, \"peak_live_owned_identities\": 1, \"peak_session_rss_bytes\": 16420864, \"survivors\": [], \"ownership_status\": \"observed\", \"exit_code\": 2, \"finished_utc\": \"2026-10-11T15:39:56.838712+00:00\", \"elapsed_seconds\": 0.1672079280106118, \"logs\": {\"invalid-cli-4.stdout\": {\"bytes\": 0, \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"}, \"invalid-cli-4.stderr\": {\"bytes\": 356, \"sha256\": \"ab1ba2ef7c28aa35a36d291ccd33bc4755af59d8bc90ffa8a27965eb4ee5eeba\"}}}, {\"label\": \"invalid-cli-5\", \"argv\": [\"/usr/bin/python3\", \"/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-chunk8192-controller-source-v1/run_root.py\", \"--input-tokens\", \"32768\", \"--chunk\", \"8192\", \"--group\", \"8\", \"--compact\", \"on\", \"--reference\", \"/tmp/unused-no-open\"], \"environment\": {\"PATH\": \"/usr/bin:/bin\", \"HOME\": \"/home/yayoi\", \"LANG\": \"C.UTF-8\", \"LC_ALL\": \"C.UTF-8\", \"PYTHONDONTWRITEBYTECODE\": \"1\"}, \"started_utc\": \"2026-10-11T15:39:56.839139+00:00\", \"wall_seconds\": 10, \"errors\": [], \"owners\": [{\"pid\": 1212284, \"start_ticks\": 8196096, \"sid\": 1212284, \"pgid\": 1212284}], \"cleanup\": [], \"observation_complete\": true, \"direct_child_reaped\": true, \"session_empty\": true, \"session_anchored\": true, \"spawn_begin_monotonic\": 81960.960483874, \"pid\": 1212284, \"spawn_return_monotonic\": 81960.962327349, \"direct_identity\": {\"pid\": 1212284, \"state\": \"R\", \"ppid\": 1212232, \"pgid\": 1212284, \"sid\": 1212284, \"start_ticks\": 8196096, \"rss_bytes\": 458752}, \"peak_live_owned_identities\": 1, \"peak_session_rss_bytes\": 14663680, \"survivors\": [], \"ownership_status\": \"observed\", \"exit_code\": 2, \"finished_utc\": \"2026-10-11T15:39:57.018861+00:00\", \"elapsed_seconds\": 0.17967578799289186, \"logs\": {\"invalid-cli-5.stdout\": {\"bytes\": 0, \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"}, \"invalid-cli-5.stderr\": {\"bytes\": 335, \"sha256\": \"24e1f4ec4902021cef5bf3567b50bee551b4b8201a43033b8fca8fe0343281f0\"}}}, {\"label\": \"pending-refused\", \"argv\": [\"/usr/bin/python3\", \"/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-chunk8192-controller-source-v1/run_root.py\", \"--input-tokens\", \"65536\", \"--chunk\", \"6144\", \"--compact\", \"on\", \"--qualification\", \"/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-chunk8192-controller-source-v1/qualification.pending.json\", \"--qualification-sha256\", \"a7c18efab31c43b52468651698e13d947b73956793402aa4728875ec8a1a4b58\"], \"environment\": {\"PATH\": \"/usr/bin:/bin\", \"HOME\": \"/home/yayoi\", \"LANG\": \"C.UTF-8\", \"LC_ALL\": \"C.UTF-8\", \"PYTHONDONTWRITEBYTECODE\": \"1\"}, \"started_utc\": \"2026-10-11T15:39:57.019530+00:00\", \"wall_seconds\": 10, \"errors\": [], \"owners\": [{\"pid\": 1212293, \"start_ticks\": 8196114, \"sid\": 1212293, \"pgid\": 1212293}], \"cleanup\": [], \"observation_complete\": true, \"direct_child_reaped\": true, \"session_empty\": true, \"session_anchored\": true, \"spawn_begin_monotonic\": 81961.140884687, \"pid\": 1212293, \"spawn_return_monotonic\": 81961.142651429, \"direct_identity\": {\"pid\": 1212293, \"state\": \"R\", \"ppid\": 1212232, \"pgid\": 1212293, \"sid\": 1212293, \"start_ticks\": 8196114, \"rss_bytes\": 458752}, \"peak_live_owned_identities\": 1, \"peak_session_rss_bytes\": 16089088, \"survivors\": [], \"ownership_status\": \"observed\", \"exit_code\": 1, \"finished_utc\": \"2026-10-11T15:39:57.290513+00:00\", \"elapsed_seconds\": 0.2709131890005665, \"logs\": {\"pending-refused.stdout\": {\"bytes\": 0, \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"}, \"pending-refused.stderr\": {\"bytes\": 720, \"sha256\": \"50c6327a66de0ca638defc2afb64988a90eecbc5e06d6a1ac02eacaae8668791\"}}}]}\n",
+      "stderr": ""
+    }
+  },
+  "matrix_manifest": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-chunk8192-controller-cpu-root-v1/matrix.closed.json",
+    "sha256": "993ce98702940943939dce340e794fea0295b458ce42cb75b35b9c63edc4a03b"
+  },
+  "exported_fixture_result": {
+    "passed": true,
+    "gpu_executed": false,
+    "model_executed": false,
+    "scope": "CPU exported three-case admission/protocol/window/delta and actual retained prerequisite/owned QUIT fixtures only",
+    "owner_sha256": "a29d8257eecc77c4ad9ae6671d092b56f4c09a35c4247c125fed3a8c8bc1f95f",
+    "source_pins": {
+      "admission.py": "3f7925b7a5f47c1bb3e6dca5f74668b5fb173ca2c284c85479778a9fc95c9d34",
+      "batch_census.py": "ce794be37f2aa670ba446cd8894ca9394a1be6a8b3a77f467cf77076d0d6f7e3",
+      "controller_cpu_fixtures.py": "f2091abbba6953cae623d4005c3033a05134eaf7788c10380c02f1be48eba388",
+      "fixtures.py": "706274e56ae8dbc524142688336f9053bf786cd46c2436a4434f49b588fd6a08",
+      "hash_inputs.py": "25d21cfb5d9977fcabe7e1b036a7959bf8ca99d3ce797c44cacc6e56ef387df2",
+      "protocol.py": "f323da52a9f688c5d08aa45c9b0ab037f77e99d40ef577ec5ec2cd42974a6aa1",
+      "route_census.py": "95c511a6ebb2feac7f5a302ede193d6b9ef34c77055d2f959e76bb5e6bb1819e",
+      "run_root.py": "e56dfb1196b81e7fdc4b8c07b5cedad03fae47eff80bbb6d59dd28175e297b2a",
+      "runtime.py": "e3827641ab38ffa0d60db92153c614e7e4911c48b67f5bd841617272dd7d2fd0",
+      "timer_overhead.py": "13b62f3cc85c3b9b49e72c3e1838f7248d5c2530d3357c7a45a81dbdf439ac3e",
+      "transfer_ledger.py": "7e5e37467208c229eeda3c7367fa16f506c11fe502ad93b28bbcc70fa4e9ab6d",
+      "window_protocol.py": "b2d8e4782db570ec53d194268b788c868219d64c5aa0c361cd9a2ea3d6120788"
+    },
+    "owned_quit_cases": [
+      {
+        "phase": "normal",
+        "record": {
+          "gen_send_attempted": true,
+          "ready_seen": true,
+          "request_done_seen": true,
+          "model_close": {
+            "quit_requested": true,
+            "quit_reason": "completed GEN",
+            "quit_send_outcome": "sent",
+            "quit_exit_outcome": "exit observed"
+          }
+        },
+        "command": {
+          "label": "normal",
+          "argv": [
+            "/usr/bin/python3",
+            "-u",
+            "-c",
+            "import sys\nprint('READY 262144',flush=True)\nprint('DONE stop',flush=True)\nsys.exit(0 if sys.stdin.readline()=='QUIT\\n' else 7)\n"
+          ],
+          "environment": {
+            "PATH": "/usr/bin:/bin",
+            "HOME": "/home/yayoi",
+            "LANG": "C.UTF-8",
+            "LC_ALL": "C.UTF-8",
+            "PYTHONDONTWRITEBYTECODE": "1"
+          },
+          "started_utc": "2026-10-11T15:39:55.238052+00:00",
+          "wall_seconds": 20,
+          "errors": [],
+          "owners": [
+            {
+              "pid": 1212199,
+              "start_ticks": 8195936,
+              "sid": 1212199,
+              "pgid": 1212199
+            }
+          ],
+          "cleanup": [],
+          "observation_complete": true,
+          "direct_child_reaped": true,
+          "session_empty": true,
+          "session_anchored": true,
+          "spawn_begin_monotonic": 81959.359429485,
+          "pid": 1212199,
+          "spawn_return_monotonic": 81959.362759087,
+          "direct_identity": {
+            "pid": 1212199,
+            "state": "R",
+            "ppid": 1212182,
+            "pgid": 1212199,
+            "sid": 1212199,
+            "start_ticks": 8195936,
+            "rss_bytes": 884736
+          },
+          "peak_live_owned_identities": 1,
+          "peak_session_rss_bytes": 7819264,
+          "survivors": [],
+          "ownership_status": "observed",
+          "exit_code": 0,
+          "finished_utc": "2026-10-11T15:39:55.358634+00:00",
+          "elapsed_seconds": 0.12050889499369077,
+          "logs": {
+            "normal.stdout": {
+              "bytes": 23,
+              "sha256": "a498de574d2a8df48232e04248145aac3a16ebd63e6877808cbe8ee02bb92dba"
+            },
+            "normal.stderr": {
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          }
+        }
+      },
+      {
+        "phase": "early-eos",
+        "record": {
+          "gen_send_attempted": true,
+          "ready_seen": true,
+          "request_done_seen": true,
+          "model_close": {
+            "quit_requested": true,
+            "quit_reason": "completed GEN",
+            "quit_send_outcome": "sent",
+            "quit_exit_outcome": "exit observed"
+          }
+        },
+        "command": {
+          "label": "early-eos",
+          "argv": [
+            "/usr/bin/python3",
+            "-u",
+            "-c",
+            "import sys\nprint('READY 262144',flush=True)\nprint('DONE stop',flush=True)\nsys.exit(0 if sys.stdin.readline()=='QUIT\\n' else 7)\n"
+          ],
+          "environment": {
+            "PATH": "/usr/bin:/bin",
+            "HOME": "/home/yayoi",
+            "LANG": "C.UTF-8",
+            "LC_ALL": "C.UTF-8",
+            "PYTHONDONTWRITEBYTECODE": "1"
+          },
+          "started_utc": "2026-10-11T15:39:55.358986+00:00",
+          "wall_seconds": 20,
+          "errors": [],
+          "owners": [
+            {
+              "pid": 1212203,
+              "start_ticks": 8195948,
+              "sid": 1212203,
+              "pgid": 1212203
+            }
+          ],
+          "cleanup": [],
+          "observation_complete": true,
+          "direct_child_reaped": true,
+          "session_empty": true,
+          "session_anchored": true,
+          "spawn_begin_monotonic": 81959.480349407,
+          "pid": 1212203,
+          "spawn_return_monotonic": 81959.483156613,
+          "direct_identity": {
+            "pid": 1212203,
+            "state": "R",
+            "ppid": 1212182,
+            "pgid": 1212203,
+            "sid": 1212203,
+            "start_ticks": 8195948,
+            "rss_bytes": 458752
+          },
+          "peak_live_owned_identities": 1,
+          "peak_session_rss_bytes": 7852032,
+          "survivors": [],
+          "ownership_status": "observed",
+          "exit_code": 0,
+          "finished_utc": "2026-10-11T15:39:55.470633+00:00",
+          "elapsed_seconds": 0.11157514899969101,
+          "logs": {
+            "early-eos.stdout": {
+              "bytes": 23,
+              "sha256": "a498de574d2a8df48232e04248145aac3a16ebd63e6877808cbe8ee02bb92dba"
+            },
+            "early-eos.stderr": {
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          }
+        }
+      },
+      {
+        "phase": "ready-failure",
+        "record": {
+          "gen_send_attempted": false,
+          "ready_seen": true,
+          "request_done_seen": false,
+          "primary_model_failure": "synthetic primary gate failure",
+          "model_close": {
+            "quit_requested": true,
+            "quit_reason": "READY pre-GEN gate failure",
+            "quit_send_outcome": "sent",
+            "quit_exit_outcome": "exit observed"
+          }
+        },
+        "command": {
+          "label": "ready-failure",
+          "argv": [
+            "/usr/bin/python3",
+            "-u",
+            "-c",
+            "import sys\nprint('READY 262144',flush=True)\nsys.exit(0 if sys.stdin.readline()=='QUIT\\n' else 7)\n"
+          ],
+          "environment": {
+            "PATH": "/usr/bin:/bin",
+            "HOME": "/home/yayoi",
+            "LANG": "C.UTF-8",
+            "LC_ALL": "C.UTF-8",
+            "PYTHONDONTWRITEBYTECODE": "1"
+          },
+          "started_utc": "2026-10-11T15:39:55.470940+00:00",
+          "wall_seconds": 20,
+          "errors": [],
+          "owners": [
+            {
+              "pid": 1212206,
+              "start_ticks": 8195959,
+              "sid": 1212206,
+              "pgid": 1212206
+            }
+          ],
+          "cleanup": [],
+          "observation_complete": true,
+          "direct_child_reaped": true,
+          "session_empty": true,
+          "session_anchored": true,
+          "spawn_begin_monotonic": 81959.59230656,
+          "pid": 1212206,
+          "spawn_return_monotonic": 81959.594695504,
+          "direct_identity": {
+            "pid": 1212206,
+            "state": "R",
+            "ppid": 1212182,
+            "pgid": 1212206,
+            "sid": 1212206,
+            "start_ticks": 8195959,
+            "rss_bytes": 458752
+          },
+          "peak_live_owned_identities": 1,
+          "peak_session_rss_bytes": 7630848,
+          "survivors": [],
+          "ownership_status": "observed",
+          "exit_code": 0,
+          "finished_utc": "2026-10-11T15:39:55.584525+00:00",
+          "elapsed_seconds": 0.11351278900110628,
+          "logs": {
+            "ready-failure.stdout": {
+              "bytes": 13,
+              "sha256": "3cbda8d7208b2e5da74cf3b36b28da2b9c2e4a23658ddeac3b5ef498102cabf5"
+            },
+            "ready-failure.stderr": {
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          }
+        }
+      },
+      {
+        "phase": "done-failure",
+        "record": {
+          "gen_send_attempted": true,
+          "ready_seen": true,
+          "request_done_seen": true,
+          "primary_model_failure": "synthetic primary gate failure",
+          "model_close": {
+            "quit_requested": true,
+            "quit_reason": "completed GEN post-completion gate failure",
+            "quit_send_outcome": "sent",
+            "quit_exit_outcome": "exit observed"
+          }
+        },
+        "command": {
+          "label": "done-failure",
+          "argv": [
+            "/usr/bin/python3",
+            "-u",
+            "-c",
+            "import sys\nprint('READY 262144',flush=True)\nprint('DONE stop',flush=True)\nsys.exit(0 if sys.stdin.readline()=='QUIT\\n' else 7)\n"
+          ],
+          "environment": {
+            "PATH": "/usr/bin:/bin",
+            "HOME": "/home/yayoi",
+            "LANG": "C.UTF-8",
+            "LC_ALL": "C.UTF-8",
+            "PYTHONDONTWRITEBYTECODE": "1"
+          },
+          "started_utc": "2026-10-11T15:39:55.584849+00:00",
+          "wall_seconds": 20,
+          "errors": [],
+          "owners": [
+            {
+              "pid": 1212209,
+              "start_ticks": 8195970,
+              "sid": 1212209,
+              "pgid": 1212209
+            }
+          ],
+          "cleanup": [],
+          "observation_complete": true,
+          "direct_child_reaped": true,
+          "session_empty": true,
+          "session_anchored": true,
+          "spawn_begin_monotonic": 81959.706203627,
+          "pid": 1212209,
+          "spawn_return_monotonic": 81959.709019038,
+          "direct_identity": {
+            "pid": 1212209,
+            "state": "R",
+            "ppid": 1212182,
+            "pgid": 1212209,
+            "sid": 1212209,
+            "start_ticks": 8195970,
+            "rss_bytes": 589824
+          },
+          "peak_live_owned_identities": 1,
+          "peak_session_rss_bytes": 7823360,
+          "survivors": [],
+          "ownership_status": "observed",
+          "exit_code": 0,
+          "finished_utc": "2026-10-11T15:39:55.708611+00:00",
+          "elapsed_seconds": 0.12369138099893462,
+          "logs": {
+            "done-failure.stdout": {
+              "bytes": 23,
+              "sha256": "a498de574d2a8df48232e04248145aac3a16ebd63e6877808cbe8ee02bb92dba"
+            },
+            "done-failure.stderr": {
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          }
+        }
+      }
+    ],
+    "prerequisite_fixture_receipt_pins": {
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-llvm-v711-source-root-v5/record.json": "3f1c3741f6b09b78377064a2b993b558a52b1b95ff30f5eb016ea8c6342d9e3a",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-host-qualification-root-v2/record.json": "3cdd1892e07767647ebaa956cc46f731f55030cac9f5685cb7da4adfd36674dd",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-free-qualification-root-v2/record.json": "6ca1c13e68f36e33dc228a4f4050b4c1a89e3f422d5b646e8b105ea75504e39f",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-contrib-llvm-qualification-root-v2/record.json": "c52451e7fd88e5ac52837345dfc6a087e829b4b7bf6ccc5b088331b7c1cda112",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-free-asan-qualification-root-v2/record.json": "0f1927d9a8dff7fadf74debdd4105fd108358e31e4e924884426d4dad879e6ec",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-contrib-llvm-asan-qualification-root-v2/record.json": "e9d7153c9a96bb4f9a5fcc787e73811b0cd3527602c2398616152e867e3a6e69",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-lint-qualification-root-v2/record.json": "f87af4ee461589be4c76d6e86b6ce12b727af70d70928cba780235d122e8e4c7",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-lint-qualification-root-v1/record.json": "7d0aa1513fd4bb24c5b919c1a4219ac63c3121d87b268987613d75513995d0cf",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-main-admission-converter-root-v1/qualification.resolved.json": "9a00ad8dbfa2ad5982c4745555ef6b9c86d44d0cd982c1a870aff1d50b2834e8",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-model-controller-cpu-root-v2/record.json": "1b7545c767b52dddabb0e410c01ab2f6ad90e70a0ce357eef0c19b153ce8ae2d",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-model-controller-main-review-v1.json": "a9e207d61f5c697c3168e66e953aaa17742da1489f861108fb9b131141c47710",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-main-admission-converter-root-v1/publication.bridge.resolved.json": "c4f66a0af24704aeb8ec4fd183f2c8a44fd39c04c98ba6bd26be523687a701f6",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-chunk8192-controller-cpu-root-v1/matrix.closed.json": "993ce98702940943939dce340e794fea0295b458ce42cb75b35b9c63edc4a03b",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-model-root-v1/n64-g16-off/record.json": "6e9e8c9adfda6d3c3a7c5269be99b8c33e5de43afd49ad5c3a10922f22059327",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-model-root-v1/n64-g16-on/record.json": "489661e5e003e3f8ecf62b90e694da0277d7739efd222c169213b38751766427",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-model-root-v1/n2049-g16-off/record.json": "9a91e9a4598e3b4400f22148346a58780eb984c445462ca9081ebd3ebbf91b21",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-model-root-v1/n2049-g16-on/record.json": "d34e29a414bf980a5b5ef10eeea2dd2dd7eb46a4c3d1dc853cc8684c12211df1",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-model-root-v1/n32768-g16-off/record.json": "88fff2bff8048508abbe64c6debdd0b4f032621cded55462d260086ca75f530f",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-model-root-v1/n32768-g16-on/record.json": "f8ffd0117a552eff1c2d88ccc30c37b7b2fad1b61a34181802f8ef77bc3bc0f8"
+    }
+  },
+  "prerequisite_fixture_receipt_pins": {
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-llvm-v711-source-root-v5/record.json": "3f1c3741f6b09b78377064a2b993b558a52b1b95ff30f5eb016ea8c6342d9e3a",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-host-qualification-root-v2/record.json": "3cdd1892e07767647ebaa956cc46f731f55030cac9f5685cb7da4adfd36674dd",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-free-qualification-root-v2/record.json": "6ca1c13e68f36e33dc228a4f4050b4c1a89e3f422d5b646e8b105ea75504e39f",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-contrib-llvm-qualification-root-v2/record.json": "c52451e7fd88e5ac52837345dfc6a087e829b4b7bf6ccc5b088331b7c1cda112",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-free-asan-qualification-root-v2/record.json": "0f1927d9a8dff7fadf74debdd4105fd108358e31e4e924884426d4dad879e6ec",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-contrib-llvm-asan-qualification-root-v2/record.json": "e9d7153c9a96bb4f9a5fcc787e73811b0cd3527602c2398616152e867e3a6e69",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-lint-qualification-root-v2/record.json": "f87af4ee461589be4c76d6e86b6ce12b727af70d70928cba780235d122e8e4c7",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-lint-qualification-root-v1/record.json": "7d0aa1513fd4bb24c5b919c1a4219ac63c3121d87b268987613d75513995d0cf",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-main-admission-converter-root-v1/qualification.resolved.json": "9a00ad8dbfa2ad5982c4745555ef6b9c86d44d0cd982c1a870aff1d50b2834e8",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-model-controller-cpu-root-v2/record.json": "1b7545c767b52dddabb0e410c01ab2f6ad90e70a0ce357eef0c19b153ce8ae2d",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-model-controller-main-review-v1.json": "a9e207d61f5c697c3168e66e953aaa17742da1489f861108fb9b131141c47710",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-main-admission-converter-root-v1/publication.bridge.resolved.json": "c4f66a0af24704aeb8ec4fd183f2c8a44fd39c04c98ba6bd26be523687a701f6",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-chunk8192-controller-cpu-root-v1/matrix.closed.json": "993ce98702940943939dce340e794fea0295b458ce42cb75b35b9c63edc4a03b",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-model-root-v1/n64-g16-off/record.json": "6e9e8c9adfda6d3c3a7c5269be99b8c33e5de43afd49ad5c3a10922f22059327",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-model-root-v1/n64-g16-on/record.json": "489661e5e003e3f8ecf62b90e694da0277d7739efd222c169213b38751766427",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-model-root-v1/n2049-g16-off/record.json": "9a91e9a4598e3b4400f22148346a58780eb984c445462ca9081ebd3ebbf91b21",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-model-root-v1/n2049-g16-on/record.json": "d34e29a414bf980a5b5ef10eeea2dd2dd7eb46a4c3d1dc853cc8684c12211df1",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-model-root-v1/n32768-g16-off/record.json": "88fff2bff8048508abbe64c6debdd0b4f032621cded55462d260086ca75f530f",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-model-root-v1/n32768-g16-on/record.json": "f8ffd0117a552eff1c2d88ccc30c37b7b2fad1b61a34181802f8ef77bc3bc0f8"
+  },
+  "negative_cli_recipe_sha256": "af3c640c2fc0fd49f687a692c6b334d1782d7d5fe845977d387c99994d3b818e",
+  "actual_cli_fixture_result": {
+    "passed": true,
+    "gpu_executed": false,
+    "model_executed": false,
+    "actual_cli_commands": [
+      {
+        "label": "invalid-cli-0",
+        "argv": [
+          "/usr/bin/python3",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-chunk8192-controller-source-v1/run_root.py",
+          "--input-tokens",
+          "32768",
+          "--chunk",
+          "8192",
+          "--compact",
+          "on"
+        ],
+        "environment": {
+          "PATH": "/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "PYTHONDONTWRITEBYTECODE": "1"
+        },
+        "started_utc": "2026-10-11T15:39:55.875072+00:00",
+        "wall_seconds": 10,
+        "errors": [],
+        "owners": [
+          {
+            "pid": 1212234,
+            "start_ticks": 8195999,
+            "sid": 1212234,
+            "pgid": 1212234
+          }
+        ],
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 81959.996418934,
+        "pid": 1212234,
+        "spawn_return_monotonic": 81959.998236691,
+        "direct_identity": {
+          "pid": 1212234,
+          "state": "R",
+          "ppid": 1212232,
+          "pgid": 1212234,
+          "sid": 1212234,
+          "start_ticks": 8195999,
+          "rss_bytes": 589824
+        },
+        "peak_live_owned_identities": 1,
+        "peak_session_rss_bytes": 16400384,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 2,
+        "finished_utc": "2026-10-11T15:39:56.063644+00:00",
+        "elapsed_seconds": 0.18851995300792623,
+        "logs": {
+          "invalid-cli-0.stdout": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "invalid-cli-0.stderr": {
+            "bytes": 361,
+            "sha256": "1e51a420ad5fa8bf4812c5a6fc8f8b274ea5cf491b41d2633c644f72acd1a9e5"
+          }
+        }
+      },
+      {
+        "label": "invalid-cli-1",
+        "argv": [
+          "/usr/bin/python3",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-chunk8192-controller-source-v1/run_root.py",
+          "--input-tokens",
+          "65536",
+          "--chunk",
+          "6144",
+          "--compact",
+          "on",
+          "--reference",
+          "/tmp/unused-no-open"
+        ],
+        "environment": {
+          "PATH": "/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "PYTHONDONTWRITEBYTECODE": "1"
+        },
+        "started_utc": "2026-10-11T15:39:56.064158+00:00",
+        "wall_seconds": 10,
+        "errors": [],
+        "owners": [
+          {
+            "pid": 1212251,
+            "start_ticks": 8196018,
+            "sid": 1212251,
+            "pgid": 1212251
+          }
+        ],
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 81960.185506437,
+        "pid": 1212251,
+        "spawn_return_monotonic": 81960.187174735,
+        "direct_identity": {
+          "pid": 1212251,
+          "state": "R",
+          "ppid": 1212232,
+          "pgid": 1212251,
+          "sid": 1212251,
+          "start_ticks": 8196018,
+          "rss_bytes": 589824
+        },
+        "peak_live_owned_identities": 1,
+        "peak_session_rss_bytes": 16396288,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 2,
+        "finished_utc": "2026-10-11T15:39:56.275946+00:00",
+        "elapsed_seconds": 0.21173980900493916,
+        "logs": {
+          "invalid-cli-1.stdout": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "invalid-cli-1.stderr": {
+            "bytes": 361,
+            "sha256": "1e51a420ad5fa8bf4812c5a6fc8f8b274ea5cf491b41d2633c644f72acd1a9e5"
+          }
+        }
+      },
+      {
+        "label": "invalid-cli-2",
+        "argv": [
+          "/usr/bin/python3",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-chunk8192-controller-source-v1/run_root.py",
+          "--input-tokens",
+          "32768",
+          "--chunk",
+          "6144",
+          "--compact",
+          "on"
+        ],
+        "environment": {
+          "PATH": "/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "PYTHONDONTWRITEBYTECODE": "1"
+        },
+        "started_utc": "2026-10-11T15:39:56.276556+00:00",
+        "wall_seconds": 10,
+        "errors": [],
+        "owners": [
+          {
+            "pid": 1212260,
+            "start_ticks": 8196039,
+            "sid": 1212260,
+            "pgid": 1212260
+          }
+        ],
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 81960.398026825,
+        "pid": 1212260,
+        "spawn_return_monotonic": 81960.400853658,
+        "direct_identity": {
+          "pid": 1212260,
+          "state": "R",
+          "ppid": 1212232,
+          "pgid": 1212260,
+          "sid": 1212260,
+          "start_ticks": 8196039,
+          "rss_bytes": 458752
+        },
+        "peak_live_owned_identities": 1,
+        "peak_session_rss_bytes": 13905920,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 2,
+        "finished_utc": "2026-10-11T15:39:56.474099+00:00",
+        "elapsed_seconds": 0.1974467980035115,
+        "logs": {
+          "invalid-cli-2.stdout": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "invalid-cli-2.stderr": {
+            "bytes": 318,
+            "sha256": "19c428f75fa3bbb66156aa2eda7e19fdf90da861176980b69d7382b00dfa5e47"
+          }
+        }
+      },
+      {
+        "label": "invalid-cli-3",
+        "argv": [
+          "/usr/bin/python3",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-chunk8192-controller-source-v1/run_root.py",
+          "--input-tokens",
+          "32768",
+          "--chunk",
+          "8192",
+          "--compact",
+          "off",
+          "--reference",
+          "/tmp/unused-no-open"
+        ],
+        "environment": {
+          "PATH": "/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "PYTHONDONTWRITEBYTECODE": "1"
+        },
+        "started_utc": "2026-10-11T15:39:56.474481+00:00",
+        "wall_seconds": 10,
+        "errors": [],
+        "owners": [
+          {
+            "pid": 1212269,
+            "start_ticks": 8196059,
+            "sid": 1212269,
+            "pgid": 1212269
+          }
+        ],
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 81960.595824168,
+        "pid": 1212269,
+        "spawn_return_monotonic": 81960.597606389,
+        "direct_identity": {
+          "pid": 1212269,
+          "state": "R",
+          "ppid": 1212232,
+          "pgid": 1212269,
+          "sid": 1212269,
+          "start_ticks": 8196059,
+          "rss_bytes": 458752
+        },
+        "peak_live_owned_identities": 1,
+        "peak_session_rss_bytes": 14835712,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 2,
+        "finished_utc": "2026-10-11T15:39:56.670848+00:00",
+        "elapsed_seconds": 0.19631653600663412,
+        "logs": {
+          "invalid-cli-3.stdout": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "invalid-cli-3.stderr": {
+            "bytes": 343,
+            "sha256": "a0777cfb65ab95883d9602344c372b53e2d02d3f9f0909acb522bd46e2385220"
+          }
+        }
+      },
+      {
+        "label": "invalid-cli-4",
+        "argv": [
+          "/usr/bin/python3",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-chunk8192-controller-source-v1/run_root.py",
+          "--input-tokens",
+          "65537",
+          "--chunk",
+          "8192",
+          "--compact",
+          "on",
+          "--reference",
+          "/tmp/unused-no-open"
+        ],
+        "environment": {
+          "PATH": "/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "PYTHONDONTWRITEBYTECODE": "1"
+        },
+        "started_utc": "2026-10-11T15:39:56.671427+00:00",
+        "wall_seconds": 10,
+        "errors": [],
+        "owners": [
+          {
+            "pid": 1212280,
+            "start_ticks": 8196079,
+            "sid": 1212280,
+            "pgid": 1212280
+          }
+        ],
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 81960.792835503,
+        "pid": 1212280,
+        "spawn_return_monotonic": 81960.794411027,
+        "direct_identity": {
+          "pid": 1212280,
+          "state": "R",
+          "ppid": 1212232,
+          "pgid": 1212280,
+          "sid": 1212280,
+          "start_ticks": 8196079,
+          "rss_bytes": 458752
+        },
+        "peak_live_owned_identities": 1,
+        "peak_session_rss_bytes": 16420864,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 2,
+        "finished_utc": "2026-10-11T15:39:56.838712+00:00",
+        "elapsed_seconds": 0.1672079280106118,
+        "logs": {
+          "invalid-cli-4.stdout": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "invalid-cli-4.stderr": {
+            "bytes": 356,
+            "sha256": "ab1ba2ef7c28aa35a36d291ccd33bc4755af59d8bc90ffa8a27965eb4ee5eeba"
+          }
+        }
+      },
+      {
+        "label": "invalid-cli-5",
+        "argv": [
+          "/usr/bin/python3",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-chunk8192-controller-source-v1/run_root.py",
+          "--input-tokens",
+          "32768",
+          "--chunk",
+          "8192",
+          "--group",
+          "8",
+          "--compact",
+          "on",
+          "--reference",
+          "/tmp/unused-no-open"
+        ],
+        "environment": {
+          "PATH": "/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "PYTHONDONTWRITEBYTECODE": "1"
+        },
+        "started_utc": "2026-10-11T15:39:56.839139+00:00",
+        "wall_seconds": 10,
+        "errors": [],
+        "owners": [
+          {
+            "pid": 1212284,
+            "start_ticks": 8196096,
+            "sid": 1212284,
+            "pgid": 1212284
+          }
+        ],
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 81960.960483874,
+        "pid": 1212284,
+        "spawn_return_monotonic": 81960.962327349,
+        "direct_identity": {
+          "pid": 1212284,
+          "state": "R",
+          "ppid": 1212232,
+          "pgid": 1212284,
+          "sid": 1212284,
+          "start_ticks": 8196096,
+          "rss_bytes": 458752
+        },
+        "peak_live_owned_identities": 1,
+        "peak_session_rss_bytes": 14663680,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 2,
+        "finished_utc": "2026-10-11T15:39:57.018861+00:00",
+        "elapsed_seconds": 0.17967578799289186,
+        "logs": {
+          "invalid-cli-5.stdout": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "invalid-cli-5.stderr": {
+            "bytes": 335,
+            "sha256": "24e1f4ec4902021cef5bf3567b50bee551b4b8201a43033b8fca8fe0343281f0"
+          }
+        }
+      },
+      {
+        "label": "pending-refused",
+        "argv": [
+          "/usr/bin/python3",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-chunk8192-controller-source-v1/run_root.py",
+          "--input-tokens",
+          "65536",
+          "--chunk",
+          "6144",
+          "--compact",
+          "on",
+          "--qualification",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-compact-moe-chunk8192-controller-source-v1/qualification.pending.json",
+          "--qualification-sha256",
+          "a7c18efab31c43b52468651698e13d947b73956793402aa4728875ec8a1a4b58"
+        ],
+        "environment": {
+          "PATH": "/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "PYTHONDONTWRITEBYTECODE": "1"
+        },
+        "started_utc": "2026-10-11T15:39:57.019530+00:00",
+        "wall_seconds": 10,
+        "errors": [],
+        "owners": [
+          {
+            "pid": 1212293,
+            "start_ticks": 8196114,
+            "sid": 1212293,
+            "pgid": 1212293
+          }
+        ],
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 81961.140884687,
+        "pid": 1212293,
+        "spawn_return_monotonic": 81961.142651429,
+        "direct_identity": {
+          "pid": 1212293,
+          "state": "R",
+          "ppid": 1212232,
+          "pgid": 1212293,
+          "sid": 1212293,
+          "start_ticks": 8196114,
+          "rss_bytes": 458752
+        },
+        "peak_live_owned_identities": 1,
+        "peak_session_rss_bytes": 16089088,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 1,
+        "finished_utc": "2026-10-11T15:39:57.290513+00:00",
+        "elapsed_seconds": 0.2709131890005665,
+        "logs": {
+          "pending-refused.stdout": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "pending-refused.stderr": {
+            "bytes": 720,
+            "sha256": "50c6327a66de0ca638defc2afb64988a90eecbc5e06d6a1ac02eacaae8668791"
+          }
+        }
+      }
+    ]
+  },
+  "finished_utc": "2026-10-11T15:39:57.403432+00:00"
+}

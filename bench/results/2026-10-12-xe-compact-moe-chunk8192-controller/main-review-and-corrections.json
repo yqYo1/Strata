@@ -1,0 +1,50 @@
+{
+  "original_reports_modified": false,
+  "report_full_reads": true,
+  "extra_source_pins": {
+    "src/core/gpu.cpp": "9792966f6b2c84434a1dddafefb3286c3c5fcfa78e23065b455904f9cf6fcfb8",
+    "src/core/device.cpp": "3e7523a2947af7c82d41fc9a7653f4f9aad0fa3cbb062999de19553659e0ec27",
+    "include/strata/core/gpu.hpp": "54b1a10524c9ee0c9b42979d75bd4f775ee0c45da2839d8129c2a2bd3daa552a"
+  },
+  "controller_cpu_actual_pass": true,
+  "admission_actual_pass": true,
+  "gpu_executed": false,
+  "qualification_sha256": "1d077ebe12abcd8e2d5f18c630f06c82a9b9dea17868f66b3836e9f9cecf351e",
+  "cases": [
+    "32768/8192/compact-on versus closed32768/6144/on",
+    "65536/6144/compact-on fresh control",
+    "65536/8192/compact-on versus same-N6144 control"
+  ],
+  "physical8192_fit_unmeasured": true,
+  "full262144_qualified": false,
+  "restore_qualified": false,
+  "broad_quality_qualified": false,
+  "performance_eligible": false,
+  "compact_default": "off",
+  "route_work": {
+    "logical_bytes_not_physical_traffic": true,
+    "zero_route_full_stream_copy_bytes": 16473728000,
+    "five_full_bank_bytes": 251461632000,
+    "corrected_percent_of_five_full_banks": 6.551189487229607,
+    "correction": "R151 3.25% of five whole512-bank passes is arithmetically incorrect; it is about6.55%. Its6.59% of nonresident passes uses a different denominator."
+  },
+  "bank_reference": {
+    "unimplemented": true,
+    "correction": "39e was pushed to yqYo1/Strata. Original MistVVK/XeStrata commit links in R151 do not establish remote availability.",
+    "immutable_url": "https://github.com/yqYo1/Strata/tree/39e395a103af36323262cdc0dbaea27cba81f3e4"
+  },
+  "quality": {
+    "existing_native_oracle_follow_dump_can_supply_full_rows_conditionally": true,
+    "no_new_engine_hook_required_for_mtp_off": true,
+    "caller_validation_unimplemented": true,
+    "correction": "R152 EOS statement crosses paths: standalone native generation at generate.cpp10805 checks EOS only when o.stop_eos is true. Defaultfalse does not truncate this loop for an EOS ID. Other serve/batch checks are distinct.",
+    "mtp4_qualified": false,
+    "full_distribution_runtime_unmeasured": true
+  },
+  "timing": {
+    "current_phases_are_adjacent_compute_marker_spans": true,
+    "not_per_kernel_or_H2D_service": true,
+    "current_presence_value_zero_enables": true,
+    "proposed_observer_unimplemented": true
+  }
+}
