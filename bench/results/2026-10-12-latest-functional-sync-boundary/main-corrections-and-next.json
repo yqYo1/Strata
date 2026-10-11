@@ -1,0 +1,28 @@
+{
+  "original_reports_modified": false,
+  "engine_revision": "39e395a103af36323262cdc0dbaea27cba81f3e4",
+  "functional_revision": "69495a01443cb1fef41706b51514f5deb6f8a716",
+  "official_pristine_revision": "7695859aa13afb248bdb4d36f9b2e95707db079d",
+  "xe_pristine_revision": "da3d426079019daa6e01388d03b0d94ae67070b7",
+  "corrections": {
+    "R167_R168_precision_hash": "Both reports omit one c in the prefill hash. Actual unchanged qualified prefill SHA is c7a427dc58fd5f03732b4a807274f2cc5d406cd2f6c39d64a620c0cd3518cc67; original report spelling is preserved.",
+    "R167_AVX2_threshold": "Official source requires !cpu_avx512_ok(), and IQ3S opt-in is presence-based with gather-setting!=0 plus cpu_gather_fast(). The report wording AVX512 enabled/=1 is not the complete actual predicate. Current local one-token policy remains unchanged.",
+    "R167_context_scope": "Current quiet results are cold16-output samples after64K input. A cold16K prompt in the source-only proposal is not the measured scope and does not meet the user minimum32K comparison rule.",
+    "R168_SYCL_NaN": "Actual official f332 commit explicitly excludes sycl/. Shared server handling can be ported as a protocol consumer; that does not claim a working SYCL finite-logit guard. A new SYCL guard needs its own validated implementation, rather than treating it as an already supplied upstream SYCL feature.",
+    "R168_process": "Stdlib decoding of a committed research archive caused no project/runtime/GPU execution; agent disclosed it. Agent twice wrote reports directly into WS instead of private R; originals are kept and committed here, and future tasks require private R only.",
+    "health_controller_review": "Pending source-only controller removes debug logs and starts by collecting the entire boot journal under1MiB per-command cap, while a current historical kernel-before was2060496B. These known admission/logging issues must be resolved before execution; no GPU run is qualified.",
+    "fetch_v1": "Absolute ghq path was missing from restricted PATH; first command127, no fetch/create mutation.",
+    "fetch_v2": "Fetch/import/create commands all succeeded. Final equality check rejected expected newly untracked nested worktree entries. Verificationv3 separately confirms unchanged rootHEAD/tracked diff, only expected entries and all three clean pinned WTs; original v2 FAILED retained."
+  },
+  "official_independent_settings_optimized": false,
+  "latest_pristine_long_input_measured": false,
+  "full262144_qualified": false,
+  "restore_qualified": false,
+  "broad_quality_qualified": false,
+  "next": [
+    "Resolve unitrace logging/journal cap issues; finish Main21file review and CPU/admission before health-only GPU gate.",
+    "Integrate complete logit_bias and remaining mandatory server/API/setup features; retain tested inference safety.",
+    "Independently select official prefill/decode settings and validate>=32K/decode3+, if pristine safe configuration can be established.",
+    "Review retired successful raw logs after compact evidence verification; no cleanup in this boundary."
+  ]
+}

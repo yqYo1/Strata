@@ -28,3 +28,5 @@ XeStrata 更新版の評価後、本家 v0.1.42 の比較を確定する前に�
 追加の[R140 source安全監査](../2026-10-11-xe-quiet32k-balanced-campaign/research/research-official-v0142-long-prefill-source-identity-safety-admission-round140-v1.txt.lossless.json)では、本家0.1.42のtracked sourceを確認した。現在のHOST_USM/ATOMIC_HOST_USM capabilityでは、長いprefillのstagerに残るvolatileポーリングを設定だけで避けられないため、未修正本家の長入力は未実行。新コンパイラを用意したことはこのプロトコルを修正した証拠にならず、設定探索完了とも扱わない。
 
 [R141のphase別設定探索案](../2026-10-11-xe-compact-moe-scratch-source-qualification/research/research-official-xe-phase-separated-parameter-search-contract-round141-v1.txt)を追加した。prefillの固定4096/6144/8192と標準auto方針、decodeの独立した設定選択と選択後の3回以上の検証を区別する。これは未実行の選定案であり、本家の最適化完了ではない。
+
+2026-10-12 の更新取得では、本家 v0.1.43 (`7695859aa13afb248bdb4d36f9b2e95707db079d`) と XeStrata xe0.1.42 (`da3d426079019daa6e01388d03b0d94ae67070b7`) の未変更 worktree を分けて用意した。これは取得・ソース確認であり、新しい長入力測定や本家単体の最適設定探索ではない。取り込み用には本家の要求全体の時間・トークン集計3修正だけを先に移し、CPU32テストと全指定lintの新規指摘なしを確認した。推論の本家全体を取り込んだ版とは扱わない。独立した設定探索と選択後の検証は未完了のまま。取得時の失敗と別途の検証、最新調査は [更新境界の記録](../2026-10-12-latest-functional-sync-boundary/main-corrections-and-next.json) に保存した。

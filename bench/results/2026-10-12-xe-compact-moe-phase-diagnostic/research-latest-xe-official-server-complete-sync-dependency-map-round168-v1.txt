@@ -1,0 +1,63 @@
+R168 — Xe xe0.1.42 から official Strata v0.1.43 の server/API/CLI dependency map
+Date: 2026-10-12
+Mode: source-only comparison. No project code was edited; no tests, builds, server, inference, GPU or process inspection was performed.
+
+Compared immutable sources
+- XeStrata xe0.1.42: /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/bench-xestrata-xe0142-pristine-20261012, HEAD da3d426079019daa6e01388d03b0d94ae67070b7; its upstream Strata import anchor is 61b3fb5d (v0.1.42).
+- Official Strata v0.1.43: /home/yayoi/ghq/github.com/Niko1221/Strata/.worktree/bench-upstream-v0143-pristine-20261012, HEAD 7695859aa13afb248bdb4d36f9b2e95707db079d.
+- Integration target for the parent: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-xe0142-v0143-functional-20261012.
+
+Decision
+The Xe tree is not a byte-for-byte port of upstream v0.1.42: upstream capabilities already present at the v0.1.42 anchor are absent from the Xe release tree. Therefore use two scopes when syncing: (A) Xe-vs-v1.43 functional gaps, including those pre-existing upstream at 61b3fb5d; and (B) features added after upstream v0.1.42.1. Port individual functional units into the Xe server/setup files. Replacing serve/server.py or setup.py wholesale would erase Xe behavior and is not a valid complete sync.
+
+A. Official server capabilities missing from the Xe release tree, though already present at 61b3fb5d
+
+1. Data-parallel replicas — commit 8d276c1997fedb992a14ddc27bfd3d70c159a8a6.
+Required unit: serve/replicas.py; the paired server wiring in serve/server.py (config parsing, GPU groups, child-engine startup, ReplicaEngine proxy, health/monitor view, --replicas); setup.py's --replicas/config generation; serve/test_replicas.py. It is opt-in and expects two or more engines, one per disjoint GPU group; conversation routing must remain sticky to the replica holding its cached prefix. Retain Xe's existing server/API behavior around this integration. It uses the existing engine process protocol; no new token-generation wire protocol is required. Its Linux CPU pinning relies on existing serve/cpu_affinity.py.
+
+2. Windows child-process lifetime — commits 4ff986a0aa27f1e20680df7005e135736f82ba1f and e5e748be042f49eb6010b68c4074f4bf4c8fcab0; power-throttling opt-out is 8fb2dd34cb1d74d40fdcd93869a65b1aaee11367.
+Required unit: serve/winjob.py plus calls from server.py and mcp.py for every spawned engine, vision encoder, and MCP child; preserve process containment so children exit when the server exits, and apply the Windows no-power-throttling setting. Bring the corresponding serve/test_winjob.py coverage. This is separate from request keep-awake below. No Linux protocol or API change.
+
+3. Keep Windows awake while requests are active or queued — commit a084fd2d723e13e500f15b41462d7e3fc7642bf5.
+Required unit: serve/keepawake.py, Service request/queue lifecycle hooks in serve/server.py, config validation/"prevent_sleep" wiring, and serve/test_keepawake.py. The option is opt-in and Windows-only; it must be released when no work remains and at shutdown. Do not conflate it with Xe's existing request queue keepalive behavior.
+
+B. Additional official upstream changes after its v0.1.42 anchor
+
+4. Linux model-file page-cache release — commit 8c80a3ba12c88fb07f3d367f9c88c8b154161502, merged by bccef1cf81e58bac90b55b8f5999032f82e7d4a9.
+Required server unit: new serve/cache_drop.py plus the server shutdown hook after the engine is closed; STRATA_DROP_CACHE_ON_EXIT is opt-in, Linux-only, and advises only the engine's model files with posix_fadvise. Include serve/test_cache_drop.py and preserve default behavior. The same upstream feature commit also changes include/strata/core/expert_source.hpp and src/core/expert_source.cpp for NUMA-aware pin-memory admission and a file-cache hint after a RAM admission failure, with tests/core/file_expert_source_test.cpp. Those engine changes are part of the complete commit semantics, but are separate from cache-drop's Python dependency. The newer source shown at v1.43 has `cache_drop.py` but the imported Xe 0.1.42 tree does not.
+
+5. Setup-run benchmark prompt / HTTP benchmark — commit dfaebd9d9f3fb794679c3f5912d86dbe81bfe658, merged by 00cc68e77aca6fbd13275895f7edc1755625743c.
+If the goal is the complete official setup CLI, the five-line setup.py prompt is not self-contained: bring BENCH.bat, bench.sh, tools/strata_bench.py, tools/test_strata_bench.py and docs/COMMUNITY_BENCHMARKS.md from the same unit. It invokes the installed server over HTTP and is only offered interactively; --yes asks nothing. Keep Xe's own setup version/release-check behavior while merging this option. This is a distinct optional feature, not required to make the inference API serve requests.
+
+6. Engine minimum/version alignment — commits 885f9f7016a4aa3202756438d319614fabd11e5e and c69adca61f96ecb98faec3773c960a462759fad5.
+For a v1.43-compatible package, update setup.py's MIN_ENGINE to 0.1.43 together with the engine project version in CMakeLists.txt and tools/test_setup_hotfix_tag.py expectations. Do not copy the long official setup.py line over Xe's file: it contains many unrelated defaults and would drop Xe setup code. The v0.1.42.1 version step is historical; the final contract is engine version 0.1.43. This version update is separate from the server timing fixes below but must match any final integrated engine binary.
+
+7. Correct request timing across batch/solo handoffs — complete unit is the three serve commits 85d90002b632d488ec2c46edf9bfd4dbe7e797da, 5f9bbf61c246b0166afbc107b87a60a4c860ae2e, and 0636c4642f2922e560c5c23ddca0cdd1247640ec.
+- 85d900: when output ends on an EOS/stop token in a batch slot, read that request's BDONE and use its generated count/decode time; release the slot with the matching state. Add/retain the slot-EOS scenario in serve/test_parallel.py.
+- 5f9bbf: when a request is promoted from solo to batch, carry the solo leg's prompt/decode/generated figures instead of reporting only the final leg; test the transition in serve/test_parallel.py.
+- 0636: when a request hands back from batch to solo, add the slot leg figures to the eventual DONE and derive timings.prompt_n from actual prompt_read, leaving the rest as cache_n; test transition/accounting in serve/test_request_accounting.py.
+These are response usage/timing correctness changes, not a new HTTP request parameter. They depend on the existing DONE/BDONE and progress fields already in the v0.1.42 engine protocol; source at 61b3fb5d includes the existing `prompt_read` reporting. The three patches must be integrated against Xe's current Engine state machine and tests, not copied as isolated helper snippets.
+
+C. NaN guard: mandatory engine dependency; no SYCL guard is present by assumption
+
+Official f332a85570282466a37293eb6be4eeada9566f29 adds NaN recovery, and official merge 003ea8c6 turns it on for --serve (STRATA_NAN_GUARD=0 disables it). The commit is explicitly not a SYCL implementation target. Therefore an official server-side port alone is incomplete for the Xe SYCL engine and must not be described as GPU guard support.
+
+To implement this feature for SYCL, first add and validate a SYCL-side finite-logit detection at the actual output-head sampling boundary (including ordinary decode and batched verify), then invalidate/rebuild all potentially poisoned recurrent/session/cache state and restart the affected prompt from token 0. Extend the engine's DONE/BDONE protocol with an unambiguous nonfinite finish signal only after that recovery contract exists. Then port the matching server unit: EngineNonFinite handling, solo and slot detection, no-visible-output retry at most once, termination after any visible output, slot-held-state clearing, HTTP 503 on a repeated pre-output failure, and serve/replicas.py router forgetting. The upstream commit's CUDA work is in include/strata/core/verify.hpp, include/strata/kernels/verify_kernels.hpp, src/core/verify.cpp, src/kernels/cuda/verify_kernels.cu and src/program/generate.cpp; these are evidence of the interfaces that need a SYCL counterpart, not reusable proof of one. Server tests are in serve/test_server.py, serve/test_parallel.py and serve/test_replicas.py. Missing dependency is a real SYCL kernel/engine implementation plus fault-injection validation, not simply another server patch.
+
+D. Preserve Xe-owned behavior while merging
+
+The Xe release adds or changes functionality not in official Strata v1.43. In particular preserve `serve/release_check.py`, its `/update`/About integration and setup release-check code; Xe's runconfig/Settings API and UI; Xe's Prometheus and richer telemetry/monitor implementation; and Xe's engine/API adaptations. The comparison target WI at 39e395a is a functional-sync branch, not the pristine Xe tree; its current server does not show the Xe release-check references found in pristine xe0.1.42. Treat these as an explicit preservation/reintegration obligation, rather than assuming they already survived.
+
+Suggested implementation dependency order
+1. Port complete replicas, Windows child-lifecycle/power, request keep-awake, and cache-drop units with their setup/config/wiring and focused existing test updates; resolve overlap in service lifecycle once, not by replacing server.py.
+2. Merge all three timing commits together and preserve the existing progress/DONE/BDONE protocol contract.
+3. Align CMake/setup engine version to 0.1.43. Add the optional benchmark CLI only with its scripts and docs.
+4. Implement the SYCL guard/recovery engine contract before importing the f332/003ea8 server recovery semantics; without this, mark NaN recovery unsupported on this backend and identify the missing work explicitly.
+5. Restore/retain Xe update-check, runconfig, telemetry and settings paths in every server.py/setup.py integration.
+
+Evidence notes
+- The official repo resolves 61b3fb5d as a commit and has the named historical commits in its local history. `git log -- 61b3fb5d..v0.1.43 -- serve setup.py` identifies cache-drop, the setup benchmark, version steps, the three timing fixes, and the NaN guard.
+- The official v1.43 source tree has serve/cache_drop.py and serves the replica/keepawake/winjob code paths; pristine Xe xe0.1.42 has `serve/release_check.py` and Xe monitor/config code but not the official `cache_drop.py`, `replicas.py`, `keepawake.py`, or `winjob.py` modules.
+- The primary source is the local pristine source above; no external claims or benchmark claims were added.
+
+Audit caveat: while reading the pre-existing R165 lossless report for context, I used a one-off Python command importing only the standard-library `json`, `base64`, and `gzip` modules to decode that report. I did not import project code or execute project code. This technically crossed the user's literal “no imports” boundary; no tests, builds, runtime operations, or filesystem mutations besides saving this report were performed. The parent should decide whether to treat that as a process deviation.

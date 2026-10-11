@@ -1,0 +1,101 @@
+# Round 168 — minimum numerical-quality benchmark for compact long Prefill
+
+Date: 2026-10-12 (Asia/Tokyo). Read-only source, closed-report/registry, current-fixture reference, and public-source review. No imports, tests, build, runtime, process/GPU query, Git mutation, cleanup, source edit, or benchmark execution was performed. This report designs a future quality comparison; it does not report a new run, quality result, performance result, adoption, or full-context qualification.
+
+## Finding and scope boundary
+
+The existing diagnostic success is narrow. The closed compact-mode reports show exact 16 output IDs and the selected log-probability top five (`LP5`) for 64-token, 2,049-token, 32,768-token and 65,536-token requests. The 64K chunk pair also had identical 16 IDs and displayed LP5 at T=6144 and T=8192. Its published notes explicitly say these checks do not establish broad quality, a full distribution, or physical use of all 262,144 context cells. They are useful correctness/serving gates, not a quality certificate.
+
+There are two distinct questions hidden in “compact FP16”:
+
+1. **Does compact scratch/grouping preserve the current model output?** `STRATA_PREFILL_COMPACT_MOE_SCRATCH` changes the fallback MoE workspace from route-sized `T*K` rows to `T` rows and partitions already ordered expert rows into groups capped at `T`. Its on/off comparison is the direct existing-engine test.
+2. **What is the quality effect of the FP16 SwiGLU bridge itself?** The current fallback already stores the SwiGLU result in `uint16_t Hh` in both compact-off and compact-on modes. Turning compact scratch on does not add that cast. The compact toggle alone therefore cannot isolate an FP32→FP16 `Hh` precision effect. No current full-model FP32-`Hh` arm was found in this source audit.
+
+The smallest defensible first experiment uses the existing FP32 output/logit oracle to assess compact layout and long-prefill chunk repartition, while treating the FP16 `Hh` cast as common-mode. A direct claim about FP16 `Hh` needs a separately implemented and validated FP32-`Hh` counterfactual (or a valid per-layer reference capture plus a tested FP32-input down projection). It cannot be answered by comparing compact ON to OFF alone.
+
+## Current source contract
+
+The task-pinned source is XeStrata worktree `/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/perf-xe-prefill-row-bounded-scratch-20261011`, HEAD `39e395a103af36323262cdc0dbaea27cba81f3e4`. Relevant SHA-256 pins:
+
+- `src/prefill/prefill.cpp`: `c7a427dc58fd5f03732b4a807274f2cc5d406cd2f6c39d64a620c0d3518cc67`
+- `src/prefill/kernels.cpp`: `0e89bbb83220ad85257d17fc6b98f2332a5c17e8d2832937a98a1e3ae300ab81`
+- `include/strata/kernels/f16_bits.hpp`: `3715a20a8d464738fb662712157015c5b124615adb0512347b37589bf9103979`
+- `include/strata/prefill/compact_moe.hpp`: `433897666aa6c93d645ead09eba04d872e67bdbce3b7aa232f553168595fac72`
+- `src/program/generate.cpp`: `c9b60ef079694302dfa1f8099ddffd5375d7dae503f6edec454c1d7de3d941ee`
+- `src/core/verify.cpp`: `44d8667e973c44d889afac2387cf7686a1b3785d31fa22f22cc5c7097927e27a`
+
+Compact mode is effective only when requested, the MMQ plan has no active layer and takes the FP16 fallback, `STRATA_DBG_NAN` is absent, and the compute queue is in-order (`prefill.cpp:627-679`). Record those effective conditions in every arm; merely setting the environment option does not prove that the compact route ran.
+
+In the compact branch, gate/up GEMM writes float `GU`; `swiglu_interleaved` computes `gate/(1+exp(-gate))*up` in float and writes `Hh` as `uint16_t` through `hf_sat` (`prefill.cpp:2176-2200`, `kernels.cpp:48-54, ~994-999`). The conversion helper performs round-to-nearest-even, retains FP16 subnormals through its representable range, maps finite overflow to infinity on its own, and preserves NaN/Inf (`f16_bits.hpp:15-49`). `hf_sat` first clamps finite SwiGLU values to [-65504,65504], so the current `Hh` writer deliberately prevents finite overflow there while allowing NaN to remain NaN. The down GEMM reads this half representation and writes FP32 `Dm`; the final combiner walks the ten router ranks in order, performs `sycl::fma(weight, Dm, accumulator)` into FP32, then adds the shared branch (`kernels.cpp:1000-1008`). Thus the candidate is not “FP16 MoE accumulation”: it has a rounded/saturated intermediate `Hh`, FP32 down output and FP32 route-weighted accumulation.
+
+The compact group helper validates the entire route window, keeps the existing expert order/slot mapping, and makes consecutive expert groups with total routed rows at most T (`compact_moe.hpp`). Changing T changes these group and GEMM row shapes. Compact on/off and T6144/T8192 may therefore change the backend path, grouping, or reduction layout even when the mathematical rows and `Hh` dtype are common. The source audit does not predict the resulting error or its direction.
+
+## How this affects a long prompt
+
+- **Repeated half rounding at every MoE layer.** Each routed row crosses the gate/up float GEMM, nonlinear SwiGLU, FP16 saturation/rounding, then the down projection. Small differences in `Hh` perturb FP32 `Dm`; the ten route-rank FMA sum creates a new FP32 residual for the next layer. A token can change routing/top-10 at a later layer if router scores are close. Compare route IDs/weights and layer outputs where a diagnostic capture exists, but the primary end-to-end gate must score logits for every fixed target.
+- **Chunk seam and persistent state.** `Prefill::run` handles all layers for one chunk, then carries session state into the next chunk. GDN convolution/recurrent state, QSA K/V/indexer storage and absolute query positions, and PLE history span chunk boundaries. Changing T from 6144 to 8192 changes the exact split/tail and can also select different batched/tiled kernel shapes. These are not fixed by testing the same 16 generated tokens after a short or 64K prompt. Use the same prompt ID array and compare full fixed-target rows at matched absolute positions.
+- **MoE grouping and accumulation.** The `T` row cap changes how many expert rows are packed in each compact group. Router assignments determine per-expert M dimensions; top-10 changes alter which expert rows feed the FP32 combine. Even though the combine itself is FP32 and rank ordered, a changed group shape can change an earlier GEMM result. Capture per-layer route count/IDs, router weights and first-divergent outputs if the existing diagnostic path supports them; don't infer equivalence from final IDs alone.
+- **Context and content coverage.** A 65,536-ID prompt covers the current long-prefill fixture and chunk path, but is only one quarter of the configured 262,144 cells. Repeating the same tokens to create 256K would overrepresent a single distribution and is not a replacement for held-out long documents. Prepare a token-ID fixture assembled from distinct, representative held-out documents, retain its exact bytes/hash, and include retrieval keys placed at early/middle/late positions plus coding/instruction material.
+
+## Minimal staged benchmark
+
+Use the existing current 64K task fixture reference: `clean64k-task-fixture-root-r3/coding-review-65536-tokens.txt`, 65,536 IDs, SHA-256 `5284d8fa53d1ef28f6ba916a629faf901c890bc0c669bf986ee04ed72aa2c3ff`. Keep the model/pack, token IDs, sampler, KV/context mode, route/cache/native-dequant/PLE settings, device/runtime/compiler/binary, and every effective prefill branch fixed within each pair. Use fresh session/model state per invocation and the standalone native fixed-reference `--spec-oracle FILE --spec-follow FILE --spec 2 --max-new N --dump-logits PATH` route, with the same file for oracle and follow, MTP omitted, greedy/default sampler, no `--stop-eos`, no `--prefill-until`, and fixed explicit `--prefill` (never auto). The caller must prevalidate exact equal oracle/follow file contents and hashes, N valid IDs, every ID in `[0,n_vocab)`, and an exact non-EOS continuation. The binary does not fail closed for all these file conditions.
+
+Choose N=256 for the first broad distributional pass. At P=65,536, the 256 emitted predictions remain well inside the configured context. The native prompt path batches P-1 prompt IDs, then the first verifier row processes the final prompt token; fixed-prefix rows correspond to predictor positions `P-1 ... P+N-2`. The same IDs are fed as references, so a greedy output never changes the later conditioning prefix. Ensure the dump declares exactly N full float32 vocabulary rows and has the exact expected `8 + 4*N*n_vocab` bytes; check header, finiteness, coverage and target IDs before interpreting metrics. Full logits are essential: selected LP5 does not report tail mass and cannot produce KL.
+
+The smallest matrix that separately estimates compact-toggle and chunk effects at long Prefill is a 2x2 with two exact repeats per cell (8 invocations):
+
+| Compact scratch | T=6144 | T=8192 |
+|---|---|---|
+| OFF control | 2 x A/A | 2 x A/A |
+| ON candidate | 2 x A/A | 2 x A/A |
+
+Compare ON/OFF within each fixed T to isolate compact layout at that chunk. Compare T6144/T8192 within each fixed compact setting to isolate the chunk-boundary/shape effect. Keep the two repeats to estimate same-condition noise. If exact A/A output-dump determinism is already demonstrated for this precise binary/device/config, a first triage may reuse the existing A/A and use one paired comparison, but keep two independent runs for any quality claim. The phase observer and earlier diagnostic receipts do not establish full-logit A/A determinism.
+
+At P=65,536 the existing work makes the expected batch geometry concrete: T6144 has ten complete 6,144-row chunks and a 4,095-row tail in the P-1 batched prefix; T8192 has seven complete 8,192-row chunks and an 8,191-row tail. The final prompt ID is still processed by the verifier in both cases. Record effective chunk, actual `n_batched`, tail, compact/MMQ plan, host/GPU expert route, and all settings from the receipt rather than inferring them from requested flags.
+
+After the first gate, the minimum support for a general long-context statement adds fresh held-out 32K and 128K/near-256K prompt-ID cohorts and a task suite. Report each context separately. Do not average away an isolated late-position regression. The current checked-in/published evidence I inspected names a 64K fixture; no matching 128K/256K quality ID fixture or result was established in this read-only pass.
+
+## Metrics and proposed acceptance rule
+
+For every aligned fixed-target row, compute from full logits:
+
+- stable target-token log-probability and NLL delta in nats/token;
+- full-vocabulary forward and reverse KL or Jensen-Shannon divergence;
+- top-1 agreement, target rank, top-1/top-2 margin change, top-10 overlap and target coverage;
+- finite-row rate and per-position distributions (mean, median, 95th/99th percentile and worst), grouped by document and absolute context-position bin.
+
+Also report free-running exact generated IDs and first divergence position as a secondary behavioral field, never as the only metric. A tiny distribution shift can flip an argmax near a decision boundary; conversely identical top IDs can hide substantial changes in non-top-five probability mass. Repeat the unmodified A arm to estimate numerical/system noise and use paired document/token bootstrap intervals; keep code test pass/fail, retrieval exactness/recall by key position, and instruction/format tests as separate outcomes.
+
+Hard gates: all arms have identical input/output ID and source/config provenance except the matrix factor; exactly N full-vocabulary rows cover contiguous expected predictor positions; each output row and metric is finite; no invalid/missing/duplicate references; compact ON was truly enabled; and the intended context/tail ran. Any failed coverage, NaN/Inf or route/data-integrity check fails that comparison. These gates establish a valid measurement, not that a nonzero quality change is acceptable.
+
+No reviewed Strata report defines an approved numerical “near-zero” allowance. For a concrete predeclared first-pass rule, propose (owner may tighten before results are opened):
+
+- candidate-vs-control mean paired NLL increase no more than **0.01 nat/token**, with the upper 95% paired-bootstrap confidence bound also <=0.01;
+- 99th percentile per-token NLL increase no more than **0.10 nat**;
+- mean token-distribution JS no more than **1e-4 nat**;
+- top-1 agreement at least **99.9%** across all fixed-target rows, with no context bin below **99%**;
+- held-out code pass rate and retrieval exact-match/recall each decline by no more than **1 absolute percentage point**, with no missed designated late-position key and no changed structured-output validity.
+
+Freeze these thresholds and corpus before candidate evaluation. Compare each candidate's paired interval to the measured A/A interval as well; a candidate failing either the predeclared margin or showing a reproducible effect beyond A/A does not pass. These are proposed decision limits, not limits approved by earlier receipts and not measured quality results. If an owner does not accept them, publish measured deltas and leave the adoption decision unresolved rather than selecting a looser margin after seeing results. A direct FP16-Hh claim additionally requires an FP32-Hh control; the 2x2 compact/chunk matrix cannot pass or fail that distinct precision claim.
+
+## What the source can and cannot prove about exactly 256K
+
+Normal generation admission uses `context_bounds::admission(max_context, prompt, outputs)`, equivalent to a positive output count with `prompt + outputs <= max_context` (`generate.cpp:2760-2763, 3464-3468`; `context_bounds.hpp:17-20`). The ordinary fixed-logit route therefore does not provide an N>0 row whose final predictor position is the final physical cell `262143`; for exact end-of-capacity quality, a separately bounded terminal-head/no-following-token diagnostic is needed. The source already has a distinct `full_context_probe` mode, whose design fills all 262,144 IDs through production `Prefill::run` and exits before verifier/sampler. That can test full-cell Prefill/state/lifecycle, but it emits no next-token distribution and is not a quality score. The current task's exact 64K teacher-forced score or any near-256K regular score must not be described as proof of a full 262,144-position quality run. Exact last-cell execution, resulting full state/KV integrity and restore remain a separate admission gate.
+
+## External implementation and research comparison
+
+These sources show how other implementations separate operand type, accumulation type, output storage type, and quality measurement. None supplies a quality allowance for this exact Strata model or the current `Hh` tensor.
+
+- **vLLM official fused MoE source, v0.14.0.** Its Triton path explicitly keeps an FP32 accumulator, applies router weighting in FP32, then casts once to the configured compute/output type before the store. That is a concrete fused output boundary; Strata's current fallback instead casts SwiGLU `Hh` between gate/up and down, then leaves `Dm` and rank combine FP32. It is a design comparator, not an apples-to-apples quality test: [vLLM fused MoE source](https://docs.vllm.ai/en/v0.14.0/api/vllm/model_executor/layers/fused_moe/fused_moe/).
+- **SGLang Triton MoE source.** The current source initializes the tile accumulator as FP32, loops over K, and documents conversion back to FP16 after that loop. This supports recording both accumulation and store dtype in a candidate report; its fused kernels, weights, GPU path and model differ: [SGLang fused MoE Triton kernels](https://github.com/sgl-project/sglang/blob/main/python/sglang/kernels/ops/moe/fused_moe_triton_kernels.py).
+- **llama.cpp optional expert kernel.** The inspected `ggml-et` `mul_mat_id_f32` variant requires F32 activations and F32 output even when expert weights are F16/quantized. This is an implementation choice for that experimental backend, not a statement about every llama.cpp CPU/CUDA/Vulkan path: [llama.cpp `mul_mat_id_f32.c`](https://github.com/ggml-org/llama.cpp/blob/master/ggml/src/ggml-et/et-kernels/src/mul_mat_id_f32.c).
+- **Official numerical background.** The NVIDIA mixed-precision guide describes FP16's 5-bit exponent/10-bit fraction, FP32-accumulated Tensor Core products, and conversion to FP16 before memory store. Its accuracy results are training workloads with specific loss scaling/master weights; it does not prove inference quality of a repeatedly reused MoE activation: [NVIDIA Mixed-Precision Training guide](https://developer.nvidia.com/blog/?p=8452). The original Micikevicius et al. paper likewise studies training with FP16 weights/activations/gradients and additional handling for range loss, not Qwen3.8 inference-storage ablation: [arXiv:1710.03740](https://arxiv.org/abs/1710.03740).
+- **Original inference-path study.** Chodavarapu & Xu compare full-vocabulary distributions for fixed inputs and show how an FP16 cache/recompute execution-order difference can change greedy token trajectories on three other open models. This supports measuring aligned distributions and decision-boundary-sensitive token flips, but studies KV-state/cache differences, not MoE Hh storage or long prompt chunking in this model: [arXiv:2604.15409](https://arxiv.org/abs/2604.15409).
+- **Personal blog and personal GitHub implementation.** Arganzheng's floating-point post illustrates ULP/rounding using a BF16 weight update; its optimizer examples are not forward-activation error bounds. Nixabe's `llmcuda-rs` benchmark notes describe FP16 inputs/dequantized weights accumulated into FP32 and report full-logit cosine/max-absolute comparisons against an INT8-activation path at one 512-token prompt; it is one author's different Qwen3.8-27B engine/model and does not test this MoE Hh boundary. They are useful implementation/measurement examples, not transferable quality guarantees: [Arganzheng's mixed-precision post](https://arganzheng.life/floating-point-formats-and-mixed-precision.html), [llmcuda-rs benchmark notes](https://github.com/nixabe/llmcuda-rs/blob/main/docs/BENCHMARKS.md).
+
+Together these sources reinforce an evaluation rule, not a prediction: FP32 dot-product accumulation does not undo an explicit low-precision store that a later layer reads. A stable metric requires fixed inputs, full probability distributions, branch/context coverage, A/A noise, and task outcomes for the target checkpoint.
+
+## Reports and registry read
+
+The latest workspace publication inspected is `bench/results/2026-10-12-xe-compact-moe-phase-diagnostic/report-registry-v145.json`; its `research_completed` field is 620 and `measured` is false. Relevant published records inspected were the compact GPU parity `results.json` (v139), 64K/chunk GPU diagnostic `README.md` and `results.json` (v142), phase diagnostic `README.md` (v145), and the lossless research texts for R148/R149/R152/R153/R156 and R289/R296/R299. R289/R299's prior literature discussion was not repeated as a claim about this benchmark; this report adds the source-specific fact that `Hh` FP16 is common to compact ON/OFF and reframes the experiment as separate compact, chunk and precision questions. No private active run receipt was opened.
