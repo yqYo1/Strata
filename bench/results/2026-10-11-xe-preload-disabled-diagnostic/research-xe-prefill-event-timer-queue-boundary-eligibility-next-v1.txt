@@ -1,0 +1,35 @@
+# What the existing prefill event timer can and cannot attribute
+
+Read-only audit — 2026-10-11
+
+## Scope and source identity
+
+Read the immutable WX source at commit `0740b43488d812117f021ccbe4bd0e15d223f955` (`src/prefill/prefill.cpp`, SHA-256 `c5cfa727302d334e2f6a8aaad8c1bf59e7d581dd8c2cec2af0d031faf807272d`; timer at lines 1095-1183 and report at 2921-2940), its `src/core/gpu.cpp` event wrappers (331-382), the prior event-timer proposal `research-xe-32k-exposed-prefill-phase-next-v1.txt`, and closed 2049-token OFF/ON receipts. The active 32768-token root was not read. No GPU, build, test, profiler, service, source edit, or Git mutation occurred.
+
+## Existing receipt answers the eligibility question
+
+The prior 32K proposal already recommends enabling `STRATA_PREFILL_TIMING=1` on a matched OFF/ON pair, but its scope needs to be kept narrow. In the closed N=2049 G16 receipts, `timer_overhead.timing_enabled=false` and `overhead=null` in both arms; the timer was absent from their diagnostic environment and neither receipt has phase measurements. They are both complete strict diagnostic PASSes, but `performance_eligible=false`; their prefill walls (20,817.0 and 21,065.9 ms) cannot answer the timing question. Their source configuration had `STRATA_PREFILL_ISSUER=0` (inline issue), ring 8, and native-batch OFF/ON. They are not evidence for threaded-issuer timing or a quiet speed result.
+
+For the 32K pair, the useful output is an instrumented diagnostic pair from the exact pinned source and binary with the timer actually enabled and all other inputs/settings held fixed. Record the timer's own phase line, host timing line, marker/fold overhead, and the strict receipt's completion/health/kernel/fault gates. Treat it as a compute-stream dependency diagnosis only; it cannot certify a speedup. The pre-existing 32K receipts do not need to be rerun to establish that their timer was off.
+
+## Queue/event semantics
+
+`STRATA_PREFILL_TIMING` is presence-based (`getenv(...) != nullptr`), so even the string `0` enables it. `mark(phase, cs)` records a timing event on the compute stream, with no explicit synchronization. The measured interval is the difference between adjacent events' command-end timestamps, charged to the phase of the earlier marker. The timer folds after the MoE host sync at 1866-67 and at the final compute-stream sync (2916-22), retaining the last event to continue the interval sequence. Thus the buckets partition the marked compute-stream timeline across folds; they are not independently measured kernel durations and their percentages are not fractions of request wall time.
+
+There are two relevant streams: compute `m.cs` and copy `m.copy`. The timer records no event on the copy stream. Its `wait copy` bucket is exposed compute-queue delay around marked dependencies, not the full DMA interval. For the threaded issuer, the marker can be queued before the host's `wait_issued(k)` returns; the next compute-stream event is queued after it returns, so host-side issue lag can appear as compute-queue idle time. With `STRATA_PREFILL_ISSUER=0`, the producer work is inline; that is a different queue boundary. Even when copy and compute overlap, the timer provides no copy-engine timeline to quantify that overlap.
+
+The native-batch path has no marker around each `native_flush()` or around each GU/Down group-dequant call. The `dequant` label begins at the per-expert `compute()` marker and ends at a later phase marker (often `gemm gate/up`); in batch mode it can therefore include host staging/submission gaps and grouped work. GEMM labels also span queued work and any intervening queue idle. Do not read the category named `dequant` as isolated native kernel time, nor infer native-call latency from it. The current timer can compare where marked compute-stream exposure lands, including copy dependency waits, but cannot isolate issuer CPU waiting, copy service, group API host cost, or kernel service.
+
+The marker/fold CPU counters report time spent in the timer's event-record/bookkeeping and event-elapsed calls. They do not correct for the extra timing events and event queue commands. The source labels the counters as host API overhead, not GPU service/calibration; instrumented wall should not be used as a quiet performance sample.
+
+## Lifetime review
+
+On the successful path, the final `m.cs` sync precedes the last fold and `PfTimer` destructor; fold retains the final recorded event, then the destructor destroys each wrapper once. The event wrapper stores a `sycl::event` value and `event_destroy` deletes its wrapper. There is no duplicate event pointer after fold: it swaps vector entries and retains one used entry. This code inspection did not establish a use-after-free or an event-reuse bug on the successful path.
+
+There are error returns before final sync, so the destructor can run with recorded work outstanding. Whether deleting a SYCL event wrapper in those exceptional paths is safe relies on SYCL event ownership/runtime semantics not demonstrated by these source files. This is a review question only, not evidence of a defect; no failure or runtime trace was examined to establish it. Do not change timer lifetime based on this inspection alone.
+
+## Decision boundary
+
+The specific smallest useful question remains: did native batch move exposed compute-stream time among copy waits, dequant-labeled intervals, and the two GEMM labels in the 32K path? Use one matched diagnostic OFF/ON pair with `STRATA_PREFILL_TIMING` present, and verify the receipts show `timing_enabled=true` and the expected issuer mode. Preserve strict output, health, kernel, fault, and normal-close checks. Report the phase values together with `GPU timeline`, host setup/wait/chunk fields and timer overhead. Interpret differences as timestamped compute-stream exposure only. If the actual question is copy DMA service/overlap or native group-call cost, this timer cannot answer it; the existing generic phase-pair proposal is insufficient for that stronger claim, and a separately scoped trace/measurement would need to be chosen.
+
+Evidence read: `research-xe-32k-exposed-prefill-phase-next-v1.txt`; closed receipts `xe-native-dequant-prefill-model-root-v6/n2049-g16-off/record.json` and `n2049-g16-on/record.json`; pinned source commit and blob above. The N2049 receipts have `performance_eligible=false`, timer disabled, and `timing_environment_scope` limited to diagnostic warnings/errors/progress.

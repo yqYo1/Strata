@@ -1,0 +1,89 @@
+{
+  "registry_version": 132,
+  "research_completed": 547,
+  "created_utc": "2026-10-11T12:08:00.474394+00:00",
+  "registry_format": "incremental; follow previous_committed_registry",
+  "previous_committed_registry": {
+    "path": "bench/results/2026-10-11-xe-preload-disabled-diagnostic/report-registry-v131.json",
+    "sha256": "8472507d75b6fe32194c877e74be84d01ac8db5ef5d351ccc2418b72f53f0f4b",
+    "reports": 545
+  },
+  "new_reports": [
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-xe-quiet32k-sample-order-and-publication-gates-next-v1.txt",
+      "archive": "bench/results/2026-10-11-xe-preload-disabled-diagnostic/research-xe-quiet32k-sample-order-and-publication-gates-next-v1.txt",
+      "sha256": "93f0e20d7be0e4c40a22d492437ad74107d0ff58e2958d879de2726f84881bed",
+      "bytes": 6782,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "status": "completed",
+      "main_full_report_review": true,
+      "qualification": "Read-only source/report review; no execution or performance inference"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-xe-prefill-event-timer-queue-boundary-eligibility-next-v1.txt",
+      "archive": "bench/results/2026-10-11-xe-preload-disabled-diagnostic/research-xe-prefill-event-timer-queue-boundary-eligibility-next-v1.txt",
+      "sha256": "2fec9cf50e567574c6a8a5ecdae9a0f503ff576ae387f3ec783d58612941b684",
+      "bytes": 6458,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "status": "completed",
+      "main_full_report_review": true,
+      "qualification": "Read-only source/report review; no execution or performance inference"
+    }
+  ],
+  "reports": [
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-xe-quiet32k-sample-order-and-publication-gates-next-v1.txt",
+      "archive": "bench/results/2026-10-11-xe-preload-disabled-diagnostic/research-xe-quiet32k-sample-order-and-publication-gates-next-v1.txt",
+      "sha256": "93f0e20d7be0e4c40a22d492437ad74107d0ff58e2958d879de2726f84881bed",
+      "bytes": 6782,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "status": "completed",
+      "main_full_report_review": true,
+      "qualification": "Read-only source/report review; no execution or performance inference"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-xe-prefill-event-timer-queue-boundary-eligibility-next-v1.txt",
+      "archive": "bench/results/2026-10-11-xe-preload-disabled-diagnostic/research-xe-prefill-event-timer-queue-boundary-eligibility-next-v1.txt",
+      "sha256": "2fec9cf50e567574c6a8a5ecdae9a0f503ff576ae387f3ec783d58612941b684",
+      "bytes": 6458,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "status": "completed",
+      "main_full_report_review": true,
+      "qualification": "Read-only source/report review; no execution or performance inference"
+    }
+  ],
+  "live_agent_snapshot": {
+    "source": "actual collaboration.list_agents immediately before archive",
+    "observed_utc": "2026-10-11T12:08:00.474661+00:00",
+    "agents": [
+      {
+        "agent": "/root/implement_optional_kernel_preload_control",
+        "model": "gpt-6.1-sol",
+        "status": "running",
+        "scope": "Separate source-only counterbalanced quiet controller v2; no tests or GPU work"
+      },
+      {
+        "agent": "/root/research_native_batch_driver_lowering",
+        "model": "gpt-6-luna",
+        "status": "running",
+        "scope": "SYCL event destruction versus queue/USM lifetime; readonly"
+      },
+      {
+        "agent": "/root/research_quiet32k_publication_gates",
+        "model": "gpt-6-luna",
+        "status": "running",
+        "scope": "Prefill-native-batch influence on cold decode; readonly"
+      }
+    ],
+    "note": "Snapshot only; recheck actual live state before resuming. Old decode agent returned N64 review, not requested quiet audit; new dedicated Luna completed that audit."
+  },
+  "next_research_scopes": [
+    "SYCL event reference ownership",
+    "Prefill and decode direct versus indirect behavior"
+  ],
+  "dependency": "Main full source review and CPU qualification of counterbalanced controller before any new model launch"
+}

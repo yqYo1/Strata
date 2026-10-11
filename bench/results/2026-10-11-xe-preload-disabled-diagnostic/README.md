@@ -134,3 +134,11 @@ quiet-controller inputs remain retained. Removed logical/file allocation is
 reported separately from measured available filesystem space.
 
 The v2 model-width addendum is archived as lossless base64 JSON because its original extra EOF blank line failed staged whitespace checking. Its decoded bytes and original SHA-256 are preserved. The first publication attempt stays FAIL; the correction does not normalize or change the report.
+
+## Completed retirement and next qualification
+
+The [executed manifest](retention-executed-v1.json) records all 402 removals: 93466690 logical bytes and 95279104 allocated bytes. Measured filesystem available space changed by zero bytes between snapshots; the removed file totals do not prove exclusive space reclamation. Original receipts, fixtures, models, binaries and required source remain unchanged.
+
+The [next registry](report-registry-v132.json) contains two additional fully reviewed Luna reports, 547 total entries. Actual agent state was checked: two researchers and a separate Sol implementer are running new scopes. The quiet v1 audit identifies order bias; its ON preflight requires prior OFF, so simply alternating commands cannot reverse pairs. The separate source-only v2 assignment must support balanced four-pair ordering, a strict immutable diagnostic reference for each first arm, a fresh same-index first-arm comparison for the second, and validated completed predecessors. Pending candidates remain unexecuted and performance-ineligible. Main owns all future tests and GPU runs.
+
+The event-timer audit confirms adjacent compute-stream timestamps include idle/dependency intervals; they are not isolated dequant or DMA durations. Successful-path event lifetime was reviewed in source. Exceptional destruction semantics require a separate source/specification investigation and do not establish a bug. Its reference to an active 32K root describes a path it excluded; both actual 32K receipts were already terminal when this follow-up was assigned.
