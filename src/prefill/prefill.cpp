@@ -41,6 +41,7 @@
 
 #include "strata/prefill/publication.hpp"
 #include "strata/prefill/compact_moe.hpp"
+#include "strata/prefill/issuer_timing.hpp"
 #include <algorithm>
 #include <chrono>
 #include <cmath>
@@ -1389,6 +1390,8 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
         const bool stream_all = m.ring > STAGE && T >= STREAM_ALL_MIN && m.src != nullptr;
         // Before the issuer/its join guard: a threaded issuer owns these writes,
         // and the consumer reads/moves them only after join and checked drains.
+        IssuerTiming issuer_timing(IssuerTiming::requested(), (size_t) (LE - LB));
+        const auto issuer_streamed_begin = stats_.experts_streamed;
         std::vector<PfExpertTransfers> chunk_transfers;
         // Also before the join guard, with exclusive consumer ownership. Disabled
         // counts allocate no census storage and perform no additional routing scan.
@@ -1456,18 +1459,21 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
                 const int sl = (int) (issued % (size_t) m.ring);
                 const auto th = Clock::now();
                 const size_t bytes = (size_t) lay0.blob_bytes(en.l);
+                const auto timing_kind = en.job < 0 ? IssuerTiming::PinnedDirect :
+                    (en.blob ? IssuerTiming::UnpinnedStaged : IssuerTiming::TransientStaged);
                 // the slot's last reader, the copy and its mark in one submission (copy_async_after)
                 const strata::gpu::Event* after = m.stage_live[sl] ? m.used[m.used_of[sl]] : nullptr;
                 if (en.job < 0) {
-                    publication::require(strata::gpu::copy_async_after(m.stage_dev[sl], en.blob, bytes, m.copy, after, m.copied[sl]), "strata::gpu::copy_async_after(m.stage_dev[sl], en.blob, bytes, m.copy, after, m.copied[sl])", strata::gpu::last_error);
+                    publication::require(issuer_timing.measure((size_t) (en.l - LB), timing_kind, false, [&] { return strata::gpu::copy_async_after(m.stage_dev[sl], en.blob, bytes, m.copy, after, m.copied[sl]); }), "strata::gpu::copy_async_after(m.stage_dev[sl], en.blob, bytes, m.copy, after, m.copied[sl])", strata::gpu::last_error);
                     if (transfer_counts && bytes != 0) chunk_transfers[(size_t) (en.l - LB)].add(1, bytes);
                     ++stats_.experts_dma;
                 } else {
-                    const uint8_t* hb = m.stager->wait(en.job);
-                    publication::require(strata::gpu::copy_async_after(m.stage_dev[sl], hb, bytes, m.copy, after, m.copied[sl]), "strata::gpu::copy_async_after(m.stage_dev[sl], hb, bytes, m.copy, after, m.copied[sl])", strata::gpu::last_error);
+                    const uint8_t* hb = issuer_timing.measure((size_t) (en.l - LB), timing_kind, true, [&] { return m.stager->wait(en.job); });
+                    publication::require(issuer_timing.measure((size_t) (en.l - LB), timing_kind, false, [&] { return strata::gpu::copy_async_after(m.stage_dev[sl], hb, bytes, m.copy, after, m.copied[sl]); }), "strata::gpu::copy_async_after(m.stage_dev[sl], hb, bytes, m.copy, after, m.copied[sl])", strata::gpu::last_error);
                     if (transfer_counts && bytes != 0) chunk_transfers[(size_t) (en.l - LB)].add(1, bytes);
                     m.stager->issued_one(en.job, m.copy);
                 }
+                issuer_timing.entry((size_t) (en.l - LB), timing_kind, bytes);
                 m.stage_live[sl] = true;
                 stats_.ms_experts_host += ms_since(th);
                 ++stats_.experts_streamed;
@@ -1516,18 +1522,21 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
                     const int sl = (int) (idx % (size_t) m.ring);
                     const auto th = Clock::now();
                     const size_t bytes = (size_t) lay0.blob_bytes(en.l);
+                    const auto timing_kind = en.job < 0 ? IssuerTiming::PinnedDirect :
+                        (en.blob ? IssuerTiming::UnpinnedStaged : IssuerTiming::TransientStaged);
                     // the slot's last reader, the copy and its mark in one submission (copy_async_after)
                     const strata::gpu::Event* after = m.stage_live[sl] ? m.used[m.used_of[sl]] : nullptr;
                     if (en.job < 0) {
-                        publication::require(strata::gpu::copy_async_after(m.stage_dev[sl], en.blob, bytes, m.copy, after, m.copied[sl]), "strata::gpu::copy_async_after(m.stage_dev[sl], en.blob, bytes, m.copy, after, m.copied[sl])", strata::gpu::last_error);
+                        publication::require(issuer_timing.measure((size_t) (en.l - LB), timing_kind, false, [&] { return strata::gpu::copy_async_after(m.stage_dev[sl], en.blob, bytes, m.copy, after, m.copied[sl]); }), "strata::gpu::copy_async_after(m.stage_dev[sl], en.blob, bytes, m.copy, after, m.copied[sl])", strata::gpu::last_error);
                         if (transfer_counts && bytes != 0) chunk_transfers[(size_t) (en.l - LB)].add(1, bytes);
                         ++iss_dma;
                     } else {
-                        const uint8_t* hb = m.stager->wait(en.job);
-                        publication::require(strata::gpu::copy_async_after(m.stage_dev[sl], hb, bytes, m.copy, after, m.copied[sl]), "strata::gpu::copy_async_after(m.stage_dev[sl], hb, bytes, m.copy, after, m.copied[sl])", strata::gpu::last_error);
+                        const uint8_t* hb = issuer_timing.measure((size_t) (en.l - LB), timing_kind, true, [&] { return m.stager->wait(en.job); });
+                        publication::require(issuer_timing.measure((size_t) (en.l - LB), timing_kind, false, [&] { return strata::gpu::copy_async_after(m.stage_dev[sl], hb, bytes, m.copy, after, m.copied[sl]); }), "strata::gpu::copy_async_after(m.stage_dev[sl], hb, bytes, m.copy, after, m.copied[sl])", strata::gpu::last_error);
                         if (transfer_counts && bytes != 0) chunk_transfers[(size_t) (en.l - LB)].add(1, bytes);
                         m.stager->issued_one(en.job, m.copy);
                     }
+                    issuer_timing.entry((size_t) (en.l - LB), timing_kind, bytes);
                     m.stage_live[sl] = true;
                     iss_ms += ms_since(th);
                     ++iss_streamed;
@@ -2334,24 +2343,28 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
                         const uint8_t* b = tr ? nullptr : m.src->blob(l, e);
                         if (!tr && !b) { err = "prefill: expert source has no blob"; return false; }
                         const size_t bytes = (size_t) lay.blob_bytes(l);
-                        if (!tr && m.src->pinned(l, e)) {
+                        const bool direct = !tr && m.src->pinned(l, e);
+                        const auto timing_kind = direct ? IssuerTiming::PinnedDirect :
+                            (tr ? IssuerTiming::TransientStaged : IssuerTiming::UnpinnedStaged);
+                        if (direct) {
                             // DMA straight from the page-locked arena: the copy stream only waits for the slot
                             wait_slot();
-                            publication::require(strata::gpu::copy_async(slot_ptr(sl), b, bytes, m.copy), "copy_async", strata::gpu::last_error);
+                            publication::require(issuer_timing.measure((size_t) (l - LB), timing_kind, false, [&] { return strata::gpu::copy_async(slot_ptr(sl), b, bytes, m.copy); }), "copy_async", strata::gpu::last_error);
                             if (transfer_counts && bytes != 0) chunk_transfers[(size_t) (l - LB)].add(1, bytes);
                             ++stats_.experts_dma;
                         } else {
                             // copied to a pinned buffer by the stager (waits only if it is behind), then DMA
-                            const uint8_t* hb = m.stager->wait(job_of[j]);
+                            const uint8_t* hb = issuer_timing.measure((size_t) (l - LB), timing_kind, true, [&] { return m.stager->wait(job_of[j]); });
                             if (m.stager->failed.exchange(false)) { err = "prefill: the expert source could not copy a blob"; return false; }
                             wait_slot();
-                            publication::require(strata::gpu::copy_async(slot_ptr(sl), hb, bytes, m.copy), "copy_async", strata::gpu::last_error);
+                            publication::require(issuer_timing.measure((size_t) (l - LB), timing_kind, false, [&] { return strata::gpu::copy_async(slot_ptr(sl), hb, bytes, m.copy); }), "copy_async", strata::gpu::last_error);
                             if (transfer_counts && bytes != 0) chunk_transfers[(size_t) (l - LB)].add(1, bytes);
                             m.stager->issued_one(job_of[j], m.copy);
                         }
                         publication::require(strata::gpu::event_record(m.copied[sl], m.copy), "strata::gpu::event_record(m.copied[sl], m.copy)", strata::gpu::last_error);
                         if (!mmq_direct) m.stage_live[sl] = true;
                         stage_of[j] = sl;
+                        issuer_timing.entry((size_t) (l - LB), timing_kind, bytes);
                         stats_.ms_experts_host += ms_since(th);
                         ++stats_.experts_streamed;
                         return true;
@@ -2616,24 +2629,28 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
                         const uint8_t* b = tr ? nullptr : m.src->blob(l, e);
                         if (!tr && !b) { err = "prefill: expert source has no blob"; return false; }
                         const size_t bytes = (size_t) lay.blob_bytes(l);
-                        if (!tr && m.src->pinned(l, e)) {
+                        const bool direct = !tr && m.src->pinned(l, e);
+                        const auto timing_kind = direct ? IssuerTiming::PinnedDirect :
+                            (tr ? IssuerTiming::TransientStaged : IssuerTiming::UnpinnedStaged);
+                        if (direct) {
                             // DMA straight from the page-locked arena: the copy stream only waits for the slot
                             wait_slot();
-                            publication::require(strata::gpu::copy_async(slot_ptr(sl), b, bytes, m.copy), "copy_async", strata::gpu::last_error);
+                            publication::require(issuer_timing.measure((size_t) (l - LB), timing_kind, false, [&] { return strata::gpu::copy_async(slot_ptr(sl), b, bytes, m.copy); }), "copy_async", strata::gpu::last_error);
                             if (transfer_counts && bytes != 0) chunk_transfers[(size_t) (l - LB)].add(1, bytes);
                             ++stats_.experts_dma;
                         } else {
                             // copied to a pinned buffer by the stager (waits only if it is behind), then DMA
-                            const uint8_t* hb = m.stager->wait(job_of[j]);
+                            const uint8_t* hb = issuer_timing.measure((size_t) (l - LB), timing_kind, true, [&] { return m.stager->wait(job_of[j]); });
                             if (m.stager->failed.exchange(false)) { err = "prefill: the expert source could not copy a blob"; return false; }
                             wait_slot();
-                            publication::require(strata::gpu::copy_async(slot_ptr(sl), hb, bytes, m.copy), "copy_async", strata::gpu::last_error);
+                            publication::require(issuer_timing.measure((size_t) (l - LB), timing_kind, false, [&] { return strata::gpu::copy_async(slot_ptr(sl), hb, bytes, m.copy); }), "copy_async", strata::gpu::last_error);
                             if (transfer_counts && bytes != 0) chunk_transfers[(size_t) (l - LB)].add(1, bytes);
                             m.stager->issued_one(job_of[j], m.copy);
                         }
                         publication::require(strata::gpu::event_record(m.copied[sl], m.copy), "strata::gpu::event_record(m.copied[sl], m.copy)", strata::gpu::last_error);
                         if (!mmq_direct) m.stage_live[sl] = true;
                         stage_of[j] = sl;
+                        issuer_timing.entry((size_t) (l - LB), timing_kind, bytes);
                         stats_.ms_experts_host += ms_since(th);
                         ++stats_.experts_streamed;
                         return true;
@@ -2918,6 +2935,8 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
             return false;
         }
         chunk_stager_done.complete();
+        issuer_timing.emit(m.device, LB, LE, c0, p0, T, stream_all, threaded_issue, m.ring,
+                           (uint64_t) (stats_.experts_streamed - issuer_streamed_begin));
         if (transfer_counts)
             transfer_chunks.push_back({c0, p0, T, stream_all, threaded_issue, std::move(chunk_transfers),
                                        std::move(chunk_census)});
