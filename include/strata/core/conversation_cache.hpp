@@ -151,6 +151,23 @@ public:
     }
     ConversationKvReuse take_reuse() { return std::exchange(reuse_, {}); }
     size_t retained_bytes() const { return reuse_.bytes(); }
+    // SAVE-only reclamation: discard the oldest unpinned parked image, preserving explicit shared-prefix pins.
+    bool evict_oldest() {
+        auto victim = std::find_if(entries_.begin(), entries_.end(), [](const SavedConversation& e) { return !e.pinned(); });
+        if (victim == entries_.end()) return false;
+        bytes_ -= victim->bytes();
+        entries_.erase(victim);
+        ++evictions_;
+        return true;
+    }
+    // Non-finite state cannot be restored, even when a conversation has pinned checkpoints.
+    size_t clear() {
+        const size_t n = entries_.size();
+        entries_.clear();
+        bytes_ = 0;
+        reuse_ = {};
+        return n;
+    }
     bool can_fit(size_t incoming, size_t held = 0) const {
         return enabled() && held <= budget_ && incoming <= budget_ - held &&
                entries_.size() < slots_ && bytes() <= budget_ - held - incoming;

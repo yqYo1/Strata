@@ -159,6 +159,9 @@ OrcaRouter の Flash-Next Uncensored IQ3_XXS は、setup のメニューには�
 **自分の PC に合わせる**: `xestrata --calibrate` は、エンジンの設定のいくつかをこの PC で測り、速いものを残します
 （5〜10 分ほど）。
 
+別の [HTTP コミュニティ計測](docs/COMMUNITY_BENCHMARKS.ja.md) は、専用の読み込み済みサーバーへ
+`./bench.sh --url http://127.0.0.1:8095` で接続します。サーバーの起動・停止は行わず、リクエストの時間とキャッシュ再利用を記録します。
+
 **速さを測る**: `xestrata --bench` は、入れた IQ3_XXS（ほかのモデルは `--model IQ2_XS` などで指定）のこの PC での速さと、どこに時間がかかっているかを測り、
 データフォルダの `records/bench-<日時>/` に記録を書きます（40 分ほど。動いている xestrata は先に止めます）。
 各計測は 2 回ずつで、`--bench-rounds 3` のように回数を変えられます（1 回あたり 20 分ほど増えます）。

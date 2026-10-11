@@ -1134,6 +1134,29 @@ sycl::event row_top_prob_split(sycl::queue& q, const float* logits, int n_rows, 
 }
 }  // namespace
 
+void logits_nonfinite_rows(const float* logits, int n_rows, int n, uint32_t* flags, void* stream) {
+    if (!logits || !flags || n_rows < 1 || n_rows > kVerifyMaxT || n < 1)
+        fail("logits_nonfinite_rows: invalid arguments");
+    auto& q = Q(stream);
+    const size_t wg = std::min<size_t>(128, q.get_device().get_info<sycl::info::device::max_work_group_size>());
+    const size_t per_block = ((size_t) n + kNonfiniteBlocks - 1) / kNonfiniteBlocks;
+    const auto e = q.parallel_for(sycl::nd_range<1>((size_t) n_rows * kNonfiniteBlocks * wg, wg),
+        [=](sycl::nd_item<1> it) {
+            const size_t group = it.get_group_linear_id();
+            const size_t row = group / kNonfiniteBlocks, block = group % kNonfiniteBlocks;
+            const size_t lo = block * per_block, hi = sycl::min((size_t) n, lo + per_block);
+            uint32_t bad = 0;
+            for (size_t i = lo + it.get_local_linear_id(); i < hi; i += wg) {
+                // Bits, not floating arithmetic: fast-math cannot discard this NaN/Inf test.
+                const uint32_t bits = sycl::bit_cast<uint32_t>(logits[row * (size_t) n + i]);
+                bad |= (bits & 0x7f800000u) == 0x7f800000u ? 1u : 0u;
+            }
+            bad = sycl::reduce_over_group(it.get_group(), bad, sycl::bit_or<uint32_t>());
+            if (it.get_local_linear_id() == 0) flags[group] = bad;
+        });
+    done(stream, e, "logits_nonfinite_rows");
+}
+
 void row_top_prob(const float* logits, int n_rows, int n_vocab, const int32_t* ids, float* probs, void* stream) {
     auto& q = Q(stream);
     const int wg = xe::work_group_upto_1024(q);   // the draft probabilities sum in another order below 1024

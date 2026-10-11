@@ -27,6 +27,8 @@ adaptive expert tier and the OS make single measurements noisy by a few percent.
 """
 from __future__ import annotations
 
+from typing import Any
+
 import json
 import statistics
 import sys
@@ -128,7 +130,7 @@ def pick(measured: dict, default_key, min_gain: float = MIN_GAIN):
     med = {k: statistics.median(v) for k, v in measured.items() if v}
     if not med or default_key not in med:
         return default_key
-    best = max(med, key=med.get)
+    best = max(med, key=lambda k: med[k])
     return best if med[best] > med[default_key] * (1.0 + min_gain) else default_key
 
 
@@ -142,7 +144,7 @@ class Session:
     def rate(self, tune: dict | None = None, max_new: int | None = None) -> float:
         rates = []
         for ids in self.ids_list:
-            sampling = {"temperature": 0}
+            sampling: dict[str, Any] = {"temperature": 0}
             if tune:
                 sampling["strata_tune"] = tune
             n = sum(1 for t in self.engine.generate(ids, max_new or MAX_NEW, sampling, threading.Event())
@@ -168,7 +170,7 @@ def run(cfg: dict, say=print, start_engine=None) -> dict:
     import strata_tokenizer as ST
     tpath = Path(cfg["tokenizer"])
     vocab = json.loads((tpath / "vocab.json").read_text(encoding="utf-8"))
-    toks = [None] * len(vocab)
+    toks: list[Any] = [None] * len(vocab)
     for t, i in vocab.items():
         toks[i] = t
     tok = ST.Tokenizer(toks, (tpath / "merges.txt").read_text(encoding="utf-8").split("\n"),

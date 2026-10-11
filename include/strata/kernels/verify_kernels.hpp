@@ -22,6 +22,9 @@
 namespace strata::kernels {
 
 inline constexpr int kVerifyMaxT = 8;
+/// Every launch overwrites all 16 flags for every active row. Read host-USM only after queue completion.
+inline constexpr int kNonfiniteBlocks = 16;
+void logits_nonfinite_rows(const float* logits, int n_rows, int n, uint32_t* flags, void* stream);
 
 /// For token t of T: conv over [history(3) | qkv_0 .. qkv_t] -> SiLU -> L2 norm of the q/k heads -> h[t].
 /// `history` is NOT written, except with `commit` (one token, t_begin 0: a one-token window keeps its token), which

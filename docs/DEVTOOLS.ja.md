@@ -41,8 +41,9 @@ cmake -S . -B build/free -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
 ```sh
 python3 -m venv .lint/venv && .lint/venv/bin/pip install ruff reuse        # ruff 0.16, reuse 6.2
 npm install --prefix .lint stylelint stylelint-config-recommended         # stylelint 17
-mkdir -p .lint/bin && curl -sSL https://github.com/lycheeverse/lychee/releases/latest/download/lychee-x86_64-unknown-linux-gnu.tar.gz \
-    | tar -xz -C .lint/bin lychee                                          # lychee 0.24
+lychee_release=https://github.com/lycheeverse/lychee/releases/download/lychee-v0.24.2
+mkdir -p .lint/bin && curl -fsSL "$lychee_release/lychee-x86_64-unknown-linux-gnu.tar.gz" \
+    | tar -xz --strip-components=1 -C .lint/bin lychee-x86_64-unknown-linux-gnu/lychee
 ```
 
 `tools/lint/run.sh` は、ディストリビューションの `reuse` があればそれを使い、なければ `.lint/venv/bin/reuse` を使います。

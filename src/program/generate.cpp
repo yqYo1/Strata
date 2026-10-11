@@ -23,6 +23,7 @@
 #include "strata/core/conversation_snapshot.hpp"
 #include "strata/core/conversation_disk.hpp"
 #include "strata/core/conversation_file.hpp"
+#include "strata/core/session_save_reclaim.hpp"
 #include "strata/core/conversation_memory.hpp"
 #include "strata/core/expert_source.hpp"
 #include "strata/core/remote_experts.hpp"
@@ -447,6 +448,7 @@ struct Options {
     bool serve = false;
     /// The vision path: keep a per-cell (t, h, w) rotary position table so --serve can take GENI requests.
     bool vision = false;
+    bool session_save_reclaim = false;
     int adapt_swaps = 96;
     /// --serve: how many conversation checkpoints to keep between requests (0 = every request reads its whole
     /// prompt again, the v0.1.2 behaviour).  One is the GDN recurrence of the 36 layers, the QSA indexer tails and
@@ -457,6 +459,7 @@ struct Options {
     int64_t conversation_cache_mib = 0;
     int conversation_cache_slots = 4;
     int64_t conversation_cache_min_free_mib = 2560;
+    int64_t memory_limit_mib = -1;   // unset: STRATA_MEMORY_LIMIT_MIB, else no operator cap
     /// --serve: write parked conversations to this folder (when the RAM cache pushes one out, and at QUIT) and
     /// read them back after a restart; empty = off.  Checkpoints per conversation (the deepest, the chain's root,
     /// then the most recently used), the folder's budget, and the age after its last use at which a file goes.
@@ -605,6 +608,9 @@ void usage() {
                  "  --conversation-cache-min-free-mib N  --serve: physical RAM floor when parking or restoring a\n"
                  "                       session file (default 2560)\n"
                  "  --session-min-free-mib N  --serve: disk space a SAVE must leave free (default 4096; 0 = no check)\n"
+                 "  --session-save-reclaim  --serve: free unpinned host conversation caches before SAVE admission (off)\n"
+                 "  --memory-limit-mib N  host/container RAM cap for parking and session admission (0 = no cap;\n"
+                 "                       default STRATA_MEMORY_LIMIT_MIB, otherwise no cap)\n"
                  "  --conversation-save DIR  --serve: also keep parked conversations in DIR across restarts (default off;\n"
                  "                       needs --conversation-cache-mib)\n"
                  "  --conversation-save-checkpoints N  --serve: checkpoints written per conversation (default 2)\n"
@@ -900,6 +906,11 @@ struct GpuStage {
 };
 
 // ---- issue #31: what the watchdog prints before it stops a stalled engine
+static std::string ram_note(const std::optional<strata::core::HostMemoryReading>& mem) {
+    if (!mem) return "RAM telemetry unavailable";
+    return std::to_string(mem->available >> 20) + " MiB available, source " + strata::core::memory_source_name(mem->source);
+}
+
 struct MemSample {
     unsigned long long faults = 0, rss_mib = 0, avail_mib = 0, commit_mib = 0;
 };
@@ -1287,7 +1298,7 @@ bool run_full_context_probe(const Options& o, strata::prefill::Prefill& prefill,
     const uint64_t floor_mib = uint64_t(std::max<int64_t>(2560, o.conversation_cache_min_free_mib));
     uint64_t floor = 0;
     if (!probe::add_bytes(floor, floor_mib, 1ull << 20)) { err = "probe: RAM floor overflow"; return false; }
-    const auto available = conversation_available_memory();
+    const auto available = available_host_bytes();
     std::fprintf(stderr, "full-context-probe: RAM snapshot=%llu extra_checkpoint_budget=%llu required=%llu "
                          "available=%llu known=%d floor=%llu consumer=in-process-restore\n",
                  (unsigned long long) snapshot_bytes, (unsigned long long) (required - snapshot_bytes),
@@ -1344,7 +1355,7 @@ bool run_full_context_probe(const Options& o, strata::prefill::Prefill& prefill,
                  (long long) stats.experts_cpu, stats.ms_experts_host, stats.ms_ple);
     // Re-admit immediately before capture: expert/prefill initialization may have
     // consumed RAM since the first estimate. The large image has this single consumer.
-    if (!conversation_memory_admit(conversation_available_memory(), required, floor)) {
+    if (!conversation_memory_admit(available_host_bytes(), required, floor)) {
         err = "probe: physical RAM no longer admits capture"; return false;
     }
     if (!conversation_snapshot_save(image, view, ss, g, mtp.kv_state(), err) ||
@@ -2333,9 +2344,11 @@ int main(int argc, char** argv) {
         else if (a == "--serve") o.serve = true;
         else if (a == "--vision") o.vision = true;
         else if (a == "--prompt-cache") o.prompt_cache = std::max(0, std::atoi(next("--prompt-cache")));
+        else if (a == "--session-save-reclaim") o.session_save_reclaim = true;
         else if (a == "--conversation-cache-mib" || a == "--conversation-cache-slots" ||
                  a == "--conversation-cache-min-free-mib" || a == "--conversation-save-checkpoints" ||
-                 a == "--conversation-save-mib" || a == "--conversation-save-hours" || a == "--session-min-free-mib") {
+                 a == "--conversation-save-mib" || a == "--conversation-save-hours" || a == "--session-min-free-mib" ||
+                 a == "--memory-limit-mib") {
             const std::string value = next(a.c_str());
             int64_t parsed = 0;
             const auto result = std::from_chars(value.data(), value.data() + value.size(), parsed);
@@ -2353,6 +2366,7 @@ int main(int argc, char** argv) {
             else if (a == "--conversation-save-mib") o.conversation_save_mib = parsed;
             else if (a == "--conversation-save-hours") o.conversation_save_hours = parsed;
             else if (a == "--session-min-free-mib") o.session_min_free_mib = parsed;
+            else if (a == "--memory-limit-mib") o.memory_limit_mib = parsed;
             else o.conversation_cache_slots = (int) parsed;
         }
         else if (a == "--conversation-save") o.conversation_save = next("--conversation-save");
@@ -2485,6 +2499,38 @@ int main(int argc, char** argv) {
     // Layer split (multi-GPU): the later stages run layers [K_i, K_i+1) on their own GPUs (--split-device, default
     // the next discrete ones); "auto" chooses the K before anything is loaded (below).  The helper caches
     // (--expert-cache-remote) are not carried by the Xe engine at all (remote_experts.cpp).
+    {   // Native admission is authoritative; explicit flag overrides the environment, including flag 0.
+        int64_t mib = o.memory_limit_mib;
+        if (mib < 0) {
+            const char* env = std::getenv("STRATA_MEMORY_LIMIT_MIB");
+            if (env != nullptr && env[0] != '\0') {
+                const size_t len = std::strlen(env);
+                const auto parsed = std::from_chars(env, env + len, mib);
+                if (parsed.ec != std::errc{} || parsed.ptr != env + len || mib < 0 || mib > INT64_MAX / (1024LL * 1024)) {
+                    std::fprintf(stderr, "STRATA_MEMORY_LIMIT_MIB needs a nonnegative integer within range (got \"%s\")\n", env);
+                    return 2;
+                }
+            } else mib = 0;
+        }
+        strata::core::set_memory_limit_bytes((uint64_t) mib << 20);
+        if (o.serve || mib > 0) {
+            constexpr double GiB = 1073741824.0;
+            const auto mem = strata::core::sample_host_memory();
+            if (!mem) {
+                std::fprintf(stderr, "strata generate: memory guard: the available RAM cannot be read; parking and session "
+                                     "save/restore are refused\n");
+            } else {
+                std::fprintf(stderr, "strata generate: memory guard: limit %.1f GiB (source: %s), current %.1f GiB, "
+                                     "reclaimable cache credited %.1f GiB; available %.1f GiB (MemAvailable %.1f GiB%s), "
+                                     "floor %lld MiB\n",
+                             (double) mem->limit / GiB, strata::core::memory_source_name(mem->source),
+                             (double) mem->current / GiB, (double) mem->credit / GiB, (double) mem->available / GiB,
+                             (double) mem->mem_available / GiB,
+                             mib > 0 ? (", --memory-limit-mib " + std::to_string((long long) mib)).c_str() : "",
+                             (long long) o.conversation_cache_min_free_mib);
+            }
+        }
+    }
     if (o.serve && o.conversation_cache_mib > 0 && (o.prompt_cache == 0 || o.conversation_cache_slots == 0))
         std::fprintf(stderr, "strata serve: warning: conversation caching is disabled by %s\n",
                      o.prompt_cache == 0 ? "--prompt-cache 0" : "--conversation-cache-slots 0");
@@ -5526,8 +5572,13 @@ int main(int argc, char** argv) {
     //
     // and each generated token is written to stdout as `T <id>` as soon as its verify window is done, followed by
     //
-    //     DONE <generated> <prompt_tokens> <prompt_ms> <decode_ms> <stop|length|cancel> <drafts accepted>
+    //     DONE <generated> <prompt_tokens> <prompt_ms> <decode_ms> <stop|length|cancel|nonfinite> <drafts accepted>
     //          <drafts offered> <prompt tokens reused> ... <prompt tokens read>   (see the DONE line below; #471)
+    //
+    // `nonfinite` (#879): a window's head logits held a NaN or an infinity (Verifier::nonfinite_row).  None of that
+    // window's tokens was written; every state that may carry the poison (the live session, the checkpoints, the
+    // parked conversations, the idle batch slots) is dropped at the next request's start, which reads its prompt from
+    // token 0.  A batch slot ends the same way: `BDONE <slot> <n> nonfinite`.
     //
     // Before that, `RESUME <n>` (n prompt tokens are not read again), `PP <position> <prompt_tokens> <ms> <tok/s>`
     // after every prompt chunk, and `REUSED <n>` once the prompt is read.  (`ERR <message>` instead when a request
@@ -6124,6 +6175,8 @@ int main(int argc, char** argv) {
         std::vector<int32_t> live;
         std::vector<ImgKey> live_imgs, req_imgs;
         bool live_ok = false;
+        // #879: a window met non-finite logits: the next request drops every cached state first and reads from token 0
+        bool nan_flush = false;
         std::vector<ConvCheckpoint> checks;
         uint64_t check_clock = 0;   // the checkpoints' LRU clock; creation and every use advance it
         int64_t tail_ckpt_len = -1;   // --prompt-cache-tail: the length of the one tail checkpoint alive (-1 = none)
@@ -6328,11 +6381,12 @@ int main(int argc, char** argv) {
             try {
                 const uint64_t floor = (uint64_t) o.conversation_cache_min_free_mib * 1024 * 1024;
                 const size_t additional = estimate - reuse.bytes();
-                if (!strata::core::conversation_memory_admit(strata::core::conversation_available_memory(),
+                const auto mem = strata::core::sample_host_memory();
+                if (!strata::core::conversation_memory_admit(mem ? std::optional<uint64_t>(mem->available) : std::nullopt,
                                                              additional, floor)) {
-                    std::fprintf(stderr, "strata serve: conversation cache: skip parking (physical RAM admission; need "
-                                         "%zu MiB plus %lld MiB floor, or telemetry unavailable)\n",
-                                 additional >> 20, (long long) o.conversation_cache_min_free_mib);
+                    std::fprintf(stderr, "strata serve: conversation cache: skip parking (RAM admission; need "
+                                         "%zu MiB plus %lld MiB floor, %s)\n",
+                                 additional >> 20, (long long) o.conversation_cache_min_free_mib, ram_note(mem).c_str());
                     return true;
                 }
                 strata::core::SavedConversation image;
@@ -6342,9 +6396,11 @@ int main(int argc, char** argv) {
                                         : !strata::core::conversation_split_save(image, view, conv_stages, g,
                                                                                  mtp.kv_state(), err))
                     return false;
-                if (!strata::core::conversation_memory_admit(strata::core::conversation_available_memory(), 0, floor)) {
-                    std::fprintf(stderr, "strata serve: conversation cache: skip parking (physical RAM floor after "
-                                         "capture, or telemetry unavailable)\n");
+                const auto mem_after = strata::core::sample_host_memory();
+                if (!strata::core::conversation_memory_admit(mem_after ? std::optional<uint64_t>(mem_after->available)
+                                                                     : std::nullopt, 0, floor)) {
+                    std::fprintf(stderr, "strata serve: conversation cache: skip parking (RAM floor after "
+                                         "capture, %s)\n", ram_note(mem_after).c_str());
                     return true;
                 }
                 const size_t snapshot_bytes = image.bytes();
@@ -6369,6 +6425,20 @@ int main(int argc, char** argv) {
         // mid-read reports as read, instead of the whole prompt
         int64_t pp_reached = 0;
         Clock::time_point pp_t0 = Clock::now();
+        // #879: this request met a window whose head logits were not all finite (nonfinite_hit): it ends with
+        // DONE ... nonfinite, emitting none of that window's tokens
+        bool nf_hit = false;
+        auto nonfinite_hit = [&](const strata::core::Verifier& v, const char* what) -> bool {
+            const int row = v.nonfinite_row();
+            if (row < 0) return false;
+            std::fprintf(stderr, "strata serve: non-finite logits (#879) in a %s window at position %lld (row %d): its "
+                                 "tokens are not emitted, the request ends (DONE nonfinite) and the next request reads "
+                                 "its prompt from token 0\n", what, (long long) v.nonfinite_pos(), row);
+            std::fflush(stderr);
+            nf_hit = true;
+            nan_flush = true;
+            return true;
+        };
         auto imgs_below = [&](const std::vector<ImgKey>& all, int64_t L) {
             std::vector<ImgKey> v;
             for (const ImgKey& k : all) if (k.start < L) v.push_back(k);
@@ -7277,6 +7347,9 @@ int main(int argc, char** argv) {
             // a prompt read that gave way to a waiting request (BYIELD): `ids` is the part read so far, and the same
             // request continues from it (the read goes on with the same chunks; `from0`: it had started at token 0)
             bool partial = false, partial_from0 = false;
+            // #879: it was running when non-finite logits dropped the cached state; its state may have started from
+            // that state (a checkpoint, a parked conversation), so it is not kept as a cache when it ends
+            bool tainted = false;
         };
         std::vector<BSlot> bs((size_t) std::max(o.batch, 0));
         // timing of the batch windows since the slots were last all idle (one stderr line then)
@@ -7444,6 +7517,21 @@ int main(int argc, char** argv) {
             for (int a = 0; a < A; ++a) {
                 const int b = active[a];
                 BSlot& sl = bs[(size_t) b];
+                bool nf = false;
+                for (int r = first[a]; r < first[a] + row_count[a]; ++r) nf = nf || ver.nonfinite_in(r);
+                if (nf) {
+                    std::fprintf(stderr, "strata batch: non-finite logits (#879) in slot %d at position %lld: it ends "
+                                         "(BDONE nonfinite) and the next request reads its prompt from token 0\n", b,
+                                 (long long) pos[first[a]]);
+                    const double ms = std::chrono::duration<double, std::milli>(Clock::now() - sl.t0).count();
+                    std::printf("BDONE %d %lld nonfinite %.1f\n", b, (long long) sl.produced, ms);
+                    sl.active = false;
+                    sl.cached = false;
+                    sl.checks.clear();
+                    nan_flush = true;
+                    for (BSlot& other : bs) if (other.active) other.tainted = true;
+                    continue;
+                }
                 for (int j = 0; j < keep[(size_t) b]; ++j) {
                     const int32_t y = outb[first[a] + j];
                     sl.ids.push_back(tok[first[a] + j]);   // the window fed it: the slot's session holds it now
@@ -7456,7 +7544,7 @@ int main(int argc, char** argv) {
                         const double ms = std::chrono::duration<double, std::milli>(Clock::now() - sl.t0).count();
                         std::printf("BDONE %d %lld %s %.1f\n", b, (long long) sl.produced, fin, ms);
                         sl.active = false;
-                        sl.cached = o.prompt_cache > 0 && !sl.img;   // its session holds sl.ids for the next turn
+                        sl.cached = o.prompt_cache > 0 && !sl.img && !sl.tainted && !nan_flush;
                         break;
                     }
                     sl.x = y;
@@ -7597,6 +7685,19 @@ int main(int argc, char** argv) {
                     const int b = gi * GS + t;
                     BSlot& sl = bs[(size_t) b];
                     if (!sl.active) continue;
+                    if (stage_ver(k).nonfinite_in(t)) {   // #879: the slot ends, nothing emitted
+                        std::fprintf(stderr, "strata batch: non-finite logits (#879) in slot %d at position %lld: it "
+                                             "ends (BDONE nonfinite) and the next request reads its prompt from token 0\n",
+                                     gi * GS + t, (long long) sl.p);
+                        const double ms = std::chrono::duration<double, std::milli>(Clock::now() - sl.t0).count();
+                        std::printf("BDONE %d %lld nonfinite %.1f\n", gi * GS + t, (long long) sl.produced, ms);
+                        sl.active = false;
+                        sl.cached = false;
+                        sl.checks.clear();
+                        nan_flush = true;
+                        for (BSlot& other : bs) if (other.active) other.tainted = true;
+                        continue;
+                    }
                     const int32_t y = outb[t];
                     sl.ids.push_back(sl.x);    // the window fed it: the slot's session holds it now
                     std::printf("BT %d %d\n", b, (int) y);
@@ -7867,14 +7968,26 @@ int main(int argc, char** argv) {
                             sl.kv_layers = (uint64_t) std::max<int64_t>(ss.qsa_alloc, 0) + 1;
                         }
                         const uint64_t floor = (uint64_t) o.conversation_cache_min_free_mib << 20;
+                        if (o.session_save_reclaim) {
+                            const auto freed = strata::core::session_save_reclaim(
+                                checks, conversations, sl, floor, strata::core::available_host_bytes);
+                            if (freed.bytes || freed.checkpoints || freed.parked) {
+                                if (tail_ckpt_len >= 0 && std::none_of(checks.begin(), checks.end(), [&](const auto& c) {
+                                        return int64_t(c.ids.size()) == tail_ckpt_len;
+                                    })) tail_ckpt_len = -1;
+                                std::fprintf(stderr, "strata serve: save reclaimed %zu checkpoints, %zu parked, "
+                                                     "%zu host bytes; checking RAM again\n",
+                                             freed.checkpoints, freed.parked, freed.bytes);
+                            }
+                        }
                         auto admit = [&](uint64_t need, std::string& why) {
-                            const auto avail = strata::core::conversation_available_memory();
+                            const auto mem = strata::core::sample_host_memory();
+                            const std::optional<uint64_t> avail = mem ? std::optional<uint64_t>(mem->available) : std::nullopt;
                             if (strata::core::conversation_memory_admit(avail, need, floor)) return true;
                             why = "not enough RAM to save the session (" +
                                   (need == UINT64_MAX ? std::string("unknown") : std::to_string(need >> 20)) +
                                   " MiB plus a floor of " + std::to_string((long long) o.conversation_cache_min_free_mib) +
-                                  " MiB needed, " + (avail ? std::to_string(*avail >> 20) + " MiB available)"
-                                                           : "RAM telemetry unavailable)");
+                                  " MiB needed, " + ram_note(mem) + ")";
                             return false;
                         };
                         std::vector<ConvCheckpoint> disk_checks;
@@ -7926,11 +8039,12 @@ int main(int argc, char** argv) {
                         limits.progress = moving;
                         const uint64_t floor = (uint64_t) o.conversation_cache_min_free_mib << 20;
                         limits.admit = [floor, &o](uint64_t need, std::string& why) {
-                            const auto avail = strata::core::conversation_available_memory();
+                            const auto mem = strata::core::sample_host_memory();
+                            const std::optional<uint64_t> avail = mem ? std::optional<uint64_t>(mem->available) : std::nullopt;
                             if (strata::core::conversation_memory_admit(avail, need, floor)) return true;
                             why = "not enough RAM to read it (" + std::to_string(need >> 20) + " MiB plus a floor of " +
                                   std::to_string((long long) o.conversation_cache_min_free_mib) + " MiB needed, " +
-                                  (avail ? std::to_string(*avail >> 20) + " MiB available)" : "RAM telemetry unavailable)");
+                                  ram_note(mem) + ")";
                             return false;
                         };
                         if (!strata::core::conversation_session_read_limits(
@@ -7983,6 +8097,13 @@ int main(int argc, char** argv) {
                     for (const ConvCheckpoint& c : checks) check_clock = std::max(check_clock, c.used);
                     cvec_cached = image.cvec;
                     live_ok = true;
+                    if (nan_flush) {   // #879: the file replaced the poisoned session; the parked ones go (no slots here)
+                        nan_flush = false;
+                        const size_t n_parked = conversations.clear();
+                        std::fprintf(stderr, "strata serve: after non-finite logits (#879): the restored session "
+                                             "replaces the live one; dropped %zu parked conversation%s\n", n_parked,
+                                     n_parked == 1 ? "" : "s");
+                    }
                     std::fprintf(stderr, "strata serve: session restored %zu tokens, %zu checkpoints, %zu bytes from %s "
                                  "in %.1f ms (read+check %.1f ms)\n", live.size(), checks.size(), bytes, path.c_str(),
                                  ms(), read_ms);
@@ -8203,6 +8324,37 @@ int main(int argc, char** argv) {
                     return 1;
                 }
             }
+            nf_hit = false;
+            const bool nf_reset_this_request = nan_flush;
+            // #879: an earlier window met non-finite logits.  The poison sits in a conversation's K/V and recurrent
+            // state, so nothing that may hold it is continued: the live session, every checkpoint, every parked
+            // conversation and every idle batch slot go, and this prompt is read from token 0 (resume == 0 below)
+            if (nan_flush) {
+                nan_flush = false;
+                const size_t n_checks = checks.size();
+                live_ok = false;
+                checks.clear();
+                tail_ckpt_len = -1;
+                const size_t n_parked = conversations.clear();
+                size_t n_slots = 0, n_running = 0;
+                for (BSlot& sl : bs)
+                    if (sl.active) {   // a running slot finishes its reply, but is not kept as a cache after it
+                        sl.tainted = true;
+                        ++n_running;
+                    } else {
+                        n_slots += sl.cached || sl.partial || !sl.checks.empty();
+                        sl.cached = false;
+                        sl.partial = false;
+                        sl.partial_from0 = false;
+                        sl.checks.clear();
+                        sl.ids.clear();
+                    }
+                std::fprintf(stderr, "strata serve: after non-finite logits (#879): dropped the live session, %zu "
+                                     "checkpoint%s, %zu parked conversation%s and %zu idle slot%s (%zu running slot%s "
+                                     "not kept after their reply); reading this prompt from token 0\n", n_checks,
+                             n_checks == 1 ? "" : "s", n_parked, n_parked == 1 ? "" : "s", n_slots,
+                             n_slots == 1 ? "" : "s", n_running, n_running == 1 ? "" : "s");
+            }
             int64_t resume = 0;
             bool from_live = false;
             // the live session and the checkpoints were read with the control vector one way: a switch reads the
@@ -8244,12 +8396,12 @@ int main(int argc, char** argv) {
             bool in_live = false;
             const char* in_source = "ram";
             // --conversation-save: a file goes further than the live session and every parked conversation
-            const auto saved = disk.enabled() ? disk.best(ids, req_imgs, want_cvec)
+            const auto saved = disk.enabled() && !nf_reset_this_request ? disk.best(ids, req_imgs, want_cvec)
                                               : strata::core::ConversationDisk::Match{};
             if (saved.tokens > std::max(resume, slot_tokens) && saved.tokens > parked.tokens) {
                 const uint64_t floor = (uint64_t) o.conversation_cache_min_free_mib * 1024 * 1024;
                 const size_t need = disk.load_bytes(saved.index);
-                if (!strata::core::conversation_memory_admit(strata::core::conversation_available_memory(), need,
+                if (!strata::core::conversation_memory_admit(strata::core::available_host_bytes(), need,
                                                              floor)) {
                     std::fprintf(stderr, "strata serve: conversation save: skip reading %zu MiB (physical RAM "
                                          "admission)\n", need >> 20);
@@ -8586,7 +8738,9 @@ int main(int argc, char** argv) {
                         strata::core::Verifier& v = *PV[1][f1 & 1];
                         if (v.service(win_pool_fn, PSD[f1 & 1], e) < 0) return fail(e);
                         if (v.done(e)) {
-                            if (!v.pl_finish(nullptr, e) || !v.pl_commit_async(wins[f1].T, e)) return fail(e);
+                            if (!v.pl_finish(nullptr, e)) return fail(e);
+                            if (nonfinite_hit(v, "prompt")) return fail("non-finite logits (#879)");
+                            if (!v.pl_commit_async(wins[f1].T, e)) return fail(e);
                             const Win& w = wins[f1];
                             for (int t = 0; t < w.T; ++t) nx[(size_t) t] = (int32_t) cur[(size_t) (w.q + t + 1)];
                             if (!mtp.prefill(v.final_R(0), nx.data(), w.T, w.q, e, false)) return fail(e);
@@ -8631,6 +8785,10 @@ int main(int argc, char** argv) {
                     drive.d.failed = false;
                     if (!ver.run(T, win.data(), q, win_pool_fn, win_pool_user, outw.data(), e) || drive.d.failed) {
                         if (drive.d.failed && drive.d.fail) e = drive.d.fail;
+                        return false;
+                    }
+                    if (nonfinite_hit(ver, "prompt")) {
+                        e = "non-finite logits (#879)";
                         return false;
                     }
                     // STRATA_LOGPOS=<path>: the teacher-forced log-probability of every token read here (every token
@@ -8795,8 +8953,9 @@ int main(int argc, char** argv) {
                             BSlot& sl = bs[(size_t) ys];
                             sl = BSlot{};
                             sl.ids = std::move(pre);
-                            sl.cached = true;
-                            sl.partial = true;
+                            sl.tainted = nan_flush;
+                            sl.cached = !sl.tainted;
+                            sl.partial = !sl.tainted;
                             sl.partial_from0 = read_from == 0 || resumed_from0;
                             sl.cvec = cvec_cached;
                             for (const ConvCheckpoint& c : checks)   // the root / periodic checkpoints of this read
@@ -8965,6 +9124,10 @@ int main(int argc, char** argv) {
                                  std::chrono::duration<double, std::milli>(Clock::now() - tsp).count());
                     std::fflush(stderr);
                 }
+                if (!sp_ok && nf_hit) {   // #879: DONE nonfinite (the lent slots are refilled below)
+                    cancelled = true;
+                    break;
+                }
                 if (!sp_ok) {
                     if (yielded_at < 0 && (batch_fatal || !stop_req.load())) {
                         std::fprintf(stderr, "strata serve: %s\n", err.c_str());
@@ -9065,7 +9228,7 @@ int main(int argc, char** argv) {
             const uint64_t file_bytes0 = src.file_read_bytes();
             const int64_t decode_look0 = drive.d.cache_hits + drive.d.cache_admitted + drive.d.cache_refused;
             const int64_t offload0 = drive.d.offload_entries;   // #588
-            if (cancelled) finish = "cancel";
+            if (cancelled) finish = nf_hit ? "nonfinite" : "cancel";
             // ======== --pipeline-windows 2: the decode windows with the two cards overlapped ========
             // Stage 0 (the first card) runs window K+1 while stage 1 verifies window K, on the guess that K is accepted
             // whole and that its bonus token is the drafter's.  The drafter, teacher-forced through K+1's drafts,
@@ -9485,8 +9648,9 @@ int main(int argc, char** argv) {
                     ++rounds;
                     ++dec_windows;
                     dec_T += A.T;
+                    const bool nf = nonfinite_hit(V1(A), "decode");   // #879: none of its tokens goes out
                     bool eos = false;
-                    for (int i = 0; i <= a && produced_n < max_new && !eos; ++i) {
+                    for (int i = 0; !nf && i <= a && produced_n < max_new && !eos; ++i) {
                         std::printf("T %d\n", (int) outp[(size_t) i]);
                         strata::core::progress_beat();
                         ++produced_n;
@@ -9494,10 +9658,11 @@ int main(int argc, char** argv) {
                         eos = std::find(o.eos_ids.begin(), o.eos_ids.end(), (int64_t) outp[(size_t) i]) != o.eos_ids.end();
                     }
                     std::fflush(stdout);
-                    if (eos) finish = "stop";
+                    if (nf) finish = "nonfinite";
+                    else if (eos) finish = "stop";
                     else if (stop_req.load()) finish = "cancel";
-                    const bool last = eos || produced_n >= max_new || stop_req.load();
-                    const bool on = B.launched && a == A.T - 1 && B.tok[0] == outp[(size_t) A.T - 1];
+                    const bool last = nf || eos || produced_n >= max_new || stop_req.load();
+                    const bool on = !nf && B.launched && a == A.T - 1 && B.tok[0] == outp[(size_t) A.T - 1];
                     if (B.made) {   // the gate's calibration: would B have been on the path, by its estimate p_on
                         const bool would = a == A.T - 1 && B.tok[0] == outp[(size_t) A.T - 1];
                         const int bin = std::min(9, std::max(0, (int) (B.p_on * 10.0f)));
@@ -9710,6 +9875,15 @@ int main(int argc, char** argv) {
                     std::printf("ERR %s\n", err.c_str());
                     return 1;
                 }
+                if (nonfinite_hit(ver, first_window ? "first decode" : "decode")) {   // #879: none of its tokens goes out
+                    if (adapt_thr.joinable()) adapt_thr.join();
+                    if (!adapt_ok) {
+                        std::printf("ERR an adaptive refill failed\n");
+                        return 1;
+                    }
+                    finish = "nonfinite";
+                    break;
+                }
                 // the window's first a + 1 tokens are in the session now (the last output is not: it is next x)
                 for (int i = 0; i <= a; ++i) consumed.push_back(window[(size_t) i]);
                 draft_offered += T - 1;
@@ -9815,12 +9989,13 @@ int main(int argc, char** argv) {
                                      st, pr.c_str());
                 }
             }
+            if (nf_hit) live_ok = false;
             if (!cancelled) {
                 // a prompt stopped halfway leaves the session somewhere between two chunks: nothing to continue from
                 // (the checkpoints taken while reading it are still good)
                 live.swap(consumed);
                 live_imgs = imgs_below(req_imgs, (int64_t) live.size());
-                live_ok = o.prompt_cache > 0 && req_ckpt;   // ckpt=0: nothing to continue or park (#830)
+                live_ok = o.prompt_cache > 0 && req_ckpt && !nf_hit && !nan_flush;
             }
             static const bool state_hash = std::getenv("STRATA_STATE_HASH") != nullptr;
             if (state_hash && !cancelled && o.prompt_cache > 0) {   // every finished request, ckpt=0 too (parity gates)
@@ -9959,6 +10134,7 @@ int main(int argc, char** argv) {
                     BSlot& sl = bs[(size_t) admit_slot];
                     sl = BSlot{};
                     sl.active = true;
+                    sl.tainted = nan_flush;
                     sl.x = x;
                     sl.p = p;
                     sl.produced = 1;
@@ -10086,7 +10262,7 @@ int main(int argc, char** argv) {
                     const uint64_t floor = (uint64_t) o.conversation_cache_min_free_mib * 1024 * 1024;
                     size_t estimate = 0;
                     if (!ver.wait_commit(de) || !snapshot_bytes(view, estimate, de)) return false;
-                    if (!strata::core::conversation_memory_admit(strata::core::conversation_available_memory(),
+                    if (!strata::core::conversation_memory_admit(strata::core::available_host_bytes(),
                                                                  estimate, floor)) {
                         de = "physical RAM admission";
                         return false;

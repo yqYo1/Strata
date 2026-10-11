@@ -2,6 +2,7 @@
 // SPDX-FileCopyrightText: 2026 MistVVK and the XeStrata contributors
 // SPDX-License-Identifier: LGPL-3.0-or-later
 #include "strata/core/conversation_cache.hpp"
+#include "strata/core/nonfinite.hpp"
 
 #include <cstdio>
 #include <cstdlib>
@@ -235,6 +236,38 @@ int main() {
         p2.checkpoints.back().gdn.resize(64, 1);
         check(tiny.put(std::move(p2)), "a pinned one fits an empty cache");
         check(!tiny.put(image({7,8,9})) && tiny.size() == 1, "nothing else fits beside it: parking is refused, the pin stays");
+        std::vector<ConversationKv> kv(1);
+        kv[0].cells = 3;
+        kv[0].k.resize(32, 1);
+        big.retain(std::move(kv), 3);
+        check(big.clear() == 3, "clear drops pinned and unpinned parked conversations");
+        check(big.size() == 0 && big.bytes() == 0 && big.retained_bytes() == 0, "clear releases all cache accounting");
+        check(big.best(std::vector<int32_t>{1,2,9,9}, {}, true).tokens == 0, "clear removes pinned prefix match");
+        check(big.take_reuse().bytes() == 0 && big.clear() == 0, "clear removes reusable KV and is idempotent");
+        check(big.put(image({8,7,6})), "cache accepts a clean conversation after clear");
+    }
+    {
+        uint32_t flags[32 * 16] = {};
+        check(nonfinite_mask(flags, 8, 16) == 0, "completed finite window flags are clear");
+        flags[3 * 16 + 15] = 1;
+        flags[(size_t) 7 * 16] = 1;
+        check(nonfinite_mask(flags, 8, 16) == ((1u << 3) | (1u << 7)), "every active row and block is checked");
+        check(nonfinite_mask(flags, 2, 16) == 0, "short window ignores previous inactive row flags");
+        flags[31 * 16 + 15] = 1;
+        check((nonfinite_mask(flags, 32, 16) & (1u << 31)) != 0, "last mask bit is unsigned and bounded");
+        check(nonfinite_mask(nullptr, 8, 16) == 0 && nonfinite_mask(flags, 33, 16) == 0,
+              "invalid flag span does not read storage");
+    }
+    {
+        ConversationCache cache(1 << 20, 4);
+        check(cache.put(image({1,2,3})), "a parked conversation before clearing retained KV");
+        std::vector<ConversationKv> kv(1);
+        kv[0].cells = 3;
+        kv[0].k.resize(64, 1);
+        cache.retain(std::move(kv), 3);
+        check(cache.retained_bytes() > 0, "retained KV actually exists before clear");
+        check(cache.clear() == 1 && cache.retained_bytes() == 0 && cache.bytes() == 0,
+              "clear releases actual retained KV and parked state");
     }
     std::printf("conversation_cache_test: %d checks passed\n", checks);
 }

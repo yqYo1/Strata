@@ -62,6 +62,7 @@ from serve.frontend import (ChatTemplate, Event, OutputParser, anthropic_to_mess
                             tool_choice_of, unmark_think_literals)
 from serve.mcp import McpCancelled, hub_from_config  # noqa: E402
 from serve import runconfig  # noqa: E402
+from serve import logit_bias as bias_api  # noqa: E402
 from serve.structured import StructuredOutputError, prepare_format, validated_json  # noqa: E402
 from serve import responses as responses_api  # noqa: E402
 from serve.responses import ResponsesError, error_body as responses_error_body  # noqa: E402
@@ -286,6 +287,14 @@ class EngineSilent(EngineDied):
     """#481: the engine said nothing for too long during a request (or never acknowledged a STOP): the two sides lost
     step - the engine waiting for its next command, the server for this request's end - and the server ended it.  An
     EngineDied, so the request ends with an error and the next one starts the engine again."""
+
+
+class EngineNonFinite(ValueError):
+    """#879: the engine's DONE (or a slot's BDONE) said `nonfinite`: a window's logits held a NaN or an infinity.  The
+    engine wrote none of that window's tokens and drops every cached state that may carry the poison, so its next
+    request reads the prompt from token 0.  Service.run sends a request that had produced nothing yet once more, and
+    ends one that had started (as "length").  A ValueError, so a stream that has started
+    reports it as an error event."""
 
 
 class SessionRefused(ValueError):
@@ -635,6 +644,7 @@ class StrataEngine:
         # what each slot's session holds (prompt + every token a window fed), so a conversation's next turn goes to
         # the slot that has its start (the engine checks it again); when the slot was last used
         self.slot_held: list[list[int]] = [[] for _ in range(self.batch)]
+        self.slot_tainted = [False for _ in range(self.batch)]
         self.slot_used = [0.0] * self.batch
         self.slot_live: list[dict | None] = [None] * self.batch   # /metrics: the request in each slot
         # #1012: the admission state belongs to the server, not to one engine process.  restart() runs this again
@@ -840,6 +850,23 @@ class StrataEngine:
             self.last.update(prompt_read=int(f[14]))
         if len(f) >= 16:                                  # #588 (engine 0.1.39+): routed experts read over PCIe
             self.last.update(offloaded=int(f[15]))
+        if f[5] == "nonfinite":
+            self._forget_nonfinite_state()
+
+    def _forget_nonfinite_state(self):
+        """Mirror the engine's global cache invalidation; running slots cannot republish old prefixes."""
+        cv = getattr(self, "slot_cv", None)
+        if cv is None:
+            return
+        with cv:
+            self.slot_tainted = [True for _ in self.slot_held]
+            for slot in range(len(self.slot_held)):
+                self.slot_held[slot] = []
+
+    def _keep_slot_prefix(self, slot, prefix):
+        with self.slot_cv:
+            tainted = getattr(self, "slot_tainted", [])
+            self.slot_held[slot] = [] if slot < len(tainted) and tainted[slot] else prefix
 
     @staticmethod
     def sampling_keys(sampling: dict) -> str:
@@ -907,7 +934,8 @@ class StrataEngine:
         """`cvec=0|1`: the experimental-speed-projection control vector for this request, when the engine was
         started with one (--control-vector-scaled; an engine without one ignores the key).  Absent = on."""
         on = sampling.get("experimental_speed_projection")
-        return f" cvec={int(on)}" if isinstance(on, bool) else ""
+        keys = f" cvec={int(on)}" if isinstance(on, bool) else ""
+        return keys + bias_api.engine_key(sampling.get("logit_bias"))
 
     def _send(self, text: str):
         btrace("send>", text[:60])
@@ -981,6 +1009,11 @@ class StrataEngine:
                 self._ctl_result = ("done", None)
                 return
 
+    def _done_finish(self) -> str | None:
+        """The finish field of the DONE line the control lines read last (None: none since it was cleared)."""
+        f = (getattr(self, "_last_done", None) or "").split()
+        return f[5] if len(f) > 5 else None
+
     def _drain_control(self, until: str, timeout: float = 300.0, born: int | None = None):
         """After a consumer left early: read the control lines up to the next `until` line (DONE or BADM) so the next
         request does not read this one's leftovers.  Returns that line (None: the engine ended or never answered).
@@ -1008,6 +1041,8 @@ class StrataEngine:
         if len(f) >= 5 and isinstance(self.last, dict):
             self.last = {**self.last, "finish": f[3], "decode_ms": float(f[4]),
                          "generated": int(f[2]) if f[2].isdigit() else self.last.get("generated")}
+        if f[3:4] == ["nonfinite"]:
+            self._forget_nonfinite_state()
 
     def _bdone_after_eos(self, slot: int, wait_s: float = 2.0):
         """#1869: a slot consumer that leaves at its stop token has BDONE behind it in the same engine window.
@@ -1057,9 +1092,14 @@ class StrataEngine:
                     except (IndexError, ValueError):
                         tail = []
                 if line.startswith("BDONE "):
+                    if line.split()[3:4] == ["nonfinite"]:   # #879: the engine dropped the slot's state
+                        tail = []
+                        if held is self.slot_held:
+                            self._forget_nonfinite_state()
                     break
-            held[slot] = tail[:-1] if stream and tail else []
             with self.slot_cv:
+                tainted = getattr(self, "slot_tainted", []) if held is self.slot_held else []
+                held[slot] = tail[:-1] if stream and tail and not (slot < len(tainted) and tainted[slot]) else []
                 busy[slot] = False
                 self.slot_cv.notify_all()
         threading.Thread(target=wait, daemon=True).start()
@@ -1135,6 +1175,7 @@ class StrataEngine:
         admission to its BADM, a slot is BSTOPped and freed at its BDONE."""
         if not self.alive():
             raise EngineDied("the engine is unavailable; this request was not sent")
+        bias_api.validate_request(sampling or {}, self, None)
         self.progress, self.progress_ms, self.reused = None, 0, 0
         born = self.gen                                 # the engine process this request is sent to
         keys = self.sampling_keys(sampling or {})
@@ -1163,6 +1204,7 @@ class StrataEngine:
                     alone = not any(self.slot_busy) and self.waiting == 0
                 if alone and left > 1:
                     head = f"GENI {left}{keys} {embeddings}" if embeddings else f"GEN {left}{keys}"
+                    self._last_done = None                  # (#879: this request's DONE decides below)
                     self._send(f"{head} {','.join(str(int(t)) for t in prompt)}")
                     phase = "solo"
                     self._ctl_mode, self._ctl_result, self._yielded = "solo", None, None
@@ -1191,6 +1233,8 @@ class StrataEngine:
                         t = pending.pop(0)
                         out.append(t)
                         yield t
+                    if self._done_finish() == "nonfinite":    # #879 (never promoted to a slot)
+                        raise EngineNonFinite("the engine's logits became non-finite (#879)")
                     if self._yielded is not None and reserved is not None and self._yielded[0] == reserved:
                         slot, reserved = reserved, None     # gave way: the read goes on in that slot (below)
                     elif reserved is not None:              # it did not give way: the slot is free again
@@ -1222,7 +1266,7 @@ class StrataEngine:
                                 if cancel.is_set():
                                     return
                     if self._yielded is not None:           # it gave way: the others waiting then go first
-                        self.slot_held[slot] = list(prompt[:self._yielded[1]])
+                        self._keep_slot_prefix(slot, list(prompt[:self._yielded[1]]))
                         self._yielded = None
                         yields += 1
                         self.ctl.release()
@@ -1239,6 +1283,10 @@ class StrataEngine:
                     live = {"slot": slot, "state": "reading", "prompt_tokens": len(prompt), "generated": 0,
                             "started": time.time(), "first_token": None}
                     self.slot_live[slot] = live
+                    self._last_done = None                  # (#879: this admission's DONE decides below)
+                    with self.slot_cv:
+                        if slot < len(getattr(self, "slot_tainted", [])):
+                            self.slot_tainted[slot] = False
                     self._send(f"{head} {','.join(str(int(t)) for t in prompt)}")
                     self.slot_held[slot] = []               # the admission overwrites what the slot held
                     phase = "admit"
@@ -1262,6 +1310,8 @@ class StrataEngine:
                         t = pending.pop(0)
                         out.append(t)
                         yield t
+                    if not cont and self._done_finish() == "nonfinite":   # #879
+                        raise EngineNonFinite("the engine's logits became non-finite (#879)")
                     if not cont and self._yielded is not None and self._yielded[0] == slot and not cancel.is_set():
                         continue                            # gave way: again once the shorter request is in
                     break
@@ -1303,7 +1353,10 @@ class StrataEngine:
                         f = line.split()
                         self._apply_bdone(f)
                         # what the slot's sessions hold now: the prompt and every token fed (all but the last one)
-                        self.slot_held[slot] = list(prompt) + out[gen0:-1] if len(out) > gen0 else []
+                        self._keep_slot_prefix(slot, list(prompt) + out[gen0:-1] if len(out) > gen0 else [])
+                        if f[3:4] == ["nonfinite"]:              # #879: the engine dropped the slot's state
+                            self.slot_held[slot] = []
+                            raise EngineNonFinite("the engine's logits became non-finite (#879)")
                         if (going_solo and f[3:4] == ["cancel"] and not cancel.is_set() and len(out) < int(max_new)
                                 and not (out and out[-1] in EOS_IDS)):
                             # the solo path continues it: the engine copies the slot's sessions back (all but the
@@ -1360,7 +1413,7 @@ class StrataEngine:
                 self.slot_used[slot] = time.time()
                 if phase == "slot" and bdone_in:
                     stream = list(prompt) + out[gen0:] if gen0 is not None and len(out) > gen0 else None
-                    self.slot_held[slot] = stream[:-1] if stream else []     # as the BDONE wait leaves it
+                    self._keep_slot_prefix(slot, stream[:-1] if stream else [])
                     with self.slot_cv:
                         self.slot_busy[slot] = False
                         self.slot_cv.notify_all()
@@ -1420,6 +1473,7 @@ class StrataEngine:
         has gone.  A consumer that stops early (or `cancel`) makes the engine STOP, so it does not run to max_new."""
         if not self.alive():
             raise EngineDied("the engine is unavailable; this request was not sent")
+        bias_api.validate_request(sampling or {}, self, None)
         if getattr(self, "batch", 0):
             yield from self.generate_batched(ids, max_new, sampling, cancel, embeddings)
             return
@@ -1492,6 +1546,8 @@ class StrataEngine:
                 elif line.startswith("DONE"):
                     self._parse_done(line)
                     done = True
+                    if self.last.get("finish") == "nonfinite":   # #879
+                        raise EngineNonFinite("the engine's logits became non-finite (#879)")
                     return
                 elif line.startswith("ERR"):
                     done = True
@@ -2011,6 +2067,25 @@ def gpu_list(cfg: dict) -> list[int]:
     return [int(str(x).strip()) for x in items if str(x).strip() != ""]
 
 
+def engine_binary(exe: str, cfg: dict | None = None) -> str:
+    """Read feature strings from the actual SYCL engine, rather than its shell launcher."""
+    cfg = cfg or {}
+    p = Path(exe)
+    if not p.is_absolute():
+        p = Path(cfg.get("cwd") or ".") / p
+    if p.name == "strata-sycl.sh":
+        rel = (cfg.get("env") or {}).get("STRATA_SYCL_BIN") or os.environ.get("STRATA_SYCL_BIN") \
+            or "build-sycl-aot/strata"
+        # The launcher changes into its repository before interpreting STRATA_SYCL_BIN.
+        try:
+            b = p.resolve().parents[2] / rel
+            if b.is_file():
+                return str(b)
+        except (OSError, IndexError):
+            pass
+    return str(p)
+
+
 def effort_end_args(cfg: dict, exe: str, tok) -> list[str] | None:
     """#458 (opt-in): the engine arguments for "effort_position": "end" - the id of "system" as --tail-role-token, so
     the engine checkpoints in front of the trailing effort turn - or None when the config leaves it at the top (the
@@ -2022,7 +2097,7 @@ def effort_end_args(cfg: dict, exe: str, tok) -> list[str] | None:
     if pos == "start":
         return None
     try:
-        with open(exe, "rb") as f:
+        with open(engine_binary(exe, cfg), "rb") as f:
             known = b"--tail-role-token" in f.read()
     except OSError:
         known = False
@@ -2380,6 +2455,7 @@ class Service:
         self.codex_thread_titles = False              # #923 (opt-in): Codex's thread-title turns without the engine
         self.sampling_defaults = dict(sampling_defaults or {})   # the run config's `sampling` block
         self.shared = {}                              # the web app's Chat settings for every client (POST /settings)
+        self.config_effort = None                     # config default; request and shared settings take priority
         self.shared_path = None                       # where they are kept between starts (next to the config)
         self.fifo = threading.Lock()
         self.vram_reserve: int | None = None           # #533: the last POST /v1/vram reserve (None: the start's)
@@ -2484,7 +2560,11 @@ class Service:
                                        else "restoring a session", started=time.time(), first_token=None,
                                        prompt_tokens=None, generated=None, max_tokens=None)
                 try:
-                    r = self.engine.session_file(action, path)
+                    if action == "save" and getattr(self.engine, "session_save_reclaim", False):
+                        from serve.session_save_retry import session_file
+                        r = session_file(self, action, path, SessionRefused)
+                    else:
+                        r = self.engine.session_file(action, path)
                 except SessionRefused as e:
                     body = error(e.status, str(e))
                     body[1]["error"]["kind"] = e.kind
@@ -2726,12 +2806,12 @@ class Service:
     def with_shared(self, req: dict, api: str) -> dict:
         """The request with the shared thinking level and max tokens filled in where it has none of its own."""
         s = self.shared
-        if not s:
+        effort = s.get("reasoning_effort") or self.config_effort
+        if not s and not effort:
             return req
         req = dict(req)
         if "max_tokens" in s and not req.get("max_tokens") and not req.get("max_completion_tokens"):
             req["max_tokens"] = s["max_tokens"]
-        effort = s.get("reasoning_effort")
         if effort:
             if api == "openai":
                 ctk = req.get("chat_template_kwargs") if isinstance(req.get("chat_template_kwargs"), dict) else {}
@@ -3034,12 +3114,14 @@ class Service:
         room = ctx - CTX_SLACK - len(ids)
         if max_new is None or max_new <= 0 or (self.fit_max_tokens and room < 1):
             if room < 1:
-                raise ValueError(f"prompt ({len(ids)} tokens) leaves no room to answer in the context "
+                raise ValueError("request exceeds the context window: "
+                                 f"prompt ({len(ids)} tokens) leaves no room to answer in the context "
                                  f"({ctx}); requests are never truncated")
             max_new = room
         elif max_new > room:
             if not self.fit_max_tokens:
-                raise ValueError(f"prompt ({len(ids)} tokens) + max tokens ({max_new}) exceeds the context "
+                raise ValueError("request exceeds the context window: "
+                                 f"prompt ({len(ids)} tokens) + max tokens ({max_new}) exceeds the context "
                                  f"({ctx}); requests are never truncated. Send a smaller "
                                  f"max_tokens (at most {max(0, room)} here), or add \"fit_max_tokens\": true to the "
                                  "model's xestrata-<model>.json to shorten it to the room left (#545)")
@@ -3173,6 +3255,11 @@ class Service:
                   f"{el:.0f} s", flush=True)
         return now
 
+    def validate_logit_bias(self, req):
+        sampling = {**self.sampling_defaults, **self.shared,
+                    **{k: v for k, v in (req or {}).items() if v is not None}}
+        return bias_api.validate_request(sampling, self.engine, len(getattr(self.tok, "tokens", ())) or None)
+
     def run(self, ids, thinking, tools, max_new, sampling, cancel, force=None) -> Iterator[tuple[str, object]]:
         """Yields ("event", Event) as text arrives, then ("done", {"finish": .., "completion_tokens": ..}).
         `force` (forced_call): the opening of the call the reply must make - see prepare()."""
@@ -3212,6 +3299,7 @@ class Service:
             opening, force = parser.feed(force), None
         tail = ""                                       # the last characters written (the newlines before a call)
         answered, close_retried = False, False          # #1053: content or a call came out; the thinking was closed
+        nf_retried = False                              # #879: the request was sent again after non-finite logits
         timings, before = None, None                    # this request's timings; the engine's `last` before it
         recovery_count, reasoning_text, repeat_coverage = 0, "", 0.0
         looped, next_loop_check = False, LOOP_CHECK_EVERY       # #728: reasoning that repeats whole passages
@@ -3221,7 +3309,7 @@ class Service:
         # the PREVIOUS request's decode figures recorded as its own: each pass keeps its own DONE (a segment) if
         # one arrived.  A reasoning-budget continuation is another native generation, not another API request,
         # so the generated reasoning must not become this request's cached input (#615).
-        segments = []
+        segments: list[dict] = []
         trace = getattr(self.request_trace, "record", None)
         waiting = time.perf_counter()
         # #465: with "parallel" (the engine's batch slots) requests run at once: each keeps its own status and rate
@@ -3260,10 +3348,12 @@ class Service:
                         yield "event", ev
                     while True:
                         segment_before = getattr(self.engine, "last", None)
+                        segments_before = len(segments)     # (#879: a pass sent again leaves no segment)
                         gen = self.engine.generate(prompt, max_new - n, sampling, cancel, embeddings=emb) if emb \
                             else self.engine.generate(prompt, max_new - n, sampling, cancel)
                         recover_prompt = None
                         seg, wrap, leaving = [], False, False   # this pass's tokens; the budget is reached; closed
+                        nonfinite = False               # #879: the engine ended this pass on non-finite logits
                         opens = False                   # the thinking is over: write the forced call's opening
                         try:
                             for t in gen:
@@ -3326,6 +3416,8 @@ class Service:
                                     elif parser.state == "content" and not parser.buf and not detok.pending():
                                         opens = True
                                         break
+                        except EngineNonFinite:
+                            nonfinite = True
                         except EngineDied as e:
                             finish = "error"
                             self._say_died(e)
@@ -3351,6 +3443,29 @@ class Service:
                             segment_done = getattr(self.engine, "last", None)
                             if segment_done is not None and segment_done is not segment_before:
                                 segments.append(dict(segment_done))
+                        if nonfinite and not cancel.is_set():
+                            # #879: the engine emitted none of the poisoned window's tokens and reads its next prompt
+                            # from token 0.  Nothing sent yet: the same request once more, unseen by the client
+                            if n == 0 and not nf_retried:
+                                nf_retried = True
+                                # the retry reads from token 0: its DONE, not this one's, says what was reused
+                                del segments[segments_before:]
+                                print("[strata] the engine's logits became non-finite before the first token "
+                                      "(#879); it "
+                                      "dropped its cached state: sending the request again once", flush=True)
+                                continue
+                            if n == 0:
+                                finish = "error"
+                                print("[strata] the engine's logits became non-finite again on the retry (#879): the "
+                                      "request ends with an error", flush=True)
+                                raise EngineNonFinite("the model's output became non-finite (NaN) twice in a row "
+                                                      "(#879); the engine has dropped its cached state - send the "
+                                                      "request again")
+                            print(f"[strata] the engine's logits became non-finite after {n} tokens (#879): the reply "
+                                  "ends here as \"length\"; the engine dropped its cached state, so the next request "
+                                  "reads its prompt from the start", flush=True)
+                            finish = "length"
+                            break
                         if recover_prompt is not None and not cancel.is_set() and n < max_new:
                             recovery_count += 1
                             # Only the two settings that keep the same words coming are raised (temperature to at
@@ -4545,6 +4660,10 @@ def make_handler(svc: Service):
                     self._count_tokens(req)
                 else:
                     self._json(404, {"error": {"message": "not found"}})
+            except EngineNonFinite as e:                    # #879, twice: not the request's fault
+                print(f"[strata] 503: {e}", flush=True)
+                self._json(503, responses_error_body(str(e), "server_error") if path == "/v1/responses"
+                           else {"error": {"type": "server_error", "message": str(e)}})
             except ValueError as e:
                 print(f"[strata] 400 invalid request: {e}", flush=True)
                 if path == "/v1/responses":
@@ -4782,6 +4901,7 @@ def make_handler(svc: Service):
 
         def _openai(self, req):
             req = svc.with_shared(req, "openai")
+            bias_api.normalize(req.get("logit_bias"), len(getattr(svc.tok, "tokens", ())) or None)
             messages, tools, kw = openai_to_messages(req)
             self._no_local_images(messages)
             if tool_choice_of(req.get("tool_choice"))[0] == "none":   # as the Responses route: no tools are offered
@@ -4791,6 +4911,7 @@ def make_handler(svc: Service):
             if validator is not None and (tools or req.get("strata_mcp")):
                 raise ValueError("structured response_format with tools/MCP is not supported")
             svc.load()
+            svc.validate_logit_bias(req)
             max_req = max_new = int(req.get("max_completion_tokens") or req.get("max_tokens") or 0)   # 0/-1: the rest
             use_mcp = req.get("strata_mcp") is True and svc.mcp is not None      # the web app's opt-in (serve/mcp.py)
             own = {t.get("name") for t in tools or [] if isinstance(t, dict)}   # #592: a second line of defence
@@ -4903,6 +5024,8 @@ def make_handler(svc: Service):
                 except EngineDied as e:
                     return self._json(503, responses_error_body(f"{e}; the next request restarts it", "server_error",
                                                                 code="server_error"))
+                except EngineNonFinite as e:                 # #879, twice: not the request's fault
+                    return self._json(503, responses_error_body(str(e), "server_error", code="server_error"))
                 except ValueError as e:                      # the engine's ERR line
                     return self._json(500, responses_error_body(str(e), "server_error", code="server_error"))
                 return self._json(200, result)
@@ -4949,9 +5072,14 @@ def make_handler(svc: Service):
 
         def _responses_prepare(self, req):
             responses_api.check_request(req)
+            try:
+                bias_api.normalize(req.get("logit_bias"), len(getattr(svc.tok, "tokens", ())) or None)
+            except ValueError as e:
+                raise ResponsesError(str(e), "logit_bias") from None
             messages = responses_api.input_messages(req)
             tools, names, skipped = responses_api.request_tools(req)
-            kw = responses_api.template_kwargs(req, svc.shared)
+            defaults = {"reasoning_effort": svc.config_effort, **svc.shared}
+            kw = responses_api.template_kwargs(req, defaults)
             try:
                 self._no_local_images(messages)              # as on the chat route: no file read for a foreign page
             except ValueError as e:
@@ -4976,6 +5104,10 @@ def make_handler(svc: Service):
             except ValueError as e:
                 raise ResponsesError(str(e), "stop") from None
             svc.load()
+            try:
+                svc.validate_logit_bias(req)
+            except ValueError as e:
+                raise ResponsesError(str(e), "logit_bias") from None
             # #924 (opt-in): a Codex compaction request is rendered with its conversation's tools, so its prompt
             # starts as the cached one did; the parser and the response keep the request's own tools
             shown = responses_api.prompt_tools(req, tools) if svc.codex_compaction_cache else tools
@@ -5014,6 +5146,7 @@ def make_handler(svc: Service):
         def _anthropic(self, req):
             svc.load()
             req = svc.with_shared(req, "anthropic")
+            svc.validate_logit_bias(req)                      # reject unsupported defaults before SSE starts
             messages, tools, kw = anthropic_to_messages(req, svc.anthropic_think_unasked)
             self._no_local_images(messages)
             if tool_choice_of(req.get("tool_choice"))[0] == "none":   # Anthropic's {"type": "none"}: no tools offered
@@ -5286,7 +5419,7 @@ def origins_of(value, key: str, wildcard: bool) -> list[str]:
 
 
 SHARED_KEYS = ("reasoning_effort", "reasoning_budget_tokens", "temperature", "top_p", "top_k", "seed", "max_tokens",
-               "experimental_speed_projection")
+               "experimental_speed_projection", "logit_bias")
 
 
 def clean_shared_defaults(d) -> dict:
@@ -5300,7 +5433,9 @@ def clean_shared_defaults(d) -> dict:
         if value is None or value == "":
             continue
         number = isinstance(value, (int, float)) and not isinstance(value, bool)
-        if key == "reasoning_effort":
+        if key == "logit_bias":
+            value = bias_api.normalize(value)   # loaded vocabulary/capability checked before generation/SSE
+        elif key == "reasoning_effort":
             if value not in ("none", "low", "medium", "high"):
                 raise ValueError("reasoning_effort: none, low, medium or high")
         elif key == "temperature":
@@ -5330,6 +5465,35 @@ def clean_shared_defaults(d) -> dict:
     return out
 
 
+def lift_reasoning_effort_arg(cfg: dict) -> None:
+    """Migrate the legacy server thinking option out of engine args, validating it before startup."""
+    args = cfg.get("args")
+    if not isinstance(args, list):
+        return
+    out, value, i = [], None, 0
+    while i < len(args):
+        a = args[i]
+        if a == "--reasoning-effort":
+            if i + 1 >= len(args) or str(args[i + 1]).startswith("--"):
+                raise ValueError("--reasoning-effort needs none, low, medium or high")
+            value, i = args[i + 1], i + 2
+            if not clean_shared_defaults({"reasoning_effort": value}).get("reasoning_effort"):
+                raise ValueError("--reasoning-effort needs none, low, medium or high")
+        elif isinstance(a, str) and a.startswith("--reasoning-effort="):
+            value, i = a.partition("=")[2], i + 1
+            if not value:
+                raise ValueError("--reasoning-effort needs none, low, medium or high")
+            clean_shared_defaults({"reasoning_effort": value})
+        else:
+            out.append(a)
+            i += 1
+    if value is not None:
+        cfg["args"] = out
+        if cfg.get("reasoning_effort") is None:
+            cfg["reasoning_effort"] = value
+        print("[strata] --reasoning-effort moved from engine args to config reasoning_effort", flush=True)
+
+
 def sampling_defaults_from_config(cfg: dict) -> dict:
     """The run config's optional `sampling` block: defaults for the sampling fields a request leaves out, so
     a plain client gets configured sampling instead of greedy.  Supported: temperature, top_p, top_k, min_p,
@@ -5342,7 +5506,12 @@ def sampling_defaults_from_config(cfg: dict) -> dict:
         if value is None:
             continue
         number = isinstance(value, (int, float)) and not isinstance(value, bool)
-        if key == "temperature":
+        if key == "logit_bias":
+            try:
+                out[key] = bias_api.normalize(value)
+            except ValueError as e:
+                raise SystemExit(f"[strata] config sampling.{e}") from None
+        elif key == "temperature":
             if not number or value < 0:
                 raise SystemExit(f"[strata] config sampling.temperature={value!r}: expected a number >= 0 (0 = greedy)")
             out[key] = float(value)
@@ -5435,6 +5604,11 @@ def main() -> int:
                          "conversation the engine holds, to or from DIR/NAME (also \"slot_save_path\" in the config)")
     a = ap.parse_args()
     cfg = json.loads(Path(a.config).read_text(encoding="utf-8-sig")) if a.config else {}   # Notepad adds a BOM
+    try:
+        lift_reasoning_effort_arg(cfg)
+        config_effort = clean_shared_defaults({"reasoning_effort": cfg.get("reasoning_effort")}).get("reasoning_effort")
+    except ValueError as e:
+        raise SystemExit(f"[strata] config {e}")
     if a.gpu is not None:
         cfg["gpu"] = int(a.gpu) if a.gpu.strip().isdigit() else a.gpu
     a.host = a.host or cfg.get("host") or "127.0.0.1"   # issue #26: the run scripts pass no --host, the config can
@@ -5532,6 +5706,7 @@ def main() -> int:
     svc.vision_error = vision_error
     svc.vision_fallback = vision_fallback
     svc.reasoning_close_retry = cfg.get("reasoning_close_retry") is True    # #1053: opt-in, off by default
+    svc.config_effort = config_effort
     svc.codex_thread_titles = cfg.get("codex_thread_titles") is True    # #923: opt-in, off by default
     svc.codex_compaction_cache = cfg.get("codex_compaction_cache") is True   # #924: opt-in, off by default
     try:
@@ -5685,6 +5860,11 @@ def main() -> int:
                 proc = getattr(engine, "proc", None)
                 if proc:
                     proc.kill()
+        try:
+            from serve import cache_drop
+            cache_drop.drop_after_exit(engine)           # default off; helper refuses a still-live engine
+        except Exception as e:  # noqa: BLE001 - an optional cache hint must never block exit
+            print(f"[strata] could not release the model files' cache: {e}", flush=True)
         print("[strata] stopped", flush=True)
     return 0
 

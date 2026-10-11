@@ -83,6 +83,15 @@ public:
     /// The head's raw logits for the first `rows` tokens of the last window (the last stage's head):
     /// `rows` x n_vocab floats into `host`.  For --dump-logits; call after `run`, before the next window.
     bool read_logits(int rows, float* host, std::string& err) const;
+    /// Read only after the window's existing queue/event completion. No concurrent host-USM polling.
+    /// The stage with the head owns flags; an earlier layer-split stage delegates to it.
+    int nonfinite_row() const { return next_ != nullptr && !last_stage() ? next_->nonfinite_row() : nf_row_; }
+    int64_t nonfinite_pos() const { return next_ != nullptr && !last_stage() ? next_->nonfinite_pos() : nf_pos_; }
+    bool nonfinite_in(int t) const {
+        if (next_ != nullptr && !last_stage()) return next_->nonfinite_in(t);
+        return t >= 0 && t < 32 && ((nf_mask_ >> t) & 1u) != 0;
+    }
+    static bool nan_guard_on();
     /// The sampling the verify window's head applies (temperature / top_p / top_k / seed).  Set per
     /// request; greedy by default.  The sampling itself runs OUTSIDE the captured graph - its
     /// parameters would otherwise be baked forever - so this can change between requests freely.
@@ -374,6 +383,11 @@ private:
     int32_t* h_commit_ = nullptr; int32_t* m_commit_ = nullptr; // [n_keep, n_keep-1, pos_0 .. pos_{T-1}]
     float* h_ple_ = nullptr;     float* m_ple_ = nullptr;       // T * n_embd
     int32_t* h_out_ = nullptr;   int32_t* m_out_ = nullptr;     // T argmax ids
+    uint32_t* h_nf_ = nullptr;   uint32_t* m_nf_ = nullptr;     // #879: kVerifyMaxT * kNonfiniteBlocks flags
+    int64_t nf_pos_ = -1;                 ///< nonfinite_pos()
+    int nf_row_ = -1;                     ///< nonfinite_row()
+    uint32_t nf_mask_ = 0;                ///< nonfinite_in(): bit t = row t
+    void note_nonfinite(int T, const int64_t* pos_b);   ///< the window's flags (+ STRATA_NAN_INJECT) -> nf_row_
     float* h_x_ = nullptr;       float* m_x_ = nullptr;         // doorbell payload: T * n_embd
     int32_t* h_ids_ = nullptr;   int32_t* m_ids_ = nullptr;     // T * k
     float* h_w_ = nullptr;       float* m_w_ = nullptr;         // T * k

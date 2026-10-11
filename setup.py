@@ -46,6 +46,7 @@ import math
 import os
 import platform
 import re
+import shlex
 import shutil
 import struct
 import subprocess
@@ -1188,8 +1189,18 @@ def get_llama_cpp():
     download(LLAMA_CPP_ZIP, z, "llama.cpp source")
     tmp = ROOT / "third_party" / "main" / "_unpack"
     shutil.rmtree(tmp, ignore_errors=True)
-    with zipfile.ZipFile(z) as f:
-        f.extractall(tmp)
+    try:
+        with zipfile.ZipFile(z) as f:
+            # The engine uses ggml and mtmd, not llama.cpp's separate web UI.
+            f.extractall(tmp, [name for name in f.namelist() if "/tools/ui/" not in name])
+    except zipfile.BadZipFile:
+        # Upstream #1797: a .done mark must not keep a damaged source archive.
+        try:
+            z.unlink(missing_ok=True)
+            z.with_name(z.name + ".done").unlink(missing_ok=True)
+        except OSError as e:
+            warn(f"cannot remove damaged {z.name} ({e}): delete it and its .done mark before running setup again")
+        raise
     top = next(tmp.iterdir())
     if llama.exists():
         shutil.rmtree(llama)
@@ -2476,6 +2487,28 @@ def settings_summary(cfg: dict, port=None) -> str:
     return " ".join(out) + ("; " if out else "") + "server " + ", ".join(srv)
 
 
+def offer_http_bench(cfg_path: Path, port: int, yes=False):
+    """Interactive, default no: show an attach-only command for another terminal; never run a benchmark here."""
+    tool = ROOT / "tools" / "strata_bench.py"
+    if yes:
+        return False
+    try:
+        interactive = bool(sys.stdin and sys.stdin.isatty())
+    except (AttributeError, OSError, ValueError):
+        interactive = False
+    if not interactive or not tool.is_file():
+        return False
+    if ask("Show the optional HTTP benchmark command for another terminal? (does not run it)",
+           ["y", "n"], "n", False) != "y":
+        return False
+    cmd = [sys.executable, str(tool), "--url", f"http://127.0.0.1:{port}", "--config", str(cfg_path),
+           "--out", str(STATE / "bench" / "results")]
+    say("After the server is loaded and idle, in another terminal: " + " ".join(shlex.quote(v) for v in cmd))
+    say("This HTTP suite sends requests; xestrata --bench is the separate native engine benchmark.")
+    say("Guide: " + str(ROOT / "docs" / "COMMUNITY_BENCHMARKS.md"))
+    return True
+
+
 def start(cfg_path: Path, port: int | None, gpu: int | list | None = None, open_browser=True, yes=False,
           layer_split=None, reserve: int | None = None, browser: bool | None = None) -> int:
     """reserve: --vram-reserve-mib given on this start, kept in the model's args from now on (#493).  browser:
@@ -3663,6 +3696,7 @@ def main() -> int:
         say("  Images:           send them in the chat page, in chat.py (/image <path>) or over the API")
     if a.no_start:
         return 0
+    offer_http_bench(cfg_path, port, a.yes)
     return start(cfg_path, port)
 
 

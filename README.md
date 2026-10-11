@@ -164,6 +164,9 @@ In `xestrata --setup`'s questions, pressing Enter takes the recommended choice.
 **Fitting it to your PC:** `xestrata --calibrate` measures some of the engine's settings on this PC and keeps the
 fastest (about 5-10 minutes).
 
+The separate [HTTP community suite](docs/COMMUNITY_BENCHMARKS.md) attaches to your dedicated, already-loaded server:
+`./bench.sh --url http://127.0.0.1:8095`. It does not start or stop the server; it reports request timing and cache reuse.
+
 **Measuring its speed:** `xestrata --bench` measures the installed IQ3_XXS's speed on this PC (another model: `--model IQ2_XS`, for example) and where the time goes,
 and writes a record to the data folder's `records/bench-<time>/` (about 40 minutes; stop a running xestrata first).
 Each case runs twice; `--bench-rounds 3`, for example, changes that (about 20 minutes more a round).

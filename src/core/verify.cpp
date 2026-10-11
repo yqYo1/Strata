@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 // src/core/verify.cpp - see include/strata/core/verify.hpp.
 #include "strata/core/verify.hpp"
+#include "strata/core/nonfinite.hpp"
 
 #include "strata/core/native_head.hpp"
 #include "strata/core/on_device.hpp"
@@ -184,7 +185,7 @@ Verifier::~Verifier() {
     if (commit_done_) strata::gpu::event_destroy(commit_done_);
     if (arena_) strata::gpu::free(arena_);
     void* hosts[] = {h_tok_, h_step_, h_pos_, h_commit_, h_ple_, h_out_, h_x_, h_ids_, h_w_, h_seq_, h_flag_, h_ymiss_,
-                     h_flagA_, h_plan_, h_flagB_};
+                     h_flagA_, h_plan_, h_flagB_, h_nf_};
     for (void* h : hosts)
         if (h) strata::gpu::free(h);
 }
@@ -267,6 +268,8 @@ bool Verifier::init(const WeightTable& wt, const ModelGeometry& g, SessionState&
               mapped((2 + T) * 4 + 16, (void**) &h_commit_, (void**) &m_commit_) &&
               mapped(T * N * 4, (void**) &h_ple_, (void**) &m_ple_) &&
               mapped(T * 4 + 16, (void**) &h_out_, (void**) &m_out_) &&
+              mapped((size_t) strata::kernels::kVerifyMaxT * strata::kernels::kNonfiniteBlocks * sizeof(uint32_t),
+                     (void**) &h_nf_, (void**) &m_nf_) &&
               mapped(T * N * 4, (void**) &h_x_, (void**) &m_x_) &&
               mapped(T * K * 4, (void**) &h_ids_, (void**) &m_ids_) &&
               mapped(T * K * 4, (void**) &h_w_, (void**) &m_w_) &&
@@ -1253,6 +1256,7 @@ bool Verifier::record_window(int T, strata::gpu::Stream cs, std::string& err) {
         sp.greedy = true;
         sp.temperature = 0.0f;
         sample_tokens(head_logits_, T, (int) n_vocab_, nullptr, 0, sp, m_out_, cs);
+        if (nan_guard_on()) logits_nonfinite_rows(head_logits_, T, (int) n_vocab_, m_nf_, cs);
     }
     stamp(g.n_layers, 1, 0);
     return true;
@@ -1645,6 +1649,7 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
         }
     }
     for (int t = 0; t < T; ++t) out[t] = ((volatile int32_t*) h_out_)[t];
+    note_nonfinite(T, nullptr);
     if (static const bool dbg = std::getenv("STRATA_DBG_NAN") != nullptr; dbg) {   // debug: the first non-finite head
         static bool reported = false;
         if (!reported) {
@@ -2107,6 +2112,7 @@ bool Verifier::run_slot_rows(const int* rows, int S, const int32_t* tokens, cons
     }
     if (!sample_rows(S, err)) return false;
     for (int t = 0; t < S; ++t) out[t] = ((volatile int32_t*) h_out_)[t];
+    note_nonfinite(S, last_pos_b_);
     progress_at("decode");
     progress_beat();
     return true;
@@ -2239,6 +2245,7 @@ int Verifier::batch_poll(PoolMultiFn pool, void* user, std::string& err) {
     if (last_stage()) {
         if (!sample_rows(S, err)) { b_running_ = false; return -1; }
         for (int t = 0; t < S; ++t) b_out_[t] = ((volatile int32_t*) h_out_)[t];
+        note_nonfinite(S, last_pos_b_);
     } else if (next_ != nullptr && next_->hand_in_ != hand_out_) {   // the next stage on another GPU: its rows
         const size_t HB = (size_t) handoff_floats(*g_);
         std::memcpy(const_cast<float*>(next_->hand_in_) + (size_t) row_base_ * HB, hand_out_ + (size_t) row_base_ * HB,
@@ -2248,6 +2255,53 @@ int Verifier::batch_poll(PoolMultiFn pool, void* user, std::string& err) {
     b_running_ = false;
     progress_beat();
     return 1;
+}
+
+bool Verifier::nan_guard_on() {
+    static const bool on = [] {
+        const char* v = std::getenv("STRATA_NAN_GUARD");
+        return v == nullptr || std::strcmp(v, "0") != 0;   // only an explicit 0 disables this guard
+    }();
+    return on;
+}
+
+namespace {
+const std::vector<long long>& nan_inject_list() {
+    static const std::vector<long long> list = [] {
+        std::vector<long long> v;
+        if (const char* e = std::getenv("STRATA_NAN_INJECT"))
+            for (const char* q = e; *q != 0;) {
+                char* end = nullptr;
+                const long long n = std::strtoll(q, &end, 10);
+                if (end == q) break;
+                if (n > 0) v.push_back(n);
+                q = *end == ',' ? end + 1 : end;
+            }
+        return v;
+    }();
+    return list;
+}
+std::atomic<long long> g_nf_windows{0};
+}  // namespace
+
+void Verifier::note_nonfinite(int T, const int64_t* pos_b) {
+    nf_row_ = -1;
+    nf_pos_ = -1;
+    nf_mask_ = 0;
+    if (!nan_guard_on() || h_nf_ == nullptr || !last_stage()) return;
+    // The caller has already completed the graph/queue. These are ordinary reads, never a host-USM spin loop.
+    nf_mask_ = nonfinite_mask(h_nf_, T, strata::kernels::kNonfiniteBlocks);
+    const auto& inject = nan_inject_list();
+    if (!inject.empty()) {
+        const long long k = g_nf_windows.fetch_add(1) + 1;
+        if (nf_mask_ == 0 && std::find(inject.begin(), inject.end(), k) != inject.end()) {
+            nf_mask_ = 1u;
+            std::fprintf(stderr, "strata verify: STRATA_NAN_INJECT: window %lld reported as non-finite\n", k);
+        }
+    }
+    for (int t = 0; t < T && t < strata::kernels::kVerifyMaxT && nf_row_ < 0; ++t)
+        if ((nf_mask_ >> t) & 1u) nf_row_ = t;
+    if (nf_row_ >= 0) nf_pos_ = pos_b != nullptr ? pos_b[nf_row_] : last_pos0_ + nf_row_;
 }
 
 bool Verifier::sample_rows(int S, std::string& err) {
@@ -2590,6 +2644,11 @@ bool Verifier::pl_finish(int32_t* out, std::string& err) {
     using namespace strata::kernels;
     const OnDevice on_device(device_);
     const ModelGeometry& g = *g_;
+    // This is normally established by done(). Refuse an early caller before reading host-USM flags.
+    if (nan_guard_on() && last_stage() && (!ev_done_ || !strata::gpu::event_query(ev_done_))) {
+        err = "verify: non-finite flags requested before pipelined window completion";
+        return false;
+    }
     fl_active_ = false;
     if (fl_prof_) accumulate_profile(prof_pin_);
     ++windows;
@@ -2614,6 +2673,7 @@ bool Verifier::pl_finish(int32_t* out, std::string& err) {
     }
     if (out != nullptr)
         for (int t = 0; t < T; ++t) out[t] = ((volatile int32_t*) h_out_)[t];
+    note_nonfinite(T, nullptr);
     progress_beat();
     return true;
 }
