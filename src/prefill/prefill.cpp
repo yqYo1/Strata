@@ -1115,10 +1115,25 @@ struct PfExpertTransfers {
         bytes += extent;
     }
 };
+// Consumer-owned fields: never written or read by the copy issuer.
+struct PfRouteCensus {
+    bool routing_observed = false, mmq_enabled = false, plan_fallback = false;
+    bool mmq_direct = false, group_gather = false;
+    uint64_t routed_rows = 0, expected_rows = 0, active_experts = 0;
+    uint64_t active_nonresident = 0, zero_nonresident = 0;
+    uint64_t group_accepted = 0, group_declined = 0, individual_gather = 0;
+    uint64_t native_dequant_gu = 0, native_dequant_down = 0;
+    static void add(uint64_t& counter, uint64_t value = 1) {
+        if (value > std::numeric_limits<uint64_t>::max() - counter)
+            throw std::runtime_error("prefill route census counter overflow");
+        counter += value;
+    }
+};
 struct PfTransferChunk {
     int64_t offset, pos, tokens;
     bool stream_all, threaded;
     std::vector<PfExpertTransfers> layers;
+    std::vector<PfRouteCensus> census;
 };
 struct PfTimer {
     bool on = std::getenv("STRATA_PREFILL_TIMING") != nullptr;
@@ -1339,7 +1354,19 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
         // Before the issuer/its join guard: a threaded issuer owns these writes,
         // and the consumer reads/moves them only after join and checked drains.
         std::vector<PfExpertTransfers> chunk_transfers;
-        if (transfer_counts) chunk_transfers.resize((size_t) (LE - LB));
+        // Also before the join guard, with exclusive consumer ownership. Disabled
+        // counts allocate no census storage and perform no additional routing scan.
+        std::vector<PfRouteCensus> chunk_census;
+        if (transfer_counts) {
+            chunk_transfers.resize((size_t) (LE - LB));
+            chunk_census.resize((size_t) (LE - LB));
+            const MmqPlan& plan = mmq_plan();
+            for (int64_t l = LB; l < LE; ++l) {
+                auto& c = chunk_census[(size_t) (l - LB)];
+                c.mmq_enabled = plan.any && (size_t) l < plan.layer.size() && plan.layer[(size_t) l];
+                c.plan_fallback = plan.fallback;
+            }
+        }
         struct StreamEntry { int32_t l, e; const uint8_t* blob; int job; };
         std::vector<StreamEntry> seq;
         std::vector<size_t> seq_start;
@@ -1857,6 +1884,30 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
                     }
                     const strata::kernels::cpu::ExpertLayout& lay = strata::kernels::cpu::expert_layout();
                     const bool use_mmq = mmq_plan().any && mmq_plan().layer[(size_t) l];
+                    PfRouteCensus* census = transfer_counts ? &chunk_census[(size_t) (l - LB)] : nullptr;
+                    if (census) {
+                        census->routing_observed = true;
+                        census->mmq_enabled = use_mmq;
+                        census->plan_fallback = mmq_plan().fallback;
+                        if (T < 0 || K <= 0 || (uint64_t) T > std::numeric_limits<uint64_t>::max() / (uint64_t) K)
+                            throw std::runtime_error("prefill route census expected rows overflow");
+                        census->expected_rows = (uint64_t) T * (uint64_t) K;
+                        for (int32_t e = 0; e < m.g->n_expert; ++e) {
+                            const int32_t rows = m.cnt[(size_t) e];
+                            if (rows < 0) throw std::runtime_error("prefill route census negative rows");
+                            PfRouteCensus::add(census->routed_rows, (uint64_t) rows);
+                            const bool resident = m.host_res && m.cache &&
+                                                  m.host_res[(size_t) l * m.g->n_expert + e] >= 0;
+                            if (rows > 0) {
+                                PfRouteCensus::add(census->active_experts);
+                                if (!resident) PfRouteCensus::add(census->active_nonresident);
+                            } else if (!resident) {
+                                PfRouteCensus::add(census->zero_nonresident);
+                            }
+                        }
+                        if (census->routed_rows != census->expected_rows)
+                            throw std::runtime_error("prefill route census row total mismatch");
+                    }
                     // set_cpu_pool: the experts the CPU computes this layer (their rows last: [T * K - rows_cpu, T * K))
                     std::vector<char> on_cpu;
                     int64_t rows_cpu = 0, n_cpu = 0, n_stream = 0;
@@ -2122,6 +2173,7 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
                         return v == nullptr || std::strtol(v, nullptr, 10) != 0;
                     }();
                     const bool group_gather = group_env && stream_all && use_mmq && !mmq_direct;
+                    if (census) { census->mmq_direct = mmq_direct; census->group_gather = group_gather; }
                     mmq::GatherGroup gg;
                     int gg_slots[MMQ_GROUP];
                     int gg_nslots = 0;            // ring slots gathered by the next flush
@@ -2134,12 +2186,15 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
                                 publication::require(strata::gpu::stream_wait_event(m.cs, m.copied[gg_slots[gg_nslots - 1]]), "strata::gpu::stream_wait_event(m.cs, m.copied[gg_slots[gg_nslots - 1]])", strata::gpu::last_error);
                                 pt.mark(kPfDequant, cs);
                             }
-                            if (!mmq::gather_native_group(gg, f.up_off, mmq_gub / 2, f.down_off, mmq_db, m.grp_gu, mmq_gub,
-                                                          m.grp_d, mmq_db, m.cs)) {
+                            const bool accepted = mmq::gather_native_group(gg, f.up_off, mmq_gub / 2, f.down_off, mmq_db,
+                                                                           m.grp_gu, mmq_gub, m.grp_d, mmq_db, m.cs);
+                            if (census) PfRouteCensus::add(accepted ? census->group_accepted : census->group_declined);
+                            if (!accepted) {
                                 for (int i = gg.first; i < gg.n; ++i) {   // not 16-byte aligned: one at a time
                                     const uint8_t* b = gg.blob[i];
                                     mmq::gather_native(b, b + f.up_off, mmq_gub / 2, b + f.down_off, mmq_db,
                                                        m.grp_gu + i * mmq_gub, m.grp_d + i * mmq_db, m.cs);
+                                    if (census) PfRouteCensus::add(census->individual_gather);
                                 }
                             }
                             if (gg_nslots > 0) {
@@ -2178,6 +2233,7 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
                                 // gather the expert into its group slot (its GGUF blocks; mmq_plan takes native packs)
                                 mmq::gather_native(blob_dev, blob_dev + f.up_off, mmq_gub / 2, blob_dev + f.down_off,
                                                    mmq_db, m.grp_gu + q * mmq_gub, m.grp_d + q * mmq_db, m.cs);
+                                if (census) PfRouteCensus::add(census->individual_gather);
                                 if (slot >= 0) { publication::require(strata::gpu::event_record(m.used[slot], m.cs), "strata::gpu::event_record", strata::gpu::last_error); m.used_of[slot] = slot; }
                             }
                             if (q + 1 < MMQ_GROUP && j + 1 < order.size()) return true;
@@ -2220,7 +2276,9 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
                             const auto& f = lay.fmt[(size_t) l];
                             strata::kernels::iq_dequant_gu_f16(f.gu_type, blob_dev, blob_dev + f.up_off, f.n_ff, f.n_embd,
                                                                gu16, m.cs);
+                            if (census) PfRouteCensus::add(census->native_dequant_gu);
                             strata::kernels::iq_dequant_f16(f.d_type, blob_dev + f.down_off, f.n_embd * f.n_ff, d16, m.cs);
+                            if (census) PfRouteCensus::add(census->native_dequant_down);
                         } else {
                             blob_dequant_f16(blob_dev, gu16, d16, m.cs);
                         }
@@ -2395,7 +2453,8 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
         }
         chunk_stager_done.complete();
         if (transfer_counts)
-            transfer_chunks.push_back({c0, p0, T, stream_all, threaded_issue, std::move(chunk_transfers)});
+            transfer_chunks.push_back({c0, p0, T, stream_all, threaded_issue, std::move(chunk_transfers),
+                                       std::move(chunk_census)});
         stats_.tokens += T;
         core::progress_at("reading the prompt (batched): finishing the chunk from token", p0);
         pt.mark(kPfStart, cs);
@@ -2551,6 +2610,28 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
                              chunk.threaded ? "thread" : "inline", layout.native ? "native_gguf" : "canonical_q2_0",
                              gu_type, down_type, (unsigned long long) layout.blob_bytes(l),
                              (unsigned long long) count.calls, (unsigned long long) count.bytes);
+            }
+        }
+        // Separate grammar: successful wrapper returns and host routing facts.
+        for (const auto& chunk : transfer_chunks) {
+            for (size_t i = 0; i < chunk.census.size(); ++i) {
+                const auto& c = chunk.census[i];
+                std::fprintf(stderr, "strata prefill route census v1: device=%d stage=[%lld,%lld) chunk_offset=%lld pos=%lld "
+                                     "tokens=%lld layer=%lld mode=%s issuer=%s routing_observed=%d mmq_enabled=%d "
+                                     "plan_fallback=%d mmq_direct=%d group_gather=%d routed_rows=%llu expected_rows=%llu "
+                                     "active_experts=%llu active_nonresident=%llu zero_nonresident=%llu "
+                                     "gather_group_accepted_calls=%llu gather_group_declined_calls=%llu gather_individual_calls=%llu "
+                                     "native_dequant_gu_calls=%llu native_dequant_down_calls=%llu completion=checked\n",
+                             m.device, (long long) LB, (long long) LE, (long long) chunk.offset, (long long) chunk.pos,
+                             (long long) chunk.tokens, (long long) LB + (long long) i,
+                             chunk.stream_all ? "full_nonresident_stream" : "routed", chunk.threaded ? "thread" : "inline",
+                             (int) c.routing_observed, (int) c.mmq_enabled, (int) c.plan_fallback,
+                             (int) c.mmq_direct, (int) c.group_gather, (unsigned long long) c.routed_rows,
+                             (unsigned long long) c.expected_rows, (unsigned long long) c.active_experts,
+                             (unsigned long long) c.active_nonresident, (unsigned long long) c.zero_nonresident,
+                             (unsigned long long) c.group_accepted, (unsigned long long) c.group_declined,
+                             (unsigned long long) c.individual_gather, (unsigned long long) c.native_dequant_gu,
+                             (unsigned long long) c.native_dequant_down);
             }
         }
         std::fprintf(stderr, "strata prefill expert H2D total: scope=this_prefill_stage_run device=%d stage=[%lld,%lld) "
