@@ -1,0 +1,85 @@
+{
+  "created_utc": "2026-10-11T04:26:29.936613+00:00",
+  "prior_capacity_record_sha256": "4aa7b2d2c0ae632d40771a61072aca7e144ba6f9e357fdef212bcdf73ffecd31",
+  "current_ancestors": [
+    {
+      "path": "/sys/devices/pci0000:00/0000:00:01.2/0000:01:00.0/0000:02:02.0/0000:03:00.0/0000:04:01.0/0000:05:00.0",
+      "values": {
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "class": "0x030000",
+        "current_link_speed": "2.5 GT/s PCIe",
+        "current_link_width": "1",
+        "max_link_speed": "2.5 GT/s PCIe",
+        "max_link_width": "1"
+      }
+    },
+    {
+      "path": "/sys/devices/pci0000:00/0000:00:01.2/0000:01:00.0/0000:02:02.0/0000:03:00.0/0000:04:01.0",
+      "values": {
+        "vendor": "0x8086",
+        "device": "0xe2f0",
+        "class": "0x060400",
+        "current_link_speed": "2.5 GT/s PCIe",
+        "current_link_width": "1",
+        "max_link_speed": "2.5 GT/s PCIe",
+        "max_link_width": "1"
+      }
+    },
+    {
+      "path": "/sys/devices/pci0000:00/0000:00:01.2/0000:01:00.0/0000:02:02.0/0000:03:00.0",
+      "values": {
+        "vendor": "0x8086",
+        "device": "0xe2ff",
+        "class": "0x060400",
+        "current_link_speed": "16.0 GT/s PCIe",
+        "current_link_width": "4",
+        "max_link_speed": "16.0 GT/s PCIe",
+        "max_link_width": "8"
+      }
+    },
+    {
+      "path": "/sys/devices/pci0000:00/0000:00:01.2/0000:01:00.0/0000:02:02.0",
+      "values": {
+        "vendor": "0x1022",
+        "device": "0x57a3",
+        "class": "0x060400",
+        "current_link_speed": "16.0 GT/s PCIe",
+        "current_link_width": "4",
+        "max_link_speed": "16.0 GT/s PCIe",
+        "max_link_width": "4"
+      }
+    },
+    {
+      "path": "/sys/devices/pci0000:00/0000:00:01.2/0000:01:00.0",
+      "values": {
+        "vendor": "0x1022",
+        "device": "0x57ad",
+        "class": "0x060400",
+        "current_link_speed": "16.0 GT/s PCIe",
+        "current_link_width": "4",
+        "max_link_speed": "16.0 GT/s PCIe",
+        "max_link_width": "8"
+      }
+    },
+    {
+      "path": "/sys/devices/pci0000:00/0000:00:01.2",
+      "values": {
+        "vendor": "0x1022",
+        "device": "0x1483",
+        "class": "0x060400",
+        "current_link_speed": "16.0 GT/s PCIe",
+        "current_link_width": "4",
+        "max_link_speed": "16.0 GT/s PCIe",
+        "max_link_width": "8"
+      }
+    }
+  ],
+  "prior_reviewed_research": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round207-gpu-vram-pcie-ceilings-and-prefill-demand.txt",
+    "sha256": "0feee87520b59a157218320e66f5f716a2f515767fede7e9c897d59e8f64974f"
+  },
+  "correction": "The GPU leaf reports2.5GT/s x1, as already cautioned in R207. Do not derive the effective PCIe ceiling from that leaf. The external upstream path and measured application transfers are separate evidence. No cause of this leaf reading or new transfer rate was established by these metadata reads.",
+  "gpu_commands_executed": false,
+  "transfers_measured": false
+}

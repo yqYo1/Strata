@@ -1,0 +1,46 @@
+{
+  "created_utc": "2026-10-11T04:25:18.381305+00:00",
+  "gpu_pci": "0000:05:00.0",
+  "sysfs_links": {
+    "current_link_speed": "2.5 GT/s PCIe",
+    "current_link_width": "1",
+    "max_link_speed": "2.5 GT/s PCIe",
+    "max_link_width": "1"
+  },
+  "source_revision": "51436a0 + exact reviewed per-layer-fill patch; not a clean514 tree",
+  "source_pins": {
+    "src/prefill/prefill.cpp": "fe0b5939b1ebeb0a958f8deebbc6037c1c7ae3dce7de138ab51c08361ee9ea02",
+    "src/core/gpu.cpp": "a844eeb381e1cb9f1272f1f68f754a73640d44aa6d6e89b743ecfc793bc2a8ef",
+    "src/program/generate.cpp": "c9b60ef079694302dfa1f8099ddffd5375d7dae503f6edec454c1d7de3d941ee"
+  },
+  "observed_baseline_model_v4": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-source-llvm-model8k-root-v4/record.json",
+    "sha256": "6d51051f9d03c0473ae263d57053f1231845d4a8699552b0aee0425479e7efac",
+    "free_mib_after_cache_graphs": 3935,
+    "free_mib_after_head_prefill": 1802,
+    "free_mib_after_verifier_draft_binding": 1515,
+    "draft_layer_mib": 834,
+    "draft_head_mib": 212.9,
+    "verifier_buffers_mib": 64.0
+  },
+  "source_capacity_candidates": [
+    {
+      "candidate": "Profile current4096 on32K first",
+      "reason": "Get actual critical phase and copying/CPU wait charged intervals before selecting tuning.",
+      "status": "Prepared; unexecuted"
+    },
+    {
+      "candidate": "Separate prefill-only no-MTP8192 arm after explicit source admission/sizing review",
+      "reason": "Current optional MTP consumes834MiB of draft layer plus212.9MiB of draft head. Prefill and decode can select different policies. Removing those during prefill may make a larger chunk fit; actual allocation/graph/rebuild overhead and safe state handoff remain unknown.",
+      "status": "Source-derived hypothesis only; no launch recipe or qualification"
+    },
+    {
+      "candidate": "Reduce selected ephemeral FP32 storage or stream its lifetime",
+      "reason": "carve holds GU(T*10*1280) and Dm(T*10*2560) asFP32; at4096 their logical payloads are200MiB and400MiB. Converting only Dm storage to16bits would save200MiB at4096 and400MiB at8192, before allocator effects. Residual accumulation/normalization precision and all-vocabulary model quality must be separately evaluated.",
+      "status": "No implementation or numerical/performance result"
+    }
+  ],
+  "precision_adoption_gate": "Compare actual full-vocabulary teacher-forced likelihood across representative inputs and task outcomes; LP5 or same16 greedy IDs is insufficient. Preserve physical262144 full-context validation requirement.",
+  "measurement_limits": "No-MTP reclaimed bytes and larger-chunk capacity are estimates from recorded startup allocations, not a measured admission. Logical payload counts do not include allocation granularity, alignment, scratch maxima or hidden library allocations.",
+  "performance_eligible": false
+}

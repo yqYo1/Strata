@@ -1,0 +1,29 @@
+{
+  "created_utc": "2026-10-11T04:06:51.013955+00:00",
+  "main_reviewed": true,
+  "base_revision": "51436a0fe4c9588b0d3eaae921a7eae12343ce7e",
+  "source_pins": {
+    "src/program/generate.cpp": "c9b60ef079694302dfa1f8099ddffd5375d7dae503f6edec454c1d7de3d941ee",
+    "src/core/expert_cache.cpp": "83a8857e0f4be6efece62b49de7ca184d9213f702f2037a6d5eaf502987d9c07",
+    "tests/core/expert_profile_version_test.cpp": "e1369cda8de36268cec609941484b03a0c9c2f3ff68701cd7d619df2c0a6d0c1"
+  },
+  "base_test_sha256": "dec89acef67a49fc7860e1cfcc8a4c7adfa3919a4e1b0b4fe614fa7e2a9baf2c",
+  "implementation_manifest_sha256": "33a9fbcdfc907cd46a050af682fa428fe98ba2c1044c359630459bf5d44907a5",
+  "implementation_patch_sha256": "73750b009ad0edd1970d1c7cb4b91cd43d2adea9b82762921d8223d64d978431",
+  "baseline_model_receipt_sha256": "6d51051f9d03c0473ae263d57053f1231845d4a8699552b0aee0425479e7efac",
+  "scope": "Main independent production-reader, per-layer sized slots and fill/verification review; exact Sol code applied plus Main production-reader regression cases. Build/lint/host-ASan/model candidate pending.",
+  "review": {
+    "selection": "Whole finite ranking in per-layer mode only; rejected quota does not copy; unique admitted pairs increment filled only after checked blocking H2D. Global hottest prefix scan unchanged for valid unique rankings.",
+    "typed_slots": "open_sized per-layer cursors reset to slot indices; every admitted pair maps to its own layer-aligned size. Global size/rank relation requires unique input, now explicitly enforced.",
+    "duplicates": "Read-time refusal before cache sizing; no change to canonical writer or rank order. Compatibility change for previously accepted malformed duplicates documented.",
+    "sparse": "Exhaustion may leave capacity empty; denominator actual total slots. First real filled pair+slot verified; zero quota does not assume rank0/slot0.",
+    "bounded": "At most24576 admission checks,144 successful fills for unchanged48x512 ranking; advice clamp avoids signed lookahead overflow.",
+    "preserved": "Serialized admission514 guard; concurrent whole-token/MTP chain refusals; physical262144 bounds; queue completion and math kernels unchanged."
+  },
+  "main_tests": "Existing expert_profile_version_test calls actual production reader with valid sparse/nonzero-layer first pair, duplicate pair, header count above geometry, out-of-range pair, truncation and empty ranking. No mirror selector or Runtime fake added.",
+  "model_executed": false,
+  "performance_qualified": false,
+  "full_model_quality_qualified": false,
+  "full262144_qualified": false,
+  "adopted": false
+}
