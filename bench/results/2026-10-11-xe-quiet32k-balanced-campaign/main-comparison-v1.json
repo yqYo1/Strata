@@ -1,0 +1,454 @@
+{
+  "active": false,
+  "complete": true,
+  "passed": true,
+  "started_utc": "2026-10-11T13:21:29.463285+00:00",
+  "recipe_sha256": "06783dce823c1b192f41403632adb340783011dc85c465197d50c1e78321081b",
+  "gpu_executed": false,
+  "model_executed": false,
+  "cleanup_executed": false,
+  "original_receipts_modified": false,
+  "campaign": "main-balanced-quiet32k-v3",
+  "qualification": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-quiet32k-campaign-qualification-v3.json",
+    "sha256": "a5cf2859a55fb2c6f582132f003c733fe0fc5cd2c6f1c71589187b780a3c2c12"
+  },
+  "published_source_revision": "0740b43488d812117f021ccbe4bd0e15d223f955",
+  "boot_id": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+  "sample_order": [
+    {
+      "sample_index": 0,
+      "arm": "off"
+    },
+    {
+      "sample_index": 0,
+      "arm": "on"
+    },
+    {
+      "sample_index": 1,
+      "arm": "on"
+    },
+    {
+      "sample_index": 1,
+      "arm": "off"
+    },
+    {
+      "sample_index": 2,
+      "arm": "off"
+    },
+    {
+      "sample_index": 2,
+      "arm": "on"
+    },
+    {
+      "sample_index": 3,
+      "arm": "on"
+    },
+    {
+      "sample_index": 3,
+      "arm": "off"
+    }
+  ],
+  "samples": [
+    {
+      "receipt": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-native-dequant-prefill-quiet-timing-root-v3/main-balanced-quiet32k-v3/sample-000/n32768-g16-off/record.json",
+        "sha256": "ced956d6dec210bf7c48b4da54dd27fe0bc5ed5af73fbc9eb8d862f22c95ae67"
+      },
+      "sample_index": 0,
+      "arm": "off",
+      "ordinal": 0,
+      "first_arm": "off",
+      "prefill_ms": 124194.0,
+      "cold_decode_ms": 2323.1,
+      "prompt_tokens": 32768,
+      "actual_batched_positions": 32767,
+      "generated_tokens": 16,
+      "prefill_tps": 263.84527432887256,
+      "cold_decode_tps": 6.88734880117085,
+      "ready_free_mib": 745,
+      "original_passed": true,
+      "strict16_T_LP5_equal": true,
+      "fresh_health_and_fault_gate": true,
+      "model_normal_close": true,
+      "original_performance_eligible": false,
+      "raw_done": "DONE 16 32768 124194.0 2323.1 length 10 13 0 513 9120 0 0 0.0 32768 0"
+    },
+    {
+      "receipt": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-native-dequant-prefill-quiet-timing-root-v3/main-balanced-quiet32k-v3/sample-000/n32768-g16-on/record.json",
+        "sha256": "c97dde29186058482c1259317c8f1650c0b3ccf5d3b4d61b38f70245b51985ef"
+      },
+      "sample_index": 0,
+      "arm": "on",
+      "ordinal": 1,
+      "first_arm": "off",
+      "prefill_ms": 125978.8,
+      "cold_decode_ms": 2251.9,
+      "prompt_tokens": 32768,
+      "actual_batched_positions": 32767,
+      "generated_tokens": 16,
+      "prefill_tps": 260.10725614150954,
+      "cold_decode_tps": 7.105111239397842,
+      "ready_free_mib": 745,
+      "original_passed": true,
+      "strict16_T_LP5_equal": true,
+      "fresh_health_and_fault_gate": true,
+      "model_normal_close": true,
+      "original_performance_eligible": false,
+      "raw_done": "DONE 16 32768 125978.8 2251.9 length 10 13 0 513 9120 0 0 0.0 32768 0"
+    },
+    {
+      "receipt": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-native-dequant-prefill-quiet-timing-root-v3/main-balanced-quiet32k-v3/sample-001/n32768-g16-on/record.json",
+        "sha256": "647a191e152b783da08490e5813d5570d9bbd56d7403f1ccd8ebad68f3179289"
+      },
+      "sample_index": 1,
+      "arm": "on",
+      "ordinal": 2,
+      "first_arm": "on",
+      "prefill_ms": 129747.4,
+      "cold_decode_ms": 2022.5,
+      "prompt_tokens": 32768,
+      "actual_batched_positions": 32767,
+      "generated_tokens": 16,
+      "prefill_tps": 252.55226694330676,
+      "cold_decode_tps": 7.911001236093943,
+      "ready_free_mib": 745,
+      "original_passed": true,
+      "strict16_T_LP5_equal": true,
+      "fresh_health_and_fault_gate": true,
+      "model_normal_close": true,
+      "original_performance_eligible": false,
+      "raw_done": "DONE 16 32768 129747.4 2022.5 length 10 13 0 513 9120 0 0 0.0 32768 0"
+    },
+    {
+      "receipt": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-native-dequant-prefill-quiet-timing-root-v3/main-balanced-quiet32k-v3/sample-001/n32768-g16-off/record.json",
+        "sha256": "32d9bed59b2c9ce7d4d057f3c6f98ed370dc132ef686ba017595145348d2ff3e"
+      },
+      "sample_index": 1,
+      "arm": "off",
+      "ordinal": 3,
+      "first_arm": "on",
+      "prefill_ms": 127844.2,
+      "cold_decode_ms": 1966.8,
+      "prompt_tokens": 32768,
+      "actual_batched_positions": 32767,
+      "generated_tokens": 16,
+      "prefill_tps": 256.31197973783713,
+      "cold_decode_tps": 8.135041692088672,
+      "ready_free_mib": 745,
+      "original_passed": true,
+      "strict16_T_LP5_equal": true,
+      "fresh_health_and_fault_gate": true,
+      "model_normal_close": true,
+      "original_performance_eligible": false,
+      "raw_done": "DONE 16 32768 127844.2 1966.8 length 10 13 0 513 9120 0 0 0.0 32768 0"
+    },
+    {
+      "receipt": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-native-dequant-prefill-quiet-timing-root-v3/main-balanced-quiet32k-v3/sample-002/n32768-g16-off/record.json",
+        "sha256": "0545f155b1ed48e650f28e348f5802f66b05865597c982387eb0e491b59b95e0"
+      },
+      "sample_index": 2,
+      "arm": "off",
+      "ordinal": 4,
+      "first_arm": "off",
+      "prefill_ms": 126386.4,
+      "cold_decode_ms": 2180.3,
+      "prompt_tokens": 32768,
+      "actual_batched_positions": 32767,
+      "generated_tokens": 16,
+      "prefill_tps": 259.2684022964496,
+      "cold_decode_tps": 7.338439664266385,
+      "ready_free_mib": 745,
+      "original_passed": true,
+      "strict16_T_LP5_equal": true,
+      "fresh_health_and_fault_gate": true,
+      "model_normal_close": true,
+      "original_performance_eligible": false,
+      "raw_done": "DONE 16 32768 126386.4 2180.3 length 10 13 0 513 9120 0 0 0.0 32768 0"
+    },
+    {
+      "receipt": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-native-dequant-prefill-quiet-timing-root-v3/main-balanced-quiet32k-v3/sample-002/n32768-g16-on/record.json",
+        "sha256": "d9520b99a810af156aa1a6e558d7f8db7b2668d37d258ac7bd2a8c3cb0998cf7"
+      },
+      "sample_index": 2,
+      "arm": "on",
+      "ordinal": 5,
+      "first_arm": "off",
+      "prefill_ms": 120868.3,
+      "cold_decode_ms": 2025.1,
+      "prompt_tokens": 32768,
+      "actual_batched_positions": 32767,
+      "generated_tokens": 16,
+      "prefill_tps": 271.10499609905986,
+      "cold_decode_tps": 7.900844402745544,
+      "ready_free_mib": 745,
+      "original_passed": true,
+      "strict16_T_LP5_equal": true,
+      "fresh_health_and_fault_gate": true,
+      "model_normal_close": true,
+      "original_performance_eligible": false,
+      "raw_done": "DONE 16 32768 120868.3 2025.1 length 10 13 0 513 9120 0 0 0.0 32768 0"
+    },
+    {
+      "receipt": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-native-dequant-prefill-quiet-timing-root-v3/main-balanced-quiet32k-v3/sample-003/n32768-g16-on/record.json",
+        "sha256": "3dde062463452d4c38d2aa7343cb2f1ffd03703667c3197dd6a2af5d77e8cf56"
+      },
+      "sample_index": 3,
+      "arm": "on",
+      "ordinal": 6,
+      "first_arm": "on",
+      "prefill_ms": 121150.0,
+      "cold_decode_ms": 2056.5,
+      "prompt_tokens": 32768,
+      "actual_batched_positions": 32767,
+      "generated_tokens": 16,
+      "prefill_tps": 270.47461824184893,
+      "cold_decode_tps": 7.780209093119377,
+      "ready_free_mib": 745,
+      "original_passed": true,
+      "strict16_T_LP5_equal": true,
+      "fresh_health_and_fault_gate": true,
+      "model_normal_close": true,
+      "original_performance_eligible": false,
+      "raw_done": "DONE 16 32768 121150.0 2056.5 length 10 13 0 513 9120 0 0 0.0 32768 0"
+    },
+    {
+      "receipt": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-native-dequant-prefill-quiet-timing-root-v3/main-balanced-quiet32k-v3/sample-003/n32768-g16-off/record.json",
+        "sha256": "2fcf303c628d23db90197af4bef92e08e3e598d53350e33fcf45145cb6b4b6d6"
+      },
+      "sample_index": 3,
+      "arm": "off",
+      "ordinal": 7,
+      "first_arm": "on",
+      "prefill_ms": 125703.2,
+      "cold_decode_ms": 1764.0,
+      "prompt_tokens": 32768,
+      "actual_batched_positions": 32767,
+      "generated_tokens": 16,
+      "prefill_tps": 260.6775324733181,
+      "cold_decode_tps": 9.070294784580499,
+      "ready_free_mib": 745,
+      "original_passed": true,
+      "strict16_T_LP5_equal": true,
+      "fresh_health_and_fault_gate": true,
+      "model_normal_close": true,
+      "original_performance_eligible": false,
+      "raw_done": "DONE 16 32768 125703.2 1764.0 length 10 13 0 513 9120 0 0 0.0 32768 0"
+    }
+  ],
+  "paired_changes": [
+    {
+      "sample_index": 0,
+      "first_arm": "off",
+      "prefill_time_on_change_percent": 1.437106462470017,
+      "prefill_tps_on_change_percent": -1.4167463096965482,
+      "cold_decode_time_on_change_percent": -3.0648702165210207,
+      "cold_decode_tps_on_change_percent": 3.161774501532033
+    },
+    {
+      "sample_index": 1,
+      "first_arm": "on",
+      "prefill_time_on_change_percent": 1.4886870112214678,
+      "prefill_tps_on_change_percent": -1.4668502027786245,
+      "cold_decode_time_on_change_percent": 2.8320113890583754,
+      "cold_decode_tps_on_change_percent": -2.754017305315204
+    },
+    {
+      "sample_index": 2,
+      "first_arm": "off",
+      "prefill_time_on_change_percent": -4.366055208471787,
+      "prefill_tps_on_change_percent": 4.565382321088318,
+      "cold_decode_time_on_change_percent": -7.118286474338409,
+      "cold_decode_tps_on_change_percent": 7.66381907066318
+    },
+    {
+      "sample_index": 3,
+      "first_arm": "on",
+      "prefill_time_on_change_percent": -3.622183047050509,
+      "prefill_tps_on_change_percent": 3.7583161370202234,
+      "cold_decode_time_on_change_percent": 16.581632653061227,
+      "cold_decode_tps_on_change_percent": -14.22319474835887
+    }
+  ],
+  "summaries": {
+    "off": {
+      "prefill_ms": {
+        "n": 4,
+        "values": [
+          124194.0,
+          127844.2,
+          126386.4,
+          125703.2
+        ],
+        "mean": 126031.95,
+        "median": 126044.79999999999,
+        "sample_sd": 1516.1378158553603,
+        "cv_percent": 1.202978939749294,
+        "minimum": 124194.0,
+        "maximum": 127844.2
+      },
+      "prefill_tps": {
+        "n": 4,
+        "values": [
+          263.84527432887256,
+          256.31197973783713,
+          259.2684022964496,
+          260.6775324733181
+        ],
+        "mean": 260.02579720911933,
+        "median": 259.9729673848839,
+        "sample_sd": 3.1293903339499174,
+        "cv_percent": 1.2034922563599266,
+        "minimum": 256.31197973783713,
+        "maximum": 263.84527432887256
+      },
+      "cold_decode_ms": {
+        "n": 4,
+        "values": [
+          2323.1,
+          1966.8,
+          2180.3,
+          1764.0
+        ],
+        "mean": 2058.55,
+        "median": 2073.55,
+        "sample_sd": 244.9404893710579,
+        "cv_percent": 11.898690309735391,
+        "minimum": 1764.0,
+        "maximum": 2323.1
+      },
+      "cold_decode_tps": {
+        "n": 4,
+        "values": [
+          6.88734880117085,
+          8.135041692088672,
+          7.338439664266385,
+          9.070294784580499
+        ],
+        "mean": 7.857781235526602,
+        "median": 7.7367406781775285,
+        "sample_sd": 0.9589086235057274,
+        "cv_percent": 12.2033000762392,
+        "minimum": 6.88734880117085,
+        "maximum": 9.070294784580499
+      }
+    },
+    "on": {
+      "prefill_ms": {
+        "n": 4,
+        "values": [
+          125978.8,
+          129747.4,
+          120868.3,
+          121150.0
+        ],
+        "mean": 124436.125,
+        "median": 123564.4,
+        "sample_sd": 4247.253270350142,
+        "cv_percent": 3.4131995594929863,
+        "minimum": 120868.3,
+        "maximum": 129747.4
+      },
+      "prefill_tps": {
+        "n": 4,
+        "values": [
+          260.10725614150954,
+          252.55226694330676,
+          271.10499609905986,
+          270.47461824184893
+        ],
+        "mean": 263.5597843564313,
+        "median": 265.29093719167923,
+        "sample_sd": 8.903754612130221,
+        "cv_percent": 3.3782675281328274,
+        "minimum": 252.55226694330676,
+        "maximum": 271.10499609905986
+      },
+      "cold_decode_ms": {
+        "n": 4,
+        "values": [
+          2251.9,
+          2022.5,
+          2025.1,
+          2056.5
+        ],
+        "mean": 2089.0,
+        "median": 2040.8,
+        "sample_sd": 109.6936947443502,
+        "cv_percent": 5.2510145880493155,
+        "minimum": 2022.5,
+        "maximum": 2251.9
+      },
+      "cold_decode_tps": {
+        "n": 4,
+        "values": [
+          7.105111239397842,
+          7.911001236093943,
+          7.900844402745544,
+          7.780209093119377
+        ],
+        "mean": 7.674291492839177,
+        "median": 7.8405267479324605,
+        "sample_sd": 0.3840756967471553,
+        "cv_percent": 5.004705608400899,
+        "minimum": 7.105111239397842,
+        "maximum": 7.911001236093943
+      }
+    }
+  },
+  "paired_prefill_time_change_percent": {
+    "n": 4,
+    "values": [
+      1.437106462470017,
+      1.4886870112214678,
+      -4.366055208471787,
+      -3.622183047050509
+    ],
+    "mean": -1.2656111954577027,
+    "median": -1.092538292290246,
+    "sample_sd": 3.1652817315022066,
+    "cv_percent": -250.0990622445858,
+    "minimum": -4.366055208471787,
+    "maximum": 1.4886870112214678
+  },
+  "paired_cold_decode_time_change_percent": {
+    "n": 4,
+    "values": [
+      -3.0648702165210207,
+      2.8320113890583754,
+      -7.118286474338409,
+      16.581632653061227
+    ],
+    "mean": 2.3076218378150433,
+    "median": -0.11642941373132265,
+    "sample_sd": 10.355896670307306,
+    "cv_percent": 448.7692264219826,
+    "minimum": -7.118286474338409,
+    "maximum": 16.581632653061227
+  },
+  "timing_comparison_qualified": true,
+  "complete_population": true,
+  "original_performance_eligible_flags_preserved": true,
+  "full_model_quality_qualified": false,
+  "full262144_qualified": false,
+  "restore_qualified": false,
+  "official_settings_search_complete": false,
+  "adopted": false,
+  "decision": "Keep native dequant batching default OFF; evaluate prefill and decode separately. No adoption from this limited four-pair cold-process comparison.",
+  "limits": [
+    "Single canonical 32K prompt and GEN16; selected token/LP5 equivalence only.",
+    "Engine DONE phase times, independent cold processes, no warmup.",
+    "Mapping observations outside phase timers; CPU/I/O/cache effects not calibrated.",
+    "Balanced adjacent order reduces one order bias but does not remove variability.",
+    "Decode kernels unchanged by this prefill flag; no warm/restored sustained decode claim.",
+    "Configured physical context262144 is not a completed full-context validation."
+  ],
+  "finished_utc": "2026-10-11T13:21:29.523423+00:00"
+}

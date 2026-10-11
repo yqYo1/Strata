@@ -1,0 +1,28 @@
+{
+  "source_revision": "0740b43488d812117f021ccbe4bd0e15d223f955",
+  "original_reports_modified": false,
+  "corrections": [
+    {
+      "report": "research-xe-decode-cache-expansion-post-prefill-owner-contract-round136-v1.txt",
+      "scope": "Non-serve only; stack Prefill around generate.cpp10118 is not the actual --serve persistent sp route. Round137 and138 cover serve explicitly."
+    },
+    {
+      "report": "research-xe-serve-gen-prefill-phase-retirement-cache-contract-round137-v1.txt",
+      "scope": "Reinitializing immediately after retirement restores workspace; a decode-memory interval needs retirement before decode and initialization before a later GEN, as clarified in round138."
+    },
+    {
+      "report": "research-xe-fallback-one-expert-gemm-descriptor-lifetime-round138-v1.txt",
+      "scope": "rows_gpu is bounded by T*K, not T. Only one expert has cnt[e]<=T. Current full-route Xs/GU/Hh/Dm span T*K rows; a fused multi-expert group does not necessarily fit a T-row scratch. Apply explicit group row-sum admission or process individual experts. Source around prefill.cpp2065/2086/2365 confirms global grouped row bounds."
+    }
+  ],
+  "capacity": {
+    "scope": "Combined Xs/GU/Hh reusable fallback scratch source request only, no physical VRAM or performance measurement.",
+    "T8192_old_owned_bytes": 3755593472,
+    "T8192_new_owned_bytes": 2999273728,
+    "T8192_owned_decrease_bytes": 756319744,
+    "T6144_old_owned_bytes": 2952728320,
+    "T8192_new_minus_T6144_old_bytes": 46545408,
+    "arithmetic_precision_changed": false,
+    "implemented": false
+  }
+}
