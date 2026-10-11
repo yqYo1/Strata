@@ -48,8 +48,10 @@
 #include <condition_variable>
 #include <cstring>
 #include <future>
+#include <limits>
 #include <memory>
 #include <mutex>
+#include <stdexcept>
 #include <thread>
 #include <vector>
 
@@ -1102,36 +1104,64 @@ const char* const kPfNames[kPfCount] = {"embed+steps", "hc read", "gdn", "qsa pr
                                         "qsa attn", "router+shared", "host grouping", "gather", "wait copy", "dequant",
                                         "gemm gate/up", "gemm down", "combine", "ple", "kv stage", "gdn conv+gates",
                                         "gdn recurrence", "gdn out proj"};
+// Successful expert-blob H2D requests, not PCIe-exclusive traffic or DMA service.
+struct PfExpertTransfers {
+    uint64_t calls = 0, bytes = 0;
+    void add(uint64_t n, uint64_t extent) {
+        if (n > std::numeric_limits<uint64_t>::max() - calls ||
+            extent > std::numeric_limits<uint64_t>::max() - bytes)
+            throw std::runtime_error("prefill expert H2D counters overflow");
+        calls += n;
+        bytes += extent;
+    }
+};
+struct PfTransferChunk {
+    int64_t offset, pos, tokens;
+    bool stream_all, threaded;
+    std::vector<PfExpertTransfers> layers;
+};
 struct PfTimer {
     bool on = std::getenv("STRATA_PREFILL_TIMING") != nullptr;
     std::vector<strata::gpu::Event*> ev;
     std::vector<int> ph;
     size_t used = 0;
     double ms[kPfCount] = {};
+    // Host wall spent in the timer's CPU API calls and local bookkeeping, not GPU service.
+    double mark_host_ms = 0, fold_host_ms = 0;
+    size_t marker_calls = 0, new_events = 0, fold_calls = 0, completed_intervals = 0;
     void mark(int phase, strata::gpu::Stream s) {
         if (!on) return;
+        const auto t_call = Clock::now();
+        ++marker_calls;
         if (used == ev.size()) {
             strata::gpu::Event* e = nullptr;
             publication::require(strata::gpu::event_create(&e, true), "timer event_create", strata::gpu::last_error);
+            ++new_events;
             ev.push_back(e);
             ph.push_back(0);
         }
         ph[used] = phase;
         publication::require(strata::gpu::event_record(ev[used], s), "strata::gpu::event_record(ev[used], s)", strata::gpu::last_error);
         ++used;
+        mark_host_ms += ms_since(t_call);
     }
     // every recorded mark has completed (the stream was synchronized): charge the gaps, keep the last mark
     void fold() {
-        if (!on || used < 2) return;
+        if (!on) return;
+        const auto t_call = Clock::now();
+        ++fold_calls;
+        if (used < 2) { fold_host_ms += ms_since(t_call); return; }
         for (size_t i = 0; i + 1 < used; ++i) {
             float t = 0.0f;
             publication::require(strata::gpu::event_elapsed_ms(&t, ev[i], ev[i + 1]),
                                  "prefill phase timer interval", strata::gpu::last_error);
+            ++completed_intervals;
             ms[ph[i]] += t;
         }
         std::swap(ev[0], ev[used - 1]);
         std::swap(ph[0], ph[used - 1]);
         used = 1;
+        fold_host_ms += ms_since(t_call);
     }
     ~PfTimer() {
         for (strata::gpu::Event* e : ev) strata::gpu::event_destroy(e);
@@ -1166,6 +1196,9 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
                                 (uint64_t) g.ssm_conv_channels * (g.ssm_d_conv - 1);
     int32_t prev[2] = {ss.ple_prev[0], ss.ple_prev[1]};
     PfTimer pt;
+    // Independent of phase timing; presence (including 0) enables this optional ledger.
+    const bool transfer_counts = std::getenv("STRATA_PREFILL_TRANSFER_COUNTS") != nullptr;
+    std::vector<PfTransferChunk> transfer_chunks;
     const strata::gpu::Stream cs = m.cs;
     // the MMQ row table lives in the borrowed cache slots, which the refill after a prompt overwrites with experts:
     // write it again for every prompt (a layout is reused as long as the chunk and the slots are the same)
@@ -1303,6 +1336,10 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
         // `used` event recorded), so the copy stream never waits on an event that is not queued yet
         const strata::kernels::cpu::ExpertLayout& lay0 = strata::kernels::cpu::expert_layout();
         const bool stream_all = m.ring > STAGE && T >= STREAM_ALL_MIN && m.src != nullptr;
+        // Before the issuer/its join guard: a threaded issuer owns these writes,
+        // and the consumer reads/moves them only after join and checked drains.
+        std::vector<PfExpertTransfers> chunk_transfers;
+        if (transfer_counts) chunk_transfers.resize((size_t) (LE - LB));
         struct StreamEntry { int32_t l, e; const uint8_t* blob; int job; };
         std::vector<StreamEntry> seq;
         std::vector<size_t> seq_start;
@@ -1360,10 +1397,12 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
                 const strata::gpu::Event* after = m.stage_live[sl] ? m.used[m.used_of[sl]] : nullptr;
                 if (en.job < 0) {
                     publication::require(strata::gpu::copy_async_after(m.stage_dev[sl], en.blob, bytes, m.copy, after, m.copied[sl]), "strata::gpu::copy_async_after(m.stage_dev[sl], en.blob, bytes, m.copy, after, m.copied[sl])", strata::gpu::last_error);
+                    if (transfer_counts && bytes != 0) chunk_transfers[(size_t) (en.l - LB)].add(1, bytes);
                     ++stats_.experts_dma;
                 } else {
                     const uint8_t* hb = m.stager->wait(en.job);
                     publication::require(strata::gpu::copy_async_after(m.stage_dev[sl], hb, bytes, m.copy, after, m.copied[sl]), "strata::gpu::copy_async_after(m.stage_dev[sl], hb, bytes, m.copy, after, m.copied[sl])", strata::gpu::last_error);
+                    if (transfer_counts && bytes != 0) chunk_transfers[(size_t) (en.l - LB)].add(1, bytes);
                     m.stager->issued_one(en.job, m.copy);
                 }
                 m.stage_live[sl] = true;
@@ -1418,10 +1457,12 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
                     const strata::gpu::Event* after = m.stage_live[sl] ? m.used[m.used_of[sl]] : nullptr;
                     if (en.job < 0) {
                         publication::require(strata::gpu::copy_async_after(m.stage_dev[sl], en.blob, bytes, m.copy, after, m.copied[sl]), "strata::gpu::copy_async_after(m.stage_dev[sl], en.blob, bytes, m.copy, after, m.copied[sl])", strata::gpu::last_error);
+                        if (transfer_counts && bytes != 0) chunk_transfers[(size_t) (en.l - LB)].add(1, bytes);
                         ++iss_dma;
                     } else {
                         const uint8_t* hb = m.stager->wait(en.job);
                         publication::require(strata::gpu::copy_async_after(m.stage_dev[sl], hb, bytes, m.copy, after, m.copied[sl]), "strata::gpu::copy_async_after(m.stage_dev[sl], hb, bytes, m.copy, after, m.copied[sl])", strata::gpu::last_error);
+                        if (transfer_counts && bytes != 0) chunk_transfers[(size_t) (en.l - LB)].add(1, bytes);
                         m.stager->issued_one(en.job, m.copy);
                     }
                     m.stage_live[sl] = true;
@@ -2047,17 +2088,20 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
                         const bool tr = m.src->transient(l, e);
                         const uint8_t* b = tr ? nullptr : m.src->blob(l, e);
                         if (!tr && !b) { err = "prefill: expert source has no blob"; return false; }
+                        const size_t bytes = (size_t) lay.blob_bytes(l);
                         if (!tr && m.src->pinned(l, e)) {
                             // DMA straight from the page-locked arena: the copy stream only waits for the slot
                             wait_slot();
-                            publication::require(strata::gpu::copy_async(slot_ptr(sl), b, (size_t) lay.blob_bytes(l), m.copy), "copy_async", strata::gpu::last_error);
+                            publication::require(strata::gpu::copy_async(slot_ptr(sl), b, bytes, m.copy), "copy_async", strata::gpu::last_error);
+                            if (transfer_counts && bytes != 0) chunk_transfers[(size_t) (l - LB)].add(1, bytes);
                             ++stats_.experts_dma;
                         } else {
                             // copied to a pinned buffer by the stager (waits only if it is behind), then DMA
                             const uint8_t* hb = m.stager->wait(job_of[j]);
                             if (m.stager->failed.exchange(false)) { err = "prefill: the expert source could not copy a blob"; return false; }
                             wait_slot();
-                            publication::require(strata::gpu::copy_async(slot_ptr(sl), hb, (size_t) lay.blob_bytes(l), m.copy), "copy_async", strata::gpu::last_error);
+                            publication::require(strata::gpu::copy_async(slot_ptr(sl), hb, bytes, m.copy), "copy_async", strata::gpu::last_error);
+                            if (transfer_counts && bytes != 0) chunk_transfers[(size_t) (l - LB)].add(1, bytes);
                             m.stager->issued_one(job_of[j], m.copy);
                         }
                         publication::require(strata::gpu::event_record(m.copied[sl], m.copy), "strata::gpu::event_record(m.copied[sl], m.copy)", strata::gpu::last_error);
@@ -2350,6 +2394,8 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
             return false;
         }
         chunk_stager_done.complete();
+        if (transfer_counts)
+            transfer_chunks.push_back({c0, p0, T, stream_all, threaded_issue, std::move(chunk_transfers)});
         stats_.tokens += T;
         core::progress_at("reading the prompt (batched): finishing the chunk from token", p0);
         pt.mark(kPfStart, cs);
@@ -2462,6 +2508,10 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
         std::fprintf(stderr, "strata prefill timing: host: chunk setup (PLE rows, the expert stream plan) %.0f ms, "
                              "waiting for each chunk %.0f ms, after each chunk (the draft layer, progress) %.0f ms, "
                              "PLE %.0f ms\n", host_setup_ms, host_sync_ms, host_chunk_ms, stats_.ms_ple);
+        std::fprintf(stderr, "strata prefill timer overhead: host wall CPU API overhead: mark %.3f ms "
+                             "(marker calls %zu, new event creations %zu), fold %.3f ms "
+                             "(fold calls %zu, completed intervals %zu); not GPU service or timer calibration\n",
+                     pt.mark_host_ms, pt.marker_calls, pt.new_events, pt.fold_host_ms, pt.fold_calls, pt.completed_intervals);
     }
     if (std::getenv("STRATA_STATE_HASH_GDN") != nullptr) {   // debug: the GDN states as the prompt path leaves them
         publication::cleanup_require(strata::gpu::stream_sync(m.cs), "strata::gpu::stream_sync(m.cs)", strata::gpu::last_error);
@@ -2476,6 +2526,41 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
             line += h;
         }
         std::fprintf(stderr, "strata prefill: GDN_HASH %s\n", line.c_str());
+    }
+    if (transfer_counts) {
+        // All issuer threads have joined, expert copy/stager drains succeeded and
+        // the terminal compute drain/optional diagnostics have succeeded. Sum
+        // before emitting any ledger so overflow cannot publish a partial summary.
+        PfExpertTransfers mode_total[2], total;
+        for (const auto& chunk : transfer_chunks)
+            for (const auto& layer : chunk.layers)
+                mode_total[chunk.stream_all ? 1 : 0].add(layer.calls, layer.bytes);
+        for (const auto& mode : mode_total) total.add(mode.calls, mode.bytes);
+        const auto& layout = strata::kernels::cpu::expert_layout();
+        for (const auto& chunk : transfer_chunks) {
+            for (size_t i = 0; i < chunk.layers.size(); ++i) {
+                const int64_t l = LB + (int64_t) i;
+                const auto& count = chunk.layers[i];
+                const int gu_type = layout.native ? layout.fmt[(size_t) l].gu_type : -1;
+                const int down_type = layout.native ? layout.fmt[(size_t) l].d_type : -1;
+                std::fprintf(stderr, "strata prefill expert H2D: device=%d stage=[%lld,%lld) chunk_offset=%lld pos=%lld "
+                                     "tokens=%lld layer=%lld mode=%s issuer=%s format=%s gu_type=%d down_type=%d "
+                                     "blob_bytes=%llu submitted_calls=%llu submitted_bytes=%llu\n",
+                             m.device, (long long) LB, (long long) LE, (long long) chunk.offset, (long long) chunk.pos,
+                             (long long) chunk.tokens, (long long) l, chunk.stream_all ? "full_nonresident_stream" : "routed",
+                             chunk.threaded ? "thread" : "inline", layout.native ? "native_gguf" : "canonical_q2_0",
+                             gu_type, down_type, (unsigned long long) layout.blob_bytes(l),
+                             (unsigned long long) count.calls, (unsigned long long) count.bytes);
+            }
+        }
+        std::fprintf(stderr, "strata prefill expert H2D total: scope=this_prefill_stage_run device=%d stage=[%lld,%lld) "
+                             "pos=%lld tokens=%lld chunks=%zu routed_calls=%llu routed_bytes=%llu "
+                             "full_stream_calls=%llu full_stream_bytes=%llu submitted_calls=%llu submitted_bytes=%llu "
+                             "completion=checked; request extents, not PCIe-exclusive bytes or DMA service\n",
+                     m.device, (long long) LB, (long long) LE, (long long) pos0, (long long) n, transfer_chunks.size(),
+                     (unsigned long long) mode_total[0].calls, (unsigned long long) mode_total[0].bytes,
+                     (unsigned long long) mode_total[1].calls, (unsigned long long) mode_total[1].bytes,
+                     (unsigned long long) total.calls, (unsigned long long) total.bytes);
     }
     return true;
 } catch (const std::exception& e) {
