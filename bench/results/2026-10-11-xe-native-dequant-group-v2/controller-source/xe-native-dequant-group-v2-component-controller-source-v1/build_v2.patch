@@ -1,0 +1,29 @@
+--- /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-native-dequant-group-component-build-v1.py
++++ /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-native-dequant-group-v2-component-controller-source-v1/build_v2.py
+@@ -1,5 +1,6 @@
+ import argparse,fcntl,importlib.util,json,shlex,time
+ from pathlib import Path
++EXPECTED_API_V2_PINS={'src/kernels/xe/iq_kernels.cpp': '75f2ac1dfdb337c424bba19e62c34159a1bde547a776b9b5d6cf7975dfc29d50', 'include/strata/kernels/iq_kernels.hpp': '61513ccb71831d1065bd25829541c508adf3ae58e1e3df6d3bc0c9681cb54f6d', 'src/prefill/prefill.cpp': '1b30e3de22b30f4eb2160756c9fdde623abe87a2360fe029f0767be33aa9d664'}
+ B=Path('/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007')
+ W=Path('/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011')
+ LLVM=W/'.tools/intel-llvm-v711/install';O=B/'xe-llvm-v711-source-v5/direct_owner.py'
+@@ -9,15 +10,16 @@
+ ENV=dict(PATH=str(LLVM/'bin')+':/usr/bin:/bin',HOME='/home/yayoi',LANG='C.UTF-8',LC_ALL='C.UTF-8',LD_LIBRARY_PATH=str(LLVM/'lib'))
+ with (B/'owned-v0141-measurement.lock').open('a') as lock:
+  fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
+- out=B/('xe-native-dequant-group-component-build-root-v1-'+a.mode);m.require(not out.exists(),'immutable build');out.mkdir()
+- r=dict(active=True,complete=False,passed=False,commands=[],started_utc=m.utc(),controller_sha256=m.sha(__file__),gpu_executed=False,model_executed=False,mode=a.mode,source_base='b3e1de06076b692614ef51512f5501838d4b6f2b',compiler_runtime='source intel LLVM v7.1.1',scope='Real production library closure; exact target compile/device-link settings; no extracted decoders or Runtime stubs',raw_log_budget_bytes=64<<20)
++ out=B/('xe-native-dequant-group-component-build-root-v2-'+a.mode);m.require(not out.exists(),'immutable build');out.mkdir()
++ r=dict(active=True,complete=False,passed=False,commands=[],started_utc=m.utc(),controller_sha256=m.sha(__file__),gpu_executed=False,model_executed=False,mode=a.mode,source_base='d73288cba04f728dadfd69e9797729c1a10af3ab',api_version=2,compiler_runtime='source intel LLVM v7.1.1',scope='Real production library closure; exact target compile/device-link settings; no extracted decoders or Runtime stubs',raw_log_budget_bytes=64<<20)
+  def save():(out/'record.json').write_text(json.dumps(r,indent=2)+'\n')
+  owner=m.Owner(out/'commands',save);r['commands']=owner.commands;save()
+  def run(label,args,wall=300):
+   e,so,se=owner.run(label,args,ENV,W/'build'/a.mode,wall=wall,cpu=wall*4,text_cap=64<<20,total_cap=64<<20,rss_cap=40<<30)
+   m.require(m.closed(e) and e['exit_code']==0,'normal closed '+label);return so.read_text()
+  try:
+-  proof=B/('xe-e32-'+a.mode+'-full-build-root-v17/record.json');v=json.loads(proof.read_text());m.require(v['passed'] and v['complete'] and not v['active'] and all(m.closed(c) for c in v['commands']),'closed release build')
++  proof=B/('xe-e32-'+a.mode+'-full-build-root-v18/record.json');v=json.loads(proof.read_text());m.require(v['passed'] and v['complete'] and not v['active'] and all(m.closed(c) for c in v['commands']),'closed release build')
++  m.require(all(v['source_pins'].get(f)==h for f,h in EXPECTED_API_V2_PINS.items()),'fresh exact constant-selector APIv2 release pins')
+   m.require(all(m.sha(W/f)==h for f,h in v['source_pins'].items()),'matching production source');r['release_proof_sha256']=m.sha(proof);r['source_pins']=v['source_pins']
+   src=B/'xe-native-dequant-group-component-source-v2/native_dequant_group_component.cpp';m.require(m.sha(src)=='f9168793027bfd3aa62fd8c8ff607b98e9b25d9ece54fe31d54d1945439b89a7','reviewed selector source');r['probe_source']=dict(path=str(src),sha256=m.sha(src))
+   build=W/'build'/a.mode;db=build/'compile_commands.json';rows=json.loads(db.read_text());row=next(x for x in rows if x['file'].endswith('/src/kernels/bf16_gemv_parity.cpp'))

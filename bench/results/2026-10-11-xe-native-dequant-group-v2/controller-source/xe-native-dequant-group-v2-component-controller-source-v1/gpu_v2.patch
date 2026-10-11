@@ -1,0 +1,62 @@
+--- /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-native-dequant-group-component-gpu-v1.py
++++ /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-native-dequant-group-v2-component-controller-source-v1/gpu_v2.py
+@@ -1,5 +1,6 @@
+ import argparse,fcntl,importlib.util,json,os,re,time,types
+ from pathlib import Path
++EXPECTED_API_V2_PINS={'src/kernels/xe/iq_kernels.cpp': '75f2ac1dfdb337c424bba19e62c34159a1bde547a776b9b5d6cf7975dfc29d50', 'include/strata/kernels/iq_kernels.hpp': '61513ccb71831d1065bd25829541c508adf3ae58e1e3df6d3bc0c9681cb54f6d', 'src/prefill/prefill.cpp': '1b30e3de22b30f4eb2160756c9fdde623abe87a2360fe029f0767be33aa9d664'}
+ B=Path('/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007')
+ W=Path('/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011');LLVM=W/'.tools/intel-llvm-v711/install'
+ O=B/'xe-llvm-v711-source-v5/direct_owner.py';H=Path('/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/fix-sycl-health-reset-classification-20261011/sycl/tools/recover-xe.sh')
+@@ -9,9 +10,9 @@
+ p=argparse.ArgumentParser();p.add_argument('--mode',choices=['free','contrib-llvm'],required=True);p.add_argument('--matrix',choices=['smoke-host','full-host','smoke-tags','full-tags'],required=True);a=p.parse_args()
+ with (B/'owned-v0141-measurement.lock').open('a') as lock:
+  fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
+- out=B/('xe-native-dequant-group-component-gpu-root-v1-'+a.mode+'-'+a.matrix);m.require(not out.exists(),'immutable GPU receipt');out.mkdir(mode=0o700)
++ out=B/('xe-native-dequant-group-component-gpu-root-v2-'+a.mode+'-'+a.matrix);m.require(not out.exists(),'immutable GPU receipt');out.mkdir(mode=0o700)
+  boot=Path('/proc/sys/kernel/random/boot_id').read_text().strip();wall=240 if a.matrix.startswith('smoke-') else 600
+- r=dict(active=True,complete=False,passed=False,commands=[],started_utc=m.utc(),boot_id=boot,controller_sha256=m.sha(__file__),mode=a.mode,matrix=a.matrix,model_executed=False,adopted=False,performance_eligible=a.matrix.startswith('full-'),instrumented_tags=a.matrix.endswith('-tags'),reset_executed=False,retry_count=0,gpu_submission_attempted=False,raw_text_budget_bytes=64<<20,whole_wall_budget_seconds=wall+150,probe_wall_budget_seconds=wall,observed_libraries={},scope='Same-work individual/group GU+Down component: all7 recorded pairs640x2560 n1/8/16, six ABBA samples/arm, host-only or separate production tags; full output/source/padding guard oracle; no model performance/global quality inference')
++ r=dict(active=True,complete=False,passed=False,commands=[],started_utc=m.utc(),boot_id=boot,controller_sha256=m.sha(__file__),mode=a.mode,matrix=a.matrix,api_version=2,context_head='d73288cba04f728dadfd69e9797729c1a10af3ab',model_executed=False,adopted=False,performance_eligible=a.matrix.startswith('full-'),instrumented_tags=a.matrix.endswith('-tags'),reset_executed=False,retry_count=0,gpu_submission_attempted=False,raw_text_budget_bytes=64<<20,whole_wall_budget_seconds=wall+150,probe_wall_budget_seconds=wall,observed_libraries={},scope='Same-work individual/group GU+Down component: all7 recorded pairs640x2560 n1/8/16, six ABBA samples/arm, host-only or separate production tags; full output/source/padding guard oracle; no model performance/global quality inference')
+  def save():
+   for c in r['commands']:
+    if c['label']!='component' or not c.get('direct_identity'):continue
+@@ -37,12 +38,17 @@
+   faults=[x['MESSAGE'] for x in relevant if helper.FAULT.search(x['MESSAGE'])];r[label]=dict(relevant_entries=relevant,faults=faults);m.require(not faults and not DUMP.exists(),'fault-free '+label)
+  save()
+  try:
+-  paths=dict(release=B/('xe-e32-'+a.mode+'-full-build-root-v17/record.json'),asan=B/('xe-e32-'+a.mode+'-asan-full-build-root-v14/record.json'),lint=B/'xe-e32-lints-baseline-compare-root-v12/record.json',probe_build=B/('xe-native-dequant-group-component-build-root-v1-'+a.mode+'/record.json'),health=B/'xe-source-llvm-small-health-root-v3/record.json')
++  paths=dict(release=B/('xe-e32-'+a.mode+'-full-build-root-v18/record.json'),asan=B/('xe-e32-'+a.mode+'-asan-full-build-root-v15/record.json'),lint=B/'xe-e32-lints-baseline-compare-root-v13/record.json',probe_build=B/('xe-native-dequant-group-component-build-root-v2-'+a.mode+'/record.json'),health=B/'xe-source-llvm-small-health-root-v3/record.json')
+   proofs={}
+   for name,path in paths.items():
+    v=json.loads(path.read_text());m.require(v['passed'] and v['complete'] and not v['active'] and all(m.closed(c) for c in v['commands']),'closed '+name);proofs[name]=v
+   r['prerequisite_receipt_pins']={name:dict(path=str(path),sha256=m.sha(path)) for name,path in paths.items()}
+   m.require(proofs['release']['source_pins']==proofs['asan']['source_pins']==proofs['probe_build']['source_pins'],'same compiled release/ASAN/probe source')
++  m.require(all(proofs['release']['source_pins'].get(f)==h for f,h in EXPECTED_API_V2_PINS.items()),'fresh exact constant-selector APIv2 release pins')
++  m.require(proofs['probe_build'].get('api_version')==2 and proofs['probe_build']['mode']==a.mode,'fresh mode-specific APIv2 component build')
++  m.require(proofs['probe_build']['probe_source']['sha256']=='f9168793027bfd3aa62fd8c8ff607b98e9b25d9ece54fe31d54d1945439b89a7','unchanged Main corrected component source')
++  r['timing_interpretation']='Completed queue tag endpoint includes issuance gaps and end-tag work; not exclusive kernel time. Component only, no model throughput claim.'
++  r['probe_source']=proofs['probe_build']['probe_source']
+   r['source_pins']=proofs['release']['source_pins'];m.require(all(m.sha(W/f)==h for f,h in r['source_pins'].items()),'exact production source')
+   m.require(all(m.sha(W/f)==h for f,h in proofs['lint']['source_pins'].items()),'exact mandatory lint source');m.require(proofs['health']['boot_id']==boot,'same qualified health boot')
+   r['binary']=proofs['probe_build']['binary'];m.require(m.sha(Path(r['binary']['path']))==r['binary']['sha256'],'exact built probe');health=proofs['health'];m.require(m.sha(Path(health['binary']['path']))==health['binary']['sha256'],'actual health binary');r['health_binary']=health['binary']
+@@ -55,12 +61,12 @@
+   def health_run(label):
+    text,_=run(label,[health['binary']['path'],'0000:05:00.0'],env=health_env,deadline=30)
+    expected=['STATUS 0000:05:00.0 0','QUEUE 0000:05:00.0','H2D 65536 complete','KERNEL 16384 complete','D2H 65536 complete','PASS 0000:05:00.0: 1 round, 16384 exact words'];m.require(text.splitlines()[:6]==expected,'exact '+label);r[label]=text.splitlines()
+-  full_path=B/'xe-native-dequant-group-byte-gpu-root-v3-free-full/record.json';qualified=json.loads(full_path.read_text());m.require(qualified['passed'] and qualified['complete'] and not qualified['active'] and qualified['boot_id']==boot and all(m.closed(c) for c in qualified['commands']),'complete same-boot all18 full-byte guard qualification')
++  full_path=B/'xe-native-dequant-group-byte-gpu-root-v4-free-full/record.json';qualified=json.loads(full_path.read_text());m.require(qualified['passed'] and qualified['complete'] and not qualified['active'] and qualified['boot_id']==boot and all(m.closed(c) for c in qualified['commands']),'complete same-boot all18 full-byte guard qualification')
+   m.require(qualified['source_pins']==r['source_pins'] and qualified['coverage']['group_cases']==18432,'exact current API qualified');r['all18_full_byte_receipt_sha256']=m.sha(full_path)
+   if a.matrix.endswith('-tags'):
+    tag_path=B/'xe-source-llvm-profiling-tags-root-v1/record.json';tag=json.loads(tag_path.read_text());m.require(tag['passed'] and tag['complete'] and not tag['active'] and tag['boot_id']==boot and all(m.closed(c) for c in tag['commands']),'actual same-boot production tag qualification');m.require(all(m.sha(W/f)==h for f,h in tag['source_pins'].items()),'exact unchanged production timing helper');r['prior_tag_qualification_sha256']=m.sha(tag_path)
+   if a.matrix.startswith('full-'):
+-   sp=B/('xe-native-dequant-group-component-gpu-root-v1-'+a.mode+'-smoke-'+a.matrix.split('-')[1]+'/record.json');sm=json.loads(sp.read_text());m.require(sm['passed'] and sm['complete'] and not sm['active'] and sm['boot_id']==boot and sm['binary']==r['binary'] and all(m.closed(c) for c in sm['commands']),'same binary detailed component smoke');r['smoke_receipt_sha256']=m.sha(sp)
++   sp=B/('xe-native-dequant-group-component-gpu-root-v2-'+a.mode+'-smoke-'+a.matrix.split('-')[1]+'/record.json');sm=json.loads(sp.read_text());m.require(sm['passed'] and sm['complete'] and not sm['active'] and sm['boot_id']==boot and sm['binary']==r['binary'] and all(m.closed(c) for c in sm['commands']),'same binary detailed component smoke');r['smoke_receipt_sha256']=m.sha(sp)
+   health_run('health-before');kernel('kernel-after-prehealth',['--after-cursor',cursor]);r['gpu_submission_attempted']=True;save()
+   so,se=run('component',[r['binary']['path'],'--'+a.matrix],env=r['environment'],deadline=wall)
+   m.require(not re.search(r'UR_RESULT_ERROR_[A-Z_]+|ZE_RESULT_ERROR_[A-Z_]+|\bFAIL\b|\bDIFF\b|GPU completion unconfirmed|terminate called',so+'\n'+se),'no byte/runtime error')
+@@ -97,5 +103,5 @@
+   if helper and cursor and owner.active is None:
+    try:kernel('kernel-final',['--after-cursor',cursor]);r['kernel_gate_passed']=True
+    except BaseException as exc:r['kernel_gate_error']=repr(exc)
+-  r['source_stable']=all(m.sha(W/f)==h for f,h in r.get('source_pins',{}).items());r['binary_stable']=bool(r.get('binary') and m.sha(Path(r['binary']['path']))==r['binary']['sha256']);r['boot_unchanged']=boot==Path('/proc/sys/kernel/random/boot_id').read_text().strip();r['active']=owner.active is not None;r['passed']=bool(r['complete'] and r.get('kernel_gate_passed') and r['source_stable'] and r['binary_stable'] and r['boot_unchanged'] and not r['active'] and not r.get('error') and not r.get('kernel_gate_error'));r['finished_utc']=m.utc();save()
++  r['source_stable']=all(m.sha(W/f)==h for f,h in r.get('source_pins',{}).items()) and bool(r.get('probe_source') and m.sha(Path(r['probe_source']['path']))==r['probe_source']['sha256']);r['binary_stable']=bool(r.get('binary') and m.sha(Path(r['binary']['path']))==r['binary']['sha256']);r['boot_unchanged']=boot==Path('/proc/sys/kernel/random/boot_id').read_text().strip();r['active']=owner.active is not None;r['passed']=bool(r['complete'] and r.get('kernel_gate_passed') and r['source_stable'] and r['binary_stable'] and r['boot_unchanged'] and not r['active'] and not r.get('error') and not r.get('kernel_gate_error'));r['finished_utc']=m.utc();save()
+  print(json.dumps({k:r.get(k) for k in ['mode','matrix','passed','error','coverage','kernel_gate_error']}));raise SystemExit(0 if r['passed'] else 1)

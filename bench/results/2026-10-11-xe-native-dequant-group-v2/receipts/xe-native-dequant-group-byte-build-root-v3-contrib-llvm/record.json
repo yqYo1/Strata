@@ -1,0 +1,410 @@
+{
+  "active": false,
+  "complete": true,
+  "passed": true,
+  "commands": [
+    {
+      "label": "compile-probe",
+      "argv": [
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+        "-I/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/third_party/main/ggml",
+        "-DSTRATA_BACKEND=\"xe\"",
+        "-DSTRATA_UPSTREAM_COMMIT=\"e8ca9af\"",
+        "-DSTRATA_UPSTREAM_VERSION=\"0.1.40.2\"",
+        "-DSTRATA_VERSION=\"xe0.1.40.2.2\"",
+        "-I/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/include",
+        "-O3",
+        "-DNDEBUG",
+        "-std=c++20",
+        "-fsycl",
+        "-foffload-fp32-prec-div",
+        "-foffload-fp32-prec-sqrt",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-native-dequant-group-byte-build-root-v3-contrib-llvm/probe.o",
+        "-c",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-native-dequant-group-byte-probe-source-v3/native_dequant_group_byte.cpp"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib"
+      },
+      "started_utc": "2026-10-11T09:11:03.653486+00:00",
+      "wall_seconds": 300,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 3795909,
+          "start_ticks": 5862777,
+          "sid": 3795909,
+          "pgid": 3795909
+        },
+        {
+          "pid": 3795911,
+          "start_ticks": 5862778,
+          "sid": 3795909,
+          "pgid": 3795909
+        },
+        {
+          "pid": 3796142,
+          "start_ticks": 5863125,
+          "sid": 3795909,
+          "pgid": 3795909
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 58627.77494863,
+      "pid": 3795909,
+      "spawn_return_monotonic": 58627.776748421,
+      "direct_identity": {
+        "pid": 3795909,
+        "state": "R",
+        "ppid": 3795907,
+        "pgid": 3795909,
+        "sid": 3795909,
+        "start_ticks": 5862777,
+        "rss_bytes": 323584
+      },
+      "peak_live_owned_identities": 2,
+      "peak_session_rss_bytes": 325242880,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-11T09:11:11.651300+00:00",
+      "elapsed_seconds": 7.997609279998869,
+      "logs": {
+        "compile-probe.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "compile-probe.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "actual-target-device-link-recipe",
+      "argv": [
+        "/usr/bin/ninja",
+        "-C",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/build/contrib-llvm",
+        "-t",
+        "commands",
+        "bf16_gemv_parity"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib"
+      },
+      "started_utc": "2026-10-11T09:11:11.651889+00:00",
+      "wall_seconds": 60,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 3796312,
+          "start_ticks": 5863577,
+          "sid": 3796312,
+          "pgid": 3796312
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 58635.773658323,
+      "pid": 3796312,
+      "spawn_return_monotonic": 58635.77601329,
+      "direct_identity": {
+        "pid": 3796312,
+        "state": "R",
+        "ppid": 3795907,
+        "pgid": 3796312,
+        "sid": 3796312,
+        "start_ticks": 5863577,
+        "rss_bytes": 450560
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-11T09:11:11.767374+00:00",
+      "elapsed_seconds": 0.11501016199326841,
+      "logs": {
+        "actual-target-device-link-recipe.stdout": {
+          "bytes": 50860,
+          "sha256": "f9b681ec6f61ebb6bfa4679d67ce4ae9ae2ac094e591da41b81f891eefae9ee0"
+        },
+        "actual-target-device-link-recipe.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "link-real-production-closure",
+      "argv": [
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+        "-O3",
+        "-DNDEBUG",
+        "-fsycl",
+        "-foffload-fp32-prec-div",
+        "-foffload-fp32-prec-sqrt",
+        "-fsycl-max-parallel-link-jobs=12",
+        "-Xspirv-translator",
+        "--spirv-ext=+SPV_KHR_integer_dot_product",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-native-dequant-group-byte-build-root-v3-contrib-llvm/probe.o",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-native-dequant-group-byte-build-root-v3-contrib-llvm/native-dequant-group-byte",
+        "libstrata_kernels.a",
+        "libstrata_core.a",
+        "libstrata_ngram.a",
+        "libstrata_platform.a"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib"
+      },
+      "started_utc": "2026-10-11T09:11:11.776707+00:00",
+      "wall_seconds": 300,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 3796316,
+          "start_ticks": 5863589,
+          "sid": 3796316,
+          "pgid": 3796316
+        },
+        {
+          "pid": 3796433,
+          "start_ticks": 5863646,
+          "sid": 3796316,
+          "pgid": 3796316
+        },
+        {
+          "pid": 3796435,
+          "start_ticks": 5863646,
+          "sid": 3796316,
+          "pgid": 3796316
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 58635.898366476,
+      "pid": 3796316,
+      "spawn_return_monotonic": 58635.900118156,
+      "direct_identity": {
+        "pid": 3796316,
+        "state": "R",
+        "ppid": 3795907,
+        "pgid": 3796316,
+        "sid": 3796316,
+        "start_ticks": 5863589,
+        "rss_bytes": 425984
+      },
+      "peak_live_owned_identities": 3,
+      "peak_session_rss_bytes": 67723264,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-11T09:11:12.679461+00:00",
+      "elapsed_seconds": 0.9023743580037262,
+      "logs": {
+        "link-real-production-closure.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "link-real-production-closure.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "invalid-cli-before-runtime",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-native-dequant-group-byte-build-root-v3-contrib-llvm/native-dequant-group-byte",
+        "--invalid"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib"
+      },
+      "started_utc": "2026-10-11T09:11:12.681352+00:00",
+      "wall_seconds": 15,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 3796456,
+          "start_ticks": 5863680,
+          "sid": 3796456,
+          "pgid": 3796456
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 58636.802924798,
+      "pid": 3796456,
+      "spawn_return_monotonic": 58636.805057376,
+      "direct_identity": {
+        "pid": 3796456,
+        "state": "R",
+        "ppid": 3795907,
+        "pgid": 3796456,
+        "sid": 3796456,
+        "start_ticks": 5863680,
+        "rss_bytes": 712704
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 2,
+      "finished_utc": "2026-10-11T09:11:12.793752+00:00",
+      "elapsed_seconds": 0.11210754400235601,
+      "logs": {
+        "invalid-cli-before-runtime.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "invalid-cli-before-runtime.stderr": {
+          "bytes": 31,
+          "sha256": "07c6d85181d867b570658b1aaf3ce86ae2f7d09477eae852a95df1d97f0bed63"
+        }
+      }
+    }
+  ],
+  "started_utc": "2026-10-11T09:11:03.647557+00:00",
+  "controller_sha256": "6a50383b2597a01e09409354d7003b7ec8dded3b24b20e1ca6686b627bb68427",
+  "gpu_executed": false,
+  "model_executed": false,
+  "mode": "contrib-llvm",
+  "source_base": "d73288cba04f728dadfd69e9797729c1a10af3ab",
+  "compiler_runtime": "source intel LLVM v7.1.1",
+  "scope": "Real production library closure; exact target compile/device-link settings; no extracted decoders or Runtime stubs",
+  "raw_log_budget_bytes": 67108864,
+  "release_proof_sha256": "37079865b7613fd293e24afe5715705934587df87c3342277ab7253522b1e5e2",
+  "source_pins": {
+    "AGENTS.md": "0427d8d4f91c4cf5128e77d3d898ee20783b63394d24718d1ff0b16779424dd0",
+    "CMakeLists.txt": "040de957a32bd26c9b71ca476aa45060571b86c0bad72a545ed9dbba9f2394a9",
+    "include/strata/core/commit_transaction.hpp": "52106d09b751d00a4ae1c85f555ba50bc10eb227f956423da94cb98cf7d850ad",
+    "include/strata/core/context_bounds.hpp": "30f66e36b2908518cfd5890f26d0efa9999cc6d52b70dcb635b6d4e865fa99ab",
+    "include/strata/core/gpu.hpp": "54b1a10524c9ee0c9b42979d75bd4f775ee0c45da2839d8129c2a2bd3daa552a",
+    "include/strata/core/layer.hpp": "93b34132db393b1a804c892ec7f7a1c1d4aeddd4f2fd885b464ddecfc93dbfb6",
+    "include/strata/core/mtp.hpp": "19c2bf0b8f89b45eefacd3479be78b79c00da7320bd6c668b37bec63999b872e",
+    "include/strata/core/mtp_completion.hpp": "8767f9807e1dd89971a49aa6195be44eb12ae54996ffcc2d9e4ad2819216a5d8",
+    "include/strata/core/session.hpp": "cf31a4c17ba0e29ca70f52ad435740d8cf59f11571e5e559b953af79b1e5ac02",
+    "include/strata/core/verify.hpp": "452c85060e68e94b7d9e0f039d25f3b9696972a50292e08bf6d69b9b96e454a7",
+    "include/strata/kernels/elementwise.hpp": "24062ca572b852cf03be537cdbfda58f3e35abffd25461d7f56a5a8775a2b78b",
+    "include/strata/kernels/iq_kernels.hpp": "61513ccb71831d1065bd25829541c508adf3ae58e1e3df6d3bc0c9681cb54f6d",
+    "include/strata/kernels/verify_kernels.hpp": "27387500d0631ff694723c2ae165c61831f34ca06a2cb2fec8a064549a326885",
+    "include/strata/prefill/publication.hpp": "c266156f02854f6578ca526203525249e6e9035ca56102a4aeb815280d42e2ee",
+    "include/strata/program/full_context_probe.hpp": "c7463aee451e41d3b25c7dac12814b93aaa99443a7a78f851dd5cb6faf51f963",
+    "src/core/expert_cache.cpp": "83a8857e0f4be6efece62b49de7ca184d9213f702f2037a6d5eaf502987d9c07",
+    "src/core/expert_source.cpp": "7915f5ceb462a5c14655bbe585408f72ef9abd581b95ed14f08d9533d20f2edc",
+    "src/core/gpu.cpp": "9792966f6b2c84434a1dddafefb3286c3c5fcfa78e23065b455904f9cf6fcfb8",
+    "src/core/mtp.cpp": "11c00990bed018d9a4bf5cb658d97582875b969016d4af1e0bb38c6d5c951a8c",
+    "src/core/pinned.cpp": "1d2beba41fc8864cae2cf433dfe618725f6455c430809622ac9dda69d7575356",
+    "src/core/session.cpp": "d914f75a19022edd29f6fec0fd4df85f1b24b09d56bf014744be79d12e914ab6",
+    "src/core/verify.cpp": "44d8667e973c44d889afac2387cf7686a1b3785d31fa22f22cc5c7097927e27a",
+    "src/kernels/parity_device.hpp": "0a29292188c155628a4f11b8a8a5cb147a3fc76ee428f8f65ba6f2420799a0de",
+    "src/kernels/xe/elementwise.cpp": "ddbf6dd80363254349b12c926a61e51e630ed4ae6d683d1b160da3661b6ca68e",
+    "src/kernels/xe/iq_kernels.cpp": "75f2ac1dfdb337c424bba19e62c34159a1bde547a776b9b5d6cf7975dfc29d50",
+    "src/kernels/xe/kv_stream.cpp": "cd3bb7877dd848497a1d7d50cbcf75ae28cffdd187b5c18b6234b917520f7fbf",
+    "src/kernels/xe/verify_kernels.cpp": "8e9c8ef3e9ceb5e7de0711c0ccc658b9006a10ed796fc1652ed63fecdc58ecf6",
+    "src/prefill/gemm.cpp": "bfa40846fddb46a3d03d8c58ef5209b181c46674939beeefe512db0073c9d648",
+    "src/prefill/prefill.cpp": "1b30e3de22b30f4eb2160756c9fdde623abe87a2360fe029f0767be33aa9d664",
+    "src/program/generate.cpp": "c9b60ef079694302dfa1f8099ddffd5375d7dae503f6edec454c1d7de3d941ee",
+    "tests/core/expert_profile_version_test.cpp": "e1369cda8de36268cec609941484b03a0c9c2f3ff68701cd7d619df2c0a6d0c1",
+    "tools/test_commit_transaction.cpp": "15fe42c25f5ab45f95fa6317dd428198c4cccf70d550be8cd9892e30c160a6d0",
+    "tools/test_context_bounds.cpp": "226d6649cea8aa67987b1759419f1401e64418b614bbf31ee313f570ac9fdaba",
+    "tools/test_full_context_probe.cpp": "72df5a4c916a81fa186db62de087c815b1e7922e43767d3d21a436eed8027d56",
+    "tools/test_mtp_completion.cpp": "b414eff5c0383f216d3a760d2b3dd35e2f949836a04a27b2b08158e589f3b1a0",
+    "tools/test_prefill_dense_gemm.cpp": "b81f479c3e57d5312d37dd54492608d917e7ca64758706686b2b7930018fc251",
+    "tools/test_prefill_publication.cpp": "aecf2d051b7138dfe8b21ba3993d5adcbd721032b7f8f19abc898b7f9f5ef9b1"
+  },
+  "probe_source": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-native-dequant-group-byte-probe-source-v3/native_dequant_group_byte.cpp",
+    "sha256": "846ec8a718c22e7d8e4e49befe60ebd40a22428c3db80571c7dd9994d54a7761"
+  },
+  "compile_db_sha256": "de495eeb5a7464a2c3eb28c60c488ec177baab4a4608dd326cdec1e6b3cd52a0",
+  "compile_arguments": [
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+    "-I/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/third_party/main/ggml",
+    "-DSTRATA_BACKEND=\"xe\"",
+    "-DSTRATA_UPSTREAM_COMMIT=\"e8ca9af\"",
+    "-DSTRATA_UPSTREAM_VERSION=\"0.1.40.2\"",
+    "-DSTRATA_VERSION=\"xe0.1.40.2.2\"",
+    "-I/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/include",
+    "-O3",
+    "-DNDEBUG",
+    "-std=c++20",
+    "-fsycl",
+    "-foffload-fp32-prec-div",
+    "-foffload-fp32-prec-sqrt",
+    "-Wall",
+    "-Wextra",
+    "-Werror",
+    "-o",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-native-dequant-group-byte-build-root-v3-contrib-llvm/probe.o",
+    "-c",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-native-dequant-group-byte-probe-source-v3/native_dequant_group_byte.cpp"
+  ],
+  "archive_pins": {
+    "libstrata_kernels.a": "3806a90d2d2a45c85b9411904c8d9cc5a78446b839e1b63a280bbf23556dddd9",
+    "libstrata_core.a": "87ce59968a7e724ca0dc77c13ba9441ff9e4f022a57421ac687a862b47ee4113",
+    "libstrata_ngram.a": "3989fb1dd5b6a2aae6c78c76e53bba65ca75c1adeb5380c53bbb096822341518",
+    "libstrata_platform.a": "395410201bb90fdd78424915360ba517e7b270a5c8b89932402a5b987b7f37e3"
+  },
+  "link_arguments": [
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+    "-O3",
+    "-DNDEBUG",
+    "-fsycl",
+    "-foffload-fp32-prec-div",
+    "-foffload-fp32-prec-sqrt",
+    "-fsycl-max-parallel-link-jobs=12",
+    "-Xspirv-translator",
+    "--spirv-ext=+SPV_KHR_integer_dot_product",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-native-dequant-group-byte-build-root-v3-contrib-llvm/probe.o",
+    "-o",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-native-dequant-group-byte-build-root-v3-contrib-llvm/native-dequant-group-byte",
+    "libstrata_kernels.a",
+    "libstrata_core.a",
+    "libstrata_ngram.a",
+    "libstrata_platform.a"
+  ],
+  "binary": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-native-dequant-group-byte-build-root-v3-contrib-llvm/native-dequant-group-byte",
+    "sha256": "24938a09d42cc419b91bf03bf7f460603fe8b8196922f145c57c8637c4f8588b",
+    "bytes": 2544320
+  },
+  "source_stable": true,
+  "finished_utc": "2026-10-11T09:11:12.804936+00:00"
+}

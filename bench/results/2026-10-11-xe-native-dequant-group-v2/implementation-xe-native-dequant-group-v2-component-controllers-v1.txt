@@ -1,0 +1,38 @@
+COMPLETE — Xe native dequant APIv2 component controllers v1
+2026-10-11; concrete SOURCE ONLY implementation, owner/consumer Main.
+
+Deliverables
+B=/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007
+A=B/xe-native-dequant-group-v2-component-controller-source-v1
+A/build_v2.py SHA256 ac779825edad0eb03cce726b673f73265b0bbac7467db1c1d711d57399843f9a (5288 bytes)
+A/gpu_v2.py SHA256 d559d548a58b42c08a3e694d768bcab623cde453620aa222feb7bafdb8650e42 (15584 bytes)
+A/construct.py reproduces text construction; A/build_v2.patch and A/gpu_v2.patch show complete changes against immutable original v1 controller inputs. A/manifest.json records dependency/output hashes and exact expected source pins. Reconstruction requires a fresh destination because controller outputs are immutable. No original controller, receipt, report or production source was edited.
+
+Scope and evidence
+Read W/AGENTS.md; LOCAL.md absent. Read WS/docs/ARTIFACT_RETENTION.md, registry-v128 (506 reviewed reports), prior APIv1/APIv2/byte/component implementation reports, original v1 build/GPU controller sources, Main corrected component C++ source, actual original free full-host/full-tags records, Main component-analysis-v1.json and optimized-ir-analysis-v1/analysis.json. Complete inputs were read as bytes for dependency hashing, and relevant source/report/JSON fields reviewed. No alternative investigation model, project import, AST, test, compiler, build, lint, runtime/GPU query, profiler, service operation, git mutation, cleanup or new measurement occurred. Only ordinary file reading and standard-library text construction/diff/hash ran. Main owns all serialized qualification and committed work boundaries.
+
+Adaptation
+New build roots are xe-native-dequant-group-component-build-root-v2-{mode}. New GPU roots are xe-native-dequant-group-component-gpu-root-v2-{mode}-{smoke-host|full-host|smoke-tags|full-tags}; Main's scheduled measurements use free. Both CLI mode values free and contrib-llvm are preserved.
+Release prerequisite is xe-e32-{mode}-full-build-root-v18; host ASAN prerequisite is xe-e32-{mode}-asan-full-build-root-v15; lint prerequisite is xe-e32-lints-baseline-compare-root-v13. GPU requires fresh xe-native-dequant-group-byte-gpu-root-v4-free-full/record.json with18432 group cases and exactly matching current source pins. Full component phases require their corresponding new v2 same-binary/same-boot smoke receipt. No old component binary, full-byte proof, release/ASAN/lint proof or component smoke can satisfy these paths.
+Both controllers explicitly require production cpp75f2ac1dfdb337c424bba19e62c34159a1bde547a776b9b5d6cf7975dfc29d50, public header61513ccb71831d1065bd25829541c508adf3ae58e1e3df6d3bc0c9681cb54f6d and unchanged Prefill1b30e3de22b30f4eb2160756c9fdde623abe87a2360fe029f0767be33aa9d664 in the fresh release source_pins. Context HEADd73288cba04f728dadfd69e9797729c1a10af3ab is descriptive context, not a clean-tree claim. All release/ASAN/probe source maps must still be identical and all mapped production files checked live.
+The build continues compiling unchanged Main corrected component source at B/xe-native-dequant-group-component-source-v2/native_dequant_group_component.cpp, pinf9168793027bfd3aa62fd8c8ff607b98e9b25d9ece54fe31d54d1945439b89a7, using actual target compile flags and actual production archive/device-link closure. No extracted decoder, Runtime stub, new queue or ordinary enable_profiling guard is introduced. GPU additionally verifies the new component build api_version2/mode and exact probe source hash; final source stability includes that external probe source.
+Qualified unchanged direct Owner, runtime validator, read-only health helper, adapter/health binary and timing-helper receipts remain the existing dependencies, with original exact hashes, same-boot health and current unchanged timing-helper source validation. These qualify infrastructure only; they cannot substitute for fresh v2 API/component execution. Manifest pins their existing identities. No receipt is rewritten or recast as a v2 API pass.
+
+Preserved measurement and safety contract
+The component C++ is byte-unchanged, including seven recorded GU/Down pairs640x2560, n1/8/16, six samples per arm in ABBA_ABBA_ABBA order, four repetitions, source/padding/inactive/output guards and full byte memcmp. Host-only and source-tag runs remain distinct processes. Exact sample-field/finite-number/work-volume/logical-return/protocol/order/count checks, all105 full comparisons and112 readbacks remain unchanged. Smoke still requires12 samples, one pair,n1 and7 comparisons.
+Direct child/session ownership and immutable lock/roots, no failure retry, bounded CPU/RSS/wall/log budgets, explicit environment allowlist, direct process runtime mappings, qualified adapter/runtime validation, before/after health, fresh kernel cursor/journal/fault filtering, dump absence, stable binary/source/boot and final gate are retained. Failure statuses and previous numerical PASS remain unchanged. Added metadata explicitly states that completed queue tag endpoints include issuance gaps/end-tag work and are not exclusive kernel durations or model throughput. No caller/model change is included.
+No cross-mode component sharing is implemented. Each mode requires a fresh mode-specific build/smoke. Main may independently decide sharing only after generating and reviewing fresh samebinarybothmodes proof; old v1 identical binary evidence grants no sharing permission.
+
+Existing results and next gate
+Main's original v1 n16 host completion median slowdown29.799167..44.591857 remains rejected for caller adoption. Existing correctness/health/fault PASS remains PASS. Main's optimized IR shows v2 removes explicit private alloca and776-byte memcpy from both group kernels in both compiler modes, while byval kernel argument payload remains. That is existing compiler evidence, not backend/GPU performance qualification. No v2 speedup, model throughput, global quality,32K/full262144 or RESTORE claim is made.
+Main must review source/diffs and then own actual new release/ASAN/lint, byte, component builds and smoke/full host/tag execution. This delivery is unbuilt, unimported and unexecuted; syntax and all run gates remain unverified by this agent. Example execution commands, for Main only after prerequisites close:
+python3 A/build_v2.py --mode free
+python3 A/build_v2.py --mode contrib-llvm
+python3 A/gpu_v2.py --mode free --matrix smoke-host
+python3 A/gpu_v2.py --mode free --matrix full-host
+python3 A/gpu_v2.py --mode free --matrix smoke-tags
+python3 A/gpu_v2.py --mode free --matrix full-tags
+A is the absolute artifact directory above; do not execute these in parallel with other GPU/build/lint/cleanup work.
+
+Retention
+No runtime traces/logs/tensors/diagnostics were created and no deletion occurred. Requested source artifacts, manifest, diffs and this report are the immediate Main review consumer; next review is Main source review and qualification/adoption boundary. Preserve original reports/receipts/statuses. Main archives compact evidence under policy, with path/hash/reason manifests for any later retirement. This delivery is not an independent progress backup.

@@ -1,0 +1,89 @@
+import argparse,fcntl,importlib.util,json,os,re,time,types
+from pathlib import Path
+B=Path('/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007')
+W=Path('/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011');LLVM=W/'.tools/intel-llvm-v711/install'
+O=B/'xe-llvm-v711-source-v5/direct_owner.py';H=Path('/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/fix-sycl-health-reset-classification-20261011/sycl/tools/recover-xe.sh')
+DUMP=Path('/sys/bus/pci/devices/0000:05:00.0/devcoredump')
+s=importlib.util.spec_from_file_location('owner',O);m=importlib.util.module_from_spec(s);s.loader.exec_module(m)
+m.require(m.sha(O)=='a29d8257eecc77c4ad9ae6671d092b56f4c09a35c4247c125fed3a8c8bc1f95f','qualified owner')
+EXPECTED_SOURCE_PINS={'AGENTS.md': '0427d8d4f91c4cf5128e77d3d898ee20783b63394d24718d1ff0b16779424dd0', 'CMakeLists.txt': '040de957a32bd26c9b71ca476aa45060571b86c0bad72a545ed9dbba9f2394a9', 'include/strata/core/commit_transaction.hpp': '52106d09b751d00a4ae1c85f555ba50bc10eb227f956423da94cb98cf7d850ad', 'include/strata/core/context_bounds.hpp': '30f66e36b2908518cfd5890f26d0efa9999cc6d52b70dcb635b6d4e865fa99ab', 'include/strata/core/gpu.hpp': '54b1a10524c9ee0c9b42979d75bd4f775ee0c45da2839d8129c2a2bd3daa552a', 'include/strata/core/layer.hpp': '93b34132db393b1a804c892ec7f7a1c1d4aeddd4f2fd885b464ddecfc93dbfb6', 'include/strata/core/mtp.hpp': '19c2bf0b8f89b45eefacd3479be78b79c00da7320bd6c668b37bec63999b872e', 'include/strata/core/mtp_completion.hpp': '8767f9807e1dd89971a49aa6195be44eb12ae54996ffcc2d9e4ad2819216a5d8', 'include/strata/core/session.hpp': 'cf31a4c17ba0e29ca70f52ad435740d8cf59f11571e5e559b953af79b1e5ac02', 'include/strata/core/verify.hpp': '452c85060e68e94b7d9e0f039d25f3b9696972a50292e08bf6d69b9b96e454a7', 'include/strata/kernels/elementwise.hpp': '24062ca572b852cf03be537cdbfda58f3e35abffd25461d7f56a5a8775a2b78b', 'include/strata/kernels/iq_kernels.hpp': '61513ccb71831d1065bd25829541c508adf3ae58e1e3df6d3bc0c9681cb54f6d', 'include/strata/kernels/verify_kernels.hpp': '27387500d0631ff694723c2ae165c61831f34ca06a2cb2fec8a064549a326885', 'include/strata/prefill/publication.hpp': 'c266156f02854f6578ca526203525249e6e9035ca56102a4aeb815280d42e2ee', 'include/strata/program/full_context_probe.hpp': 'c7463aee451e41d3b25c7dac12814b93aaa99443a7a78f851dd5cb6faf51f963', 'src/core/expert_cache.cpp': '83a8857e0f4be6efece62b49de7ca184d9213f702f2037a6d5eaf502987d9c07', 'src/core/expert_source.cpp': '7915f5ceb462a5c14655bbe585408f72ef9abd581b95ed14f08d9533d20f2edc', 'src/core/gpu.cpp': '9792966f6b2c84434a1dddafefb3286c3c5fcfa78e23065b455904f9cf6fcfb8', 'src/core/mtp.cpp': '11c00990bed018d9a4bf5cb658d97582875b969016d4af1e0bb38c6d5c951a8c', 'src/core/pinned.cpp': '1d2beba41fc8864cae2cf433dfe618725f6455c430809622ac9dda69d7575356', 'src/core/session.cpp': 'd914f75a19022edd29f6fec0fd4df85f1b24b09d56bf014744be79d12e914ab6', 'src/core/verify.cpp': '44d8667e973c44d889afac2387cf7686a1b3785d31fa22f22cc5c7097927e27a', 'src/kernels/parity_device.hpp': '0a29292188c155628a4f11b8a8a5cb147a3fc76ee428f8f65ba6f2420799a0de', 'src/kernels/xe/elementwise.cpp': 'ddbf6dd80363254349b12c926a61e51e630ed4ae6d683d1b160da3661b6ca68e', 'src/kernels/xe/iq_kernels.cpp': '75f2ac1dfdb337c424bba19e62c34159a1bde547a776b9b5d6cf7975dfc29d50', 'src/kernels/xe/kv_stream.cpp': 'cd3bb7877dd848497a1d7d50cbcf75ae28cffdd187b5c18b6234b917520f7fbf', 'src/kernels/xe/verify_kernels.cpp': '8e9c8ef3e9ceb5e7de0711c0ccc658b9006a10ed796fc1652ed63fecdc58ecf6', 'src/prefill/gemm.cpp': 'bfa40846fddb46a3d03d8c58ef5209b181c46674939beeefe512db0073c9d648', 'src/prefill/prefill.cpp': '1b30e3de22b30f4eb2160756c9fdde623abe87a2360fe029f0767be33aa9d664', 'src/program/generate.cpp': 'c9b60ef079694302dfa1f8099ddffd5375d7dae503f6edec454c1d7de3d941ee', 'tests/core/expert_profile_version_test.cpp': 'e1369cda8de36268cec609941484b03a0c9c2f3ff68701cd7d619df2c0a6d0c1', 'tools/test_commit_transaction.cpp': '15fe42c25f5ab45f95fa6317dd428198c4cccf70d550be8cd9892e30c160a6d0', 'tools/test_context_bounds.cpp': '226d6649cea8aa67987b1759419f1401e64418b614bbf31ee313f570ac9fdaba', 'tools/test_full_context_probe.cpp': '72df5a4c916a81fa186db62de087c815b1e7922e43767d3d21a436eed8027d56', 'tools/test_mtp_completion.cpp': 'b414eff5c0383f216d3a760d2b3dd35e2f949836a04a27b2b08158e589f3b1a0', 'tools/test_prefill_dense_gemm.cpp': 'b81f479c3e57d5312d37dd54492608d917e7ca64758706686b2b7930018fc251', 'tools/test_prefill_publication.cpp': 'aecf2d051b7138dfe8b21ba3993d5adcbd721032b7f8f19abc898b7f9f5ef9b1'}
+PROBE_SOURCE=B/'xe-native-dequant-group-byte-probe-source-v3/native_dequant_group_byte.cpp'
+PROBE_SHA='846ec8a718c22e7d8e4e49befe60ebd40a22428c3db80571c7dd9994d54a7761'
+BUILD_CONTROLLER_SHA='6a50383b2597a01e09409354d7003b7ec8dded3b24b20e1ca6686b627bb68427'
+p=argparse.ArgumentParser();p.add_argument('--mode',choices=['free','contrib-llvm'],required=True);p.add_argument('--matrix',choices=['smoke','small','full'],required=True);a=p.parse_args()
+with (B/'owned-v0141-measurement.lock').open('a') as lock:
+ fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
+ out=B/('xe-native-dequant-group-byte-gpu-root-v4-'+a.mode+'-'+a.matrix);m.require(not out.exists(),'immutable GPU receipt');out.mkdir(mode=0o700)
+ boot=Path('/proc/sys/kernel/random/boot_id').read_text().strip();wall=120 if a.matrix=='smoke' else (900 if a.matrix=='small' else 2400)
+ r=dict(source_base='d73288cba04f728dadfd69e9797729c1a10af3ab',active=True,complete=False,passed=False,commands=[],started_utc=m.utc(),boot_id=boot,controller_sha256=m.sha(__file__),mode=a.mode,matrix=a.matrix,model_executed=False,adopted=False,performance_eligible=False,reset_executed=False,retry_count=0,gpu_submission_attempted=False,raw_text_budget_bytes=64<<20,whole_wall_budget_seconds=wall+150,probe_wall_budget_seconds=wall,observed_libraries={},scope='Bounded real unchanged individual versus grouped native dequant byte equality, complete output and source guard preservation; not component timing or global model quality')
+ def save():
+  for c in r['commands']:
+   if c['label']!='byte-matrix' or not c.get('direct_identity'):continue
+   ident=c['direct_identity'];now=m.identity(ident['pid'])
+   if not now or now['start_ticks']!=ident['start_ticks']:continue
+   try:
+    for line in Path('/proc',str(ident['pid']),'maps').read_text().splitlines():
+     at=line.find('/')
+     if at<0:continue
+     path=line[at:]
+     if '(deleted)' in path or not any(n in Path(path).name for n in ['libsycl','libur_','libze_','libumf']):continue
+     if path not in r['observed_libraries']:r['observed_libraries'][path]=dict(path=path,sha256=m.sha(Path(path)))
+   except (FileNotFoundError,ProcessLookupError,PermissionError):pass
+  (out/'record.json').write_text(json.dumps(r,indent=2)+'\n')
+ owner=m.Owner(out/'commands',save);r['commands']=owner.commands;begin=time.monotonic();cursor=None;helper=None
+ BASE=dict(PATH=str(LLVM/'bin')+':/usr/bin:/bin',HOME='/home/yayoi',LANG='C.UTF-8',LC_ALL='C.UTF-8',LD_LIBRARY_PATH=str(LLVM/'lib')+(':/opt/intel/oneapi/mkl/2026.1/lib' if a.mode!='free' else ''),XDG_RUNTIME_DIR='/run/user/'+str(os.getuid()))
+ def run(label,args,env=BASE,deadline=20):
+  left=wall+150-(time.monotonic()-begin);m.require(left>0,'whole finite deadline')
+  e,so,se=owner.run(label,args,env,W,wall=min(deadline,left),cpu=deadline*2,text_cap=64<<20,total_cap=64<<20,rss_cap=8<<30)
+  m.require(m.closed(e) and e['exit_code']==0,'normal closed '+label);return so.read_text(),se.read_text()
+ def kernel(label,args):
+  so,_=run(label,['/usr/bin/journalctl','-k',*args,'--no-pager','-o','json']);rows=[json.loads(s) for s in so.splitlines() if s.startswith('{')];relevant=[x for x in rows if '0000:05:00.0' in x.get('MESSAGE','') or re.search(r'\bxe\b',x.get('MESSAGE',''))]
+  faults=[x['MESSAGE'] for x in relevant if helper.FAULT.search(x['MESSAGE'])];r[label]=dict(relevant_entries=relevant,faults=faults);m.require(not faults and not DUMP.exists(),'fault-free '+label)
+ save()
+ try:
+  paths=dict(release=B/('xe-e32-'+a.mode+'-full-build-root-v18/record.json'),asan=B/('xe-e32-'+a.mode+'-asan-full-build-root-v15/record.json'),lint=B/'xe-e32-lints-baseline-compare-root-v13/record.json',probe_build=B/('xe-native-dequant-group-byte-build-root-v3-'+a.mode+'/record.json'),health=B/'xe-source-llvm-small-health-root-v3/record.json')
+  proofs={}
+  for name,path in paths.items():
+   v=json.loads(path.read_text());m.require(v['passed'] and v['complete'] and not v['active'] and all(m.closed(c) for c in v['commands']),'closed '+name);proofs[name]=v
+  r['prerequisite_receipt_pins']={name:dict(path=str(path),sha256=m.sha(path)) for name,path in paths.items()}
+  m.require(proofs['release']['source_pins']==proofs['asan']['source_pins']==proofs['probe_build']['source_pins'],'same compiled release/ASAN/probe source')
+  m.require(proofs['release']['source_pins']==EXPECTED_SOURCE_PINS,'exact v2 production source closure')
+  m.require(all(proofs[n]['mode']==a.mode for n in ['release','asan','probe_build']),'same qualified build mode')
+  m.require(proofs['probe_build']['controller_sha256']==BUILD_CONTROLLER_SHA,'new v3 probe build controller')
+  m.require(proofs['probe_build']['source_base']=='d73288cba04f728dadfd69e9797729c1a10af3ab','new probe build base')
+  m.require(proofs['probe_build']['probe_source']==dict(path=str(PROBE_SOURCE),sha256=PROBE_SHA) and m.sha(PROBE_SOURCE)==PROBE_SHA,'unchanged exact byte oracle')
+  m.require(proofs['lint']['source_pins']=={f:EXPECTED_SOURCE_PINS[f] for f in ['include/strata/kernels/iq_kernels.hpp','src/kernels/xe/iq_kernels.cpp']},'exact v2 lint source closure')
+  r['source_pins']=proofs['release']['source_pins'];m.require(all(m.sha(W/f)==h for f,h in r['source_pins'].items()),'exact production source')
+  m.require(all(m.sha(W/f)==h for f,h in proofs['lint']['source_pins'].items()),'exact mandatory lint source');m.require(proofs['health']['boot_id']==boot,'same qualified health boot')
+  r['binary']=proofs['probe_build']['binary'];m.require(m.sha(Path(r['binary']['path']))==r['binary']['sha256'],'exact built probe');health=proofs['health'];m.require(m.sha(Path(health['binary']['path']))==health['binary']['sha256'],'actual health binary');r['health_binary']=health['binary']
+  rh=B/'xe-source-llvm-census32k-v3/runtime.py';m.require(m.sha(rh)==json.loads((B/'xe-source-llvm-census32k-root-v3/counts/record.json').read_text())['runtime_helper_sha256'],'qualified exact runtime validator');rs=importlib.util.spec_from_file_location('runtime_validator',rh);runtime=importlib.util.module_from_spec(rs);rs.loader.exec_module(runtime);r['runtime_validator_sha256']=m.sha(rh)
+  m.require(m.sha(H)=='51f5ba140613ae6ee81905eeeea153243a6a41742488ac161d76bad241944457','exact read-only health helper');helper=types.ModuleType('diagnostic_helper');exec(compile(H.read_text().split("<<'PY'\n",1)[1].rsplit('\nPY',1)[0],str(H),'exec'),helper.__dict__)
+  adapter=health['adapter'];m.require(m.sha(Path(adapter['path']))==adapter['sha256'],'exact source adapter')
+  env=dict(BASE,ONEAPI_DEVICE_SELECTOR='level_zero:gpu',STRATA_GPU_PCI='0000:05:00.0',STRATA_EVENT_MARK='barrier',SYCL_CACHE_PERSISTENT='0',UR_ADAPTERS_FORCE_LOAD=adapter['path'],UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD='1',NEOReadDebugKeys='1',EnableDirectSubmission='0')
+  health_env=helper.diagnostic_environment(env);r['environment']=health_env if a.matrix=='smoke' else env;r['health_environment']=health_env
+  kernel('kernel-before',['-b']);so,_=run('fresh-kernel-cursor',['/usr/bin/journalctl','-k','-n','0','--show-cursor','--no-pager']);match=re.search(r'^-- cursor: (.+)$',so,re.M);m.require(match is not None,'fresh cursor');cursor=match[1];r['kernel_cursor_before']=cursor
+  def health_run(label):
+   text,_=run(label,[health['binary']['path'],'0000:05:00.0'],env=health_env,deadline=30)
+   expected=['STATUS 0000:05:00.0 0','QUEUE 0000:05:00.0','H2D 65536 complete','KERNEL 16384 complete','D2H 65536 complete','PASS 0000:05:00.0: 1 round, 16384 exact words'];m.require(text.splitlines()[:6]==expected,'exact '+label);r[label]=text.splitlines()
+  if a.matrix!='smoke':
+   sp=B/('xe-native-dequant-group-byte-gpu-root-v4-'+a.mode+'-smoke/record.json');sm=json.loads(sp.read_text());m.require(sm['passed'] and sm['complete'] and not sm['active'] and sm['boot_id']==boot and sm['binary']==r['binary'] and sm['mode']==a.mode and sm['matrix']=='smoke' and sm['controller_sha256']==m.sha(__file__) and sm['source_pins']==EXPECTED_SOURCE_PINS and all(m.closed(c) for c in sm['commands']),'same binary prior detailed smoke');r['smoke_receipt_sha256']=m.sha(sp)
+  health_run('health-before');kernel('kernel-after-prehealth',['--after-cursor',cursor]);r['gpu_submission_attempted']=True;save()
+  so,se=run('byte-matrix',[r['binary']['path'],'--'+a.matrix],env=r['environment'],deadline=wall)
+  m.require(not re.search(r'UR_RESULT_ERROR_[A-Z_]+|ZE_RESULT_ERROR_[A-Z_]+|\bFAIL\b|\bDIFF\b|GPU completion unconfirmed|terminate called',so+'\n'+se),'no byte/runtime error')
+  lines=so.splitlines();arms=1 if a.matrix=='smoke' else (144 if a.matrix=='full' else 72)
+  final=[x for x in lines if x.startswith('PASS arms=')];m.require(len(final)==1,'exact one final PASS');r['final_protocol']=final[0]
+  pat=r'PASS arms=(\d+) cases=(\d+) individual_calls=(\d+) group_calls=(\d+) refusals=(\d+) readbacks=(\d+) read_bytes=(\d+) tracing_qualified=0 timing_qualified=0';match=re.fullmatch(pat,final[0]);m.require(match is not None,'strict finite pass protocol')
+  counts=list(map(int,match.groups()));m.require(counts[:5]==[arms,arms*128,arms*16,arms*128,arms*26] and counts[5]==arms*131 and counts[6]<=1<<40,'exact expected finite coverage')
+  compares=[x for x in lines if x.startswith('BYTE_COMPARE ')];m.require(len(compares)==arms*130 and all(x.endswith('differences=0') for x in compares),'all full byte comparisons reported');ledger=[x for x in lines if x.startswith(('ARM_BEGIN ','CASE_BEGIN ','REFUSAL_BEGIN ','BYTE_COMPARE ','INPUT '))]
+  m.require(sum(x.startswith('CASE_BEGIN ') for x in ledger)==arms*128 and sum(x.startswith('ARM_BEGIN ') for x in ledger)==arms and sum(x.startswith('REFUSAL_BEGIN ') for x in ledger)==arms*26,'complete actual case identities')
+  ledger_path=out/'byte-comparison-ledger.txt';ledger_path.write_text('\n'.join(ledger)+'\n');r['byte_comparison_ledger']=dict(path=str(ledger_path),sha256=m.sha(ledger_path),bytes=ledger_path.stat().st_size,comparison_count=len(compares),scope='Ordered actual arm/input/case/refusal identities plus every full-byte comparison size and reference/output native-endian word FNV-style fingerprint; repeated drain/copy progress omitted, full source SHA identities preserved separately')
+  m.require(lines.count('ARM_PASS')==arms and lines.count('CASE_PASS')==arms*128 and 'EMPTY_BEFORE_RUNTIME_PASS' in lines,'complete arms/cases/zero before Runtime');r['coverage']=dict(arms=arms,group_cases=arms*128,individual_reference_calls=arms*16,refusals=arms*26,empty_pre_runtime=34,readbacks=counts[5],readback_bytes=counts[6],full_byte_compares=len(compares))
+  r['runtime_mapping_validation']=runtime.validate_runtime(r['observed_libraries'],health['loaded_libraries']);kernel('kernel-after-byte-matrix',['--after-cursor',cursor]);health_run('health-after');kernel('kernel-after-health',['--after-cursor',cursor]);r['complete']=True
+ except BaseException as exc:r['error']=repr(exc)
+ finally:
+  if helper and cursor and owner.active is None:
+   try:kernel('kernel-final',['--after-cursor',cursor]);r['kernel_gate_passed']=True
+   except BaseException as exc:r['kernel_gate_error']=repr(exc)
+  r['probe_source_stable']=m.sha(PROBE_SOURCE)==PROBE_SHA
+  r['source_stable']=all(m.sha(W/f)==h for f,h in r.get('source_pins',{}).items());r['binary_stable']=bool(r.get('binary') and m.sha(Path(r['binary']['path']))==r['binary']['sha256']);r['boot_unchanged']=boot==Path('/proc/sys/kernel/random/boot_id').read_text().strip();r['active']=owner.active is not None;r['passed']=bool(r['complete'] and r.get('kernel_gate_passed') and r['source_stable'] and r['probe_source_stable'] and r['binary_stable'] and r['boot_unchanged'] and not r['active'] and not r.get('error') and not r.get('kernel_gate_error'));r['finished_utc']=m.utc();save()
+ print(json.dumps({k:r.get(k) for k in ['mode','matrix','passed','error','coverage','kernel_gate_error']}));raise SystemExit(0 if r['passed'] else 1)

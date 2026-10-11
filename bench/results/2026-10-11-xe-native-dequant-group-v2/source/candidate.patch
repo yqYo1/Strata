@@ -1,0 +1,55 @@
+--- a/src/kernels/xe/iq_kernels.cpp
++++ b/src/kernels/xe/iq_kernels.cpp
+@@ -1638,6 +1638,34 @@
+ 
+ namespace {
+ 
++// Constant subscripts keep the captured pointer table available for scalar replacement. Whether the compiler
++// actually removes private-array traffic is an IR / component qualification question, not a source guarantee.
++// Pass the table by reference: this helper does not make another by-value array copy.
++#if defined(__clang__) || defined(__GNUC__)
++__attribute__((always_inline))
++#endif
++inline const void* dequant_group_pointer(const void* const (&p)[kIqDequantGroup], int expert) {
++    switch (expert) {
++        case 0: return p[0];
++        case 1: return p[1];
++        case 2: return p[2];
++        case 3: return p[3];
++        case 4: return p[4];
++        case 5: return p[5];
++        case 6: return p[6];
++        case 7: return p[7];
++        case 8: return p[8];
++        case 9: return p[9];
++        case 10: return p[10];
++        case 11: return p[11];
++        case 12: return p[12];
++        case 13: return p[13];
++        case 14: return p[14];
++        case 15: return p[15];
++        default: return nullptr;   // unreachable after the host slot-bounds check and the expert ND-range
++    }
++}
++
+ // All group checks precede queue submission; no allocation, queue or synchronization is introduced.
+ bool dequant_group_mul(size_t a, size_t b, size_t& out) {
+     const size_t limit = std::min((size_t) std::numeric_limits<int64_t>::max(),
+@@ -1712,7 +1740,7 @@
+             if (i >= nsb) return;
+             const int parity = (int) it.get_group(1);
+             const int64_t r = i / per_row, c = i % per_row;
+-            dq_dispatch(t, parity ? g.up[expert] : g.gate[expert], i,
++            dq_dispatch(t, parity ? dequant_group_pointer(g.up, expert) : dequant_group_pointer(g.gate, expert), i,
+                         ToGlobal<sycl::half>{y + (size_t) expert * stride + ((2 * r + parity) * per_row + c) * QK_K},
+                         (int) (it.get_local_id(2) % 32));
+         });
+@@ -1737,7 +1765,7 @@
+             const int expert = g.first + (int) it.get_group(0);
+             const int64_t i = (int64_t) (it.get_global_id(1) / 32);
+             if (i >= nsb) return;
+-            dq_dispatch(t, g.down[expert], i,
++            dq_dispatch(t, dequant_group_pointer(g.down, expert), i,
+                         ToGlobal<sycl::half>{y + (size_t) expert * stride + i * QK_K},
+                         (int) (it.get_local_id(1) % 32));
+         });
