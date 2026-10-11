@@ -1,0 +1,2175 @@
+define internal spir_func void @_ZN6strata7kernels12_GLOBAL__N_111dq_dispatchINS1_8ToGlobalIN4sycl3_V16detail9half_impl4halfEEEEEviPKvlRKT_i(i32 noundef %0, ptr addrspace(4) noundef readonly %1, i64 noundef range(i64 0, 576460752303423488) %2, ptr addrspace(4) writeonly captures(none) %3, i32 noundef range(i32 0, 32) %4) unnamed_addr #12 !sycl_used_aspects !12 !sycl_kernel_omit_args !854 {
+  %6 = alloca [4 x float], align 4
+  %7 = alloca %"class.sycl::_V1::vec.211", align 8
+  %8 = alloca %"class.sycl::_V1::vec.211", align 8
+  %9 = alloca [4 x float], align 4
+  %10 = alloca [4 x float], align 4
+  %11 = alloca %"class.sycl::_V1::vec.211", align 8
+  %12 = alloca %"class.sycl::_V1::vec.211", align 8
+  %13 = alloca [4 x float], align 4
+  %14 = alloca [4 x float], align 4
+  %15 = alloca %"class.sycl::_V1::vec.211", align 8
+  %16 = alloca %"class.sycl::_V1::vec.211", align 8
+  %17 = alloca [4 x float], align 4
+  %18 = alloca [4 x float], align 4
+  %19 = alloca %"class.sycl::_V1::vec.174", align 16
+  %20 = alloca [8 x float], align 4
+  %21 = alloca %"class.sycl::_V1::vec.211", align 8
+  %22 = alloca %"class.sycl::_V1::vec.211", align 8
+  %23 = alloca [4 x float], align 4
+  %24 = alloca [4 x float], align 4
+  %25 = alloca %"class.sycl::_V1::vec", align 4
+  %26 = alloca %"class.sycl::_V1::vec", align 4
+  %27 = alloca [2 x float], align 4
+  %28 = alloca [2 x float], align 4
+  %29 = alloca %"class.sycl::_V1::vec.211", align 8
+  %30 = alloca %"class.sycl::_V1::vec.211", align 8
+  %31 = alloca [4 x float], align 4
+  %32 = alloca [4 x float], align 4
+  %33 = alloca %"class.sycl::_V1::vec.174", align 16
+  %34 = alloca [8 x float], align 4
+  %35 = alloca %"class.sycl::_V1::vec.174", align 16
+  %36 = alloca [8 x float], align 4
+  %37 = alloca %"class.sycl::_V1::vec.211", align 8
+  %38 = alloca [4 x float], align 4
+  %39 = alloca %"class.sycl::_V1::vec.211", align 8
+  %40 = alloca %"class.sycl::_V1::vec.211", align 8
+  %41 = alloca [4 x float], align 4
+  %42 = alloca [4 x float], align 4
+  %43 = alloca %"class.sycl::_V1::vec.174", align 16
+  %44 = alloca [2 x i32], align 4
+  %45 = alloca [8 x float], align 4
+  %46 = alloca %"class.sycl::_V1::vec.174", align 16
+  %47 = alloca [8 x float], align 4
+  %48 = alloca %"class.sycl::_V1::vec.174", align 16
+  %49 = alloca [8 x float], align 4
+  %50 = alloca %"class.sycl::_V1::vec.211", align 8
+  %51 = alloca %"class.sycl::_V1::vec.211", align 8
+  %52 = alloca %"struct.strata::kernels::iq_bits::Int2", align 4
+  %53 = alloca [4 x float], align 4
+  %54 = alloca [4 x float], align 4
+  %55 = alloca %"class.sycl::_V1::vec.174", align 16
+  %56 = alloca [8 x float], align 4
+  %57 = alloca %"class.sycl::_V1::vec.174", align 16
+  %58 = alloca [8 x float], align 4
+  %59 = alloca %"class.sycl::_V1::vec.174", align 16
+  %60 = alloca [8 x float], align 4
+  switch i32 %0, label %1609 [
+    i32 16, label %61
+    i32 17, label %134
+    i32 18, label %202
+    i32 20, label %287
+    i32 21, label %359
+    i32 22, label %456
+    i32 29, label %531
+    i32 23, label %631
+    i32 11, label %716
+    i32 42, label %840
+    i32 30, label %882
+    i32 12, label %912
+    i32 13, label %1035
+    i32 7, label %1195
+    i32 8, label %1271
+    i32 6, label %1310
+    i32 2, label %1383
+    i32 3, label %1444
+    i32 14, label %1508
+  ]
+
+61:                                               ; preds = %5
+  %62 = and i32 %4, 3
+  %63 = and i32 %4, 28
+  %64 = getelementptr inbounds nuw %struct.block_iq2_xxs, ptr addrspace(4) %1, i64 %2
+  %65 = getelementptr inbounds nuw i8, ptr addrspace(4) %64, i64 2
+  %66 = zext nneg i32 %63 to i64
+  %67 = getelementptr inbounds nuw i16, ptr addrspace(4) %65, i64 %66
+  %68 = lshr i32 %62, 1
+  %69 = zext nneg i32 %68 to i64
+  %70 = getelementptr inbounds nuw i16, ptr addrspace(4) %67, i64 %69
+  %71 = load i16, ptr addrspace(4) %70, align 2, !tbaa !34
+  %72 = zext i16 %71 to i32
+  %73 = shl nuw nsw i32 %4, 3
+  %74 = and i32 %73, 8
+  %75 = lshr i32 %72, %74
+  %76 = and i32 %75, 255
+  %77 = zext nneg i32 %76 to i64
+  %78 = getelementptr inbounds i64, ptr addrspace(1) @_ZL11iq2xxs_grid, i64 %77
+  %79 = load i64, ptr addrspace(1) %78, align 8, !tbaa !39
+  %80 = getelementptr inbounds nuw i8, ptr addrspace(4) %67, i64 4
+  %81 = load i16, ptr addrspace(4) %80, align 2, !tbaa !34
+  %82 = zext i16 %81 to i32
+  %83 = getelementptr inbounds nuw i8, ptr addrspace(4) %67, i64 6
+  %84 = load i16, ptr addrspace(4) %83, align 2, !tbaa !34
+  %85 = zext i16 %84 to i32
+  %86 = shl nuw i32 %85, 16
+  %87 = or disjoint i32 %86, %82
+  %88 = load half, ptr addrspace(4) %64, align 2, !tbaa !27
+  %89 = fpext half %88 to float
+  %90 = lshr i32 %85, 12
+  %91 = uitofp nneg i32 %90 to float
+  %92 = fadd float %91, 5.000000e-01
+  %93 = fmul float %92, %89
+  %94 = fmul float %93, 2.500000e-01
+  %95 = mul nuw nsw i32 %62, 7
+  %96 = lshr i32 %87, %95
+  %97 = and i32 %96, 127
+  %98 = tail call spir_func noundef i32 @_Z20__spirv_ocl_popcountj(i32 noundef %97) #20
+  %99 = shl i32 %98, 7
+  %100 = or disjoint i32 %99, %97
+  call void @llvm.lifetime.start.p0(ptr nonnull %60) #22
+  br label %101
+
+101:                                              ; preds = %115, %61
+  %102 = phi i32 [ 0, %61 ], [ %130, %115 ]
+  %103 = icmp samesign ult i32 %102, 8
+  br i1 %103, label %115, label %104
+
+104:                                              ; preds = %101
+  call void @llvm.lifetime.start.p0(ptr nonnull %59) #22
+  br label %105
+
+105:                                              ; preds = %108, %104
+  %106 = phi i32 [ 0, %104 ], [ %114, %108 ]
+  %107 = icmp samesign ult i32 %106, 8
+  br i1 %107, label %108, label %131
+
+108:                                              ; preds = %105
+  %109 = zext nneg i32 %106 to i64
+  %110 = getelementptr inbounds float, ptr %60, i64 %109
+  %111 = load float, ptr %110, align 4, !tbaa !16
+  %112 = fptrunc float %111 to half
+  %113 = getelementptr inbounds %"class.sycl::_V1::detail::half_impl::half", ptr %59, i64 %109
+  store half %112, ptr %113, align 2, !tbaa !855
+  %114 = add nuw nsw i32 %106, 1
+  br label %105, !llvm.loop !856
+
+115:                                              ; preds = %101
+  %116 = shl nuw nsw i32 %102, 3
+  %117 = zext nneg i32 %116 to i64
+  %118 = lshr i64 %79, %117
+  %119 = trunc i64 %118 to i32
+  %120 = and i32 %119, 255
+  %121 = uitofp nneg i32 %120 to float
+  %122 = fmul float %94, %121
+  %123 = shl nuw nsw i32 1, %102
+  %124 = and i32 %100, %123
+  %125 = icmp eq i32 %124, 0
+  %126 = fneg float %122
+  %127 = select i1 %125, float %122, float %126
+  %128 = zext nneg i32 %102 to i64
+  %129 = getelementptr inbounds float, ptr %60, i64 %128
+  store float %127, ptr %129, align 4, !tbaa !16
+  %130 = add nuw nsw i32 %102, 1
+  br label %101, !llvm.loop !857
+
+131:                                              ; preds = %105
+  %132 = zext nneg i32 %73 to i64
+  %133 = getelementptr inbounds nuw %"class.sycl::_V1::detail::half_impl::half", ptr addrspace(4) %3, i64 %132
+  call void @llvm.memcpy.p4.p0.i64(ptr addrspace(4) align 16 %133, ptr align 16 %59, i64 16, i1 false)
+  call void @llvm.lifetime.end.p0(ptr nonnull %59) #22
+  call void @llvm.lifetime.end.p0(ptr nonnull %60) #22
+  br label %1609
+
+134:                                              ; preds = %5
+  %135 = and i32 %4, 3
+  %136 = zext nneg i32 %135 to i64
+  %137 = lshr i32 %4, 2
+  %138 = zext nneg i32 %137 to i64
+  %139 = getelementptr inbounds nuw %struct.block_iq2_xs, ptr addrspace(4) %1, i64 %2
+  %140 = getelementptr inbounds nuw i8, ptr addrspace(4) %139, i64 2
+  %141 = shl nuw nsw i64 %138, 3
+  %142 = getelementptr inbounds nuw i8, ptr addrspace(4) %140, i64 %141
+  %143 = getelementptr inbounds nuw i16, ptr addrspace(4) %142, i64 %136
+  %144 = load i16, ptr addrspace(4) %143, align 2, !tbaa !34
+  %145 = and i16 %144, 511
+  %146 = zext nneg i16 %145 to i64
+  %147 = getelementptr inbounds i64, ptr addrspace(1) @_ZL10iq2xs_grid, i64 %146
+  %148 = load i64, ptr addrspace(1) %147, align 8, !tbaa !39
+  %149 = load half, ptr addrspace(4) %139, align 2, !tbaa !27
+  %150 = fpext half %149 to float
+  %151 = getelementptr inbounds nuw i8, ptr addrspace(4) %139, i64 66
+  %152 = getelementptr inbounds nuw i8, ptr addrspace(4) %151, i64 %138
+  %153 = load i8, ptr addrspace(4) %152, align 1, !tbaa !21
+  %154 = zext i8 %153 to i32
+  %155 = shl nuw nsw i32 %4, 1
+  %156 = and i32 %155, 4
+  %157 = lshr i32 %154, %156
+  %158 = and i32 %157, 15
+  %159 = uitofp nneg i32 %158 to float
+  %160 = fadd float %159, 5.000000e-01
+  %161 = fmul float %160, %150
+  %162 = fmul float %161, 2.500000e-01
+  %163 = lshr i16 %144, 9
+  %164 = zext nneg i16 %163 to i32
+  %165 = tail call spir_func noundef i32 @_Z20__spirv_ocl_popcountj(i32 noundef %164) #20
+  %166 = shl i32 %165, 7
+  %167 = or disjoint i32 %166, %164
+  call void @llvm.lifetime.start.p0(ptr nonnull %58) #22
+  br label %168
+
+168:                                              ; preds = %182, %134
+  %169 = phi i32 [ 0, %134 ], [ %197, %182 ]
+  %170 = icmp samesign ult i32 %169, 8
+  br i1 %170, label %182, label %171
+
+171:                                              ; preds = %168
+  call void @llvm.lifetime.start.p0(ptr nonnull %57) #22
+  br label %172
+
+172:                                              ; preds = %175, %171
+  %173 = phi i32 [ 0, %171 ], [ %181, %175 ]
+  %174 = icmp samesign ult i32 %173, 8
+  br i1 %174, label %175, label %198
+
+175:                                              ; preds = %172
+  %176 = zext nneg i32 %173 to i64
+  %177 = getelementptr inbounds float, ptr %58, i64 %176
+  %178 = load float, ptr %177, align 4, !tbaa !16
+  %179 = fptrunc float %178 to half
+  %180 = getelementptr inbounds %"class.sycl::_V1::detail::half_impl::half", ptr %57, i64 %176
+  store half %179, ptr %180, align 2, !tbaa !855
+  %181 = add nuw nsw i32 %173, 1
+  br label %172, !llvm.loop !856
+
+182:                                              ; preds = %168
+  %183 = shl nuw nsw i32 %169, 3
+  %184 = zext nneg i32 %183 to i64
+  %185 = lshr i64 %148, %184
+  %186 = trunc i64 %185 to i32
+  %187 = and i32 %186, 255
+  %188 = uitofp nneg i32 %187 to float
+  %189 = fmul float %162, %188
+  %190 = shl nuw nsw i32 1, %169
+  %191 = and i32 %167, %190
+  %192 = icmp eq i32 %191, 0
+  %193 = fneg float %189
+  %194 = select i1 %192, float %189, float %193
+  %195 = zext nneg i32 %169 to i64
+  %196 = getelementptr inbounds float, ptr %58, i64 %195
+  store float %194, ptr %196, align 4, !tbaa !16
+  %197 = add nuw nsw i32 %169, 1
+  br label %168, !llvm.loop !858
+
+198:                                              ; preds = %172
+  %199 = shl nuw nsw i32 %4, 3
+  %200 = zext nneg i32 %199 to i64
+  %201 = getelementptr inbounds nuw %"class.sycl::_V1::detail::half_impl::half", ptr addrspace(4) %3, i64 %200
+  call void @llvm.memcpy.p4.p0.i64(ptr addrspace(4) align 16 %201, ptr align 16 %57, i64 16, i1 false)
+  call void @llvm.lifetime.end.p0(ptr nonnull %57) #22
+  call void @llvm.lifetime.end.p0(ptr nonnull %58) #22
+  br label %1609
+
+202:                                              ; preds = %5
+  %203 = and i32 %4, 3
+  %204 = lshr i32 %4, 2
+  %205 = zext nneg i32 %204 to i64
+  %206 = getelementptr inbounds nuw %struct.block_iq3_xxs, ptr addrspace(4) %1, i64 %2
+  %207 = getelementptr inbounds nuw i8, ptr addrspace(4) %206, i64 2
+  %208 = shl nuw nsw i64 %205, 3
+  %209 = getelementptr inbounds nuw i8, ptr addrspace(4) %207, i64 %208
+  %210 = getelementptr inbounds nuw i8, ptr addrspace(4) %206, i64 66
+  %211 = shl nuw nsw i64 %205, 2
+  %212 = getelementptr inbounds nuw i8, ptr addrspace(4) %210, i64 %211
+  %213 = shl nuw nsw i32 %203, 1
+  %214 = zext nneg i32 %213 to i64
+  %215 = getelementptr inbounds nuw i8, ptr addrspace(4) %209, i64 %214
+  %216 = load i8, ptr addrspace(4) %215, align 1, !tbaa !21
+  %217 = zext i8 %216 to i64
+  %218 = getelementptr inbounds i32, ptr addrspace(1) @_ZL11iq3xxs_grid, i64 %217
+  %219 = load i32, ptr addrspace(1) %218, align 4, !tbaa !6
+  %220 = getelementptr inbounds nuw i8, ptr addrspace(4) %215, i64 1
+  %221 = load i8, ptr addrspace(4) %220, align 1, !tbaa !21
+  %222 = zext i8 %221 to i64
+  %223 = getelementptr inbounds i32, ptr addrspace(1) @_ZL11iq3xxs_grid, i64 %222
+  %224 = load i32, ptr addrspace(1) %223, align 4, !tbaa !6
+  %225 = load i16, ptr addrspace(4) %212, align 2, !tbaa !34
+  %226 = zext i16 %225 to i32
+  %227 = getelementptr inbounds nuw i8, ptr addrspace(4) %212, i64 2
+  %228 = load i16, ptr addrspace(4) %227, align 2, !tbaa !34
+  %229 = zext i16 %228 to i32
+  %230 = shl nuw i32 %229, 16
+  %231 = or disjoint i32 %230, %226
+  %232 = load half, ptr addrspace(4) %206, align 2, !tbaa !27
+  %233 = fpext half %232 to float
+  %234 = lshr i32 %229, 12
+  %235 = uitofp nneg i32 %234 to float
+  %236 = fadd float %235, 5.000000e-01
+  %237 = fmul float %236, %233
+  %238 = fmul float %237, 5.000000e-01
+  %239 = mul nuw nsw i32 %203, 7
+  %240 = lshr i32 %231, %239
+  %241 = and i32 %240, 127
+  %242 = tail call spir_func noundef i32 @_Z20__spirv_ocl_popcountj(i32 noundef %241) #20
+  %243 = shl i32 %242, 7
+  %244 = or disjoint i32 %243, %241
+  call void @llvm.lifetime.start.p0(ptr nonnull %56) #22
+  br label %245
+
+245:                                              ; preds = %259, %202
+  %246 = phi i32 [ 0, %202 ], [ %282, %259 ]
+  %247 = icmp samesign ult i32 %246, 4
+  br i1 %247, label %259, label %248
+
+248:                                              ; preds = %245
+  call void @llvm.lifetime.start.p0(ptr nonnull %55) #22
+  br label %249
+
+249:                                              ; preds = %252, %248
+  %250 = phi i32 [ 0, %248 ], [ %258, %252 ]
+  %251 = icmp samesign ult i32 %250, 8
+  br i1 %251, label %252, label %283
+
+252:                                              ; preds = %249
+  %253 = zext nneg i32 %250 to i64
+  %254 = getelementptr inbounds float, ptr %56, i64 %253
+  %255 = load float, ptr %254, align 4, !tbaa !16
+  %256 = fptrunc float %255 to half
+  %257 = getelementptr inbounds %"class.sycl::_V1::detail::half_impl::half", ptr %55, i64 %253
+  store half %256, ptr %257, align 2, !tbaa !855
+  %258 = add nuw nsw i32 %250, 1
+  br label %249, !llvm.loop !856
+
+259:                                              ; preds = %245
+  %260 = shl nuw nsw i32 %246, 3
+  %261 = lshr i32 %219, %260
+  %262 = trunc i32 %261 to i8
+  %263 = uitofp i8 %262 to float
+  %264 = fmul float %238, %263
+  %265 = shl nuw nsw i32 1, %246
+  %266 = and i32 %240, %265
+  %267 = icmp eq i32 %266, 0
+  %268 = fneg float %264
+  %269 = select i1 %267, float %264, float %268
+  %270 = zext nneg i32 %246 to i64
+  %271 = getelementptr inbounds float, ptr %56, i64 %270
+  store float %269, ptr %271, align 4, !tbaa !16
+  %272 = lshr i32 %224, %260
+  %273 = trunc i32 %272 to i8
+  %274 = uitofp i8 %273 to float
+  %275 = fmul float %238, %274
+  %276 = shl nuw nsw i32 16, %246
+  %277 = and i32 %244, %276
+  %278 = icmp eq i32 %277, 0
+  %279 = fneg float %275
+  %280 = select i1 %278, float %275, float %279
+  %281 = getelementptr inbounds i8, ptr %271, i64 16
+  store float %280, ptr %281, align 4, !tbaa !16
+  %282 = add nuw nsw i32 %246, 1
+  br label %245, !llvm.loop !859
+
+283:                                              ; preds = %249
+  %284 = shl nuw nsw i32 %4, 3
+  %285 = zext nneg i32 %284 to i64
+  %286 = getelementptr inbounds nuw %"class.sycl::_V1::detail::half_impl::half", ptr addrspace(4) %3, i64 %285
+  call void @llvm.memcpy.p4.p0.i64(ptr addrspace(4) align 16 %286, ptr align 16 %55, i64 16, i1 false)
+  call void @llvm.lifetime.end.p0(ptr nonnull %55) #22
+  call void @llvm.lifetime.end.p0(ptr nonnull %56) #22
+  br label %1609
+
+287:                                              ; preds = %5
+  %288 = addrspacecast ptr %52 to ptr addrspace(4)
+  %289 = mul nuw nsw i64 %2, 144
+  %290 = getelementptr inbounds nuw i8, ptr addrspace(4) %1, i64 %289
+  %291 = and i32 %4, 3
+  %292 = lshr i32 %4, 2
+  %293 = zext nneg i32 %292 to i64
+  call void @llvm.lifetime.start.p0(ptr nonnull %52) #22
+  %294 = getelementptr inbounds nuw %struct.block_iq4_nl, ptr addrspace(4) %290, i64 %293
+  %295 = getelementptr inbounds nuw i8, ptr addrspace(4) %294, i64 2
+  %296 = shl nuw nsw i32 %291, 1
+  %297 = zext nneg i32 %296 to i64
+  %298 = getelementptr inbounds nuw i16, ptr addrspace(4) %295, i64 %297
+  %299 = load i16, ptr addrspace(4) %298, align 2, !tbaa !34
+  %300 = zext i16 %299 to i32
+  %301 = getelementptr i8, ptr addrspace(4) %298, i64 2
+  %302 = load i16, ptr addrspace(4) %301, align 2, !tbaa !34
+  %303 = zext i16 %302 to i32
+  %304 = shl nuw i32 %303, 16
+  %305 = or disjoint i32 %304, %300
+  call spir_func void @_ZN6strata7kernels7iq_bits21get_int_from_table_16EiPKa(ptr addrspace(4) dead_on_unwind writable sret(%"struct.strata::kernels::iq_bits::Int2") align 4 %288, i32 noundef %305, ptr addrspace(4) noundef addrspacecast (ptr addrspace(1) @_ZL13kvalues_iq4nl to ptr addrspace(4))) #22
+  %306 = load half, ptr addrspace(4) %294, align 2, !tbaa !27
+  %307 = fpext half %306 to float
+  call void @llvm.lifetime.start.p0(ptr nonnull %53) #22
+  call void @llvm.lifetime.start.p0(ptr nonnull %54) #22
+  %308 = load i32, ptr %52, align 4, !tbaa !188
+  %309 = getelementptr inbounds i8, ptr %52, i64 4
+  %310 = load i32, ptr %309, align 4, !tbaa !190
+  br label %311
+
+311:                                              ; preds = %342, %287
+  %312 = phi i32 [ 0, %287 ], [ %355, %342 ]
+  %313 = icmp samesign ult i32 %312, 4
+  br i1 %313, label %342, label %314
+
+314:                                              ; preds = %311
+  %315 = shl nuw nsw i32 %291, 2
+  %316 = shl nuw nsw i32 %292, 5
+  %317 = or disjoint i32 %316, %315
+  call void @llvm.lifetime.start.p0(ptr nonnull %51) #22
+  br label %318
+
+318:                                              ; preds = %321, %314
+  %319 = phi i32 [ 0, %314 ], [ %327, %321 ]
+  %320 = icmp samesign ult i32 %319, 4
+  br i1 %320, label %321, label %328
+
+321:                                              ; preds = %318
+  %322 = zext nneg i32 %319 to i64
+  %323 = getelementptr inbounds float, ptr %53, i64 %322
+  %324 = load float, ptr %323, align 4, !tbaa !16
+  %325 = fptrunc float %324 to half
+  %326 = getelementptr inbounds %"class.sycl::_V1::detail::half_impl::half", ptr %51, i64 %322
+  store half %325, ptr %326, align 2, !tbaa !855
+  %327 = add nuw nsw i32 %319, 1
+  br label %318, !llvm.loop !860
+
+328:                                              ; preds = %318
+  %329 = zext nneg i32 %317 to i64
+  %330 = getelementptr inbounds nuw %"class.sycl::_V1::detail::half_impl::half", ptr addrspace(4) %3, i64 %329
+  %331 = load i64, ptr %51, align 8
+  store i64 %331, ptr addrspace(4) %330, align 8
+  call void @llvm.lifetime.end.p0(ptr nonnull %51) #22
+  call void @llvm.lifetime.start.p0(ptr nonnull %50) #22
+  br label %332
+
+332:                                              ; preds = %335, %328
+  %333 = phi i32 [ 0, %328 ], [ %341, %335 ]
+  %334 = icmp samesign ult i32 %333, 4
+  br i1 %334, label %335, label %356
+
+335:                                              ; preds = %332
+  %336 = zext nneg i32 %333 to i64
+  %337 = getelementptr inbounds float, ptr %54, i64 %336
+  %338 = load float, ptr %337, align 4, !tbaa !16
+  %339 = fptrunc float %338 to half
+  %340 = getelementptr inbounds %"class.sycl::_V1::detail::half_impl::half", ptr %50, i64 %336
+  store half %339, ptr %340, align 2, !tbaa !855
+  %341 = add nuw nsw i32 %333, 1
+  br label %332, !llvm.loop !860
+
+342:                                              ; preds = %311
+  %343 = shl nuw nsw i32 %312, 3
+  %344 = lshr i32 %308, %343
+  %345 = trunc i32 %344 to i8
+  %346 = sitofp i8 %345 to float
+  %347 = fmul float %307, %346
+  %348 = zext nneg i32 %312 to i64
+  %349 = getelementptr inbounds float, ptr %53, i64 %348
+  store float %347, ptr %349, align 4, !tbaa !16
+  %350 = lshr i32 %310, %343
+  %351 = trunc i32 %350 to i8
+  %352 = sitofp i8 %351 to float
+  %353 = fmul float %307, %352
+  %354 = getelementptr inbounds float, ptr %54, i64 %348
+  store float %353, ptr %354, align 4, !tbaa !16
+  %355 = add nuw nsw i32 %312, 1
+  br label %311, !llvm.loop !861
+
+356:                                              ; preds = %332
+  %357 = getelementptr inbounds nuw i8, ptr addrspace(4) %330, i64 32
+  %358 = load i64, ptr %50, align 8
+  store i64 %358, ptr addrspace(4) %357, align 8
+  call void @llvm.lifetime.end.p0(ptr nonnull %50) #22
+  call void @llvm.lifetime.end.p0(ptr nonnull %54) #22
+  call void @llvm.lifetime.end.p0(ptr nonnull %53) #22
+  call void @llvm.lifetime.end.p0(ptr nonnull %52) #22
+  br label %1609
+
+359:                                              ; preds = %5
+  %360 = and i32 %4, 3
+  %361 = zext nneg i32 %360 to i64
+  %362 = lshr i32 %4, 2
+  %363 = zext nneg i32 %362 to i64
+  %364 = getelementptr inbounds nuw %struct.block_iq3_s, ptr addrspace(4) %1, i64 %2
+  %365 = getelementptr inbounds nuw i8, ptr addrspace(4) %364, i64 2
+  %366 = shl nuw nsw i64 %363, 3
+  %367 = getelementptr inbounds nuw i8, ptr addrspace(4) %365, i64 %366
+  %368 = shl nuw nsw i64 %361, 1
+  %369 = getelementptr inbounds nuw i8, ptr addrspace(4) %367, i64 %368
+  %370 = load i8, ptr addrspace(4) %369, align 1, !tbaa !21
+  %371 = zext i8 %370 to i32
+  %372 = getelementptr inbounds nuw i8, ptr addrspace(4) %364, i64 66
+  %373 = getelementptr inbounds nuw i8, ptr addrspace(4) %372, i64 %363
+  %374 = load i8, ptr addrspace(4) %373, align 1, !tbaa !21
+  %375 = zext i8 %374 to i32
+  %376 = trunc nuw nsw i64 %368 to i32
+  %377 = sub nuw nsw i32 8, %376
+  %378 = shl nuw nsw i32 %375, %377
+  %379 = and i32 %378, 256
+  %380 = or disjoint i32 %379, %371
+  %381 = zext nneg i32 %380 to i64
+  %382 = getelementptr inbounds i32, ptr addrspace(1) @_ZL9iq3s_grid, i64 %381
+  %383 = load i32, ptr addrspace(1) %382, align 4, !tbaa !6
+  %384 = getelementptr inbounds nuw i8, ptr addrspace(4) %369, i64 1
+  %385 = load i8, ptr addrspace(4) %384, align 1, !tbaa !21
+  %386 = zext i8 %385 to i32
+  %387 = xor i32 %376, 7
+  %388 = shl nuw nsw i32 %375, %387
+  %389 = and i32 %388, 256
+  %390 = or disjoint i32 %389, %386
+  %391 = zext nneg i32 %390 to i64
+  %392 = getelementptr inbounds i32, ptr addrspace(1) @_ZL9iq3s_grid, i64 %391
+  %393 = load i32, ptr addrspace(1) %392, align 4, !tbaa !6
+  %394 = load half, ptr addrspace(4) %364, align 2, !tbaa !27
+  %395 = fpext half %394 to float
+  %396 = getelementptr inbounds nuw i8, ptr addrspace(4) %364, i64 106
+  %397 = lshr i64 %363, 1
+  %398 = getelementptr inbounds nuw i8, ptr addrspace(4) %396, i64 %397
+  %399 = load i8, ptr addrspace(4) %398, align 1, !tbaa !21
+  %400 = zext i8 %399 to i32
+  %401 = and i32 %4, 4
+  %402 = lshr i32 %400, %401
+  %403 = shl nuw nsw i32 %402, 1
+  %404 = and i32 %403, 30
+  %405 = or disjoint i32 %404, 1
+  %406 = uitofp nneg i32 %405 to float
+  %407 = fmul float %395, %406
+  %408 = getelementptr inbounds nuw i8, ptr addrspace(4) %364, i64 74
+  %409 = shl nuw nsw i64 %363, 2
+  %410 = getelementptr inbounds nuw i8, ptr addrspace(4) %408, i64 %409
+  %411 = getelementptr inbounds nuw i8, ptr addrspace(4) %410, i64 %361
+  %412 = load i8, ptr addrspace(4) %411, align 1, !tbaa !21
+  %413 = zext i8 %412 to i32
+  call void @llvm.lifetime.start.p0(ptr nonnull %49) #22
+  br label %414
+
+414:                                              ; preds = %428, %359
+  %415 = phi i32 [ 0, %359 ], [ %451, %428 ]
+  %416 = icmp samesign ult i32 %415, 4
+  br i1 %416, label %428, label %417
+
+417:                                              ; preds = %414
+  call void @llvm.lifetime.start.p0(ptr nonnull %48) #22
+  br label %418
+
+418:                                              ; preds = %421, %417
+  %419 = phi i32 [ 0, %417 ], [ %427, %421 ]
+  %420 = icmp samesign ult i32 %419, 8
+  br i1 %420, label %421, label %452
+
+421:                                              ; preds = %418
+  %422 = zext nneg i32 %419 to i64
+  %423 = getelementptr inbounds float, ptr %49, i64 %422
+  %424 = load float, ptr %423, align 4, !tbaa !16
+  %425 = fptrunc float %424 to half
+  %426 = getelementptr inbounds %"class.sycl::_V1::detail::half_impl::half", ptr %48, i64 %422
+  store half %425, ptr %426, align 2, !tbaa !855
+  %427 = add nuw nsw i32 %419, 1
+  br label %418, !llvm.loop !856
+
+428:                                              ; preds = %414
+  %429 = shl nuw nsw i32 %415, 3
+  %430 = lshr i32 %383, %429
+  %431 = trunc i32 %430 to i8
+  %432 = uitofp i8 %431 to float
+  %433 = fmul float %407, %432
+  %434 = shl nuw nsw i32 1, %415
+  %435 = and i32 %434, %413
+  %436 = icmp eq i32 %435, 0
+  %437 = fneg float %433
+  %438 = select i1 %436, float %433, float %437
+  %439 = zext nneg i32 %415 to i64
+  %440 = getelementptr inbounds float, ptr %49, i64 %439
+  store float %438, ptr %440, align 4, !tbaa !16
+  %441 = lshr i32 %393, %429
+  %442 = trunc i32 %441 to i8
+  %443 = uitofp i8 %442 to float
+  %444 = fmul float %407, %443
+  %445 = shl nuw nsw i32 16, %415
+  %446 = and i32 %445, %413
+  %447 = icmp eq i32 %446, 0
+  %448 = fneg float %444
+  %449 = select i1 %447, float %444, float %448
+  %450 = getelementptr inbounds i8, ptr %440, i64 16
+  store float %449, ptr %450, align 4, !tbaa !16
+  %451 = add nuw nsw i32 %415, 1
+  br label %414, !llvm.loop !862
+
+452:                                              ; preds = %418
+  %453 = shl nuw nsw i32 %4, 3
+  %454 = zext nneg i32 %453 to i64
+  %455 = getelementptr inbounds nuw %"class.sycl::_V1::detail::half_impl::half", ptr addrspace(4) %3, i64 %454
+  call void @llvm.memcpy.p4.p0.i64(ptr addrspace(4) align 16 %455, ptr align 16 %48, i64 16, i1 false)
+  call void @llvm.lifetime.end.p0(ptr nonnull %48) #22
+  call void @llvm.lifetime.end.p0(ptr nonnull %49) #22
+  br label %1609
+
+456:                                              ; preds = %5
+  %457 = and i32 %4, 3
+  %458 = zext nneg i32 %457 to i64
+  %459 = lshr i32 %4, 2
+  %460 = zext nneg i32 %459 to i64
+  %461 = getelementptr inbounds nuw %struct.block_iq2_s, ptr addrspace(4) %1, i64 %2
+  %462 = getelementptr inbounds nuw i8, ptr addrspace(4) %461, i64 2
+  %463 = shl nuw nsw i64 %460, 2
+  %464 = getelementptr inbounds nuw i8, ptr addrspace(4) %462, i64 %463
+  %465 = getelementptr inbounds nuw i8, ptr addrspace(4) %464, i64 %458
+  %466 = load i8, ptr addrspace(4) %465, align 1, !tbaa !21
+  %467 = zext i8 %466 to i32
+  %468 = getelementptr inbounds nuw i8, ptr addrspace(4) %461, i64 66
+  %469 = getelementptr inbounds nuw i8, ptr addrspace(4) %468, i64 %460
+  %470 = load i8, ptr addrspace(4) %469, align 1, !tbaa !21
+  %471 = zext i8 %470 to i32
+  %472 = shl nuw nsw i32 %457, 1
+  %473 = sub nuw nsw i32 8, %472
+  %474 = shl nuw nsw i32 %471, %473
+  %475 = and i32 %474, 768
+  %476 = or disjoint i32 %475, %467
+  %477 = zext nneg i32 %476 to i64
+  %478 = getelementptr inbounds i64, ptr addrspace(1) @_ZL9iq2s_grid, i64 %477
+  %479 = load i64, ptr addrspace(1) %478, align 8, !tbaa !39
+  %480 = load half, ptr addrspace(4) %461, align 2, !tbaa !27
+  %481 = fpext half %480 to float
+  %482 = getelementptr inbounds nuw i8, ptr addrspace(4) %461, i64 74
+  %483 = getelementptr inbounds nuw i8, ptr addrspace(4) %482, i64 %460
+  %484 = load i8, ptr addrspace(4) %483, align 1, !tbaa !21
+  %485 = zext i8 %484 to i32
+  %486 = shl nuw nsw i32 %4, 1
+  %487 = and i32 %486, 4
+  %488 = lshr i32 %485, %487
+  %489 = and i32 %488, 15
+  %490 = uitofp nneg i32 %489 to float
+  %491 = fadd float %490, 5.000000e-01
+  %492 = fmul float %491, %481
+  %493 = fmul float %492, 2.500000e-01
+  %494 = getelementptr inbounds nuw i8, ptr addrspace(4) %465, i64 32
+  %495 = load i8, ptr addrspace(4) %494, align 1, !tbaa !21
+  %496 = zext i8 %495 to i32
+  call void @llvm.lifetime.start.p0(ptr nonnull %47) #22
+  br label %497
+
+497:                                              ; preds = %511, %456
+  %498 = phi i32 [ 0, %456 ], [ %526, %511 ]
+  %499 = icmp samesign ult i32 %498, 8
+  br i1 %499, label %511, label %500
+
+500:                                              ; preds = %497
+  call void @llvm.lifetime.start.p0(ptr nonnull %46) #22
+  br label %501
+
+501:                                              ; preds = %504, %500
+  %502 = phi i32 [ 0, %500 ], [ %510, %504 ]
+  %503 = icmp samesign ult i32 %502, 8
+  br i1 %503, label %504, label %527
+
+504:                                              ; preds = %501
+  %505 = zext nneg i32 %502 to i64
+  %506 = getelementptr inbounds float, ptr %47, i64 %505
+  %507 = load float, ptr %506, align 4, !tbaa !16
+  %508 = fptrunc float %507 to half
+  %509 = getelementptr inbounds %"class.sycl::_V1::detail::half_impl::half", ptr %46, i64 %505
+  store half %508, ptr %509, align 2, !tbaa !855
+  %510 = add nuw nsw i32 %502, 1
+  br label %501, !llvm.loop !856
+
+511:                                              ; preds = %497
+  %512 = shl nuw nsw i32 %498, 3
+  %513 = zext nneg i32 %512 to i64
+  %514 = lshr i64 %479, %513
+  %515 = trunc i64 %514 to i32
+  %516 = and i32 %515, 255
+  %517 = uitofp nneg i32 %516 to float
+  %518 = fmul float %493, %517
+  %519 = shl nuw nsw i32 1, %498
+  %520 = and i32 %519, %496
+  %521 = icmp eq i32 %520, 0
+  %522 = fneg float %518
+  %523 = select i1 %521, float %518, float %522
+  %524 = zext nneg i32 %498 to i64
+  %525 = getelementptr inbounds float, ptr %47, i64 %524
+  store float %523, ptr %525, align 4, !tbaa !16
+  %526 = add nuw nsw i32 %498, 1
+  br label %497, !llvm.loop !863
+
+527:                                              ; preds = %501
+  %528 = shl nuw nsw i32 %4, 3
+  %529 = zext nneg i32 %528 to i64
+  %530 = getelementptr inbounds nuw %"class.sycl::_V1::detail::half_impl::half", ptr addrspace(4) %3, i64 %529
+  call void @llvm.memcpy.p4.p0.i64(ptr addrspace(4) align 16 %530, ptr align 16 %46, i64 16, i1 false)
+  call void @llvm.lifetime.end.p0(ptr nonnull %46) #22
+  call void @llvm.lifetime.end.p0(ptr nonnull %47) #22
+  br label %1609
+
+531:                                              ; preds = %5
+  %532 = and i32 %4, 3
+  %533 = zext nneg i32 %532 to i64
+  %534 = lshr i32 %4, 2
+  %535 = zext nneg i32 %534 to i64
+  %536 = getelementptr inbounds nuw %struct.block_iq1_m, ptr addrspace(4) %1, i64 %2
+  %537 = getelementptr inbounds nuw i8, ptr addrspace(4) %536, i64 48
+  %538 = shl nuw nsw i64 %535, 1
+  %539 = lshr i64 %533, 1
+  %540 = or disjoint i64 %538, %539
+  %541 = load i16, ptr addrspace(4) %537, align 2, !tbaa !34
+  %542 = lshr i16 %541, 12
+  %543 = getelementptr inbounds nuw i8, ptr addrspace(4) %536, i64 50
+  %544 = load i16, ptr addrspace(4) %543, align 2, !tbaa !34
+  %545 = lshr i16 %544, 8
+  %546 = and i16 %545, 240
+  %547 = or disjoint i16 %542, %546
+  %548 = getelementptr inbounds nuw i8, ptr addrspace(4) %536, i64 52
+  %549 = load i16, ptr addrspace(4) %548, align 2, !tbaa !34
+  %550 = lshr i16 %549, 4
+  %551 = and i16 %550, 3840
+  %552 = or disjoint i16 %547, %551
+  %553 = getelementptr inbounds nuw i8, ptr addrspace(4) %536, i64 54
+  %554 = load i16, ptr addrspace(4) %553, align 2, !tbaa !34
+  %555 = and i16 %554, -4096
+  %556 = or disjoint i16 %552, %555
+  %557 = bitcast i16 %556 to half
+  %558 = fpext half %557 to float
+  %559 = lshr i64 %535, 1
+  %560 = getelementptr inbounds nuw i16, ptr addrspace(4) %537, i64 %559
+  %561 = load i16, ptr addrspace(4) %560, align 2, !tbaa !34
+  %562 = zext i16 %561 to i32
+  %563 = trunc nuw nsw i64 %540 to i32
+  %564 = and i32 %563, 3
+  %565 = mul nuw nsw i32 %564, 3
+  %566 = lshr i32 %562, %565
+  %567 = shl nuw nsw i32 %566, 1
+  %568 = and i32 %567, 14
+  %569 = or disjoint i32 %568, 1
+  %570 = uitofp nneg i32 %569 to float
+  %571 = fmul float %558, %570
+  %572 = getelementptr inbounds nuw i8, ptr addrspace(4) %536, i64 32
+  %573 = getelementptr inbounds nuw i8, ptr addrspace(4) %572, i64 %540
+  %574 = load i8, ptr addrspace(4) %573, align 1, !tbaa !21
+  %575 = zext i8 %574 to i32
+  %576 = shl nuw nsw i32 %4, 2
+  %577 = and i32 %576, 4
+  %578 = shl nuw nsw i32 8, %577
+  %579 = and i32 %578, %575
+  %580 = icmp eq i32 %579, 0
+  %581 = select i1 %580, float -8.750000e-01, float -1.125000e+00
+  %582 = shl nuw nsw i64 %535, 2
+  %583 = getelementptr inbounds nuw i8, ptr addrspace(4) %536, i64 %582
+  %584 = getelementptr inbounds nuw i8, ptr addrspace(4) %583, i64 %533
+  %585 = load i8, ptr addrspace(4) %584, align 1, !tbaa !21
+  %586 = zext i8 %585 to i32
+  %587 = lshr i32 %575, %577
+  %588 = shl nuw nsw i32 %587, 8
+  %589 = and i32 %588, 1792
+  %590 = or disjoint i32 %589, %586
+  %591 = zext nneg i32 %590 to i64
+  %592 = getelementptr inbounds i32, ptr addrspace(1) @_ZL13iq1s_grid_gpu, i64 %591
+  %593 = load i32, ptr addrspace(1) %592, align 4, !tbaa !6
+  call void @llvm.lifetime.start.p0(ptr nonnull %44) #22
+  %594 = and i32 %593, 252645135
+  store i32 %594, ptr %44, align 4, !tbaa !6
+  %595 = getelementptr inbounds i8, ptr %44, i64 4
+  %596 = lshr i32 %593, 4
+  %597 = and i32 %596, 252645135
+  store i32 %597, ptr %595, align 4, !tbaa !6
+  call void @llvm.lifetime.start.p0(ptr nonnull %45) #22
+  br label %598
+
+598:                                              ; preds = %612, %531
+  %599 = phi i32 [ 0, %531 ], [ %626, %612 ]
+  %600 = icmp samesign ult i32 %599, 8
+  br i1 %600, label %612, label %601
+
+601:                                              ; preds = %598
+  call void @llvm.lifetime.start.p0(ptr nonnull %43) #22
+  br label %602
+
+602:                                              ; preds = %605, %601
+  %603 = phi i32 [ 0, %601 ], [ %611, %605 ]
+  %604 = icmp samesign ult i32 %603, 8
+  br i1 %604, label %605, label %627
+
+605:                                              ; preds = %602
+  %606 = zext nneg i32 %603 to i64
+  %607 = getelementptr inbounds float, ptr %45, i64 %606
+  %608 = load float, ptr %607, align 4, !tbaa !16
+  %609 = fptrunc float %608 to half
+  %610 = getelementptr inbounds %"class.sycl::_V1::detail::half_impl::half", ptr %43, i64 %606
+  store half %609, ptr %610, align 2, !tbaa !855
+  %611 = add nuw nsw i32 %603, 1
+  br label %602, !llvm.loop !856
+
+612:                                              ; preds = %598
+  %613 = lshr i32 %599, 2
+  %614 = zext nneg i32 %613 to i64
+  %615 = getelementptr inbounds i32, ptr %44, i64 %614
+  %616 = load i32, ptr %615, align 4, !tbaa !6
+  %617 = shl nuw nsw i32 %599, 3
+  %618 = and i32 %617, 24
+  %619 = lshr i32 %616, %618
+  %620 = trunc i32 %619 to i8
+  %621 = sitofp i8 %620 to float
+  %622 = fadd float %581, %621
+  %623 = fmul float %571, %622
+  %624 = zext nneg i32 %599 to i64
+  %625 = getelementptr inbounds float, ptr %45, i64 %624
+  store float %623, ptr %625, align 4, !tbaa !16
+  %626 = add nuw nsw i32 %599, 1
+  br label %598, !llvm.loop !864
+
+627:                                              ; preds = %602
+  %628 = shl nuw nsw i32 %4, 3
+  %629 = zext nneg i32 %628 to i64
+  %630 = getelementptr inbounds nuw %"class.sycl::_V1::detail::half_impl::half", ptr addrspace(4) %3, i64 %629
+  call void @llvm.memcpy.p4.p0.i64(ptr addrspace(4) align 16 %630, ptr align 16 %43, i64 16, i1 false)
+  call void @llvm.lifetime.end.p0(ptr nonnull %43) #22
+  call void @llvm.lifetime.end.p0(ptr nonnull %45) #22
+  call void @llvm.lifetime.end.p0(ptr nonnull %44) #22
+  br label %1609
+
+631:                                              ; preds = %5
+  %632 = getelementptr inbounds nuw %struct.block_iq4_xs, ptr addrspace(4) %1, i64 %2
+  %633 = lshr i32 %4, 2
+  %634 = shl nuw nsw i32 %4, 2
+  %635 = and i32 %634, 12
+  %636 = getelementptr inbounds nuw i8, ptr addrspace(4) %632, i64 8
+  %637 = shl nuw nsw i32 %633, 4
+  %638 = zext nneg i32 %637 to i64
+  %639 = getelementptr inbounds nuw i8, ptr addrspace(4) %636, i64 %638
+  %640 = zext nneg i32 %635 to i64
+  %641 = getelementptr inbounds nuw i8, ptr addrspace(4) %639, i64 %640
+  %642 = load half, ptr addrspace(4) %632, align 2, !tbaa !27
+  %643 = fpext half %642 to float
+  %644 = getelementptr inbounds nuw i8, ptr addrspace(4) %632, i64 4
+  %645 = lshr i32 %4, 3
+  %646 = zext nneg i32 %645 to i64
+  %647 = getelementptr inbounds nuw i8, ptr addrspace(4) %644, i64 %646
+  %648 = load i8, ptr addrspace(4) %647, align 1, !tbaa !21
+  %649 = zext i8 %648 to i32
+  %650 = and i32 %4, 4
+  %651 = lshr i32 %649, %650
+  %652 = and i32 %651, 15
+  %653 = getelementptr inbounds nuw i8, ptr addrspace(4) %632, i64 2
+  %654 = load i16, ptr addrspace(4) %653, align 2, !tbaa !368
+  %655 = zext i16 %654 to i32
+  %656 = shl nuw nsw i32 %633, 1
+  %657 = lshr i32 %655, %656
+  %658 = shl nuw nsw i32 %657, 4
+  %659 = and i32 %658, 48
+  %660 = or disjoint i32 %652, %659
+  %661 = add nsw i32 %660, -32
+  %662 = sitofp i32 %661 to float
+  %663 = fmul float %643, %662
+  call void @llvm.lifetime.start.p0(ptr nonnull %41) #22
+  call void @llvm.lifetime.start.p0(ptr nonnull %42) #22
+  br label %664
+
+664:                                              ; preds = %694, %631
+  %665 = phi i32 [ 0, %631 ], [ %712, %694 ]
+  %666 = icmp samesign ult i32 %665, 4
+  br i1 %666, label %694, label %667
+
+667:                                              ; preds = %664
+  %668 = shl nuw nsw i32 %633, 5
+  %669 = or disjoint i32 %668, %635
+  call void @llvm.lifetime.start.p0(ptr nonnull %40) #22
+  br label %670
+
+670:                                              ; preds = %673, %667
+  %671 = phi i32 [ 0, %667 ], [ %679, %673 ]
+  %672 = icmp samesign ult i32 %671, 4
+  br i1 %672, label %673, label %680
+
+673:                                              ; preds = %670
+  %674 = zext nneg i32 %671 to i64
+  %675 = getelementptr inbounds float, ptr %41, i64 %674
+  %676 = load float, ptr %675, align 4, !tbaa !16
+  %677 = fptrunc float %676 to half
+  %678 = getelementptr inbounds %"class.sycl::_V1::detail::half_impl::half", ptr %40, i64 %674
+  store half %677, ptr %678, align 2, !tbaa !855
+  %679 = add nuw nsw i32 %671, 1
+  br label %670, !llvm.loop !860
+
+680:                                              ; preds = %670
+  %681 = zext nneg i32 %669 to i64
+  %682 = getelementptr inbounds nuw %"class.sycl::_V1::detail::half_impl::half", ptr addrspace(4) %3, i64 %681
+  %683 = load i64, ptr %40, align 8
+  store i64 %683, ptr addrspace(4) %682, align 8
+  call void @llvm.lifetime.end.p0(ptr nonnull %40) #22
+  call void @llvm.lifetime.start.p0(ptr nonnull %39) #22
+  br label %684
+
+684:                                              ; preds = %687, %680
+  %685 = phi i32 [ 0, %680 ], [ %693, %687 ]
+  %686 = icmp samesign ult i32 %685, 4
+  br i1 %686, label %687, label %713
+
+687:                                              ; preds = %684
+  %688 = zext nneg i32 %685 to i64
+  %689 = getelementptr inbounds float, ptr %42, i64 %688
+  %690 = load float, ptr %689, align 4, !tbaa !16
+  %691 = fptrunc float %690 to half
+  %692 = getelementptr inbounds %"class.sycl::_V1::detail::half_impl::half", ptr %39, i64 %688
+  store half %691, ptr %692, align 2, !tbaa !855
+  %693 = add nuw nsw i32 %685, 1
+  br label %684, !llvm.loop !860
+
+694:                                              ; preds = %664
+  %695 = zext nneg i32 %665 to i64
+  %696 = getelementptr inbounds nuw i8, ptr addrspace(4) %641, i64 %695
+  %697 = load i8, ptr addrspace(4) %696, align 1, !tbaa !21
+  %698 = and i8 %697, 15
+  %699 = zext nneg i8 %698 to i64
+  %700 = getelementptr inbounds i8, ptr addrspace(1) @_ZL13kvalues_iq4nl, i64 %699
+  %701 = load i8, ptr addrspace(1) %700, align 1, !tbaa !21
+  %702 = sitofp i8 %701 to float
+  %703 = fmul float %663, %702
+  %704 = getelementptr inbounds float, ptr %41, i64 %695
+  store float %703, ptr %704, align 4, !tbaa !16
+  %705 = lshr i8 %697, 4
+  %706 = zext nneg i8 %705 to i64
+  %707 = getelementptr inbounds i8, ptr addrspace(1) @_ZL13kvalues_iq4nl, i64 %706
+  %708 = load i8, ptr addrspace(1) %707, align 1, !tbaa !21
+  %709 = sitofp i8 %708 to float
+  %710 = fmul float %663, %709
+  %711 = getelementptr inbounds float, ptr %42, i64 %695
+  store float %710, ptr %711, align 4, !tbaa !16
+  %712 = add nuw nsw i32 %665, 1
+  br label %664, !llvm.loop !865
+
+713:                                              ; preds = %684
+  %714 = getelementptr inbounds nuw i8, ptr addrspace(4) %682, i64 32
+  %715 = load i64, ptr %39, align 8
+  store i64 %715, ptr addrspace(4) %714, align 8
+  call void @llvm.lifetime.end.p0(ptr nonnull %39) #22
+  call void @llvm.lifetime.end.p0(ptr nonnull %42) #22
+  call void @llvm.lifetime.end.p0(ptr nonnull %41) #22
+  br label %1609
+
+716:                                              ; preds = %5
+  %717 = getelementptr inbounds nuw %struct.block_q3_K, ptr addrspace(4) %1, i64 %2
+  %718 = getelementptr inbounds nuw i8, ptr addrspace(4) %717, i64 96
+  %719 = getelementptr inbounds nuw i8, ptr addrspace(4) %717, i64 108
+  %720 = getelementptr inbounds nuw i8, ptr addrspace(4) %717, i64 32
+  br label %721
+
+721:                                              ; preds = %815, %716
+  %722 = phi i32 [ %4, %716 ], [ %819, %815 ]
+  %723 = icmp samesign ult i32 %722, 64
+  br i1 %723, label %724, label %1609
+
+724:                                              ; preds = %721
+  %725 = lshr i32 %722, 2
+  %726 = lshr i32 %722, 3
+  %727 = and i32 %725, 1
+  %728 = shl nuw nsw i32 %727, 4
+  %729 = shl nuw nsw i32 %722, 2
+  %730 = and i32 %729, 12
+  %731 = or disjoint i32 %728, %730
+  %732 = lshr i32 %722, 5
+  %733 = shl nuw nsw i32 %732, 2
+  %734 = sub nsw i32 %726, %733
+  %735 = shl nuw nsw i32 1, %726
+  %736 = shl nuw nsw i32 %732, 3
+  %737 = shl nsw i32 %734, 1
+  %738 = add nsw i32 %736, %737
+  %739 = or disjoint i32 %738, %727
+  %740 = icmp slt i32 %739, 4
+  br i1 %740, label %741, label %751
+
+741:                                              ; preds = %724
+  %742 = sext i32 %739 to i64
+  %743 = getelementptr inbounds i8, ptr addrspace(4) %718, i64 %742
+  %744 = load i8, ptr addrspace(4) %743, align 1, !tbaa !21
+  %745 = and i8 %744, 15
+  %746 = getelementptr i8, ptr addrspace(4) %743, i64 8
+  %747 = load i8, ptr addrspace(4) %746, align 1, !tbaa !21
+  %748 = shl i8 %747, 4
+  %749 = and i8 %748, 48
+  %750 = or disjoint i8 %745, %749
+  br label %785
+
+751:                                              ; preds = %724
+  %752 = icmp samesign ult i32 %738, 8
+  br i1 %752, label %753, label %763
+
+753:                                              ; preds = %751
+  %754 = zext nneg i32 %739 to i64
+  %755 = getelementptr inbounds nuw i8, ptr addrspace(4) %718, i64 %754
+  %756 = load i8, ptr addrspace(4) %755, align 1, !tbaa !21
+  %757 = and i8 %756, 15
+  %758 = getelementptr inbounds nuw i8, ptr addrspace(4) %755, i64 4
+  %759 = load i8, ptr addrspace(4) %758, align 1, !tbaa !21
+  %760 = shl i8 %759, 2
+  %761 = and i8 %760, 48
+  %762 = or disjoint i8 %757, %761
+  br label %785
+
+763:                                              ; preds = %751
+  %764 = icmp samesign ult i32 %738, 12
+  br i1 %764, label %765, label %774
+
+765:                                              ; preds = %763
+  %766 = zext nneg i32 %739 to i64
+  %767 = getelementptr i8, ptr addrspace(4) %718, i64 %766
+  %768 = getelementptr i8, ptr addrspace(4) %767, i64 -8
+  %769 = load i8, ptr addrspace(4) %768, align 1, !tbaa !21
+  %770 = lshr i8 %769, 4
+  %771 = load i8, ptr addrspace(4) %767, align 1, !tbaa !21
+  %772 = and i8 %771, 48
+  %773 = or disjoint i8 %770, %772
+  br label %785
+
+774:                                              ; preds = %763
+  %775 = zext nneg i32 %739 to i64
+  %776 = getelementptr i8, ptr addrspace(4) %718, i64 %775
+  %777 = getelementptr i8, ptr addrspace(4) %776, i64 -8
+  %778 = load i8, ptr addrspace(4) %777, align 1, !tbaa !21
+  %779 = lshr i8 %778, 4
+  %780 = getelementptr i8, ptr addrspace(4) %776, i64 -4
+  %781 = load i8, ptr addrspace(4) %780, align 1, !tbaa !21
+  %782 = lshr i8 %781, 2
+  %783 = and i8 %782, 48
+  %784 = or disjoint i8 %779, %783
+  br label %785
+
+785:                                              ; preds = %774, %765, %753, %741
+  %786 = phi i8 [ %750, %741 ], [ %762, %753 ], [ %773, %765 ], [ %784, %774 ]
+  %787 = load half, ptr addrspace(4) %719, align 2, !tbaa !27
+  %788 = fpext half %787 to float
+  %789 = zext nneg i8 %786 to i32
+  %790 = add nsw i32 %789, -32
+  %791 = sitofp i32 %790 to float
+  %792 = fmul float %788, %791
+  %793 = and i32 %722, 32
+  %794 = zext nneg i32 %793 to i64
+  %795 = getelementptr inbounds nuw i8, ptr addrspace(4) %720, i64 %794
+  call void @llvm.lifetime.start.p0(ptr nonnull %38) #22
+  %796 = add nuw nsw i32 %731, 4
+  br label %797
+
+797:                                              ; preds = %820, %785
+  %798 = phi i32 [ %731, %785 ], [ %839, %820 ]
+  %799 = icmp samesign ult i32 %798, %796
+  br i1 %799, label %820, label %800
+
+800:                                              ; preds = %797
+  %801 = shl nuw nsw i32 %732, 7
+  %802 = shl nsw i32 %734, 5
+  %803 = add nsw i32 %801, %802
+  %804 = or disjoint i32 %803, %731
+  call void @llvm.lifetime.start.p0(ptr nonnull %37) #22
+  br label %805
+
+805:                                              ; preds = %808, %800
+  %806 = phi i32 [ 0, %800 ], [ %814, %808 ]
+  %807 = icmp samesign ult i32 %806, 4
+  br i1 %807, label %808, label %815
+
+808:                                              ; preds = %805
+  %809 = zext nneg i32 %806 to i64
+  %810 = getelementptr inbounds float, ptr %38, i64 %809
+  %811 = load float, ptr %810, align 4, !tbaa !16
+  %812 = fptrunc float %811 to half
+  %813 = getelementptr inbounds %"class.sycl::_V1::detail::half_impl::half", ptr %37, i64 %809
+  store half %812, ptr %813, align 2, !tbaa !855
+  %814 = add nuw nsw i32 %806, 1
+  br label %805, !llvm.loop !860
+
+815:                                              ; preds = %805
+  %816 = sext i32 %804 to i64
+  %817 = getelementptr inbounds %"class.sycl::_V1::detail::half_impl::half", ptr addrspace(4) %3, i64 %816
+  %818 = load i64, ptr %37, align 8
+  store i64 %818, ptr addrspace(4) %817, align 8
+  call void @llvm.lifetime.end.p0(ptr nonnull %37) #22
+  call void @llvm.lifetime.end.p0(ptr nonnull %38) #22
+  %819 = add nuw nsw i32 %722, 32
+  br label %721, !llvm.loop !866
+
+820:                                              ; preds = %797
+  %821 = zext nneg i32 %798 to i64
+  %822 = getelementptr inbounds nuw i8, ptr addrspace(4) %795, i64 %821
+  %823 = load i8, ptr addrspace(4) %822, align 1, !tbaa !21
+  %824 = zext i8 %823 to i32
+  %825 = lshr i32 %824, %737
+  %826 = and i32 %825, 3
+  %827 = getelementptr inbounds nuw i8, ptr addrspace(4) %717, i64 %821
+  %828 = load i8, ptr addrspace(4) %827, align 1, !tbaa !21
+  %829 = zext i8 %828 to i32
+  %830 = and i32 %735, %829
+  %831 = icmp eq i32 %830, 0
+  %832 = select i1 %831, i32 -4, i32 0
+  %833 = or disjoint i32 %832, %826
+  %834 = sitofp i32 %833 to float
+  %835 = fmul float %792, %834
+  %836 = sub nsw i32 %798, %731
+  %837 = sext i32 %836 to i64
+  %838 = getelementptr inbounds float, ptr %38, i64 %837
+  store float %835, ptr %838, align 4, !tbaa !16
+  %839 = add nuw nsw i32 %798, 1
+  br label %797, !llvm.loop !867
+
+840:                                              ; preds = %5
+  %841 = mul nuw nsw i64 %2, 72
+  %842 = getelementptr inbounds nuw i8, ptr addrspace(4) %1, i64 %841
+  %843 = lshr i32 %4, 3
+  %844 = and i32 %4, 7
+  %845 = zext nneg i32 %843 to i64
+  %846 = getelementptr inbounds nuw %struct.block_q2_0, ptr addrspace(4) %842, i64 %845
+  %847 = load half, ptr addrspace(4) %846, align 2, !tbaa !27
+  %848 = fpext half %847 to float
+  %849 = getelementptr inbounds nuw i8, ptr addrspace(4) %846, i64 2
+  %850 = zext nneg i32 %844 to i64
+  %851 = getelementptr inbounds nuw i16, ptr addrspace(4) %849, i64 %850
+  %852 = load i16, ptr addrspace(4) %851, align 2, !tbaa !34
+  %853 = zext i16 %852 to i32
+  call void @llvm.lifetime.start.p0(ptr nonnull %36) #22
+  br label %854
+
+854:                                              ; preds = %868, %840
+  %855 = phi i32 [ 0, %840 ], [ %877, %868 ]
+  %856 = icmp samesign ult i32 %855, 8
+  br i1 %856, label %868, label %857
+
+857:                                              ; preds = %854
+  call void @llvm.lifetime.start.p0(ptr nonnull %35) #22
+  br label %858
+
+858:                                              ; preds = %861, %857
+  %859 = phi i32 [ 0, %857 ], [ %867, %861 ]
+  %860 = icmp samesign ult i32 %859, 8
+  br i1 %860, label %861, label %878
+
+861:                                              ; preds = %858
+  %862 = zext nneg i32 %859 to i64
+  %863 = getelementptr inbounds float, ptr %36, i64 %862
+  %864 = load float, ptr %863, align 4, !tbaa !16
+  %865 = fptrunc float %864 to half
+  %866 = getelementptr inbounds %"class.sycl::_V1::detail::half_impl::half", ptr %35, i64 %862
+  store half %865, ptr %866, align 2, !tbaa !855
+  %867 = add nuw nsw i32 %859, 1
+  br label %858, !llvm.loop !856
+
+868:                                              ; preds = %854
+  %869 = shl nuw nsw i32 %855, 1
+  %870 = lshr i32 %853, %869
+  %871 = and i32 %870, 3
+  %872 = add nsw i32 %871, -1
+  %873 = sitofp i32 %872 to float
+  %874 = fmul float %848, %873
+  %875 = zext nneg i32 %855 to i64
+  %876 = getelementptr inbounds float, ptr %36, i64 %875
+  store float %874, ptr %876, align 4, !tbaa !16
+  %877 = add nuw nsw i32 %855, 1
+  br label %854, !llvm.loop !868
+
+878:                                              ; preds = %858
+  %879 = shl nuw nsw i32 %4, 3
+  %880 = zext nneg i32 %879 to i64
+  %881 = getelementptr inbounds nuw %"class.sycl::_V1::detail::half_impl::half", ptr addrspace(4) %3, i64 %880
+  call void @llvm.memcpy.p4.p0.i64(ptr addrspace(4) align 16 %881, ptr align 16 %35, i64 16, i1 false)
+  call void @llvm.lifetime.end.p0(ptr nonnull %35) #22
+  call void @llvm.lifetime.end.p0(ptr nonnull %36) #22
+  br label %1609
+
+882:                                              ; preds = %5
+  %883 = shl nsw i64 %2, 9
+  %884 = getelementptr inbounds nuw i8, ptr addrspace(4) %1, i64 %883
+  %885 = shl nuw nsw i32 %4, 3
+  %886 = zext nneg i32 %885 to i64
+  %887 = getelementptr inbounds nuw i16, ptr addrspace(4) %884, i64 %886
+  call void @llvm.lifetime.start.p0(ptr nonnull %34) #22
+  br label %888
+
+888:                                              ; preds = %902, %882
+  %889 = phi i32 [ 0, %882 ], [ %909, %902 ]
+  %890 = icmp samesign ult i32 %889, 8
+  br i1 %890, label %902, label %891
+
+891:                                              ; preds = %888
+  call void @llvm.lifetime.start.p0(ptr nonnull %33) #22
+  br label %892
+
+892:                                              ; preds = %895, %891
+  %893 = phi i32 [ 0, %891 ], [ %901, %895 ]
+  %894 = icmp samesign ult i32 %893, 8
+  br i1 %894, label %895, label %910
+
+895:                                              ; preds = %892
+  %896 = zext nneg i32 %893 to i64
+  %897 = getelementptr inbounds float, ptr %34, i64 %896
+  %898 = load float, ptr %897, align 4, !tbaa !16
+  %899 = fptrunc float %898 to half
+  %900 = getelementptr inbounds %"class.sycl::_V1::detail::half_impl::half", ptr %33, i64 %896
+  store half %899, ptr %900, align 2, !tbaa !855
+  %901 = add nuw nsw i32 %893, 1
+  br label %892, !llvm.loop !856
+
+902:                                              ; preds = %888
+  %903 = zext nneg i32 %889 to i64
+  %904 = getelementptr inbounds nuw i16, ptr addrspace(4) %887, i64 %903
+  %905 = load i16, ptr addrspace(4) %904, align 2, !tbaa !34
+  %906 = zext i16 %905 to i32
+  %907 = shl nuw i32 %906, 16
+  %908 = getelementptr inbounds float, ptr %34, i64 %903
+  store i32 %907, ptr %908, align 4, !tbaa !16
+  %909 = add nuw nsw i32 %889, 1
+  br label %888, !llvm.loop !869
+
+910:                                              ; preds = %892
+  %911 = getelementptr inbounds nuw %"class.sycl::_V1::detail::half_impl::half", ptr addrspace(4) %3, i64 %886
+  call void @llvm.memcpy.p4.p0.i64(ptr addrspace(4) align 16 %911, ptr align 16 %33, i64 16, i1 false)
+  call void @llvm.lifetime.end.p0(ptr nonnull %33) #22
+  call void @llvm.lifetime.end.p0(ptr nonnull %34) #22
+  br label %1609
+
+912:                                              ; preds = %5
+  %913 = getelementptr inbounds nuw %struct.block_q4_K, ptr addrspace(4) %1, i64 %2
+  %914 = lshr i32 %4, 3
+  %915 = shl nuw nsw i32 %914, 1
+  %916 = load half, ptr addrspace(4) %913, align 2, !tbaa !27
+  %917 = fpext half %916 to float
+  %918 = getelementptr inbounds nuw i8, ptr addrspace(4) %913, i64 2
+  %919 = load half, ptr addrspace(4) %918, align 2, !tbaa !27
+  %920 = fpext half %919 to float
+  %921 = getelementptr inbounds nuw i8, ptr addrspace(4) %913, i64 16
+  %922 = shl nuw nsw i32 %914, 5
+  %923 = shl nuw nsw i32 %4, 2
+  %924 = and i32 %923, 28
+  %925 = or disjoint i32 %922, %924
+  %926 = zext nneg i32 %925 to i64
+  %927 = getelementptr inbounds nuw i8, ptr addrspace(4) %921, i64 %926
+  %928 = getelementptr inbounds nuw i8, ptr addrspace(4) %913, i64 4
+  %929 = icmp samesign ult i32 %4, 16
+  br i1 %929, label %930, label %944
+
+930:                                              ; preds = %912
+  %931 = zext nneg i32 %915 to i64
+  %932 = getelementptr inbounds nuw i8, ptr addrspace(4) %928, i64 %931
+  %933 = load i8, ptr addrspace(4) %932, align 1, !tbaa !21
+  %934 = and i8 %933, 63
+  %935 = getelementptr i8, ptr addrspace(4) %932, i64 4
+  %936 = load i8, ptr addrspace(4) %935, align 1, !tbaa !21
+  %937 = and i8 %936, 63
+  %938 = getelementptr inbounds nuw i8, ptr addrspace(4) %932, i64 1
+  %939 = load i8, ptr addrspace(4) %938, align 1, !tbaa !21
+  %940 = and i8 %939, 63
+  %941 = getelementptr i8, ptr addrspace(4) %932, i64 5
+  %942 = load i8, ptr addrspace(4) %941, align 1, !tbaa !21
+  %943 = and i8 %942, 63
+  br label %974
+
+944:                                              ; preds = %912
+  %945 = zext nneg i32 %915 to i64
+  %946 = getelementptr inbounds nuw i8, ptr addrspace(4) %928, i64 %945
+  %947 = getelementptr inbounds nuw i8, ptr addrspace(4) %946, i64 4
+  %948 = load i8, ptr addrspace(4) %947, align 1, !tbaa !21
+  %949 = and i8 %948, 15
+  %950 = getelementptr i8, ptr addrspace(4) %946, i64 -4
+  %951 = load i8, ptr addrspace(4) %950, align 1, !tbaa !21
+  %952 = lshr i8 %951, 2
+  %953 = and i8 %952, 48
+  %954 = or disjoint i8 %949, %953
+  %955 = lshr i8 %948, 4
+  %956 = load i8, ptr addrspace(4) %946, align 1, !tbaa !21
+  %957 = lshr i8 %956, 2
+  %958 = and i8 %957, 48
+  %959 = or disjoint i8 %955, %958
+  %960 = getelementptr inbounds nuw i8, ptr addrspace(4) %946, i64 1
+  %961 = getelementptr inbounds nuw i8, ptr addrspace(4) %946, i64 5
+  %962 = load i8, ptr addrspace(4) %961, align 1, !tbaa !21
+  %963 = and i8 %962, 15
+  %964 = getelementptr i8, ptr addrspace(4) %946, i64 -3
+  %965 = load i8, ptr addrspace(4) %964, align 1, !tbaa !21
+  %966 = lshr i8 %965, 2
+  %967 = and i8 %966, 48
+  %968 = or disjoint i8 %963, %967
+  %969 = lshr i8 %962, 4
+  %970 = load i8, ptr addrspace(4) %960, align 1, !tbaa !21
+  %971 = lshr i8 %970, 2
+  %972 = and i8 %971, 48
+  %973 = or disjoint i8 %969, %972
+  br label %974
+
+974:                                              ; preds = %944, %930
+  %975 = phi i8 [ %937, %930 ], [ %959, %944 ]
+  %976 = phi i8 [ %934, %930 ], [ %954, %944 ]
+  %977 = phi i8 [ %940, %930 ], [ %968, %944 ]
+  %978 = phi i8 [ %943, %930 ], [ %973, %944 ]
+  %979 = uitofp nneg i8 %976 to float
+  %980 = fmul float %917, %979
+  %981 = uitofp nneg i8 %975 to float
+  %982 = fmul float %920, %981
+  %983 = uitofp nneg i8 %977 to float
+  %984 = fmul float %917, %983
+  %985 = uitofp nneg i8 %978 to float
+  %986 = fmul float %920, %985
+  call void @llvm.lifetime.start.p0(ptr nonnull %31) #22
+  call void @llvm.lifetime.start.p0(ptr nonnull %32) #22
+  br label %987
+
+987:                                              ; preds = %1017, %974
+  %988 = phi i32 [ 0, %974 ], [ %1031, %1017 ]
+  %989 = icmp samesign ult i32 %988, 4
+  br i1 %989, label %1017, label %990
+
+990:                                              ; preds = %987
+  %991 = shl nuw nsw i32 %914, 6
+  %992 = or disjoint i32 %991, %924
+  call void @llvm.lifetime.start.p0(ptr nonnull %30) #22
+  br label %993
+
+993:                                              ; preds = %996, %990
+  %994 = phi i32 [ 0, %990 ], [ %1002, %996 ]
+  %995 = icmp samesign ult i32 %994, 4
+  br i1 %995, label %996, label %1003
+
+996:                                              ; preds = %993
+  %997 = zext nneg i32 %994 to i64
+  %998 = getelementptr inbounds float, ptr %31, i64 %997
+  %999 = load float, ptr %998, align 4, !tbaa !16
+  %1000 = fptrunc float %999 to half
+  %1001 = getelementptr inbounds %"class.sycl::_V1::detail::half_impl::half", ptr %30, i64 %997
+  store half %1000, ptr %1001, align 2, !tbaa !855
+  %1002 = add nuw nsw i32 %994, 1
+  br label %993, !llvm.loop !860
+
+1003:                                             ; preds = %993
+  %1004 = zext nneg i32 %992 to i64
+  %1005 = getelementptr inbounds nuw %"class.sycl::_V1::detail::half_impl::half", ptr addrspace(4) %3, i64 %1004
+  %1006 = load i64, ptr %30, align 8
+  store i64 %1006, ptr addrspace(4) %1005, align 8
+  call void @llvm.lifetime.end.p0(ptr nonnull %30) #22
+  call void @llvm.lifetime.start.p0(ptr nonnull %29) #22
+  br label %1007
+
+1007:                                             ; preds = %1010, %1003
+  %1008 = phi i32 [ 0, %1003 ], [ %1016, %1010 ]
+  %1009 = icmp samesign ult i32 %1008, 4
+  br i1 %1009, label %1010, label %1032
+
+1010:                                             ; preds = %1007
+  %1011 = zext nneg i32 %1008 to i64
+  %1012 = getelementptr inbounds float, ptr %32, i64 %1011
+  %1013 = load float, ptr %1012, align 4, !tbaa !16
+  %1014 = fptrunc float %1013 to half
+  %1015 = getelementptr inbounds %"class.sycl::_V1::detail::half_impl::half", ptr %29, i64 %1011
+  store half %1014, ptr %1015, align 2, !tbaa !855
+  %1016 = add nuw nsw i32 %1008, 1
+  br label %1007, !llvm.loop !860
+
+1017:                                             ; preds = %987
+  %1018 = zext nneg i32 %988 to i64
+  %1019 = getelementptr inbounds nuw i8, ptr addrspace(4) %927, i64 %1018
+  %1020 = load i8, ptr addrspace(4) %1019, align 1, !tbaa !21
+  %1021 = and i8 %1020, 15
+  %1022 = uitofp nneg i8 %1021 to float
+  %1023 = fmul float %980, %1022
+  %1024 = fsub float %1023, %982
+  %1025 = getelementptr inbounds float, ptr %31, i64 %1018
+  store float %1024, ptr %1025, align 4, !tbaa !16
+  %1026 = lshr i8 %1020, 4
+  %1027 = uitofp nneg i8 %1026 to float
+  %1028 = fmul float %984, %1027
+  %1029 = fsub float %1028, %986
+  %1030 = getelementptr inbounds float, ptr %32, i64 %1018
+  store float %1029, ptr %1030, align 4, !tbaa !16
+  %1031 = add nuw nsw i32 %988, 1
+  br label %987, !llvm.loop !870
+
+1032:                                             ; preds = %1007
+  %1033 = getelementptr inbounds nuw i8, ptr addrspace(4) %1005, i64 64
+  %1034 = load i64, ptr %29, align 8
+  store i64 %1034, ptr addrspace(4) %1033, align 8
+  call void @llvm.lifetime.end.p0(ptr nonnull %29) #22
+  call void @llvm.lifetime.end.p0(ptr nonnull %32) #22
+  call void @llvm.lifetime.end.p0(ptr nonnull %31) #22
+  br label %1609
+
+1035:                                             ; preds = %5
+  %1036 = getelementptr inbounds nuw %struct.block_q5_K, ptr addrspace(4) %1, i64 %2
+  %1037 = getelementptr inbounds nuw i8, ptr addrspace(4) %1036, i64 2
+  %1038 = getelementptr inbounds nuw i8, ptr addrspace(4) %1036, i64 48
+  %1039 = getelementptr inbounds nuw i8, ptr addrspace(4) %1036, i64 16
+  %1040 = getelementptr inbounds nuw i8, ptr addrspace(4) %1036, i64 4
+  %1041 = getelementptr inbounds i8, ptr %27, i64 4
+  %1042 = getelementptr inbounds i8, ptr %28, i64 4
+  br label %1043
+
+1043:                                             ; preds = %1191, %1035
+  %1044 = phi i32 [ %4, %1035 ], [ %1194, %1191 ]
+  %1045 = icmp samesign ult i32 %1044, 64
+  br i1 %1045, label %1046, label %1609
+
+1046:                                             ; preds = %1043
+  %1047 = lshr i32 %1044, 4
+  %1048 = shl nuw nsw i32 %1047, 1
+  %1049 = load half, ptr addrspace(4) %1036, align 2, !tbaa !27
+  %1050 = fpext half %1049 to float
+  %1051 = load half, ptr addrspace(4) %1037, align 2, !tbaa !27
+  %1052 = fpext half %1051 to float
+  %1053 = shl nuw nsw i32 %1047, 5
+  %1054 = shl nuw nsw i32 %1044, 1
+  %1055 = and i32 %1054, 30
+  %1056 = or disjoint i32 %1053, %1055
+  %1057 = zext nneg i32 %1056 to i64
+  %1058 = getelementptr inbounds nuw i8, ptr addrspace(4) %1038, i64 %1057
+  %1059 = zext nneg i32 %1055 to i64
+  %1060 = getelementptr inbounds nuw i8, ptr addrspace(4) %1039, i64 %1059
+  %1061 = icmp samesign ult i32 %1044, 32
+  br i1 %1061, label %1062, label %1076
+
+1062:                                             ; preds = %1046
+  %1063 = zext nneg i32 %1048 to i64
+  %1064 = getelementptr inbounds nuw i8, ptr addrspace(4) %1040, i64 %1063
+  %1065 = load i8, ptr addrspace(4) %1064, align 1, !tbaa !21
+  %1066 = and i8 %1065, 63
+  %1067 = getelementptr i8, ptr addrspace(4) %1064, i64 4
+  %1068 = load i8, ptr addrspace(4) %1067, align 1, !tbaa !21
+  %1069 = and i8 %1068, 63
+  %1070 = getelementptr inbounds nuw i8, ptr addrspace(4) %1064, i64 1
+  %1071 = load i8, ptr addrspace(4) %1070, align 1, !tbaa !21
+  %1072 = and i8 %1071, 63
+  %1073 = getelementptr i8, ptr addrspace(4) %1064, i64 5
+  %1074 = load i8, ptr addrspace(4) %1073, align 1, !tbaa !21
+  %1075 = and i8 %1074, 63
+  br label %1106
+
+1076:                                             ; preds = %1046
+  %1077 = zext nneg i32 %1048 to i64
+  %1078 = getelementptr inbounds nuw i8, ptr addrspace(4) %1040, i64 %1077
+  %1079 = getelementptr inbounds nuw i8, ptr addrspace(4) %1078, i64 4
+  %1080 = load i8, ptr addrspace(4) %1079, align 1, !tbaa !21
+  %1081 = and i8 %1080, 15
+  %1082 = getelementptr i8, ptr addrspace(4) %1078, i64 -4
+  %1083 = load i8, ptr addrspace(4) %1082, align 1, !tbaa !21
+  %1084 = lshr i8 %1083, 2
+  %1085 = and i8 %1084, 48
+  %1086 = or disjoint i8 %1081, %1085
+  %1087 = lshr i8 %1080, 4
+  %1088 = load i8, ptr addrspace(4) %1078, align 1, !tbaa !21
+  %1089 = lshr i8 %1088, 2
+  %1090 = and i8 %1089, 48
+  %1091 = or disjoint i8 %1087, %1090
+  %1092 = getelementptr inbounds nuw i8, ptr addrspace(4) %1078, i64 1
+  %1093 = getelementptr inbounds nuw i8, ptr addrspace(4) %1078, i64 5
+  %1094 = load i8, ptr addrspace(4) %1093, align 1, !tbaa !21
+  %1095 = and i8 %1094, 15
+  %1096 = getelementptr i8, ptr addrspace(4) %1078, i64 -3
+  %1097 = load i8, ptr addrspace(4) %1096, align 1, !tbaa !21
+  %1098 = lshr i8 %1097, 2
+  %1099 = and i8 %1098, 48
+  %1100 = or disjoint i8 %1095, %1099
+  %1101 = lshr i8 %1094, 4
+  %1102 = load i8, ptr addrspace(4) %1092, align 1, !tbaa !21
+  %1103 = lshr i8 %1102, 2
+  %1104 = and i8 %1103, 48
+  %1105 = or disjoint i8 %1101, %1104
+  br label %1106
+
+1106:                                             ; preds = %1076, %1062
+  %1107 = phi i8 [ %1069, %1062 ], [ %1091, %1076 ]
+  %1108 = phi i8 [ %1066, %1062 ], [ %1086, %1076 ]
+  %1109 = phi i8 [ %1072, %1062 ], [ %1100, %1076 ]
+  %1110 = phi i8 [ %1075, %1062 ], [ %1105, %1076 ]
+  %1111 = uitofp nneg i8 %1108 to float
+  %1112 = fmul float %1050, %1111
+  %1113 = uitofp nneg i8 %1107 to float
+  %1114 = fmul float %1052, %1113
+  %1115 = uitofp nneg i8 %1109 to float
+  %1116 = fmul float %1050, %1115
+  %1117 = uitofp nneg i8 %1110 to float
+  %1118 = fmul float %1052, %1117
+  %1119 = shl nuw nsw i32 1, %1048
+  call void @llvm.lifetime.start.p0(ptr nonnull %27) #22
+  call void @llvm.lifetime.start.p0(ptr nonnull %28) #22
+  %1120 = load i8, ptr addrspace(4) %1058, align 1, !tbaa !21
+  %1121 = and i8 %1120, 15
+  %1122 = zext nneg i8 %1121 to i32
+  %1123 = load i8, ptr addrspace(4) %1060, align 1, !tbaa !21
+  %1124 = zext i8 %1123 to i32
+  %1125 = and i32 %1119, %1124
+  %1126 = icmp eq i32 %1125, 0
+  %1127 = select i1 %1126, i32 0, i32 16
+  %1128 = or disjoint i32 %1127, %1122
+  %1129 = uitofp nneg i32 %1128 to float
+  %1130 = fmul float %1112, %1129
+  %1131 = fsub float %1130, %1114
+  store float %1131, ptr %27, align 4, !tbaa !16
+  %1132 = getelementptr inbounds nuw i8, ptr addrspace(4) %1058, i64 1
+  %1133 = load i8, ptr addrspace(4) %1132, align 1, !tbaa !21
+  %1134 = and i8 %1133, 15
+  %1135 = zext nneg i8 %1134 to i32
+  %1136 = getelementptr inbounds nuw i8, ptr addrspace(4) %1060, i64 1
+  %1137 = load i8, ptr addrspace(4) %1136, align 1, !tbaa !21
+  %1138 = zext i8 %1137 to i32
+  %1139 = and i32 %1119, %1138
+  %1140 = icmp eq i32 %1139, 0
+  %1141 = select i1 %1140, i32 0, i32 16
+  %1142 = or disjoint i32 %1141, %1135
+  %1143 = uitofp nneg i32 %1142 to float
+  %1144 = fmul float %1112, %1143
+  %1145 = fsub float %1144, %1114
+  store float %1145, ptr %1041, align 4, !tbaa !16
+  %1146 = shl nuw nsw i32 2, %1048
+  %1147 = lshr i8 %1120, 4
+  %1148 = zext nneg i8 %1147 to i32
+  %1149 = and i32 %1146, %1124
+  %1150 = icmp eq i32 %1149, 0
+  %1151 = select i1 %1150, i32 0, i32 16
+  %1152 = or disjoint i32 %1151, %1148
+  %1153 = uitofp nneg i32 %1152 to float
+  %1154 = fmul float %1116, %1153
+  %1155 = fsub float %1154, %1118
+  store float %1155, ptr %28, align 4, !tbaa !16
+  %1156 = lshr i8 %1133, 4
+  %1157 = zext nneg i8 %1156 to i32
+  %1158 = and i32 %1146, %1138
+  %1159 = icmp eq i32 %1158, 0
+  %1160 = select i1 %1159, i32 0, i32 16
+  %1161 = or disjoint i32 %1160, %1157
+  %1162 = uitofp nneg i32 %1161 to float
+  %1163 = fmul float %1116, %1162
+  %1164 = fsub float %1163, %1118
+  store float %1164, ptr %1042, align 4, !tbaa !16
+  %1165 = shl nuw nsw i32 %1047, 6
+  %1166 = or disjoint i32 %1165, %1055
+  call void @llvm.lifetime.start.p0(ptr nonnull %26) #22
+  br label %1167
+
+1167:                                             ; preds = %1170, %1106
+  %1168 = phi i32 [ 0, %1106 ], [ %1176, %1170 ]
+  %1169 = icmp samesign ult i32 %1168, 2
+  br i1 %1169, label %1170, label %1177
+
+1170:                                             ; preds = %1167
+  %1171 = zext nneg i32 %1168 to i64
+  %1172 = getelementptr inbounds float, ptr %27, i64 %1171
+  %1173 = load float, ptr %1172, align 4, !tbaa !16
+  %1174 = fptrunc float %1173 to half
+  %1175 = getelementptr inbounds %"class.sycl::_V1::detail::half_impl::half", ptr %26, i64 %1171
+  store half %1174, ptr %1175, align 2, !tbaa !855
+  %1176 = add nuw nsw i32 %1168, 1
+  br label %1167, !llvm.loop !871
+
+1177:                                             ; preds = %1167
+  %1178 = zext nneg i32 %1166 to i64
+  %1179 = getelementptr inbounds nuw %"class.sycl::_V1::detail::half_impl::half", ptr addrspace(4) %3, i64 %1178
+  %1180 = load i32, ptr %26, align 4
+  store i32 %1180, ptr addrspace(4) %1179, align 4
+  call void @llvm.lifetime.end.p0(ptr nonnull %26) #22
+  call void @llvm.lifetime.start.p0(ptr nonnull %25) #22
+  br label %1181
+
+1181:                                             ; preds = %1184, %1177
+  %1182 = phi i32 [ 0, %1177 ], [ %1190, %1184 ]
+  %1183 = icmp samesign ult i32 %1182, 2
+  br i1 %1183, label %1184, label %1191
+
+1184:                                             ; preds = %1181
+  %1185 = zext nneg i32 %1182 to i64
+  %1186 = getelementptr inbounds float, ptr %28, i64 %1185
+  %1187 = load float, ptr %1186, align 4, !tbaa !16
+  %1188 = fptrunc float %1187 to half
+  %1189 = getelementptr inbounds %"class.sycl::_V1::detail::half_impl::half", ptr %25, i64 %1185
+  store half %1188, ptr %1189, align 2, !tbaa !855
+  %1190 = add nuw nsw i32 %1182, 1
+  br label %1181, !llvm.loop !871
+
+1191:                                             ; preds = %1181
+  %1192 = getelementptr inbounds nuw i8, ptr addrspace(4) %1179, i64 64
+  %1193 = load i32, ptr %25, align 4
+  store i32 %1193, ptr addrspace(4) %1192, align 4
+  call void @llvm.lifetime.end.p0(ptr nonnull %25) #22
+  call void @llvm.lifetime.end.p0(ptr nonnull %28) #22
+  call void @llvm.lifetime.end.p0(ptr nonnull %27) #22
+  %1194 = add nuw nsw i32 %1044, 32
+  br label %1043, !llvm.loop !872
+
+1195:                                             ; preds = %5
+  %1196 = mul nuw nsw i64 %2, 192
+  %1197 = getelementptr inbounds nuw i8, ptr addrspace(4) %1, i64 %1196
+  %1198 = and i32 %4, 7
+  %1199 = zext nneg i32 %1198 to i64
+  %1200 = getelementptr inbounds nuw %struct.block_q5_1, ptr addrspace(4) %1197, i64 %1199
+  %1201 = load half, ptr addrspace(4) %1200, align 2, !tbaa !27
+  %1202 = fpext half %1201 to float
+  %1203 = getelementptr inbounds nuw i8, ptr addrspace(4) %1200, i64 2
+  %1204 = load half, ptr addrspace(4) %1203, align 2, !tbaa !27
+  %1205 = fpext half %1204 to float
+  %1206 = getelementptr inbounds nuw i8, ptr addrspace(4) %1200, i64 4
+  %1207 = load i32, ptr addrspace(4) %1206, align 4
+  call void @llvm.lifetime.start.p0(ptr nonnull %23) #22
+  call void @llvm.lifetime.start.p0(ptr nonnull %24) #22
+  %1208 = lshr i32 %4, 1
+  %1209 = and i32 %1208, 12
+  %1210 = getelementptr inbounds nuw i8, ptr addrspace(4) %1200, i64 8
+  br label %1211
+
+1211:                                             ; preds = %1241, %1195
+  %1212 = phi i32 [ 0, %1195 ], [ %1267, %1241 ]
+  %1213 = icmp samesign ult i32 %1212, 4
+  br i1 %1213, label %1241, label %1214
+
+1214:                                             ; preds = %1211
+  %1215 = shl nuw nsw i32 %1198, 5
+  %1216 = or disjoint i32 %1215, %1209
+  call void @llvm.lifetime.start.p0(ptr nonnull %22) #22
+  br label %1217
+
+1217:                                             ; preds = %1220, %1214
+  %1218 = phi i32 [ 0, %1214 ], [ %1226, %1220 ]
+  %1219 = icmp samesign ult i32 %1218, 4
+  br i1 %1219, label %1220, label %1227
+
+1220:                                             ; preds = %1217
+  %1221 = zext nneg i32 %1218 to i64
+  %1222 = getelementptr inbounds float, ptr %23, i64 %1221
+  %1223 = load float, ptr %1222, align 4, !tbaa !16
+  %1224 = fptrunc float %1223 to half
+  %1225 = getelementptr inbounds %"class.sycl::_V1::detail::half_impl::half", ptr %22, i64 %1221
+  store half %1224, ptr %1225, align 2, !tbaa !855
+  %1226 = add nuw nsw i32 %1218, 1
+  br label %1217, !llvm.loop !860
+
+1227:                                             ; preds = %1217
+  %1228 = zext nneg i32 %1216 to i64
+  %1229 = getelementptr inbounds nuw %"class.sycl::_V1::detail::half_impl::half", ptr addrspace(4) %3, i64 %1228
+  %1230 = load i64, ptr %22, align 8
+  store i64 %1230, ptr addrspace(4) %1229, align 8
+  call void @llvm.lifetime.end.p0(ptr nonnull %22) #22
+  call void @llvm.lifetime.start.p0(ptr nonnull %21) #22
+  br label %1231
+
+1231:                                             ; preds = %1234, %1227
+  %1232 = phi i32 [ 0, %1227 ], [ %1240, %1234 ]
+  %1233 = icmp samesign ult i32 %1232, 4
+  br i1 %1233, label %1234, label %1268
+
+1234:                                             ; preds = %1231
+  %1235 = zext nneg i32 %1232 to i64
+  %1236 = getelementptr inbounds float, ptr %24, i64 %1235
+  %1237 = load float, ptr %1236, align 4, !tbaa !16
+  %1238 = fptrunc float %1237 to half
+  %1239 = getelementptr inbounds %"class.sycl::_V1::detail::half_impl::half", ptr %21, i64 %1235
+  store half %1238, ptr %1239, align 2, !tbaa !855
+  %1240 = add nuw nsw i32 %1232, 1
+  br label %1231, !llvm.loop !860
+
+1241:                                             ; preds = %1211
+  %1242 = or disjoint i32 %1209, %1212
+  %1243 = lshr i32 %1207, %1242
+  %1244 = shl i32 %1243, 4
+  %1245 = and i32 %1244, 16
+  %1246 = add nuw nsw i32 %1242, 12
+  %1247 = lshr i32 %1207, %1246
+  %1248 = and i32 %1247, 16
+  %1249 = zext nneg i32 %1242 to i64
+  %1250 = getelementptr inbounds nuw i8, ptr addrspace(4) %1210, i64 %1249
+  %1251 = load i8, ptr addrspace(4) %1250, align 1, !tbaa !21
+  %1252 = and i8 %1251, 15
+  %1253 = zext nneg i8 %1252 to i32
+  %1254 = or disjoint i32 %1245, %1253
+  %1255 = uitofp nneg i32 %1254 to float
+  %1256 = fmul float %1202, %1255
+  %1257 = fadd float %1256, %1205
+  %1258 = zext nneg i32 %1212 to i64
+  %1259 = getelementptr inbounds float, ptr %23, i64 %1258
+  store float %1257, ptr %1259, align 4, !tbaa !16
+  %1260 = lshr i8 %1251, 4
+  %1261 = zext nneg i8 %1260 to i32
+  %1262 = or disjoint i32 %1248, %1261
+  %1263 = uitofp nneg i32 %1262 to float
+  %1264 = fmul float %1202, %1263
+  %1265 = fadd float %1264, %1205
+  %1266 = getelementptr inbounds float, ptr %24, i64 %1258
+  store float %1265, ptr %1266, align 4, !tbaa !16
+  %1267 = add nuw nsw i32 %1212, 1
+  br label %1211, !llvm.loop !873
+
+1268:                                             ; preds = %1231
+  %1269 = getelementptr inbounds nuw i8, ptr addrspace(4) %1229, i64 32
+  %1270 = load i64, ptr %21, align 8
+  store i64 %1270, ptr addrspace(4) %1269, align 8
+  call void @llvm.lifetime.end.p0(ptr nonnull %21) #22
+  call void @llvm.lifetime.end.p0(ptr nonnull %24) #22
+  call void @llvm.lifetime.end.p0(ptr nonnull %23) #22
+  br label %1609
+
+1271:                                             ; preds = %5
+  %1272 = mul nuw nsw i64 %2, 272
+  %1273 = getelementptr inbounds nuw i8, ptr addrspace(4) %1, i64 %1272
+  %1274 = and i32 %4, 7
+  %1275 = and i32 %4, 24
+  %1276 = zext nneg i32 %1274 to i64
+  %1277 = getelementptr inbounds nuw %struct.block_q8_0, ptr addrspace(4) %1273, i64 %1276
+  %1278 = load half, ptr addrspace(4) %1277, align 2, !tbaa !27
+  %1279 = fpext half %1278 to float
+  call void @llvm.lifetime.start.p0(ptr nonnull %20) #22
+  %1280 = getelementptr inbounds nuw i8, ptr addrspace(4) %1277, i64 2
+  br label %1281
+
+1281:                                             ; preds = %1295, %1271
+  %1282 = phi i32 [ 0, %1271 ], [ %1304, %1295 ]
+  %1283 = icmp samesign ult i32 %1282, 8
+  br i1 %1283, label %1295, label %1284
+
+1284:                                             ; preds = %1281
+  call void @llvm.lifetime.start.p0(ptr nonnull %19) #22
+  br label %1285
+
+1285:                                             ; preds = %1288, %1284
+  %1286 = phi i32 [ 0, %1284 ], [ %1294, %1288 ]
+  %1287 = icmp samesign ult i32 %1286, 8
+  br i1 %1287, label %1288, label %1305
+
+1288:                                             ; preds = %1285
+  %1289 = zext nneg i32 %1286 to i64
+  %1290 = getelementptr inbounds float, ptr %20, i64 %1289
+  %1291 = load float, ptr %1290, align 4, !tbaa !16
+  %1292 = fptrunc float %1291 to half
+  %1293 = getelementptr inbounds %"class.sycl::_V1::detail::half_impl::half", ptr %19, i64 %1289
+  store half %1292, ptr %1293, align 2, !tbaa !855
+  %1294 = add nuw nsw i32 %1286, 1
+  br label %1285, !llvm.loop !856
+
+1295:                                             ; preds = %1281
+  %1296 = or disjoint i32 %1275, %1282
+  %1297 = zext nneg i32 %1296 to i64
+  %1298 = getelementptr inbounds nuw i8, ptr addrspace(4) %1280, i64 %1297
+  %1299 = load i8, ptr addrspace(4) %1298, align 1, !tbaa !21
+  %1300 = sitofp i8 %1299 to float
+  %1301 = fmul float %1279, %1300
+  %1302 = zext nneg i32 %1282 to i64
+  %1303 = getelementptr inbounds float, ptr %20, i64 %1302
+  store float %1301, ptr %1303, align 4, !tbaa !16
+  %1304 = add nuw nsw i32 %1282, 1
+  br label %1281, !llvm.loop !874
+
+1305:                                             ; preds = %1285
+  %1306 = shl nuw nsw i32 %1274, 5
+  %1307 = or disjoint i32 %1306, %1275
+  %1308 = zext nneg i32 %1307 to i64
+  %1309 = getelementptr inbounds nuw %"class.sycl::_V1::detail::half_impl::half", ptr addrspace(4) %3, i64 %1308
+  call void @llvm.memcpy.p4.p0.i64(ptr addrspace(4) align 16 %1309, ptr align 16 %19, i64 16, i1 false)
+  call void @llvm.lifetime.end.p0(ptr nonnull %19) #22
+  call void @llvm.lifetime.end.p0(ptr nonnull %20) #22
+  br label %1609
+
+1310:                                             ; preds = %5
+  %1311 = mul nuw nsw i64 %2, 176
+  %1312 = getelementptr inbounds nuw i8, ptr addrspace(4) %1, i64 %1311
+  %1313 = and i32 %4, 7
+  %1314 = zext nneg i32 %1313 to i64
+  %1315 = getelementptr inbounds nuw %struct.block_q5_0, ptr addrspace(4) %1312, i64 %1314
+  %1316 = load half, ptr addrspace(4) %1315, align 2, !tbaa !27
+  %1317 = fpext half %1316 to float
+  %1318 = getelementptr inbounds nuw i8, ptr addrspace(4) %1315, i64 2
+  %1319 = load i32, ptr addrspace(4) %1318, align 2
+  call void @llvm.lifetime.start.p0(ptr nonnull %17) #22
+  call void @llvm.lifetime.start.p0(ptr nonnull %18) #22
+  %1320 = lshr i32 %4, 1
+  %1321 = and i32 %1320, 12
+  %1322 = getelementptr inbounds nuw i8, ptr addrspace(4) %1315, i64 6
+  br label %1323
+
+1323:                                             ; preds = %1353, %1310
+  %1324 = phi i32 [ 0, %1310 ], [ %1379, %1353 ]
+  %1325 = icmp samesign ult i32 %1324, 4
+  br i1 %1325, label %1353, label %1326
+
+1326:                                             ; preds = %1323
+  %1327 = shl nuw nsw i32 %1313, 5
+  %1328 = or disjoint i32 %1327, %1321
+  call void @llvm.lifetime.start.p0(ptr nonnull %16) #22
+  br label %1329
+
+1329:                                             ; preds = %1332, %1326
+  %1330 = phi i32 [ 0, %1326 ], [ %1338, %1332 ]
+  %1331 = icmp samesign ult i32 %1330, 4
+  br i1 %1331, label %1332, label %1339
+
+1332:                                             ; preds = %1329
+  %1333 = zext nneg i32 %1330 to i64
+  %1334 = getelementptr inbounds float, ptr %17, i64 %1333
+  %1335 = load float, ptr %1334, align 4, !tbaa !16
+  %1336 = fptrunc float %1335 to half
+  %1337 = getelementptr inbounds %"class.sycl::_V1::detail::half_impl::half", ptr %16, i64 %1333
+  store half %1336, ptr %1337, align 2, !tbaa !855
+  %1338 = add nuw nsw i32 %1330, 1
+  br label %1329, !llvm.loop !860
+
+1339:                                             ; preds = %1329
+  %1340 = zext nneg i32 %1328 to i64
+  %1341 = getelementptr inbounds nuw %"class.sycl::_V1::detail::half_impl::half", ptr addrspace(4) %3, i64 %1340
+  %1342 = load i64, ptr %16, align 8
+  store i64 %1342, ptr addrspace(4) %1341, align 8
+  call void @llvm.lifetime.end.p0(ptr nonnull %16) #22
+  call void @llvm.lifetime.start.p0(ptr nonnull %15) #22
+  br label %1343
+
+1343:                                             ; preds = %1346, %1339
+  %1344 = phi i32 [ 0, %1339 ], [ %1352, %1346 ]
+  %1345 = icmp samesign ult i32 %1344, 4
+  br i1 %1345, label %1346, label %1380
+
+1346:                                             ; preds = %1343
+  %1347 = zext nneg i32 %1344 to i64
+  %1348 = getelementptr inbounds float, ptr %18, i64 %1347
+  %1349 = load float, ptr %1348, align 4, !tbaa !16
+  %1350 = fptrunc float %1349 to half
+  %1351 = getelementptr inbounds %"class.sycl::_V1::detail::half_impl::half", ptr %15, i64 %1347
+  store half %1350, ptr %1351, align 2, !tbaa !855
+  %1352 = add nuw nsw i32 %1344, 1
+  br label %1343, !llvm.loop !860
+
+1353:                                             ; preds = %1323
+  %1354 = or disjoint i32 %1321, %1324
+  %1355 = lshr i32 %1319, %1354
+  %1356 = shl i32 %1355, 4
+  %1357 = and i32 %1356, 16
+  %1358 = add nuw nsw i32 %1354, 12
+  %1359 = lshr i32 %1319, %1358
+  %1360 = and i32 %1359, 16
+  %1361 = zext nneg i32 %1354 to i64
+  %1362 = getelementptr inbounds nuw i8, ptr addrspace(4) %1322, i64 %1361
+  %1363 = load i8, ptr addrspace(4) %1362, align 1, !tbaa !21
+  %1364 = and i8 %1363, 15
+  %1365 = zext nneg i8 %1364 to i32
+  %1366 = or disjoint i32 %1357, %1365
+  %1367 = add nsw i32 %1366, -16
+  %1368 = sitofp i32 %1367 to float
+  %1369 = fmul float %1317, %1368
+  %1370 = zext nneg i32 %1324 to i64
+  %1371 = getelementptr inbounds float, ptr %17, i64 %1370
+  store float %1369, ptr %1371, align 4, !tbaa !16
+  %1372 = lshr i8 %1363, 4
+  %1373 = zext nneg i8 %1372 to i32
+  %1374 = or disjoint i32 %1360, %1373
+  %1375 = add nsw i32 %1374, -16
+  %1376 = sitofp i32 %1375 to float
+  %1377 = fmul float %1317, %1376
+  %1378 = getelementptr inbounds float, ptr %18, i64 %1370
+  store float %1377, ptr %1378, align 4, !tbaa !16
+  %1379 = add nuw nsw i32 %1324, 1
+  br label %1323, !llvm.loop !875
+
+1380:                                             ; preds = %1343
+  %1381 = getelementptr inbounds nuw i8, ptr addrspace(4) %1341, i64 32
+  %1382 = load i64, ptr %15, align 8
+  store i64 %1382, ptr addrspace(4) %1381, align 8
+  call void @llvm.lifetime.end.p0(ptr nonnull %15) #22
+  call void @llvm.lifetime.end.p0(ptr nonnull %18) #22
+  call void @llvm.lifetime.end.p0(ptr nonnull %17) #22
+  br label %1609
+
+1383:                                             ; preds = %5
+  %1384 = mul nuw nsw i64 %2, 144
+  %1385 = getelementptr inbounds nuw i8, ptr addrspace(4) %1, i64 %1384
+  %1386 = and i32 %4, 7
+  %1387 = zext nneg i32 %1386 to i64
+  %1388 = getelementptr inbounds nuw %struct.block_q4_0, ptr addrspace(4) %1385, i64 %1387
+  %1389 = load half, ptr addrspace(4) %1388, align 2, !tbaa !27
+  %1390 = fpext half %1389 to float
+  call void @llvm.lifetime.start.p0(ptr nonnull %13) #22
+  call void @llvm.lifetime.start.p0(ptr nonnull %14) #22
+  %1391 = lshr i32 %4, 1
+  %1392 = and i32 %1391, 12
+  %1393 = getelementptr inbounds nuw i8, ptr addrspace(4) %1388, i64 2
+  br label %1394
+
+1394:                                             ; preds = %1424, %1383
+  %1395 = phi i32 [ 0, %1383 ], [ %1440, %1424 ]
+  %1396 = icmp samesign ult i32 %1395, 4
+  br i1 %1396, label %1424, label %1397
+
+1397:                                             ; preds = %1394
+  %1398 = shl nuw nsw i32 %1386, 5
+  %1399 = or disjoint i32 %1398, %1392
+  call void @llvm.lifetime.start.p0(ptr nonnull %12) #22
+  br label %1400
+
+1400:                                             ; preds = %1403, %1397
+  %1401 = phi i32 [ 0, %1397 ], [ %1409, %1403 ]
+  %1402 = icmp samesign ult i32 %1401, 4
+  br i1 %1402, label %1403, label %1410
+
+1403:                                             ; preds = %1400
+  %1404 = zext nneg i32 %1401 to i64
+  %1405 = getelementptr inbounds float, ptr %13, i64 %1404
+  %1406 = load float, ptr %1405, align 4, !tbaa !16
+  %1407 = fptrunc float %1406 to half
+  %1408 = getelementptr inbounds %"class.sycl::_V1::detail::half_impl::half", ptr %12, i64 %1404
+  store half %1407, ptr %1408, align 2, !tbaa !855
+  %1409 = add nuw nsw i32 %1401, 1
+  br label %1400, !llvm.loop !860
+
+1410:                                             ; preds = %1400
+  %1411 = zext nneg i32 %1399 to i64
+  %1412 = getelementptr inbounds nuw %"class.sycl::_V1::detail::half_impl::half", ptr addrspace(4) %3, i64 %1411
+  %1413 = load i64, ptr %12, align 8
+  store i64 %1413, ptr addrspace(4) %1412, align 8
+  call void @llvm.lifetime.end.p0(ptr nonnull %12) #22
+  call void @llvm.lifetime.start.p0(ptr nonnull %11) #22
+  br label %1414
+
+1414:                                             ; preds = %1417, %1410
+  %1415 = phi i32 [ 0, %1410 ], [ %1423, %1417 ]
+  %1416 = icmp samesign ult i32 %1415, 4
+  br i1 %1416, label %1417, label %1441
+
+1417:                                             ; preds = %1414
+  %1418 = zext nneg i32 %1415 to i64
+  %1419 = getelementptr inbounds float, ptr %14, i64 %1418
+  %1420 = load float, ptr %1419, align 4, !tbaa !16
+  %1421 = fptrunc float %1420 to half
+  %1422 = getelementptr inbounds %"class.sycl::_V1::detail::half_impl::half", ptr %11, i64 %1418
+  store half %1421, ptr %1422, align 2, !tbaa !855
+  %1423 = add nuw nsw i32 %1415, 1
+  br label %1414, !llvm.loop !860
+
+1424:                                             ; preds = %1394
+  %1425 = or disjoint i32 %1392, %1395
+  %1426 = zext nneg i32 %1425 to i64
+  %1427 = getelementptr inbounds nuw i8, ptr addrspace(4) %1393, i64 %1426
+  %1428 = load i8, ptr addrspace(4) %1427, align 1, !tbaa !21
+  %1429 = and i8 %1428, 15
+  %1430 = add nsw i8 %1429, -8
+  %1431 = sitofp i8 %1430 to float
+  %1432 = fmul float %1390, %1431
+  %1433 = zext nneg i32 %1395 to i64
+  %1434 = getelementptr inbounds float, ptr %13, i64 %1433
+  store float %1432, ptr %1434, align 4, !tbaa !16
+  %1435 = lshr i8 %1428, 4
+  %1436 = add nsw i8 %1435, -8
+  %1437 = sitofp i8 %1436 to float
+  %1438 = fmul float %1390, %1437
+  %1439 = getelementptr inbounds float, ptr %14, i64 %1433
+  store float %1438, ptr %1439, align 4, !tbaa !16
+  %1440 = add nuw nsw i32 %1395, 1
+  br label %1394, !llvm.loop !876
+
+1441:                                             ; preds = %1414
+  %1442 = getelementptr inbounds nuw i8, ptr addrspace(4) %1412, i64 32
+  %1443 = load i64, ptr %11, align 8
+  store i64 %1443, ptr addrspace(4) %1442, align 8
+  call void @llvm.lifetime.end.p0(ptr nonnull %11) #22
+  call void @llvm.lifetime.end.p0(ptr nonnull %14) #22
+  call void @llvm.lifetime.end.p0(ptr nonnull %13) #22
+  br label %1609
+
+1444:                                             ; preds = %5
+  %1445 = mul nuw nsw i64 %2, 160
+  %1446 = getelementptr inbounds nuw i8, ptr addrspace(4) %1, i64 %1445
+  %1447 = and i32 %4, 7
+  %1448 = zext nneg i32 %1447 to i64
+  %1449 = getelementptr inbounds nuw %struct.block_q4_1, ptr addrspace(4) %1446, i64 %1448
+  %1450 = load half, ptr addrspace(4) %1449, align 2, !tbaa !27
+  %1451 = fpext half %1450 to float
+  %1452 = getelementptr inbounds nuw i8, ptr addrspace(4) %1449, i64 2
+  %1453 = load half, ptr addrspace(4) %1452, align 2, !tbaa !27
+  %1454 = fpext half %1453 to float
+  call void @llvm.lifetime.start.p0(ptr nonnull %9) #22
+  call void @llvm.lifetime.start.p0(ptr nonnull %10) #22
+  %1455 = lshr i32 %4, 1
+  %1456 = and i32 %1455, 12
+  %1457 = getelementptr inbounds nuw i8, ptr addrspace(4) %1449, i64 4
+  br label %1458
+
+1458:                                             ; preds = %1488, %1444
+  %1459 = phi i32 [ 0, %1444 ], [ %1504, %1488 ]
+  %1460 = icmp samesign ult i32 %1459, 4
+  br i1 %1460, label %1488, label %1461
+
+1461:                                             ; preds = %1458
+  %1462 = shl nuw nsw i32 %1447, 5
+  %1463 = or disjoint i32 %1462, %1456
+  call void @llvm.lifetime.start.p0(ptr nonnull %8) #22
+  br label %1464
+
+1464:                                             ; preds = %1467, %1461
+  %1465 = phi i32 [ 0, %1461 ], [ %1473, %1467 ]
+  %1466 = icmp samesign ult i32 %1465, 4
+  br i1 %1466, label %1467, label %1474
+
+1467:                                             ; preds = %1464
+  %1468 = zext nneg i32 %1465 to i64
+  %1469 = getelementptr inbounds float, ptr %9, i64 %1468
+  %1470 = load float, ptr %1469, align 4, !tbaa !16
+  %1471 = fptrunc float %1470 to half
+  %1472 = getelementptr inbounds %"class.sycl::_V1::detail::half_impl::half", ptr %8, i64 %1468
+  store half %1471, ptr %1472, align 2, !tbaa !855
+  %1473 = add nuw nsw i32 %1465, 1
+  br label %1464, !llvm.loop !860
+
+1474:                                             ; preds = %1464
+  %1475 = zext nneg i32 %1463 to i64
+  %1476 = getelementptr inbounds nuw %"class.sycl::_V1::detail::half_impl::half", ptr addrspace(4) %3, i64 %1475
+  %1477 = load i64, ptr %8, align 8
+  store i64 %1477, ptr addrspace(4) %1476, align 8
+  call void @llvm.lifetime.end.p0(ptr nonnull %8) #22
+  call void @llvm.lifetime.start.p0(ptr nonnull %7) #22
+  br label %1478
+
+1478:                                             ; preds = %1481, %1474
+  %1479 = phi i32 [ 0, %1474 ], [ %1487, %1481 ]
+  %1480 = icmp samesign ult i32 %1479, 4
+  br i1 %1480, label %1481, label %1505
+
+1481:                                             ; preds = %1478
+  %1482 = zext nneg i32 %1479 to i64
+  %1483 = getelementptr inbounds float, ptr %10, i64 %1482
+  %1484 = load float, ptr %1483, align 4, !tbaa !16
+  %1485 = fptrunc float %1484 to half
+  %1486 = getelementptr inbounds %"class.sycl::_V1::detail::half_impl::half", ptr %7, i64 %1482
+  store half %1485, ptr %1486, align 2, !tbaa !855
+  %1487 = add nuw nsw i32 %1479, 1
+  br label %1478, !llvm.loop !860
+
+1488:                                             ; preds = %1458
+  %1489 = or disjoint i32 %1456, %1459
+  %1490 = zext nneg i32 %1489 to i64
+  %1491 = getelementptr inbounds nuw i8, ptr addrspace(4) %1457, i64 %1490
+  %1492 = load i8, ptr addrspace(4) %1491, align 1, !tbaa !21
+  %1493 = and i8 %1492, 15
+  %1494 = uitofp nneg i8 %1493 to float
+  %1495 = fmul float %1451, %1494
+  %1496 = fadd float %1495, %1454
+  %1497 = zext nneg i32 %1459 to i64
+  %1498 = getelementptr inbounds float, ptr %9, i64 %1497
+  store float %1496, ptr %1498, align 4, !tbaa !16
+  %1499 = lshr i8 %1492, 4
+  %1500 = uitofp nneg i8 %1499 to float
+  %1501 = fmul float %1451, %1500
+  %1502 = fadd float %1501, %1454
+  %1503 = getelementptr inbounds float, ptr %10, i64 %1497
+  store float %1502, ptr %1503, align 4, !tbaa !16
+  %1504 = add nuw nsw i32 %1459, 1
+  br label %1458, !llvm.loop !877
+
+1505:                                             ; preds = %1478
+  %1506 = getelementptr inbounds nuw i8, ptr addrspace(4) %1476, i64 32
+  %1507 = load i64, ptr %7, align 8
+  store i64 %1507, ptr addrspace(4) %1506, align 8
+  call void @llvm.lifetime.end.p0(ptr nonnull %7) #22
+  call void @llvm.lifetime.end.p0(ptr nonnull %10) #22
+  call void @llvm.lifetime.end.p0(ptr nonnull %9) #22
+  br label %1609
+
+1508:                                             ; preds = %5
+  %1509 = getelementptr inbounds nuw %struct.block_q6_K, ptr addrspace(4) %1, i64 %2
+  %1510 = getelementptr inbounds nuw i8, ptr addrspace(4) %1509, i64 208
+  %1511 = load half, ptr addrspace(4) %1510, align 2, !tbaa !27
+  %1512 = fpext half %1511 to float
+  %1513 = getelementptr inbounds nuw i8, ptr addrspace(4) %1509, i64 128
+  %1514 = getelementptr inbounds nuw i8, ptr addrspace(4) %1509, i64 192
+  %1515 = getelementptr inbounds i8, ptr %6, i64 4
+  %1516 = getelementptr inbounds i8, ptr %6, i64 8
+  %1517 = getelementptr inbounds i8, ptr %6, i64 12
+  br label %1518
+
+1518:                                             ; preds = %1590, %1508
+  %1519 = phi i32 [ %4, %1508 ], [ %1591, %1590 ]
+  %1520 = icmp samesign ult i32 %1519, 64
+  br i1 %1520, label %1521, label %1609
+
+1521:                                             ; preds = %1518
+  %1522 = lshr i32 %1519, 5
+  %1523 = and i32 %1519, 31
+  %1524 = shl nuw nsw i32 %1522, 3
+  %1525 = lshr i32 %1523, 4
+  %1526 = or disjoint i32 %1524, %1525
+  %1527 = shl nuw nsw i32 %1522, 6
+  %1528 = zext nneg i32 %1527 to i64
+  %1529 = getelementptr inbounds nuw i8, ptr addrspace(4) %1509, i64 %1528
+  %1530 = zext nneg i32 %1523 to i64
+  %1531 = getelementptr inbounds nuw i8, ptr addrspace(4) %1529, i64 %1530
+  %1532 = zext nneg i32 %1519 to i64
+  %1533 = getelementptr inbounds nuw i8, ptr addrspace(4) %1513, i64 %1532
+  %1534 = load i8, ptr addrspace(4) %1533, align 1, !tbaa !21
+  %1535 = zext nneg i32 %1526 to i64
+  %1536 = getelementptr inbounds nuw i8, ptr addrspace(4) %1514, i64 %1535
+  call void @llvm.lifetime.start.p0(ptr nonnull %6) #22
+  %1537 = load i8, ptr addrspace(4) %1536, align 1, !tbaa !21
+  %1538 = sitofp i8 %1537 to float
+  %1539 = fmul float %1512, %1538
+  %1540 = load i8, ptr addrspace(4) %1531, align 1, !tbaa !21
+  %1541 = and i8 %1540, 15
+  %1542 = shl i8 %1534, 4
+  %1543 = and i8 %1542, 48
+  %1544 = or disjoint i8 %1543, %1541
+  %1545 = zext nneg i8 %1544 to i32
+  %1546 = add nsw i32 %1545, -32
+  %1547 = sitofp i32 %1546 to float
+  %1548 = fmul float %1539, %1547
+  store float %1548, ptr %6, align 4, !tbaa !16
+  %1549 = getelementptr inbounds nuw i8, ptr addrspace(4) %1536, i64 2
+  %1550 = load i8, ptr addrspace(4) %1549, align 1, !tbaa !21
+  %1551 = sitofp i8 %1550 to float
+  %1552 = fmul float %1512, %1551
+  %1553 = getelementptr inbounds nuw i8, ptr addrspace(4) %1531, i64 32
+  %1554 = load i8, ptr addrspace(4) %1553, align 1, !tbaa !21
+  %1555 = and i8 %1554, 15
+  %1556 = shl i8 %1534, 2
+  %1557 = and i8 %1556, 48
+  %1558 = or disjoint i8 %1557, %1555
+  %1559 = zext nneg i8 %1558 to i32
+  %1560 = add nsw i32 %1559, -32
+  %1561 = sitofp i32 %1560 to float
+  %1562 = fmul float %1552, %1561
+  store float %1562, ptr %1515, align 4, !tbaa !16
+  %1563 = getelementptr inbounds nuw i8, ptr addrspace(4) %1536, i64 4
+  %1564 = load i8, ptr addrspace(4) %1563, align 1, !tbaa !21
+  %1565 = sitofp i8 %1564 to float
+  %1566 = fmul float %1512, %1565
+  %1567 = lshr i8 %1540, 4
+  %1568 = and i8 %1534, 48
+  %1569 = or disjoint i8 %1568, %1567
+  %1570 = zext nneg i8 %1569 to i32
+  %1571 = add nsw i32 %1570, -32
+  %1572 = sitofp i32 %1571 to float
+  %1573 = fmul float %1566, %1572
+  store float %1573, ptr %1516, align 4, !tbaa !16
+  %1574 = getelementptr inbounds nuw i8, ptr addrspace(4) %1536, i64 6
+  %1575 = load i8, ptr addrspace(4) %1574, align 1, !tbaa !21
+  %1576 = sitofp i8 %1575 to float
+  %1577 = fmul float %1512, %1576
+  %1578 = lshr i8 %1554, 4
+  %1579 = lshr i8 %1534, 2
+  %1580 = and i8 %1579, 48
+  %1581 = or disjoint i8 %1578, %1580
+  %1582 = zext nneg i8 %1581 to i32
+  %1583 = add nsw i32 %1582, -32
+  %1584 = sitofp i32 %1583 to float
+  %1585 = fmul float %1577, %1584
+  store float %1585, ptr %1517, align 4, !tbaa !16
+  %1586 = shl nuw nsw i32 %1522, 7
+  br label %1587
+
+1587:                                             ; preds = %1605, %1521
+  %1588 = phi i32 [ 0, %1521 ], [ %1608, %1605 ]
+  %1589 = icmp samesign ult i32 %1588, 4
+  br i1 %1589, label %1592, label %1590
+
+1590:                                             ; preds = %1587
+  call void @llvm.lifetime.end.p0(ptr nonnull %6) #22
+  %1591 = add nuw nsw i32 %1519, 32
+  br label %1518, !llvm.loop !878
+
+1592:                                             ; preds = %1587
+  %1593 = shl nuw nsw i32 %1588, 5
+  %1594 = or disjoint i32 %1586, %1593
+  %1595 = or disjoint i32 %1594, %1523
+  %1596 = zext nneg i32 %1588 to i64
+  %1597 = getelementptr inbounds float, ptr %6, i64 %1596
+  br label %1598
+
+1598:                                             ; preds = %1601, %1592
+  %1599 = phi i16 [ undef, %1592 ], [ %1604, %1601 ]
+  %1600 = phi i1 [ true, %1592 ], [ false, %1601 ]
+  br i1 %1600, label %1601, label %1605
+
+1601:                                             ; preds = %1598
+  %1602 = load float, ptr %1597, align 4, !tbaa !16
+  %1603 = fptrunc float %1602 to half
+  %1604 = bitcast half %1603 to i16
+  br label %1598, !llvm.loop !879
+
+1605:                                             ; preds = %1598
+  %1606 = zext nneg i32 %1595 to i64
+  %1607 = getelementptr inbounds nuw %"class.sycl::_V1::detail::half_impl::half", ptr addrspace(4) %3, i64 %1606
+  store i16 %1599, ptr addrspace(4) %1607, align 2
+  %1608 = add nuw nsw i32 %1588, 1
+  br label %1587, !llvm.loop !880
+
+1609:                                             ; preds = %1518, %1043, %721, %5, %1505, %1441, %1380, %1305, %1268, %1032, %910, %878, %713, %627, %527, %452, %356, %283, %198, %131
+  ret void
+}

@@ -1,0 +1,26 @@
+define weak_odr dso_local spir_kernel void @_ZTSZN6strata7kernels12_GLOBAL__N_119launch_dequant_flatIfEEN4sycl3_V15eventERNS4_5queueEiPKvlPT_EUlNS4_7nd_itemILi1EEEE_(i64 noundef %0, i32 noundef %1, ptr addrspace(1) noundef %2, ptr addrspace(1) noundef align 4 %3) local_unnamed_addr #0 comdat !kernel_arg_buffer_location !853 !sycl_used_aspects !12 !sycl_fixed_targets !14 !sycl_kernel_omit_args !33 {
+  %5 = tail call spir_func noundef i64 @_Z33__spirv_BuiltInGlobalInvocationIdi(i32 noundef 0) #20
+  %6 = tail call spir_func noundef i64 @_Z27__spirv_BuiltInGlobalOffseti(i32 noundef 0) #20
+  %7 = sub i64 %5, %6
+  %8 = icmp ult i64 %7, 2147483648
+  tail call void @llvm.assume(i1 %8)
+  %9 = lshr i64 %7, 5
+  %10 = icmp slt i64 %9, %0
+  br i1 %10, label %11, label %20
+
+11:                                               ; preds = %4
+  %12 = addrspacecast ptr addrspace(1) %3 to ptr addrspace(4)
+  %13 = addrspacecast ptr addrspace(1) %2 to ptr addrspace(4)
+  %14 = shl nuw nsw i64 %9, 10
+  %15 = getelementptr inbounds nuw i8, ptr addrspace(4) %12, i64 %14
+  %16 = tail call spir_func noundef i64 @_Z32__spirv_BuiltInLocalInvocationIdi(i32 noundef 0) #20
+  %17 = icmp ult i64 %16, 2147483648
+  tail call void @llvm.assume(i1 %17)
+  %18 = trunc nuw nsw i64 %16 to i32
+  %19 = and i32 %18, 31
+  tail call spir_func void @_ZN6strata7kernels12_GLOBAL__N_111dq_dispatchINS1_8ToGlobalIfEEEEviPKvlRKT_i(i32 noundef %1, ptr addrspace(4) noundef %13, i64 noundef %9, ptr addrspace(4) %15, i32 noundef %19) #21
+  br label %20
+
+20:                                               ; preds = %4, %11
+  ret void
+}

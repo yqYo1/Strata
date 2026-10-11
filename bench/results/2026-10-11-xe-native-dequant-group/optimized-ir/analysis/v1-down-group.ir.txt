@@ -1,0 +1,43 @@
+define weak_odr dso_local spir_kernel void @_ZTSZN6strata7kernels25iq_dequant_down_group_f16EiRKNS0_14IqDequantGroupEllPtmmPvEUlN4sycl3_V17nd_itemILi2EEEE_(ptr noundef byval(%"struct.strata::kernels::__generated_IqDequantGroup.459") align 8 %0, i64 noundef %1, i32 noundef %2, ptr addrspace(1) noundef align 2 %3, i64 noundef %4) local_unnamed_addr #0 comdat !kernel_arg_buffer_location !914 !sycl_used_aspects !12 !sycl_fixed_targets !14 !sycl_kernel_omit_args !854 {
+  %6 = alloca %class.anon.460, align 8
+  call void @llvm.lifetime.start.p0(ptr nonnull %6) #22
+  call void @llvm.memcpy.p0.p0.i64(ptr align 8 %6, ptr align 8 %0, i64 776, i1 false), !tbaa.struct !906
+  %7 = getelementptr inbounds i8, ptr %6, i64 792
+  %8 = addrspacecast ptr addrspace(1) %3 to ptr addrspace(4)
+  store ptr addrspace(4) %8, ptr %7, align 8, !tbaa !915
+  %9 = getelementptr inbounds i8, ptr %6, i64 768
+  %10 = load i32, ptr %9, align 8, !tbaa !917
+  %11 = tail call spir_func noundef i64 @_Z26__spirv_BuiltInWorkgroupIdi(i32 noundef 1) #20
+  %12 = icmp ult i64 %11, 2147483648
+  tail call void @llvm.assume(i1 %12)
+  %13 = tail call spir_func noundef i64 @_Z33__spirv_BuiltInGlobalInvocationIdi(i32 noundef 0) #20
+  %14 = icmp ult i64 %13, 2147483648
+  tail call void @llvm.assume(i1 %14)
+  %15 = lshr i64 %13, 5
+  %16 = icmp slt i64 %15, %1
+  br i1 %16, label %17, label %33
+
+17:                                               ; preds = %5
+  %18 = trunc nuw nsw i64 %11 to i32
+  %19 = add nsw i32 %10, %18
+  %20 = getelementptr inbounds i8, ptr %6, i64 256
+  %21 = sext i32 %19 to i64
+  %22 = getelementptr inbounds ptr addrspace(4), ptr %20, i64 %21
+  %23 = load ptr addrspace(4), ptr %22, align 8, !tbaa !913
+  %24 = mul i64 %4, %21
+  %25 = getelementptr inbounds %"class.sycl::_V1::detail::half_impl::half", ptr addrspace(1) %3, i64 %24
+  %26 = addrspacecast ptr addrspace(1) %25 to ptr addrspace(4)
+  %27 = shl nuw nsw i64 %15, 9
+  %28 = getelementptr inbounds nuw i8, ptr addrspace(4) %26, i64 %27
+  %29 = tail call spir_func noundef i64 @_Z32__spirv_BuiltInLocalInvocationIdi(i32 noundef 0) #20
+  %30 = icmp ult i64 %29, 2147483648
+  tail call void @llvm.assume(i1 %30)
+  %31 = trunc nuw nsw i64 %29 to i32
+  %32 = and i32 %31, 31
+  tail call spir_func void @_ZN6strata7kernels12_GLOBAL__N_111dq_dispatchINS1_8ToGlobalIN4sycl3_V16detail9half_impl4halfEEEEEviPKvlRKT_i(i32 noundef %2, ptr addrspace(4) noundef %23, i64 noundef %15, ptr addrspace(4) %28, i32 noundef %32) #21
+  br label %33
+
+33:                                               ; preds = %5, %17
+  call void @llvm.lifetime.end.p0(ptr nonnull %6) #22
+  ret void
+}

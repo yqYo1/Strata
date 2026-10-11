@@ -1,0 +1,247 @@
+define weak_odr dso_local spir_kernel void @_ZTSZN6strata7kernels23iq_dequant_gu_group_f16EiRKNS0_14IqDequantGroupEllPtmmPvEUlN4sycl3_V17nd_itemILi3EEEE_(ptr noundef byval(%"struct.strata::kernels::__generated_IqDequantGroup") align 8 %0, i64 noundef %1, i64 noundef %2, i32 noundef %3, ptr addrspace(1) noundef align 2 %4, i64 noundef %5) local_unnamed_addr #0 comdat !kernel_arg_buffer_location !22 !sycl_used_aspects !12 !sycl_fixed_targets !14 !sycl_kernel_omit_args !23 {
+  %7 = load ptr addrspace(4), ptr %0, align 8
+  %8 = getelementptr inbounds i8, ptr %0, i64 8
+  %9 = load ptr addrspace(4), ptr %8, align 8
+  %10 = getelementptr inbounds i8, ptr %0, i64 16
+  %11 = load ptr addrspace(4), ptr %10, align 8
+  %12 = getelementptr inbounds i8, ptr %0, i64 24
+  %13 = load ptr addrspace(4), ptr %12, align 8
+  %14 = getelementptr inbounds i8, ptr %0, i64 32
+  %15 = load ptr addrspace(4), ptr %14, align 8
+  %16 = getelementptr inbounds i8, ptr %0, i64 40
+  %17 = load ptr addrspace(4), ptr %16, align 8
+  %18 = getelementptr inbounds i8, ptr %0, i64 48
+  %19 = load ptr addrspace(4), ptr %18, align 8
+  %20 = getelementptr inbounds i8, ptr %0, i64 56
+  %21 = load ptr addrspace(4), ptr %20, align 8
+  %22 = getelementptr inbounds i8, ptr %0, i64 64
+  %23 = load ptr addrspace(4), ptr %22, align 8
+  %24 = getelementptr inbounds i8, ptr %0, i64 72
+  %25 = load ptr addrspace(4), ptr %24, align 8
+  %26 = getelementptr inbounds i8, ptr %0, i64 80
+  %27 = load ptr addrspace(4), ptr %26, align 8
+  %28 = getelementptr inbounds i8, ptr %0, i64 88
+  %29 = load ptr addrspace(4), ptr %28, align 8
+  %30 = getelementptr inbounds i8, ptr %0, i64 96
+  %31 = load ptr addrspace(4), ptr %30, align 8
+  %32 = getelementptr inbounds i8, ptr %0, i64 104
+  %33 = load ptr addrspace(4), ptr %32, align 8
+  %34 = getelementptr inbounds i8, ptr %0, i64 112
+  %35 = load ptr addrspace(4), ptr %34, align 8
+  %36 = getelementptr inbounds i8, ptr %0, i64 120
+  %37 = load ptr addrspace(4), ptr %36, align 8, !tbaa !21
+  %38 = getelementptr inbounds i8, ptr %0, i64 128
+  %39 = load ptr addrspace(4), ptr %38, align 8
+  %40 = getelementptr inbounds i8, ptr %0, i64 136
+  %41 = load ptr addrspace(4), ptr %40, align 8
+  %42 = getelementptr inbounds i8, ptr %0, i64 144
+  %43 = load ptr addrspace(4), ptr %42, align 8
+  %44 = getelementptr inbounds i8, ptr %0, i64 152
+  %45 = load ptr addrspace(4), ptr %44, align 8
+  %46 = getelementptr inbounds i8, ptr %0, i64 160
+  %47 = load ptr addrspace(4), ptr %46, align 8
+  %48 = getelementptr inbounds i8, ptr %0, i64 168
+  %49 = load ptr addrspace(4), ptr %48, align 8
+  %50 = getelementptr inbounds i8, ptr %0, i64 176
+  %51 = load ptr addrspace(4), ptr %50, align 8
+  %52 = getelementptr inbounds i8, ptr %0, i64 184
+  %53 = load ptr addrspace(4), ptr %52, align 8
+  %54 = getelementptr inbounds i8, ptr %0, i64 192
+  %55 = load ptr addrspace(4), ptr %54, align 8
+  %56 = getelementptr inbounds i8, ptr %0, i64 200
+  %57 = load ptr addrspace(4), ptr %56, align 8
+  %58 = getelementptr inbounds i8, ptr %0, i64 208
+  %59 = load ptr addrspace(4), ptr %58, align 8
+  %60 = getelementptr inbounds i8, ptr %0, i64 216
+  %61 = load ptr addrspace(4), ptr %60, align 8
+  %62 = getelementptr inbounds i8, ptr %0, i64 224
+  %63 = load ptr addrspace(4), ptr %62, align 8
+  %64 = getelementptr inbounds i8, ptr %0, i64 232
+  %65 = load ptr addrspace(4), ptr %64, align 8
+  %66 = getelementptr inbounds i8, ptr %0, i64 240
+  %67 = load ptr addrspace(4), ptr %66, align 8
+  %68 = getelementptr inbounds i8, ptr %0, i64 248
+  %69 = load ptr addrspace(4), ptr %68, align 8, !tbaa !21
+  %70 = getelementptr inbounds i8, ptr %0, i64 768
+  %71 = load i32, ptr %70, align 8, !tbaa !6
+  %72 = tail call spir_func noundef i64 @_Z26__spirv_BuiltInWorkgroupIdi(i32 noundef 2) #20
+  %73 = icmp ult i64 %72, 2147483648
+  tail call void @llvm.assume(i1 %73)
+  %74 = trunc nuw nsw i64 %72 to i32
+  %75 = add nsw i32 %71, %74
+  %76 = tail call spir_func noundef i64 @_Z33__spirv_BuiltInGlobalInvocationIdi(i32 noundef 0) #20
+  %77 = icmp ult i64 %76, 2147483648
+  tail call void @llvm.assume(i1 %77)
+  %78 = lshr i64 %76, 5
+  %79 = icmp slt i64 %78, %1
+  br i1 %79, label %80, label %137
+
+80:                                               ; preds = %6
+  %81 = tail call spir_func noundef i64 @_Z26__spirv_BuiltInWorkgroupIdi(i32 noundef 1) #20
+  %82 = icmp ult i64 %81, 2147483648
+  tail call void @llvm.assume(i1 %82)
+  %83 = sdiv i64 %78, %2
+  %84 = mul i64 %83, %2
+  %85 = sub i64 %78, %84
+  %86 = icmp eq i64 %81, 0
+  br i1 %86, label %104, label %87
+
+87:                                               ; preds = %80
+  switch i32 %75, label %121 [
+    i32 0, label %88
+    i32 1, label %89
+    i32 2, label %90
+    i32 3, label %91
+    i32 4, label %92
+    i32 5, label %93
+    i32 6, label %94
+    i32 7, label %95
+    i32 8, label %96
+    i32 9, label %97
+    i32 10, label %98
+    i32 11, label %99
+    i32 12, label %100
+    i32 13, label %101
+    i32 14, label %102
+    i32 15, label %103
+  ]
+
+88:                                               ; preds = %87
+  br label %121
+
+89:                                               ; preds = %87
+  br label %121
+
+90:                                               ; preds = %87
+  br label %121
+
+91:                                               ; preds = %87
+  br label %121
+
+92:                                               ; preds = %87
+  br label %121
+
+93:                                               ; preds = %87
+  br label %121
+
+94:                                               ; preds = %87
+  br label %121
+
+95:                                               ; preds = %87
+  br label %121
+
+96:                                               ; preds = %87
+  br label %121
+
+97:                                               ; preds = %87
+  br label %121
+
+98:                                               ; preds = %87
+  br label %121
+
+99:                                               ; preds = %87
+  br label %121
+
+100:                                              ; preds = %87
+  br label %121
+
+101:                                              ; preds = %87
+  br label %121
+
+102:                                              ; preds = %87
+  br label %121
+
+103:                                              ; preds = %87
+  br label %121
+
+104:                                              ; preds = %80
+  switch i32 %75, label %121 [
+    i32 0, label %105
+    i32 1, label %106
+    i32 2, label %107
+    i32 3, label %108
+    i32 4, label %109
+    i32 5, label %110
+    i32 6, label %111
+    i32 7, label %112
+    i32 8, label %113
+    i32 9, label %114
+    i32 10, label %115
+    i32 11, label %116
+    i32 12, label %117
+    i32 13, label %118
+    i32 14, label %119
+    i32 15, label %120
+  ]
+
+105:                                              ; preds = %104
+  br label %121
+
+106:                                              ; preds = %104
+  br label %121
+
+107:                                              ; preds = %104
+  br label %121
+
+108:                                              ; preds = %104
+  br label %121
+
+109:                                              ; preds = %104
+  br label %121
+
+110:                                              ; preds = %104
+  br label %121
+
+111:                                              ; preds = %104
+  br label %121
+
+112:                                              ; preds = %104
+  br label %121
+
+113:                                              ; preds = %104
+  br label %121
+
+114:                                              ; preds = %104
+  br label %121
+
+115:                                              ; preds = %104
+  br label %121
+
+116:                                              ; preds = %104
+  br label %121
+
+117:                                              ; preds = %104
+  br label %121
+
+118:                                              ; preds = %104
+  br label %121
+
+119:                                              ; preds = %104
+  br label %121
+
+120:                                              ; preds = %104
+  br label %121
+
+121:                                              ; preds = %120, %119, %118, %117, %116, %115, %114, %113, %112, %111, %110, %109, %108, %107, %106, %105, %104, %103, %102, %101, %100, %99, %98, %97, %96, %95, %94, %93, %92, %91, %90, %89, %88, %87
+  %122 = phi ptr addrspace(4) [ null, %87 ], [ %69, %103 ], [ %39, %88 ], [ %41, %89 ], [ %43, %90 ], [ %45, %91 ], [ %47, %92 ], [ %49, %93 ], [ %51, %94 ], [ %53, %95 ], [ %55, %96 ], [ %57, %97 ], [ %59, %98 ], [ %61, %99 ], [ %63, %100 ], [ %65, %101 ], [ %67, %102 ], [ %37, %120 ], [ %7, %105 ], [ %9, %106 ], [ %11, %107 ], [ %13, %108 ], [ %15, %109 ], [ %17, %110 ], [ %19, %111 ], [ %21, %112 ], [ %23, %113 ], [ %25, %114 ], [ %27, %115 ], [ %29, %116 ], [ %31, %117 ], [ %33, %118 ], [ %35, %119 ], [ null, %104 ]
+  %123 = sext i32 %75 to i64
+  %124 = mul i64 %5, %123
+  %125 = getelementptr inbounds %"class.sycl::_V1::detail::half_impl::half", ptr addrspace(1) %4, i64 %124
+  %126 = addrspacecast ptr addrspace(1) %125 to ptr addrspace(4)
+  %127 = shl nsw i64 %83, 1
+  %128 = add nsw i64 %127, %81
+  %129 = mul nsw i64 %128, %2
+  %130 = add nsw i64 %129, %85
+  %131 = shl nsw i64 %130, 9
+  %132 = getelementptr inbounds i8, ptr addrspace(4) %126, i64 %131
+  %133 = tail call spir_func noundef i64 @_Z32__spirv_BuiltInLocalInvocationIdi(i32 noundef 0) #20
+  %134 = icmp ult i64 %133, 2147483648
+  tail call void @llvm.assume(i1 %134)
+  %135 = trunc nuw nsw i64 %133 to i32
+  %136 = and i32 %135, 31
+  tail call spir_func void @_ZN6strata7kernels12_GLOBAL__N_111dq_dispatchINS1_8ToGlobalIN4sycl3_V16detail9half_impl4halfEEEEEviPKvlRKT_i(i32 noundef %3, ptr addrspace(4) noundef %122, i64 noundef %78, ptr addrspace(4) %132, i32 noundef %136) #21
+  br label %137
+
+137:                                              ; preds = %6, %121
+  ret void
+}

@@ -1,0 +1,36 @@
+define weak_odr dso_local spir_kernel void @_ZTSZN6strata7kernels17iq_dequant_gu_f16EiPKvS2_llPtPvEUlN4sycl3_V17nd_itemILi2EEEE_(i64 noundef %0, i64 noundef %1, i32 noundef %2, ptr addrspace(1) noundef %3, ptr addrspace(1) noundef %4, ptr addrspace(1) noundef align 2 %5) local_unnamed_addr #0 comdat !kernel_arg_buffer_location !22 !sycl_used_aspects !12 !sycl_fixed_targets !14 !sycl_kernel_omit_args !23 {
+  %7 = tail call spir_func noundef i64 @_Z33__spirv_BuiltInGlobalInvocationIdi(i32 noundef 0) #20
+  %8 = icmp ult i64 %7, 2147483648
+  tail call void @llvm.assume(i1 %8)
+  %9 = lshr i64 %7, 5
+  %10 = icmp slt i64 %9, %0
+  br i1 %10, label %11, label %31
+
+11:                                               ; preds = %6
+  %12 = addrspacecast ptr addrspace(1) %5 to ptr addrspace(4)
+  %13 = tail call spir_func noundef i64 @_Z26__spirv_BuiltInWorkgroupIdi(i32 noundef 1) #20
+  %14 = icmp ult i64 %13, 2147483648
+  tail call void @llvm.assume(i1 %14)
+  %15 = sdiv i64 %9, %1
+  %16 = mul i64 %15, %1
+  %17 = sub i64 %9, %16
+  %18 = icmp eq i64 %13, 0
+  %19 = select i1 %18, ptr addrspace(1) %4, ptr addrspace(1) %3
+  %20 = addrspacecast ptr addrspace(1) %19 to ptr addrspace(4)
+  %21 = shl nsw i64 %15, 1
+  %22 = add nsw i64 %21, %13
+  %23 = mul nsw i64 %22, %1
+  %24 = add nsw i64 %23, %17
+  %25 = shl nsw i64 %24, 9
+  %26 = getelementptr inbounds i8, ptr addrspace(4) %12, i64 %25
+  %27 = tail call spir_func noundef i64 @_Z32__spirv_BuiltInLocalInvocationIdi(i32 noundef 0) #20
+  %28 = icmp ult i64 %27, 2147483648
+  tail call void @llvm.assume(i1 %28)
+  %29 = trunc nuw nsw i64 %27 to i32
+  %30 = and i32 %29, 31
+  tail call spir_func void @_ZN6strata7kernels12_GLOBAL__N_111dq_dispatchINS1_8ToGlobalIN4sycl3_V16detail9half_impl4halfEEEEEviPKvlRKT_i(i32 noundef %2, ptr addrspace(4) noundef %20, i64 noundef %9, ptr addrspace(4) %26, i32 noundef %30) #21
+  br label %31
+
+31:                                               ; preds = %6, %11
+  ret void
+}
