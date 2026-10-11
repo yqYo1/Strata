@@ -252,6 +252,11 @@ sycl::queue& Runtime::stream(void* stream) {
 
 void Runtime::preload_kernels() {
     if (preload_.joinable()) return;
+    if (const char* v = std::getenv("STRATA_PRELOAD_KERNELS"); v && std::strcmp(v, "0") == 0) {
+        if (std::getenv("STRATA_TRACE"))
+            std::fprintf(stderr, "strata trace: kernel preload disabled by STRATA_PRELOAD_KERNELS=0\n");
+        return;
+    }
     preload_ = std::thread([this] {
         int built = 0, skipped = 0;
         for (const sycl::kernel_id& id : sycl::get_kernel_ids()) {
