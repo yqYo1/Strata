@@ -360,9 +360,12 @@ bool session_replay_stages_per_layer(const ModelGeometry& g, int64_t pos, int32_
     ms_ffn = 0; ms_post = 0;
     for (int64_t l = 0; l < n; ++l) {
         float a = 0, b = 0, c = 0;
-        strata::gpu::event_elapsed_ms(&a, ev[(size_t) (l * 4 + 0)], ev[(size_t) (l * 4 + 1)]);
-        strata::gpu::event_elapsed_ms(&b, ev[(size_t) (l * 4 + 1)], ev[(size_t) (l * 4 + 2)]);
-        strata::gpu::event_elapsed_ms(&c, ev[(size_t) (l * 4 + 2)], ev[(size_t) (l * 4 + 3)]);
+        if (!strata::gpu::event_elapsed_ms(&a, ev[(size_t) (l * 4 + 0)], ev[(size_t) (l * 4 + 1)]) ||
+            !strata::gpu::event_elapsed_ms(&b, ev[(size_t) (l * 4 + 1)], ev[(size_t) (l * 4 + 2)]) ||
+            !strata::gpu::event_elapsed_ms(&c, ev[(size_t) (l * 4 + 2)], ev[(size_t) (l * 4 + 3)])) {
+            err = "session_replay_stages: elapsed interval: " + std::string(strata::gpu::last_error());
+            return false;
+        }
         mixer_per_layer[(size_t) l] = (double) a;
         ms_ffn += b; ms_post += c;
     }
@@ -412,9 +415,11 @@ bool session_replay_stage_sweep(const ModelGeometry& g, int64_t pos, int32_t pos
         return false;
     }
     float v = 0;
-    strata::gpu::event_elapsed_ms(&v, a, b);
+    const bool measured = strata::gpu::event_elapsed_ms(&v, a, b);
+    if (!measured) err = "session_replay_stage_sweep: elapsed interval: " + std::string(strata::gpu::last_error());
     strata::gpu::event_destroy(a);
     strata::gpu::event_destroy(b);
+    if (!measured) return false;
     ms = (double) v;
     return true;
 }
@@ -474,11 +479,14 @@ bool session_replay_stage_prefixes(const ModelGeometry& g, int64_t pos, int32_t 
     float t1 = 0, t2 = 0, t3 = 0, t4 = 0, t5 = 0;
     for (int64_t l = 0; l < n; ++l) {
         float a = 0, b = 0, c = 0, d = 0, e = 0;
-        strata::gpu::event_elapsed_ms(&a, ev[(size_t) (l * 6 + 0)], ev[(size_t) (l * 6 + 1)]);
-        strata::gpu::event_elapsed_ms(&b, ev[(size_t) (l * 6 + 1)], ev[(size_t) (l * 6 + 2)]);
-        strata::gpu::event_elapsed_ms(&c, ev[(size_t) (l * 6 + 2)], ev[(size_t) (l * 6 + 3)]);
-        strata::gpu::event_elapsed_ms(&d, ev[(size_t) (l * 6 + 3)], ev[(size_t) (l * 6 + 4)]);
-        strata::gpu::event_elapsed_ms(&e, ev[(size_t) (l * 6 + 4)], ev[(size_t) (l * 6 + 5)]);
+        if (!strata::gpu::event_elapsed_ms(&a, ev[(size_t) (l * 6 + 0)], ev[(size_t) (l * 6 + 1)]) ||
+            !strata::gpu::event_elapsed_ms(&b, ev[(size_t) (l * 6 + 1)], ev[(size_t) (l * 6 + 2)]) ||
+            !strata::gpu::event_elapsed_ms(&c, ev[(size_t) (l * 6 + 2)], ev[(size_t) (l * 6 + 3)]) ||
+            !strata::gpu::event_elapsed_ms(&d, ev[(size_t) (l * 6 + 3)], ev[(size_t) (l * 6 + 4)]) ||
+            !strata::gpu::event_elapsed_ms(&e, ev[(size_t) (l * 6 + 4)], ev[(size_t) (l * 6 + 5)])) {
+            err = "session_replay_stage_prefixes: elapsed interval: " + std::string(strata::gpu::last_error());
+            return false;
+        }
         t1 += a; t2 += b; t3 += c; t4 += d; t5 += e;
         mixer_per_layer[(size_t) l] = (double) c;   // prefix 3 IS the mixer: stages 0..2
     }
