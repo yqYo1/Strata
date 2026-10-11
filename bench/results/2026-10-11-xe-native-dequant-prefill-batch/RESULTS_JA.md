@@ -38,7 +38,7 @@ Lunaの読み取り専用調査を、compiled caller、memory admission、driver
 
 ## 保存と削除
 
-個別PASS/FAIL、command、allowlist環境、source/binary/runtime hash、process終了、fault判定、検証範囲を18の元receiptそのままで保持した。成功した全API/poll/build/lint出力300ファイル、論理4,459,848byteは、Git保存とhash確認後に削除する。失敗の代表窓を抽出した後の重複出力も含め、削除予定は計336ファイル・論理35,324,933byte。retention-v1.jsonがpath/hash/reasonを記録する。失敗したmodelの27.9MB traceも、該当調査が戻り代表窓で十分と確認したため削除する。現在の調査consumerは30,751byteの代表窓と静的source/metadataを参照する。元の測定status、現在のfixture、model/source、GPU/service状態はcleanupで変更しない。
+個別PASS/FAIL、command、allowlist環境、source/binary/runtime hash、process終了、fault判定、検証範囲を18の元receiptそのままで保持した。成功した全API/poll/build/lint出力300ファイル、論理4,459,848byteは、今回の削除に含む。失敗の代表窓を抽出した後の重複出力も含め、当初の削除予定は計336ファイル・論理35,324,933byte。公開済みcommit `bdd23be6b2e4b823c8d5595a9ae90c614625aa67` のGit blob、元receipt、process不在、全fileのhashを照合した後、Mainが336ファイルすべてを削除した。retention-v1.jsonがpath/hash/reasonと個別の削除結果を記録する。削除したfileの割当量は36,700,160byte、直前・直後の利用可能容量の増加は6,815,744byte。snapshotや他のfilesystem操作があり得るため、利用可能容量の変化をcleanupだけの効果とは断定しない。失敗したmodelの27.9MB traceも削除し、30,751byteの代表窓と静的source/metadataを次の調査で参照する。元の測定status、現在のfixture、model/source、GPU/service状態はcleanupで変更しない。
 
 IGC公式sourceのGetMatrixFuncNameはrow-major AをPackedAという内部名へ変換し、SG16という文字列をplatformのDPAS能力で付ける。sourceのsubgroup 32とは矛盾せず、Kernel<2>のlocal A loadと強く対応する。ただし実際の失敗moduleのIRとproviderはまだ取得していない。[IGC v2.41.5 source](https://github.com/intel/intel-graphics-compiler/blob/v2.41.5/IGC/Compiler/Optimizer/OpenCLPasses/JointMatrixFuncsResolutionPass/JointMatrixFuncsResolutionPass.cpp) と最新レポートに根拠を保存した。host上のIGC候補2.40.13と過去inventoryの2.41.5は区別し、今回の実mapにIGC/FCLを含めていなかった点を未確定として調査している。
 
@@ -47,3 +47,7 @@ IGC公式sourceのGetMatrixFuncNameはrow-major AをPackedAという内部名へ
 最新2件の調査も戻った。IGC v2.41.5/v2.40.13のsourceには該当builtinを生成する定義があり、単純なsource上の欠落とは扱わない。実際にどのIGC/FCLがロードされたかは既存filterでは収集しておらず、次のMainの有限な実行でpath/hash/build-idを追加収集する。2件のagentは完了済み。次のprovider判別調査は、この実mapと選択した実演算の証拠に依存する。
 
 初回のreport公開は、3つのunified diffの空行context（1つのspace）がGitのtrailing-whitespace判定となり、commit前にFAILした。元patchの意味・byteを変えず、その3件だけlossless base64 JSONに保存し、decodeしたbytes/hashの一致を確認した。元receiptとこの公開失敗も保存し、whitespace checkのsuppressionは追加していない。
+
+2回目のreport公開はcommitとpushまでPASS。元の18件に加え、公開v1/v2とcleanupのreceiptを別途保存した。cleanupはGPU、build/test、service操作と同時実行せず、既存のPASS/FAILを変更していない。
+
+削除記録の最初の公開controllerは、Git statusの先頭spaceを`.strip()`で落とし、pathを誤って検証したためcommit前にFAILした。削除処理自体はPASSであり、そのreceiptを変更していない。v2ではcommand出力の末尾newlineだけを除去し、status列をそのまま検証する。元の公開失敗receiptと両recipeを保存した。
