@@ -49,6 +49,7 @@
 #include <algorithm>
 #include <cstdlib>
 #include <cstring>
+#include <limits>
 #include <string>
 #include <type_traits>
 
@@ -1633,6 +1634,115 @@ void iq_dequant_gu_f16(int t, const void* gate, const void* up, int64_t n_ff, in
                                     (int) (it.get_local_id(1) % 32));
         });
     sync_if_needed(stream, e, "iq_dequant_gu_f16");
+}
+
+namespace {
+
+// All group checks precede queue submission; no allocation, queue or synchronization is introduced.
+bool dequant_group_mul(size_t a, size_t b, size_t& out) {
+    const size_t limit = std::min((size_t) std::numeric_limits<int64_t>::max(),
+                                  (size_t) std::numeric_limits<ptrdiff_t>::max());
+    if (b != 0 && a > limit / b) return false;
+    out = a * b;
+    return true;
+}
+bool dequant_group_span(const void* p, size_t bytes, size_t alignment) {
+    const uintptr_t a = reinterpret_cast<uintptr_t>(p);
+    return p && a % alignment == 0 && bytes <= (size_t) std::numeric_limits<ptrdiff_t>::max() &&
+           bytes <= std::numeric_limits<uintptr_t>::max() - a;
+}
+bool dequant_group_bounds(const IqDequantGroup& g) {
+    return g.first >= 0 && g.first <= kIqDequantGroup && g.n >= 0 && g.n <= kIqDequantGroup - g.first;
+}
+bool dequant_group_check(int t, const IqDequantGroup& g, int64_t n_ff, int64_t n_embd,
+                         uint16_t* dst, size_t stride, size_t dst_bytes, bool gu,
+                         size_t& values, size_t& global) {
+    if (!is_iq(t) || n_ff <= 0 || n_embd <= 0 || n_embd % 256 != 0 ||
+        (uint64_t) n_ff > std::numeric_limits<size_t>::max() ||
+        (uint64_t) n_embd > std::numeric_limits<size_t>::max()) return false;
+    size_t matrix = 0;
+    if (!dequant_group_mul((size_t) n_ff, (size_t) n_embd, matrix) ||
+        !dequant_group_mul(matrix, gu ? 2 : 1, values) || stride < values || stride % 8 != 0) return false;
+    const size_t nsb = matrix / QK_K;
+    // Exactly the old flat / GU launch: eight 256-value superblocks per 256-work-item group.
+    const size_t groups = nsb / 8 + (nsb % 8 != 0);
+    size_t total = 0;
+    if (!dequant_group_mul(groups, 256, global) ||
+        !dequant_group_mul(global, (size_t) g.n * (gu ? 2 : 1), total)) return false;
+    size_t last = 0, end = 0, bytes = 0, source_bytes = 0;
+    if (!dequant_group_mul((size_t) (g.first + g.n - 1), stride, last)) return false;
+    const size_t limit = std::min((size_t) std::numeric_limits<int64_t>::max(),
+                                  (size_t) std::numeric_limits<ptrdiff_t>::max());
+    if (values > limit - last) return false;
+    end = last + values;
+    if (!dequant_group_mul(end, sizeof(uint16_t), bytes) || bytes > dst_bytes ||
+        !dequant_group_span(dst, bytes, alignof(sycl::vec<sycl::half, 8>)) ||
+        !dequant_group_mul(nsb, iq_row_bytes(t, QK_K), source_bytes)) return false;
+    const uintptr_t lo = reinterpret_cast<uintptr_t>(dst), hi = lo + bytes;
+    for (int e = g.first; e < g.first + g.n; ++e) {
+        const void* sources[2] = {gu ? g.gate[e] : g.down[e], g.up[e]};
+        const size_t capacities[2] = {gu ? g.gate_bytes[e] : g.down_bytes[e], g.up_bytes[e]};
+        for (int p = 0; p < (gu ? 2 : 1); ++p) {
+            if (source_bytes > capacities[p] || !dequant_group_span(sources[p], source_bytes, 4)) return false;
+            const uintptr_t a = reinterpret_cast<uintptr_t>(sources[p]);
+            if (a < hi && lo < a + source_bytes) return false;
+        }
+    }
+    return true;
+}
+
+}  // namespace
+
+bool iq_dequant_gu_group_f16(int t, const IqDequantGroup& group, int64_t n_ff, int64_t n_embd,
+                             uint16_t* dst, size_t stride, size_t dst_bytes, void* stream) {
+    if (!dequant_group_bounds(group)) return false;
+    if (group.n == 0) return true;
+    size_t values = 0, global = 0;
+    if (!dequant_group_check(t, group, n_ff, n_embd, dst, stride, dst_bytes, true, values, global)) return false;
+    auto& q = queue_for(stream);
+    if (q.get_device().get_info<sycl::info::device::max_work_group_size>() < 256 ||
+        q.get_device().get_info<sycl::info::device::max_work_item_sizes<3>>()[2] < 256) return false;
+    const IqDequantGroup g = group;   // addresses copied by value, never an array read from host memory on device
+    const int64_t per_row = n_embd / 256, nsb = n_ff * per_row;
+    auto* y = reinterpret_cast<sycl::half*>(dst);
+    const auto e = q.parallel_for(
+        sycl::nd_range<3>({(size_t) g.n, 2, global}, {1, 1, 256}), [=](sycl::nd_item<3> it) {
+            const int expert = g.first + (int) it.get_group(0);
+            const int64_t i = (int64_t) (it.get_global_id(2) / 32);
+            if (i >= nsb) return;
+            const int parity = (int) it.get_group(1);
+            const int64_t r = i / per_row, c = i % per_row;
+            dq_dispatch(t, parity ? g.up[expert] : g.gate[expert], i,
+                        ToGlobal<sycl::half>{y + (size_t) expert * stride + ((2 * r + parity) * per_row + c) * QK_K},
+                        (int) (it.get_local_id(2) % 32));
+        });
+    sync_if_needed(stream, e, "iq_dequant_gu_group_f16");
+    return true;
+}
+
+bool iq_dequant_down_group_f16(int t, const IqDequantGroup& group, int64_t n_ff, int64_t n_embd,
+                               uint16_t* dst, size_t stride, size_t dst_bytes, void* stream) {
+    if (!dequant_group_bounds(group)) return false;
+    if (group.n == 0) return true;
+    size_t values = 0, global = 0;
+    if (!dequant_group_check(t, group, n_ff, n_embd, dst, stride, dst_bytes, false, values, global)) return false;
+    auto& q = queue_for(stream);
+    if (q.get_device().get_info<sycl::info::device::max_work_group_size>() < 256 ||
+        q.get_device().get_info<sycl::info::device::max_work_item_sizes<2>>()[1] < 256) return false;
+    const IqDequantGroup g = group;
+    const int64_t nsb = (int64_t) (values / QK_K);
+    auto* y = reinterpret_cast<sycl::half*>(dst);
+    const auto e = q.parallel_for(
+        sycl::nd_range<2>({(size_t) g.n, global}, {1, 256}), [=](sycl::nd_item<2> it) {
+            const int expert = g.first + (int) it.get_group(0);
+            const int64_t i = (int64_t) (it.get_global_id(1) / 32);
+            if (i >= nsb) return;
+            dq_dispatch(t, g.down[expert], i,
+                        ToGlobal<sycl::half>{y + (size_t) expert * stride + i * QK_K},
+                        (int) (it.get_local_id(1) % 32));
+        });
+    sync_if_needed(stream, e, "iq_dequant_down_group_f16");
+    return true;
 }
 
 bool iq_gemm_grouped_ok(int t, int64_t N, int64_t K) noexcept {

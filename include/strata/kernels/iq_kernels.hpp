@@ -40,6 +40,29 @@ void iq_embed_rows(int ggml_type, const void* table, size_t row_bytes, const int
 void iq_dequant_gu_f16(int ggml_type, const void* gate, const void* up, int64_t n_ff, int64_t n_embd, uint16_t* dst,
                        void* stream);
 
+/// Optional Xe-only native-to-FP16 group APIs; no caller is switched automatically.
+constexpr int kIqDequantGroup = 16;
+struct IqDequantGroup {
+    const void* gate[kIqDequantGroup]{};
+    const void* up[kIqDequantGroup]{};
+    const void* down[kIqDequantGroup]{};
+    size_t gate_bytes[kIqDequantGroup]{}, up_bytes[kIqDequantGroup]{}, down_bytes[kIqDequantGroup]{};
+    int first = 0, n = 0;   // active slots [first, first+n), also the destination slots
+};
+/// The pointer arrays are host metadata copied by value; active addresses already reside on this stream's device.
+/// `stride` is FP16 elements between expert slots; `dst_bytes` is the full accessible destination capacity.
+/// Sources are at least 4-byte aligned, destination 16-byte aligned (stride multiple 8), and source/destination ranges must not overlap.
+/// False: refused before submission. True: zero work or normal submission (null stream also waits, as the old APIs).
+/// Exceptions from Runtime, submission or the null-stream wait propagate; true with a stream is not completion.
+/// n==0 accepts legal slot bounds without inspecting dimensions, pointers, capacities, type or stream; no launch.
+/// Nonempty calls require positive dimensions, n_embd multiple 256, supported IQ types, and checked capacities.
+/// GU writes [2*n_ff,n_embd] interleaved per slot; Down writes flat [n_embd,n_ff] per slot (total multiple 256).
+/// Caller owns device accessibility, actual allocation capacities, stream lifetime and ordering until completion.
+bool iq_dequant_gu_group_f16(int ggml_type, const IqDequantGroup& group, int64_t n_ff, int64_t n_embd,
+                             uint16_t* dst, size_t stride, size_t dst_bytes, void* stream);
+bool iq_dequant_down_group_f16(int ggml_type, const IqDequantGroup& group, int64_t n_ff, int64_t n_embd,
+                               uint16_t* dst, size_t stride, size_t dst_bytes, void* stream);
+
 /// Whether iq_gemm_grouped_f16 takes weights of `ggml_type` in [N, K] matrices: N and K multiples of 128.  Q3_K is
 /// not taken.
 bool iq_gemm_grouped_ok(int ggml_type, int64_t N, int64_t K) noexcept;
