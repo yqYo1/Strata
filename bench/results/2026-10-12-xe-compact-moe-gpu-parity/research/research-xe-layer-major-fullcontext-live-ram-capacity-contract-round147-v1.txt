@@ -1,0 +1,51 @@
+# Xe layer-major full-context live-RAM capacity contract (round 147)
+
+Date: 2026-10-12 (Asia/Tokyo). Read-only source and receipt audit. No build, test, GPU/runtime query, process inspection or Git mutation. This is a capacity/liveness contract, not a fit or full-context qualification.
+
+## Decision
+
+Correct the machine description first: the campaign receipt reports MemTotal 134,986,948,608 B (125.716 GiB), and representative pre-run MemAvailable 97,499,279,360 B (90.79 GiB), not a 64-GB machine. The default expert arena is 47,962 MiB (46.838 GiB) of owned, loaded host storage. Corrected full-context INT8 host KV is 6,643,777,536 B (6.1875 GiB). A single layer-major FP32 residual plane is 2.49996 GiB at 65,535 rows and 9.99996 GiB at 262,143 rows. The old 57/115/459-GiB figures are cumulative transfer traffic and must not be booked as simultaneous allocations.
+
+The capacity interpretation therefore does not rule out layer-major on a nominal 64-GB machine; however neither this arithmetic nor the available-memory sample proves a fit. The sample is before model load, and it does not include phase-aligned process RSS, pinned-host allocations, cgroup limit, other applications, memory pressure, or all session owners. Full 262,144-token qualification remains false/unresolved. Preserve the exact context boundary; do not cap prompt length at 262,143 to make the residual plane fit. The current generation route batches `n_prompt-1` then processes the last prompt token through the single-token path. At a 262,144 prompt, the plane needs 262,143 batched rows and session/KV capacity must still represent the final token at position 262,143. Zero output room at this boundary is acceptable; do not silently truncate the prompt.
+
+## Source and accounting boundary
+
+Candidate source reviewed: `/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/perf-xe-prefill-row-bounded-scratch-20261011`, clean immutable HEAD `39e395a103af36323262cdc0dbaea27cba81f3e4`. The insertion proposal is R142 and the streamed-INT8 contract is R141. These describe a prospective schedule, not implemented behavior. The correction receipt is `main-memory-traffic-correction-v3.json` under the 2026-10-11 quiet32k campaign. Physical total and initial available memory are system receipts, not measured per-phase consumption.
+
+For each owner below distinguish (a) address-space reservation, (b) pages/storage committed or pinned, and (c) resident set at a particular instant. Anonymous expert-arena allocation is written during load, which commits its pages; pinned host KV allocation is actual pinned backing, not a cost-free mapping. The optional Linux mmap expert branch reserves a file mapping and lets the page cache populate/dismiss pages dynamically; it is neither permanently resident nor zero-cost. `STRATA_ARENA_MMAP` defaults off. Shared-arena reuse, if selected, changes ownership but is not evidenced by this campaign receipt.
+
+## Required simultaneous owners by phase
+
+The following are host-side amounts only. GPU-resident K/V pools, expert banks/caches and bounded device workspaces are separate device admission owners and are not added to host RAM totals. The proposed current-layer expert bank is specifically an additional GPU owner in R142; do not count it as a host copy unless an implementation adds a host staging bank.
+
+| Owner | 64K prompt boundary | 262,144 prompt boundary | Liveness and evidence |
+|---|---:|---:|---|
+| Default expert arena | 46.838 GiB | 46.838 GiB | Long-lived owned host arena (47,962 MiB); source load writes/commits it. It contains expert blobs, not an extra per-layer duplicate. |
+| Streamed INT8 main QSA host K/V | ~1.546875 GiB for 65,536 cells | 6.1875 GiB for 262,144 cells | Session-lifetime pinned host backing; K, V codes and scales. The corrected full value is 6,643,777,536 B. It is distinct from the VRAM staging/resident page pools. |
+| One FP32 layer-major residual plane, HC×N=4×2,560 values/row | 2.49996 GiB for 65,535 batched rows | 9.99996 GiB for 262,143 batched rows | Proposed run-lifetime pageable host plane. No second plane is required by the R142 in-place chunk scheme if each chunk is fully read before its same rows are overwritten and layer output is copied before advancing. |
+| Prefill chunk staging and PLE | Bounded by chunk T; formula below | Bounded by chunk T; formula below | Two PLE buffers each T×N×4 bytes; pageable fallback or pinned host allocation, not context-length. Other handoff buffers are also chunk-sized. |
+| GDN/PLE session state, QSA metadata and non-expert host model state | Fixed by model geometry/session configuration | Fixed by model geometry/session configuration | GDN recurrent/conv states are allocated once per session; PLE history is fixed. QSA metadata/page tables scale with cells, and the RoPE table has a context-sized allocation (one QSA owner, shared by other states). QSA host KV is already listed separately. Exact aggregate needs the accepted runtime geometry, slot plan, `k`, and allocation receipt. |
+| MTP/drafter state and cache | Conditional, separate session/cache and bounded scratch | Conditional, separate session/cache and bounded scratch | Independent state and KV geometry; do not infer streamed INT8 support from main QSA. If enabled, MTP `prefill` fallback can have its own session/KV storage. Exact bytes depend on MTP configuration and its KV mode. |
+| Restore/checkpoint/conversation snapshots | Not inherently live in ordinary prefill; add when captured/restored | Same | Host K/V is authoritative for streamed sessions. Snapshot/save/restore may copy host K/V and metadata; a simultaneously retained snapshot is another copy. No phase receipt establishes whether a snapshot overlaps the prospective plane. Must be counted from route-specific allocation evidence. |
+| Optional residual captures / diagnostic consumers | Excluded from normal schedule | Excluded from normal schedule | Include only if an active named consumer requires them. They can dominate memory and must not be treated as inherent to layer-major. |
+
+Main known-owner subtotal (arena + INT8 host K/V + one plane) is about **50.885 GiB at 64K** and **63.025 GiB at full context**, before other host model/session/runtime/application owners. The 64K calculation uses 65,536 KV cells but 65,535 batched residual rows; full uses 262,144 KV cells and 262,143 batched rows. Values are rounded and not measured allocations. Do not subtract these totals from MemAvailable to claim free headroom: MemAvailable was measured before loading and process/cgroup scope may differ.
+
+For a chosen chunk size `T`, existing PLE host storage is `2 × T × N × 4` bytes (two pinned buffers or two pageable vectors), with `N=2,560` in this build; it does not scale with prompt length. A further pair of layer handoff buffers, when allocated, is `2 × T × D × 4`, `D=HC×N=10,240`. The prefill's other host vectors (token ids, step records, route/slot/source IDs, PLE row indices, expert counts/offsets) scale with `T`, `K`, and expert count. `Prefill::bytes_needed()` is a device workspace query, not a complete process-host-RAM query; its counted region includes streamed staging data but not the prospective residual plane or full process/session accounting.
+
+## Non-host owners and overlap constraints
+
+R142's per-layer expert bank holds all native expert blobs for the active layer across token chunks, and it is provisioned in addition to the existing decode/profile cache; its planned footprint is GPU memory. Existing tail cache slots currently loaned to chunk scratch cannot also be assumed available for that bank. Device VRAM fit requires its own phase-aligned receipt. On the host, the source arena remains live while that bank is copied; source/pack reads, PLE and transfer staging may overlap. Do not add cumulative H2D/D2H traffic to live RAM, but do count any simultaneously retained source buffer or copy buffer if implementation introduces one.
+
+The residual plane is pageable in R142. Making it pinned would change the pinned-host total and may fail even when pageable allocation succeeds. Do not automatically provision two planes for optional rollback or ping-pong: they are separate design choices, and two planes would add another 2.49996/9.99996 GiB at these boundaries. Failure rollback/checkpoint behavior remains a correctness requirement, but no second plane is justified by the current proposal itself.
+
+## Capacity proof still required
+
+No current evidence establishes exact simultaneous process RSS or pinned bytes for an accepted 64K or 262,144 prompt run. A qualifying proof must use the actual selected model/config and process memory limit, record before/after and phase-aligned host available/commit/RSS/pinned values, and name overlap for: arena/source, QSA host pools, residual plane, PLE/handoff buffers, session, MTP, snapshots, other model mappings and runtime. Report reserved virtual bytes separately from committed pages and RSS. At full context, retain the 262,144-cell session/KV and final single-token pass even if generation has no output capacity. Until that evidence exists, the result is **capacity plausible but unqualified**, not rejected by a 64-GB label and not proven to fit.
+
+## Source pointers
+
+- R142 insertion design: `research-xe-layer-major-current-port-insertion-design-round142-v1.txt`.
+- R141 streamed QSA contract: `research-xe-layer-major-streamed-int8-qsa-contract-round141-v1.txt`.
+- Corrected memory/traffic receipt: `bench/results/2026-10-11-xe-quiet32k-balanced-campaign/main-memory-traffic-correction-v3.json`.
+- Candidate source: `src/core/session.cpp` (`session_bytes`, GDN and QSA arena ownership); `src/core/layer.cpp` (QSA state, pinned streamed host K/V); `src/prefill/prefill.cpp` (`Prefill::init`, PLE buffers and `bytes_needed`); `src/core/expert_source.cpp` (`ArenaExpertSource`, default owned arena versus opt-in mmap); `src/program/generate.cpp` (`n_batched=n_prompt-1`, final prompt-token handling and MTP fallback).

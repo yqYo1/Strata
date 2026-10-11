@@ -1,0 +1,31 @@
+{
+  "original_reports_modified": false,
+  "source_only": true,
+  "R146_microbenchmark": {
+    "source_hashes_independently_matched": true,
+    "provenance": "Hashes match current committed source; assignment did not itself list these hashes.",
+    "current_dequant_reference": "Current nativebatch0 uses individual dequant wrappers. Grouped APIs are a separate conditional benchmark arm; do not label them current production execution.",
+    "event_timing": "Kernel-event duration excludes separate transfers. A copy-event duration measures that command interval, not necessarily the complete host-pack/PCIe service."
+  },
+  "R147_memory": {
+    "actual_memtotal": 134986948608,
+    "actual_representative_available": 97499279360,
+    "expert_arena_bytes": 50291802112,
+    "configured_context": 262144,
+    "host_int8_kv_bytes": 6643777536,
+    "residual_plane64k_bytes": 2684313600,
+    "residual_plane_full_bytes": 10737377280,
+    "current_config_known_owner_subtotal64k_bytes": 59619893248,
+    "current_config_known_owner_subtotal_full_bytes": 67672956928,
+    "correction": "R147 50.885GiB subtotal assumes context65536 and shrinks the hostKV. Current context262144 allocates full6.1875GiB even for64K prompt; corrected known subtotal is55.525GiB. No64GB-host fit claim applies to this125.715GiB host.",
+    "full_context_fit_qualified": false,
+    "other_session_snapshot_runtime_owners_unmeasured": true
+  },
+  "R148_route_scope": {
+    "explicit_unsupported_compact_request": "Prefill::init returns an error before allocation when explicit compact opt-in is incompatible; it does not silently turn the request off.",
+    "short_prompt_clipping": "Prompt-length clipping belongs to the known-prompt one-shot initialization route. Serve allocates fixed chunk storage before GEN; short requests use tails without changing the6144 chunk limit.",
+    "ring": "Owned stage buffers clamp to16; fullstream uses16 and routed consumers use the requested8. Do not label every consumer16.",
+    "quality_permission": "The report suggestion to request a numeric threshold creates no approval requirement. Existing authorization covers measurement; evaluate observed deltas and retain unresolved quality claims.",
+    "changed_chunk_quality_and_physical_fit_unqualified": true
+  }
+}

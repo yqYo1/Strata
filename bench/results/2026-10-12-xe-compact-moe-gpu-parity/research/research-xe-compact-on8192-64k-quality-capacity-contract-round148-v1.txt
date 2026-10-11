@@ -1,0 +1,81 @@
+# Compact-MoE ON, T=8192, 64K prefill validation contract (round 148)
+
+Date: 2026-10-12 (Asia/Tokyo). Read-only source/receipt-design audit. No controller code, source/Git edits, builds, tests, imports, inference, profiler, GPU/process query, cleanup, or live-run artifact read. This is a proposed validation contract; it is not an allocation, performance, or quality result.
+
+## Scope and known evidence
+
+The prospective code is the task-pinned clean Xe source at `/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/perf-xe-prefill-row-bounded-scratch-20261011`, HEAD `39e395a103af36323262cdc0dbaea27cba81f3e4`. The reviewed `src/prefill/prefill.cpp` has SHA-256 `c7a427dc58fd5f03732b4a807274f2cc5d406cd2f6c39d64a620c0cd3518cc67`. The task's current controller remains the owner of runtime, builds, and qualification. Main is serially running six-root T6144 diagnostics; do not inspect its live artifacts or overlap the proposed work with it.
+
+Already reported results to preserve as scoped evidence: N=64 and N=2,049 OFF/ON strict-16-ID/LP5 parity succeeded; the historical T6144 startup-free figures were 745 MiB OFF and 1,286 MiB ON. Those are not a 64K quality result, do not qualify T8192, and do not establish a GPU allocation limit. No new quality-loss threshold is authorized here. R135's T6144→8192 byte report used an earlier source SHA (`c5cfa...`, HEAD `0740b434...`) and a noncompact allocation maximum; its 802,865,152-B delta must not be copied as the compact-ON total. R143's post-compact shared-set numbers are useful formula inputs but are likewise pinned to that earlier source. The following T request census is reconstructed against the task-pinned current source and the same explicit 262144-context/INT8/compact fallback configuration; it remains requested extents, not physical commitment.
+
+The corrected machine receipt reports MemTotal 134,986,948,608 B = 125.716 GiB, not 64 GB. Do not retain stale 64-GB labels. Neither total RAM nor this GPU-memory arithmetic establishes fit or speed.
+
+## Compact-ON source-requested Prefill bytes
+
+The fixed census below uses `max_context=262144`, main KV INT8 with configured resident capacity 32768, `STRATA_PREFILL_COMPACT_MOE_SCRATCH=1`, MMQ unavailable/disabled for every layer (`MmqPlan.any=false`, fallback true), `STRATA_DBG_NAN` unset, `STRATA_PREFILL_BF16X2=0`, prefill expert group 16, and `STRATA_PREFILL_RING=8` (source clamps the owned ring to 16). These predicates must be confirmed from the eventual closed run receipt. Compact is only enabled when all source predicates hold; an environment request alone is not proof the compact path ran.
+
+For those inputs, `Prefill::init()` source-requested device buffers are reconstructed as follows. All entries are `Alloc::take` extents with source padding; direct token/identity allocations are included. The GDN/QSA/MoE region is one shared allocation sized to the maximum, not the sum of all three phases.
+
+| Owner | T=6144 compact ON | T=8192 compact ON | Change |
+|---|---:|---:|---:|
+| GEMM scratch | 67,109,120 B | 67,109,120 B | 0 |
+| Chunk vectors and step table | 892,898,560 B | 1,190,530,304 B | +297,631,744 B |
+| Shared `max(GDN,QSA,MoE)` region | 885,524,480 B | 1,180,698,624 B | +295,174,144 B |
+| FP16 expert dequant GU/down | 157,286,912 B | 157,286,912 B | 0 |
+| Expert row-bound table + compact bounds descriptor | 5,120 B | 5,120 B | 0 |
+| Device expert staging ring | 42,598,656 B | 42,598,656 B | 0 |
+| PLE embedding + norm device storage | 62,956,032 B | 83,927,552 B | +20,971,520 B |
+| Full-config INT8 KV stage pools | 276,825,088 B | 276,825,088 B | 0 |
+| Direct token IDs + full-config identity page table | 286,720 B | 294,912 B | +8,192 B |
+| **Total `Impl::owned` request** | **2,385,490,688 B (2.222 GiB)** | **2,999,276,288 B (2.793 GiB)** | **+613,785,600 B (585.35 MiB)** |
+
+For this configuration GDN sets the shared-region maximum at both T values (885,524,480 B and 1,180,698,624 B); QSA and compact MoE are smaller. Do not add GDN, QSA, and MoE together. `bytes_needed()` is an admission planner with its own ring accounting and +8 MiB slack; it is not this owned-request sum and is not a physical free-memory reading. Host vectors, PLE pin/pageable fallbacks, runtime, descriptors and driver rounding are also outside the table.
+
+T changes chunk-sized lifetimes rather than the configured context. At T=8192, each of the two PLE host buffers is `T*N*4` = 83,886,080 B (80 MiB), pinned if allocation succeeds or pageable fallback otherwise; together they add 160 MiB of host backing. At T=6144 the pair is 120 MiB. Route/step/PLE-index host vectors also scale with T. Fixed `max_context=262144` means the QSA state/KV capacity and streamed page-map extent do not become 64K merely because the prompt has 64K tokens. In this INT8 streamed configuration, host K/V backing is sized for the configured context; the separate GPU resident pool uses the configured 32768-cell residency. Include those existing session owners in physical admission rather than treating the 64K input as a smaller KV allocation.
+
+The rough request delta has three main sources: per-chunk arrays, larger shared maximum, and PLE embedding storage. It says only that the program asks the device allocator for these extents. It does not say the driver can commit them, that allocatable bytes are available, or that larger T is faster.
+
+## Physical admission contract
+
+Use a closed, source-pinned receipt for each arm. Before Prefill initialization, record GPU free/total memory after the model, session, cache and selected KV mode are established; record the source-planned `bytes_needed`, actual owned versus borrowed route, every failed allocation, and post-init/peak phase free memory. Include concurrent-free status, driver/runtime allocations and any pinned-host failures. If using a borrowed cache region, record exact borrowed byte extent, slots displaced/refilled, and remaining decode-cache capacity. If not borrowing, establish enough genuine free device capacity for the complete init and transient first-use/runtime peak. `--prefill` must be fixed at the requested T: fixed chunks can fall back to owned buffers when the loan cannot fit, while `--prefill auto` selects a different chunk/ring. Record the effective T and ring, not just the requested command line. Do not infer fit from the 745/1286-MiB historical startup figures, a subtraction of source-request bytes, or a nominal VRAM limit.
+
+For the 64K arm, keep `max_context=262144`, KV format/resident count and weights fixed in both baseline and candidate. Do not lower max context to 65,536 to improve the admission result. Run the 6144 controls only after the current serial six-root job has closed; then run T8192 ON serially. Capture separate timing and quality receipts. Do not start timing conclusions until quality and lifecycle gates pass.
+
+## Fixed settings versus adjustment paths
+
+Fix and receipt-pin: exact model/pack and weight hashes; 65,536 prompt token IDs and their hash; `max_context=262144`; INT8 main KV and resident cells 32768; `--prefill 6144` or `--prefill 8192` (never auto); compact request and effective enable state; MMQ plan/census; `STRATA_DBG_NAN` absence; BF16X2=0; expert group=16; ring override=8/effective 16; PLE preload and relevant kernel override settings; MTP mode; GPU/device selection; seed, sampler, stop conditions, and fixed completion tokens. Also pin host paging/arena mode, output capture, and other owners which may affect admission.
+
+Source-controlled adjustments to detect, not conflate with a fixed-T comparison: prompt-length clipping rounds the chunk request down to a 256-token boundary when the prompt is shorter; `--prefill auto` may select a different T and ring; cache borrowing depends on currently available slots and can turn off; ring selection can change absent the explicit override; compact turns itself off if unsupported MMQ layers or `STRATA_DBG_NAN` are present; PLE host allocation may fall back from pinned to pageable; `draft_kv` may reject its mode/scratch and invoke MTP's independent `prefill` fallback. Record the effective route for every arm. For the proposed 65,536-token prompt, `n_batched=65,535`: T8192 processes seven 8,192-row chunks plus an 8,191-row tail; T6144 processes ten 6,144-row chunks plus a 4,095-row tail. The generator then processes the last prompt token through the ordinary single-token/verifier path. Keep this `n_prompt-1` behavior and token position alignment unchanged.
+
+## State and chunk-boundary obligations
+
+Compact scratch should preserve route IDs/weights, expert order, per-token outputs and the same session state, but the source changes row packing/indexing and T changes kernel batch shapes and boundaries. A strict bitwise comparison is not an authorized acceptance rule when batching changes arithmetic or scheduling order. Record exact equality where it is a true invariant (input IDs/hashes, expected route/counter coverage where exposed, session capacities, no missing or duplicate token/route rows); measure numeric differences in tensors and distribution outputs rather than presuming bit identity.
+
+At both T values verify all input positions are consumed exactly once in increasing order; no expert row aliases beyond its compact T-row region; compact bounds and IDs map back to the original top-k route; no uninitialized/missing row contributes to combine; and final residual/output rows match their token positions. Exercise full and short tail chunks.
+
+Preserve, compare and report the evolving state owners:
+
+- GDN recurrence and convolution state must persist across chunk boundaries; do not reset or duplicate a token update.
+- QSA host K/V codes/scales and page-map/residency state must append every token once, then resolve causal selections before attention. Check page crossings, selected IDs/tails/dead/pooled/block position and final session state. Chunk sizes 6144/8192 are multiples of the current four-cell page, but the 64K tail and final single-token path still cross different boundaries; do not treat aligned chunk starts as proof of parity.
+- PLE token-history/`ple_prev` advances once for each applicable token, including chunk starts; no preload bypass unless it is identically fixed and validated in both arms. Its pair of PLE buffers scale with T, while persistent PLE history is session state.
+- MTP has its own state/KV capacity and is sensitive to callback segmentation. Initially isolate main Prefill with MTP disabled or fixed to the same validated mode. Then test the intended MTP-enabled path separately: each final prefill chunk must supply the correctly aligned next-token IDs once, draft/fallback behavior must be recorded, and final MTP state/output must be compared. Do not infer MTP's capacity or streaming behavior from main QSA.
+
+## Quality evaluation: no invented threshold
+
+N=64 and N=2,049 OFF/ON strict-16-ID/LP5 parity is useful short-prefix evidence only. The six-root T6144 diagnostic is in progress and remains the current owner; no result from it was read here. R289/R299 find no public quantitative simple-intermediate-store quality result on the exact target; R291 recommends paired fixed-token continuation evaluation, and R294/R297 correct that stock LOGPOS only records verifier-window tokens, not an entire batched Prefill. The Qwen 3.8 report's qualitative “almost no loss” statement for a residual storage variant supplies no numeric allowance for this compact scratch or chunk-size change.
+
+After the current diagnostics close, evaluate a matched matrix: (1) T6144 OFF vs T6144 ON to isolate compact mode at one T; (2) T6144 ON vs T8192 ON to isolate chunk-size/scheduling change; optionally (3) T8192 OFF to identify an interaction. Preserve one exact long context and exact completion targets per root. Keep ordinary generation/output-ID targets as reported regressions, not as a proxy for full probability quality. Use a teacher-forced paired continuation harness that executes the real 64K batched Prefill path, captures the first distribution after the final prompt token is processed, scores the first fixed completion token there, then feeds that reference token and scores every subsequent fixed token in bounded verifier windows. Assert the full target-position set is covered exactly once. Report per-root and per-position NLL/log-probability, top-1/top-K agreement and margins, KL or equivalent distribution distances, plus the exact generated IDs under fixed decoding. Stock LOGPOS alone is insufficient for the batched portion; verify the hook provenance for the eventual binary or use an explicitly reviewed harness.
+
+For tensor/state quality, retain same-position final residuals and GDN/QSA/PLE/MTP state snapshots for paired arms and report finite/NaN/Inf checks, max absolute, RMS, p99.9 and relative error by root/position/state owner; retain no raw captures beyond the named active comparison consumer. For ability coverage, use fixed code completion, long-context retrieval (including multiple keys and tail-position needles), and representative reasoning continuations, report per-example/seed outcomes, and keep timing separate. Establish same-arm repeatability/noise first. The user has not authorized a numerical NLL/KL/error or task-score cutoff here; do not make one up. Ask for or apply an explicit existing allowance before calling any numeric delta acceptable. Until that threshold exists, publish measurements and pass/fail only the exact protocol, finite-state, lifecycle, and specified ID targets, leaving quality acceptance unresolved.
+
+## Full-context boundary remains separate and required
+
+A successful 64K run does not qualify 262,144-cell occupancy. Preserve `max_context=262144` now and keep a separate future full-context gate: submit exactly 262,144 prompt IDs with no output room if needed; batch the first 262,143 conditioning rows and process the final prompt token at position 262,143 through the single-token path; prove physical cell 262,143 is written/read and no access exceeds the allocation. Do not change to a 262,143-token cap, substitute a shorter prompt, or assume configured KV backing shrinks with prompt length. The corrected machine total is 125.716 GiB; no fit or quality conclusion follows from that label or the byte table. Full 262,144 candidate qualification remains unqualified.
+
+## Reference artifacts
+
+- Current source: pinned clean 39e395a task worktree; source hash recorded above.
+- Source-request delta method: `research-xe-prefill-8192-owned-byte-delta-low-precision-candidates-round135-v1.txt` (earlier source; use its method, not its noncompact total).
+- Compact shared-region lifetime analysis: `research-xe-post-compact-gdn-qsa-owned-arena-reduction-round143-v1.txt` (earlier source-pinned formula context).
+- Precision and experiment limits: `round289-intermediate-storage-precision-quality-evidence.txt`, `round291-residual-storage-local-quality-experiment.txt`, `round294-logpos-batched-prefill-quality-path-eligibility.txt`, `round297-compiled-generator-quality-hook-provenance-correction.txt`, `round299-lowprecision-intermediate-published-quality-evidence.txt`, and `round301-dm-lowprecision-store-candidate-contract.txt`.
+- Memory correction: `bench/results/2026-10-11-xe-quiet32k-balanced-campaign/main-memory-traffic-correction-v3.json` in the docs worktree.
