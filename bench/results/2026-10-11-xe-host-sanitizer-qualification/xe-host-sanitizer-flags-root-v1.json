@@ -1,0 +1,90 @@
+{
+  "active": false,
+  "complete": false,
+  "passed": false,
+  "commands": [
+    {
+      "label": "sycl-driver",
+      "argv": [
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+        "-fsycl",
+        "-std=c++20",
+        "-O2",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-Xarch_host",
+        "-fsanitize=address,undefined",
+        "-Xarch_host",
+        "-fno-omit-frame-pointer",
+        "-###",
+        "-c",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-host-sanitizer-flags-v1/probe.cpp",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-host-sanitizer-flags-root-v1/sycl.o"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib"
+      },
+      "started_utc": "2026-10-10T21:09:29.248056+00:00",
+      "wall_seconds": 90,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1085696,
+          "start_ticks": 1533337,
+          "sid": 1085696,
+          "pgid": 1085696
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 15333.369547819,
+      "pid": 1085696,
+      "spawn_return_monotonic": 15333.371778612,
+      "direct_identity": {
+        "pid": 1085696,
+        "state": "R",
+        "ppid": 1085691,
+        "pgid": 1085696,
+        "sid": 1085696,
+        "start_ticks": 1533337,
+        "rss_bytes": 589824
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 31981568,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-10T21:09:29.389873+00:00",
+      "elapsed_seconds": 0.14160138299848768,
+      "logs": {
+        "sycl-driver.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "sycl-driver.stderr": {
+          "bytes": 9645,
+          "sha256": "b7bd729cb5d4a5d34555cf71d03a4754ef5224d9c850216c42d6b0e238e8455b"
+        }
+      }
+    }
+  ],
+  "gpu_executed": false,
+  "model_executed": false,
+  "controller_sha256": "fe880402318960ea90a985c9e919a178a7f6ebf572371c7f6a2c411f9d2f485d",
+  "source_sha256": "2404e4f9ecd84ad50f4724f9a5f659b659d8f870006a256eb76aa18513224642",
+  "references": [
+    "https://clang.llvm.org/docs/ClangCommandLineReference.html"
+  ],
+  "scope": "Compiler driver actual host-only sanitizers, no execution of any compiled code",
+  "compiler_receipt_sha256": "3f1c3741f6b09b78377064a2b993b558a52b1b95ff30f5eb016ea8c6342d9e3a",
+  "error": "RuntimeError('actual host sanitizer args')"
+}

@@ -1,0 +1,60 @@
+{
+  "registry_version": 117,
+  "created_utc": "2026-10-11T01:37:06.517927+00:00",
+  "registry_format": "incremental; follow previous_committed_registry for earlier reports",
+  "research_completed": 485,
+  "previous_committed_registry": {
+    "path": "bench/results/2026-10-11-parallel-round93/report-registry-v116.json",
+    "sha256": "df3533a62b014b68f5f5e32f5b8910eb85ba4e1ec18259f09a5da971c1e694cb",
+    "reports": 482
+  },
+  "reports": [
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round366-xe-full-context-probe-evidence-and-admission-review.txt",
+      "archive": "bench/results/2026-10-11-parallel-round94/round366-xe-full-context-probe-evidence-and-admission-review.txt",
+      "sha256": "a43d29a597037b184caf6dfa01e6655b82c5c35efdf836fec8d95d071e299336",
+      "bytes": 12086,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "qualification": "Completed source/report only; no new GPU/model/full262144 proof"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round368-xe-source-llvm-minimal-gpu-parity-selection.txt",
+      "archive": "bench/results/2026-10-11-parallel-round94/round368-xe-source-llvm-minimal-gpu-parity-selection.txt",
+      "sha256": "72f42f005d8cae88423c1be2669a4b4690640f0e434f127ea856947dce1f320e",
+      "bytes": 14322,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "qualification": "Completed source/report only; no new GPU/model/full262144 proof"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/implementation-xe-dense-gemm-parity-v1.txt",
+      "archive": "bench/results/2026-10-11-parallel-round94/implementation-xe-dense-gemm-parity-v1.txt",
+      "sha256": "19b2ae33f5471c052a1b3eb6583516afc775de19a2a4a9f6b72ca5723352fa97",
+      "bytes": 10153,
+      "model": "gpt-6.1-sol",
+      "read_only": false,
+      "qualification": "Completed source/report only; no new GPU/model/full262144 proof"
+    }
+  ],
+  "new_reports": [
+    "round366-xe-full-context-probe-evidence-and-admission-review.txt",
+    "round368-xe-source-llvm-minimal-gpu-parity-selection.txt",
+    "implementation-xe-dense-gemm-parity-v1.txt"
+  ],
+  "recurring_research_policy": "Repeated distinct read-only Luna scopes, actual prior-report paths shared, no mid-task intervention. Main owns and serializes tests/build/GPU/cleanup.",
+  "live_agent_snapshot": {
+    "observed_utc": "2026-10-11T01:37:06.518048+00:00",
+    "R366": "completed; original report archived",
+    "R368": "completed; original report archived",
+    "dense_gemm_implementer": "completed staged source; no build/test/GPU",
+    "R369": "errored usage limit; no completed report counted; gpt-6-luna not silently replaced",
+    "required_lint_v1": "closed FAILED: existing and four added-source warnings; Main corrections pending qualification",
+    "oneMath_prepare_implementer": "gpt-6.1-sol active source-only staging; no parent edits or execution"
+  },
+  "root_review_corrections": {
+    "R368_device_selftest": "DeviceArena(..., poison=true) actually submits a 64MiB compute().memset and checked Runtime::wait. It is not a query-only or zero-device-command check. Runtime constructor marker autotuning is bypassed explicitly with STRATA_EVENT_MARK=barrier for initial checks.",
+    "R366_admission": "All effective ancestor memory.max and memory.high currently read max; host MemAvailable admission is conditionally usable on this boot. Recheck actual child cgroup/ancestors before full-context run; reject inherited dump hooks. No physical262144/restore or numerical evidence has run.",
+    "dense_gemm": "Staged test has independent CPU double oracle, full guards, beta=1 and varied-input repetitions; quantization envelope/per-type BLAS visibility limits remain. This is source review only and has not been applied or executed."
+  }
+}

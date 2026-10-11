@@ -1,0 +1,13 @@
+# ホストサニタイザーと新runtimeの資格確認
+
+修正Xe e32のfree全体ASan/UBSanビルドとCPUテストが通過した。CPUは10 PASS、AVX-512専用expert_multiはこのCPUのISA不足で1 SKIP。GPUのサニタイザー検証ではなく、private MTP、モデル数値、通常末尾・cached再利用、物理262144セルと保存復元は未検証。
+
+初回full-build v3は、通常の `-fsanitize=address,undefined` がspir64にも渡り、未対応オプションの警告をWERRORがエラーにした。CMakeのSYCL構成で `-Xarch_host` を使い、ホストだけにサニタイザーとframe pointer指定を渡すよう修正した。SHELL指定でCMakeの引数重複除去によるselectorの分離を避ける。警告を抑制する変更ではない。独立したdriver確認と実objectのASan/UBSan symbol確認v2も通過。確認レシピv1はauxiliary tripleを誤判定して失敗しており、その失敗も原本のまま残した。
+
+修正後の通常free・contrib-llvmビルドv5とCPUテストも通過。実行バイナリーは修正前のv4とそれぞれ同一SHA-256で、サニタイザー設定変更による通常バイナリーの差はない。freeは `a07869d265c9214a3fba828fee5ed4b6c15bd42aa9fb89915fc3a729c9fb722d`、contrib-llvmは `8e2b277acd1cce8f4283cb52d1c1fae0be4a2ccf904e58b4496117328c5ec0f1`。ASanバイナリーは `e216be89d102a5ea5daae7f5e6d75b5ed9902cd1d29c0421e65e1051b3e5697b`。
+
+実際に設置したソース版SYCL/UR runtimeでB570の能力照会v3が通過した。HOST_USMはあるがATOMIC_HOST_USMはない。Level Zeroのhost capability maskも3でconcurrent accessを表さない。共有system capabilityが15であることをhost controlの同時アクセス資格には流用しない。読み込んだSYCL・UR・UMFとドライバーのパス/hashを記録し、oneAPIのSYCL/UR/UMFへの混入がないことを確認した。照会はqueue/context/割り当て/kernel/modelを作らず、新しいGPU障害とdumpもなかった。
+
+64KiB・16384 wordの整数copy/kernel全数確認と、public dense GEMMの独立double oracle比較は準備のみ。dense GEMM sourceは別Solが作成し、mainが実行を管理する。必須lint v1は通常終了したがexit 1で失敗した。133件のclang-tidy診断のうち、同一行の元ソースへ対応づけできないproject側の指摘は4件で、MTP内部graph索引、数値引数変換2件、MTPテスト内の副作用だった。mainが範囲guard・checked parse・副作用の分離を修正したが、修正後の資格確認はまだ行っていない。行の対応だけではpath-sensitive指摘が既存である証明にはならない。cppcheckのVERSION macro、CMake3件も元ソースとの比較を要する。全ツールを実行しておりskipはなかった。元の失敗は書き換えていない。これらの記録は採用判断、新規速度、モデル精度の証明ではない。
+
+閉じた原本receipt、失敗、レシピ、ソースpinを保持した。成功全文ログやobject、重複runtimeはGitにコピーせず、この境界で削除は行っていない。[retention-review.json](retention-review.json)を参照。

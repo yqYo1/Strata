@@ -1,0 +1,1071 @@
+{
+  "source_base": "e32b8b0594095352365db0e140a68d5bf56d8b0f",
+  "original_log_sha256": "b03dfe20b9c05afa3500a253182b74ac63b7ceb2e1d59de692e2aec140547394",
+  "diagnostics": [
+    {
+      "path": ".tools/intel-llvm-v711/install/bin/../include/sycl/detail/spirv.hpp",
+      "line": 476,
+      "column": 10,
+      "severity": "warning",
+      "message": "The value '896' provided to the cast expression is not in the valid range of values for 'Flag' [clang-analyzer-optin.core.EnumCastOutOfRange]",
+      "unchanged_base_line": null
+    },
+    {
+      "path": ".tools/intel-llvm-v711/install/bin/../include/sycl/detail/spirv.hpp",
+      "line": 476,
+      "column": 10,
+      "severity": "warning",
+      "message": "The value '898' provided to the cast expression is not in the valid range of values for 'Flag' [clang-analyzer-optin.core.EnumCastOutOfRange]",
+      "unchanged_base_line": null
+    },
+    {
+      "path": ".tools/intel-llvm-v711/install/bin/../include/sycl/detail/spirv.hpp",
+      "line": 476,
+      "column": 10,
+      "severity": "warning",
+      "message": "The value '900' provided to the cast expression is not in the valid range of values for 'Flag' [clang-analyzer-optin.core.EnumCastOutOfRange]",
+      "unchanged_base_line": null
+    },
+    {
+      "path": ".tools/intel-llvm-v711/install/bin/../include/sycl/detail/spirv.hpp",
+      "line": 476,
+      "column": 10,
+      "severity": "warning",
+      "message": "The value '904' provided to the cast expression is not in the valid range of values for 'Flag' [clang-analyzer-optin.core.EnumCastOutOfRange]",
+      "unchanged_base_line": null
+    },
+    {
+      "path": ".tools/intel-llvm-v711/install/bin/../include/sycl/detail/spirv.hpp",
+      "line": 476,
+      "column": 10,
+      "severity": "warning",
+      "message": "The value '912' provided to the cast expression is not in the valid range of values for 'Flag' [clang-analyzer-optin.core.EnumCastOutOfRange]",
+      "unchanged_base_line": null
+    },
+    {
+      "path": "include/strata/core/expert_source.hpp",
+      "line": 215,
+      "column": 8,
+      "severity": "warning",
+      "message": "Excessive padding in 'struct strata::core::ExpertDispatch' (105 padding bytes, where 41 is optimal). Optimal fields order: act, pool, src, n_expert, layers, experts, missing, cache, cache_hits, cache_admitted, cache_refused, cache_stream, cache_fail, cache_base, cache_blob, cache_slot_off, hit_scratch, parts_out, hit_out, parts_elems, mixed, x_q8_0_hit, x_q8_0_hit_scale, d_slot, d_dst, host_res, hit_done, hit_ready, hit_late, n_hits, hit_fail, plan, pcie_split, pcie_experts, offload_entries, ms_plan, ms_actq, ms_jobs, ms_run, multi_misses, multi_entries, fail, fail_layer, fail_expert, remote, h_slot, h_dst, is_hit, jobs, act_multi, nact_multi, jobs_multi, job_of, usage, remote_count, pcie_num, decided, split_rows, hit_poke, hit_cpu_order, hit_pending, pcie_overlap, failed, consider reordering the fields or adding explicit padding members [clang-analyzer-optin.performance.Padding]",
+      "unchanged_base_line": 215
+    },
+    {
+      "path": "include/strata/core/layer.hpp",
+      "line": 209,
+      "column": 8,
+      "severity": "warning",
+      "message": "Excessive padding in 'struct strata::core::QsaState' (35 padding bytes, where 3 is optimal). Optimal fields order: k_pool, v_pool, k_q, v_q, k_scale, v_scale, k_q4, v_q4, page_table, n_pages, max_cells, n_slots, idx_pooled_rows, idx_tail, idx_dead, idx_pooled, idx_block_pos, cos_tab, sin_tab, step, attention_status, pos_dev, host_step, host_pos, host, map, kv_mode, kv_elastic, kv_int8, kv_q4, kv_hybrid, kv_rot, owns_rope, consider reordering the fields or adding explicit padding members [clang-analyzer-optin.performance.Padding]",
+      "unchanged_base_line": 209
+    },
+    {
+      "path": "include/strata/core/verify.hpp",
+      "line": 61,
+      "column": 7,
+      "severity": "warning",
+      "message": "Excessive padding in 'class strata::core::Verifier' (63 padding bytes, where 7 is optimal). Optimal fields order: ms_wait, ms_pool, ms_host, ms_commit, windows, hist_d_, skip_, slot_off_d_, bm_tick_, batch_graph_limit_, b_k_, b_steps_, b_last_, h_commitb_, m_commitb_, commitb_, tail_snap_b_, arena_b_, lb_, le_, hand_in_, hand_out_, next_, next_user_, ext_stream_, ev_done_, ev_commit_, prof_pin_, fl_k_, fl_total_, fl_since_ms_, fl_flush_ms_, fl_launch_ms_, prof_, prof_windows_, wt_, g_, ss_, head_, last_pos0_, n_vocab_, cs_, fetch_side_, commit_exec_, seg_out_, h_tok_, m_tok_, h_step_, m_step_, h_pos_, m_pos_, h_commit_, m_commit_, h_ple_, m_ple_, h_out_, m_out_, h_x_, m_x_, h_ids_, m_ids_, h_w_, m_w_, h_seq_, m_seq_, h_flag_, m_flag_, h_flagA_, m_flagA_, h_flagB_, m_flagB_, commit_done_, copy_, h_plan_, m_plan_, plan_i32_, h_ymiss_, m_ymiss_, arena_, tok_, step_, pos_, commit_, ple_, emb_, R_, mixed_, bo_, inj_, inj2_, lo_, rs_, xn_, xq_, qkv_L_, h_L_, gate_L_, beta_L_, z_, y_, y_dummy_, qfull_, qcur_, kcur_, vcur_, idx_raw_L_, qidx_, scores_, attn_, attn32_, attn_scratch_, tail_snap_, sel_, logits_, w_, shared_, parts_, hit_out_, ids_, hit_slot_, hit_dst_, hit_count_, plan_, staging_, hit_xq_, nat_xq_, hit_xs_, hit_scratch_, head_mixed_, head_inj_, head_logits_, one_, ple_key_, ple_val_, sh_bf16_, sh_gate_, sh_up_, sh_g_, hist_snap_, cap_, max_blocks_, attn_scratch_floats_, df_side_, slots_, slot_sp_, prof_h_, dma_error_, commit_state_, exec_bm_, commit_bm_, bm_used_, hits_, sampling_, last_pos_b_, exec_res_, exec_, sink_, segs_, prof_sum_, hist_len_, device_, row_base_, fl_T_, max_t_, last_t_, cur_layer_, pl_prev_, brow_, last_rows_, b_out_, last_tokens_, groups_, head_sampling_, device_plan_, batch_rec_, last_batch_, b_running_, res_graph_, recording_res_, prof_on_, always_publish_, fl_active_, fl_prof_, commit_live_, pl_prestaged_, df_branch_, fetch_branch_, segmented_, split_, consider reordering the fields or adding explicit padding members [clang-analyzer-optin.performance.Padding]",
+      "unchanged_base_line": 60
+    },
+    {
+      "path": "include/strata/kernels/cpu/pool.hpp",
+      "line": 91,
+      "column": 7,
+      "severity": "warning",
+      "message": "Excessive padding in 'class strata::kernels::cpu::ExpertPool' (350 padding bytes, where 158 is optimal). Optimal fields order: stop_, host_works_, tasks_, ms_multi_gu, ms_multi_q, ms_multi_down, multi_bytes, jobs_, ms_wait_park_, ms_drain_, done_, n_, ms_repark_, wstate_, hstate_ms_, spin_before_sleep_, mjobs_, mrows_, nfmt_, parked_, njobs_, threads_, scratch_, split_, split_multi_, sleep_mu_, sleep_cv_, epoch_, hstate_, mode_, parts_a_, parts_b_, mtasks_, sleepers_, head_, host_scratch_, consider reordering the fields or adding explicit padding members [clang-analyzer-optin.performance.Padding]",
+      "unchanged_base_line": 91
+    },
+    {
+      "path": "include/strata/kernels/fused_gr.hpp",
+      "line": 27,
+      "column": 8,
+      "severity": "warning",
+      "message": "Excessive padding in 'struct strata::kernels::FusedGrArgs' (11 padding bytes, where 3 is optimal). Optimal fields order: R, R_out, bo_prev, inj_prev, w_norm, w_down, w_up, w_inject, lo, rs, inject_out, mixed, q8_down, q8_up, eps, apply, consider reordering the fields or adding explicit padding members [clang-analyzer-optin.performance.Padding]",
+      "unchanged_base_line": 27
+    },
+    {
+      "path": "include/strata/kernels/kv_stream.hpp",
+      "line": 83,
+      "column": 92,
+      "severity": "warning",
+      "message": "performing an implicit widening conversion to type 'uint64_t' (aka 'unsigned long') of a multiplication performed in type 'int' [bugprone-implicit-widening-of-multiplication-result]",
+      "unchanged_base_line": 83
+    },
+    {
+      "path": "src/core/mtp.cpp",
+      "line": 670,
+      "column": 27,
+      "severity": "warning",
+      "message": "result of multiplication in type 'int' is used as a pointer offset after an implicit widening conversion to type 'ptrdiff_t' [bugprone-implicit-widening-of-multiplication-result]",
+      "unchanged_base_line": 560
+    },
+    {
+      "path": "src/core/mtp.cpp",
+      "line": 751,
+      "column": 71,
+      "severity": "warning",
+      "message": "result of multiplication in type 'int' is used as a pointer offset after an implicit widening conversion to type 'ptrdiff_t' [bugprone-implicit-widening-of-multiplication-result]",
+      "unchanged_base_line": 641
+    },
+    {
+      "path": "src/core/mtp.cpp",
+      "line": 754,
+      "column": 95,
+      "severity": "warning",
+      "message": "result of multiplication in type 'int' is used as a pointer offset after an implicit widening conversion to type 'ptrdiff_t' [bugprone-implicit-widening-of-multiplication-result]",
+      "unchanged_base_line": 644
+    },
+    {
+      "path": "src/core/mtp.cpp",
+      "line": 757,
+      "column": 72,
+      "severity": "warning",
+      "message": "result of multiplication in type 'int' is used as a pointer offset after an implicit widening conversion to type 'ptrdiff_t' [bugprone-implicit-widening-of-multiplication-result]",
+      "unchanged_base_line": 647
+    },
+    {
+      "path": "src/core/mtp.cpp",
+      "line": 936,
+      "column": 9,
+      "severity": "warning",
+      "message": "Out of bound access to memory preceding the field 'prefill_dev_exec_' [clang-analyzer-security.ArrayBound]",
+      "unchanged_base_line": null
+    },
+    {
+      "path": "src/core/session.cpp",
+      "line": 224,
+      "column": 22,
+      "severity": "warning",
+      "message": "an assignment within an 'if' condition is bug-prone [bugprone-assignment-in-if-condition]",
+      "unchanged_base_line": 223
+    },
+    {
+      "path": "src/core/session.cpp",
+      "line": 243,
+      "column": 17,
+      "severity": "warning",
+      "message": "string concatenation results in allocation of unnecessary temporary strings; consider using 'operator+=' or 'string::append()' instead [performance-inefficient-string-concatenation]",
+      "unchanged_base_line": 242
+    },
+    {
+      "path": "src/core/session.cpp",
+      "line": 814,
+      "column": 13,
+      "severity": "warning",
+      "message": "string concatenation results in allocation of unnecessary temporary strings; consider using 'operator+=' or 'string::append()' instead [performance-inefficient-string-concatenation]",
+      "unchanged_base_line": 797
+    },
+    {
+      "path": "src/core/session.cpp",
+      "line": 863,
+      "column": 14,
+      "severity": "warning",
+      "message": "an assignment within an 'if' condition is bug-prone [bugprone-assignment-in-if-condition]",
+      "unchanged_base_line": 840
+    },
+    {
+      "path": "src/core/session.cpp",
+      "line": 878,
+      "column": 20,
+      "severity": "warning",
+      "message": "string concatenation results in allocation of unnecessary temporary strings; consider using 'operator+=' or 'string::append()' instead [performance-inefficient-string-concatenation]",
+      "unchanged_base_line": 855
+    },
+    {
+      "path": "src/core/session.cpp",
+      "line": 894,
+      "column": 20,
+      "severity": "warning",
+      "message": "string concatenation results in allocation of unnecessary temporary strings; consider using 'operator+=' or 'string::append()' instead [performance-inefficient-string-concatenation]",
+      "unchanged_base_line": 871
+    },
+    {
+      "path": "src/core/session.cpp",
+      "line": 932,
+      "column": 20,
+      "severity": "warning",
+      "message": "'atoi' used to convert a string to an integer value, but function will not report conversion errors; consider using 'strtol' instead [bugprone-unchecked-string-to-number-conversion]",
+      "unchanged_base_line": 905
+    },
+    {
+      "path": "src/core/verify.cpp",
+      "line": 369,
+      "column": 17,
+      "severity": "warning",
+      "message": "an assignment within an 'if' condition is bug-prone [bugprone-assignment-in-if-condition]",
+      "unchanged_base_line": 360
+    },
+    {
+      "path": "src/core/verify.cpp",
+      "line": 482,
+      "column": 112,
+      "severity": "warning",
+      "message": "'atoi' used to convert a string to an integer value, but function will not report conversion errors; consider using 'strtol' instead [bugprone-unchecked-string-to-number-conversion]",
+      "unchanged_base_line": 471
+    },
+    {
+      "path": "src/core/verify.cpp",
+      "line": 858,
+      "column": 45,
+      "severity": "warning",
+      "message": "result of multiplication in type 'int' is used as a pointer offset after an implicit widening conversion to type 'ptrdiff_t' [bugprone-implicit-widening-of-multiplication-result]",
+      "unchanged_base_line": 847
+    },
+    {
+      "path": "src/core/verify.cpp",
+      "line": 885,
+      "column": 65,
+      "severity": "warning",
+      "message": "result of multiplication in type 'int' is used as a pointer offset after an implicit widening conversion to type 'ptrdiff_t' [bugprone-implicit-widening-of-multiplication-result]",
+      "unchanged_base_line": 874
+    },
+    {
+      "path": "src/core/verify.cpp",
+      "line": 934,
+      "column": 84,
+      "severity": "warning",
+      "message": "result of multiplication in type 'int' is used as a pointer offset after an implicit widening conversion to type 'ptrdiff_t' [bugprone-implicit-widening-of-multiplication-result]",
+      "unchanged_base_line": 923
+    },
+    {
+      "path": "src/core/verify.cpp",
+      "line": 936,
+      "column": 69,
+      "severity": "warning",
+      "message": "result of multiplication in type 'int' is used as a pointer offset after an implicit widening conversion to type 'ptrdiff_t' [bugprone-implicit-widening-of-multiplication-result]",
+      "unchanged_base_line": 925
+    },
+    {
+      "path": "src/core/verify.cpp",
+      "line": 940,
+      "column": 68,
+      "severity": "warning",
+      "message": "result of multiplication in type 'int' is used as a pointer offset after an implicit widening conversion to type 'ptrdiff_t' [bugprone-implicit-widening-of-multiplication-result]",
+      "unchanged_base_line": 929
+    },
+    {
+      "path": "src/core/verify.cpp",
+      "line": 944,
+      "column": 95,
+      "severity": "warning",
+      "message": "result of multiplication in type 'int' is used as a pointer offset after an implicit widening conversion to type 'ptrdiff_t' [bugprone-implicit-widening-of-multiplication-result]",
+      "unchanged_base_line": 933
+    },
+    {
+      "path": "src/core/verify.cpp",
+      "line": 1473,
+      "column": 23,
+      "severity": "warning",
+      "message": "result of multiplication in type 'int' is used as a pointer offset after an implicit widening conversion to type 'ptrdiff_t' [bugprone-implicit-widening-of-multiplication-result]",
+      "unchanged_base_line": 1443
+    },
+    {
+      "path": "src/kernels/xe/elementwise.cpp",
+      "line": 34,
+      "column": 27,
+      "severity": "warning",
+      "message": "narrowing conversion from 'size_t' (aka 'unsigned long') to signed type 'int64_t' (aka 'long') is implementation-defined [bugprone-narrowing-conversions]",
+      "unchanged_base_line": 34
+    },
+    {
+      "path": "src/kernels/xe/elementwise.cpp",
+      "line": 37,
+      "column": 26,
+      "severity": "warning",
+      "message": "narrowing conversion from 'unsigned int' to signed type 'int' is implementation-defined [bugprone-narrowing-conversions]",
+      "unchanged_base_line": 37
+    },
+    {
+      "path": "src/kernels/xe/elementwise.cpp",
+      "line": 51,
+      "column": 27,
+      "severity": "warning",
+      "message": "narrowing conversion from 'size_t' (aka 'unsigned long') to signed type 'int64_t' (aka 'long') is implementation-defined [bugprone-narrowing-conversions]",
+      "unchanged_base_line": 51
+    },
+    {
+      "path": "src/kernels/xe/elementwise.cpp",
+      "line": 90,
+      "column": 33,
+      "severity": "warning",
+      "message": "narrowing conversion from 'size_t' (aka 'unsigned long') to signed type 'int64_t' (aka 'long') is implementation-defined [bugprone-narrowing-conversions]",
+      "unchanged_base_line": 90
+    },
+    {
+      "path": "src/kernels/xe/elementwise.cpp",
+      "line": 90,
+      "column": 68,
+      "severity": "warning",
+      "message": "narrowing conversion from 'size_t' (aka 'unsigned long') to signed type 'int64_t' (aka 'long') is implementation-defined [bugprone-narrowing-conversions]",
+      "unchanged_base_line": 90
+    },
+    {
+      "path": "src/kernels/xe/verify_kernels.cpp",
+      "line": 88,
+      "column": 36,
+      "severity": "warning",
+      "message": "result of multiplication in type 'int' is used as a pointer offset after an implicit widening conversion to type 'ptrdiff_t' [bugprone-implicit-widening-of-multiplication-result]",
+      "unchanged_base_line": 94
+    },
+    {
+      "path": "src/kernels/xe/verify_kernels.cpp",
+      "line": 120,
+      "column": 9,
+      "severity": "warning",
+      "message": "result of multiplication in type 'int' is used as a pointer offset after an implicit widening conversion to type 'ptrdiff_t' [bugprone-implicit-widening-of-multiplication-result]",
+      "unchanged_base_line": 126
+    },
+    {
+      "path": "src/kernels/xe/verify_kernels.cpp",
+      "line": 156,
+      "column": 35,
+      "severity": "warning",
+      "message": "result of multiplication in type 'int' is used as a pointer offset after an implicit widening conversion to type 'ptrdiff_t' [bugprone-implicit-widening-of-multiplication-result]",
+      "unchanged_base_line": 162
+    },
+    {
+      "path": "src/kernels/xe/verify_kernels.cpp",
+      "line": 339,
+      "column": 32,
+      "severity": "warning",
+      "message": "performing an implicit widening conversion to type 'typename std::enable_if_t<(1 == 1), size_t>' (aka 'unsigned long') of a multiplication performed in type 'int' [bugprone-implicit-widening-of-multiplication-result]",
+      "unchanged_base_line": 345
+    },
+    {
+      "path": "src/kernels/xe/verify_kernels.cpp",
+      "line": 388,
+      "column": 65,
+      "severity": "warning",
+      "message": "performing an implicit widening conversion to type 'size_t' (aka 'unsigned long') of a multiplication performed in type 'int' [bugprone-implicit-widening-of-multiplication-result]",
+      "unchanged_base_line": 394
+    },
+    {
+      "path": "src/kernels/xe/verify_kernels.cpp",
+      "line": 843,
+      "column": 26,
+      "severity": "warning",
+      "message": "narrowing conversion from 'unsigned int' to signed type 'int' is implementation-defined [bugprone-narrowing-conversions]",
+      "unchanged_base_line": 871
+    },
+    {
+      "path": "src/kernels/xe/verify_kernels.cpp",
+      "line": 992,
+      "column": 26,
+      "severity": "warning",
+      "message": "performing an implicit widening conversion to type 'const size_t' (aka 'const unsigned long') of a multiplication performed in type 'int' [bugprone-implicit-widening-of-multiplication-result]",
+      "unchanged_base_line": 1020
+    },
+    {
+      "path": "src/kernels/xe/verify_kernels.cpp",
+      "line": 1163,
+      "column": 74,
+      "severity": "warning",
+      "message": "performing an implicit widening conversion to type 'size_t' (aka 'unsigned long') of a multiplication performed in type 'int' [bugprone-implicit-widening-of-multiplication-result]",
+      "unchanged_base_line": 1191
+    },
+    {
+      "path": "src/kernels/xe/verify_kernels.cpp",
+      "line": 1165,
+      "column": 23,
+      "severity": "warning",
+      "message": "result of multiplication in type 'int' is used as a pointer offset after an implicit widening conversion to type 'ptrdiff_t' [bugprone-implicit-widening-of-multiplication-result]",
+      "unchanged_base_line": 1193
+    },
+    {
+      "path": "src/prefill/prefill.cpp",
+      "line": 602,
+      "column": 74,
+      "severity": "warning",
+      "message": "'atoi' used to convert a string to an integer value, but function will not report conversion errors; consider using 'strtol' instead [bugprone-unchecked-string-to-number-conversion]",
+      "unchanged_base_line": 576
+    },
+    {
+      "path": "src/prefill/prefill.cpp",
+      "line": 669,
+      "column": 18,
+      "severity": "warning",
+      "message": "an assignment within an 'if' condition is bug-prone [bugprone-assignment-in-if-condition]",
+      "unchanged_base_line": 643
+    },
+    {
+      "path": "src/prefill/prefill.cpp",
+      "line": 1183,
+      "column": 58,
+      "severity": "warning",
+      "message": "performing an implicit widening conversion to type 'int64_t' (aka 'long') of a multiplication performed in type 'int' [bugprone-implicit-widening-of-multiplication-result]",
+      "unchanged_base_line": 1151
+    },
+    {
+      "path": "src/prefill/prefill.cpp",
+      "line": 1724,
+      "column": 61,
+      "severity": "warning",
+      "message": "'atoll' used to convert a string to an integer value, but function will not report conversion errors; consider using 'strtoll' instead [bugprone-unchecked-string-to-number-conversion]",
+      "unchanged_base_line": 1658
+    },
+    {
+      "path": "src/prefill/prefill.cpp",
+      "line": 2257,
+      "column": 36,
+      "severity": "warning",
+      "message": "narrowing conversion from 'int64_t' (aka 'long') to signed type 'int32_t' (aka 'int') is implementation-defined [bugprone-narrowing-conversions]",
+      "unchanged_base_line": 2187
+    },
+    {
+      "path": "src/prefill/prefill.cpp",
+      "line": 2439,
+      "column": 27,
+      "severity": "warning",
+      "message": "performing an implicit widening conversion to type 'int64_t' (aka 'long') of a multiplication performed in type 'int' [bugprone-implicit-widening-of-multiplication-result]",
+      "unchanged_base_line": 2366
+    },
+    {
+      "path": "src/program/generate.cpp",
+      "line": 207,
+      "column": 8,
+      "severity": "warning",
+      "message": "Excessive padding in 'struct (anonymous namespace)::Options' (143 padding bytes, where 7 is optimal). Optimal fields order: max_new, max_context, rope_scale, rope_freq_base, rope_freq_scale, yarn_orig_ctx, yarn_ext_factor, yarn_attn_factor, yarn_beta_fast, yarn_beta_slow, seed, logits_stride, ple_row_cache, ple_delay_us, kv_resident, resident_gib, expert_profile_save_min, vram_segment_mib, prefill_chunk, prefill_until, mtp_window, pcie_frac, spec_min_p, conversation_cache_mib, conversation_cache_min_free_mib, conversation_save_mib, conversation_save_hours, session_min_free_mib, prompt_cache_every, prompt_cache_root, turn_token, tail_role_token, short_read, tokens, native_dense_gguf, eos_ids, cvec_files, pack, rope_scaling, dump_logits, ple_gguf, native_head_gguf, native_preset, ple_io, embd_gguf, kv, dump_residual, dump_mixed, dump_layers, dump_halves, dump_routing, shared_expert_arena, expert_cache_remote_placement, expert_profile, expert_profile_save, dump_final_r, spec_oracle, spec_follow, window_hashes, mtp, pcie_mode, layer_split, split_device, conversation_save, full_context_terminal, top_k, top_p, temperature, ple_inflight, kv_grow, pool_workers, pool_tasks, expert_cache, vram_reserve_mib, vram_reserve_later_mib, prefill_experts, spec, batch, batch_groups, batch_mtp, spec_corrupt, adapt_every, adapt_decay, adapt_async, adapt_swaps, prompt_cache, conversation_cache_slots, conversation_save_checkpoints, pipeline_windows, suffix_draft, mtp_max_t, lookup_chain, lookup_chain_min, cvec_first, cvec_last, cvec_mode, cvec_single, batch_cpu_split, expert_cache_remote, full_context_probe, greedy, no_ple, stream_token, check_logits, gr_fp32_activations, gr_native_mmvf, native_bf16, native_bf16_extra, native_ple_key, native_moe_combine, native_gdn, native_flash_attn_short, native_qsa_indexer, native_qsa, native_rope, native_ple_postops, native_router, cpu_oracle_q8_0, ple_sync_submit, no_capture, no_pool, sync_every_layer, stage_timing, graph_only, gpu_only_full, no_host_worker, mmap_experts, resident_cpu_experts, resident_pin, coupled_draft, expert_cache_cpu_order, expert_cache_per_layer, no_hit_poke, gpu_stages, stats, shared_late, keep_canonical, no_token_graph, no_fused_gr, no_fast_attn, no_publish_kernel, no_fused_gdn, no_fast_select, vram_reserve_given, vram_elastic, prefill_auto, no_split_rows, no_prefill_borrow, stop_eos, spec_split, serve, vision, conversation_save_compress, prompt_cache_tail, short_read_given, mtp_hnorm_stream, consider reordering the fields or adding explicit padding members [clang-analyzer-optin.performance.Padding]",
+      "unchanged_base_line": 203
+    },
+    {
+      "path": "src/program/generate.cpp",
+      "line": 1509,
+      "column": 47,
+      "severity": "warning",
+      "message": "narrowing conversion from 'size_t' (aka 'unsigned long') to signed type 'difference_type' (aka 'long') is implementation-defined [bugprone-narrowing-conversions]",
+      "unchanged_base_line": 1235
+    },
+    {
+      "path": "src/program/generate.cpp",
+      "line": 2192,
+      "column": 47,
+      "severity": "warning",
+      "message": "'atoll' used to convert a string to an integer value, but function will not report conversion errors; consider using 'strtoll' instead [bugprone-unchecked-string-to-number-conversion]",
+      "unchanged_base_line": null
+    },
+    {
+      "path": "src/program/generate.cpp",
+      "line": 2193,
+      "column": 34,
+      "severity": "warning",
+      "message": "'atoll' used to convert a string to an integer value, but function will not report conversion errors; consider using 'strtoll' instead [bugprone-unchecked-string-to-number-conversion]",
+      "unchanged_base_line": null
+    },
+    {
+      "path": "src/program/generate.cpp",
+      "line": 2205,
+      "column": 55,
+      "severity": "warning",
+      "message": "'atoll' used to convert a string to an integer value, but function will not report conversion errors; consider using 'strtoll' instead [bugprone-unchecked-string-to-number-conversion]",
+      "unchanged_base_line": 1905
+    },
+    {
+      "path": "src/program/generate.cpp",
+      "line": 2206,
+      "column": 44,
+      "severity": "warning",
+      "message": "'atoi' used to convert a string to an integer value, but function will not report conversion errors; consider using 'strtol' instead [bugprone-unchecked-string-to-number-conversion]",
+      "unchanged_base_line": 1906
+    },
+    {
+      "path": "src/program/generate.cpp",
+      "line": 2207,
+      "column": 52,
+      "severity": "warning",
+      "message": "'atof' used to convert a string to a floating-point value, but function will not report conversion errors; consider using 'strtod' instead [bugprone-unchecked-string-to-number-conversion]",
+      "unchanged_base_line": 1907
+    },
+    {
+      "path": "src/program/generate.cpp",
+      "line": 2208,
+      "column": 64,
+      "severity": "warning",
+      "message": "'atof' used to convert a string to a floating-point value, but function will not report conversion errors; consider using 'strtod' instead [bugprone-unchecked-string-to-number-conversion]",
+      "unchanged_base_line": 1908
+    },
+    {
+      "path": "src/program/generate.cpp",
+      "line": 2226,
+      "column": 60,
+      "severity": "warning",
+      "message": "'atoll' used to convert a string to an integer value, but function will not report conversion errors; consider using 'strtoll' instead [bugprone-unchecked-string-to-number-conversion]",
+      "unchanged_base_line": 1926
+    },
+    {
+      "path": "src/program/generate.cpp",
+      "line": 2227,
+      "column": 58,
+      "severity": "warning",
+      "message": "'atoi' used to convert a string to an integer value, but function will not report conversion errors; consider using 'strtol' instead [bugprone-unchecked-string-to-number-conversion]",
+      "unchanged_base_line": 1927
+    },
+    {
+      "path": "src/program/generate.cpp",
+      "line": 2228,
+      "column": 58,
+      "severity": "warning",
+      "message": "'atof' used to convert a string to a floating-point value, but function will not report conversion errors; consider using 'strtod' instead [bugprone-unchecked-string-to-number-conversion]",
+      "unchanged_base_line": 1928
+    },
+    {
+      "path": "src/program/generate.cpp",
+      "line": 2231,
+      "column": 56,
+      "severity": "warning",
+      "message": "'atoll' used to convert a string to an integer value, but function will not report conversion errors; consider using 'strtoll' instead [bugprone-unchecked-string-to-number-conversion]",
+      "unchanged_base_line": 1931
+    },
+    {
+      "path": "src/program/generate.cpp",
+      "line": 2259,
+      "column": 58,
+      "severity": "warning",
+      "message": "'atoi' used to convert a string to an integer value, but function will not report conversion errors; consider using 'strtol' instead [bugprone-unchecked-string-to-number-conversion]",
+      "unchanged_base_line": 1959
+    },
+    {
+      "path": "src/program/generate.cpp",
+      "line": 2273,
+      "column": 51,
+      "severity": "warning",
+      "message": "'atoi' used to convert a string to an integer value, but function will not report conversion errors; consider using 'strtol' instead [bugprone-unchecked-string-to-number-conversion]",
+      "unchanged_base_line": 1973
+    },
+    {
+      "path": "src/program/generate.cpp",
+      "line": 2275,
+      "column": 76,
+      "severity": "warning",
+      "message": "'atoi' used to convert a string to an integer value, but function will not report conversion errors; consider using 'strtol' instead [bugprone-unchecked-string-to-number-conversion]",
+      "unchanged_base_line": 1975
+    },
+    {
+      "path": "src/program/generate.cpp",
+      "line": 2276,
+      "column": 76,
+      "severity": "warning",
+      "message": "'atoi' used to convert a string to an integer value, but function will not report conversion errors; consider using 'strtol' instead [bugprone-unchecked-string-to-number-conversion]",
+      "unchanged_base_line": 1976
+    },
+    {
+      "path": "src/program/generate.cpp",
+      "line": 2277,
+      "column": 76,
+      "severity": "warning",
+      "message": "'atoi' used to convert a string to an integer value, but function will not report conversion errors; consider using 'strtol' instead [bugprone-unchecked-string-to-number-conversion]",
+      "unchanged_base_line": 1977
+    },
+    {
+      "path": "src/program/generate.cpp",
+      "line": 2291,
+      "column": 55,
+      "severity": "warning",
+      "message": "'atoll' used to convert a string to an integer value, but function will not report conversion errors; consider using 'strtoll' instead [bugprone-unchecked-string-to-number-conversion]",
+      "unchanged_base_line": 1991
+    },
+    {
+      "path": "src/program/generate.cpp",
+      "line": 2295,
+      "column": 60,
+      "severity": "warning",
+      "message": "'atoll' used to convert a string to an integer value, but function will not report conversion errors; consider using 'strtoll' instead [bugprone-unchecked-string-to-number-conversion]",
+      "unchanged_base_line": 1995
+    },
+    {
+      "path": "src/program/generate.cpp",
+      "line": 2298,
+      "column": 42,
+      "severity": "warning",
+      "message": "'atoi' used to convert a string to an integer value, but function will not report conversion errors; consider using 'strtol' instead [bugprone-unchecked-string-to-number-conversion]",
+      "unchanged_base_line": 1998
+    },
+    {
+      "path": "src/program/generate.cpp",
+      "line": 2314,
+      "column": 58,
+      "severity": "warning",
+      "message": "'atoi' used to convert a string to an integer value, but function will not report conversion errors; consider using 'strtol' instead [bugprone-unchecked-string-to-number-conversion]",
+      "unchanged_base_line": 2014
+    },
+    {
+      "path": "src/program/generate.cpp",
+      "line": 2318,
+      "column": 54,
+      "severity": "warning",
+      "message": "'atoll' used to convert a string to an integer value, but function will not report conversion errors; consider using 'strtoll' instead [bugprone-unchecked-string-to-number-conversion]",
+      "unchanged_base_line": 2018
+    },
+    {
+      "path": "src/program/generate.cpp",
+      "line": 2319,
+      "column": 52,
+      "severity": "warning",
+      "message": "'atof' used to convert a string to a floating-point value, but function will not report conversion errors; consider using 'strtod' instead [bugprone-unchecked-string-to-number-conversion]",
+      "unchanged_base_line": 2019
+    },
+    {
+      "path": "src/program/generate.cpp",
+      "line": 2320,
+      "column": 56,
+      "severity": "warning",
+      "message": "'atoi' used to convert a string to an integer value, but function will not report conversion errors; consider using 'strtol' instead [bugprone-unchecked-string-to-number-conversion]",
+      "unchanged_base_line": 2020
+    },
+    {
+      "path": "src/program/generate.cpp",
+      "line": 2323,
+      "column": 54,
+      "severity": "warning",
+      "message": "'atof' used to convert a string to a floating-point value, but function will not report conversion errors; consider using 'strtod' instead [bugprone-unchecked-string-to-number-conversion]",
+      "unchanged_base_line": 2023
+    },
+    {
+      "path": "src/program/generate.cpp",
+      "line": 2332,
+      "column": 70,
+      "severity": "warning",
+      "message": "'atoi' used to convert a string to an integer value, but function will not report conversion errors; consider using 'strtol' instead [bugprone-unchecked-string-to-number-conversion]",
+      "unchanged_base_line": 2032
+    },
+    {
+      "path": "src/program/generate.cpp",
+      "line": 2358,
+      "column": 84,
+      "severity": "warning",
+      "message": "'atoll' used to convert a string to an integer value, but function will not report conversion errors; consider using 'strtoll' instead [bugprone-unchecked-string-to-number-conversion]",
+      "unchanged_base_line": 2058
+    },
+    {
+      "path": "src/program/generate.cpp",
+      "line": 2359,
+      "column": 82,
+      "severity": "warning",
+      "message": "'atoll' used to convert a string to an integer value, but function will not report conversion errors; consider using 'strtoll' instead [bugprone-unchecked-string-to-number-conversion]",
+      "unchanged_base_line": 2059
+    },
+    {
+      "path": "src/program/generate.cpp",
+      "line": 2360,
+      "column": 54,
+      "severity": "warning",
+      "message": "'atoll' used to convert a string to an integer value, but function will not report conversion errors; consider using 'strtoll' instead [bugprone-unchecked-string-to-number-conversion]",
+      "unchanged_base_line": 2060
+    },
+    {
+      "path": "src/program/generate.cpp",
+      "line": 2361,
+      "column": 64,
+      "severity": "warning",
+      "message": "'atoll' used to convert a string to an integer value, but function will not report conversion errors; consider using 'strtoll' instead [bugprone-unchecked-string-to-number-conversion]",
+      "unchanged_base_line": 2061
+    },
+    {
+      "path": "src/program/generate.cpp",
+      "line": 2363,
+      "column": 42,
+      "severity": "warning",
+      "message": "'atoll' used to convert a string to an integer value, but function will not report conversion errors; consider using 'strtoll' instead [bugprone-unchecked-string-to-number-conversion]",
+      "unchanged_base_line": 2063
+    },
+    {
+      "path": "src/program/generate.cpp",
+      "line": 2367,
+      "column": 70,
+      "severity": "warning",
+      "message": "'atoi' used to convert a string to an integer value, but function will not report conversion errors; consider using 'strtol' instead [bugprone-unchecked-string-to-number-conversion]",
+      "unchanged_base_line": 2067
+    },
+    {
+      "path": "src/program/generate.cpp",
+      "line": 2368,
+      "column": 64,
+      "severity": "warning",
+      "message": "'atoi' used to convert a string to an integer value, but function will not report conversion errors; consider using 'strtol' instead [bugprone-unchecked-string-to-number-conversion]",
+      "unchanged_base_line": 2068
+    },
+    {
+      "path": "src/program/generate.cpp",
+      "line": 2396,
+      "column": 28,
+      "severity": "warning",
+      "message": "'atoi' used to convert a string to an integer value, but function will not report conversion errors; consider using 'strtol' instead [bugprone-unchecked-string-to-number-conversion]",
+      "unchanged_base_line": 2096
+    },
+    {
+      "path": "src/program/generate.cpp",
+      "line": 2397,
+      "column": 27,
+      "severity": "warning",
+      "message": "'atoi' used to convert a string to an integer value, but function will not report conversion errors; consider using 'strtol' instead [bugprone-unchecked-string-to-number-conversion]",
+      "unchanged_base_line": 2097
+    },
+    {
+      "path": "src/program/generate.cpp",
+      "line": 2408,
+      "column": 66,
+      "severity": "warning",
+      "message": "'atoi' used to convert a string to an integer value, but function will not report conversion errors; consider using 'strtol' instead [bugprone-unchecked-string-to-number-conversion]",
+      "unchanged_base_line": 2108
+    },
+    {
+      "path": "src/program/generate.cpp",
+      "line": 2417,
+      "column": 56,
+      "severity": "warning",
+      "message": "'atoi' used to convert a string to an integer value, but function will not report conversion errors; consider using 'strtol' instead [bugprone-unchecked-string-to-number-conversion]",
+      "unchanged_base_line": 2117
+    },
+    {
+      "path": "src/program/generate.cpp",
+      "line": 2515,
+      "column": 35,
+      "severity": "warning",
+      "message": "'atoll' used to convert a string to an integer value, but function will not report conversion errors; consider using 'strtoll' instead [bugprone-unchecked-string-to-number-conversion]",
+      "unchanged_base_line": 2190
+    },
+    {
+      "path": "src/program/generate.cpp",
+      "line": 2612,
+      "column": 20,
+      "severity": "warning",
+      "message": "Value stored to 'helpers' during its initialization is never read [clang-analyzer-deadcode.DeadStores]",
+      "unchanged_base_line": 2287
+    },
+    {
+      "path": "src/program/generate.cpp",
+      "line": 3510,
+      "column": 23,
+      "severity": "warning",
+      "message": "an assignment within an 'if' condition is bug-prone [bugprone-assignment-in-if-condition]",
+      "unchanged_base_line": 3180
+    },
+    {
+      "path": "src/program/generate.cpp",
+      "line": 3550,
+      "column": 13,
+      "severity": "warning",
+      "message": "Opened stream never closed. Potential resource leak [clang-analyzer-unix.Stream]",
+      "unchanged_base_line": 3220
+    },
+    {
+      "path": "src/program/generate.cpp",
+      "line": 3736,
+      "column": 25,
+      "severity": "warning",
+      "message": "an assignment within an 'if' condition is bug-prone [bugprone-assignment-in-if-condition]",
+      "unchanged_base_line": 3406
+    },
+    {
+      "path": "src/program/generate.cpp",
+      "line": 3737,
+      "column": 31,
+      "severity": "warning",
+      "message": "an assignment within an 'if' condition is bug-prone [bugprone-assignment-in-if-condition]",
+      "unchanged_base_line": 3407
+    },
+    {
+      "path": "src/program/generate.cpp",
+      "line": 4344,
+      "column": 66,
+      "severity": "warning",
+      "message": "'atoi' used to convert a string to an integer value, but function will not report conversion errors; consider using 'strtol' instead [bugprone-unchecked-string-to-number-conversion]",
+      "unchanged_base_line": 4007
+    },
+    {
+      "path": "src/program/generate.cpp",
+      "line": 5802,
+      "column": 76,
+      "severity": "warning",
+      "message": "casting (double + 0.5) to integer leads to incorrect rounding; consider using lround (#include <cmath>) instead [bugprone-incorrect-roundings]",
+      "unchanged_base_line": 5461
+    },
+    {
+      "path": "src/program/generate.cpp",
+      "line": 5802,
+      "column": 82,
+      "severity": "warning",
+      "message": "casting (double + 0.5) to integer leads to incorrect rounding; consider using lround (#include <cmath>) instead [bugprone-incorrect-roundings]",
+      "unchanged_base_line": 5461
+    },
+    {
+      "path": "src/program/generate.cpp",
+      "line": 6501,
+      "column": 54,
+      "severity": "warning",
+      "message": "casting (double + 0.5) to integer leads to incorrect rounding; consider using lround (#include <cmath>) instead [bugprone-incorrect-roundings]",
+      "unchanged_base_line": 6160
+    },
+    {
+      "path": "src/program/generate.cpp",
+      "line": 6501,
+      "column": 60,
+      "severity": "warning",
+      "message": "casting (double + 0.5) to integer leads to incorrect rounding; consider using lround (#include <cmath>) instead [bugprone-incorrect-roundings]",
+      "unchanged_base_line": 6160
+    },
+    {
+      "path": "src/program/generate.cpp",
+      "line": 6518,
+      "column": 28,
+      "severity": "warning",
+      "message": "an assignment within an 'if' condition is bug-prone [bugprone-assignment-in-if-condition]",
+      "unchanged_base_line": 6177
+    },
+    {
+      "path": "src/program/generate.cpp",
+      "line": 7095,
+      "column": 36,
+      "severity": "warning",
+      "message": "'atoi' used to convert a string to an integer value, but function will not report conversion errors; consider using 'strtol' instead [bugprone-unchecked-string-to-number-conversion]",
+      "unchanged_base_line": 6754
+    },
+    {
+      "path": "src/program/generate.cpp",
+      "line": 7125,
+      "column": 35,
+      "severity": "warning",
+      "message": "repeated branch body in conditional chain [bugprone-branch-clone]",
+      "unchanged_base_line": 6784
+    },
+    {
+      "path": "src/program/generate.cpp",
+      "line": 8024,
+      "column": 51,
+      "severity": "warning",
+      "message": "'atoi' used to convert a string to an integer value, but function will not report conversion errors; consider using 'strtol' instead [bugprone-unchecked-string-to-number-conversion]",
+      "unchanged_base_line": 7667
+    },
+    {
+      "path": "src/program/generate.cpp",
+      "line": 8029,
+      "column": 58,
+      "severity": "warning",
+      "message": "'atoi' used to convert a string to an integer value, but function will not report conversion errors; consider using 'strtol' instead [bugprone-unchecked-string-to-number-conversion]",
+      "unchanged_base_line": 7672
+    },
+    {
+      "path": "src/program/generate.cpp",
+      "line": 8031,
+      "column": 76,
+      "severity": "warning",
+      "message": "'atoi' used to convert a string to an integer value, but function will not report conversion errors; consider using 'strtol' instead [bugprone-unchecked-string-to-number-conversion]",
+      "unchanged_base_line": 7674
+    },
+    {
+      "path": "src/program/generate.cpp",
+      "line": 8434,
+      "column": 70,
+      "severity": "warning",
+      "message": "incrementing and referencing a variable in a complex condition can cause unintended side-effects due to C++'s order of evaluation, consider moving the modification outside of the condition to avoid misunderstandings [bugprone-inc-dec-in-conditions]",
+      "unchanged_base_line": 8077
+    },
+    {
+      "path": "src/program/generate.cpp",
+      "line": 8840,
+      "column": 58,
+      "severity": "warning",
+      "message": "casting (double + 0.5) to integer leads to incorrect rounding; consider using lround (#include <cmath>) instead [bugprone-incorrect-roundings]",
+      "unchanged_base_line": 8483
+    },
+    {
+      "path": "src/program/generate.cpp",
+      "line": 8840,
+      "column": 64,
+      "severity": "warning",
+      "message": "casting (double + 0.5) to integer leads to incorrect rounding; consider using lround (#include <cmath>) instead [bugprone-incorrect-roundings]",
+      "unchanged_base_line": 8483
+    },
+    {
+      "path": "src/program/generate.cpp",
+      "line": 9785,
+      "column": 55,
+      "severity": "warning",
+      "message": "narrowing conversion from 'int64_t' (aka 'long') to 'double' [bugprone-narrowing-conversions]",
+      "unchanged_base_line": 9424
+    },
+    {
+      "path": "src/program/generate.cpp",
+      "line": 9785,
+      "column": 66,
+      "severity": "warning",
+      "message": "narrowing conversion from 'int64_t' (aka 'long') to 'double' [bugprone-narrowing-conversions]",
+      "unchanged_base_line": 9424
+    },
+    {
+      "path": "src/program/generate.cpp",
+      "line": 9788,
+      "column": 85,
+      "severity": "warning",
+      "message": "narrowing conversion from 'int64_t' (aka 'long') to 'double' [bugprone-narrowing-conversions]",
+      "unchanged_base_line": 9427
+    },
+    {
+      "path": "src/program/generate.cpp",
+      "line": 9989,
+      "column": 51,
+      "severity": "warning",
+      "message": "narrowing conversion from 'int64_t' (aka 'long') to 'double' [bugprone-narrowing-conversions]",
+      "unchanged_base_line": 9626
+    },
+    {
+      "path": "src/program/generate.cpp",
+      "line": 10000,
+      "column": 35,
+      "severity": "warning",
+      "message": "either cast from 'int64_t' (aka 'long') to 'long long' is ineffective, or there is loss of precision before the conversion [bugprone-misplaced-widening-cast]",
+      "unchanged_base_line": 9637
+    },
+    {
+      "path": "src/program/generate.cpp",
+      "line": 10504,
+      "column": 34,
+      "severity": "warning",
+      "message": "casting (double + 0.5) to integer leads to incorrect rounding; consider using lround (#include <cmath>) instead [bugprone-incorrect-roundings]",
+      "unchanged_base_line": 10129
+    },
+    {
+      "path": "src/program/generate.cpp",
+      "line": 10514,
+      "column": 54,
+      "severity": "warning",
+      "message": "an assignment within an 'if' condition is bug-prone [bugprone-assignment-in-if-condition]",
+      "unchanged_base_line": 10139
+    },
+    {
+      "path": "src/program/generate.cpp",
+      "line": 10805,
+      "column": 105,
+      "severity": "warning",
+      "message": "either cast from 'int64_t' (aka 'long') to 'long long' is ineffective, or there is loss of precision before the conversion [bugprone-misplaced-widening-cast]",
+      "unchanged_base_line": 10425
+    },
+    {
+      "path": "src/program/generate.cpp",
+      "line": 10866,
+      "column": 56,
+      "severity": "warning",
+      "message": "narrowing conversion from 'int64_t' (aka 'long') to 'double' [bugprone-narrowing-conversions]",
+      "unchanged_base_line": 10485
+    },
+    {
+      "path": "src/program/generate.cpp",
+      "line": 10866,
+      "column": 78,
+      "severity": "warning",
+      "message": "narrowing conversion from 'int64_t' (aka 'long') to 'double' [bugprone-narrowing-conversions]",
+      "unchanged_base_line": 10485
+    },
+    {
+      "path": "src/program/generate.cpp",
+      "line": 10866,
+      "column": 100,
+      "severity": "warning",
+      "message": "narrowing conversion from 'int64_t' (aka 'long') to 'double' [bugprone-narrowing-conversions]",
+      "unchanged_base_line": 10485
+    },
+    {
+      "path": "src/program/generate.cpp",
+      "line": 10867,
+      "column": 41,
+      "severity": "warning",
+      "message": "narrowing conversion from 'int64_t' (aka 'long') to 'double' [bugprone-narrowing-conversions]",
+      "unchanged_base_line": 10486
+    },
+    {
+      "path": "src/program/generate.cpp",
+      "line": 10883,
+      "column": 59,
+      "severity": "warning",
+      "message": "'atoll' used to convert a string to an integer value, but function will not report conversion errors; consider using 'strtoll' instead [bugprone-unchecked-string-to-number-conversion]",
+      "unchanged_base_line": 10502
+    },
+    {
+      "path": "src/program/generate.cpp",
+      "line": 10889,
+      "column": 91,
+      "severity": "warning",
+      "message": "narrowing conversion from 'int64_t' (aka 'long') to 'double' [bugprone-narrowing-conversions]",
+      "unchanged_base_line": 10508
+    },
+    {
+      "path": "src/program/generate.cpp",
+      "line": 10890,
+      "column": 43,
+      "severity": "warning",
+      "message": "narrowing conversion from 'int64_t' (aka 'long') to 'double' [bugprone-narrowing-conversions]",
+      "unchanged_base_line": 10509
+    },
+    {
+      "path": "src/program/generate.cpp",
+      "line": 10890,
+      "column": 72,
+      "severity": "warning",
+      "message": "narrowing conversion from 'int64_t' (aka 'long') to 'double' [bugprone-narrowing-conversions]",
+      "unchanged_base_line": 10509
+    },
+    {
+      "path": "src/program/generate.cpp",
+      "line": 10892,
+      "column": 53,
+      "severity": "warning",
+      "message": "narrowing conversion from 'int64_t' (aka 'long') to 'double' [bugprone-narrowing-conversions]",
+      "unchanged_base_line": 10511
+    },
+    {
+      "path": "src/program/generate.cpp",
+      "line": 10895,
+      "column": 43,
+      "severity": "warning",
+      "message": "narrowing conversion from 'int64_t' (aka 'long') to 'double' [bugprone-narrowing-conversions]",
+      "unchanged_base_line": 10514
+    },
+    {
+      "path": "src/program/generate.cpp",
+      "line": 10895,
+      "column": 69,
+      "severity": "warning",
+      "message": "narrowing conversion from 'int64_t' (aka 'long') to 'double' [bugprone-narrowing-conversions]",
+      "unchanged_base_line": 10514
+    },
+    {
+      "path": "src/program/generate.cpp",
+      "line": 10895,
+      "column": 95,
+      "severity": "warning",
+      "message": "narrowing conversion from 'int64_t' (aka 'long') to 'double' [bugprone-narrowing-conversions]",
+      "unchanged_base_line": 10514
+    },
+    {
+      "path": "src/program/generate.cpp",
+      "line": 10896,
+      "column": 42,
+      "severity": "warning",
+      "message": "narrowing conversion from 'int64_t' (aka 'long') to 'double' [bugprone-narrowing-conversions]",
+      "unchanged_base_line": 10515
+    },
+    {
+      "path": "src/program/generate.cpp",
+      "line": 10899,
+      "column": 76,
+      "severity": "warning",
+      "message": "narrowing conversion from 'int64_t' (aka 'long') to 'double' [bugprone-narrowing-conversions]",
+      "unchanged_base_line": 10518
+    },
+    {
+      "path": "src/program/generate.cpp",
+      "line": 11066,
+      "column": 57,
+      "severity": "warning",
+      "message": "either cast from 'int64_t' (aka 'long') to 'long long' is ineffective, or there is loss of precision before the conversion [bugprone-misplaced-widening-cast]",
+      "unchanged_base_line": 10685
+    },
+    {
+      "path": "tools/test_mtp_completion.cpp",
+      "line": 28,
+      "column": 37,
+      "severity": "warning",
+      "message": "incrementing and referencing a variable in a complex condition can cause unintended side-effects due to C++'s order of evaluation, consider moving the modification outside of the condition to avoid misunderstandings [bugprone-inc-dec-in-conditions]",
+      "unchanged_base_line": null
+    }
+  ],
+  "classification": "Identical source-line mapping only; does not prove absence of new path-sensitive findings"
+}
