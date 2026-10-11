@@ -1,0 +1,58 @@
+# Production Prefill planner API consumer — source-only implementation v1
+
+Date: 2026-10-12 (Asia/Tokyo). Private source and read-only dependency audit only. No helper compilation/execution, test, import/AST, Runtime/GPU/model launch, device/process/service query, install, cleanup or Git operation was performed by this agent. Main owns compilation, qualification, execution, cleanup and archival. No launch of this helper is authorized in the current boundary. Actual planner API measurement remains OPEN.
+
+## Private artifacts and source identities
+
+B: /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007
+Private source: B/xe-prefill-emb-ple-planner-source-v1/planner_api_consumer.cpp
+Source SHA-256: e36c404cfe883ce98b394721522aead7c7f6fc06181104384051fc0ca0a69c5f
+Report: B/research-20261009/implementation-prefill-real-planner-api-consumer-v1.txt
+
+No repository/CMake/active worktree source was changed by this subtask. The helper contains the new XeStrata SPDX copyright and LGPL-3.0-or-later identifier. Its named later consumer is Main's supervised Runtime-backed production planner API measurement, after a separately authorized GPU/runtime boundary; it is not a CPU-only executable or a current passing test fixture. Main may retire it after preserving this source/dependency evidence if that future consumer is abandoned.
+
+Immutable header audit worktree W: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-xe-host-issuer-ledger-20261012, supplied base 337255086026f6eef21a861c297183d05a5f7a22.
+Header SHA-256:
+- include/strata/core/layout.hpp: fdebc55612d559de4e516a5f2c33ebde6fb36e414adb45e42edbe200006e8b95
+- include/strata/core/session.hpp: cf31a4c17ba0e29ca70f52ad435740d8cf59f11571e5e559b953af79b1e5ac02
+- include/strata/core/layer.hpp: 93b34132db393b1a804c892ec7f7a1c1d4aeddd4f2fd885b464ddecfc93dbfb6
+- include/strata/prefill/prefill.hpp: c3db75e2c4d672504c42b3f6fb31e1ddbf6740e2584573cfea11494d75fa14ae
+
+Main supplied current production src/prefill/prefill.cpp SHA-256 37040e63755a49c669e90d53eec0a7c5f2b1bb5eb6c227ba60d6afe7da6449bc after adding Runtime device/context equality admission. Main also supplied source-review closure 2588, free build binary SHA-256 55199c6bbda7bf60662801796ce3e02d88ef6a5cb31b015cd36d9d5bb9ad046c, free build PASS, 14 CPU test PASS and one AVX512 skip; contrib-llvm was running at dispatch. These are Main's supplied receipts, not checks independently performed by this agent, and do not establish this helper's compilation/execution or any planner result.
+
+## Real API use and frozen-setting observation
+
+The helper includes the actual layout.hpp, session.hpp and prefill.hpp headers. It invokes linked strata::prefill::Prefill::bytes_needed directly for T=3,256,8192,10240,12288. No allocator/counting implementation, expected-size formula, stubbed function, copied planner, fake queue property, kernel or model loop is provided.
+
+Each fresh process accepts STRATA_PREFILL_EMB_PLE_ALIAS absent or exactly 0,1,01,true,2 and requires STRATA_PREFILL_BF16X2 exactly 0,1,2. Unsupported values return status 2 before the planner. Main must launch the six alias cohorts crossed with the three BF16X2 settings as separate processes so production static settings start fresh.
+
+For each T the helper calls the actual API under the original requested alias string, changes the process environment to the opposite effective request (exact 1 becomes 0; every other allowed original becomes 1), calls the same API again, prints complete before/after sizes and frozen_unchanged, then restores the exact original presence/value. The first mutation immediately follows the first T3 API call. Every later T therefore also compares the original environment spelling against its opposite in the same already frozen process. Exit 0 requires all five before/after sizes equal; changed plans return 1. Environment mutation/restoration failure or a C++ exception returns 2. These outcomes have not been executed or observed.
+
+The output header records alias string/presence/opposite, BF16X2, explicit ring, primary QSA capacity/mode/index, k and canonical geometry; each sample records T and both uint64 requested sizes. Frozen_setting_all summarizes the five actual API comparisons. It does not report an effective device alias or init success. Expected subtraction T*2560*4+256 belongs only to Main's across-fresh-process comparator and is intentionally absent from the helper. No numerical-byte/GPU parity is inferred from equal planner sizes.
+
+## Exact plain state inputs and default expert layout
+
+The helper creates only ModelGeometry g{}, QsaState qsa{}, and SessionState ss{} on the host stack, sets qsa.max_cells=262144 and ss.qsa_states=&qsa, and keeps these objects alive through all calls. It does not construct Prefill, call session_init, open a pack, load expert layout, initialize a model or create a queue.
+
+ModelGeometry defaults in layout.hpp give N2560, HC4, LR320, E512, n_head24, n_head_kv2, head_dim256, idx_q_heads4 and idx_key_dim128. SessionState defaults give k10 and qsa_ord0=0; qsa_primary() returns qsa_ord0 directly (session.hpp:41-52). Thus primary state lookup resolves to the one live stack QsaState. qsa.max_cells alone supplies the capacity used by bytes_needed. ss.max_cells stays its default 0; no claim is made that this describes a fully allocated inference session. QsaState defaults have kv_mode0, all device pointers null, zero page/slot counts and no destructor with GPU resource ownership (layer.hpp:209 onward). SessionState and their member buffers contain state descriptions, not RAII allocation/Runtime initialization. take_stage returns immediately for kv_mode!=1 (prefill.cpp:501-503 in W), so no actual streamed KV staging is requested.
+
+The process-wide expert_layout is initialized as plain ExpertLayout g_layout (src/kernels/cpu/expert_layout.cpp:17-20); ExpertLayout defaults native=false, n_layers0, n_expert=NE, empty fmt/offset/bytes vectors, max_blob=BLOB, total0 (include/strata/kernels/cpu/expert_layout.hpp:21-39). The helper never changes it. This is default canonical Q2_0 request accounting, including its real default blob/ring contribution, not the qualified mixed-IQ model's loaded native pack layout and not a loaded production arena. No native-pack full request size is inferred.
+
+## Two implicit Runtime paths: CPU-only execution is unavailable
+
+Direct helper code contains no Runtime, SYCL queue, GPU or allocator API call, but actual production bytes_needed is not currently Runtime-free:
+
+1. bytes_needed calls moe_set_bytes, whose first action obtains mmq_plan. mmq_plan evaluates `mmq::built() && lay.native && (env == nullptr || std::atoi(env) != 0)` (W src/prefill/prefill.cpp:603-608; identical expression read in the current active worktree). C++ evaluates the left operand first, so even default native=false or STRATA_PREFILL_MMQ=0 does not bypass mmq::built(). src/prefill/moe_mmq.cpp:19 implements built() as kernels::iq_mmq_usable(core::Runtime::get().compute()). Runtime::get may create its context/ordered queues/watchdog and its queue-mark capability measurements (src/core/device.cpp:185 onward). The helper cannot meet a no-Runtime launch contract while calling the unchanged actual planner.
+2. bytes_needed also calls ring_slots for its expert staging takes. If STRATA_PREFILL_RING is absent, ring_slots accesses Runtime::at(dev).device() and device_info(dev).total_bytes (W src/prefill/prefill.cpp:159-175), using current_device and a cached PerDevice report. This occurs before the small-T return chooses STAGE, so even T3 would not avoid the query. The helper requires exact STRATA_PREFILL_RING=16 before any API call and preserves it across all cohorts. That suppresses this second query only; it cannot suppress the independent MMQ Runtime probe above.
+
+The helper prints a Runtime-backed-launch warning before the first actual API call. This warning does not turn an unauthorized launch into an authorized one. At this boundary only source preparation and read-only dependency analysis are complete; no execution is authorized. Main will leave actual planner measurement OPEN and use qualified GPU-owner allocation admission later rather than mislabeling this as a CPU-only planner pass. Setting MMQ=0, setting ring16, or confirming a canonical layout alone does not remove the MMQ probe.
+
+Alternative for future separately reviewed source work only: reorder MMQ admission so conditions that do not require device information (nonnative layout or explicit MMQ disable) short-circuit before mmq::built(), and provide an explicit ring override. This would change when Runtime side effects/failures occur and therefore requires a new source diff/hash, rebuild/relink, dependency review and affected validation before any CPU-only claim. Native enabled paths must retain the real capability decision; defaults, model route and device support must not silently change. No reorder, override implementation, stub or production edit was made here during Main's active qualification.
+
+## Future Main-only consumer and limits
+
+If Main later authorizes a supervised Runtime-backed measurement, it can compile/link this source against the actual qualified strata_prefill, engine/kernels/core libraries using its known dense-parity link recipe. Record actual compiler flags, current production source/binary/dependency identities, helper binary hash, process supervision, effective allowlisted environment and all complete per-T receipts. Use the identical explicit ring16 and stable unrelated planner settings in all 18 separate cohort processes; report default canonical layout rather than native model requests. Check frozen-setting equality and perform the exact alias delta comparison across fresh processes only. No build recipe was invented or executed by this agent.
+
+Actual carve agreement, allocator/queue/device/context admission, GPU ordering, embedding/PLE bytes, loaded mixed-IQ pack full sizes, MTP/borrowed/multi-stage ownership, full-context endpoint behavior, actual fit and performance are outside this helper's measured scope. They remain unavailable here and require Main's real qualified-owner checks. Equal production planner sizes after environment mutation would prove only the frozen planner flag behavior; it would not prove device alias effectiveness or numerical equivalence.
+
+Retention: keep this compact report and source identity as source/dependency evidence. The private helper's named future Runtime-backed consumer is Main; no current measurement uses it, no raw diagnostic artifact was created, and no cleanup occurred. Main should archive this gap/source evidence and decide its later retention at the next authorized boundary.

@@ -1,0 +1,79 @@
+# R182 — exact source-lowered AOT option contract for GroupedKernel image 4
+
+Date: 2026-10-12 (Asia/Tokyo). Read-only review of the retained host ELF/SPIR-V receipts and pinned LLVM/Compute Runtime sources. No compiler, `ocloc`, query, test, build, import/AST, runtime/process/device/GPU command, Git command, cleanup, or source edit was performed. The only write is this report. This specifies a bounded host-only AOT screen for a later Main-owned run; it is not evidence of native register allocation, spills, scratch usage, runtime JIT options, invocation, or performance.
+
+## Decision
+
+The existing image 4 can be compiled as raw SPIR-V using a source-derived, target-specific `ocloc` command. The complete SYCL program-manager public build-option string for the qualified Level Zero runtime is reconstructable from the successful ELF metadata receipt and pinned LLVM/UR sources. It is **not** the raw descriptor string, and `-cl-intel-256-GRF-per-thread` alone is not an equivalent reproduction.
+
+For the recorded PCI identity `vendor=0x8086, device=0xe20c, revision=0x00`, the source-pinned Compute Runtime maps the ID/revision pair to `BMG_G21_A0`. That is a defensible offline target selector for an `ocloc` built from the supplied source. The host receipt still does not contain the runtime's `ZE_DEVICE_IP_VERSION`; PCI/revision-to-AOT-product mapping is not itself a live runtime IP receipt. The installed `/usr/bin/ocloc-26.31.1` has not been proven to be built from this Compute Runtime source or to load the production IGC binary. Therefore any later result must remain an offline AOT screen unless both binary/backend identities and the target correspondence are recorded.
+
+## Evidence bound to image 4
+
+The successful pure-host ELF metadata receipt is `/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-grouped-image-elf-metadata-root-v2/record.json`. It reports no GPU execution and no executable loading. Its selected raw image is `/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-host-issuer-offload-extract-root-v1/images/image.4`, 74,244 bytes, SHA-256 `9b768242be2fdb50c6f58954626e767d392310bf7cc6475ebed78e81cf75e514`. The linked descriptor's format value is `0` (the legal NONE format for bytes recognized by the pinned SYCL loader as SPIR-V), target is `spir64`, and selected grouped entry is `_ZTSN6strata7kernels12_GLOBAL__N_113GroupedKernelILi128ELi256ELi3EEE` / SPIR-V result ID 2549. The receipt ties this descriptor/image to final executable SHA-256 `fd241348db019ec0985072e55dc27c08ac0cfd7962072847905e391e73ab83fd`.
+
+The descriptor records compile options exactly as:
+
+    -ftarget-register-alloc-mode=pvc:-ze-intel-enable-auto-large-GRF-mode -foffload-fp32-prec-div -foffload-fp32-prec-sqrt
+
+Its `SYCL/misc properties` record `sycl-grf-size=256` and `optLevel=3`. The separate receipt records `SYCL_PROGRAM_COMPILE_OPTIONS`, `SYCL_PROGRAM_APPEND_COMPILE_OPTIONS`, and the link-option override/append variables as null for the qualified runtime. The selected grouped entry's semantic is `num-thread-per-eu 4`; that and the image property prove a 256-GRF request reached this linked image, not the compiler's final allocation.
+
+The original v1 ELF inspection failed because it assumed format value 2. Its FAILED receipt is retained at `xe-grouped-image-elf-metadata-root-v1/record.json`; it was a host-side parser error (`expected SYCL SPIR-V descriptor ABI`), not a compiler, device, or kernel failure. The later v2 receipt corrected the descriptor-format check and passed. Do not reuse the v1 status as evidence against image 4.
+
+## Exact Level Zero option lowering
+
+The pinned LLVM worktree supplied for this build is `/home/yayoi/ghq/github.com/intel/llvm/.worktree/toolchain-sycl-v711-b570-20261011`, source pin `504366f4b82ff00bbac7b0c956635eed8bc599d8` plus 17 archived patches. The source review gives this lowering for the **non-ESIMD Level Zero** image in the qualified configuration:
+
+1. With no `SYCL_PROGRAM_COMPILE_OPTIONS` override, `appendCompileOptionsFromImage` starts with the linked descriptor compile-options string above.
+2. Its `-ftarget-register-alloc-mode=` lowering extracts `pvc:-ze-intel-enable-auto-large-GRF-mode` and keeps the backend suffix only if the device is an Intel GPU and `(device_id & 0xFF00) == 0x0B00`. For `0xe20c`, the mask is `0xe200`, so the PVC predicate is false. This option is dropped. The PCI revision does not affect this predicate. Do not put `-ze-intel-enable-auto-large-GRF-mode` in the AOT command.
+3. Independently, the image property `sycl-grf-size=256` appends `-ze-opt-large-register-file` for the non-ESIMD path. That is the GRF-size option produced by this SYCL runtime path. The Compute Runtime constant `-cl-intel-256-GRF-per-thread` belongs to its OpenCL-facing option set; substituting it would change the recipe.
+4. `optLevel=3` becomes frontend string `-O3`. The pinned Level Zero UR adapter maps `-O1`, `-O2`, and `-O3` to the single backend option `-ze-opt-level=2`. Thus the matched Level Zero option is `-ze-opt-level=2`, not `-O3`.
+5. Each of `-foffload-fp32-prec-div` and `-foffload-fp32-prec-sqrt` is mapped by the Level Zero UR adapter to `-ze-fp32-correctly-rounded-divide-sqrt`. The current source replacement loop leaves two identical tokens, one for each descriptor option.
+6. The recorded compile-option override and append variables are null, so there are no extra application-supplied compile tokens in this receipt. Link options are empty and irrelevant to this image compile. If the runtime backend is not Level Zero, recalculate the mappings from that backend; do not reuse the string below.
+
+Therefore, the expected final public Level Zero build-options string, in source append/replacement order, is:
+
+    -ze-opt-large-register-file -ze-opt-level=2 -ze-fp32-correctly-rounded-divide-sqrt -ze-fp32-correctly-rounded-divide-sqrt
+
+This is an exact source-derived user/public option string conditional on the passed receipt and pinned source. It is not a runtime trace of `zeModuleCreate`, and it does not enumerate IGC's private/internal defaults or environment controls. The pinned `ocloc` interface separates `-options` from `-internal_options`; do not place the runtime string in `-internal_options` or add private options by guess. `ocloc` itself derives target-specific private options, so its internal-option state is another difference to record rather than silently treat as identical to JIT.
+
+## Bounded host-only AOT command for Main
+
+After Main has established a fresh private output directory and confirmed the installed tool and backend identities, the source-backed command shape is:
+
+    /usr/bin/ocloc-26.31.1 compile \
+      -file /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-host-issuer-offload-extract-root-v1/images/image.4 \
+      -spirv_input \
+      -device 0xe20c -revision_id 0x0 \
+      -options '-ze-opt-large-register-file -ze-opt-level=2 -ze-fp32-correctly-rounded-divide-sqrt -ze-fp32-correctly-rounded-divide-sqrt' \
+      -out_dir <fresh-private-output-directory>
+
+Use the exact SHA-bound image 4, not the linked host executable, `.tgtimg` container, or a reconstructed SPIR-V. Do not add `-cl-intel-256-GRF-per-thread`, the dropped PVC-only auto-GRF token, `-O3`, or guessed `-internal_options`. Keep the complete `ocloc` stdout/stderr and the generated output in the named private result directory until Main has recorded and verified hashes and metadata. No command above was run in this review.
+
+The pinned Compute Runtime source shows `-device 0xe20c -revision_id 0` resolves through its PCI-ID table: `0xe20c` is in `bmgG21DeviceIds`; `product_config.inl` associates that list with `BMG_G21_A0`; `-revision_id` is parsed as a numeric stepping and participates in `matchRevisionIdWithProductConfig`. Require the compiler log to identify the selected BMG G21 A0 target and stop on unknown/mismatched mapping. `-device bmg-g21` alone is less precise because it omits the receipt's PCI/revision identity.
+
+Before interpreting an output, record: input SHA and size; executable/compiler SHA and reported version; exact arguments and sanitized/allowlisted relevant environment; resolved IGC full path, SHA-256 and `IGC_REVISION`; Compute Runtime/ocloc build provenance; output SHA/size; compiler status/log; and the target reported by that actual binary. Source `OclocIgcFacade` loads a product-specific IGC library when configured, otherwise `Os::igcDllName`, through the dynamic loader. For a host-only later run, capture the loader's resolved library path (for example with a narrowly retained dynamic-loader trace) and hash that exact file; the production-loaded IGC reported by Main is `/usr/local/lib/libigc.so.2.41.5+1788943183`, SHA-256 `40badd8f1ee80ac844a8947f5e91e5654fbcd851caefe343b0e5ec4ce4d1b123`. If ocloc resolves another path/hash or IGC revision, report an AOT backend difference. Do not infer the library from `ldd` on ocloc alone: this source uses an explicit dynamic load.
+
+## Device target and runtime-IP boundary
+
+Pinned Compute Runtime source revision supplied for this review is `724697d73af22685918fcad4575c6bc267589ca5`. Its `offline_compiler.cpp` and `ocloc_arg_helper.cpp` define the ID/revision resolution described above. The linked host receipt contributes PCI vendor/device/revision only (`8086: e20c`, rev `00`) and explicitly says that PCI metadata is not a GPU runtime IP query. The SYCL descriptor's `spir64` is the input architecture, not the BMG native target.
+
+Thus `0xe20c + revision 0 -> BMG_G21_A0` is enough to construct the pinned-source offline compiler target. It does not prove that the live runtime reports the same `ZE_DEVICE_IP_VERSION`, or that `/usr/bin/ocloc-26.31.1` contains the same mapping code. Before calling the AOT build target-matched, Main still needs the runtime-reported device IP value from an already authorized device receipt, plus the actual installed ocloc/Compute Runtime provenance. If the live IP receipt disagrees or is absent, keep the candidate target-qualified only by PCI/revision and leave exact runtime target equivalence OPEN. `SUPPORTED_DEVICES` is a support-list query, not the needed live IP evidence.
+
+## Native resource metadata and interpretation
+
+If the compiler emits an Intel device binary/Zebin, inspect its ELF `.ze_info` and correlate the kernel record by the exact GroupedKernel entry name. The pinned Compute Runtime Zebin schema/decoder names execution-environment `grf_count`, `spill_size`, `private_size`, and per-thread memory-buffer records; the decoder maps `grf_count` to `numGrfRequired`, `spill_size` to `spillFillScratchMemorySize`, and per-thread scratch buffer records to per-thread scratch sizes. Record the literal presence/absence, values, units, kernel name and binary hash for each field. `grf_count` is the backend-reported kernel resource metadata; the requested GRF property alone is not an observed native allocation.
+
+A missing `.ze_info` field is **unreported**, not zero. The decoder has default-initialized metadata members, so a post-decode zero/default cannot establish that the compiler explicitly emitted a zero. Only a field explicitly present with value zero in the compiler output can be recorded as zero for that AOT artifact. If `.ze_info`, the kernel record, or the resource keys are absent, report those items as unavailable; do not turn an empty log, a missing spill diagnostic, or an AOT success status into “no spill/no scratch.” Even present values characterize only this exact AOT output, options, target and loaded IGC, not the runtime JIT kernel.
+
+The installed compiler's emitted `.ze_info` shape and whether it preserves the grouped entry/resource fields remain open until a Main-owned host compile produces an output. The output may fail to compile or may omit resource fields; either is a valid AOT-screen result, not a runtime failure. No native GRF count, spill, scratch, occupancy, invocation or speed claim is made here.
+
+## Source and report lineage
+
+The new R180/R181 reports reviewed in `/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009` were `research-extracted-grouped-grf-option-lowering-round180-v1.txt`, `round180-grouped-onemkl-metadata-address-space-contract.txt`, `research-prefill-fp32-buffer-capacity-candidate-round180-v1.txt`, `research-prefill-10240-chunk-source-admission-round181-v1.txt`, `research-prefill-emb-ple-alias-lifetime-admission-round181-v1.txt`, and `round181-other-engine-intel-small-row-moe-gemm-candidates.txt`. The R180 option-lowering report's earlier conclusion remains a source chain, not a proven exact AOT recipe; this R182 refines its public options after incorporating the new successful ELF descriptor receipt and the actual PCI filter. R181 prefill reports are unrelated to AOT admission. The original failed and new passed host ELF receipts are distinguished above.
+
+Primary source references, read from the supplied pins (no Git verification was performed):
+
+- Intel LLVM `sycl/source/detail/program_manager/program_manager.cpp` (`appendCompileOptionsFromImage`, GRF property, opt-level and per-target option lowering); `unified-runtime/source/adapters/level_zero/platform.cpp` (frontend/backend option mappings); `unified-runtime/source/adapters/opencl/platform.cpp` (different mappings, confirming backend sensitivity).
+- Compute Runtime `shared/offline_compiler/source/offline_compiler.cpp`, `ocloc_arg_helper.cpp`, `ocloc_igc_facade.cpp`, `shared/source/helpers/product_config_helper.cpp`, `shared/source/dll/devices/product_config_base.inl`, and `shared/source/xe2_hpg_core/bmg/definitions/device_ids_configs_bmg.h` (CLI, ID/revision resolution, IGC loader and product mapping).
+- Compute Runtime `shared/source/compiler_interface/compiler_options.h` (OpenCL large-GRF spelling), `shared/source/device_binary_format/zebin/zeinfo.h`, `zeinfo_decoder.cpp`, and `zebin_elf.h` (resource metadata names and consumer semantics).

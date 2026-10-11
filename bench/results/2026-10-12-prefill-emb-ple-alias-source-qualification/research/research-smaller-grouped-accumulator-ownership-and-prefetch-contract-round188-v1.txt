@@ -1,0 +1,78 @@
+# R188 — smaller grouped accumulator ownership and prefetch contract
+
+Date: 2026-10-12 (Asia/Tokyo). Read-only review of the pinned `xmx_gemm.cpp`, retained R176/R185/R186 reports, and Intel’s primary SYCL joint-matrix extension. No source edit, build, test, compiler/ocloc, runtime/GPU/process/device query, profiler use, Git mutation, or cleanup was performed. This report establishes source-level tile ownership and candidate legality conditions only; it does not prove compiler acceptance, device invocation, native resource use, correctness execution, or performance.
+
+## Result and correction
+
+A 16×32 output tile per subgroup can be composed from the same supported-source 8×16 FP16 A/B and FP32 accumulator matrix atoms already used by this kernel: set the accumulator-fragment counts to `SGM=2, SGN=2`, while keeping `TM=8, TN=16, TK=16`. This is a structural layout proposal; the device must still report/accept the existing 8×16×16 FP16/FP16→FP32 matrix combination and subgroup-16 execution mode. The matrix operation shapes themselves do not change.
+
+For the 64×128 workgroup candidate, this mapping requires **16 subgroups/workgroup**, because `(64/16) * (128/32) = 16`. The earlier R186 report incorrectly stated eight subgroups for this shape. Eight subgroups applies to 32×128 with 16×32 per-subgroup outputs, or to 64×128 only if each subgroup owns a 16×64 tile (which would not be the proposed two-by-two accumulator mapping). R186’s accumulator arithmetic also needs this correction: the proposed 64×128 tile has 16 subgroups, each with four accumulator matrices, rather than eight subgroups.
+
+R176’s 32×64 candidate with the same 16×32 per-subgroup shape correctly needs four subgroups. R188 does not repeat that candidate; it answers whether the larger 64×128 workgroup can safely use the smaller accumulator ownership alongside the original kernel.
+
+## Current code contract
+
+Pinned production source is the immutable worktree and revision supplied by Main: `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-xe-host-issuer-ledger-20261012`, HEAD `337255086026f6eef21a861c297183d05a5f7a22`. The reviewed file hash supplied in the task is `2d2144e7331b3dd66a2289a9c67b541b1c136332be53f31c935c9176880085d1`. Relevant template code is in `src/kernels/xe/xmx_gemm.cpp`:
+
+- Constants at lines 35–42 define the XMX atom dimensions `TM=8,TN=16,TK=16`, current subgroup fragment counts `SGM=SGN=4`, subgroup output extent `MS=32,NS=64`, prefetch step `KC=32`, and `kPrefetchRows<R>` selection over 1,2,4,8,16,32 rows.
+- `tile<E,WM,WN,PD,CM,CN,ACC>` at lines 55–117 derives `NSG_N=WN/NS`, `NSG=(WM/MS)*NSG_N`, `A_ROWS=WM/NSG`, and `B_ROWS=WN/NSG`. The computation owner for subgroup id `s` is `m0=wm0+(s/NSG_N)*MS`, `n0=wn0+(s%NSG_N)*NS`. It holds `SGM×SGN` accumulator matrices and loads/MADs/stores them in the nested i,j loops.
+- Prefetch assigns each subgroup `A_ROWS` rows from X starting at `wm0+s*A_ROWS`, and `B_ROWS` rows from W starting at `wn0+s*B_ROWS`. The loops advance by the selected `PA/PB` and issue collective `joint_matrix_prefetch<PA,KC>` / `<PB,KC>` only when the full row segment fits the active T/N and `kk<K`.
+- `tile_any` at lines 119–123 uses unchecked loads/stores only when the entire workgroup tile fits both T and N. At either edge it instantiates the checked path for both dimensions. For a column-edge tile, `bn[j]` clamps the B operand’s starting N row to `N-TN` because the unchecked column-major matrix-B load cannot read a partial last tile; `joint_matrix_store_checked` restricts actual output writes to valid T×N coordinates.
+- `GroupedKernel` at lines 158–176 derives expert, row-tile and N-tile from workgroup id, loads `[bounds[ex], bounds[ex+1])`, returns when `tm*WM >= rows`, and then runs `tile_any` with X/Y offset to that expert’s row base. The grouped grid uses `tiles_m=ceil(max_rows/WM)`, `nN=ceil(N/WN)`, and `NSG*16` work-items per workgroup.
+- `ACC` defaults false. This initializes each C accumulator to zero with `joint_matrix_fill`; the grouped call does not read prior Y. Keep that mode and its initialization on the candidate; accumulation semantics would be a separate kernel behavior.
+- `xmx_gemm_ok` at lines 293–300 requires `N>=16`, `N%16==0`, `K>=32`, `K%32==0`, `ldy>=N`, `ldy%16==0`, and 64-byte-aligned X/W/Y. Grouped dispatch additionally requires `(w_stride*2)%64==0`. The current grouped route checks these before launching. The candidate keeps all these guards and the same FP16 inputs/weights, FP32 C/output, K-step ordering and PD=3.
+
+## Exact candidate ownership and prefetch proof
+
+The minimum safe shared-helper refactor is to make the subgroup fragment counts explicit compile-time parameters in the tile core and derive `MS=TM*SGM`, `NS=TN*SGN` there. The new grouped functor/launcher should carry those parameters as part of its distinct kernel specialization. Keep the existing `GroupedKernel<128,256,3>` entry and its current `SGM=SGN=4` instantiation through a compatibility wrapper so the existing image identity/dispatch remains intact. Do not alter or replace the original kernel while adding the candidate. This avoids changing `GemmKernel`, dense GEMM, and unrelated paths merely to express one grouped layout.
+
+For the candidate `WM=64, WN=128, SGM=2, SGN=2`:
+
+| Quantity | Derived value | Consequence |
+|---|---:|---|
+| `MS=TM*SGM`, `NS=TN*SGN` | 16, 32 | Each subgroup owns a 16×32 output patch via 2×2 8×16 accumulator matrices. |
+| `NSG_N=WN/NS` | 4 | Four subgroup columns per workgroup row strip. |
+| `NSG=(WM/MS)*NSG_N` | 16 | Workgroup has four subgroup rows by four subgroup columns. |
+| `A_ROWS=WM/NSG`, `B_ROWS=WN/NSG` | 4, 8 | Per-subgroup X and W prefetch slices. |
+| `PA=kPrefetchRows<4>`, `PB=kPrefetchRows<8>` | 4, 8 | Both are in the current helper’s documented row-size set and divide their complete row spans. |
+| Work-items/workgroup | `16*16=256` | Same workgroup size as the current 16-subgroup specialization. |
+
+Let `s` range from 0 through 15. Its output tile begins at row group `floor(s/4)` and column group `s mod 4`. Each subgroup’s two i accumulator rows cover `[16*floor(s/4), 16*floor(s/4)+15]`; its two j accumulator columns cover `[32*(s mod 4), 32*(s mod 4)+31]`. The Cartesian product of four disjoint row intervals and four disjoint column intervals partitions `[0,64)×[0,128)` exactly once. No workgroup output holes or overlap exist if these compile-time divisibilities hold.
+
+For X prefetch, `ar=wm0+4*s`, so the sixteen subgroups own contiguous row intervals `[4s,4s+3]`, which partition `[0,64)` exactly. For W prefetch, `br=wn0+8*s`, yielding `[8s,8s+7]`, which partitions `[0,128)` exactly. The row loops advance by PA=4/PB=8, so they cover each per-subgroup interval once without a residual gap or overlap. Existing `ar+r+PA<=T` and `br+r+PB<=N` guards suppress a segment that crosses a partial edge. This prefetch ownership is a cache-hint partition; computation ownership remains the 2D output mapping above, and W is intentionally reused across multiple output-row groups.
+
+The current 128×256 configuration has `SGM=SGN=4`, `MS=32,NS=64`, `NSG_N=4`, `NSG=16`, `A_ROWS=8`, `B_ROWS=16`, `PA=8`, `PB=16`. The 64×128 candidate preserves subgroup count and work-items/workgroup but covers one quarter as many outputs per workgroup; it consequently creates four times as many workgroups at equal M×N. The candidate reduces each subgroup’s accumulator matrices from 16 to 4, a fourfold decrease in accumulator elements/subgroup. This is source algebra only, not compiler register or occupancy evidence.
+
+## Compile-time admission conditions for any generalized helper
+
+The current file uses integer division in the derived tile layout without static assertions for every required divisibility. A generalized helper must reject invalid layouts instead of silently truncating subgroup coverage. At minimum, its template contract should require:
+
+1. `WM>0`, `WN>0`, `SGM>0`, `SGN>0`; `WM % (TM*SGM)==0`; and `WN % (TN*SGN)==0`. Otherwise the integer `NSG_N`/workgroup mapping can omit rows or columns.
+2. `NSG_N>0`, `NSG>0`, and exact divisions `WM % NSG == 0`, `WN % NSG == 0`. Then `NSG*A_ROWS==WM` and `NSG*B_ROWS==WN` by construction, with each prefetch partition integral.
+3. `PA` and `PB` are in the matrix-prefetch row shapes admitted by this implementation, no larger than `A_ROWS/B_ROWS`, and divide those spans. The local helper comment names 1,2,4,8,16,32. Without the divisibility check, `kPrefetchRows<R>` rounds down to the largest listed size, while the loop condition can silently leave the final remainder rows unprefetched (for example R=6 chooses 4 and omits rows 4–5). A missing prefetch segment would not omit arithmetic data, because joint_matrix_load is separate; it would invalidate the claimed full-tile prefetch partition and likely indicate an unsupported tuning layout.
+4. Maintain `N>=TN=16`, N divisible by TN, K≥KC=32 and K divisible by KC, plus all existing pointer/stride/alignment checks. `joint_matrix_prefetch` checks only `kk<K`, then asks for a full `KC`-wide shape. The divisible-K admission ensures that issued prefetches and all `k0+kk` loads fit the K extent. Do not broaden this kernel’s accepted K shapes without adding checked K-tail handling for both loads and prefetches.
+5. Require valid expert bounds: `G>0`, `max_rows>0`, bounds are monotonic with `0<=bounds[0]`, each `bounds[ex+1]-bounds[ex]` is nonnegative and no greater than `max_rows`, and X/Y row storage covers the final bound. W storage covers each expert’s `w_stride`, and the existing stride alignment condition holds. The kernel itself trusts bounds and uses them in pointer formation; the existing early return only handles tiles wholly beyond the expert’s row count, not malformed bounds or rows exceeding the host-supplied launch maximum.
+6. Keep `PD` nonnegative and the existing prefetch loop/guard behavior; hold PD=3 for an isolated accumulator-shape experiment. All subgroup collectives (matrix constructor, fill/load, prefetch, mad, store) must remain convergent. Existing `sgid`, tile coordinates, bounds, and loop counts are workgroup/subgroup-uniform; do not introduce lane-dependent conditions around collective calls.
+
+For partial M and N, `tile_any` chooses CM=CN=true whenever either workgroup edge is partial. That makes A loads checked even if only N is partial, and makes C load/store checked even if only M is partial. This can be conservative but keeps the current edge path intact. The N clamp ensures every B load starts at a valid complete 16-row tile for supported `N>=16` and N%16==0; checked store suppresses columns beyond N. The checked A path bounds row tails against per-expert `rows`. Preserve the exact checked helpers and the same host launch ceil divisions for the new tile specialization. An empty expert’s `rows=0` must early-return before tile setup; a partial final M tile must run checked loads/stores. For `max_rows` smaller than the tile, the launch still schedules one M tile; each expert with fewer rows is handled by the same early-return/tail logic.
+
+## Primary SYCL contract and its limit
+
+Intel’s primary matrix extension document is https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/experimental/sycl_ext_matrix/sycl_ext_oneapi_matrix.asciidoc . It says `joint_matrix` and `joint_matrix_mad` are optional matrix-hardware features; each device supports only specific M/N/K and type combinations, which should be checked through the matrix-combination query. It defines joint-matrix operations, including construction, fill, load, mad and store, as subgroup collective/group functions that must occur in convergent control flow. It defines `joint_matrix_prefetch` as a cooperative group prefetch of a logical Rows×Cols matrix, with the same logical shape meaning as load. These statements support keeping all lanes of each subgroup on the same tile and call sequence, and checking the hardware matrix atom separately from the higher-level workgroup tile.
+
+That SYCL document does not guarantee the exact `joint_matrix_prefetch<4,32>` or `<8,32>` forms accepted by this installed Xe2 compiler/device, nor does it specify behavior for the Intel checked-load/store wrappers used by this file. The local source already uses the row-size family and those wrappers. Exact compilation and target acceptance remain Main-owned validation; no compiler was run for this report. The primary source also does not make workgroup tile area or accumulator counts into a resource-allocation guarantee.
+
+## Smallest safe isolated implementation seam (proposal only)
+
+A compact implementation seam would be a common `tile_core<E,WM,WN,PD,SGM,SGN,CM,CN,ACC>` plus a matching `tile_any_core`, with compile-time derived dimensions and static assertions. Retain existing `tile`/`tile_any` wrappers that instantiate SGM=4,SGN=4, leaving current callers unchanged. Add a separate grouped-only functor/launcher carrying `SGM=2,SGN=2`, then instantiate the 64×128 candidate with `tiles_m=ceil(max_rows/64)`, `nN=ceil(N/128)`, and local size 16 subgroups × 16 lanes. Keep existing `GroupedKernel<128,256,3>`, its property request, backend gate, bounds input ABI, output destinations and selection behavior untouched. The new functor receives the same `grf_size<256>` and subgroup-size-16 properties, but executable-bundle preflight for the candidate needs its own exact kernel ID before any dispatch can select it. This architecture does not authorize dispatch selection; it only isolates a compileable alternate specialization for Main to validate.
+
+Before any performance comparison, source-level checks should prove the static partition identities above for both variants and verify that the launcher’s group count matches `G*ceil(max_rows/WM)*ceil(N/WN)`. Correctness tests should include M=0 and 1, M just below/at/above 16 and 64, final partial M tiles, N tails at a 16-element boundary, full N tile boundaries, and combinations where both M and N are partial; plus K minimum 32 and multiple K blocks. These are proposed test boundaries, not tests run here. Compare every product output against the unchanged baseline and preserve the existing per-chunk fault/error path. The actual model’s N values are aligned multiples (current GU N=1280 and Down N=2560), so N-tail coverage still matters for the generalized kernel contract but does not imply the current model uses it.
+
+## Evidence status
+
+- **Proved by supplied source:** current fragment ownership and prefetch formulas; existing grouped grid indexing, tail path selection, `ACC=false` initialization, and admission constraints; candidate arithmetic for `WM=64,WN=128,SGM=SGN=2`.
+- **Primary SYCL contract:** joint-matrix shapes/types are device-dependent; matrix group operations are convergent subgroup collectives; joint matrix prefetch is a cooperative logical-shape prefetch.
+- **Inference/design proposal:** parameterized helper plus a distinct grouped functor is the narrowest clean way to add the 16×32 ownership while preserving the current kernel specialization. Static assertions listed above would prevent integer-division holes and prefetch-range gaps.
+- **Unverified:** compiler acceptance and exact prefetch-shape support on the pinned Xe2 stack; resource allocation/spills; invocation; numerical equivalence; runtime speed.
+
+R185’s route uncertainty remains: image presence and source predicate checks alone do not prove that an actual B570 prompt invoked the XMX grouped branch. R186’s external Xe-Fuse/Xe-Forge tile dimensions remain source support only, not local measurements. No candidate should be dispatched or promoted from this source-only analysis.

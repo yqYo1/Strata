@@ -1,0 +1,42 @@
+# Round 182 — existing real Prefill parity and state-oracle seams
+
+Read-only source research for the proposed unchanged-FP32 Prefill `emb`/`ple_emb` storage alias. Source anchor is immutable W `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-xe-host-issuer-ledger-20261012`, HEAD `337255086026f6eef21a861c297183d05a5f7a22`. Verified source SHA-256: `src/prefill/prefill.cpp` `2922806c8b56b64e1bc20096d93c852a105ed225ff3bf9dcf113436c79964d9c`; `src/program/generate.cpp` `c9b60ef079694302dfa1f8099ddffd5375d7dae503f6edec454c1d7de3d941ee`.
+
+## Finding
+
+No existing test fixture exercises the combined Prefill lifetime/order in which the embedding input is consumed and its storage is reused for PLE. Existing component checks do not establish safety of that alias. `src/kernels/gr_parity.cpp` checks GR operations; it does not cover the Prefill producer-to-overwrite-to- PLE-consumer sequence. `src/kernels/ple_parity.cpp` has a captured GGML PLE block oracle, but is CUDA-specific (`cuda_runtime.h`) and independently validates the PLE block, not SYCL Prefill storage reuse. Thus the smallest meaningful existing *production-kernel* check for the alias is one short actual `Prefill::run` on the target SYCL backend, with real loaded model weights and the production PLE table, same prompt/position/state from clean initialization, and alias disabled/enabled. A synthetic CPU mirror or the independent block fixtures cannot answer the lifetime question. The proposed opt-in switch described in `implementation-xe-prefill-emb-ple-alias-v1.txt` is an implementation proposal without a validation result; do not describe it as committed or tested.
+
+## 32K full-vocabulary parity protocol
+
+The reusable real-output seam is native generation `--dump-logits`, driven by fixed teacher-forced oracle/follow token files (protocol recorded in round 168). Use exactly the same validated prompt and continuation files, model/artifact and all runtime options in baseline and candidate runs; fresh state each run; fixed `--prefill` (no auto), greedy sampling, no EOS termination, omit MTP so the compared rows have a single clear target path. Command shape:
+
+```
+STRATA_PREFILL_COMPACT_MOE_SCRATCH=1 STRATA_PREFILL_EMB_PLE_ALIAS=0 \
+  strata generate --spec-oracle PROMPT_AND_FOLLOW.tsv --spec-follow PROMPT_AND_FOLLOW.tsv \
+  --spec 2 --max-new N --dump-logits BASELINE.bin [same model/context/KV/prefill flags]
+
+STRATA_PREFILL_COMPACT_MOE_SCRATCH=1 STRATA_PREFILL_EMB_PLE_ALIAS=1 \
+  strata generate --spec-oracle PROMPT_AND_FOLLOW.tsv --spec-follow PROMPT_AND_FOLLOW.tsv \
+  --spec 2 --max-new N --dump-logits CANDIDATE.bin [identical model/context/KV/prefill flags]
+```
+
+The command is a template: record the exact resolved executable/build SHA, model and tokenizer/artifact hashes, prompt/follow fixture hashes and token counts, effective environment, selected prefill path/chunk sizes, and complete argv for both runs. The qualified 32768-token/T8192 record only establishes that a 262144 context with `STRATA_PREFILL_COMPACT_MOE_SCRATCH=1` and actual T=8192 was exercised; its recorded oracle is exact 16 generated IDs plus LP5. It has neither full-vocabulary logits nor a PLE/QSA/MTP state oracle, and therefore is not alias parity evidence.
+
+`--dump-logits` writes an int32 `[n_vocab, n_rows]` header followed by full float32 rows (see `generate.cpp` around dump setup at 4890 and verifier row collection around 10649). For native packs, rows begin at the final prompt token's prediction; the batched native prompt itself does not emit prefill logits. Thus this is a real full-vocabulary comparison of teacher-forced continuation rows conditioned on the prompt, not a saved tensor of every prompt-position logit. Require the expected `N` rows and exact byte length, align absolute prediction positions, check finite values, then compare every float and report max absolute/relative error and differing count. With arithmetic unchanged, demand bitwise equality unless an independently documented nondeterministic operation is shown to affect these rows; do not substitute token/LP equality for full rows.
+
+## State/debug seams and limits
+
+- GDN: `STRATA_STATE_HASH_GDN` in Prefill (`prefill.cpp` around 3060) emits per-layer low-16-bit hashes of recurrent state after prompt prefill. It is a compact regression signal, not a full state dump. The serve path has the analogous per-layer hook in `generate.cpp` around 9856.
+- QSA: `STRATA_QSA_DUMP` (`prefill.cpp` around 1834) records selected-cell indices for the last up-to-4096 positions, with per-record `{layer,pos0,T,cap}` and selected cells. It does not capture complete QSA K/V/state. `STRATA_STATE_HASH` in serve reports QSA tail/pooled/KV-related hashes in aggregate, but is a distinct serving/cache path; qualify it separately if used.
+- PLE: the serve `STRATA_STATE_HASH` aggregate includes PLE history and previous-row state. Standalone Prefill has no direct exact `emb`/`ple_emb` row dump identified here. `STRATA_PREFILL_DUMP_R` samples residual R every 64 positions in FP32; `STRATA_PREFILL_DUMP_R_ALL` writes BF16 and is not an exact-FP32 oracle. The CUDA `ple_parity` intermediate capture does not cover Prefill aliasing.
+- MTP: serve aggregate state hashing includes MTP KV and the state hash is emitted after the request path; MTP callbacks consume R separately. The native fixed-oracle test above should omit MTP, then any MTP-enabled run must be treated as a separate comparison. No direct complete standalone MTP-state dump was found.
+
+For useful state parity, capture baseline/candidate from clean sessions at identical absolute prompt extent, compare GDN hashes, QSA selected cells, and the serve aggregate (PLE and MTP included only when that exact serving route is intentionally under test). Hashes/dumps complement but do not replace complete logits. Retain only compact comparison output and hashes under the artifact-retention rules.
+
+## 262144 boundary
+
+Normal generation admission requires prompt tokens plus requested generated tokens not exceed 262144. Therefore a legal full-logit run with one predicted token has at most a 262143-token prompt; it cannot score the next-token distribution after consuming input cell 262143 under ordinary admission. The existing exact-full-context probe processes 262144 cells and checks captured/restored state, but its terminal probe token is storage/state-only and it emits no prediction logits. Treat it as an exact-capacity state gate, separate from the 32K (or <=262143 prompt) full-vocabulary oracle. Do not claim exact 262144 post-cell logits without a new explicit diagnostic protocol.
+
+## Recommendation to Main
+
+Use a short real Prefill baseline/candidate run first to isolate the lifetime change, then the fixed 32K teacher-forced continuation with full-vocabulary `--dump-logits` and state/debug captures. Separately run the existing full-context state probe at exactly 262144 cells if capacity remains in scope. Preserve all command, environment, artifact/fixture hashes, per-run status and compact comparison results. No test/build/model/GPU run or code modification was performed for this research note.

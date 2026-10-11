@@ -1,0 +1,37 @@
+# Round 183 — GDN row-bounded scratch lifetime audit
+
+Date: 2026-10-12 (Asia/Tokyo). Read-only audit of the immutable implementation worktree and retained allocation report. No source change, build, test, runtime/GPU/process query, Git operation, or cleanup was performed. This is a conditional source-capacity candidate, not an implementation or fit/performance result.
+
+## Evidence boundary
+
+Implementation source: `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-xe-host-issuer-ledger-20261012`, supplied HEAD `337255086026f6eef21a861c297183d05a5f7a22`. Allocation baseline: `research-prefill-full-allocation-ledger-round179-v1.txt`; R180's FP32 capacity candidate establishes the same T=12288 design point. The relevant source is `src/prefill/prefill.cpp`, `src/prefill/kernels.cpp`, `src/prefill/gemm.cpp`, and `src/core/device.cpp`. No live build alias was read.
+
+## Actual row-local seam and state boundary
+
+`Prefill::carve()` creates a shared `m.region` sized as `max(gdn_set_bytes(T), qsa_set_bytes(...), moe_set_bytes(...))` (`prefill.cpp:797-800, 1082`). The GDN view overlays eight row arrays there: qkv, z, ab, gate, beta, hbuf, y, and y_h (`prefill.cpp:805-807`). The GDN producer-consumer chain is contiguous and explicit (`prefill.cpp:1657-1668`): projections write qkv/z/ab; `gdn_gates` writes gate/beta; `gdn_conv` reads qkv and writes hbuf while advancing persistent convolution history; `gdn_recurrence` reads hbuf/gate/beta/z, advances persistent recurrent state and writes y/y_h; output projection reads y_h and writes `m.bo`.
+
+These eight scratch planes are row-local at the GDN interface: each tile's kernels consume its rows, while recurrence and convolution carry only their existing compact state between tiles. The safe cut is an outer row loop around the whole GDN chain, after the full-T `mixed_h`/`mixed_bf` input rows already exist and before the first GDN projection. Keep the session recurrent state and three-value convolution history outside the bounded scratch and pass the same state/history through tiles in increasing row order. `m.bo` is a separate full-T output, later consumed by `gr_write` (`prefill.cpp:2919`); it is not one of the eight bounded planes. Upstream inputs `mixed_h` and `mixed_bf` also remain full-T. This candidate therefore bounds only the GDN scratch view, not every T-dependent allocation.
+
+`Gemm::native` and the BF16 projection entry points accept an input row count and input/output pointers. They can be invoked per tile with the input advanced by `row0 * input_width`, local output scratch, and `nrows`; the output projection can target `m.bo + row0 * N` so the full-T result remains contiguous. This repeats GEMM setup/dequantization work and needs numerical comparison. The custom row-wise arithmetic has no cross-row reduction in the identified GDN projections, but backend algorithm selection under oneMath can vary with row count, so bitwise parity cannot be asserted from source alone.
+
+## Bound and exact shared-region delta
+
+For the current dimensions C=10240, ZV=6144, HV=48, the eight `Alloc::take` rows charge
+
+`G(B) = 144,128 * B + 2,048 bytes`
+
+(the eight 256-byte guards are included). Thus `G(12,288)=1,771,046,912 B`, while `G(512)=73,795,584 B`. R179 gives QSA=1,634,831,104 B and compact-MoE=1,631,505,920 B at T=12,288. Once every one of the eight takes and the matching `gdn_set_bytes()` accounting uses B, the shared region becomes QSA-sized, giving the exact requested-region reduction `1,771,046,912 - 1,634,831,104 = 136,215,808 B`. This is the shared carve request delta only; it is not a measured resident or peak-memory reduction.
+
+The byte outcome is unchanged for any B with G(B) <= QSA: mathematically B <= 11,342. If retaining a 64-row tile multiple, the largest such bound is 11,328. B=512 is a practical exact tiling for T=12,288 (24 tiles, no tail), divisible by the convolution's 64-row internal tile and the recurrence's 8-row token block. B=64 is the smallest bound aligned to both existing granularities and is structurally possible, but would launch 192 outer iterations and gives no further shared-region saving over B=512. There is no mathematical minimum B from allocation arithmetic alone; arbitrary positive B requires correct tail and mode handling. The meaningful capacity threshold is the maximum B above, not a unique minimum.
+
+## Correctness and lifetime conditions
+
+- Preserve the *logical call's* convolution mode, not just each tile's local length. `gdn_conv()` chooses its serial implementation when `T <= CONV_TILE` (64); that branch omits the q/k normalization done after the large-call convolution. If the original T is greater than 64, a short final tile must still execute large-call semantics. Thread an explicit logical-T/mode (plus row offset/count) into the tiled implementation. The three-value history must be updated after each tile, including tails shorter than three rows.
+- Carry recurrent FP32 state tile-to-tile in row order. `gdn_recurrence()` mutates session state while walking tokens and must not process later rows first or initialize fresh state per tile. Output y/y_h are tile-local.
+- The first non-lane recurrence call can benchmark D2 vs key-head at T>=64 (`kernels.cpp:911+`) using `yy = T * HV * S` FP32 scratch; at T=12,288 this is about 302 MB, separately allocated from `m.region`. A tiling patch must ensure this picker does not silently retain another full-T temporary if peak capacity is the goal. Either make its scratch bounded consistently or establish that the active path skips it; source has a lane capability branch, so do not assume the latter. Tuning on B-sized inputs may alter the selected implementation/performance, even where arithmetic is designed to match.
+- Engine-created compute and transfer streams are in-order (`device.cpp:186-187, 202, 223-225`), and the compact path explicitly checks the compute queue's in-order property (`prefill.cpp:679). The GDN chain, GEMM calls and the surrounding `gr_write` use `m.cs`; row-buffer reuse on that queue is therefore ordered. The separate `m.copy` stream is created for staging, but GDN buffers are not passed to it. Preserve this same-queue submission invariant or add explicit event dependencies if future code moves any producer/consumer to another queue. Host enqueue order alone is not a SYCL dependency on an out-of-order queue.
+- The inspected Prefill GDN path has no command-graph capture retaining these scratch pointers. MTP graph/callback work owns separate buffers; do not introduce a captured graph referencing the reused GDN view. Prefill's chunk handoff synchronizes `m.cs` before invoking the next-stage callback (`prefill.cpp:2950+`), which does not create a reason to keep GDN scratch live across chunks.
+
+## Decision
+
+A bounded outer GDN row loop at B=512 is the lowest-change practical candidate for this exact T: tile all eight shared-region arrays, update `gdn_set_bytes()` and its carve to use B, retain full-T inputs/output and session state, and keep the GDN chain on `m.cs`. This should reduce the shared-region source request by 136,215,808 B once G(B) falls below QSA. The source review does not establish that first-call autotune peak, allocator overhead, or other live owners permit T=12,288. Correctness still requires a same-input full-output/state parity check across serial/large convolution boundaries, short tails, recurrence state continuity, and the relevant GEMM backend before adoption.

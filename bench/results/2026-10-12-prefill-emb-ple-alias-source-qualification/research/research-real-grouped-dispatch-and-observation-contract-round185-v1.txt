@@ -1,0 +1,58 @@
+# Round 185 — real grouped GEMM dispatch and the smallest route observation
+
+Date: 2026-10-12 (Asia/Tokyo). Read-only audit of the pinned production source and already-retained sanitized reports/receipts. No source edit, build, test, compiler/AOT/profiler use, GPU/runtime/process query, Git operation, or cleanup was performed. This report separates source dispatch rules from actual B570 invocation; it does not claim a route executed.
+
+## Evidence boundary
+
+Production source identity supplied by Main: `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-xe-host-issuer-ledger-20261012`, HEAD `337255086026f6eef21a861c297183d05a5f7a22`. `src/kernels/xe/xmx_gemm.cpp` is SHA-256 `2d2144e7331b3dd66a2289a9c67b541b1c136332be53f31c935c9176880085d1` as recorded in retained R176; grouped dispatch is unchanged in the current tree. I read the complete relevant caller in `src/prefill/prefill.cpp`, `Gemm::f16_groups` in `src/prefill/gemm.cpp`, and grouped XMX/portable-MMA predicates and launches in `src/kernels/xe/{xmx_gemm.cpp,mma_gemm.cpp,dp4a_gemm.cpp,matrix_report.cpp}`.
+
+Retained summary evidence consulted: R175 fallback-route report, R176 grouped-kernel source screen, R180/R182 grouped image and property reports, the R182 corrected findings packet, and the host-only `xe-grouped-image-elf-metadata-root-v2/record.json` and sanitized `xe-issuer-device-json-query-root-v1/record.json`. The prohibited `prefill-gemm-only-contract-root-v1/record.json` was not read. I did not open raw model token/session records.
+
+## Source path: reaching a grouped product is conditional
+
+The grouped dispatcher is only reached from the dequantized fallback product path. In `prefill.cpp:1956+`, the expert layer first has routing counts and builds GPU expert order. With native weights and `STRATA_PREFILL_FUSED` enabled, eligible resident experts with at most `kIqGemmTileRows` can go through `iq_gemm_grouped_f16` (`:1960-1975, 2146-2168`); that fused-IQ path does **not** call `xmx_gemm_grouped` and does not launch `GroupedKernel<128,256,3>`. `use_mmq` selects another branch before dense FP16 grouped products (`:2070+`). Only the `fallback_products` lambda (`:2186+`) calls `Gemm::f16_groups` for GU and Down and, when it returns false, calls `xmx_gemm_grouped` (`:2194-2208` for compact rows; `:2218-2224` for noncompact rows). Thus image presence, an XMX-capable device, `STRATA_PREFILL_FUSED=0`, and non-MMQ source settings do not alone prove the real prompt made one of these calls; the active `ExpertLayout`, cache residency, CPU assignment, group membership, bounds and runtime flags matter.
+
+The caller uses FP16 activation/weight products with FP32 output: GU has N=1280,K=2048, followed by rowwise SwiGLU; Down has N=2048,K=640. The grouped device API receives per-expert bounds and `max_rows`. A call with G<=0 or max_rows<=0 returns without launching. In normal compact fallback, each product group has G experts and its own `group.max_rows`; the overall group count/row cohorts vary with the routed experts. Current code launches XMX with M tile count `ceil(max_rows/128)`, five N tiles for GU and eight for Down when N is 1280/2048, 16 subgroups per workgroup, and the `GroupedKernel<128,256,3>` entry. These are launch-shape rules if the XMX branch is reached, not observed model cohorts.
+
+## Source branch selection after `xmx_gemm_grouped` is reached
+
+`Gemm::f16_groups` is a separate caller gate. In a `STRATA_ONEMATH=0` build it always returns false, so the caller enters XeStrata's grouped backend for each fallback product. The supplied free build evidence summarized by R175 identifies this configuration. In a oneMath build, it first asks `gemm_path(F16)`: when the path is not `DP4a`, it returns false immediately; when it is `DP4a`, it tries oneMath products per nonempty expert and returns true only if all calls accept. A failed later product returns false and queues the full grouped fallback, potentially after earlier oneMath products were already submitted and then overwritten. Therefore an aggregate `Gemm::path()`/"oneMath plus own kernels" startup string does not prove whether oneMath served a particular GU/Down group or whether the grouped fallback followed it.
+
+Once `xmx_gemm_grouped()` executes, its source priority (`xmx_gemm.cpp:316-340`) is:
+
+| Selected path | Source condition | Submitted implementation |
+|---|---|---|
+| Portable `joint_matrix` / MMA | `mma_usable(q,false)` and (`STRATA_MMA` forced or `use_xmx(F16)` false) | `mma_gemm_grouped`, which selects a supported portable grouped `Kernel<S, half, false, true>` shape. |
+| DP4a grouped | Portable condition false and `use_xmx(F16)` false | `dp4a_gemm_grouped`. |
+| Intel XMX grouped | Portable condition false and `use_xmx(F16)` true | `GroupedKernel<128,256,3>` on `m.cs` with the exact large-GRF and subgroup-16 kernel properties. |
+
+`use_xmx(F16)` is a cached capability decision (`xmx.cpp:209-263`): absent `STRATA_NO_XMX`, the device must report subgroup size 16 and the FP16 8x16x16 matrix combination with FP32 accumulation/output, and `large_grf_ok()` must succeed. The large-GRF preflight currently requests an executable bundle for dense `GemmKernel<half,128,256,3>`, not the grouped kernel ID; grouped XMX launch has no explicit catch-and-fallback if its own compilation/submission fails. So `use_xmx(F16)==true` is a selection predicate, not evidence that the grouped specialization successfully compiled or ran.
+
+`mma_usable()` also requires a reported subgroup and a compatible FP16/FP32 matrix-combination shape whose grouped layout passes local-memory/workgroup checks. `STRATA_MMA=1` can force portable MMA even when `use_xmx(F16)` is true. `STRATA_NO_XMX=1` suppresses both XMX and (unless `STRATA_MMA=1`) portable MMA. If neither matrix path is selected, the grouped dispatcher submits DP4a. All of these are source-defined dispatch conditions; a path report without the exact environment, build mode, runtime capability values and callsite is not an invocation receipt.
+
+## What retained evidence proves—and leaves open
+
+The successful sanitized host ELF metadata receipt `xe-grouped-image-elf-metadata-root-v2/record.json` is bound to executable SHA-256 `fd241348db019ec0985072e55dc27c08ac0cfd7962072847905e391e73ab83fd`. It identifies raw SPIR-V image 4 (74,244 bytes; SHA-256 `9b768242be2fdb50c6f58954626e767d392310bf7cc6475ebed78e81cf75e514`), entry `_ZTSN6strata7kernels12_GLOBAL__N_113GroupedKernelILi128ELi256ELi3EEE`, `reqd_sub_group_size=16`, and misc property `sycl-grf-size=256`. The receipt explicitly has `gpu_executed=false`, `executable_loaded=false`, and `native_allocated_grf_and_spill=unverified`. This establishes that the linked executable contains the grouped SPIR-V entry with a 256-GRF request. It establishes neither JIT/native lowering, B570 capability eligibility, nor invocation.
+
+The retained sanitized xpu-smi capability record identifies Intel Arc B570, PCI `8086:e20c`, and `physical_eu_simd_width=16`; it records no GPU compute or model execution. It has no SYCL `matrix_combinations`, SYCL subgroup-size list, `large_grf_ok` result, or exact grouped-kernel build result. Physical SIMD width does not substitute for those source queries. R175/R176 likewise state the exact device branch is unresolved. The latest corrections packet contains corrected historical model-diagnostic scope but no grouped route/call count or selected kernel name. No inspected retained artifact proves that a real B570 prompt reached the fallback-products caller, that `Gemm::f16_groups` returned false on that product, or that any of the three grouped backends completed.
+
+Current classification:
+
+- **Proved by source/artifact:** the grouped XMX entry and its 256-GRF request are in the final W-linked image; the host/device dispatcher conditions and exact caller branches are known; the supplied free build's `f16_groups` returns false by compile-time branch.
+- **Conditional inference only:** if the active run is that free build, reaches `fallback_products`, has G>0/max_rows>0, and its runtime predicates report XMX true while MMA is not forced, it submits `GroupedKernel<128,256,3>` for that product group.
+- **Open:** actual run's build/mode/environment at the callsite; compact/fused/MMQ/CPU/cache branch cohort; device matrix and subgroup capability results; XMX/MMA/DP4a branch counter; whether any launch succeeded and drained; JIT native resource allocation or spills.
+
+## Smallest safe observation without profiler or per-kernel synchronization
+
+Add a host-side dispatch enum/count at the existing decision seam, with no new event, wait or queue synchronization. The minimum reliable observation spans two points:
+
+1. At `Gemm::f16_groups`, record outcome per GU/Down group: build has oneMath or not, whether it attempted any products, number accepted before return, and whether it returned true/false. This distinguishes oneMath completion from grouped fallback and captures partial oneMath attempts followed by fallback.
+2. In `xmx_gemm_grouped`, increment exactly one backend counter at the chosen MMA/DP4a/XMX branch, after the backend's launch submission returns successfully. For XMX record the exact specialization name `GroupedKernel<128,256,3>`; for portable MMA record the `S` shape and grouped `Kernel` specialization; for DP4a record the grouped function. Also record N/K, G, max_rows, and GU versus Down from the caller. Keep the counters in existing per-prefill/per-chunk host statistics and report them after the already-required chunk queue synchronization/error check. A chunk with an asynchronous queue error is failed and its dispatch counts must not be presented as a successful route result.
+
+The same compact record needs active executable/build identity, `STRATA_ONEMATH` build mode, relevant `STRATA_MMA`, `STRATA_NO_XMX`, `STRATA_NO_INT8_MMA`, `STRATA_PREFILL_FUSED` values, and the caller flags `compact_moe/use_mmq/fuse_res`. Existing chunk-level completion already waits on the queue; use that completion point rather than inserting per-kernel waits. Aggregate counters avoid per-launch logging overhead and are sufficient to answer whether the exact grouped specialization was submitted in a successful real prompt. If Main needs proof of native kernel completion beyond successful chunk completion, use a later separately approved native launch trace; it is not needed to select a minimal non-profiler observation.
+
+A single existing quiet prompt with this route summary is the smallest discriminator. It should report zero grouped counts if resident fused IQ/oneMath handled the layer or no GPU fallback groups existed; that is meaningful and must not be relabeled from image presence. If the XMX counter is positive and the enclosing prompt completes successfully under existing queue error handling, the current runtime route is established without adding synchronization. No source instrumentation was added here.
+
+## Decision
+
+The source identifies exactly when the current B570 process *would select* XMX GroupedKernel, portable MMA or DP4a, but retained evidence establishes only linked SPIR-V presence and partial device identity/capability context. The real grouped route remains open. The lowest-impact next evidence is a caller plus grouped-dispatch host counter committed at the already existing chunk-completion point, not a profiler run, static kernel-image grep, startup `Gemm::path()` string, or added per-kernel synchronization.

@@ -1,0 +1,58 @@
+# R186 — external Xe2 evidence for smaller small-row grouped GEMM tiles
+
+Date: 2026-10-12 (Asia/Tokyo). Read-only review of retained R175/R176/R180/R182/R185 evidence and public primary GitHub sources. No project/compiler execution, build, test, GPU/runtime/process/device query, profiler use, Git operation, cleanup, or production edit was performed. This report records source-supported candidate dimensions and separates them from local inference. It does not claim a measured Strata speedup, a B570 invocation, or native spill counts.
+
+## Result
+
+The clearest new candidate for a bounded Main-owned comparison is a grouped workgroup tile **WG_M=64, WG_N=128, WG_K=32**. IntelLabs/Xe-Fuse documents `64x128x32` as a tile override and describes an empirical tile selector that chooses M=64 when problem M≤64 and keeps K=32. Its README describes MoE as one batched GEMM with per-expert M and L=num_experts. IntelLabs/Xe-Forge independently documents Xe2 (including B570) CUTLASS-SYCL tile tuning for MoE, with WG_M/WG_N/WG_K, DPAS atom dimensions M=8 and N=16, and varying per-expert M. These references support the dimensions and a tuning rationale; neither publishes a small-row B570 Strata-equivalent winning configuration.
+
+This is a smaller workgroup tile than Strata’s current XMX 128×256×3 specialization, but simply changing its `WM/WN` is **not** sufficient to make it a smaller accumulator tile. R176 establishes that the current kernel maps each subgroup to a 32×64 output patch using 4×4 8×16 accumulator blocks. To instantiate 64×128 while reducing per-subgroup accumulator state, the corresponding candidate mapping is 16×32 per subgroup (2×2 8×16 accumulators), eight subgroups per workgroup (2×4 subgroup arrangement), with K step 32. This mapping is an engineering inference from the published tile/atom dimensions, not a Xe-Fuse/Xe-Forge prescription and not validated against Strata’s kernel implementation.
+
+If the current supported tile helper cannot express that mapping without changing K accumulation, bounds behavior, or output ownership, do not treat `WM=64, WN=128` alone as a register-pressure test. Keep it as a distinct scheduling tile hypothesis and first verify its actual subgroup-to-fragment mapping in generated code.
+
+A lower-priority `32×128×32` variant can be considered only as an exploratory small-M case. Its M=32 dimension is a multiple of the documented DPAS M atom 8, but the Xe-Fuse selector heuristic points to M=64 for M≤64, so no cited evidence prefers M=32. It would increase workgroup count relative to 64×128 for the same aggregate rows. The source does not establish that the smaller tile wins or even that it is an eligible specialization in Strata.
+
+## External source evidence
+
+1. IntelLabs Xe-Fuse README: https://github.com/IntelLabs/Xe-Fuse/blob/main/README.md
+   - Describes batched expert GEMM as `{M_per_expert, N=2*I, K=H, L=num_experts}` and says all routed experts can be processed in one launch; this is evidence of a relevant variable-M MoE API shape, not evidence about Strata dispatch.
+   - Documents `--tile 64x128x32` as an explicit kernel-generation override.
+   - Says its selector is based on empirical sweep data from 792 configurations across 7 tiles, 5 kernels and 32 GEMM shapes from 10+ model architectures. It summarizes the heuristic as tile_M=64 for M≤64, 128 for M≤128, 256 for M≥256, N adapting to output width, and K=32 as the XMX constraint.
+   - The aggregate sweep statement is an implementer-reported empirical basis. The README does not publish the per-shape measurements, say that `64x128x32` won for MoE on a B570, or identify small-token row cohorts. Do not transfer a speed figure from it.
+
+2. IntelLabs Xe-Forge tile guide: https://github.com/IntelLabs/Xe-Forge/blob/main/docs/TILE.md
+   - Names Intel Xe2 GPUs including Arc B570/B580 as supported tuning targets and supports MoE GEMM and grouped GEMM tile search.
+   - Defines MoE tile parameters as WG_M, WG_N, WG_K, with varying per-expert M and dynamic work distribution. Its DeepSeek-V3 example gives N=5760, K=2880, 32 experts, total_tokens=8192, but publishes no small-M best tile for that example.
+   - Identifies the standard DPAS atom as M=8,N=16, describes validator checks for atom constraints, subgroup limits and SLM capacity, and shows a generic large workload result of WG=[256,128,32]. That result is not the MoE example and must not be taken as a small-row recommendation.
+   - The guide describes a propose/validate/compile/benchmark flow, but its published examples do not disclose per-candidate measurements or a B570 small-row MoE winner.
+
+These sources are materially more specific than generic GPU register advice: they provide tile dimensions, K step, MoE variable-M shape and Xe2-targeted tuning support. They remain external implementation/source evidence, not local B570 measurement.
+
+## Mapping to the current Strata workload
+
+Current source-side facts supplied for this audit are an XMX `GroupedKernel<128,256,3>` using 16 subgroups/workgroup and per-subgroup 4×4 8×16 FP32 accumulator blocks; runtime invocation and native allocation/spill counts remain unproved. R185 correctly establishes that image presence and source predicates do not establish actual route or launch. R176 already screened a 32×64 workgroup / 2×2-fragment register-pressure candidate; this report does not re-propose it. The new R186 candidate is the external-source-supported 64×128×32 tile family and its mapping constraints.
+
+The current model dimensions for this comparison are **GU: N=1280, K=2560; Down: N=2560, K=640**. This corrects the older R185 prose that reported Down N=2048,K=640 and GU K=2048; do not use those stale dimensions when computing tiles. With N=128 and K-step=32, both products divide evenly: GU has 10 N tiles, Down 20; K loops are 80 and 20 steps respectively. The current N tile 256 would yield 5 GU tiles and 10 Down tiles. These are arithmetic counts conditional on using the stated tile sizes, not observed launch counts or route evidence. Per-group M remains dynamic and is not inferred from total prompt tokens or top-k.
+
+If the mapping is 16×32 per subgroup, a 64×128 workgroup has 2×4=8 subgroups, each owning four 8×16 accumulators (512 FP32 accumulator values/subgroup, or 32 values per 16-lane subgroup member by simple division). The current 32×64 subgroup mapping has sixteen accumulators (2,048 values/subgroup, or 128 per lane). This arithmetic estimates the accumulator footprint only. It says nothing about compiler register allocation, live ranges, spills, occupancy, or runtime speed. The tile has one quarter of the current workgroup’s output area, so at equal total M×N it requires four times as many workgroups; its eight-subgroup workgroup also uses half the current subgroup count, yielding twice the total subgroup count at equal covered area. This is the trade to measure, not an assumed win.
+
+## Candidate and guards
+
+**Candidate A (primary): WG 64×128×32, subgroup output 16×32, 8 subgroups/workgroup.** Compare only if the existing kernel can implement this exact ownership/matrix-fragment shape while preserving each expert’s row bounds, output offsets, K accumulation order, fp16 inputs/weights, fp32 accumulators/output, and GU→SwiGLU→Down ordering. Check edge M values below 64, zero-row experts, partial final M tiles and compact group splits. N/K are divisible by the candidate for the current geometry, but bounds still need to be correct independently of divisibility. Keep a capability/compiler-safe fallback and require correctness at per-product and final-output levels before performance interpretation.
+
+**Candidate B (exploratory only): WG 32×128×32, subgroup output 16×32, 8 subgroups/workgroup.** This is atom-aligned but not directly favored by Xe-Fuse’s published M heuristic. It is useful only if retained route counts show many groups with `max_rows≤32` and there are enough independent groups to occupy the device. Otherwise its smaller M tile raises scheduling overhead. Its use is an inference; no external measurement supports its selection.
+
+Neither candidate is eligible for dispatch/adoption based on this report. First establish the production route and inspect native resource data under the matched compiler/device. A linked SPIR-V entry/property, source-level accumulator count, AOT compile success, or external README tile selector is not proof of JIT invocation, native register count, spill, occupancy or speed. If measured native lowering for the existing kernel has no material resource pressure, do not frame the candidate as a spill fix; any tile trial then tests scheduling only.
+
+## Evidence status and next decision
+
+- **Source-supported:** Xe-Fuse exposes `64×128×32`; its documented heuristic uses M=64 at M≤64 and K=32. It describes variable-M batched MoE GEMM. Xe-Forge supports Xe2 B570 tile tuning for MoE and documents WG tile parameters and 8×16 DPAS atom dimensions.
+- **Implementer-reported empirical evidence:** Xe-Fuse’s 792-configuration tile sweep claim. Its published README omits raw per-shape results and exact small-row Xe2/MoE performance.
+- **Inference:** 64×128×32 is a sensible external-source-backed candidate to compare against 128×256×32; 16×32 per subgroup with eight subgroups provides a coherent atom-aligned mapping with a lower accumulator count. 32×128×32 is a lower-priority shape inference.
+- **Local-unverified:** actual Strata grouped dispatch on B570; active per-expert row cohorts; exact candidate codegen/legality; device native GRFs/spills; speed, occupancy, and numerical parity.
+
+Main’s lowest-cost next action remains the R185 dispatch observation at the existing chunk completion seam, followed (only if XMX is actually selected) by a target-matched native resource comparison and a bounded same-cohort correctness/performance arm. This report adds candidate dimensions, not permission or evidence to skip those gates.
+
+## Correction to previous save attempt
+
+The first attempted save used `/home/yayoi/.local/state/strata/...`, which was the wrong directory spelling. The assigned path is `/home/yayoi/.local/state/strata-sycl/...`; this fresh report is saved there. No prior report was changed.

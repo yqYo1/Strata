@@ -1,0 +1,32 @@
+# Round 183 — one additional Prefill plane lifetime coalescing candidate
+
+Read-only source/report audit, no changes to source. Implementation anchor: immutable W `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-xe-host-issuer-ledger-20261012`, HEAD `337255086026f6eef21a861c297183d05a5f7a22`. `src/prefill/prefill.cpp` SHA-256: `2922806c8b56b64e1bc20096d93c852a105ed225ff3bf9dcf113436c79964d9c`; current registry v150 SHA-256 `b17b2e3bff5831df6561958f2a2e935a6bda6d1308f28b0b76c9a87f2e22613c` (646 reports).
+
+Read the requested R179 full allocation ledger, R180 FP32 capacity candidate, R181 `emb`/PLE lifetime audit, R182 parity-oracle report, and relevant earlier `implementation-xe-prefill-row-bounded-scratch-source-v1.txt` / R81 transfer-reuse report. Do not repeat R180's `emb`/`ple_emb` pair, the conditional GDN row-bounded set, prior compact-MoE scratch sharing, or a proposed `mixed_bf`/`mixed_h` alias. No build, test, model/runtime/GPU/process/Git action, cleanup, import or AST operation was performed. No live implementation worktree was inspected.
+
+## Candidate: coalesce `mixed` FP32 with `bo` FP32
+
+The pinned `Prefill::carve()` allocates both `m.mixed = T*N` floats and `m.bo = T*N` floats (lines 786-787); `bytes_needed()` mirrors the same two requests (lines 1072-1073). For this artifact `N=g.n_embd=2560`. Both are full-size contiguous FP32 planes. The source liveness chain supports assigning `m.bo = m.mixed` in the common `carve()` path and removing the later `bo` take; remove its matching `f(T*N)` from `bytes_needed()`. Since both init and relayout use `carve()`, one binding covers both layouts.
+
+`m.mixed` is produced by `gr_mix_r` at line 1643, together with separate `mixed_bf` and `mixed_h` conversions. Its only direct FP32 reads found in the pinned source are:
+
+- optional expert CPU-share activation staging at line 1909: `copy_async(m.cpu_x, m.mixed, ..., m.cs)`;
+- MMQ expert activation quantization at line 2108: `mmq::quantize(m.mixed, ..., m.cs)`.
+
+For attention halves (GDN/QSA), the downstream projections consume `mixed_h`/`mixed_bf`; the output is produced in `bo` by the GDN or QSA output projection at lines 1667/1870. No direct `m.mixed` read occurs in those branch bodies after `gr_mix_r`, so that output can overwrite the now-dead FP32 plane. For the MoE half, optional CPU staging enqueues its copy from `m.mixed`, then the existing `stream_sync(m.cs)` at line 1914 completes that source read before the CPU worker consumes the distinct host `m.cpu_x` copy. If MMQ is enabled, its queued `m.mixed` quantization is its last device reader. MoE down/combine then writes `m.bo` at line 2868; `gr_write*` consumes `bo` at lines 2911-2919. No later direct read of `m.mixed` follows the MoE combine. The next half/layer's `gr_mix_r` may write the shared plane only after `gr_write*` has consumed `bo`.
+
+The GPU producer/readers/writers are submitted on `m.cs`; `Gemm` is initialized with the same stream (init around lines 665, 774-775; `Gemm::init_external`). The Runtime's created streams are in-order; an explicit alias admission should verify the actual `m.cs` queue is in-order for every caller, since `Prefill::init` accepts an opaque stream. This gate must apply to the alias even when compact MoE is off. The only CPU cross-boundary consumer (`cpu_x`) receives a completed copy because the code synchronizes `m.cs` before launching/using its CPU expert work. `m.copy` stages expert blobs and does not read these planes. The source audit in R181 found no Prefill graph capture or MTP callback retaining either pointer; MTP callbacks consume `R`, not `mixed`/`bo`. Existing `moe_combine`, projections, and GR write remain queued on `m.cs`.
+
+## Exact request reduction
+
+`Alloc::take` charges a payload plus its per-take 256-byte guard, rounded to 256-byte alignment. With T=12288, N=2560, the removed `bo` payload is:
+
+`T*N*sizeof(float) = 125,829,120 B = 120 MiB`.
+
+This payload is 256-byte aligned, so removing the second take lowers source-requested bytes by **125,829,376 B** (payload plus 256-byte guard). At the currently qualified T=8192, it would lower requested bytes by 83,886,336 B (80 MiB plus guard). This is a source-carve delta, not a measured physical allocation or proof that a larger chunk fits. In combination with the separate R180 `emb`/PLE alias, the arithmetic removes two separate equal guarded FP32 planes, but do not infer admission from that sum: all concurrently live owners, allocator headroom and actual chunk admission still need Main's qualification.
+
+## Gate, falsifiers, and validation boundary
+
+Enable only when the actual compute queue property is demonstrably in-order and `m.bo == m.mixed` is bound in the common carve for the current allocation generation. Retain separate allocations for an unknown/out-of-order caller stream. Falsifiers include any new direct FP32 `m.mixed` reader after the `bo` writer begins, any `bo` consumer on another queue that can lag past the next `gr_mix_r`, concurrent `run()` calls sharing a `Prefill`, graph capture retaining either pointer, or a future CPU consumer retaining the device pointer rather than the completed host copy. Any such source change requires re-auditing the chain.
+
+For Main's review: compare baseline and alias on the same immutable input/model/options from fresh state. First exercise GDN, QSA and MoE layers with the target in-order stream; include CPU-share and MMQ only if those paths are in scope. Check exact full logits and available state signals per R182, route/callback coverage, async status and queue completion. Validate that the planner and carve remove exactly the guarded `bo` take and that relayout rebinds the alias. No numerical operation, dtype, activation conversion or FP32 recurrence changes in this proposal. No runtime result, quality result, capacity fit or speedup is claimed.

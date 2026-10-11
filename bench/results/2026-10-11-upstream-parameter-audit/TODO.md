@@ -42,3 +42,5 @@ XeStrata 更新版の評価後、最新本家 v0.1.43 の比較を確定する�
 箱出し設定だけではなかったという履歴確認は完了した。本家単体の最適設定探索・独立検証は未完了であり、それが済むまで「最適化済みの本家との比較」とは扱わない。今回も新規GPU測定は行っていない。
 
 2026-10-12 の [R177設定選別案](../2026-10-12-xe-host-issuer-model-qualification/research/research-official-independent-config-search-round177-v1.txt) を追加した。最初の比較では現在の262144 contextとKV方針を固定し、標準autoは独立した方針として扱う。固定チャンクの選別とdecodeのワーカー選別を分け、medianで選ぶdecodeは選別時も複数回、選択後の独立検証も3回以上行う。この案は未実行であり、本家の最適設定探索は未完了。今回完了した64/32KのGPU実行はローカル版の観測コード検証で、本家pristineの設定探索や性能比較ではない。
+
+2026-10-12 の [R185 の独立設定選別案](../2026-10-12-prefill-emb-ple-alias-source-qualification/research/research-official-independent-parameter-search-contract-round185-v1.txt) では、本家 v0.1.43 の pristine ソースを再確認した。標準 auto、固定4096/6144/8192、条件付き auto:16384 を prefill の選別候補とし、decode は実効ワーカー数の重複を除いて別に選ぶ。選択後は独立した32K以上の入力と3回以上の decode 検証を必要とする。これは未実行の案であり、現行 host-USM 同期契約の問題を設定だけで避ける実行経路も未確認のため、本家単体の最適設定探索・独立検証は引き続き未完了。

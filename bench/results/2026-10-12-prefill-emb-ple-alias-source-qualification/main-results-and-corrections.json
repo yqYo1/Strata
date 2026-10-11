@@ -1,0 +1,90 @@
+{
+  "source_parent": "337255086026f6eef21a861c297183d05a5f7a22",
+  "source_revision": "fee70753ea3eaf5786fcd91b8c55cb90dd633b95",
+  "prefill_source_sha256": "e526f8cb9f546eba32a4d66345ae964ef2a2419200cd1bb0f8582eea633213d6",
+  "source_review_sha256": "e8bf20ddd0d8a6256bee887a6af65299a7179a9720f4940168983b21731e228b",
+  "opt_in": "STRATA_PREFILL_EMB_PLE_ALIAS=1",
+  "adopted_default": false,
+  "requested_saving_bytes": {
+    "T8192": 83886336,
+    "T10240": 104857856,
+    "T12288": 125829376
+  },
+  "physical_saving_measured": false,
+  "aliases_numerically_qualified": false,
+  "new_gpu_model_samples": 0,
+  "qualification": [
+    {
+      "mode": "free",
+      "status": "PASS",
+      "binary": {
+        "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-xe-prefill-emb-ple-alias-20261012/build/free/strata",
+        "bytes": 20454816,
+        "sha256": "55199c6bbda7bf60662801796ce3e02d88ef6a5cb31b015cd36d9d5bb9ad046c"
+      },
+      "cpu_passed": 14,
+      "cpu_skipped": 1,
+      "receipt_sha256": "9d966fa36bdbaa2ebdf12d47991195381033141cf32bb7f1a0b02fdadd8ae61c"
+    },
+    {
+      "mode": "contrib-llvm",
+      "status": "PASS",
+      "binary": {
+        "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-xe-prefill-emb-ple-alias-20261012/build/contrib-llvm/strata",
+        "bytes": 20507520,
+        "sha256": "f72bc1adf63cb1db83b1e56061bc78f87520e300670f1fc53839ba7536c7bab2"
+      },
+      "cpu_passed": 14,
+      "cpu_skipped": 1,
+      "receipt_sha256": "ee6b72f5378617d785882c0a55727841aefd132c2012f26fe8d95b588b84e2ce"
+    },
+    {
+      "mode": "free-asan",
+      "status": "PASS",
+      "binary": {
+        "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-xe-prefill-emb-ple-alias-20261012/build/free-asan/strata",
+        "bytes": 247977744,
+        "sha256": "64515863fae98469384724bc169b676d27012d9e351e61b664524df238b6c22c"
+      },
+      "cpu_passed": 14,
+      "cpu_skipped": 1,
+      "receipt_sha256": "9f64a34821f2ed68d357655547a61126fa4c3abefa32ca6657e9f332c880da32"
+    },
+    {
+      "mode": "contrib-llvm-asan",
+      "status": "PASS",
+      "binary": {
+        "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-xe-prefill-emb-ple-alias-20261012/build/contrib-llvm-asan/strata",
+        "bytes": 250186776,
+        "sha256": "868741a712f9d2a03849c5538474965b0acd943e2f3b3e1e08d4e3a6d8607172"
+      },
+      "cpu_passed": 14,
+      "cpu_skipped": 1,
+      "receipt_sha256": "48ef3cb1357ff422ed970e491f4234268dde8703758b1e26c6c43e0138f6eff6"
+    }
+  ],
+  "final_lints": "PASS; no new findings in free and contrib-llvm",
+  "original_lint": "FAILED; misplaced widening cast in diagnostic saving expression; original preserved",
+  "original_and_corrected_release_binaries_equal": true,
+  "implementation_report_corrections": [
+    "Original Sol source f2a8... preceded Main current-device/context gate and logging-only cast fix. Reports preserved unchanged; final exact source listed here."
+  ],
+  "grouped_elf_metadata": {
+    "original_v1": "FAILED host parser assumed format2",
+    "new_v2": "PASS: legal format0/NONE detected by SPIR-V magic",
+    "misc_grf_size": 256,
+    "optLevel": 3,
+    "grouped_semantic": "num-thread-per-eu 4",
+    "native_allocated_grf_spill": "unverified"
+  },
+  "r182_option_order_correction": "After PVC-only first token removal, source final public tokens are precision-div, precision-sqrt, then large-register-file and opt-level=2. Report option set correct; literal ordering corrected separately.",
+  "r185_geometry_correction": "Original route report gives K2048/N2048 and eight Down column tiles. Actual prefill.cpp:65 has N2560: GU Nout1280/K2560, Down Nout2560/K640, five GU and ten Down 256-column tiles. Original report preserved; invocation still OPEN.",
+  "r186_subgroup_mapping_correction": "64x128 output with 16x32 per subgroup needs4x4=16 subgroups, not2x4=8. 32x128 with16x32 needs2x4=8. Original external report preserved. WG dimension reduction alone retains original32x64-per-subgroup accumulator footprint unless SGM/SGN also change. No candidate implemented or measured.",
+  "r187_numerical_correction": "z does not feed its own isolated GDN state update directly, but altered layer output can alter later-layer states in the whole model; aggregate persistent state equality is not guaranteed. FP32 projection staging must be bounded/retired before any claimed low-storage peak saving. No dtype change implemented or measured.",
+  "original_publication_v1": "FAILED precondition wrongly required complete=true from original failed lint qualification; no Git commit or deletion occurred. Original complete=false/FAILED lint and publication receipts preserved byte-exact; all owned children closed.",
+  "planner_api_measurement": "OPEN: mmq_plan evaluates mmq::built before nonnative/disabled checks, initializing Runtime; ring16 suppresses only separate ring query. Prepared helper not executed.",
+  "next_main": "Qualify real GPU alias ordering/queue refusal and full-logit/state parity, then fixed T10240 allocation admission and quiet64K repeated prefill comparison; keep decode independent.",
+  "full262144_runtime_quality_restore": "OPEN; CPU endpoint tests are not physical full-context GPU validation",
+  "further_candidates": "mixed/bo same-size lifetime sharing and GDN bounded-row plan are proposals only; no source/fit/speed result.",
+  "upstream_todo": "Historical official explicit recipes are not box defaults, but independent pristine setting selection and held-out32K+ validation remain OPEN."
+}

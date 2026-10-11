@@ -1,0 +1,44 @@
+# Round 180 — prefill FP32 buffer capacity candidate
+
+Date: 2026-10-12 (Asia/Tokyo). Read-only source and retained-report audit. No source change, model/import, AST/test/build/profile/runtime/GPU/process query, Git operation, cleanup, or measurement was performed. This identifies one source-supported allocation reuse candidate; it does not establish implementation, fit, quality, or performance.
+
+## Evidence boundary
+
+Implementation is immutable worktree `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-xe-host-issuer-ledger-20261012`, supplied HEAD `337255086026f6eef21a861c297183d05a5f7a22`. `AGENTS.md` and the current `LOCAL.md` were read. `src/prefill/prefill.cpp` SHA-256 is `2922806c8b56b64e1bc20096d93c852a105ed225ff3bf9dcf113436c79964d9c`.
+
+The current report registry is `report-registry-v150.json`, SHA-256 `b17b2e3bff5831df6561958f2a2e935a6bda6d1308f28b0b76c9a87f2e22613c`, with 646 reports. I read the immediately preceding full allocation ledger R179 (SHA-256 `f2bfa27ca06b8f9abafbf170292779ccda48cfbe6e6ba47fccdd3f61aead4350`), R178's larger-chunk VRAM lifetime report, and the earlier low-precision candidate and quality-boundary reports R135/R168. This is a new liveness candidate, not a restatement of compact T-row MoE, GDN `y` elision, or the FP16 `Hh` boundary.
+
+The supplied design point is N=2560, D=10240, target T=12288, full logical context 262144, and the current mixed-IQ native GGUF / fallback MoE path. R179's source arithmetic says the 8192-to-12288 prefill request increase is 1,227,571,200 B including `tok_dev`; even reclaiming the entire 281 MiB cache with 714 MiB ready leaves an optimistic 184,238,080 B gap. The conditional GDN row-set bound saves 136,215,808 B and leaves 48,022,272 B. These are request/capacity calculations, not measured allocations. No T12288 fit or run is inferred.
+
+## Candidate: alias the embedding FP32 plane with the later PLE embedding plane
+
+`Prefill::carve()` currently requests both `m.emb = o.take<float>(T*N, ...)` and, near the end, `m.ple_emb = o.take<float>(T*N, ...)` (source lines 783-787 and 874). Both are contiguous FP32 arrays of exactly the same extent. The request list in `bytes_needed()` mirrors both takes (lines 1070-1075 and the later PLE take), so deleting one take and pointing both fields at the retained plane reduces the planner's requested allocation by its full take extent.
+
+The source shows non-overlapping uses on the successful compact route:
+
+1. The chunk's token embeddings are written to `m.emb` by batched `gather_dev` or per-token copy/`embed_row` at lines 1310-1345.
+2. `gr_broadcast(m.emb, m.R, ...)` consumes those rows at line 1348. A repository-source search found no later read of `m.emb`.
+3. PLE rows are independently gathered into pinned host buffers; shortly before layer 1, `ple_land()` enqueues their copy into `m.ple_emb` on `m.cs` at lines 1360-1368. PLE readers use `m.ple_emb` at lines 1593 and 1619.
+4. The compact MoE route is admitted only with an in-order compute queue (`compact_moe` admission at lines 668-679). On this qualified route, the embedding writes, `gr_broadcast`, then the PLE destination copy are ordered on that same queue. Thus the overwrite follows the final embedding read, and PLE reads follow the upload. The CPU PLE gather writes a separate pinned/pageable host buffer and does not read the device embedding plane.
+
+The minimal source shape is to retain one `T*N` FP32 take, set `m.emb` and `m.ple_emb` to that same pointer, and remove the second `T*N` take in both `carve()` and `bytes_needed()`. The alias must be enabled only where the same-queue ordering guarantee is established. The supplied successful compact-path record requires an in-order queue, so this fits the target's qualified route; a non-in-order route needs an explicit dependency or its separate allocation retained. No intermediate changes dtype, arithmetic, projection input, GDN state, MoE state, or the 262144 context.
+
+### Exact saving and bound
+
+At T=12288 and N=2560, payload bytes are:
+
+`12288 * 2560 * sizeof(float) = 125,829,120 B = 120 MiB`.
+
+Both dimensions make the payload 256-byte aligned. `Alloc::take` charges the payload plus its 256-byte guard, so removing the second take reduces source-requested device bytes by **125,829,376 B** (payload 125,829,120 B plus 256 B guard). This exceeds the 48,022,272 B residual from the conditional GDN row-bound calculation by 77,807,104 B. By itself it would leave 58,408,704 B of R179's optimistic 184,238,080 B deficit; combined with that GDN bound, the two source arithmetic deltas exceed the optimistic gap. This does not include runtime headroom, other live owners' eventual growth, page rounding, or allocator fragmentation and is not a T12288 admission claim.
+
+The candidate is a lifetime alias, not a precision reduction. It avoids any new FP16/BF16 storage or accumulation question and preserves all embedding/PLE values if the ordering and complete call graph are maintained. It does not assert that any other FP32 plane is redundant.
+
+## Minimal discriminators before adoption
+
+First use a deterministic small tensor case with `T=3`, `N=8`: write distinct finite token rows to the embedding plane, run the existing broadcast into `R`, overwrite the same plane with distinct PLE rows only after the broadcast's queue completion/order point, then run the existing PLE consumer. Compare both `R` and PLE outputs bit-for-bit against a baseline with distinct embedding/PLE allocations. Include both batched embedding and per-token host-copy entry cases, plus the hand-in case where `m.emb` is unused. Record an in-order queue and test the alias's actual enqueue sequence; do not infer safety from host call order on an out-of-order queue.
+
+Then run fresh fixed-input baseline/candidate comparisons with the exact production model and unchanged 262144 context at 32K and 64K, retaining all fixed-target vocabulary logits and the existing route/state diagnostics. Require identical output IDs, full-logit rows, GDN/QSA/PLE state hashes where available, no finite-value or progress faults, and effective in-order alias admission. At full context, exercise the production full-context endpoint through exactly 262144 prompt cells and its last-cell state/lifecycle checks; this validates capacity and context preservation, while a teacher-forced full-logit comparison at a legal endpoint remains a separate quality gate. The existing R168 quality report explains why IDs/LP5 alone are insufficient; no result is claimed here.
+
+## Decision
+
+This is the smallest eligible current-source FP32 plane alias I found that clears the requested 48 MiB threshold without changing numerical storage or products. It is a strong candidate for an implementation review because source consumers and the ordering gate are identifiable. It is not yet implemented or measured, does not independently close the R179 gap, and cannot be reported as a successful larger-chunk run. Preserve pre-consumption capacity refusal and full-context behavior until the actual complete live-owner admission is measured.
