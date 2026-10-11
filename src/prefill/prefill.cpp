@@ -40,6 +40,7 @@
 #include "strata/core/gpu.hpp"
 
 #include "strata/prefill/publication.hpp"
+#include "strata/prefill/compact_moe.hpp"
 #include <algorithm>
 #include <chrono>
 #include <cmath>
@@ -403,6 +404,7 @@ struct Prefill::Impl {
     const int32_t* host_res = nullptr;
     int64_t T = 0, T_max = 0;
     bool borrowed = false;
+    bool compact_moe = false;   // experimental T-row FP16 fallback scratch; no MMQ layers
     strata::gpu::Stream cs = nullptr, copy = nullptr;
     Gemm gemm;
     std::vector<void*> owned;
@@ -447,6 +449,7 @@ struct Prefill::Impl {
     uint16_t* dq_gu = nullptr;               // G experts' gate/up, GU_ELEMS apart, and down, D_ELEMS apart
     uint16_t* dq_d = nullptr;
     int32_t* xb_dev = nullptr;               // the experts' first rows in `order`, and the total (grouped products)
+    int32_t* compact_xb_dev = nullptr;        // persistent device bounds, reused only in compute queue order
     HostVec<int32_t> xb_host;
     uint8_t* stage_dev[RING_MAX] = {};
     int ring = STAGE;                        // the slots of this layout's ring (ring_slots)
@@ -621,14 +624,27 @@ const MmqPlan& mmq_plan() {
     }();
     return plan;
 }
+bool compact_moe_requested() {
+    static const bool on = [] {
+        const char* v = std::getenv("STRATA_PREFILL_COMPACT_MOE_SCRATCH");
+        return v != nullptr && std::strtol(v, nullptr, 10) != 0;
+    }();
+    return on;
+}
+bool compact_moe_enabled() {
+    static const bool dbg = std::getenv("STRATA_DBG_NAN") != nullptr;
+    const MmqPlan& mp = mmq_plan();
+    return compact_moe_requested() && !mp.any && mp.fallback && !dbg;
+}
 uint64_t moe_set_bytes(size_t T, int64_t n_expert) {
     const MmqPlan& mp = mmq_plan();
     Alloc a; a.count_only = true; bool ok = true;
     a.take<float>(T * n_expert, ok); a.take<float>(T * K, ok); a.take<int32_t>(T * K, ok); a.take<int32_t>(T * K, ok);
     a.take<int32_t>(T * K, ok);
-    if (mp.fallback) a.take<uint16_t>(T * K * N, ok);
-    a.take<float>(T * K * 1280, ok);
-    if (mp.fallback) a.take<uint16_t>(T * K * 640, ok);
+    const size_t scratch_rows = compact_moe_enabled() ? T : T * K;
+    if (mp.fallback) a.take<uint16_t>(scratch_rows * N, ok);
+    a.take<float>(scratch_rows * 1280, ok);
+    if (mp.fallback) a.take<uint16_t>(scratch_rows * 640, ok);
     a.take<float>(T * K * N, ok); a.take<float>(T * 640, ok);
     a.take<float>(T * 640, ok); a.take<uint16_t>(T * 640, ok); a.take<float>(T * N, ok); a.take<float>(T, ok);
     if (mp.any) {
@@ -646,6 +662,23 @@ bool Prefill::init(const core::WeightTable& wt, const core::ModelGeometry& g, co
     Impl& m = *impl_;
     m.wt = &wt; m.g = &g; m.ss = &ss; m.src = src; m.cache = cache; m.host_res = host_res;
     m.T = chunk; m.cs = stream; m.stats = &stats_;
+    // Reject unsupported opt-ins before allocating anything: MMQ GU stays route-sized, and the existing NaN
+    // diagnostic needs all GU rows at once. A compact run must use the ordered queue contract of Runtime.
+    m.compact_moe = compact_moe_enabled();
+    if (compact_moe_requested() && !m.compact_moe) {
+        err = "prefill: STRATA_PREFILL_COMPACT_MOE_SCRATCH requires pure FP16 fallback (no MMQ) and no STRATA_DBG_NAN";
+        return false;
+    }
+    if (m.compact_moe && (g.n_expert <= 0 || g.n_expert > std::numeric_limits<int32_t>::max() ||
+        chunk <= 0 || chunk > std::numeric_limits<int32_t>::max() / K ||
+        (uint64_t) chunk > std::numeric_limits<size_t>::max() / (K * N * sizeof(float)))) {
+        err = "prefill: compact MoE chunk exceeds checked route/allocation bounds";
+        return false;
+    }
+    if (m.compact_moe && !core::Runtime::get().stream(stream).has_property<sycl::property::queue::in_order>()) {
+        err = "prefill: compact MoE scratch requires an in-order compute queue";
+        return false;
+    }
     if (g.n_embd != N || g.hc != HC || g.hc_lr != LR || g.n_expert < 1 || ss.k != K) {
         err = "prefill: geometry differs from the artifact's"; return false;
     }
@@ -784,9 +817,10 @@ bool Prefill::carve(size_t T, void* alloc) {
         m.logits = c.take<float>(T * m.g->n_expert, ok); m.w = c.take<float>(T * K, ok); m.ids = c.take<int32_t>(T * K, ok);
         m.slot_dev = c.take<int32_t>(T * K, ok); m.src_dev = c.take<int32_t>(T * K, ok);
         const MmqPlan& mp = mmq_plan();
-        m.Xs = mp.fallback ? c.take<uint16_t>(T * K * N, ok) : nullptr;
-        m.GU = c.take<float>(T * K * 1280, ok);
-        m.Hh = mp.fallback ? c.take<uint16_t>(T * K * 640, ok) : nullptr;
+        const size_t scratch_rows = m.compact_moe ? T : T * K;
+        m.Xs = mp.fallback ? c.take<uint16_t>(scratch_rows * N, ok) : nullptr;
+        m.GU = c.take<float>(scratch_rows * 1280, ok);
+        m.Hh = mp.fallback ? c.take<uint16_t>(scratch_rows * 640, ok) : nullptr;
         m.Dm = c.take<float>(T * K * N, ok);
         m.sgate = c.take<float>(T * 640, ok); m.sup = c.take<float>(T * 640, ok); m.sh_h = c.take<uint16_t>(T * 640, ok);
         m.shared = c.take<float>(T * N, ok); m.sg = c.take<float>(T, ok);
@@ -801,6 +835,7 @@ bool Prefill::carve(size_t T, void* alloc) {
     m.dq_gu = mmq_plan().fallback ? o.take<uint16_t>((size_t) (g_expert_group * GU_ELEMS), ok) : nullptr;
     m.dq_d = mmq_plan().fallback ? o.take<uint16_t>((size_t) (g_expert_group * D_ELEMS), ok) : nullptr;
     m.xb_dev = o.take<int32_t>((size_t) m.g->n_expert + 1, ok);
+    m.compact_xb_dev = m.compact_moe ? o.take<int32_t>((size_t) m.g->n_expert + 1, ok) : nullptr;
     if (mmq_plan().any) {
         const MmqPlan& mp = mmq_plan();
         m.ids_identity = o.take<int32_t>(T * K, ok);
@@ -1050,6 +1085,7 @@ uint64_t Prefill::bytes_needed(const core::ModelGeometry& g, const core::Session
         o.take<uint16_t>((size_t) (g_expert_group * D_ELEMS), ok);
     }
     o.take<int32_t>((size_t) g.n_expert + 1, ok);
+    if (compact_moe_enabled()) o.take<int32_t>((size_t) g.n_expert + 1, ok);
     if (mmq_plan().any) {
         const MmqPlan& mp = mmq_plan();
         o.take<int32_t>(T * K, ok);
@@ -1908,6 +1944,15 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
                         if (census->routed_rows != census->expected_rows)
                             throw std::runtime_error("prefill route census row total mismatch");
                     }
+                    if (m.compact_moe) {
+                        int64_t sum = 0;
+                        for (const int32_t count : m.cnt) {
+                            if (count < 0 || count > T || count > T * K - sum)
+                                throw std::runtime_error("prefill compact MoE invalid routed expert count");
+                            sum += count;
+                        }
+                        if (sum != T * K) throw std::runtime_error("prefill compact MoE incomplete routing coverage");
+                    }
                     // set_cpu_pool: the experts the CPU computes this layer (their rows last: [T * K - rows_cpu, T * K))
                     std::vector<char> on_cpu;
                     int64_t rows_cpu = 0, n_cpu = 0, n_stream = 0;
@@ -1967,6 +2012,8 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
                         m.off[(size_t) m.g->n_expert] = at;
                     }
                     const int64_t rows_gpu = T * K - rows_cpu;
+                    if (m.compact_moe && (rows_gpu < 0 || rows_gpu > T * K))
+                        throw std::runtime_error("prefill compact MoE GPU row total outside routes");
                     std::vector<int32_t> fill(m.off.begin(), m.off.end() - 1);
                     for (int64_t i = 0; i < T * K; ++i) {
                         const int32_t e = m.ids_host[(size_t) i];
@@ -2062,7 +2109,7 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
                                     m.bounds_host[std::min(n, g * MMQ_GROUP + i)] - m.bounds_host[g * MMQ_GROUP];
                         m.bounds_host.to_device(m.bounds_dev, m.cs);
                     } else {
-                        gather_rows16(m.mixed_h, m.src_dev, m.Xs, T * K, N, m.cs);
+                        if (!m.compact_moe) gather_rows16(m.mixed_h, m.src_dev, m.Xs, T * K, N, m.cs);
                         // the grouped products' row bounds, `order`'s first rows and the total
                         m.xb_host.resize(order.size() + 1);
                         for (size_t j = 0; j < order.size(); ++j) m.xb_host[j] = m.off[(size_t) order[j]];
@@ -2072,6 +2119,36 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
                         std::vector<const void*> fgu, fd;
                         for (size_t j0 = 0; j0 < nf; j0 += (size_t) strata::kernels::kIqGemmGroup) {
                             const size_t j1 = std::min(nf, j0 + (size_t) strata::kernels::kIqGemmGroup);
+                            if (m.compact_moe) {
+                                const auto groups = compact_moe_groups(m.xb_host.data(), order.data(), order.size(),
+                                                                       m.cnt.data(), m.cnt.size(), j0, j1, T, rows_gpu);
+                                for (const auto& group : groups) {
+                                    fgu.clear(); fd.clear();
+                                    for (size_t j = group.first; j < group.last; ++j) {
+                                        const int32_t e = order[j];
+                                        if (m.cnt[(size_t) e] > strata::kernels::kIqGemmTileRows)
+                                            throw std::runtime_error("prefill compact MoE resident IQ row bound");
+                                        const uint8_t* b = m.cache->device_slot(m.host_res[(size_t) l * m.g->n_expert + e]);
+                                        fgu.push_back(b); fd.push_back(b + ffmt->down_off);
+                                    }
+                                    const int G = (int) (group.last - group.first);
+                                    // xb_dev is immutable for this layer. Each translation follows the previous
+                                    // Down reader on m.cs, so no asynchronous kernel ever reads overwritten bounds.
+                                    compact_moe_bounds(m.xb_dev + group.first, m.compact_xb_dev, G, group.row0, m.cs);
+                                    gather_rows16(m.mixed_h, m.src_dev + group.row0, m.Xs, group.rows, N, m.cs);
+                                    pt.mark(kPfGemmGU, cs);
+                                    strata::kernels::iq_gemm_grouped_f16(ffmt->gu_type, m.Xs, fgu.data(), ffmt->n_ff,
+                                                                         m.GU, 1280, m.compact_xb_dev, G, group.max_rows,
+                                                                         1280, N, m.cs);
+                                    swiglu_interleaved(m.GU, m.Hh, group.rows, m.cs);
+                                    pt.mark(kPfGemmD, cs);
+                                    strata::kernels::iq_gemm_grouped_f16(ffmt->d_type, m.Hh, fd.data(), 0,
+                                                                         m.Dm + (int64_t) group.row0 * N, N,
+                                                                         m.compact_xb_dev, G, group.max_rows, N, 640, m.cs);
+                                    stats_.experts_resident += G;
+                                }
+                                continue;
+                            }
                             fgu.clear();
                             fd.clear();
                             int64_t maxr = 0;
@@ -2094,6 +2171,50 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
                             stats_.experts_resident += G;
                         }
                     }
+                    // Products consume a COMPLETE logical dequant group. Compact mode only partitions its rows;
+                    // the existing q slots, native_flush, blob readers, and ring release events keep their order.
+                    auto fallback_products = [&](size_t j0, size_t j1) {
+                        if (m.compact_moe) {
+                            if (j0 > j1 || j1 - j0 > (size_t) g_expert_group)
+                                throw std::runtime_error("prefill compact MoE dequant window bounds");
+                            const auto groups = compact_moe_groups(m.xb_host.data(), order.data(), order.size(),
+                                                                   m.cnt.data(), m.cnt.size(), j0, j1, T, rows_gpu);
+                            for (const auto& group : groups) {
+                                const int G = (int) (group.last - group.first);
+                                const size_t q0 = group.first - j0;
+                                if (q0 > (size_t) g_expert_group || (size_t) G > (size_t) g_expert_group - q0)
+                                    throw std::runtime_error("prefill compact MoE dequant subgroup outside slots");
+                                const uint16_t* gu = m.dq_gu + q0 * GU_ELEMS;
+                                const uint16_t* dn = m.dq_d + q0 * D_ELEMS;
+                                float* dst = m.Dm + (int64_t) group.row0 * N;
+                                compact_moe_bounds(m.xb_dev + group.first, m.compact_xb_dev, G, group.row0, m.cs);
+                                gather_rows16(m.mixed_h, m.src_dev + group.row0, m.Xs, group.rows, N, m.cs);
+                                pt.mark(kPfGemmGU, cs);
+                                if (!Gemm::f16_groups(m.Xs, gu, GU_ELEMS, m.GU, group.bounds.data(), G, 1280, N, m.cs))
+                                    strata::kernels::xmx_gemm_grouped(m.Xs, gu, GU_ELEMS, m.GU, m.compact_xb_dev, G,
+                                                                      group.max_rows, 1280, N, m.cs);
+                                swiglu_interleaved(m.GU, m.Hh, group.rows, m.cs);
+                                pt.mark(kPfGemmD, cs);
+                                if (!Gemm::f16_groups(m.Hh, dn, D_ELEMS, dst, group.bounds.data(), G, N, 640, m.cs))
+                                    strata::kernels::xmx_gemm_grouped(m.Hh, dn, D_ELEMS, dst, m.compact_xb_dev, G,
+                                                                      group.max_rows, N, 640, m.cs);
+                            }
+                            return;
+                        }
+                        int64_t maxr = 0;
+                        for (size_t i = j0; i < j1; ++i) maxr = std::max<int64_t>(maxr, m.cnt[(size_t) order[i]]);
+                        const int G = (int) (j1 - j0);
+                        const int64_t r0 = m.xb_host[j0], nr = m.xb_host[j1] - r0;
+                        pt.mark(kPfGemmGU, cs);
+                        if (!Gemm::f16_groups(m.Xs, m.dq_gu, GU_ELEMS, m.GU, m.xb_host.data() + j0, G, 1280, N, m.cs))
+                            strata::kernels::xmx_gemm_grouped(m.Xs, m.dq_gu, GU_ELEMS, m.GU, m.xb_dev + j0, G, maxr,
+                                                              1280, N, m.cs);
+                        swiglu_interleaved(m.GU + r0 * 1280, m.Hh + r0 * 640, nr, m.cs);
+                        pt.mark(kPfGemmD, cs);
+                        if (!Gemm::f16_groups(m.Hh, m.dq_d, D_ELEMS, m.Dm, m.xb_host.data() + j0, G, N, 640, m.cs))
+                            strata::kernels::xmx_gemm_grouped(m.Hh, m.dq_d, D_ELEMS, m.Dm, m.xb_dev + j0, G, maxr, N,
+                                                              640, m.cs);
+                    };
                     // Optional native dequant batching, OFF unless explicitly requested.
                     const bool native_batch = [&] {
                         const char* v = std::getenv("STRATA_PREFILL_NATIVE_DEQUANT_BATCH");
@@ -2365,18 +2486,7 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
                         if (q + 1 < G && j + 1 < order.size()) return true;
                         if (native_batch) native_flush();   // weights must be expanded before the unchanged GEMMs
                         const size_t j0 = j - (size_t) q;
-                        int64_t maxr = 0;
-                        for (size_t i = j0; i <= j; ++i) maxr = std::max<int64_t>(maxr, m.cnt[(size_t) order[i]]);
-                        const int64_t r0 = m.xb_host[j0], nr = m.xb_host[j + 1] - r0;
-                        pt.mark(kPfGemmGU, cs);
-                        if (!Gemm::f16_groups(m.Xs, m.dq_gu, GU_ELEMS, m.GU, m.xb_host.data() + j0, q + 1, 1280, N, m.cs))
-                            strata::kernels::xmx_gemm_grouped(m.Xs, m.dq_gu, GU_ELEMS, m.GU, m.xb_dev + j0, q + 1, maxr,
-                                                              1280, N, m.cs);
-                        swiglu_interleaved(m.GU + r0 * 1280, m.Hh + r0 * 640, nr, m.cs);
-                        pt.mark(kPfGemmD, cs);
-                        if (!Gemm::f16_groups(m.Hh, m.dq_d, D_ELEMS, m.Dm, m.xb_host.data() + j0, q + 1, N, 640, m.cs))
-                            strata::kernels::xmx_gemm_grouped(m.Hh, m.dq_d, D_ELEMS, m.Dm, m.xb_dev + j0, q + 1, maxr, N,
-                                                              640, m.cs);
+                        fallback_products(j0, j + 1);
                         return true;
                     };
                     if (!stream_all) {
@@ -2651,18 +2761,7 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
                         if (slot >= 0) { publication::require(strata::gpu::event_record(m.used[slot], m.cs), "strata::gpu::event_record", strata::gpu::last_error); m.used_of[slot] = slot; }
                         if (q + 1 < G && j + 1 < order.size()) return true;
                         const size_t j0 = j - (size_t) q;
-                        int64_t maxr = 0;
-                        for (size_t i = j0; i <= j; ++i) maxr = std::max<int64_t>(maxr, m.cnt[(size_t) order[i]]);
-                        const int64_t r0 = m.xb_host[j0], nr = m.xb_host[j + 1] - r0;
-                        pt.mark(kPfGemmGU, cs);
-                        if (!Gemm::f16_groups(m.Xs, m.dq_gu, GU_ELEMS, m.GU, m.xb_host.data() + j0, q + 1, 1280, N, m.cs))
-                            strata::kernels::xmx_gemm_grouped(m.Xs, m.dq_gu, GU_ELEMS, m.GU, m.xb_dev + j0, q + 1, maxr,
-                                                              1280, N, m.cs);
-                        swiglu_interleaved(m.GU + r0 * 1280, m.Hh + r0 * 640, nr, m.cs);
-                        pt.mark(kPfGemmD, cs);
-                        if (!Gemm::f16_groups(m.Hh, m.dq_d, D_ELEMS, m.Dm, m.xb_host.data() + j0, q + 1, N, 640, m.cs))
-                            strata::kernels::xmx_gemm_grouped(m.Hh, m.dq_d, D_ELEMS, m.Dm, m.xb_dev + j0, q + 1, maxr, N,
-                                                              640, m.cs);
+                        fallback_products(j0, j + 1);
                         return true;
                     };
                     if (!stream_all) {

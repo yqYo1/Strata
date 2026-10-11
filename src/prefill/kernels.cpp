@@ -992,6 +992,11 @@ void gather_rows16(const uint16_t* x16, const int32_t* src, uint16_t* dst16, int
         dst[r * per + j] = x[(int64_t) src[r] * per + j];
     });
 }
+void compact_moe_bounds(const int32_t* absolute, int32_t* local, int groups, int32_t row0, void* stream) {
+    Q(stream).parallel_for(sycl::range<1>((size_t) groups + 1), [=](sycl::id<1> i) {
+        local[i] = absolute[i] - row0;
+    });
+}
 void moe_combine(const float* Dm, const int32_t* slot, const float* w, const float* shared, const float* sg, float* bo,
                  int64_t T, void* stream) {
     Q(stream).parallel_for(sycl::range<1>((size_t) (T * N)), [=](sycl::id<1> id) {

@@ -742,7 +742,8 @@ target_include_directories(strata_spec PUBLIC include)
 if(STRATA_BUILD_TESTS)
   # Exercise the production handoff and physical-context helpers on the host.
   # Release builds must retain the publication test's assertion checks.
-  foreach(helper IN ITEMS prefill_publication commit_transaction full_context_probe mtp_completion context_bounds)
+  foreach(helper IN ITEMS prefill_publication prefill_compact_moe commit_transaction full_context_probe
+                          mtp_completion context_bounds)
     add_executable(${helper}_test tools/test_${helper}.cpp)
     target_include_directories(${helper}_test PRIVATE include)
     target_link_libraries(${helper}_test PRIVATE strata_warnings)

@@ -65,6 +65,8 @@ void swiglu_interleaved(const float* gu, uint16_t* h16, int64_t n, void* stream)
 void swiglu_pair(const float* g, const float* u, uint16_t* h16, int64_t n, void* stream);
 /// Gather rows: dst16[i, :] = x16[src[i], :] (n rows of `width` BF16).
 void gather_rows16(const uint16_t* x16, const int32_t* src, uint16_t* dst16, int64_t n, int64_t width, void* stream);
+/// Translate persistent device bounds into reusable local bounds on the same in-order compute queue.
+void compact_moe_bounds(const int32_t* absolute, int32_t* local, int groups, int32_t row0, void* stream);
 /// bo[t, :] = shared[t, :] * sigmoid(sg[t]) + sum_k w[t, k] * D[slot[t, k], :]
 void moe_combine(const float* D, const int32_t* slot, const float* w, const float* shared, const float* sg, float* bo,
                  int64_t T, void* stream);
