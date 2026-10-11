@@ -1,0 +1,210 @@
+XeStrata per-layer profile fill implementation v1
+Date: 2026-10-11 (Asia/Tokyo)
+Implementer: gpt-6.1-sol, source-only. Main owns integration and all qualification.
+Status: implemented; no compile, lint, test, Runtime query or model run performed.
+
+Source identity and isolation
+Immutable base: 51436a0fe4c9588b0d3eaae921a7eae12343ce7e
+Base generate.cpp SHA-256:
+  9e18752e4dd08bbdf5343ee6e1d26774466ccd5de2f4b05dc412f31d93188184
+Read-only Main worktree:
+  /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011
+New own worktree:
+  /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-per-layer-profile-fill-20261011
+New own branch: fix/xestrata-per-layer-profile-fill-20261011
+HEAD remains the base; only src/program/generate.cpp and src/core/expert_cache.cpp
+are modified. The previous own serialized-admission worktree and its uncommitted
+change were not altered. No root or Main checkout edits occurred.
+
+Read source AGENTS.md; LOCAL.md was absent. The already-read git-workflow skill
+was used for explicitly authorized separate worktree creation. Task prohibitions
+override skill automatic commit/push and defer required lints/builds/tests to Main.
+No build/compiler/lint/test/inference/profiler/Runtime/GPU query, process-state
+query/control, service/reset, cleanup, commit, push or network publication occurred.
+Source reads, worktree creation, source edits, diff/hashes and requested artifacts
+only. The prohibited credential-bearing prefill contract record was never read.
+
+Evidence and unchanged failed-run status
+Read xe-source-llvm-model8k-root-v3/record.json and commands/model.stderr.
+The selected invocation requested --expert-cache 128 --expert-cache-per-layer
+with the same profile. Source admission and stderr report 144 actual slots,
+3 per layer, 281 MiB. The old profile loop filled only 29 of 144; the later
+residency table also contained 29. Its first 1-token verifier window recorded
+4 hits / 480 lookups (0.8%). These are Main-owned observed results, not runs by
+this implementer.
+
+v3 reached READY 262144 and completed both batched prompt chunks (4096 and 8191
+conditioning positions for the 8192-token request). It generated only token
+248046, stopped, and recorded drafts accepted 0 of 0. Main identifies the first
+8192 cut-out's end-of-turn as the reason to replace the diagnostic input with a
+conversation-tail-preserving one. v3 remains FAILED/incomplete: the record has
+passed=false, complete=false and an observer error "normal closed model".
+Its kernel final gate passed, new_fault_messages is empty, and ownership was
+closed by Main. This is neither a GPU hang nor a model-quality/MTP pass. Main's
+normal-QUIT observer/input follow-up is independent of this source-only task.
+
+Cause found in production source
+read_expert_profile loads all n_ranked pairs into profile and checks format,
+version, geometry, header count, truncated bytes and pair bounds. There is no
+profile.resize to --expert-cache N here. The old generate.cpp comment describing
+an explicit number as truncating the ranked list was misleading: the relevant
+selection truncation occurred in the startup fill loop's want=min(profile.size,
+cache.slots) and i<want limit. The full ranking remains available for learning,
+refill and resident-complement consumers; multi-GPU alone partitions it by stage.
+
+ExpertCache::admit rejects invalid IDs, an uninitialized per-layer cursor, a
+filled individual layer range, or a full global cache. It returns an existing
+slot for duplicate pairs. In per-layer mode, the filled-layer rejection is not
+evidence that all cache slots are occupied. The old fill loop nevertheless
+broke on that first rejection. Simply continuing would still examine only the
+first want ranks and miss later high-ranked entries for other layers.
+
+Implemented selection and termination
+Only the startup primary-cache scan policy changes:
+- Global: retain scan=want, the original hottest prefix, original admission,
+  original break on admission refusal and no eviction. Valid unique profile
+  input yields the same admitted pairs, slots and blob-size order as before.
+- Per-layer: scan at most the whole loaded profile when want>0; continue past
+  rejected pairs without requesting their blobs or copying them. Stop when
+  prefilled reaches want, or when all scan ranks have been considered.
+  Since ranking pairs are now unique and valid, every success is one newly
+  occupied slot; each layer's first admitted pairs in rank order fill its own
+  quota. Filling want slots early cannot leave a required slot unfilled when
+  want is total capacity. Sparse rankings may exhaust before quotas fill and
+  correctly leave unranked capacity empty.
+- Zero available capacity performs no scan/copy. Each iteration advances once;
+  no retry, reset, polling, eviction, fallback policy or unbounded search exists.
+  The complete 48x512 ranking caps the selected case at 24576 admission checks
+  and 144 successful H2D blob fills. This bound is source-derived, not measured.
+
+Mapped-file advice remains optional; its window is clamped to scan. Bounds use
+fill_ahead < scan-i before adding the offset, so huge STRATA_FILL_AHEAD values
+cannot overflow the signed lookahead addition. No pointer can advise beyond the
+ranking. This alters speculative file advice on the longer per-layer scan but
+does not turn advice into a residency/copy success.
+
+Invalid, duplicate and sparse profiles
+Existing invalid-format/version/geometry/truncation/out-of-range refusals remain.
+Added read-time refusal when n_ranked exceeds the model's pair count, before
+rank/raw allocation. Added a byte-per-model-pair seen table and refusal naming
+the repeated pair. Duplicate input is now explicitly invalid, rather than
+inflating successful-copy counts and quota completion.
+
+This also protects native global sized slots: sized_slots follows ranked layer
+blob sizes, while admit returns an already-existing slot for a duplicate.
+Accepting/refilling a duplicate and then admitting a later differently sized
+layer could move that later blob into a slot sized for an earlier rank. Rejecting
+duplicates preserves the size/rank relationship rather than skipping them after
+slot sizing. tools/make_profile.py's production take() deduplicates pairs, and
+rank_learned_profile ranks unique model indices. Neither writer/ranker/tool nor
+the profile file is modified. Custom profiles containing repeated pairs that
+previously loaded are a deliberate compatibility change and now fail clearly.
+
+The added seen table is transient host memory: 24576 bytes for the selected
+48x512 geometry, no new device memory. Accepted ranking length is bounded by the
+model pair count; the existing raw/ranked allocations and cache memory sizing
+are unchanged. Empty/sparse unique profiles remain accepted. Sparse fill logs
+now use actual cache capacity as denominator instead of min(profile length,
+capacity), avoiding a false fully-filled claim.
+
+Verification and copy accounting
+Track the rank and actual slot of the first successful checked blocking fill.
+Verify that same pair/slot with its actual layer blob size after filling, rather
+than assuming profile[0] must have been admitted. This matters for zero-quota
+layers and for a first ranked pair belonging to a nonzero layer's slot range.
+The verification source pointer is checked before verify_slot. No-filled-slot
+cases do not dereference an invalid rank or falsely report verification.
+The stderr line reports the real verified slot number (global usual slot 0), or
+"no filled slot to verify". Existing full valid global runs still report slot 0.
+
+prefilled and fill_bytes increment only after fill_slot_blocking succeeds;
+quota-refused pairs perform no blob read/copy and contribute no successful count.
+The duplicate reader guard makes copy/occupancy counts agree. A null blob or a
+failed blocking copy/verification remains a nonzero error path; there is no
+success-as-failure coercion. The source's transient fill_tmp is reused only after
+the unchanged blocking copy's checked Runtime wait. No asynchronous fill was
+introduced into startup.
+
+Typed-size/all-caller review and unchanged safeguards
+generate.cpp's native per-layer sized_slots uses q copies of each layer's own
+blob in layer order, with 256-byte-aligned offsets; budget stays requested N
+times max_blob, q is capped by experts per layer, and shrink_to rebuilds whole
+layer lists. This explains requested 128 -> actual 144 without changing quota,
+budget or bytes. open_sized recomputes the per-layer admission cursors after
+allocating byte-sized backing storage, so returned slot indices match final
+slot ranges/offsets. These sizing/admission methods are unchanged. Every selected
+fill still passes expert_layout().blob_bytes(the actual pair's layer), so the
+longer rank scan does not change a slot's layer/type ownership.
+
+Reviewed all production ExpertCache fill callers:
+- Primary startup profile fill: changed as above.
+- Stage startup profile fill: st.cache never enables per-layer admission; its
+  profile-prefix sized slots, break at global fullness, filled/held prefix and
+  other_gpus prefix consumer remain correct for validated unique input. No stage
+  policy, CUDA/HIP implementation or stage code was changed.
+- expert_hit_run: existing ordinary per-layer one-token dynamic admit/fill on
+  the same stream; unchanged. It requests a blob only for an actual new admission.
+- Serve and standalone prompt-loan refill: restore recorded (expert-index, slot)
+  entries with that layer's bytes; keep transient sources blocking, queued fills
+  and the existing completion points. They do not presume profile[slot].
+- VRAM grow/refill, elastic K/V cache restore and adaptive swaps: use recorded
+  residency/slot ownership or the full ranking with capacity checks, rather
+  than startup prefilled as a prefix index. Existing direct copy and queued-fill
+  behavior is unchanged; this patch is not a separate audit/repair of all their
+  error handling. Selected v3 has --adapt-swaps 0 and --no-prefill-borrow.
+- Xe RemoteExperts helper-tier open explicitly refuses unsupported operation;
+  it is not a second supported static fill implementation needing this change.
+
+Full profile remains intact; host_res is still built from actual cache slot_of
+results. The separate serve metadata admission repair at 51436a0 remains intact.
+No host-USM capability gate, TokenGraph/doorbell graph or async MTP-chain refusal,
+segmented handoff/completion/drain, model/kernel math, physical 262144 context,
+MTP/output bounds, spec width, device selection or default cache policy changed.
+More intended per-layer experts will use existing GPU arithmetic rather than
+CPU arithmetic; their different accumulation order can change near-tie tokens.
+No numerical/output-quality equivalence or throughput improvement is asserted.
+
+History and interpretation
+Read R357/R358/R361/R367 and registry v120 (task-pinned 489 reports, docs commit
+43985e7c). The retained official/pristine recipes repeat requested settings;
+their historical actual 144 slots/chunk geometry is not an independent settings
+search or a chosen optimum. This fix changes implementation of the existing
+per-layer profile policy, not the profile ranking/file, CLI recipe, expert-cache
+budget or an official/pristine parameter-search result. It does not reinterpret
+earlier throughput with historical geometry as measured speed for this patch,
+and does not qualify an unsafe pristine volatile handoff route.
+
+Qualification boundary and next Main-owned checks
+No new mirror-of-loop test, Runtime stub or CPU fake-cache selector was added.
+The actual scan lives in the production generate driver and calls actual
+ExpertCache admission; extracting/duplicating it solely for a host test would
+expand this minimal fix. No existing or new test was executed by this agent.
+Main must run required free/contrib-llvm build/lint/CPU/host sanitizer checks;
+the contrib-icpx mode must not stand in for them. Existing profile reader CPU
+tests and actual per-layer cache tests are relevant; no new pass is claimed.
+
+Main can qualify the real production path with unchanged complete skewed ranking
+and confirm 144/144 occupancy, 3 actual residents per layer, verified real slot,
+requested/resolved bytes and updated lookup counts. Sparse, duplicate, invalid
+and first-pair-not-layer-zero cases need actual production-reader/selector checks
+if those compatibility boundaries are required. Preserve failed outcomes and
+confirm the selected conversation-tail input produces real MTP windows before
+claiming MTP correctness. Main owns fresh-fault and normal-QUIT receipts.
+All filled-count, runtime completion, GPU numerical/model quality, performance,
+small-device, all-resident, adaptive/elastic, prefill-loan and multi-GPU behavior
+for this candidate remains unverified. No model or process was touched here.
+
+Artifacts and SHA-256
+Staging root:
+  /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-per-layer-profile-fill-source-v1
+src/program/generate.cpp
+  before 9e18752e4dd08bbdf5343ee6e1d26774466ccd5de2f4b05dc412f31d93188184
+  after  c9b60ef079694302dfa1f8099ddffd5375d7dae503f6edec454c1d7de3d941ee
+src/core/expert_cache.cpp
+  before 7f8b00350794b4985c9bf34a9bb88b37a36384fac0a072aa437bfc8d758bc10a
+  after  83a8857e0f4be6efece62b49de7ca184d9213f702f2037a6d5eaf502987d9c07
+Exact patch: per-layer-profile-fill.patch
+  73750b009ad0edd1970d1c7cb4b91cd43d2adea9b82762921d8223d64d978431
+manifest.json records source/patch/report identities, unchanged companion source
+pins, input evidence hashes and explicit source-only limitations. Both replacement
+C++ files retain original LGPL/SPDX copyright headers. No CMake change or commit.
