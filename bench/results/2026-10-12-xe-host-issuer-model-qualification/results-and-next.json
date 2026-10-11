@@ -1,0 +1,210 @@
+{
+  "source_revision": "337255086026f6eef21a861c297183d05a5f7a22",
+  "diagnostic_samples": [
+    {
+      "receipt": {
+        "path": "bench/results/2026-10-12-xe-host-issuer-model-qualification/receipts/xe-host-issuer-model-root-v3/n64-t8192-g16-issuer-on/record.json.lossless.json",
+        "sha256": "690d72d71cc43f1e9ad2a47c35435604544c907f7801d86feb08f8e6d2bc12c3",
+        "original_sha256": "ef72d7495b1646a4e0b67343c29f2a5220f796f2c7281127ec28b164f83770c9"
+      },
+      "input_tokens": 64,
+      "observer": "on",
+      "prompt_ms": 5277.3,
+      "decode_ms": 3536.0,
+      "output_ids": [
+        40,
+        5125,
+        421,
+        279,
+        1970,
+        41643,
+        488,
+        24001,
+        7701,
+        310,
+        381,
+        7167,
+        494,
+        678,
+        1876,
+        13
+      ],
+      "generated_tokens": 16,
+      "mtp_counts": [
+        6,
+        26
+      ],
+      "passed": true,
+      "performance_eligible": false,
+      "normal_quit": true,
+      "kernel_gate": true,
+      "arithmetic_equal": null,
+      "paired_output_equal": null,
+      "issuer_by_kind": {
+        "pinned_direct": {
+          "entries": 6951,
+          "expert_bytes": 14257561600,
+          "wait_sum_ns": 0,
+          "submit_sum_ns": 134035590
+        },
+        "unpinned_staged": {
+          "entries": 0,
+          "expert_bytes": 0,
+          "wait_sum_ns": 0,
+          "submit_sum_ns": 0
+        },
+        "transient_staged": {
+          "entries": 0,
+          "expert_bytes": 0,
+          "wait_sum_ns": 0,
+          "submit_sum_ns": 0
+        }
+      },
+      "issuer_row_count": 144
+    },
+    {
+      "receipt": {
+        "path": "bench/results/2026-10-12-xe-host-issuer-model-qualification/receipts/xe-host-issuer-model-root-v3/n32768-t8192-g16-issuer-off/record.json.lossless.json",
+        "sha256": "7eff0653e3ff36e58fa762539573c8f73412dd3d1cafde4f77792fafa0abdc04",
+        "original_sha256": "63f81bdaf8f03fc5064a04c6471da41a56041258bd29582ec7dbfff46659ed37"
+      },
+      "input_tokens": 32768,
+      "observer": "off",
+      "prompt_ms": 94256.7,
+      "decode_ms": 2380.7,
+      "output_ids": [
+        40,
+        3172,
+        22903,
+        411,
+        42903,
+        4560,
+        1970,
+        57710,
+        11,
+        20434,
+        383,
+        55404,
+        21851,
+        11,
+        5438,
+        7465
+      ],
+      "generated_tokens": 16,
+      "mtp_counts": [
+        10,
+        13
+      ],
+      "passed": true,
+      "performance_eligible": false,
+      "normal_quit": true,
+      "kernel_gate": true,
+      "arithmetic_equal": true,
+      "paired_output_equal": null,
+      "issuer_by_kind": null,
+      "issuer_row_count": 0
+    },
+    {
+      "receipt": {
+        "path": "bench/results/2026-10-12-xe-host-issuer-model-qualification/receipts/xe-host-issuer-model-root-v3/n32768-t8192-g16-issuer-on/record.json.lossless.json",
+        "sha256": "28cd66d312403863416713846bae6481edb769fd19a53cff52061ba25aa116a6",
+        "original_sha256": "a0302e26058e9df650ac320819d9a87279544fd8bd53850c5c41c53f6cd43105"
+      },
+      "input_tokens": 32768,
+      "observer": "on",
+      "prompt_ms": 93433.8,
+      "decode_ms": 2813.3,
+      "output_ids": [
+        40,
+        3172,
+        22903,
+        411,
+        42903,
+        4560,
+        1970,
+        57710,
+        11,
+        20434,
+        383,
+        55404,
+        21851,
+        11,
+        5438,
+        7465
+      ],
+      "generated_tokens": 16,
+      "mtp_counts": [
+        10,
+        13
+      ],
+      "passed": true,
+      "performance_eligible": false,
+      "normal_quit": true,
+      "kernel_gate": true,
+      "arithmetic_equal": true,
+      "paired_output_equal": true,
+      "issuer_by_kind": {
+        "pinned_direct": {
+          "entries": 97728,
+          "expert_bytes": 199990579200,
+          "wait_sum_ns": 0,
+          "submit_sum_ns": 9331112483
+        },
+        "unpinned_staged": {
+          "entries": 0,
+          "expert_bytes": 0,
+          "wait_sum_ns": 0,
+          "submit_sum_ns": 0
+        },
+        "transient_staged": {
+          "entries": 0,
+          "expert_bytes": 0,
+          "wait_sum_ns": 0,
+          "submit_sum_ns": 0
+        }
+      },
+      "issuer_row_count": 576
+    }
+  ],
+  "current32k_host_submit_wrapper_sum_ms": 9331.112483,
+  "current32k_stager_wait_sum_ms": 0.0,
+  "host_attribution_limit": "These are inclusive host wrapper sums and Stager wait only. They exclude native dequant/GEMM kernel submission, GPU service and DMA critical path. Zero wait for pinned_direct is not proof of no GPU/DMA waiting elsewhere.",
+  "requested_ring": 8,
+  "actual_ring": 16,
+  "context": 262144,
+  "chunk": 8192,
+  "group": 16,
+  "native_dequant_batch": 0,
+  "fused": 0,
+  "cpu_share": 0,
+  "actual_expert_slots": 144,
+  "controller_cpu_passed": true,
+  "actual_receipt_admission_passed": true,
+  "original_report_publication_v1_passed": false,
+  "original_report_publication_failure": "Git diff --check found one trailing EOF blank line in R176 grouped report. Byte-exact original retained losslessly; only separately identified readable derivative normalized.",
+  "original_cpu_wrapper_v1_passed": false,
+  "original_cpu_wrapper_failure": "Inner default64MiB RLIMIT_FSIZE could not raise outer4MiB hard limit; preexec_fn failed before CPU mock start. New Main wrapper uses64MiB file hard cap, unchanged4MiB text/8MiB total caps. Production/controller source unchanged; failed receipts remain exact.",
+  "model_gpu_fault_observed": false,
+  "new_performance_claim": false,
+  "full262144_runtime_qualified": false,
+  "restore_qualified": false,
+  "broad_quality_qualified": false,
+  "latest_quiet64k_prefill_mean_tps": 353.5772751396579,
+  "latest_quiet64k_cold16_decode_mean_tps": 7.639761327986409,
+  "main_corrections": {
+    "health_environment": "Qualified health-v3 DID contain loader trace and UR_LAYER_TRACING/UR_LOG_TRACING; previous absence inference withdrawn. First-model narrow debug environment was explicitly reviewed and now actually passed. Health retains exact prior environment; no unitrace/PTI replay.",
+    "R176_tile": "Proposed WG32x64 produces one-sixteenth the128x256 output tile, notone-quarter; 4xlessaccumulator/lane,16xworkgroups and4xtotalSG are structural counts, not occupancy/GRF/performance proof. Actual grouped dispatch is xmx_gemm.cpp316–341, not216–238.",
+    "R177_binary": "Report supplied executable path under B/build is incorrect. Exact qualified binary is W/build/free/strata, SHAfd241348db019ec0985072e55dc27c08ac0cfd7962072847905e391e73ab83fd; no extraction/AOT/native-code evidence was produced.",
+    "R177_settings": "Keep the current physical262144 context/KV policy fixed for the initial phase settings screen; do not silently replace with smallest context. Stock auto is a separate policy arm, not mixed into fixed-policy chunk ranking. Median-based decode selection and held-out validation require independently repeated samples; one screening sample cannot establish a median winner. Selection and validation remain distinct fresh runs."
+  },
+  "upstream_defaults_only": false,
+  "upstream_independent_optimum_search_proven": false,
+  "pristine_v0143_new_long_measurement": false,
+  "next": [
+    "Use actual host submit/wait ledger to rule in/out issuer host service; it does not measure DMA, GPU service or an exclusive critical path.",
+    "Complete phase attribution and offline finalbinary route/codegen screen before changing grouped tile.",
+    "Complete mandatory official server/API/setup functional units; original private logit-bias v2 remains pending.",
+    "Qualify safe pristine source/runtime before official default/matched/independentlyselected >=32K comparisons.",
+    "Physical262144 exhaustion, RESTORE, broader quality and repeated clean speed validation remain OPEN."
+  ]
+}

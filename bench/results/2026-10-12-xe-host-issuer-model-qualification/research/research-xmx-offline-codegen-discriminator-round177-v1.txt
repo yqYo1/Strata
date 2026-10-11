@@ -1,0 +1,89 @@
+# R177 — offline final-binary XMX codegen discriminator
+
+Date: 2026-10-12 (Asia/Tokyo). Read-only source and primary-documentation review; no compiler, extractor, disassembler, import, AST/code execution, test, build, profiler, process/device/runtime query, GPU run, Git command, cleanup, or production edit was performed. The only write is this report. All commands below are unexecuted recipes. No performance result or active runtime-route claim is made.
+
+## Decision
+
+A host-only inspection can establish whether the supplied final executable contains the relevant target image and whether an offline compiler accepts that image for an exact device target. AOT output may expose native instructions and compiler spill diagnostics. Current available evidence does **not** establish per-kernel B570 GRF count, spill bytes, scratch bytes, or production JIT allocation. The installed `ocloc-26.31.1` uses a separately installed IGC and must be labelled an offline backend screen, not treated as the same compiler/backend image as the production Level Zero JIT.
+
+The useful first discriminator is therefore conditional and cheap in interpretation:
+
+1. Extract the exact `strata` executable image and bind it to the supplied executable SHA256, build/source/flags and target image section. Identify whether the image contains the grouped XMX entry.
+2. With the target string taken from Main's approved device qualification receipt, ask the installed `ocloc` to compile that extracted SPIR-V offline. Keep compiler output and per-entry diagnostics. If it reports a spill for the identified entry, that is evidence of pressure for the specified AOT IGC/target/options. If it reports no spill, that only closes the spill question for that AOT configuration; it does not prove no JIT spill or low register occupancy.
+3. Stop if the offline backend cannot accept the raw extracted image or cannot identify the entry/produce per-kernel resource diagnostics. Do not infer GRF allocation from the source accumulator count or SPIR-V instruction count.
+
+This adds a concrete extraction and evidence boundary to R175/R176. It does not change the R176 tile decision: the 32x64 workgroup/16x32 subgroup candidate is only a later source variant if the current exact entry shows material pressure. No code candidate is produced in this research-only task.
+
+## Exact source and binary identity supplied for Main
+
+- Production worktree: `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-xe-host-issuer-ledger-20261012`, supplied revision `337255086026f6eef21a861c297183d05a5f7a22`.
+- Arithmetic reference pin: `39e395a103af36323262cdc0dbaea27cba81f3e4` (unchanged).
+- Final executable: `/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-issuer-ledger-free-qualification-root-v5/build/strata`, supplied SHA256 `fd241348db019ec0985072e55dc27c08ac0cfd7962072847905e391e73ab83fd`.
+- The relevant source `src/kernels/xe/xmx_gemm.cpp` read in the supplied worktree has SHA256 `2d2144e7331b3dd66a2289a9c67b541b1c136332be53f31c935c9176880085d1`.
+- LLVM source supplied by Main: `/home/yayoi/ghq/github.com/intel/llvm/.worktree/toolchain-sycl-v711-b570-20261011`, `504366f + 17 patches`. `clang/tools/clang-offload-extract/ClangOffloadExtract.cpp` SHA256 is `473873abdf8578a5de7b8dc715c13dc19788a4b837f79ac929f9ba73640c8384`.
+- Available tool path supplied by Main: `/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin`. The install has `clang-offload-extract`, `clang-offload-bundler`, `llvm-spirv`, and `sycl-post-link`; this read-only check found no `spirv-dis` or `llvm-objdump` in that bin directory. `llvm-spirv` is a translator, not evidence of native disassembly support.
+- Production-loaded IGC supplied by Main: `/usr/local/lib/libigc.so.2.41.5+1788943183`, SHA256 `40badd8f1ee80ac844a8947f5e91e5654fbcd851caefe343b0e5ec4ce4d1b123`.
+- Available `/usr/bin/ocloc-26.31.1` may load a different IGC/backend. The exact IGC actually loaded by this binary and whether it can parse the extracted image were not checked or executed here. Do not attribute its result to production JIT without byte/version equality and matched options.
+
+These identities were supplied/read as requested; no Git verification or executable hashing was performed in this round.
+
+## Extraction finding and safe recipe
+
+`ClangOffloadExtract.cpp` documents that it extracts target images from a **linked** fat binary by reading `.tgtimg` address/size pairs. The input is a positional argument (default `a.out`); `--stem=<path>` names output files `<stem>.<index>`. The source labels `--output` deprecated in favor of `--stem`. Its loop prints the containing section name and image number for each output unless `-q` is used. Thus no preliminary `clang-offload-bundler` step should be presumed: first try the installed extractor directly on the final executable. The extractor does not itself report source kernel names or prove an image is selected at runtime.
+
+Unexecuted, Main-owned recipe (use a fresh private output directory; retain stdout/stderr and hashes):
+
+```sh
+LLVM_BIN=/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin
+BIN=/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-issuer-ledger-free-qualification-root-v5/build/strata
+OUT=/path/to/fresh/private/r177-images/strata
+"$LLVM_BIN/clang-offload-extract" --stem="$OUT" "$BIN"
+sha256sum "$BIN" "$OUT".*
+```
+
+Record the emitted section name/image index beside each extracted file. Inspect each extracted payload's magic/bytes and target metadata. Only if an extracted payload is itself a clang offload bundle should Main use `clang-offload-bundler --list`/`--unbundle` with the exact target found inside it. If the payload is raw little-endian SPIR-V (as prior R175 evidence reports for the earlier image set), it is already the compiler input and needs no bundler. If an image is an opaque format, keep it and stop until the matching format reader is identified. Bind every conclusion to image SHA256; an image from an archive member or another executable is not a substitute for final-executable evidence.
+
+The extraction source is primary source evidence at `clang/tools/clang-offload-extract/ClangOffloadExtract.cpp` (supplied source tree; source hash above). Its output mapping is by table order, not a semantic guarantee that the image is the running route. The section name, payload target, image digest and executable digest belong in the receipt.
+
+## Codegen/resource evidence and limits
+
+For this exact kernel, `xmx_gemm.cpp` declares `GroupedKernel<WM,WN,PD>` and the dispatch selects `<128,256,3>` for the current grouped XMX shape. `tile()` uses `SGM=4`, `SGN=4`, `TM=8`, `TN=16`; it holds a 4x4 array of FP32 accumulator `joint_matrix` objects. That is 16*8*16 = 2,048 FP32 accumulator values per 16-lane subgroup, a source-level structural count of 128 values per lane before operands/temporaries. This is not physical GRF allocation. The path's large-GRF admission is a device executable-bundle test and source build option, not a recorded spill-free kernel result. (R176 provides the full arithmetic and dispatch crosswalk.)
+
+Intel's GPU Optimization Guide says the AOT compiler can warn when a kernel spills, and Intel DPC++ AOT documentation distinguishes target-native output from the SPIR-V used for JIT. Those support the AOT warning as a discriminator for its own target/backend. They do not establish that this `ocloc` build reports all per-kernel GRF or scratch values, nor that a zero-spill AOT result matches Level Zero JIT. The current tool inventory also lacks a discovered standalone SPIR-V/native disassembler, so do not promise an ISA dump until the exact installed tool reports that support.
+
+For any AOT attempt, take the architecture/device token from the approved device receipt (often written `bmg-g21`, but do not infer it from the B570 marketing name). Unexecuted recipe skeleton; first confirm syntax and input-format support from existing package documentation or a future Main-owned read-only help check, then preserve the exact options and output:
+
+```sh
+OCLOC=/usr/bin/ocloc-26.31.1
+SPV=/path/to/the-hashed-raw-spirv-image.spv
+TARGET=/path/from/approved/device/receipt
+"$OCLOC" -file "$SPV" -device "$TARGET" -out_dir /path/to/fresh/private/r177-aot
+```
+
+This recipe is intentionally not called here and is not guaranteed accepted by this particular ocloc version. Do not pass undocumented flags or silently use a different target. If AOT succeeds, record `ocloc` version/hash, actual loaded IGC path/hash, full command/environment, input SPIR-V and output hashes, compiler warnings, kernel entry names and any per-kernel native resource fields emitted. If it only emits a device binary with no readable code/resource diagnostics, the result is acceptance/translation evidence only.
+
+A meaningful positive pressure record must name the exact `GroupedKernel<128,256,3>` entry (or the compiler's proven corresponding mangled entry), identify its target image, and show an explicit spill warning/count/bytes or native GRF/scratch fields for that entry. An aggregate log mentioning an unrelated kernel is insufficient. A kernel entry's presence alone establishes image inclusion, not invocation. A string or SPIR-V disassembly line mentioning XMX/DPAS-like operations does not establish the allocated GRFs, spilling, occupancy or execution. Report “not available” for any resource field the backend does not emit; do not convert a missing statistic to zero.
+
+## Minimum next evidence, and falsifiers
+
+The smallest Main-owned offline record should contain: exact executable and image SHA256; extractor output mapping; image format and target identity; actual candidate entry name; unchanged source and build flags including 256-GRF mode; `ocloc` and loaded IGC identities; full target/command/options; compiler acceptance; per-entry native code/resource diagnostics (or explicit unavailable); and a statement that the result is AOT-only.
+
+This proposed discriminator is falsified or stops early if the supplied final `strata` lacks `.tgtimg`/supported linked images; extraction cannot bind the image to the final binary; no matching grouped XMX entry is present; the payload is not accepted by the selected AOT backend; target is unsupported; backend logs cannot attribute spill/resource output to the entry; or the IGC identity differs and Main's question requires production-JIT equivalence. A missing candidate entry does not prove the runtime never uses XMX; it only says this binary's inspected image did not furnish the expected entry. No native code or resource conclusion follows from those failures.
+
+If Main later needs production-JIT per-kernel GRF/spill/scratch rather than an offline screen, this task found no existing host-only evidence path that proves those numbers for the supplied live JIT. That stronger claim needs either an exact production backend offline path using the same IGC/options, or a qualified runtime compiler diagnostic/ISA artifact and a trace tying it to this kernel entry. Runtime collection is outside this report's host-only scope.
+
+## Sources
+
+Primary local implementation:
+
+- Intel LLVM `clang/tools/clang-offload-extract/ClangOffloadExtract.cpp`, supplied source commit/worktree above. It defines positional input, `.tgtimg` parsing, section-bound image extraction, `--stem`, and output section/image reporting. Stable browsing URL: https://github.com/intel/llvm/blob/504366f/clang/tools/clang-offload-extract/ClangOffloadExtract.cpp (the local tree is stated as that base plus 17 patches; link is base source, not all patches).
+
+Primary Intel documentation:
+
+- DPC++ debugging, extracting target binaries and subsequent type-specific device-code handling: https://intel.github.io/llvm/developer/Debugging.html . It documents `clang-offload-extract` for linked executables and explains that unbundling/disassembly depends on the extracted target format; examples there use CUDA/HIP and must not be copied blindly to raw SPIR-V.
+- DPC++ compiler/runtime design: https://intel.github.io/llvm/design/CompilerAndRuntimeDesign.html . It describes SPIR-V as an intermediate representation for JIT and native code as a target-specific AOT form.
+- Intel oneAPI GPU Optimization Guide 2024.2 PDF, “Finding Kernels with Register Spills”: https://cdrdv2-public.intel.com/824351/oneapi_optimization-guide-gpu_2024.2-771772-824351.pdf . It states that the compiler warns when an AOT kernel has register spills and gives an AOT compile example; its warning does not certify production JIT behavior.
+- Intel oneAPI GPU Optimization Guide 2025.0, AOT compilation: https://www.intel.com/content/www/us/en/docs/oneapi/optimization-guide-gpu/2025-0/ahead-of-time-compilation.html . It explains AOT's target-specific native code and the target option. Version/tool differences remain relevant here.
+- Intel Compute Runtime build notes: https://github.com/intel/compute-runtime/blob/master/documentation/BUILD.md . They document that `ocloc` loads IGC at runtime (`dlopen`) and can resolve a different installed IGC, supporting the requirement to record the actual backend identity.
+
+R175 already covers source-route/build admission and the caveat that the default SPIR-V image is not native ISA. R176 covers exact tile arithmetic and why a smaller subgroup tile is a conditional candidate. This report does not repeat their route audit or make new route/measurement claims.
