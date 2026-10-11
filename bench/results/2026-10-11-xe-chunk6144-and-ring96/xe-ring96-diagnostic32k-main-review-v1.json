@@ -1,0 +1,36 @@
+{
+  "main_reviewed": true,
+  "base_controller": "xe-source-llvm-prefill-diagnostic32k-v2/run_root.py",
+  "base_fully_read_and_derived_changes_reviewed": true,
+  "source_pins": {
+    "timer_overhead.py": "13b62f3cc85c3b9b49e72c3e1838f7248d5c2530d3357c7a45a81dbdf439ac3e",
+    "run_root.py": "e3ed836b3901b2323f562d3ba5dd339504286af97e498531b66c6868d853c158",
+    "hash_inputs.py": "25d21cfb5d9977fcabe7e1b036a7959bf8ca99d3ce797c44cacc6e56ef387df2",
+    "runtime.py": "e3827641ab38ffa0d60db92153c614e7e4911c48b67f5bd841617272dd7d2fd0",
+    "protocol.py": "9d6cb25e50be33fbe60ad6698966b45f3af05e28f303253a99e220b44dd567a0",
+    "transfer_ledger.py": "7e5e37467208c229eeda3c7367fa16f506c11fe502ad93b28bbcc70fa4e9ab6d",
+    "selfcheck_driver.py": "e1d104739d64781e5313a06657d47737b172f1bf29366ee251802ccae3c476a9"
+  },
+  "source_change": false,
+  "candidate_revision": "9c0b291d85adecb6c1dc489c3e9965b82226b799",
+  "changed": [
+    "fresh immutable output and CPU controller qualification locations",
+    "requested ring96 (actual96) instead of requested8 (actual16)",
+    "explicit matched same-boot/source/binary previous actual model and conservative additional ring VRAM preflight"
+  ],
+  "unchanged": [
+    "chunk4096",
+    "48 native format/extents",
+    "full nonresident streaming",
+    "inline issuer and checked queue ownership",
+    "normal QUIT, actual runtime mapping, deadlines/log caps/new-fault detection and fresh health before/after",
+    "model/math/compiler/binary/KV geometry/MTP/cache/worker/input settings"
+  ],
+  "source_verified": [
+    "ring_slots clamps explicit96 to96 for T>=2048; no product/device-ID tuning branch",
+    "Owned ring one contiguous allocation of ring_slots*256-aligned MAXBLOB",
+    "INFO free memory is read after prefill/verifier/drafter startup allocations; new READY must still leave512MiB"
+  ],
+  "expected_extra_ring_bytes": 212992000,
+  "performance_adopted": false
+}

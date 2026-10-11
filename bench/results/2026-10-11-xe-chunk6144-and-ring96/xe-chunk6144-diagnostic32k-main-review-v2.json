@@ -1,0 +1,36 @@
+{
+  "main_reviewed": true,
+  "base_controller_sha256": "28b0bb5336f27eece0ca2e0692a6a71976a672cdf5a65de033cef58efbc4e878",
+  "candidate_revision": "9c0b291d85adecb6c1dc489c3e9965b82226b799",
+  "source_change": false,
+  "source_pins": {
+    "run_root.py": "381b161d620c797c4312ea5453b9ce949b860752c6278a0ae770d61b3cd21c2a",
+    "runtime.py": "e3827641ab38ffa0d60db92153c614e7e4911c48b67f5bd841617272dd7d2fd0",
+    "hash_inputs.py": "25d21cfb5d9977fcabe7e1b036a7959bf8ca99d3ce797c44cacc6e56ef387df2",
+    "selfcheck_driver.py": "e1d104739d64781e5313a06657d47737b172f1bf29366ee251802ccae3c476a9",
+    "timer_overhead.py": "13b62f3cc85c3b9b49e72c3e1838f7248d5c2530d3357c7a45a81dbdf439ac3e",
+    "transfer_ledger.py": "7e5e37467208c229eeda3c7367fa16f506c11fe502ad93b28bbcc70fa4e9ab6d",
+    "protocol.py": "9d6cb25e50be33fbe60ad6698966b45f3af05e28f303253a99e220b44dd567a0"
+  },
+  "changed": [
+    "chunk4096 to6144 with original ring8/actual16",
+    "source logical allocation upper bound plus explicitly assumed per-allocation allowance",
+    "six-mode offset map including routed2047 tail",
+    "fresh immutable outputs and CPU qualification",
+    "runtime/fault/fresh-health checks precede strict numerical comparison"
+  ],
+  "numerical_policy": "Strict16 IDs and selected LP/top5 byte equality; a difference fails this limited contract and is retained as failed, without broad capability claim or silent tolerance.",
+  "source_ownership_review": [
+    "Own-init has no automatic chunk halving",
+    "T6144 allocates group buffers, no direct mring",
+    "Tail routed path uses stage_next modulo8 and copied/used_of events recorded by prior chunk",
+    "Chunks join/drain before next; event re-recording remains existing queue-owned order"
+  ],
+  "allocation_bound_bytes": 929103872,
+  "allocation_allowance_bytes": 71303168,
+  "driver_granularity_verified": false,
+  "performance_adopted": false,
+  "v1_original_failure_preserved": true,
+  "v1_model_launched": false,
+  "correction": "Only relocate post-run selected-output comparison after actual model validation, runtime/fault and health-after. Fresh immutable paths. No setting/math/source change."
+}

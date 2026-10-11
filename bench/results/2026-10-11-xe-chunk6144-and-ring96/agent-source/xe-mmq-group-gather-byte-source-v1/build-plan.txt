@@ -1,0 +1,21 @@
+SPDX-FileCopyrightText: 2026 MistVVK and the XeStrata contributors
+SPDX-License-Identifier: LGPL-3.0-or-later
+SOURCE ONLY: Main owns serial review, compilation, lint and GPU qualification.
+Production base: 9c0b291d85adecb6c1dc489c3e9965b82226b799.
+Do not run a compiled binary merely because linking succeeds.
+Use existing source-built intel/llvm v7.1.1 under W/.tools/intel-llvm-v711/install.
+Build independently in free and contrib-llvm, preserving each existing target's SYCL flags,
+include paths, target definitions, device-link flags, runtime library search paths and dependency linkage.
+Suggested temporary CMake integration in a Main-owned isolated source/build worktree:
+  add_executable(mmq_gather_byte /absolute/artifact/path/mmq_gather_byte.cpp)
+  target_link_libraries(mmq_gather_byte PRIVATE strata_prefill)
+This uses production strata_prefill (including actual src/prefill/moe_mmq.cpp),
+strata_engine, strata_kernels, strata_core, strata_kernels_cpu, strata_platform,
+strata_ngram and mode-specific dependencies transitively. No Runtime stub, extracted
+implementation or alternate kernel is supplied. Linking only moe_mmq.cpp without
+its iq_mmq references and real Runtime is not an equivalent qualification.
+Before running, verify the pinned metadata hash and production commit, manually
+review source and actual build commands, enforce the existing bounded process watchdog
+and serialize with all other GPU work. Probe accepts no CLI arguments.
+The process intentionally uses _Exit after checked terminal drains and explicit
+USM release, avoiding unchecked Runtime static destructor waits.

@@ -1,0 +1,152 @@
+{
+  "source": "9c0b291d85adecb6c1dc489c3e9965b82226b799",
+  "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+  "input_sha256": "94cbdd7fdc6c9f32a08c0c4f8b50c1cc27a7ffc3f383d23c5c6ac24e8ec7f2c9",
+  "ring96_actual": {
+    "chunk": 4096,
+    "actual_ring": 96,
+    "timing": {
+      "prefill_tps": 215.56150390461826,
+      "cold_decode_tps": 8.096346523631212,
+      "prefill_ms": 152012.3,
+      "cold_decode_ms": 1976.2,
+      "input_tokens": 32768,
+      "actual_batched_positions": 32767,
+      "generated_tokens": 16,
+      "initialized_independent_process": true,
+      "restore_measured": false,
+      "settings_search": false
+    },
+    "transfer_total": {
+      "device": 0,
+      "lb": 0,
+      "le": 48,
+      "pos": 0,
+      "tokens": 32767,
+      "chunks": 8,
+      "routed_calls": 0,
+      "routed_bytes": 0,
+      "full_stream_calls": 195456,
+      "full_stream_bytes": 399981158400,
+      "calls": 195456,
+      "bytes": 399981158400
+    }
+  },
+  "chunk6144_actual": {
+    "chunk": 6144,
+    "actual_ring": 16,
+    "timing": {
+      "prefill_tps": 266.3512848962207,
+      "cold_decode_tps": 9.153841752960695,
+      "prefill_ms": 123025.5,
+      "cold_decode_ms": 1747.9,
+      "input_tokens": 32768,
+      "actual_batched_positions": 32767,
+      "generated_tokens": 16,
+      "initialized_independent_process": true,
+      "restore_measured": false,
+      "settings_search": false
+    },
+    "transfer_total": {
+      "device": 0,
+      "lb": 0,
+      "le": 48,
+      "pos": 0,
+      "tokens": 32767,
+      "chunks": 6,
+      "routed_calls": 22479,
+      "routed_bytes": 45968076800,
+      "full_stream_calls": 122160,
+      "full_stream_bytes": 249988224000,
+      "calls": 144639,
+      "bytes": 295956300800
+    },
+    "ready_free_mib": 744,
+    "allocation_plan": {
+      "previous_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-source-llvm-prefill-diagnostic32k-root-v2/timer/record.json",
+      "previous_sha256": "915bb902ad26f34e4c044297b3bbcf397efeef6f69e406d25f11d5598efbf52b",
+      "previous_chunk": 4096,
+      "candidate_chunk": 6144,
+      "ring_requested": 8,
+      "ring_actual_source_clamp": 16,
+      "additional_logical_device_request_bound_bytes": 929103872,
+      "conservative_bytes_per_token": 453664,
+      "outer_bytes_per_token": 155568,
+      "moe_mixed_worst_bytes_per_token": 298052,
+      "gdn_bytes_per_token": 144128,
+      "qsa_bytes_per_token": 125452,
+      "identity_and_token_bytes_per_token": 44,
+      "growing_device_allocations_upper": 17,
+      "per_allocation_allowance_bytes": 4194304,
+      "allocation_allowance_bytes": 71303168,
+      "minimum_ready_free_mib": 512,
+      "expected_chunk_offsets": [
+        0,
+        6144,
+        12288,
+        18432,
+        24576,
+        30720
+      ],
+      "expected_tail_tokens": 2047,
+      "scope": "Logical source-based delta bound, with planning allowance rather than verified driver page granularity. Previous READY free was after prefill/verifier/drafter allocation. Actual new READY reserve checked before GEN. BF16X2 absent; both init T>=2048 keep fixed regions unchanged. Tail T2047 uses existing routed/STAGE8 path with checked prior-used events; no new direct-MMQ ring."
+    },
+    "per_chunk": [
+      {
+        "offset": 0,
+        "calls": 24432,
+        "bytes": 49997644800
+      },
+      {
+        "offset": 6144,
+        "calls": 24432,
+        "bytes": 49997644800
+      },
+      {
+        "offset": 12288,
+        "calls": 24432,
+        "bytes": 49997644800
+      },
+      {
+        "offset": 18432,
+        "calls": 24432,
+        "bytes": 49997644800
+      },
+      {
+        "offset": 24576,
+        "calls": 24432,
+        "bytes": 49997644800
+      },
+      {
+        "offset": 30720,
+        "calls": 22479,
+        "bytes": 45968076800
+      }
+    ]
+  },
+  "original_failed_statuses_preserved": true,
+  "selected16_ids_and_lp_top5_equal_quiet": true,
+  "fresh_before_after_health": true,
+  "new_faults": [],
+  "performance_adopted": false,
+  "logical_request_reduction_fraction": 0.2600743945442806,
+  "measurement_scope": "Successful expert blob H2D request extents, not physical PCIe or exclusive DMA service. Diagnostic counters ON, TIMING/TRACE off. One passing process per setting; ring96 vs chunk6144 changes both ring and chunk. Original quiet3 was older source. No optimal-setting/adoption or calibrated bottleneck attribution.",
+  "cold_decode_scope": "16 outputs from a new process, includes first graph captures; no warm/RESTORE measurement or repeated decode selection.",
+  "observer_actual_fixtures": {
+    "actual": null,
+    "negative_cases": 39,
+    "positive_cases": 10
+  },
+  "pending_implementation": {
+    "census": "Fully Main-reviewed source only; not applied/build/lint/runtime qualified",
+    "gather_probe": "Fully Main-reviewed source only; no build/GPU byte-parity result",
+    "observer": "Main CPU10 positive39 rejection fixtures PASS; actual new census capture unqualified"
+  },
+  "open_requirements": [
+    "Integrate reviewed route census after this boundary, build and test both free/contrib-llvm with host sanitizers and actual baseline/current mandatory lints; use CPU-qualified observer on real32K capture",
+    "Measure MMQ/fallback and unused-expert branch counts before prioritizing grouped-gather probe or selective streaming",
+    "Quiet independently repeated6144/64K measurement with separate prefill and decode selection",
+    "Prefill-only VRAM lifetime/recreate choices and broader dtype numerical capability evaluation",
+    "Actual full262144/RESTORE, Xe pristine evaluation and official latest feature integration; official independent parameter tuning per committed TODO remains OPEN"
+  ]
+}

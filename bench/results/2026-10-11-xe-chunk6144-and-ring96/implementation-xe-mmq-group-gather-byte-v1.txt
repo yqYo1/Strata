@@ -1,0 +1,80 @@
+SPDX-FileCopyrightText: 2026 MistVVK and the XeStrata contributors
+SPDX-License-Identifier: LGPL-3.0-or-later
+Implementation: xe-mmq-group-gather-byte-source-v1
+Status: source-only; compilation, lint, CPU and GPU checks unverified. No execution,
+import, AST, tests, builds, runtime queries, profiling, commits or cleanup performed.
+Main owns all qualification and serial GPU activity.
+Production base: 9c0b291d85adecb6c1dc489c3e9965b82226b799.
+Read production AGENTS.md; LOCAL.md absent. Read production moe_mmq.cpp/header,
+Runtime header, device.cpp checked finish/free and gpu.cpp failure behavior,
+publication.hpp and prior kv-resolve bounded v3 probe. Read incremental report
+registry v125 (497 reports) and its previous registry pointer; this is an actual
+entry-point byte-parity implementation, not a repeated general tuning proposal.
+
+Artifacts are in xe-mmq-group-gather-byte-source-v1 beside this report's parent.
+mmq_gather_byte.cpp invokes actual linked production gather_native and
+ gather_native_group with an explicit checked owned Runtime compute queue.
+build-plan.txt specifies actual production-library linkage for free and
+contrib-llvm; binaries remain unqualified until Main builds and tests.
+native_experts.pinned.txt is an exact copy of real native_experts.txt read here.
+Its expected SHA256 is d9ac2dfa3ee63c55c9c6a6db26f72da0cec0ee41733f007e5cbbbba71617aa5d.
+Absolute GGUF gate/up/down offsets in that file describe external tensor locations,
+not offsets inside the repacked per-expert GPU blob. The production source uses
+up_off=matrix_bytes(gu_type,640,2560), down_off=2*up_off; the probe uses this exact
+production extent calculation and checks 2*half+down==pinned blob_bytes before USM
+allocation. Seven distinct real layout pairs and representative layers are pinned:
+0 (18,20) 2176000; 1 (22,42) 1510400; 2 (22,20) 1971200;
+12 (18,42) 1715200; 17 (21,20) 2329600; 21 (21,42) 1868800;
+47 (23,20) 2662400. This also matches Main's native-transfer-layout-v1.json.
+
+Eight sequential arms: seven full native extents and tiny ragged 48-byte gate/up,
+80-byte down, deliberately separated source regions in a 256-byte blob. No graph
+capture, concurrent host USM, or host USM is used. Each arm runs [0,1), [0,7),
+[3,7), [0,16), [5,16). Each case runs individual then grouped production calls,
+reinitializes entire output allocations with 0xa5, reads every byte and compares
+both against an independently recomputed host position/expert byte pattern oracle.
+A retained individual output separately verifies grouped/individual parity.
+Every destination byte is checked, including 64-byte outer guards, untouched slots
+before first and after n, 48-byte GU stride padding, 80-byte down stride padding.
+Full source allocation readback verifies unchanged original bytes including source
+stride padding and guards. No sampled correctness checks.
+
+Real arms assert more than 65536 16-byte vectors, exercising the production group's
+capped 256*256 launch grid-stride loop. Real individual launches use their actual
+1024-group cap and are not claimed to cross that larger cap. The tiny arm covers
+non-workgroup-multiple vector count. Group refusals cover negative first, empty
+n, first==n, n>16, first>n, each offset/extent/stride misalignment, both output
+pointer misalignments and active source pointer misalignment. All use live valid
+allocations; no null live pointers or out-of-bounds device execution. False is
+required, and complete sentinel outputs are subsequently verified. The individual
+misaligned memcpy fallback is not exercised by this version; individual parity
+qualifies the aligned copy kernel for all seven production extents.
+
+Source prints flushed allocation arithmetic before any arm buffers are allocated:
+device_live=source+GU+down; host_live=source+maximum(readback)+retained(GU+down).
+Each uses exact-size new[] arrays (no vector capacity uncertainty). At largest
+blob 2662400, device bytes are 85199744 (below 134217728); host bytes are
+127798784 (below 536870912). These are bounded user buffer payloads, not a claim
+that SYCL runtime/driver process overhead lies below the buffer budgets.
+Device allocations use aligned_alloc_device(16) and check pointer context/type
+and Runtime owner. There are exactly three device USM allocations per arm.
+
+Progress flushes before allocation, submission, waits, readbacks and releases.
+Actual Runtime.wait checks async errors; actual Runtime.finish drains compute,
+transfer and every engine stream. Every USM release follows a successful checked
+whole-Runtime terminal drain. Submission/wait/drain exceptions are caught at the
+call boundary while all host/device buffers remain alive and invoke production
+publication::cleanup_require(false), terminating with _Exit(74) before unwind.
+Logical mismatch paths drain and release before reporting failure; uncertain
+release also terminates conservatively. A successful final path explicitly drains
+then _Exit(0), avoiding implicit unchecked destructor waits. No retry masks an
+uncertain operation. This is not a recovery fence after a GPU failure.
+
+Finite successful receipt requires arms=8, cases=40, refusals=112,
+individual_calls=312, grouped_calls=40, drains=97, frees=24. Per-case receipts
+print copied experts, bytes, 32-bit words and 16-byte vectors. Final totals also
+report copied bytes, compared bytes, upload bytes and readback bytes. Any byte
+mismatch logs up to eight concrete offsets then fails (all bytes examined).
+This proposal makes no kernel correctness/performance, whole-model/full-context,
+RESTORE or hang-causality claim before Main tests. No production files changed.
+Source and metadata hashes/sizes are recorded in SHA256SUMS and sizes.txt.

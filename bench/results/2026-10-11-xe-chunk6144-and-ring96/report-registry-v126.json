@@ -1,0 +1,80 @@
+{
+  "registry_version": 126,
+  "research_completed": 500,
+  "created_utc": "2026-10-11T07:06:43.199143+00:00",
+  "registry_format": "incremental; follow previous_committed_registry",
+  "previous_committed_registry": {
+    "path": "bench/results/2026-10-11-xe-prefill-diagnostics32k/report-registry-v125.json",
+    "sha256": "06a0bb42fdf294b5769db24da2d005cce503ba822193d07ea73dec1a7fee62c9",
+    "reports": 497
+  },
+  "new_reports": [
+    "implementation-xe-mmq-group-gather-byte-v1.txt",
+    "implementation-xe-prefill-route-branch-census-v1.txt",
+    "implementation-xe-prefill-route-census-observer-v1.txt"
+  ],
+  "reports": [
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/implementation-xe-mmq-group-gather-byte-v1.txt",
+      "archive": "bench/results/2026-10-11-xe-chunk6144-and-ring96/implementation-xe-mmq-group-gather-byte-v1.txt",
+      "sha256": "2c944c10716a0a439ae7bdf91531e0f7a284c100abefe350fd2552f93935fff7",
+      "bytes": 5689,
+      "model": "gpt-6.1-sol",
+      "read_only": false,
+      "qualification": "Full Main source/report/manifest review; source-only probe and census runtime remain unqualified. Observer actual CPU10 positive39 refusal cases PASS."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/implementation-xe-prefill-route-branch-census-v1.txt",
+      "archive": "bench/results/2026-10-11-xe-chunk6144-and-ring96/implementation-xe-prefill-route-branch-census-v1.txt",
+      "sha256": "3f71053c14a7c3c9a0c6c2be9866529c6b0f73c20ea0d7be92d650f73e6f6c7b",
+      "bytes": 13788,
+      "model": "gpt-6.1-sol",
+      "read_only": false,
+      "qualification": "Full Main source/report/manifest review; source-only probe and census runtime remain unqualified. Observer actual CPU10 positive39 refusal cases PASS."
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/implementation-xe-prefill-route-census-observer-v1.txt",
+      "archive": "bench/results/2026-10-11-xe-chunk6144-and-ring96/implementation-xe-prefill-route-census-observer-v1.txt",
+      "sha256": "0ab2bccc08937043139319221d16313e32b6199dd84be2ff80aea1bfffcdc1fc",
+      "bytes": 8494,
+      "model": "gpt-6.1-sol",
+      "read_only": false,
+      "qualification": "Full Main source/report/manifest review; source-only probe and census runtime remain unqualified. Observer actual CPU10 positive39 refusal cases PASS."
+    }
+  ],
+  "live_agent_snapshot": {
+    "observed_utc": "2026-10-11T07:06:38.370669+00:00",
+    "source": "Actual collaboration.list_agents after full Main reviews",
+    "root_status": "running",
+    "agents": [
+      {
+        "name": "/root/implement_mmq_group_gather_byte_probe",
+        "status": "completed",
+        "model": "gpt-6.1-sol",
+        "assignment": "concrete source-only implementation",
+        "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/implementation-xe-mmq-group-gather-byte-v1.txt"
+      },
+      {
+        "name": "/root/implement_prefill_route_branch_census",
+        "status": "completed",
+        "model": "gpt-6.1-sol",
+        "assignment": "concrete source-only implementation",
+        "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/implementation-xe-prefill-route-branch-census-v1.txt"
+      },
+      {
+        "name": "/root/implement_prefill_route_census_observer",
+        "status": "completed",
+        "model": "gpt-6.1-sol",
+        "assignment": "concrete source-only implementation",
+        "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/implementation-xe-prefill-route-census-observer-v1.txt"
+      }
+    ],
+    "research_dependency": "gpt-6-luna quota until Oct14 2026 12:33PM; no running research agents and no substitute model",
+    "main_current": "Actual chunk6144 and ring96 model processes closed; CPU observer fixtures complete. Commit evidence and clean only reviewed closed raw streams; next source census integration and serial both-mode qualification."
+  },
+  "next_research_scopes": [
+    "Measured branch/counts and component service before selective transfer or MMQ changes",
+    "Official independent parameter selection"
+  ],
+  "dependency": "Actual selected gpt-6-luna quota until Oct14 2026 12:33PM; no substitute. These were concrete implementation agents, not research substitutes."
+}
