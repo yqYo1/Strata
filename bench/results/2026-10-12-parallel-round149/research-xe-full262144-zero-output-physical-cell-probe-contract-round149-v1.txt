@@ -1,0 +1,71 @@
+# Xe full-262144 zero-output occupancy and physical-cell probe contract (round 149)
+
+Date: 2026-10-12 (Asia/Tokyo). Read-only source review. No builds, tests, imports, model/GPU/runtime/process/profiler queries, source/Git edits, cleanup, or live-run artifact reads. The task-pinned source is the clean current Xe worktree at `/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/perf-xe-prefill-row-bounded-scratch-20261011`, HEAD `39e395a103af36323262cdc0dbaea27cba81f3e4`. The prior round-356 review is useful but pinned to an earlier e32 parent; this round checks the relevant paths in the task-pinned current source.
+
+## Answer: stock GEN does not consume the full prompt with zero output
+
+There is no stock `GEN` request that both takes a 262,144-token prompt and requests zero new tokens:
+
+- Serve parses `GEN <max_new> ...`; `max_new < 1` returns `ERR bad request: max_new`. Even if that were bypassed, `context_bounds::admission(cells,prompt,outputs)` requires `outputs > 0` and a checked span. `GEN 1` with 262,144 IDs is rejected because one output would exceed capacity.
+- Standalone ordinary generation also rejects `--max-new 0` in the generic option gate. `--max-new 1` with 262,144 prompt IDs fails `tokens.size() <= max_context - max_new` before model work and is rejected again by the common admission check.
+- The standard prompt route preserves `[0,n_prompt-1)` as batched conditioning rows: `n_batched=n_prompt-1`, then it processes the last prompt token at `pos_start=n_batched` in the one-token/session verifier loop. With a legal full-capacity ordinary request of 262,143 IDs and `max_new=1`, prefill processes positions 0..262141, the token loop processes position 262142, then emits one output and stops. The last physical position 262143 is not written. This is a deliberately one-cell-short result, not full occupancy.
+
+The separate opt-in `--full-context-probe TERMINAL_ID` accepts only an exact 262,144-ID input and `--max-context 262144 --max-new 0`, with fixed positive prefill, no borrowing, one GPU, native/MTP setup and its other diagnostic preconditions. It bypasses the ordinary positive-output/admission gate and the ordinary `n_prompt-1` generation path. On the probe branch, `run_full_context_probe()` calls `prefill.run(tokens,262144,0)`, synchronizes main and draft streams plus the device, verifies full callback coverage, snapshots/restores the live state, and returns before ordinary `kvg_ensure`, verifier, sampler, or token-generation loop. Therefore this source path intends all 262,144 prompt tokens to be processed while generating zero output. Its explicit terminal ID is a storage-only successor for the final MTP row, not token 262,144 of the prompt and not a model prediction.
+
+Source paths: `src/program/generate.cpp:1232-1420` (diagnostic), `:2165-2190` (tokens-file and probe parsing), `:2459-2480` (strict probe validation), `:2755-2763` and `:3463-3467` (normal max-new and common admission), `:7995-8170` (serve GEN parse/admission), `:10113-10205` (ordinary `n_prompt-1` path and token loop); `include/strata/core/context_bounds.hpp:13-21`; `include/strata/program/full_context_probe.hpp:12-59`.
+
+## Last-cell position, bounds, and proof levels
+
+For exact capacity `C=262144`, valid logical positions are 0 through 262143; the exclusive end is 262144. `Prefill::run` validates `valid_span(n,pos0,max_cells)`, so `(262144,0,262144)` is legal while a one-row span beginning at 262144 is not. For the last QSA row, source `qsa_step_fill` writes `pos=262143`, `n_kv=pos+1=262144`; `qsa_layer` accepts `pos < st.max_cells`; the Q8 K/V append uses `step[kStepPos]`, computes `page=table[pos/page_size]` and `row=(page*kv_heads+h)*page_size+(pos%page_size)`. With page size four, this is logical page 65,535, row offset 3. The page table has `ceil(262144/4)=65,536` entries. The source arithmetic puts the final row inside the allocated physical extent and excludes a write at the exclusive end.
+
+Do not conflate these evidence levels:
+
+1. **Configured capacity/metadata:** `max_context=262144`, `QsaState.max_cells=262144`, 65,536 pages, slot count, or a reported `final_pos=262143` alone show dimensions, not a store.
+2. **Completed target work:** full target `PrefillStats.tokens`, contiguous callback coverage reaching `end=262144`, final callback interval, per-layer state capacity and completed stream sync show the program traversed the full input. The existing source has no per-layer QSA append-row counter, so these are not direct row-write receipts.
+3. **Physical write/readback:** a captured full authoritative K/V image, direct comparison/readback of the logical cell 262143 for every main QSA layer (and the draft row if claimed), plus pre-run poisoned backing and post-run changed-row checks show bytes at that physical position were overwritten and readable. The normal current diagnostic snapshots every authoritative K/V payload and restores/compares all bytes; this proves round-trip of captured extents but does not explicitly compare cell 262143 against pre-run contents, and its FNV fingerprint is not an independent numeric oracle. Add/retain a compact per-layer final-row digest and before/after sentinel check if the claim specifically says the final cell was written. Ensure the read uses authoritative logical backing (host for streamed mode) and separately verify any resident ring mapping.
+4. **Attention consumption:** if “read” means the model used position 262143 as an attention key/value rather than the verifier reading its bytes back, capture the final query's selected IDs/page mapping and prove the selected read includes that physical row/page. Current top-k selection need not be assumed to include one named raw cell just because the query step has `n_kv=262144`; report byte readback and attention selection as separate claims.
+
+The existing full probe does strong useful work: checks main QSA capacities and full draft ring, accepts exact extent only, validates token IDs plus terminal ID against vocabulary, writes all 262,144 target rows, uses 262,143 real successor rows plus one terminal MTP storage row, synchronizes each MTP callback before advancing ordered coverage, compares saved full authoritative K/V payloads, deliberately poisons/restores production snapshot/checkpoint state, re-verifies payloads, and exits before inference. Yet it is still source design until executed. A physical-cell qualification receipt must name actual source/binary/runtime/device, exact token hash, target and draft formats/capacity/page/slot extents, last callback `(begin,count,end)`, all sync and failure statuses, cell-262143 before/after row hashes, full authoritative snapshot verification, restore status, and zero generation after restore. Do not use capacity totals or snapshot geometry as a substitute for last-cell evidence.
+
+The probe must keep its full-span behavior: do not rewrite it to standard `n_prompt-1` batching and then imply max-new zero; do not decrement input IDs or cap to 262143; do not call the terminal sentinel a predicted output. The regular stock route's final prompt token is processed by the token path; the dedicated diagnostic's final prompt token is one of the full batched prefill rows. These are different schedules and need separately named receipts.
+
+## Input file and protocol framing
+
+A 262,144-ID CSV/whitespace line can exceed 1 MiB. The audited historical `Interactive.send` checks each `send(data)` call with strict `len(data) < 1<<20`, then writes raw bytes without adding a delimiter; the engine serve loop reads a whole command with `std::getline`. Do not put the entire `GEN ... ids` line in one call and do not split it into multiple `GEN` requests, which would create separate session transitions and fail to test the requested prompt as one command.
+
+Preferred full-context probe path is the standalone `--tokens-file PATH` option. It accepts comma or whitespace separated integer IDs; the source loads the file and parses IDs as nonnegative int32 values. A bounded producer may stream the fixture into the file in fixed 64 KiB chunks, while maintaining a count and SHA-256, flush/close it, then pass only the short path in argv. The parser currently reads the entire file into a string, so file transport avoids the controller call/argv cap but is not a streaming-inference parser; the ~few-MiB serialized CSV remains a bounded input allocation and should be budgeted.
+
+If a separately authorized serve-protocol admission test needs to send the full line, use multiple raw writes through the existing `Interactive.send` API, each below its 1 MiB cap (for example 256 KiB), with no newline until the last chunk. Keep one command prefix and one newline, preserve byte order, and wait for exactly one response after the final write. The existing writer's no-newline-per-call behavior makes this framing possible; verify the exact caller implementation and parser in the actual owner before use. This tests only serve admission/parse behavior; ordinary GEN still cannot physically fill the final cell with zero output. `GEN 0` itself is a short immediate rejection and says nothing about full input extent.
+
+## Minimal host-side fixtures (source contract only; not run)
+
+The current `tools/test_full_context_probe.cpp` already exercises the production header helpers for exact/short/oversized extents, gap/overlap/overshoot, regular 64×4096 chunks, uneven final intervals, exactly one terminal successor, index narrowing, invalid spans, and `uint64_t` addition overflow. `tools/test_context_bounds.cpp` tests exact admission and over-capacity/overflow cases, but normal admission requires positive outputs. Retain or explicitly add these no-GPU fixtures when Main reopens the approved build/test window:
+
+- exact `(cells,prompt,outputs)=(262144,262144,0)` is rejected by normal stock admission; `(262143,1)` is admitted at exact boundary; `(262144,1)` and `(262144,0)` are rejected; no arithmetic wraparound for `INT64_MAX` inputs;
+- standard scheduler mapping: `n_batched=n-1`, `pos_start=n-1`; with `n=262143,max_new=1`, the last processed position is 262142; special probe mode is the only route accepting `n=C,max_new=0` and passes `n=C` to prefill;
+- exact final step fixture at `pos=C-1`: step has `pos=262143,n_kv=262144`, page index 65,535, within a 65,536-entry page table; `pos=C` must reject before kernel submission;
+- callback coverage rejects first-gap, overlap, zero/negative/oversized span and accepts both aligned and uneven tails only when the final exclusive end equals C; `successors` reads input `[cell+1]` only for cells 0..C-2 and uses the explicit terminal ID only for cell C-1, never `tokens[C]`;
+- distinguish output contract: zero generated tokens after probe, zero verifier/sampler calls, no elastic-KV lookahead, and no later inference after restore; keep failures fail-closed before claiming complete occupancy.
+
+These are fixture recommendations, not a request to change source or run tests during this task.
+
+## Finite run budget and evidence handling
+
+The model-work bound is exact: 262,144 prompt IDs, zero generated outputs, one explicit terminal storage ID, one fixed prefill chunk, and the diagnostic's synchronized MTP rows/snapshot/poison/restore. No benchmark roots or extra continuation tokens are needed for a physical-boundary probe. Keep the diagnostic's existing physical-RAM snapshot admission and repeat it before capture; never remove the floor or substitute swap as capacity.
+
+For the future owner run, use finite phase and total deadlines rather than unbounded waits. Suggested planning ceilings (not measured completion expectations): model startup/load 60 minutes; request/file preparation and dispatch 5 minutes; full target+MTP prefill 12 hours with progress-based checks at each completed chunk; snapshot/poison/restore 2 hours; process drain/exit 5 minutes; hard wall cap 16 hours. Stop at the first deadline with a recorded timeout and partial state; do not retry against an active process or label partial work a pass. These generous bounds are to avoid killing a long full-context run while ensuring the controller cannot wait forever. Calibrate them from prior closed full-span timing evidence before execution; if the recorded worst case plus margin exceeds them, increase the finite cap before launch. Do not create repeated polling traces; keep only compact per-chunk progress and the final evidence needed for the question.
+
+The system receipt is 134,986,948,608 B total (125.716 GiB), not 64 GB. Also correct R147's 64K subtotal: with `max_context=262144`, host INT8 QSA KV backing stays 6.1875 GiB even for a 64K prompt; adding the 46.838-GiB expert arena and 2.49996-GiB one-plane estimate yields about 55.525 GiB known subtotal before other owners, not 50.885 GiB. This report does not use memory arithmetic to claim fit; all other host/device owners and phase peaks remain separate.
+
+## Source references
+
+- `include/strata/core/context_bounds.hpp:13-35` — checked span, positive-output admission and verifier bounds.
+- `include/strata/program/full_context_probe.hpp:12-59` — exact extent, coverage and safe terminal-successor helpers.
+- `src/program/generate.cpp:1232-1420` — special full probe, synchronized coverage, snapshot/poison/restore and early return.
+- `src/program/generate.cpp:2159-2190,2459-2480,2755-2763,3463-3467` — token file parsing and standalone probe/ordinary admissions.
+- `src/program/generate.cpp:7995-8170,10113-10205` — serve `GEN` positive max-new gate and standard n-1 plus final token schedule.
+- `src/prefill/prefill.cpp:1227+,1380+` — Prefill full-span validation and per-row QSA step generation.
+- `src/kernels/xe/qsa.cpp:409-415`, `src/core/layer.cpp:1010-1120`, `src/kernels/xe/kv_q8.cpp:39-79` — position bounds, `pos+1` step, and actual Q8 page/row store.
+- `src/core/conversation_snapshot.cpp:259-299` — authoritative K/V readback verifier.
+- Historical bounded writer review: `/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xestrata-clean-64k-comparison-v1/direct_owner.py` (`Interactive.send` raw per-call cap).
+- Prior source review for continuity only: `round356-xe-full-context-probe-source-and-restore-review.txt`; pinned to earlier e32 source, not runtime qualification for current 39e.
