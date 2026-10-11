@@ -72,3 +72,9 @@ The original receipts/statuses and current real fixtures remain unchanged.
 [The executed deletion manifest](retention-executed-v1.json) records each path,
 hash, retained replacement and reason, with logical/allocation/available-space
 observations separated. No GPU/service/source/model operation was part of cleanup.
+
+Main corrected the host-memory interpretation in [a separate record](main-memory-traffic-correction-v3.json).
+The measured kernel MemTotal is125.715GiB, not64GB. R277 width2 values are cumulative
+residual traffic, not peak RAM: one plane is2.5GiB/64K or10GiB/262K. Layer-major
+remains a conditional candidate; streamed-KV compatibility and phase admission
+still need implementation and validation. Registry v137 contains570 reviewed reports.

@@ -1,0 +1,90 @@
+{
+  "main_reviewed": true,
+  "original_reports_modified": false,
+  "original_measurements_modified": false,
+  "actual_memory": {
+    "MemTotal_bytes": 134986948608,
+    "total_gib": 125.71639251708984,
+    "representative_initial_MemAvailable_bytes": 97499279360,
+    "samples": [
+      {
+        "path": "bench/results/2026-10-11-xe-quiet32k-balanced-campaign/samples/sample-000-off.json",
+        "sha256": "ced956d6dec210bf7c48b4da54dd27fe0bc5ed5af73fbc9eb8d862f22c95ae67",
+        "initial_memory": {
+          "MemTotal": 134986948608,
+          "MemAvailable": 97598730240
+        }
+      },
+      {
+        "path": "bench/results/2026-10-11-xe-quiet32k-balanced-campaign/samples/sample-000-on.json",
+        "sha256": "c97dde29186058482c1259317c8f1650c0b3ccf5d3b4d61b38f70245b51985ef",
+        "initial_memory": {
+          "MemTotal": 134986948608,
+          "MemAvailable": 97633140736
+        }
+      },
+      {
+        "path": "bench/results/2026-10-11-xe-quiet32k-balanced-campaign/samples/sample-001-off.json",
+        "sha256": "32d9bed59b2c9ce7d4d057f3c6f98ed370dc132ef686ba017595145348d2ff3e",
+        "initial_memory": {
+          "MemTotal": 134986948608,
+          "MemAvailable": 97633058816
+        }
+      },
+      {
+        "path": "bench/results/2026-10-11-xe-quiet32k-balanced-campaign/samples/sample-001-on.json",
+        "sha256": "647a191e152b783da08490e5813d5570d9bbd56d7403f1ccd8ebad68f3179289",
+        "initial_memory": {
+          "MemTotal": 134986948608,
+          "MemAvailable": 97749708800
+        }
+      },
+      {
+        "path": "bench/results/2026-10-11-xe-quiet32k-balanced-campaign/samples/sample-002-off.json",
+        "sha256": "0545f155b1ed48e650f28e348f5802f66b05865597c982387eb0e491b59b95e0",
+        "initial_memory": {
+          "MemTotal": 134986948608,
+          "MemAvailable": 97776685056
+        }
+      },
+      {
+        "path": "bench/results/2026-10-11-xe-quiet32k-balanced-campaign/samples/sample-002-on.json",
+        "sha256": "d9520b99a810af156aa1a6e558d7f8db7b2668d37d258ac7bd2a8c3cb0998cf7",
+        "initial_memory": {
+          "MemTotal": 134986948608,
+          "MemAvailable": 97633525760
+        }
+      },
+      {
+        "path": "bench/results/2026-10-11-xe-quiet32k-balanced-campaign/samples/sample-003-off.json",
+        "sha256": "2fcf303c628d23db90197af4bef92e08e3e598d53350e33fcf45145cb6b4b6d6",
+        "initial_memory": {
+          "MemTotal": 134986948608,
+          "MemAvailable": 97499279360
+        }
+      },
+      {
+        "path": "bench/results/2026-10-11-xe-quiet32k-balanced-campaign/samples/sample-003-on.json",
+        "sha256": "3dde062463452d4c38d2aa7343cb2f1ffd03703667c3197dd6a2af5d77e8cf56",
+        "initial_memory": {
+          "MemTotal": 134986948608,
+          "MemAvailable": 97568677888
+        }
+      }
+    ],
+    "scope": "Kernel-reported physical total and pre-run available memory, not allocated phase headroom."
+  },
+  "corrections": [
+    "Earlier64GB machine assumptions are incorrect for these actual campaign receipts.",
+    "R277 width2 residual57.498/114.998/459.998GiB are cumulative D2H+H2D over46 plane transfers, not simultaneous RAM allocations.",
+    "One FP32 residual plane of HC4*N2560 is2.49996GiB at65535 batched rows and9.99996GiB at262143; other owners must be added independently.",
+    "The recorded expert arena is default owned host memory, not mmap. A true mmap branch has dynamic file-page residency and must not be counted as permanently resident or zero-cost."
+  ],
+  "decision": "Restore width2/layer-major to conditional candidates; capacity interpretation no longer rules it out. Streamed-QSA-KV incompatibility, session/MTP/state parity, actual phase fit and full262144 remain unresolved.",
+  "full262144_qualified": false,
+  "official_pristine_long_prefill_admitted": false,
+  "official_scope": "Tracked original0.1.42 source with mandatory volatile host-USM Stager/Ple polls remains inadmissible on the recorded non-concurrent host-USM capability; settings alone do not repair those protocols.",
+  "source_only_candidate_worktree": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/perf-xe-prefill-row-bounded-scratch-20261011",
+  "candidate_baseline": "0740b43488d812117f021ccbe4bd0e15d223f955",
+  "candidate_scope": "Separate Sol source-only compact scratch implementation in progress; Main owns every build/test/GPU qualification."
+}

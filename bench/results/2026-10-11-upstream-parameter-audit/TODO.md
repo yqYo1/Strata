@@ -24,3 +24,5 @@ XeStrata 更新版の評価後、本家 v0.1.42 の比較を確定する前に�
 2026-10-11の再確認では、上記6件の元の設定記録・実行controllerと、関連3報告のSHA-256がauditの保存値に一致することを確認した。[再確認記録](evidence-verification-v2.json)に元の個別statusを保持した。結論は同じで、箱出し設定だけではないが、本家単体の最適設定探索・独立検証は未完了。新しい性能測定は行っていない。
 
 「箱出し」の意味もソースで区別した。v0.1.41のsetupが生成する標準configはprefill=auto、expert-cache=auto、spec=4、spec-min-p=0.5。一方、過去の本家測定は8192/128/4/0に指定し、262144 contextで標準のprefill借用を無効化していたため、installer標準configそのままの測定でもない。spec=4は標準と同じで、workers=5やpcie=0も自動選択と一致し得る。[既定値のsource監査](default-source-audit-v1.json)を根拠として、設定を明示した事実と、標準値を変えた事実と、最適値を探索した事実を分ける。今後はinstallerの標準auto方針も比較対象に含める。
+
+追加の[R140 source安全監査](../2026-10-11-xe-quiet32k-balanced-campaign/research/research-official-v0142-long-prefill-source-identity-safety-admission-round140-v1.txt.lossless.json)では、本家0.1.42のtracked sourceを確認した。現在のHOST_USM/ATOMIC_HOST_USM capabilityでは、長いprefillのstagerに残るvolatileポーリングを設定だけで避けられないため、未修正本家の長入力は未実行。新コンパイラを用意したことはこのプロトコルを修正した証拠にならず、設定探索完了とも扱わない。
