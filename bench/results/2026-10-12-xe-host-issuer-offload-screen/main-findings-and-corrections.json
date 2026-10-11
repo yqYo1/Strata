@@ -1,0 +1,65 @@
+{
+  "source_revision": "337255086026f6eef21a861c297183d05a5f7a22",
+  "linked_binary_sha256": "fd241348db019ec0985072e55dc27c08ac0cfd7962072847905e391e73ab83fd",
+  "extraction_original_result": "FAILED: Main initial census assumed at most 64 images; actual normal extraction emitted 102. No GPU involved. Original receipt preserved; follow-up consumed already closed outputs without replaying extraction.",
+  "extraction_image_count": 102,
+  "total_image_bytes": 7855692,
+  "raw_little_endian_spirv": true,
+  "selected_grouped_image": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-host-issuer-offload-extract-root-v1/images/image.4",
+  "emitted_entry_and_mode_lines": [
+    "31 EntryPoint 6 13 \"_ZTSN6strata7kernels12_GLOBAL__N_110GemmKernelIN4sycl3_V16detail9half_impl4halfELi256ELi128ELi2ELb0EEE\" 5 8 ",
+    "31 EntryPoint 6 696 \"_ZTSN6strata7kernels12_GLOBAL__N_110GemmKernelIN4sycl3_V16detail9half_impl4halfELi256ELi256ELi2ELb0EEE\" 5 8 ",
+    "31 EntryPoint 6 1316 \"_ZTSN6strata7kernels12_GLOBAL__N_110GemmKernelIN4sycl3_V16detail9half_impl4halfELi256ELi64ELi2ELb0EEE\" 5 8 ",
+    "31 EntryPoint 6 1922 \"_ZTSN6strata7kernels12_GLOBAL__N_110GemmKernelIN4sycl3_V16detail9half_impl4halfELi128ELi512ELi2ELb0EEE\" 5 8 ",
+    "23 EntryPoint 6 2549 \"_ZTSN6strata7kernels12_GLOBAL__N_113GroupedKernelILi128ELi256ELi3EEE\" 5 8 ",
+    "31 EntryPoint 6 2610 \"_ZTSN6strata7kernels12_GLOBAL__N_110GemmKernelIN4sycl3_V16detail9half_impl4halfELi128ELi256ELi3ELb0EEE\" 5 8 ",
+    "4 ExecutionMode 13 35 16 ",
+    "4 ExecutionMode 696 35 16 ",
+    "4 ExecutionMode 1316 35 16 ",
+    "4 ExecutionMode 1922 35 16 ",
+    "4 ExecutionMode 2549 35 16 ",
+    "4 ExecutionMode 2610 35 16 "
+  ],
+  "grouped_entry": "_ZTSN6strata7kernels12_GLOBAL__N_113GroupedKernelILi128ELi256ELi3EEE",
+  "no_unbundling_needed": true,
+  "native_grf_spill_and_runtime_route": "unverified",
+  "grf_option_interpretation": "Source requests grf_size<256>; raw SPIR-V mode lines alone do not establish its metadata/build-option lowering or allocated native GRFs.",
+  "no_aot_or_gpu_execution": true,
+  "no_new_performance_sample": true,
+  "research_corrections": [
+    {
+      "reports": [
+        "R178 VRAM",
+        "R179 allocation"
+      ],
+      "reported": "six T8192 quiet64K samples",
+      "actual": "three T8192 samples; six total in paired T6144/T8192 campaign. T8192 mean353.5772751396579 tps unchanged."
+    },
+    {
+      "reports": [
+        "R178 VRAM",
+        "R179 allocation",
+        "R179 kernel events"
+      ],
+      "reported": "new 64K and32K host-issuer modeldiagnostics",
+      "actual": "new 64-token ON,32768-token OFF,32768-token ON diagnostics. Quiet64K performance belongs to the earlier campaign."
+    },
+    {
+      "report": "R178 VRAM",
+      "reported_verify_source_sha256": "44d8667e0f4be6efece62b49de7ca184d9213f702f2037a6d5eaf502987d9c07",
+      "actual_verify_source_sha256": "44d8667e973c44d889afac2387cf7686a1b3785d31fa22f22cc5c7097927e27a"
+    },
+    {
+      "report": "R178 final message",
+      "clarification": "714MiB is free with281MiB cache live; freeing cache optimistic upperbound995MiB. Full R178 body already distinguishes it."
+    },
+    {
+      "report": "R178 CPU seam",
+      "clarification": "LOCAL.md GPU-pending sentence stale. Historical W0141 implementation now has clean HEAD7d0105f2a942ac72ca20fef69d4c2e7960653de3; source/report review does not establish current Xe qualification."
+    }
+  ],
+  "full262144_runtime_quality_restore_open": true,
+  "larger_chunk_ledger": "Source projection includes full carve and separate token allocation; cache-only release leaves optimistic184238080B deficit forT12288. No measured fit or adoption.",
+  "next_main_work": "Inspect actual per-image GRF build options before any AOT/native-pressure conclusion; qualify bounded actual-event collection with profiling-enabled queues separately from speed.",
+  "upstream_todo": "Historical official measurements use explicit settings; independent official optimum search and held-out validation still open. Local diagnostic qualification is not pristine-official tuning."
+}
