@@ -1,0 +1,131 @@
+SOURCE ONLY / UNTESTED / PENDING
+Implementation: xe-logit-bias-functional-port-source-v1
+Assigned private root: /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-logit-bias-functional-port-source-v1
+No WI/WC/source/runtime/model/artifact/Git mutation; no project imports, AST, tests, builds or GPU/runtime/process queries.
+Standard-library text generation and static hashing only; no fixture/controller/product execution.
+
+Source lineage and applicability
+Engine baseline: 39e395a103af36323262cdc0dbaea27cba81f3e4.
+Read-only observed integration HEAD: 69495a01443cb1fef41706b51514f5deb6f8a716 (Main timing/accounting publication).
+Upstream latest xe0.1.42: da3d426079019daa6e01388d03b0d94ae67070b7.
+Functional unit, full commit diff reviewed: db0bb964455553c6be096dd272482bbb30daa73b.
+Included functional follow-ups: f9806a3a69139984e8808fec4f80cc0464d612e9 (Xe capability rejection wording);
+4a66c05d5ee777fefe161b46fc663df2f9597adf (free test_chat_template.jinja).
+Latest selected-file diff and subsequent histories reviewed: no further bias functional dependency found.
+3330a4af device-architecture tag and unrelated route-prior/resident/tail/CPU/PLE/memory-speed changes are not part of this unit.
+upstream/db0bb964-complete.patch retains the exact full original commit; latest-functional-followups.patch retains the selected-file audit diff, including the excluded arch tag.
+All affected existing non-server source bytes are snapshotted at 39e. Server snapshot contains Main timing changes.
+Patch targets server before SHA ab2eb7fc8b84536f2b4f4a451c3d49428a27959d7c5af0938a5c8895305b9a56.
+Unmodified timing test_parallel.py SHA f5a41d1970c8c33b1018d7691918b5d729fcb910fd6703ff7173f520c245d0dd.
+Unmodified timing test_request_accounting.py SHA d6fa5e5d1f81a37fd90e5d7519f6c3b02bbcb44b780029f5bef3ae2bbacdc85a.
+These source hashes still matched at final static read. WI files were never written by this task.
+WI/WC AGENTS.md hashes match 0427d8d4f91c4cf5128e77d3d898ee20783b63394d24718d1ff0b16779424dd0; WI AGENTS and LOCAL instructions read.
+
+Deliverables
+functional.patch: complete Git-style unified patch, 14 changed files (9 existing plus 5 new). Not git-apply checked here.
+after/: complete final contents of all 14 changed files; before/: exact original snapshots of 9 existing files.
+source-closure.json: before/after bytes and SHA256 for every changed file; static unchanged dependency pins; all qualification fields PENDING.
+The source patch adds the complete engine function and server transport/validation, not only unsupported-feature rejection.
+
+Behavior and request admission
+INFO reports logit_bias=1; native GEN/GENI accept one logit_bias=id:value,... option.
+HTTP accepts object token IDs to finite [-100,100] biases, or pair lists where false means a ban.
+Reject bool IDs, nonintegral/negative/out-of-vocabulary IDs, duplicate normalized IDs, malformed values, NaN/infinity, out-of-range values and all-vocabulary bans.
+Native parser checks strtoul overflow, embedded NUL, duplicate IDs/options, full value termination, finite double range and exact -100 before FP32 conversion.
+HTTP uses .17g round-trip decimal transport; a finite near -100 penalty cannot become a hard exclusion in transport or FP32 conversion.
+Only exactly -100 is mapped to negative infinity. Finite FP32 -100 from a near-boundary input remains finite.
+Bias is applied before penalties, top-k/top-p/min-p/temperature/pick at all three Xe target sampling sites: greedy, ordinary top-k and large-vocabulary stage 1.
+Explicit bans bypass penalty arithmetic so zero/negative repeat penalties or +infinity raw logits cannot resurrect a banned token.
+Input logits are read, never mutated. The null-bias branch calls the original penalty arithmetic directly.
+The default SamplerParams pointer is null. Unbiased requests do not allocate a bias buffer or add a bias transfer/wait.
+Each valid request constructs an empty req_bias unless explicitly supplied; empty bias clears previous request pointers after prior readers drain.
+Same dense bias reuses the completed allocation without copy; a changed bias uploads into the persistent allocation.
+Configured/shared sampling defaults and non-None request overrides are validated with the same merge as Service.run. An explicit empty object/list clears configured bias; None retains defaults.
+Chat Completions and Responses validate before SSE headers. Direct StrataEngine generate/generate_batched also validate capability/batch before sending.
+Nonempty bias is intentionally unsupported in continuous batching, rejected by server and native parser before request state mutation. INFO capability plus batch rejection matches upstream scope.
+Default old engine requests without bias remain allowed; unsupported nonempty bias produces a clear engine-capability error.
+The native parser checks request bias before embeddings/token admission/prefill/session mutation. Transfer/allocation failure during request setup prints ERR and exits; there is no retry on a possibly partial upload.
+
+Allocation, queue ordering, graph and teardown ownership
+LogitBiasState is the actual host-only production state machine used by Verifier and the C++ fixture, not a duplicate test formula.
+Final target stage only: set_logit_bias forwards through next_, uses OnDevice(device_), and refuses active/capturing changes.
+One lazy device FP32 [n_vocab] allocation and one event per final-stage verifier/parity. Device payload requested bytes = 4*n_vocab (993280 bytes at n_vocab=248320), plus opaque event/runtime allocations.
+Pipelined parity verifiers each own their own buffer/event; earlier non-head stages allocate none. Device bytes remain allocated until verifier teardown, including after clear.
+Host completed dense state and pending upload source are member-owned vectors. GEN also temporarily owns its parsed dense vector; these host bytes are additional, not asserted physical GPU fit.
+Before replacing/clearing storage, gpu::stream_sync(cs_) completes prior sampling readers on the actual final-stage stream.
+upload uses gpu::copy_async(device, member_pending.data(), bytes, cs_); completion uses event_record(event, cs_) then event_sync(event).
+Runtime::create_stream in src/core/device.cpp constructs in_order queues; compute and transfer queues are also in_order. The event barrier follows the copy on the SAME queue.
+gpu::q resolves the actual stream owner independent of current device; event_sync uses owning Runtime::wait, which waits_and_throw and checks async errors.
+Host staging is swapped/cleared only after successful completion. Failed drain/upload/event wait poisons state; run/pl_launch/pl_finish refuse reuse.
+Even a submission failure can have accepted work, so pending upload storage survives the false return. No retry or request clearing can replace a poisoned pending source.
+prepare failure is before submission and does not poison the host state; the production request still exits. Partial lazy device/event allocation remains verifier-owned.
+Existing Verifier destructor first drains compute and copy queues, terminates if completion is uncertain, destroys graphs, then releases bias device/event and streams before member staging dies.
+The existing Runtime::free also drains all owning queues or fails stop. Original drain guards, host handoff gate, rings, fences, commit waits and publication rules are unchanged.
+Captured window graphs retain fresh default greedy SamplerParams with null bias. Request bias pointers are never captured in those params.
+run/pl_finish resample the head outside the captured graph when active bias is present, including greedy requests. The persistent pointer remains live until its queue completes.
+set_sampling overwrites an incoming pointer with this verifier owned buffer/null, preventing foreign/cross-device target pointers.
+MTP remains provisional drafting: mapped draft SamplerParams explicitly clear logit_bias before the existing completion handoff, and all mapped/device struct allocations use sizeof(SamplerParams).
+Target verification applies bias, and existing exact-token draft acceptance/rejection governs output. No target device or full-vocabulary pointer enters draft/subset graphs.
+No new profiling queue, unsafe host publication, vendor/model-ID choice, compact default change, workspace retirement or cache enlargement.
+Full configured 262144 context admission/KV/scratch geometry and current compact-default-OFF source are unchanged. This is a source preservation statement, not measured full-context occupancy.
+Raw-logit/log-probability diagnostic code is unchanged; this unit does not redefine existing log-probability reporting semantics.
+
+Fixtures prepared, not executed
+CMake host-only logit_bias_test links strata_warnings (therefore normal project sanitizer settings) and has a finite 60s timeout.
+Host fixture covers parser rejection, exact ban/near-ban boundary, 103215 bans in vocab248320, actual production state unchanged/change/clear reuse, dense validation, injected drain/allocation/submission/completion failures, and retained asynchronous upload source ownership.
+Release checks use explicit check() and exit, not assert that disappears under NDEBUG.
+Server tests retain upstream known forms/capability/batching/large-list/stream-rejection cases; add decimal boundary round trips, effective-default merge and explicit clear, Responses rejection before generation, and supported CPU fake request A/empty/B/clear/pair-ban transport.
+The supported fake validates transport only; it makes no claim about GPU bias numerics.
+GPU sampler_parity source retains upstream bias fixtures and adds an order-discriminating sign/repeat example, persistent update/clear, unchanged input logits, hard-ban with zero/negative repeat, and greedy/sampled large split-stage single-permitted-token fixtures.
+Parity uses existing process-owned USM allocations and completion-checked transfer helpers; device buffers outlive all launches. No new premature free.
+tools/logit_bias_http_probe.py is retained byte-exact from latest upstream as known source fixture. It launches models, alters CLI/config, uses legacy unqualified orchestration and lacks current owner/fault/mapping bounds; DO NOT treat it as the approved GPU launch recipe.
+
+Main-only required review and qualification recipes (none executed by implementer)
+1. Full source review: functional.patch, all after files, base pins, upstream complete functional diff, queue/graph/failure lifetime reasoning and manifest.
+2. In WI, after current serialized work closes and base pins match: git apply --check PRIVATE_ROOT/functional.patch; then apply via Main authorized publication workflow. Keep Main timing edits. If source differs, Main rebases the minimal patch; never replace WI with stale after/server.py.
+3. CPU Python: python3 -m unittest serve.test_logit_bias serve.test_parallel serve.test_request_accounting serve.test_server -v; discover and run affected existing Responses/server suites using the project recipe. Main alone performs imports/AST/lint.
+4. Reconfigure/build fresh isolated free and contrib-llvm build directories with current qualified compiler/core mapping; retain existing flags, add new source/header pins, build all affected engine/parity/test targets. No CUDA/HIP requirement.
+5. CPU CTest in each appropriate build: ctest --test-dir BUILD -R "^logit_bias_test$" --output-on-failure --timeout 60; then affected existing CPU CTest selection. GPU-bearing CTest tests require separate serialized owner admission.
+6. Repeat free and contrib-llvm host sanitizer qualification in separate build trees with STRATA_SANITIZE=address,undefined, project ASAN runtime controls and required existing CPU tests. Run current source/C++/Python lint with actual receipts, preserving existing failure statuses.
+7. Separate bounded GPU sampler parity: sampler_parity --selftest under Main current sameboot/health/fault/maps/source/binary/controller ownership, finite timeout, no parallel work or retry. Verify both ordinary and large-vocabulary paths and request null/change/clear numerics.
+8. Prepare and qualify a new bounded model/API controller rather than launching the retained upstream probe. Require fresh health/kernel-cursor and exact source/bin/runtime pins, normal QUIT/exit0 before judgments, bounded traces/RSS/wall, diagnostic-only logs and no retry.
+9. GPU/model cases: baseline default null vs fresh unmodified baseline; greedy/sample positive bias and bans; object vs pair-list; A->omitted->B->empty clearing; invalid/all-banned inputs before request mutation; MTP off then MTP4 with target-biased accepted/rejected proposals; capture warmup and subsequent changed/cleared requests; configured 262144 admission unchanged. Multi-device final-stage ordering needs separate evidence if it is to be claimed supported/qualified.
+10. Inject actual allocation/submission/async-completion failures only in separately reviewed bounded CPU/mock or controlled qualification harnesses; verify poison refusal and fail-stop teardown. Do not invent actual device fault proofs from host mocks.
+11. Main resolves source/build/CPU/lint/GPU proofs and publishes only after actual review/qualification. Existing source39e qualification does not qualify this new SamplerParams layout or engine function.
+All free/contrib/ASAN/CPU/GPU/model/MTP/multi-device/graph/quality/performance/publication results for this new unit are PENDING.
+No successful measured number, GPU fit, performance, broad quality, full262144 occupancy or RESTORE claim is made.
+
+Changed file pins (before SHA or NEW; after SHA; bytes)
+CMakeLists.txt before=577ebbd766568558ba43a64960854cdbcae712cbe961491b50ac7c204887e775 after=db19557296feda4d7d82664763bf3a50f9af6a360cd6735b5f1a5fbf578acd45 bytes=60202
+include/strata/core/logit_bias.hpp before=NEW after=3e11ee65294613b62d63483c7c33eeca67723fd49e8acf02bf5ff5204d3426df bytes=4948
+include/strata/core/verify.hpp before=452c85060e68e94b7d9e0f039d25f3b9696972a50292e08bf6d69b9b96e454a7 after=bf968d793d8a207f4a3db610fe5afc527bb242646b290ad71ce154cf181ba11a bytes=30831
+include/strata/kernels/sampler.hpp before=cbf73af09d1346c6f2311f0ad496684123ce88e43362c5143907d27856d4937d after=f10c3f725ec613a124079677eab308a225892b80fddf29cb905b1b66d9ce6997 bytes=5744
+serve/logit_bias.py before=NEW after=120cf40b04411eacf24a447d84b7fd1b045476eb3937a668016498d2af896d1b bytes=2782
+serve/server.py before=ab2eb7fc8b84536f2b4f4a451c3d49428a27959d7c5af0938a5c8895305b9a56 after=71daf5410f7c584916419960594dcd1498746e8c1c806ca65cd6a15e518203a1 bytes=335700
+serve/test_logit_bias.py before=NEW after=269a091b5efa92d39c90db4085a89a76c4b67a5b3b648c7e4c14e569b7ed7730 bytes=8648
+src/core/logit_bias_test.cpp before=NEW after=2457f7542b59c5c55de7768c20f394c689c03d5fd191785c5387ae851db8fa8d bytes=5119
+src/core/mtp.cpp before=11c00990bed018d9a4bf5cb658d97582875b969016d4af1e0bb38c6d5c951a8c after=73470d5cb90ad8658ae6fc0bf2787ca223f8f96088adfcf854af455b079e235c bytes=78317
+src/core/verify.cpp before=44d8667e973c44d889afac2387cf7686a1b3785d31fa22f22cc5c7097927e27a after=e51d1daca240a0c2a783fd271ea894aee1d88be4c186bd5241639be1dcee3f42 bytes=150033
+src/kernels/sampler_parity.cpp before=375bb045fd9badd0a39d382600ca17f615fcd25807712bfa5b852f3c08ebcbc7 after=b9a9cbd526d05430085eb65f2ee2fdc9bc45aefb4ae5e6e5520d7a71c2190ef8 bytes=59486
+src/kernels/xe/sampler.cpp before=d23a3d2835c783ad1bad6c824af55118a9bfe19d4c49e4798d6a4bdf900c9a0b after=40a978b6690099f76407ce51fd2e64560b6610cbf7a2a8682dc1fb02bc891495 bytes=27186
+src/program/generate.cpp before=c9b60ef079694302dfa1f8099ddffd5375d7dae503f6edec454c1d7de3d941ee after=d802b7ea8476d025150d922e81b4d896055639339a1d7c95af5bffd302a6472e bytes=728458
+tools/logit_bias_http_probe.py before=NEW after=8744537f8bb853b8a92ea95e0de5d1af7b549c5945968fa88b6f4f8453b552f0 bytes=6636
+
+Unchanged dependency pins (static source bytes only)
+src/core/device.cpp 3e7523a2947af7c82d41fc9a7653f4f9aad0fa3cbb062999de19553659e0ec27 bytes=21855
+src/core/gpu.cpp 9792966f6b2c84434a1dddafefb3286c3c5fcfa78e23065b455904f9cf6fcfb8 bytes=18649
+include/strata/core/gpu.hpp 54b1a10524c9ee0c9b42979d75bd4f775ee0c45da2839d8129c2a2bd3daa552a bytes=7882
+include/strata/core/on_device.hpp 579d519f33e7868a9546854dc227a329fa2af04877432fc8cfc8b50c2abecc2e bytes=1150
+src/kernels/parity_device.hpp 0a29292188c155628a4f11b8a8a5cb147a3fc76ee428f8f65ba6f2420799a0de bytes=4156
+serve/test_chat_template.jinja a154136697039149f7d16e34f228d77ebc05910aaf197956e98e08dd5b7f9f1a bytes=2968
+serve/test_parallel.py f5a41d1970c8c33b1018d7691918b5d729fcb910fd6703ff7173f520c245d0dd bytes=27918
+serve/test_request_accounting.py d6fa5e5d1f81a37fd90e5d7519f6c3b02bbcb44b780029f5bef3ae2bbacdc85a bytes=12621
+src/prefill/prefill.cpp c7a427dc58fd5f03732b4a807274f2cc5d406cd2f6c39d64a620c0cd3518cc67 bytes=208230
+include/strata/core/runtime.hpp 1a42ce02127727310614461b1dc2768eb2bce421e9d5e992c4df100c1817dd26 bytes=4198
+serve/responses.py b39d0cd28fb0b4c41bc65788fb9ced1ac3b3091f01a6ee0c4630fc6957ed28f7 bytes=37471
+
+Private deliverable pins
+functional.patch 730728ce882e278ff9465cac8cd73d8cb2d5038678c0ffbef67f2d9084b22fd6 bytes=56513
+source-closure.json fd4c997d13a8c6752f5f1ef1fae6d753a0c298e5e055d89e5743a8c47625a44c bytes=7571
+upstream/db0bb964-complete.patch acd3c955f1735b1c44e28922a3403a9fecdecd56b8d1c202ca380eae9a420eb0 bytes=37974
+upstream/latest-functional-followups.patch 073927f487de8afbc5ab558a28448b610c052433daae874cbe4115aad2c69e8c bytes=1899

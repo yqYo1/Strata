@@ -1,0 +1,288 @@
+{
+  "active": false,
+  "complete": false,
+  "passed": false,
+  "commands": [
+    {
+      "label": "kernel-after-profiler-sigsegv",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "--after-cursor",
+        "s=9944479cfd1a45c28a589619cb8f2881;i=c0c7830;b=cfda0b6a7c134fe2bdf58f9202770840;m=1515fcd1eb;t=65d946576a999;x=ce7f080a35944a7b",
+        "--no-pager",
+        "-o",
+        "json"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-11T18:06:10.826388+00:00",
+      "wall_seconds": 15,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1835011,
+          "start_ticks": 9073494,
+          "sid": 1835011,
+          "pgid": 1835011
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 90734.947807737,
+      "pid": 1835011,
+      "spawn_return_monotonic": 90734.949283852,
+      "direct_identity": {
+        "pid": 1835011,
+        "state": "R",
+        "ppid": 1835008,
+        "pgid": 1835011,
+        "sid": 1835011,
+        "start_ticks": 9073494,
+        "rss_bytes": 483328
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-11T18:06:10.945714+00:00",
+      "elapsed_seconds": 0.11917413599439897,
+      "logs": {
+        "kernel-after-profiler-sigsegv.stdout": {
+          "bytes": 3971,
+          "sha256": "94d02ee9ef4dc3399fd6e103605e234ad63515d752a539d26f002a0f4f61d86f"
+        },
+        "kernel-after-profiler-sigsegv.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "core-info-readonly",
+      "argv": [
+        "/usr/bin/coredumpctl",
+        "--no-pager",
+        "info",
+        "1823073"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-11T18:06:10.948761+00:00",
+      "wall_seconds": 15,
+      "errors": [],
+      "owners": [],
+      "cleanup": [],
+      "observation_complete": false,
+      "direct_child_reaped": false,
+      "session_empty": false,
+      "session_anchored": false,
+      "spawn_begin_monotonic": 90735.070309778,
+      "error": "FileNotFoundError(2, 'No such file or directory')",
+      "finished_utc": "2026-10-11T18:06:10.951380+00:00",
+      "elapsed_seconds": 0.0023500380048062652,
+      "logs": {
+        "core-info-readonly.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "core-info-readonly.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "gpu_executed": false,
+  "model_executed": false,
+  "source_recipe_sha256": "cba5f0739bac3f87cc7393014c4e39a17f8de20387c59e191d5092f5aac6e691",
+  "original_failure": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-unitrace-v711-health-root-v2/record.json",
+    "sha256": "d97bcd95c404c7e4a700f6dc79baa5b7b8ce05bc27f02eac4f7159b9dc19e8d2",
+    "passed": false,
+    "exit_code": -11
+  },
+  "original_record_modified": false,
+  "reset_executed": false,
+  "retry_count": 0,
+  "started_utc": "2026-10-11T18:06:10.826200+00:00",
+  "new_kernel_entries": [
+    {
+      "_SOURCE_MONOTONIC_TIMESTAMP": "90591742109",
+      "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+      "__REALTIME_TIMESTAMP": "1791741828392847",
+      "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+      "SYSLOG_FACILITY": "0",
+      "_RUNTIME_SCOPE": "system",
+      "_HOSTNAME": "jitakusaba01",
+      "_TRANSPORT": "kernel",
+      "__MONOTONIC_TIMESTAMP": "90592514017",
+      "MESSAGE": "health[1823073]: segfault at 2 ip 00000f3524f5de00 sp 00007ffd955dc658 error 4 in libc.so.6[188e00,f3524dfd000+189000] likely on CPU 1 (core 1, socket 0)",
+      "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+      "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c0c78af;b=cfda0b6a7c134fe2bdf58f9202770840;m=1517bc0fe1;t=65d946735e78f;x=473068fe60508320",
+      "__SEQNUM": "202143919",
+      "SYSLOG_IDENTIFIER": "kernel",
+      "PRIORITY": "6"
+    },
+    {
+      "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+      "_HOSTNAME": "jitakusaba01",
+      "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c0c78b0;b=cfda0b6a7c134fe2bdf58f9202770840;m=1517bc103d;t=65d946735e7eb;x=6f516cb764266001",
+      "SYSLOG_IDENTIFIER": "kernel",
+      "MESSAGE": "Code: 4c 16 fc 8b 36 89 4c 17 fc 89 37 c3 c5 fa 6f 06 c5 fa 6f 4c 16 f0 c5 fa 7f 07 c5 fa 7f 4c 17 f0 c3 66 0f 1f 84 00 00 00 00 00 <48> 8b 4c 16 f8 48 8b 36 48 89 37 48 89 4c 17 f8 c3 c5 fe 6f 54 16",
+      "__REALTIME_TIMESTAMP": "1791741828392939",
+      "__SEQNUM": "202143920",
+      "SYSLOG_FACILITY": "0",
+      "_TRANSPORT": "kernel",
+      "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+      "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+      "PRIORITY": "6",
+      "_SOURCE_MONOTONIC_TIMESTAMP": "90591742121",
+      "_RUNTIME_SCOPE": "system",
+      "__MONOTONIC_TIMESTAMP": "90592514109"
+    },
+    {
+      "_TRANSPORT": "kernel",
+      "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+      "MESSAGE": "audit: type=1400 audit(1791741846.266:262): apparmor=\"DENIED\" operation=\"open\" class=\"file\" profile=\"snap.firefox.firefox\" name=\"/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/snap.firefox.firefox-f08bfddf-53de-469d-ba54-3be5b072d747.scope/cpu.max\" pid=1824202 comm=57656220436F6E74656E74 requested_mask=\"r\" denied_mask=\"r\" fsuid=1000 ouid=1000",
+      "__REALTIME_TIMESTAMP": "1791741846267844",
+      "__SEQNUM": "202144053",
+      "_SOURCE_MONOTONIC_TIMESTAMP": "90609616907",
+      "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+      "_HOSTNAME": "jitakusaba01",
+      "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c0c7935;b=cfda0b6a7c134fe2bdf58f9202770840;m=1518ccd016;t=65d946846a7c4;x=c276ef75f9242adb",
+      "_RUNTIME_SCOPE": "system",
+      "SYSLOG_FACILITY": "0",
+      "SYSLOG_IDENTIFIER": "kernel",
+      "__MONOTONIC_TIMESTAMP": "90610389014",
+      "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+      "PRIORITY": "5"
+    },
+    {
+      "__REALTIME_TIMESTAMP": "1791741856352854",
+      "SYSLOG_IDENTIFIER": "kernel",
+      "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+      "_SOURCE_MONOTONIC_TIMESTAMP": "90619702178",
+      "PRIORITY": "4",
+      "__MONOTONIC_TIMESTAMP": "90620474024",
+      "_TRANSPORT": "kernel",
+      "__SEQNUM": "202144068",
+      "SYSLOG_FACILITY": "0",
+      "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+      "_RUNTIME_SCOPE": "system",
+      "_HOSTNAME": "jitakusaba01",
+      "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c0c7944;b=cfda0b6a7c134fe2bdf58f9202770840;m=151966b2a8;t=65d9468e08a56;x=b782f414e68ed231",
+      "MESSAGE": "[UFW BLOCK] IN=enp11s0 OUT= MAC=01:00:5e:00:00:01:54:9b:49:a7:36:e0:08:00 SRC=192.168.0.1 DST=224.0.0.1 LEN=32 TOS=0x00 PREC=0xA0 TTL=1 ID=0 PROTO=2 ",
+      "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840"
+    },
+    {
+      "_HOSTNAME": "jitakusaba01",
+      "PRIORITY": "4",
+      "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+      "MESSAGE": "[UFW BLOCK] IN=enp11s0 OUT= MAC=01:00:5e:00:00:01:54:9b:49:a7:36:e0:08:00 SRC=192.168.0.1 DST=224.0.0.1 LEN=32 TOS=0x00 PREC=0xA0 TTL=1 ID=0 PROTO=2 ",
+      "SYSLOG_IDENTIFIER": "kernel",
+      "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+      "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+      "_RUNTIME_SCOPE": "system",
+      "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c0c7a79;b=cfda0b6a7c134fe2bdf58f9202770840;m=151cfa5116;t=65d946c7428c4;x=8aaa7d120e5ae0a1",
+      "_SOURCE_MONOTONIC_TIMESTAMP": "90679707287",
+      "SYSLOG_FACILITY": "0",
+      "_TRANSPORT": "kernel",
+      "__SEQNUM": "202144377",
+      "__MONOTONIC_TIMESTAMP": "90680480022",
+      "__REALTIME_TIMESTAMP": "1791741916358852"
+    }
+  ],
+  "new_gpu_fault_entries": [],
+  "devcoredump_exists": false,
+  "integer_protocol_observed": {
+    "exact_words": 16384,
+    "rounds": 1,
+    "h2d_bytes": 65536,
+    "d2h_bytes": 65536,
+    "mapped_runtime_paths": [
+      "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libsycl.so.9.0.0-0",
+      "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libumf.so.1.1.0",
+      "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0.12.0",
+      "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+      "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395",
+      "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0",
+      "/usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1.32.0",
+      "/usr/lib/x86_64-linux-gnu/libze_validation_layer.so.1.32.0"
+    ],
+    "integer_protocol_complete": true,
+    "instrumented": true
+  },
+  "raw_error_tokens": [],
+  "observed_summary_device_ns": [
+    "41040",
+    "41040"
+  ],
+  "submission_nan_percentage_present": true,
+  "trace_postfailure_parse": {
+    "capture_valid": true,
+    "file_count": 1,
+    "trace_bytes": 25717,
+    "event_count": 169,
+    "device_event_count": 3,
+    "device_events": [
+      {
+        "ph": "X",
+        "tid": 4236628959,
+        "pid": 4236628959,
+        "name": "zeCommandListAppendMemoryCopy(M2D)[65536]",
+        "cat": "gpu_op",
+        "ts": 1791741827322781.5,
+        "dur": 18.645,
+        "args": {
+          "id": "1"
+        }
+      },
+      {
+        "ph": "X",
+        "tid": 4236628959,
+        "pid": 4236628959,
+        "name": "main::{lambda(sycl::_V1::id<1>)#1}[SIMD32 {16; 1; 1} {1024; 1; 1}]",
+        "cat": "gpu_op",
+        "ts": 1791741827338917.5,
+        "dur": 5.729,
+        "args": {
+          "id": "2"
+        }
+      },
+      {
+        "ph": "X",
+        "tid": 4236628959,
+        "pid": 4236628959,
+        "name": "zeCommandListAppendMemoryCopy(D2M)[65536]",
+        "cat": "gpu_op",
+        "ts": 1791741827339793.5,
+        "dur": 16.666,
+        "args": {
+          "id": "3"
+        }
+      }
+    ],
+    "instrumented_span_us": 17028.75,
+    "performance_eligible": false,
+    "collection_overhead_measured": false,
+    "scope": "one instrumented tiny-health H2D/kernel/D2H only; collector timing overhead unmeasured"
+  },
+  "summary_postfailure_parse_error": "ValueError('nonfinite summary')",
+  "error": "AssertionError()",
+  "finished_utc": "2026-10-11T18:06:10.952335+00:00"
+}

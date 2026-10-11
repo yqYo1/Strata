@@ -1,0 +1,62 @@
+{
+  "main_reviewed": true,
+  "source_pins": {
+    "admission.py": "f69c11dc6220b85a022d7634a324707086fd11f211b68ea616d3521ab5c58896",
+    "batch_census.py": "ce794be37f2aa670ba446cd8894ca9394a1be6a8b3a77f467cf77076d0d6f7e3",
+    "controller_cpu_fixtures.py": "353a1b37d283b21fc82af3c20c6dda6cdcb453e8bc7d02acc7633d2460d0b1e9",
+    "fixtures.py": "706274e56ae8dbc524142688336f9053bf786cd46c2436a4434f49b588fd6a08",
+    "hash_inputs.py": "25d21cfb5d9977fcabe7e1b036a7959bf8ca99d3ce797c44cacc6e56ef387df2",
+    "phase_observer.py": "da31acaf24035591f36fb2f7939ee81b3700c6a3d3ca28b671fe79f515d171e8",
+    "phase_protocol.py": "9176e7aded603746631d7da179e5ee191d1d0e3762d17f99995e6f9c7234e42f",
+    "protocol.py": "f323da52a9f688c5d08aa45c9b0ab037f77e99d40ef577ec5ec2cd42974a6aa1",
+    "route_census.py": "95c511a6ebb2feac7f5a302ede193d6b9ef34c77055d2f959e76bb5e6bb1819e",
+    "run_root.py": "1e1778d8080407b84bc2caecfaa60653a3875c81d5052e32a699bc4363d455eb",
+    "runtime.py": "e3827641ab38ffa0d60db92153c614e7e4911c48b67f5bd841617272dd7d2fd0",
+    "timer_overhead.py": "13b62f3cc85c3b9b49e72c3e1838f7248d5c2530d3357c7a45a81dbdf439ac3e",
+    "trace_parser.py": "535ef69a7d244a6a5a01ac72d39028490bd38e346d250c22ce9aa8a0c3d52c74",
+    "transfer_ledger.py": "7e5e37467208c229eeda3c7367fa16f506c11fe502ad93b28bbcc70fa4e9ab6d",
+    "upstream_admission.py": "721cd9404b12d7978c1036e7fd4d0f6394c11ea12af1fabcc174223ce4652789",
+    "window_protocol.py": "b2d8e4782db570ec53d194268b788c868219d64c5aa0c361cd9a2ea3d6120788"
+  },
+  "support_file_pins": {
+    "source-review.expected.json": "3040ba6c87ed575ec8ea5f2452646c6cef77a74ea331f56b60a38b2d4e054eac",
+    "pti-source.expected.json": "deb8597a812a1367d0834b7ffe191aec4fe8c99256646d5ceb85c4f289d963d5",
+    "immutable-source.expected.json": "49332ebaa06287c37bb007955f47e88ee68d128a35a6b07093cea6c2687ef349"
+  },
+  "scope": "Main FULL-read all four new code files and health.cpp; all twelve inherited helpers exact prior reviewed bytes; all five manifests/templates reviewed; FULL-read Main v1-to-v2 diff. Health only, no model code mutation.",
+  "source_only_review": true,
+  "gpu_executed": false,
+  "model_executed": false,
+  "performance_eligible": false,
+  "findings": [
+    "Explicit loader/backend debug stderr and parameter validation before first debug GPU use; eight exact runtime maps",
+    "Only three waited integer operations, same owner lifetime/finite caps/no automatic reset or retry",
+    "Kernel JSON per-command4MiB, aggregate raw8MiB; source-reviewed health output firstsix+duplicateLIBRARY lines",
+    "Summary generic diagnostic text allowed; broad API/SYCL/UR timing summaries still refused",
+    "PTI counter event pool/pNext untouched; original counter signal appended in order; finalizer alone is not a drain; successful health waits mandatory",
+    "Logger old teardown UAF fixed upstream1.31 before installed-version1.32; actual installed lineage not proven; prior qualified exact binary retained"
+  ],
+  "all_file_pins": {
+    "admission.py": "f69c11dc6220b85a022d7634a324707086fd11f211b68ea616d3521ab5c58896",
+    "admission.recipe.pending.json": "ac8c2e3b57b7711c3fcc4e629ec336fcc5899f4ac691977bb581de2a539a3cbd",
+    "batch_census.py": "ce794be37f2aa670ba446cd8894ca9394a1be6a8b3a77f467cf77076d0d6f7e3",
+    "controller_cpu_fixtures.py": "353a1b37d283b21fc82af3c20c6dda6cdcb453e8bc7d02acc7633d2460d0b1e9",
+    "fixtures.py": "706274e56ae8dbc524142688336f9053bf786cd46c2436a4434f49b588fd6a08",
+    "hash_inputs.py": "25d21cfb5d9977fcabe7e1b036a7959bf8ca99d3ce797c44cacc6e56ef387df2",
+    "immutable-source.expected.json": "49332ebaa06287c37bb007955f47e88ee68d128a35a6b07093cea6c2687ef349",
+    "phase_observer.py": "da31acaf24035591f36fb2f7939ee81b3700c6a3d3ca28b671fe79f515d171e8",
+    "phase_protocol.py": "9176e7aded603746631d7da179e5ee191d1d0e3762d17f99995e6f9c7234e42f",
+    "protocol.py": "f323da52a9f688c5d08aa45c9b0ab037f77e99d40ef577ec5ec2cd42974a6aa1",
+    "pti-source.expected.json": "deb8597a812a1367d0834b7ffe191aec4fe8c99256646d5ceb85c4f289d963d5",
+    "qualification.pending.json": "c6b7519082f853e3a74646d14460cf9d4220f532369c2d5b44b8a5a6b95524a6",
+    "route_census.py": "95c511a6ebb2feac7f5a302ede193d6b9ef34c77055d2f959e76bb5e6bb1819e",
+    "run_root.py": "1e1778d8080407b84bc2caecfaa60653a3875c81d5052e32a699bc4363d455eb",
+    "runtime.py": "e3827641ab38ffa0d60db92153c614e7e4911c48b67f5bd841617272dd7d2fd0",
+    "source-review.expected.json": "3040ba6c87ed575ec8ea5f2452646c6cef77a74ea331f56b60a38b2d4e054eac",
+    "timer_overhead.py": "13b62f3cc85c3b9b49e72c3e1838f7248d5c2530d3357c7a45a81dbdf439ac3e",
+    "trace_parser.py": "535ef69a7d244a6a5a01ac72d39028490bd38e346d250c22ce9aa8a0c3d52c74",
+    "transfer_ledger.py": "7e5e37467208c229eeda3c7367fa16f506c11fe502ad93b28bbcc70fa4e9ab6d",
+    "upstream_admission.py": "721cd9404b12d7978c1036e7fd4d0f6394c11ea12af1fabcc174223ce4652789",
+    "window_protocol.py": "b2d8e4782db570ec53d194268b788c868219d64c5aa0c361cd9a2ea3d6120788"
+  }
+}

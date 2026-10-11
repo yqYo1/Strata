@@ -1,0 +1,51 @@
+# Xe inline issuer phase observer: sparse discriminator contract
+
+Date: 2026-10-12
+Status: source-only design audit; no build, run, test, GPU, process, or Git operation performed.
+
+## Pins and scope
+
+Source tree: `/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/perf-xe-prefill-row-bounded-scratch-20261011`.
+Pinned source revision: `39e395a103af36323262cdc0dbaea27cba81f3e4`.
+Pinned `src/prefill/prefill.cpp` SHA-256 supplied for this audit: `c7a427dc58fd5f03732b4a807274f2cc5d406cd2f6c39d64a620c0d3518cc67`.
+This report reads the closed `n64-t8192-g16-on` and `n32768-t8192-g16-on` phase-observer receipts only. It does not inspect any active run or artifact.
+
+Question: can the coarse per-phase timer be reduced to a bounded observer that distinguishes inline host issue/service pressure from GPU phase time, without recording a marker on every route/command and without changing the issuer's asynchronous ownership protocol?
+
+## What the existing phase numbers mean
+
+`PfTimer::mark` records a timing event on the supplied stream for every marker call; `fold` is called after a compute-stream synchronization, computes elapsed time between adjacent marks, assigns each interval to the earlier mark's phase, then retains the final mark as the next fold's starting point (`src/prefill/prefill.cpp:1174-1219`, fold call after `stream_sync(m.cs)` near line 1897). These are adjacent event gaps in the compute queue. They can include host submission gaps, queue idle time, dependencies and waits; they are not exclusive kernel time. They do not time the copy stream. A `wait copy` marker only brackets the consumer-side wait command as it appears in the compute queue; it does not directly measure the copy operation's service duration.
+
+The closed 32K record uses four chunks of 8192 positions, G16 compact mode, batch off, `STRATA_PREFILL_ISSUER=0`, ring 8, and `STRATA_PREFILL_TIMING=1`. It records 200,451 mark calls, 1,093 new timing-event creations and 200,450 intervals; host time in `mark` is 30,852.558 ms and `fold` is 176.250 ms over 193 folds. Its coarse phase attribution is 50,866 ms host grouping, 555 ms wait-copy, 55,518 ms dequant, 3,739 ms gate/up, 8,183 ms down and 8,709 ms combine. Invocation wall is 146,747 ms, phase timeline 146,655 ms, and host staging 5,323 ms. The record explicitly says observer overhead was not measured, performance eligibility is false, and it is not a complete critical path or full-context result. The 64-position receipt likewise has 15,937 marker calls and 2,448.49 ms mark host wall. Thus repeated marker API/bookkeeping is itself a large measured CPU cost in this observer configuration; this alone does not establish a production slowdown or a universal bottleneck.
+
+## Issuer and ring ownership contract
+
+For stream-all prompts (`m.ring > STAGE`, `T >= STREAM_ALL_MIN`, source present), `STRATA_PREFILL_ISSUER` defaults on; zero selects inline issue (`prefill.cpp:1480-1505`). Both routes traverse the same ordered `seq` into the same ring slots. The threaded issuer waits until `idx < consumed + ring`, waits for the host stager if necessary, queues `copy_async_after` on `m.copy` with the slot's last-reader event (`m.used`) as dependency and `m.copied` as completion mark, then publishes `a_issued`. The consumer waits for that publication before it queues the compute-stream wait on `m.copied` and consumes the blob. Once the compute stream has finished the reader (or skipped-entry release), it records `m.used`; `give_back` publishes the consumed frontier, allowing reuse. See `prefill.cpp:1452-1553`, streamed group wait/release around `2370-2405`, and ordinary streamed route around `2508-2555`.
+
+In inline mode, initial issuance fills the first ring window before layer work. Subsequent issuance occurs synchronously in `give_back` via `issue_until(upto + ring)`. That inline path may wait for an unpinned blob in `Stager::wait`, then submits copy and completion mark; it records host elapsed in `stats_.ms_experts_host`. Therefore an added observer must not call a queue/device sync per entry, wait for an event that the consumer has not queued yet, recycle a slot before its `used` dependency, or move the staged-host-buffer lifetime past the copy completion. The current `copy_async_after` path combines the previous-reader dependency, copy and completion mark in order. Existing `m.copied`/`m.used` events are non-timing ownership events; turning them into timing events globally would expand event-resource cost and alter all ring paths.
+
+`STRATA_PREFILL_TRANSFER_COUNTS` already enables a route/transfer census vector, populated per layer and emitted as a closed chunk record. It gives exact counts/bytes and policy fields but no command timestamps. A compact observation can attach counters to this existing opt-in output without adding a marker for every expert.
+
+## Candidate discriminator: bounded host-side issuer ledger
+
+The smallest low-perturbation first discriminator is a bounded, opt-in host ledger around the existing issue operations, not another GPU marker stream. Keep at most a fixed number of aggregate buckets per chunk/layer and route class (for example resident, pinned direct, transient/stager-backed; plus total). Record counts and byte totals already known at issue, host wall spent in `Stager::wait`, host wall spent submitting `copy_async_after`, and time from the start of `issue_until`/threaded issuer loop through its publication frontier. In inline mode, attribute the same separately measured `wait` and submission intervals around the existing operations. Report queueing/service components separately from the current `PfTimer` queue-gap fields. Store only bounded histograms or min/median/p95/max over fixed buckets, plus sums/counts; no row/command list or expert identifiers.
+
+For the threaded path, the producer can aggregate thread-local totals and publish a compact per-chunk snapshot after `join`; use existing acquire/release frontier semantics and do not introduce a new atomic per expert if a local aggregate suffices. For inline mode the launch thread already owns the work; aggregate locally. Include `stream_all`, `threaded_issue`, ring size, route census counts, and observer mode in the record, so results cannot silently combine different policies. Keep instrumentation disabled by default and avoid allocating bucket state unless enabled.
+
+This distinguishes whether host work is on the launch thread (inline) and how much time that thread/issuer spends waiting for staged host data or submitting copies. It does not isolate device DMA service or determine when a copied blob became ready on the device. If CPU issue time is low while `wait copy` phase gaps are high, the gap still needs a device-side discriminator; if inline host wait/submission is high and the inline run is sensitive to it, that is evidence for an issuer-specific candidate, not a final bottleneck attribution.
+
+## Optional sparse device-side span, only if host ledger leaves ambiguity
+
+If a device-side interval is needed, use a diagnostic-only pair at coarse boundaries (for example first and last streamed entries in a selected layer, or first/last ring window) on the copy queue, and retrieve elapsed time only after an already-required layer/chunk drain. Do not instrument every expert. Validate runtime event timestamp support and event reuse/lifetime before adopting this: an event recorded into a reused ring slot can be overwritten before the reader collects its timestamp, and the producer may run ahead by up to the ring bound. A safe design needs dedicated timing events with explicit bounded ownership, not aliases of `m.copied`/`m.used`; defer/reject the GPU span if it requires per-entry waits or a synchronization that changes overlap. A pair of boundary timestamps reports an inclusive copy-queue span (including idle gaps and queue waits), not aggregate DMA engine utilization or exclusive transfer time. Include a selected-layer identity and number/bytes of entries in that span.
+
+Do not add a second `PfTimer` mark at each selected-route command: even sparse selection needs to stay bounded and should not recreate the existing 200K marker pattern. Do not infer exact per-expert transfer readiness from a queue-span pair. The host ledger is the recommended first discriminator because it adds no GPU command and retains the current async stream ordering.
+
+## Unit race and async caveat
+
+The prior R166 callback/Unitrace caveat remains: tool callback wall times or callback ordering are not equivalent to device execution time, and a tracing tool can itself alter host/API pacing. Keep any tool-instrumented run separate from the low-overhead observer and report tool/version, selected callbacks, dropped-event status, command counts and overhead calibration. The observer's own CPU wall and marker count belong in every result; do not subtract them as though the cost were linear or fully calibrated.
+
+## Decision boundary and follow-up
+
+This source audit supports a narrow source candidate: add opt-in, fixed-size host accounting for the inline/threaded issuer's wait and submission costs, reusing existing transfer census and preserving event ownership. The next design review should prove accounting covers both direct pinned and stager-backed entries and that all exceptional exits join/drain before snapshots or buffers retire. Only then compare one identical prompt/chunk policy with timing markers disabled, first in inline mode and then threaded mode. Keep correctness, output identity and async fault behavior as gates. A coarse copy-queue span is a second-stage option, not required for the first discriminator.
+
+No claim follows here about a measured speedup, GPU-copy utilization, 64K/full-context behavior, or a universal bottleneck. The closed 32K receipt shows a large instrumentation host cost and coarse phase gaps, but it cannot assign those gaps exclusively to CPU issue, H2D service, or useful GPU work.

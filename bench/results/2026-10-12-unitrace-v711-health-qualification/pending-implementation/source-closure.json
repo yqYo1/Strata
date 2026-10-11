@@ -1,0 +1,201 @@
+{
+  "schema": "xe-logit-bias-functional-port-source-v1",
+  "status": "SOURCE_ONLY_UNTESTED_PENDING",
+  "engine_base_commit": "39e395a103af36323262cdc0dbaea27cba81f3e4",
+  "upstream_latest_commit": "da3d426079019daa6e01388d03b0d94ae67070b7",
+  "upstream_function_commit": "db0bb964455553c6be096dd272482bbb30daa73b",
+  "upstream_function_followups": [
+    "f9806a3a69139984e8808fec4f80cc0464d612e9",
+    "4a66c05d5ee777fefe161b46fc663df2f9597adf"
+  ],
+  "server_before_sha256": "ab2eb7fc8b84536f2b4f4a451c3d49428a27959d7c5af0938a5c8895305b9a56",
+  "patch_sha256": "730728ce882e278ff9465cac8cd73d8cb2d5038678c0ffbef67f2d9084b22fd6",
+  "patch_bytes": 56513,
+  "changed_files": [
+    {
+      "path": "CMakeLists.txt",
+      "before_sha256": "577ebbd766568558ba43a64960854cdbcae712cbe961491b50ac7c204887e775",
+      "before_bytes": 59802,
+      "after_sha256": "db19557296feda4d7d82664763bf3a50f9af6a360cd6735b5f1a5fbf578acd45",
+      "after_bytes": 60202
+    },
+    {
+      "path": "include/strata/core/logit_bias.hpp",
+      "before_sha256": null,
+      "before_bytes": null,
+      "after_sha256": "3e11ee65294613b62d63483c7c33eeca67723fd49e8acf02bf5ff5204d3426df",
+      "after_bytes": 4948
+    },
+    {
+      "path": "include/strata/core/verify.hpp",
+      "before_sha256": "452c85060e68e94b7d9e0f039d25f3b9696972a50292e08bf6d69b9b96e454a7",
+      "before_bytes": 30301,
+      "after_sha256": "bf968d793d8a207f4a3db610fe5afc527bb242646b290ad71ce154cf181ba11a",
+      "after_bytes": 30831
+    },
+    {
+      "path": "include/strata/kernels/sampler.hpp",
+      "before_sha256": "cbf73af09d1346c6f2311f0ad496684123ce88e43362c5143907d27856d4937d",
+      "before_bytes": 5633,
+      "after_sha256": "f10c3f725ec613a124079677eab308a225892b80fddf29cb905b1b66d9ce6997",
+      "after_bytes": 5744
+    },
+    {
+      "path": "serve/logit_bias.py",
+      "before_sha256": null,
+      "before_bytes": null,
+      "after_sha256": "120cf40b04411eacf24a447d84b7fd1b045476eb3937a668016498d2af896d1b",
+      "after_bytes": 2782
+    },
+    {
+      "path": "serve/server.py",
+      "before_sha256": "ab2eb7fc8b84536f2b4f4a451c3d49428a27959d7c5af0938a5c8895305b9a56",
+      "before_bytes": 334648,
+      "after_sha256": "71daf5410f7c584916419960594dcd1498746e8c1c806ca65cd6a15e518203a1",
+      "after_bytes": 335700
+    },
+    {
+      "path": "serve/test_logit_bias.py",
+      "before_sha256": null,
+      "before_bytes": null,
+      "after_sha256": "269a091b5efa92d39c90db4085a89a76c4b67a5b3b648c7e4c14e569b7ed7730",
+      "after_bytes": 8648
+    },
+    {
+      "path": "src/core/logit_bias_test.cpp",
+      "before_sha256": null,
+      "before_bytes": null,
+      "after_sha256": "2457f7542b59c5c55de7768c20f394c689c03d5fd191785c5387ae851db8fa8d",
+      "after_bytes": 5119
+    },
+    {
+      "path": "src/core/mtp.cpp",
+      "before_sha256": "11c00990bed018d9a4bf5cb658d97582875b969016d4af1e0bb38c6d5c951a8c",
+      "before_bytes": 78062,
+      "after_sha256": "73470d5cb90ad8658ae6fc0bf2787ca223f8f96088adfcf854af455b079e235c",
+      "after_bytes": 78317
+    },
+    {
+      "path": "src/core/verify.cpp",
+      "before_sha256": "44d8667e973c44d889afac2387cf7686a1b3785d31fa22f22cc5c7097927e27a",
+      "before_bytes": 148062,
+      "after_sha256": "e51d1daca240a0c2a783fd271ea894aee1d88be4c186bd5241639be1dcee3f42",
+      "after_bytes": 150033
+    },
+    {
+      "path": "src/kernels/sampler_parity.cpp",
+      "before_sha256": "375bb045fd9badd0a39d382600ca17f615fcd25807712bfa5b852f3c08ebcbc7",
+      "before_bytes": 53863,
+      "after_sha256": "b9a9cbd526d05430085eb65f2ee2fdc9bc45aefb4ae5e6e5520d7a71c2190ef8",
+      "after_bytes": 59486
+    },
+    {
+      "path": "src/kernels/xe/sampler.cpp",
+      "before_sha256": "d23a3d2835c783ad1bad6c824af55118a9bfe19d4c49e4798d6a4bdf900c9a0b",
+      "before_bytes": 26745,
+      "after_sha256": "40a978b6690099f76407ce51fd2e64560b6610cbf7a2a8682dc1fb02bc891495",
+      "after_bytes": 27186
+    },
+    {
+      "path": "src/program/generate.cpp",
+      "before_sha256": "c9b60ef079694302dfa1f8099ddffd5375d7dae503f6edec454c1d7de3d941ee",
+      "before_bytes": 727043,
+      "after_sha256": "d802b7ea8476d025150d922e81b4d896055639339a1d7c95af5bffd302a6472e",
+      "after_bytes": 728458
+    },
+    {
+      "path": "tools/logit_bias_http_probe.py",
+      "before_sha256": null,
+      "before_bytes": null,
+      "after_sha256": "8744537f8bb853b8a92ea95e0de5d1af7b549c5945968fa88b6f4f8453b552f0",
+      "after_bytes": 6636
+    }
+  ],
+  "unchanged_dependency_pins": [
+    {
+      "path": "src/core/device.cpp",
+      "sha256": "3e7523a2947af7c82d41fc9a7653f4f9aad0fa3cbb062999de19553659e0ec27",
+      "bytes": 21855,
+      "unchanged_by_port": true
+    },
+    {
+      "path": "src/core/gpu.cpp",
+      "sha256": "9792966f6b2c84434a1dddafefb3286c3c5fcfa78e23065b455904f9cf6fcfb8",
+      "bytes": 18649,
+      "unchanged_by_port": true
+    },
+    {
+      "path": "include/strata/core/gpu.hpp",
+      "sha256": "54b1a10524c9ee0c9b42979d75bd4f775ee0c45da2839d8129c2a2bd3daa552a",
+      "bytes": 7882,
+      "unchanged_by_port": true
+    },
+    {
+      "path": "include/strata/core/on_device.hpp",
+      "sha256": "579d519f33e7868a9546854dc227a329fa2af04877432fc8cfc8b50c2abecc2e",
+      "bytes": 1150,
+      "unchanged_by_port": true
+    },
+    {
+      "path": "src/kernels/parity_device.hpp",
+      "sha256": "0a29292188c155628a4f11b8a8a5cb147a3fc76ee428f8f65ba6f2420799a0de",
+      "bytes": 4156,
+      "unchanged_by_port": true
+    },
+    {
+      "path": "serve/test_chat_template.jinja",
+      "sha256": "a154136697039149f7d16e34f228d77ebc05910aaf197956e98e08dd5b7f9f1a",
+      "bytes": 2968,
+      "unchanged_by_port": true
+    },
+    {
+      "path": "serve/test_parallel.py",
+      "sha256": "f5a41d1970c8c33b1018d7691918b5d729fcb910fd6703ff7173f520c245d0dd",
+      "bytes": 27918,
+      "unchanged_by_port": true
+    },
+    {
+      "path": "serve/test_request_accounting.py",
+      "sha256": "d6fa5e5d1f81a37fd90e5d7519f6c3b02bbcb44b780029f5bef3ae2bbacdc85a",
+      "bytes": 12621,
+      "unchanged_by_port": true
+    },
+    {
+      "path": "src/prefill/prefill.cpp",
+      "sha256": "c7a427dc58fd5f03732b4a807274f2cc5d406cd2f6c39d64a620c0cd3518cc67",
+      "bytes": 208230,
+      "unchanged_by_port": true
+    },
+    {
+      "path": "include/strata/core/runtime.hpp",
+      "sha256": "1a42ce02127727310614461b1dc2768eb2bce421e9d5e992c4df100c1817dd26",
+      "bytes": 4198,
+      "unchanged_by_port": true
+    },
+    {
+      "path": "serve/responses.py",
+      "sha256": "b39d0cd28fb0b4c41bc65788fb9ced1ac3b3091f01a6ee0c4630fc6957ed28f7",
+      "bytes": 37471,
+      "unchanged_by_port": true
+    }
+  ],
+  "qualification": {
+    "cpu": "PENDING",
+    "free": "PENDING",
+    "contrib_llvm": "PENDING",
+    "asan": "PENDING",
+    "lint": "PENDING",
+    "gpu": "PENDING",
+    "main_review": "PENDING",
+    "publication": "PENDING"
+  },
+  "claims": {
+    "performance": false,
+    "full_context_occupancy": false,
+    "broad_quality": false
+  },
+  "integration_head_observed_read_only": "69495a01443cb1fef41706b51514f5deb6f8a716",
+  "integration_base_rule": "Eight existing non-server source files use 39e bytes; server uses the exact provided Main timing pin. The integration HEAD contains only the three timing source changes among affected source paths.",
+  "native_protocol_scope": "GEN and GENI request options; nonempty bias unsupported for continuous batch. No vendor/model ID decisions.",
+  "sampler_graph_rule": "Captured neutral graph params retain null bias; request sampling executes outside graph against stable final-stage storage."
+}

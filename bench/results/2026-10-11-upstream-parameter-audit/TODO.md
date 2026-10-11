@@ -1,7 +1,7 @@
 # 本家の設定調整を確認する TODO
 
 2026-10-11 のユーザー指示。担当: メインエージェント。
-XeStrata 更新版の評価後、本家 v0.1.42 の比較を確定する前に扱う。
+XeStrata 更新版の評価後、最新本家 v0.1.43 の比較を確定する前に扱う。
 
 - [x] 直近の過去レシピを確認し、明示設定と実効設定の差を記録する。
 - [x] 保持した索引付きレポートの範囲で設定探索の履歴を確認し、本家単体の探索とローカル版の設定流用を区別する。未保持・未索引の試行まで存在しないとは断定しない。
@@ -30,3 +30,5 @@ XeStrata 更新版の評価後、本家 v0.1.42 の比較を確定する前に�
 [R141のphase別設定探索案](../2026-10-11-xe-compact-moe-scratch-source-qualification/research/research-official-xe-phase-separated-parameter-search-contract-round141-v1.txt)を追加した。prefillの固定4096/6144/8192と標準auto方針、decodeの独立した設定選択と選択後の3回以上の検証を区別する。これは未実行の選定案であり、本家の最適化完了ではない。
 
 2026-10-12 の更新取得では、本家 v0.1.43 (`7695859aa13afb248bdb4d36f9b2e95707db079d`) と XeStrata xe0.1.42 (`da3d426079019daa6e01388d03b0d94ae67070b7`) の未変更 worktree を分けて用意した。これは取得・ソース確認であり、新しい長入力測定や本家単体の最適設定探索ではない。取り込み用には本家の要求全体の時間・トークン集計3修正だけを先に移し、CPU32テストと全指定lintの新規指摘なしを確認した。推論の本家全体を取り込んだ版とは扱わない。独立した設定探索と選択後の検証は未完了のまま。取得時の失敗と別途の検証、最新調査は [更新境界の記録](../2026-10-12-latest-functional-sync-boundary/main-corrections-and-next.json) に保存した。
+
+2026-10-12 の [R169設定だけでの実行経路調査](../2026-10-12-unitrace-v711-health-qualification/research/research-latest-pristine-parameter-only-safe-long-input-paths-round169-v1.txt) では、本家 v0.1.43 の SYCL に Xe0.1.42 の全カーネル先読みは無いことを確認した。一方、stager/PLEのhost-USM volatileポーリングは残り、現行B570のcapabilityでは既存設定だけで同期契約を満たす長入力経路を確認できない。GPUで未変更の本家設定探索を行った証拠は追加されていない。履歴・設定の監査は完了、本家単体の設定選択と独立検証は未完了として保持する。

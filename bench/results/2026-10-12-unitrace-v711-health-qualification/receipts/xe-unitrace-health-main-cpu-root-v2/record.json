@@ -1,0 +1,170 @@
+{
+  "active": false,
+  "complete": true,
+  "passed": true,
+  "commands": [
+    {
+      "label": "syntax-and-qualified-helper-selftests",
+      "argv": [
+        "/usr/bin/python3",
+        "-c",
+        "from pathlib import Path\nimport protocol,runtime\np=sorted(Path('.').glob('*.py'));assert len(p)==16\nfor f in p:compile(f.read_text(),str(f),'exec')\nprint(protocol.selftest());print(runtime.selftest());print('16 code files syntax PASS')\n"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-11T18:03:12.968653+00:00",
+      "wall_seconds": 90,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1820824,
+          "start_ticks": 9055709,
+          "sid": 1820824,
+          "pgid": 1820824
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 90557.090190715,
+      "pid": 1820824,
+      "spawn_return_monotonic": 90557.092140388,
+      "direct_identity": {
+        "pid": 1820824,
+        "state": "R",
+        "ppid": 1820819,
+        "pgid": 1820824,
+        "sid": 1820824,
+        "start_ticks": 9055709,
+        "rss_bytes": 458752
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 10973184,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-11T18:03:13.129443+00:00",
+      "elapsed_seconds": 0.16055596400110517,
+      "logs": {
+        "syntax-and-qualified-helper-selftests.stdout": {
+          "bytes": 150,
+          "sha256": "5389f5cfde6451dd1da31ba3e86c2d7c5c8b80845cc78fe6562c3eed8f8a38cb"
+        },
+        "syntax-and-qualified-helper-selftests.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "actual-controller-cpu-fixtures",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-unitrace-v711-health-controller-source-v2/controller_cpu_fixtures.py",
+        "--prerequisites",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-unitrace-health-main-cpu-root-v2/inherited-prerequisites.json",
+        "-v"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-11T18:03:13.130188+00:00",
+      "wall_seconds": 90,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1820852,
+          "start_ticks": 9055725,
+          "sid": 1820852,
+          "pgid": 1820852
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 90557.251901348,
+      "pid": 1820852,
+      "spawn_return_monotonic": 90557.254134854,
+      "direct_identity": {
+        "pid": 1820852,
+        "state": "R",
+        "ppid": 1820819,
+        "pgid": 1820852,
+        "sid": 1820852,
+        "start_ticks": 9055725,
+        "rss_bytes": 458752
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 34418688,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-11T18:03:14.061654+00:00",
+      "elapsed_seconds": 0.931233319992316,
+      "logs": {
+        "actual-controller-cpu-fixtures.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "actual-controller-cpu-fixtures.stderr": {
+          "bytes": 878,
+          "sha256": "a96ce1cd91ff3bdc548481c9c1d70935e16fcbb27fc834ea7fbc39ceb3366c25"
+        }
+      }
+    }
+  ],
+  "source_pins": {
+    "admission.py": "f69c11dc6220b85a022d7634a324707086fd11f211b68ea616d3521ab5c58896",
+    "batch_census.py": "ce794be37f2aa670ba446cd8894ca9394a1be6a8b3a77f467cf77076d0d6f7e3",
+    "controller_cpu_fixtures.py": "353a1b37d283b21fc82af3c20c6dda6cdcb453e8bc7d02acc7633d2460d0b1e9",
+    "fixtures.py": "706274e56ae8dbc524142688336f9053bf786cd46c2436a4434f49b588fd6a08",
+    "hash_inputs.py": "25d21cfb5d9977fcabe7e1b036a7959bf8ca99d3ce797c44cacc6e56ef387df2",
+    "phase_observer.py": "da31acaf24035591f36fb2f7939ee81b3700c6a3d3ca28b671fe79f515d171e8",
+    "phase_protocol.py": "9176e7aded603746631d7da179e5ee191d1d0e3762d17f99995e6f9c7234e42f",
+    "protocol.py": "f323da52a9f688c5d08aa45c9b0ab037f77e99d40ef577ec5ec2cd42974a6aa1",
+    "route_census.py": "95c511a6ebb2feac7f5a302ede193d6b9ef34c77055d2f959e76bb5e6bb1819e",
+    "run_root.py": "1e1778d8080407b84bc2caecfaa60653a3875c81d5052e32a699bc4363d455eb",
+    "runtime.py": "e3827641ab38ffa0d60db92153c614e7e4911c48b67f5bd841617272dd7d2fd0",
+    "timer_overhead.py": "13b62f3cc85c3b9b49e72c3e1838f7248d5c2530d3357c7a45a81dbdf439ac3e",
+    "trace_parser.py": "535ef69a7d244a6a5a01ac72d39028490bd38e346d250c22ce9aa8a0c3d52c74",
+    "transfer_ledger.py": "7e5e37467208c229eeda3c7367fa16f506c11fe502ad93b28bbcc70fa4e9ab6d",
+    "upstream_admission.py": "721cd9404b12d7978c1036e7fd4d0f6394c11ea12af1fabcc174223ce4652789",
+    "window_protocol.py": "b2d8e4782db570ec53d194268b788c868219d64c5aa0c361cd9a2ea3d6120788"
+  },
+  "owner_sha256": "a29d8257eecc77c4ad9ae6671d092b56f4c09a35c4247c125fed3a8c8bc1f95f",
+  "main_review_sha256": "33f98675b76bcfbe657e632c8082657e80e3f074ba9b7433180fcea3127b3579",
+  "source_stable": true,
+  "gpu_executed": false,
+  "model_executed": false,
+  "performance_eligible": false,
+  "full262144_qualified": false,
+  "broad_quality_qualified": false,
+  "restore_qualified": false,
+  "started_utc": "2026-10-11T18:03:12.968313+00:00",
+  "recipe_sha256": "e2a08ba642aea09f0e7b357240709aa759555a0a7e6f7f7ca5f833d88b697bfd",
+  "scope": "Actual Main serial syntax, real closed inherited-DAG gate fixtures and CPU fake owned health; no device operation",
+  "command_evidence": {
+    "syntax-and-qualified-helper-selftests": {
+      "stdout": "{'positive_protocol': 1, 'negative_protocol': 11, 'positive_trace': 1, 'negative_trace': 3}\n{'positive': 3, 'negative': 10}\n16 code files syntax PASS\n",
+      "stderr": ""
+    },
+    "actual-controller-cpu-fixtures": {
+      "stdout": "",
+      "stderr": "test_actual_inherited_production_route (__main__.HealthGates.test_actual_inherited_production_route) ... ok\ntest_environment_closed (__main__.HealthGates.test_environment_closed) ... ok\ntest_exact_tool_scope (__main__.HealthGates.test_exact_tool_scope) ... ok\ntest_immutable_bytes_and_real_historical_structures (__main__.HealthGates.test_immutable_bytes_and_real_historical_structures) ... ok\ntest_owned_fake_cpu_normal_exit_and_failure (__main__.HealthGates.test_owned_fake_cpu_normal_exit_and_failure) ... ok\ntest_pending_before_owner_root_gpu (__main__.HealthGates.test_pending_before_owner_root_gpu) ... ok\ntest_source_summary (__main__.HealthGates.test_source_summary) ... ok\ntest_trace_and_negative_resources (__main__.HealthGates.test_trace_and_negative_resources) ... ok\n\n----------------------------------------------------------------------\nRan 8 tests in 0.750s\n\nOK\n"
+    }
+  },
+  "finished_utc": "2026-10-11T18:03:14.101646+00:00"
+}

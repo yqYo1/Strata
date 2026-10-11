@@ -1,0 +1,43 @@
+# Round 169 — parameter-only safe long-input path assessment
+
+Date: 2026-10-12 (Asia/Tokyo). Source/specification review only. No build, tests, runtime, GPU/process query, Git mutation, source edits or cleanup. Compared the supplied pristine official v0.1.43 tree (HEAD 7695859aa13afb248bdb4d36f9b2e95707db079d) with pristine XeStrata Xe0.1.42 (HEAD da3d426079019daa6e01388d03b0d94ae67070b7). Target constraints supplied for this question: B570 with HOST_USM=1 and ATOMIC_HOST_USM=0, and a 10-GiB/125-GiB GPU/host-memory configuration. This is not a run-safety or performance qualification.
+
+## Conclusion
+
+No existing stock setting establishes a safe, useful >=32K prompt path for the stated B570 host-USM contract. Two risks are independent:
+
+1. On official v0.1.43, the specific broad all-kernel preload risk seen in Xe0.1.42 is absent: no `get_kernel_ids`, `preload_kernels`, or `STRATA_PRELOAD` reference exists under pristine `sycl/src`. This only removes eager compilation of every registered kernel. It does not establish that a selected long-prompt joint-matrix/PackedA specialization compiles or runs. There is no source-level setting shown here that excludes one selected unsupported specialization while preserving the long-prompt route.
+2. Official v0.1.43 still has host-polled volatile words in `sycl::malloc_host` allocations in prompt staging and the PLE upload path. With the supplied B570 capability record, HOST_USM lacks concurrent host/device access; ATOMIC_HOST_USM=0 also does not grant concurrent atomic access. These handoffs are not made safe by changing prompt ring size, stream-all threshold, CPU share, PCIe fraction, MTP, or expert-cache policy. The same general issue is present in Xe0.1.42, which additionally has all-ID preload.
+
+Thus the only source-supported parameter changes remove particular pieces of overlap or compilation work; none is evidence that the full >32K workload is safe. A pristine stock run should not be used to qualify this target until the handoffs use a supported synchronization/allocation model and the selected kernels are separately qualified.
+
+## Why prefill settings do not close the host-USM gap
+
+In official v0.1.43 `sycl/src/prefill/prefill.cpp`, `Stager::done_seq` is allocated with `sycl::malloc_host` (lines 388-393), the copy queue writes it after staging DMA (lines 513-520), and the host polls it through a volatile load in `buffer_free` (line 523). This staged source route is active for both stream-all and routed-only operation: `stream_all` only changes which experts are issued and whether the ring is large (lines 214-227, 2464); routed-only prefill still uses Stager for streamed experts (source around 2078-2092 and 2268-2272). `STRATA_PREFILL_RING=8` selects the routed-only ring, not a no-staging route. `STRATA_PREFILL_STREAM_ALL=0`, a larger `STRATA_PREFILL_STREAM_MIN`, or small chunks likewise do not remove the staging sequence handoff.
+
+The PLE double-buffer path independently allocates `ple_done_seq` with `malloc_host` (around line 1079), has the copy queue fill it (around 2341-2342), and polls it with a volatile host load (2361-2362). It is not gated by the all-expert stream walk. Lowering `--prefill` changes batch size; it does not make these host-USM flags atomic or add a queue/event wait before each host observation.
+
+The exact pristine official SYCL source also contains the per-layer `cpu_share` planner (around lines 1771 onward). Setting `STRATA_PREFILL_CPU_SHARE=0` is a useful narrow mitigation for the separate CPU-pool read versus asynchronous DMA from a shared host-USM expert arena: it removes CPU expert computation from that prefill route. It does not remove Stager or PLE completion-word polling. This distinction matters because the CUDA-side `src/prefill/prefill.cpp` is not the official SYCL implementation.
+
+In Xe0.1.42, `STREAM_ALL_MIN=2048`; the planner allows CPU sharing only when `!stream_all` (source around 1327 and 1771), so at stream-all chunks that particular CPU/GPU expert overlap is already absent. Below the threshold, `STRATA_PREFILL_CPU_SHARE=0` disables it. Both arms still leave Stager's sequence polling in use, so that switch does not make the prefill handoff contract safe.
+
+## Other controls and paths
+
+- `--pcie-frac` chooses the share of nonresident work/data assigned to GPU PCIe transfers; it does not serialize the prefill sequence words. With `--stream-experts`, the engine uses its alternate streaming source, but streamed nonresident experts still pass through staging and the host-polled completion mechanism. On the Xe driver the official source explicitly warns that PCIe use without `--stream-experts` can fault on pageable host memory; choosing `--pcie-frac 0` or `--stream-experts` is an addressability/path choice, not a synchronization fix.
+- `--no-pool` cannot be assumed to remove all host/device flags. Official generate source refuses it where the host pool is needed to consume the doorbell (around 5159-5198); where it is admissible, the prompt Stager/PLE path remains when batched prefill and streamed experts are used.
+- Turning MTP/speculation off removes draft/verify work, not main-model prompt staging or PLE. MTP settings affect decode windows and draft memory, not these prefill sequence handoffs.
+- Resident expert/cache policies could avoid Stager only if the whole relevant expert set is resident or the prompt does not enter the staged prefill path. The sources do not promise this for a mixed native-IQ model on the stated memory sizes. Using an mmap/file-backed expert path is not evidence that required experts are resident or that host-USM handoffs are serialized.
+- `--prefill 0` bypasses batched prompt processing in favor of the token-at-a-time route (the option help calls positive chunks batched prompt processing). This is not a practical parameter-only qualification for a 32K input: it shifts the prompt into repeated decode execution, retains the model's decode/doorbell and staging requirements as applicable, and cannot prove PackedA-selected kernels absent without tracing dispatch. It is a different workload, not a demonstrated safe long-context path.
+- A mixed native-IQ model can dispatch different formats/layers through different kernel paths, but changing the model or cache residency is not a stable filter for all registered/selected joint-matrix code. In Xe, CMake includes joint-matrix translation units and preload enumerates the global ID set regardless of runtime path.
+
+## Preload comparison
+
+Pristine Xe0.1.42 `src/core/device.cpp:255-276` implements `Runtime::preload_kernels()`: it walks `sycl::get_kernel_ids()` and requests executable bundles, with no environment or CLI opt-out. `src/program/generate.cpp` starts it beside model loading. Runtime toggles such as old/PTX attention or XMX selection affect dispatch, not that global enumeration. Therefore a supported Xe0.1.42 invocation cannot parameter-disable the all-ID preload; `STRATA_PRELOAD_KERNELS=0` belongs to a later modified tree, not this pristine commit.
+
+Pristine official v0.1.43 has no matching preload implementation/reference under `sycl/src`, and no all-ID enumeration was found in that subtree. It therefore avoids the *broad eager request* by implementation, without proving which on-demand kernels a 32K prefill will request. In particular, not observing a preload failure is not proof that selected PackedA joint-matrix lowering works. The exact 32K selected kernel/compiler acceptance question remains an execution qualification.
+
+## Evidence and limits
+
+Main official source locations: `sycl/src/prefill/prefill.cpp:388-393, 513-523, 1079, 2341-2362, 2078-2092, 2268-2272, 2464`; `sycl/src/program/generate.cpp:829-832, 1790-1805, 5159-5198, 11631-11674`; `sycl/src/core/layer.cpp:1363-1389` for host-USM doorbell allocation/reset. Xe source locations: `src/core/device.cpp:255-282`, `src/program/generate.cpp:2847-2850`, `src/prefill/prefill.cpp:1327, 1771-1775`.
+
+The host-USM rule and supplied target capability values are documented in the prior Round 351 contract review and its cited SYCL/Level Zero specifications. This report makes no claim that a particular fault occurred, that an exact long prompt was attempted, or that all allocations in either tree are host USM. It concludes only that the observed source handoffs lack a stock parameter that supplies the missing synchronization/capability, and that pristine official's absence of eager preload is not selected-kernel validation.

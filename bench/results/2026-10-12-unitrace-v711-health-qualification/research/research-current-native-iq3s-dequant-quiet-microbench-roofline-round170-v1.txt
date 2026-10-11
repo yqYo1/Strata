@@ -1,0 +1,69 @@
+# R170 — exact IQ3_S native expert-dequant microbenchmark and conditional roofline
+
+Date: 2026-10-12 (JST). Read-only source and documentation research. No build, test, project import, AST/runtime/device/process query, GPU work, Git mutation, source edit or cleanup was performed. This is a design and source accounting, not a measurement.
+
+## Decision and relation to prior work
+
+The smallest useful next GPU qualification is one source-matched IQ3_S dequant-only executable arm for the exact two production APIs and one compact-MoE flush, with active group sizes taken from the T8192/G16 run's native-dequant counters. Measure GU and Down separately and together. This resolves whether the current native dequant kernels themselves have enough service time to matter, without timing GEMM, row gathers, host staging or the whole observer-instrumented phase.
+
+R146 already gives the broad source-matched dequant/product/joined harness and general profiling controls (`research-xe-eligible-prefill-compute-memory-microbenchmark-design-round146-v1.txt`). R145 has general conditional byte/roofline accounting. This R170 addition is narrower: exact IQ3_S 256-value block size and current (n_embd,n_ff) geometry, actual grouped kernel grids, G16 source/destination footprint, the event-capture constraint of the existing void APIs, and the practical bounded footprint. Do not repeat the broader matrix/route discussion as if it were new evidence.
+
+## Pin and reachable implementation
+
+Pinned source: `/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/perf-xe-prefill-row-bounded-scratch-20261011`, HEAD `39e395a103af36323262cdc0dbaea27cba81f3e4`.
+
+Given the stated current arm (native pack, `STRATA_PREFILL_NATIVE_DEQUANT_BATCH=1`, MMQ disabled, compact prefill, expert group G=16), `src/prefill/prefill.cpp` checks that environment switch plus `lay.native && !use_mmq`; at flush it assembles `IqDequantGroup` and calls `iq_dequant_gu_group_f16` and `iq_dequant_down_group_f16`. Both APIs are in `include/strata/kernels/iq_kernels.hpp`, implemented by `src/kernels/xe/iq_kernels.cpp`. The old individual wrappers are the fallback only if grouped API validation declines. At runtime, record the `gu_admitted/down_admitted`, fallback-expert, flush, and `native_dequant_{gu,down}_calls` receipt fields to establish the actual path for that run; a configured environment variable alone is not proof of acceptance.
+
+IQ3_S dispatch is `dq_dispatch(... type 21 ...) -> dq_iq3_s`. For each 256-value block, `dq_iq3_s` reads the scale, qh, qs and signs fields, looks up two 32-bit IQ3S codebook words per lane, applies the scale/sign, and stores eight FP16 values per participating lane. The block layout in vendored `ggml-common.h` is 2-byte half scale + 64 qs + 8 qh + 32 signs + 4 scale bytes = **110 bytes per 256 values**. The kernel work mapping is 32 lane-items per block/superblock; source launch uses a 256-item workgroup with eight superblocks assigned per workgroup.
+
+The grouped GU launch has ND-range `(active experts, 2 parity planes, global)` with local `(1,1,256)`; parity selects gate/up and the output interleaves rows. Down launches `(active experts, global)` with local `(1,256)`. Both return false before submission on malformed bounds/capacity/alignment/overlap, unsupported dimensions/type, or insufficient workgroup/item dimensions. They enqueue no memory allocation and no per-expert launch loop on acceptance. The public wrappers return `bool`, not a `sycl::event`; they do not expose their internal parallel_for event. With non-null stream they return asynchronously; null stream invokes the runtime wait.
+
+T8192 and compact row partitioning affect how many experts are routed and compact GEMM row subgroups, but they do not change the two dequant kernels' per-expert matrix dimensions. Use the observed `nd_n` flush-size distribution (up to 16) from that request. A single full 16-expert group is an upper-bound shape, not a claim every flush has 16. This arm isolates dequant only; do not include compact gather/GEMM in its reported device duration.
+
+## Exact logical bytes for this model geometry
+
+The pinned prefill constants and native-layout checks use `n_embd=2560`, `n_ff=640`, `GU_ELEMS=1280*2560=3,276,800` half elements and `D_ELEMS=2560*640=1,638,400` half elements per expert.
+
+| per expert/flush slot | values | IQ3_S blocks | packed source | FP16 output |
+|---|---:|---:|---:|---:|
+| GU (gate plus up) | 3,276,800 | 12,800 | 1,408,000 B | 6,553,600 B |
+| Down | 1,638,400 | 6,400 | 704,000 B | 3,276,800 B |
+| Total | 4,915,200 | 19,200 | 2,112,000 B | 9,830,400 B |
+
+The GU source count includes both gate and up: 12,800 blocks × 110 B = 1,408,000 bytes. Per-expert packed source is 2,112,000 B (about 2.01 MiB), output is 9,830,400 B (about 9.37 MiB), and logical read+write total is 11,942,400 B. A complete G=16 source group is 33,792,000 B (32.2 MiB), output is 157,286,400 B (150 MiB), total logical reads+writes 191,078,400 B (182.2 MiB). Thus an exact full-group benchmark needs about 32.2 MiB source plus 150 MiB output; one set is bounded and small enough for one allocation cohort, while two rotated sets are about 364 MiB total. T8192 has no multiplier on these per-expert bytes.
+
+Logical read+write throughput for this isolated operation is `(source bytes + FP16 output bytes) / device interval`; it is not measured DRAM bandwidth unless a supported device counter establishes external-memory traffic. Dequant does not multiply by token rows; each active expert's matrices are decoded once per production dequant group, then compact GEMM consumes them.
+
+## Tiny standalone experiment
+
+Use an opt-in small C++ executable in the owning source tree, linked to the exact production IQ kernel implementation rather than copied/reimplemented decode code. Cap device allocations at two complete G16 sets: source 112.64 MB decimal plus output 524.288 MB decimal, about 607 MiB combined, plus small metadata. One set suffices for a cache-hot qualification; only use the second if testing rotation. Do not sweep arbitrary dimensions, formats, expert counts or random square shapes.
+
+1. Query and record selected Level Zero GPU identity, `fp16`, `sub_group_sizes` containing 32, `usm_device_allocations`, `usm_host_allocations`, max workgroup size and relevant per-dimension max work-item sizes. Production itself requires device and host USM, FP16, subgroup 32; the grouped wrappers additionally require a 256-item workgroup and the corresponding dimension capacity. Check the exact buffer capacities, 4-byte source alignment, 16-byte destination alignment, stride `% 8 == 0`, non-overlap, and allocation bounds before any launch. Use device USM for input/output so the timed kernel does not include migration or host-link copies.
+2. Populate each source slot once with actual IQ3_S blob bytes from a representative active expert when already available in the request's source fixture; alternatively use a deterministic valid block fixture and state that this is decode-throughput-only, not model-value validation. Do not synthesize uninitialized blocks. Use the production dequant/reference correctness check outside timed samples; initialize outputs/check sentinels and verify all output values are finite and the result hash/tolerance matches the reference before accepting timing.
+3. Exercise `active_n` values from the recorded flush histogram; at minimum a representative common partial group and 16 if both occur. For every n, invoke GU, Down separately and the production order GU then Down on one queue, with the same per-slot strides and source-pointer offsets. The exact `T=8192,G=16,compact=on` receipt belongs with the result, but compact row boundaries do not enter these kernels.
+4. Warm up/JIT the exact two kernels and geometry, then batch a declared small number of repetitions per measured sample so host call overhead is amortized. Preserve each sample and report median and p10/p90, warmup count, `n`, iteration count, source/output bytes and device/host timing separately. Use a quiet baseline before/after if a profiler-enabled queue changes the chosen runtime path or measured behavior. Do not contend with model inference, builds or tests.
+5. Separate kernel-only from staging. If production source is host-staged for a case, benchmark a second explicitly named copy-plus-kernel chain using production's actual host allocation kind and source bytes; report the copy-event and kernel-event intervals separately and sum only the observed dependency-chain wall. The historical 6.446834 GB/s Host-USM result is a separate isolated host-copy sample. Dividing 33.792 MB by it gives 5.24 ms as a *hypothetical transfer arithmetic*, not a current model-copy measurement or a measured maximum; keep that conditional arithmetic out of the kernel roof comparison.
+
+### Capturing timings without perturbing the path
+
+The current public grouped dequant functions hide the `sycl::event` returned by `parallel_for`; the queue is available through `Runtime::stream(stream)`. Therefore an external harness cannot query the true kernel event merely by timing the void-returning call. Recommended lowest-impact source seam: factor each accepted launch expression into a small internal helper returning its event; retain the existing public bool API/validation and dispatch through that helper unchanged. The benchmark-only caller can retain and query the returned event. Do not add `queue.wait()` to each timed call, because serial wait overhead changes the measured launch/service pattern.
+
+Use a profiling-enabled queue only for the diagnostic event arm; the SYCL specification requires queue profiling for event `command_start/command_end` queries. Collect event duration as device command start-to-end and host submit-to-final-completion separately. If the source seam is not admitted, report batched submit-to-completion wall only and clearly call it wrapper/service time, not isolated GPU kernel execution. A queue marker after a hidden launch can bound earlier queue work but is not an exact per-kernel event and should not be labeled as one.
+
+## Conditional bandwidth bounds and interpretation
+
+Intel lists Arc B570 graphics-memory bandwidth as 380 GB/s. For full G16, 191.0784 MB divided by 380 GB/s is **0.503 ms**. This is only a vendor-spec quotient for logical bytes, not a guaranteed floor or achieved bandwidth: the output may remain in cache, transactions may amplify bytes, execution can be underfilled, and the spec is not a measured maximum for this kernel/driver. A useful bounded inference is that if clean full-group kernel-only device intervals are far above 0.503 ms, then at least one assumed condition (effective memory supply, actual traffic, decode/index work, occupancy, or queue/device details) dominates; do not conclude the kernel is DRAM-bound from that ratio. If intervals are near or below it, that still does not prove DRAM saturation because the actual external-memory bytes may be lower than logical bytes.
+
+Keep H2D separate from VRAM. The user's measured host H2D datum is 6.446834 GB/s; it describes a separate transfer microbenchmark and must not be treated as the B570's VRAM bandwidth or this model run's achieved H2D rate. Also do not convert the current coarse phase's 55,518 ms inclusive/observer-distorted dequant bucket or 146,747 ms total wall into GPU kernel service. The phase mark and 200,451 call count are useful context only; this tiny test must provide the missing device-command interval.
+
+There is no sourced B570 FP16 throughput ceiling in this report. Dequant is lookup/index/integer/scale/sign work plus FP16 stores, so an FP16 matrix TOPS number would be irrelevant even if found. Use actual command time and (if available) supported external-memory/L3 counters; otherwise report logical-byte throughput and label it accordingly.
+
+## External implementation and non-primary idea
+
+Primary references: pinned XeStrata source paths above; GGML's `block_iq3_s` definition and 110-byte static assertion in `third_party/main/ggml/ggml-common.h`; Khronos SYCL 2020 spec for USM allocation/aspects and event profiling; and Intel's B570 specification (380 GB/s). URLs: https://registry.khronos.org/SYCL/specs/sycl-2020/html/sycl-2020.html and https://www.intel.com/content/www/us/en/products/sku/241676/intel-arc-b570-graphics/specifications.html. The `sycl::event` reference states that profiling descriptors require an enabled profiling queue and that `command_start/command_end` timestamps describe device action execution: https://github.khronos.org/SYCL_Reference/iface/event.html.
+
+Useful non-primary optimization intuition only: PyTorch's Triton GPTQ dequantization writeup emphasizes coalesced memory operations and reducing warp stalls while tuning a weight-decode kernel (https://docs.pytorch.org/blog/accelerating-triton/). NVIDIA's global-memory blog similarly shows contiguous lane-to-address mapping improving sector/request efficiency (https://developer.nvidia.com/blog/unlock-gpu-performance-global-memory-access-in-cuda/). Those are CUDA/Triton examples, not evidence of Arc behavior or a new IQ3_S optimization. The pinned `dq_iq3_s` already documents adjacent lane writes; only codegen or counters on this exact Intel target can show whether the write pattern or table access is limiting.
+
+## Artifact and limitations
+
+Requested coarse phase context: N=32768, total wall 146,747 ms, phase mark 30,852 ms across 200,451 calls, dequant 55,518 ms inclusive and observer-distorted. These figures are expressly not exclusive device service. Historical H2D is 6.446834 GB/s; vendor B570 VRAM is specified as 380 GB/s. No measured kernel timing is supplied here.

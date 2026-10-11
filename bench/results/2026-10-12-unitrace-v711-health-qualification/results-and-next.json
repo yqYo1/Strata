@@ -1,0 +1,157 @@
+{
+  "original_tool_campaign_passed": false,
+  "original_campaign": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-unitrace-v711-health-root-v2/record.json",
+    "sha256": "d97bcd95c404c7e4a700f6dc79baa5b7b8ce05bc27f02eac4f7159b9dc19e8d2"
+  },
+  "cpu_controller_qualified": true,
+  "health_only_admission_qualified": true,
+  "actual_profiler_qualified": false,
+  "model_launched": false,
+  "actual_integer_protocol": {
+    "exact_words": 16384,
+    "rounds": 1,
+    "h2d_bytes": 65536,
+    "d2h_bytes": 65536,
+    "mapped_runtime_paths": [
+      "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libsycl.so.9.0.0-0",
+      "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libumf.so.1.1.0",
+      "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0.12.0",
+      "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+      "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395",
+      "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0",
+      "/usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1.32.0",
+      "/usr/lib/x86_64-linux-gnu/libze_validation_layer.so.1.32.0"
+    ],
+    "integer_protocol_complete": true,
+    "instrumented": true
+  },
+  "actual_host_signal": -11,
+  "actual_summary_device_ns": [
+    "41040",
+    "41040"
+  ],
+  "trace_postfailure_parse": {
+    "capture_valid": true,
+    "file_count": 1,
+    "trace_bytes": 25717,
+    "event_count": 169,
+    "device_event_count": 3,
+    "device_events": [
+      {
+        "ph": "X",
+        "tid": 4236628959,
+        "pid": 4236628959,
+        "name": "zeCommandListAppendMemoryCopy(M2D)[65536]",
+        "cat": "gpu_op",
+        "ts": 1791741827322781.5,
+        "dur": 18.645,
+        "args": {
+          "id": "1"
+        }
+      },
+      {
+        "ph": "X",
+        "tid": 4236628959,
+        "pid": 4236628959,
+        "name": "main::{lambda(sycl::_V1::id<1>)#1}[SIMD32 {16; 1; 1} {1024; 1; 1}]",
+        "cat": "gpu_op",
+        "ts": 1791741827338917.5,
+        "dur": 5.729,
+        "args": {
+          "id": "2"
+        }
+      },
+      {
+        "ph": "X",
+        "tid": 4236628959,
+        "pid": 4236628959,
+        "name": "zeCommandListAppendMemoryCopy(D2M)[65536]",
+        "cat": "gpu_op",
+        "ts": 1791741827339793.5,
+        "dur": 16.666,
+        "args": {
+          "id": "3"
+        }
+      }
+    ],
+    "instrumented_span_us": 17028.75,
+    "performance_eligible": false,
+    "collection_overhead_measured": false,
+    "scope": "one instrumented tiny-health H2D/kernel/D2H only; collector timing overhead unmeasured"
+  },
+  "trace_is_performance_eligible": false,
+  "postfailure_new_gpu_fault_entries": [],
+  "devcoredump_exists": false,
+  "postfailure_health_executed": false,
+  "postfailure_kernel_command_exit0": true,
+  "kernel_crash_entries": [
+    {
+      "_SOURCE_MONOTONIC_TIMESTAMP": "90591742109",
+      "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+      "__REALTIME_TIMESTAMP": "1791741828392847",
+      "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+      "SYSLOG_FACILITY": "0",
+      "_RUNTIME_SCOPE": "system",
+      "_HOSTNAME": "jitakusaba01",
+      "_TRANSPORT": "kernel",
+      "__MONOTONIC_TIMESTAMP": "90592514017",
+      "MESSAGE": "health[1823073]: segfault at 2 ip 00000f3524f5de00 sp 00007ffd955dc658 error 4 in libc.so.6[188e00,f3524dfd000+189000] likely on CPU 1 (core 1, socket 0)",
+      "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+      "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c0c78af;b=cfda0b6a7c134fe2bdf58f9202770840;m=1517bc0fe1;t=65d946735e78f;x=473068fe60508320",
+      "__SEQNUM": "202143919",
+      "SYSLOG_IDENTIFIER": "kernel",
+      "PRIORITY": "6"
+    },
+    {
+      "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+      "_HOSTNAME": "jitakusaba01",
+      "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c0c78b0;b=cfda0b6a7c134fe2bdf58f9202770840;m=1517bc103d;t=65d946735e7eb;x=6f516cb764266001",
+      "SYSLOG_IDENTIFIER": "kernel",
+      "MESSAGE": "Code: 4c 16 fc 8b 36 89 4c 17 fc 89 37 c3 c5 fa 6f 06 c5 fa 6f 4c 16 f0 c5 fa 7f 07 c5 fa 7f 4c 17 f0 c3 66 0f 1f 84 00 00 00 00 00 <48> 8b 4c 16 f8 48 8b 36 48 89 37 48 89 4c 17 f8 c3 c5 fe 6f 54 16",
+      "__REALTIME_TIMESTAMP": "1791741828392939",
+      "__SEQNUM": "202143920",
+      "SYSLOG_FACILITY": "0",
+      "_TRANSPORT": "kernel",
+      "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+      "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+      "PRIORITY": "6",
+      "_SOURCE_MONOTONIC_TIMESTAMP": "90591742121",
+      "_RUNTIME_SCOPE": "system",
+      "__MONOTONIC_TIMESTAMP": "90592514109"
+    }
+  ],
+  "first_publication_original_passed": false,
+  "first_publication_error": "KeyError active on source-only review receipt; publicationv2 explicitly validates that schema rather than inventing closure",
+  "diagnostic_receipt_original_passed": false,
+  "diagnostic_error_cause": "The journal and trace checks completed, but /usr/bin/coredumpctl does not exist; last command spawn FileNotFoundError. Original FAILED receipt preserved.",
+  "core_status": "No new matching health apport report found in /var/crash; Main Owner sets RLIMIT_CORE=0. No core/backtrace claim.",
+  "source_engine_revision": "39e395a103af36323262cdc0dbaea27cba81f3e4",
+  "functional_revision": "69495a01443cb1fef41706b51514f5deb6f8a716",
+  "corrections": {
+    "R170_dequant_active_path": "Current quiet arm has STRATA_PREFILL_NATIVE_DEQUANT_BATCH=0, so its actual production path is individual wrappers; grouped APIs are an optional source candidate, not current measured dispatch.",
+    "R170_two_set_footprint": "Exact two G16 IQ3S sets: source67,584,000B + output314,572,800B =382,156,800B (364.453125MiB); report tiny-experiment607MiB arithmetic is wrong. Native model has mixed formats; IQ3S fixture covers only exact selected IQ3S experts.",
+    "R171_kernel_interval": "Original controller has after-PREhealth kernel check only; it aborted before after-unitrace check. Separate closed postfailure journal records host libc segfault at2, no new GPU fault entries; original report assertion no new kernel messages afterrun is not supported.",
+    "R171_summary_location": "Device timing summary is stderr, not stdout. Timeline complete does not override owned exit-11 or qualify tool.",
+    "R169_counter_events": "Source preserves counter descriptor and app event ordering on in-order queue; finalizer poll does not drain unknown work. Successful health waits are required, source review is not runtime no-hang proof.",
+    "R167_overwrite": "Old reused agent answered stale R167 task and overwrote private original. Resubmission preserved separately, original restored byte-exact from committed archive; not an R169 report. R169 was executed by fresh Luna; no active-agent intervention.",
+    "R171_ledger_previous_reference": "Agent calls round167-prefill-owned-async-error-chain canonicalR167; the specific sparse-discriminator original is research-xe-inline-issuer-phase-observer-sparse-discriminator-round167-v1.txt. Original reports retained."
+  },
+  "retention": {
+    "owner": "Main",
+    "byte_budget": 50331648,
+    "consumer": "One representative unresolved post-PASS unitrace host SIGSEGV, source/three-op trace/CPUqualification and pending logitbias/issuer patches",
+    "next_review": "After traceback or host-only reproducer closes tool teardown mechanism; retire unrelated successful full logs only after compact verification"
+  },
+  "next": [
+    "No same-code profiler retry, reset or GPU model launch in this boundary; keep one representative failure.",
+    "Use bounded host issuer ledger source candidate to separate host wait and submission; Main reviews/tests/applies independently.",
+    "Investigate profiler teardown only by source/host-only reproducer until a concrete mitigation is ready.",
+    "Main review and qualify complete logit_bias unit and remaining mandatory server/API/setup updates.",
+    "Official independent prefill/decode setting selection and latest pristine>=32K comparison remain OPEN."
+  ],
+  "full262144_qualified": false,
+  "restore_qualified": false,
+  "broad_quality_qualified": false,
+  "new_model_performance_measured": false
+}
