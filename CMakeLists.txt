@@ -157,9 +157,18 @@ endif()
 # folder of its own: they slow every run several times, and Intel SDE cannot run their binaries.
 set(STRATA_SANITIZE "" CACHE STRING "sanitizers for the project's own host code, e.g. address,undefined (empty: none)")
 if(STRATA_SANITIZE)
-  target_compile_options(strata_warnings INTERFACE
-    $<$<COMPILE_LANGUAGE:CXX>:-fsanitize=${STRATA_SANITIZE}> $<$<COMPILE_LANGUAGE:CXX>:-fno-omit-frame-pointer>)
-  target_link_options(strata_warnings INTERFACE -fsanitize=${STRATA_SANITIZE})
+  if(STRATA_ENABLE_XE AND CMAKE_CXX_COMPILER_ID MATCHES "^(Clang|IntelLLVM)$")
+    # SYCL also compiles each translation unit for the device. Keep instrumentation on the host; Clang 22
+    # refuses the unscoped sanitizer option for spir64 under WERROR. SHELL groups preserve each selector.
+    target_compile_options(strata_warnings INTERFACE
+      "$<$<COMPILE_LANGUAGE:CXX>:SHELL:-Xarch_host -fsanitize=${STRATA_SANITIZE}>"
+      "$<$<COMPILE_LANGUAGE:CXX>:SHELL:-Xarch_host -fno-omit-frame-pointer>")
+    target_link_options(strata_warnings INTERFACE "SHELL:-Xarch_host -fsanitize=${STRATA_SANITIZE}")
+  else()
+    target_compile_options(strata_warnings INTERFACE
+      $<$<COMPILE_LANGUAGE:CXX>:-fsanitize=${STRATA_SANITIZE}> $<$<COMPILE_LANGUAGE:CXX>:-fno-omit-frame-pointer>)
+    target_link_options(strata_warnings INTERFACE -fsanitize=${STRATA_SANITIZE})
+  endif()
 endif()
 
 # ---- strata_artifact -------------------------------------------------------
@@ -606,6 +615,24 @@ if(STRATA_ENABLE_XE)
   target_link_libraries(strata PRIVATE strata_engine strata_prefill strata_spec)
 
   if(STRATA_BUILD_TESTS)
+    add_executable(prefill_dense_gemm_parity tools/test_prefill_dense_gemm.cpp)
+    target_link_libraries(prefill_dense_gemm_parity PRIVATE strata_prefill)
+    target_compile_options(prefill_dense_gemm_parity PRIVATE -fno-fast-math -ffp-contract=off)
+    if(STRATA_LICENSE STREQUAL "contrib")
+      set(_strata_parity_license "contrib-llvm")
+    else()
+      set(_strata_parity_license "${STRATA_LICENSE}")
+    endif()
+    target_compile_definitions(prefill_dense_gemm_parity PRIVATE
+      STRATA_PARITY_LICENSE="${_strata_parity_license}")
+    if(TARGET onemath)
+      target_compile_definitions(prefill_dense_gemm_parity PRIVATE STRATA_PARITY_ONEMATH=1)
+    else()
+      target_compile_definitions(prefill_dense_gemm_parity PRIVATE STRATA_PARITY_ONEMATH=0)
+    endif()
+    add_test(NAME prefill_dense_gemm_parity COMMAND prefill_dense_gemm_parity)
+    set_tests_properties(prefill_dense_gemm_parity PROPERTIES TIMEOUT 60 RUN_SERIAL TRUE)
+
     add_executable(elementwise_parity src/kernels/elementwise_parity.cpp)
     target_link_libraries(elementwise_parity PRIVATE strata_kernels)
     target_compile_options(elementwise_parity PRIVATE -fno-fast-math -ffp-contract=off)
@@ -713,6 +740,15 @@ add_library(strata_spec STATIC src/spec/suffix_drafter.cpp src/spec/controller.c
             src/spec/draft_source.cpp)
 target_include_directories(strata_spec PUBLIC include)
 if(STRATA_BUILD_TESTS)
+  # Exercise the production handoff and physical-context helpers on the host.
+  # Release builds must retain the publication test's assertion checks.
+  foreach(helper IN ITEMS prefill_publication commit_transaction full_context_probe mtp_completion context_bounds)
+    add_executable(${helper}_test tools/test_${helper}.cpp)
+    target_include_directories(${helper}_test PRIVATE include)
+    target_link_libraries(${helper}_test PRIVATE strata_warnings)
+    target_compile_options(${helper}_test PRIVATE -UNDEBUG)
+    add_test(NAME ${helper}_test COMMAND ${helper}_test)
+  endforeach()
   add_executable(suffix_drafter_test src/spec/suffix_drafter_test.cpp)
   target_link_libraries(suffix_drafter_test PRIVATE strata_spec)
   add_test(NAME suffix_drafter_test COMMAND suffix_drafter_test)

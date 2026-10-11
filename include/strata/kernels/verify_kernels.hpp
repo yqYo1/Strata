@@ -50,12 +50,10 @@ void gdn_step_tune(int conv_channels, int h_k, int h_v, void* stream);
 /// (forked from `stream` and joined back, as the window's GDN layer branches), each graph replayed in turns; true when
 /// the branched graph takes at most 95% of the other's time.  Call it before any graph is recorded on these queues.
 bool graph_branch_pays(void* stream, void* side0, void* side1);
-/// Spin until *flag >= value (a mapped host flag).  The value is fixed at capture, so several rings can be
-/// outstanding at once (the split verify window keeps two).
+/// Legacy resident handshake; Xe rejects it before submission (concurrent host-USM access is unqualified).
 void wait_flag_ge(const uint32_t* flag, uint32_t value, void* stream);
-/// Whether a running kernel sees the host's write to host memory, as wait_flag_ge needs: a kernel rings, then spins
-/// (bounded) on a flag the host sets once it has seen the ring.  The UHD 770 sees neither direction while the
-/// kernel runs (the verify window then runs in host-launched segments); the B70 sees both.  Synchronizes `stream`.
+/// Xe returns false without submitting a visibility probe: a functional probe cannot qualify legal
+/// concurrent host/device atomic access. Verification uses checked queue-completed segments.
 bool doorbell_visible(void* stream);
 /// The device clock into buf[i] (a one-thread kernel: the verify window's stage profiler).  CUDA wrote %globaltimer
 /// in ns; SYCL's device-scope clock counts ticks of an unspecified rate, so stamps are only compared with each other.

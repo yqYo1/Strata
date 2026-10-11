@@ -20,6 +20,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <exception>
 #include <vector>
 
 // `_mm_pause` for the doorbell spin.  Guarded because it is x86-only; a target without it still builds, the
@@ -275,6 +276,12 @@ bool session_replay(const ModelGeometry& g, int64_t pos, int32_t pos_base, Sessi
                     void* stream, std::string& err) {
     if (!gr.captured || gr.n != g.n_layers) { err = "session_replay: not captured"; return false; }
     strata::gpu::Stream cs = stream;
+    // A preceding replay may still read these persistent mapped records.
+    // Even writing identical values again requires completion first.
+    if (!strata::gpu::stream_sync(cs)) {
+        err = std::string("session_replay: staging completion: ") + strata::gpu::last_error();
+        return false;
+    }
     stage_token(g, pos, pos_base, s);
     for (int64_t l = 0; l < g.n_layers; ++l) {
         const bool e = strata::gpu::graph_launch(gr.execs[l], cs);
@@ -293,6 +300,10 @@ bool session_replay_full(const ModelGeometry& g, int64_t pos, int32_t pos_base, 
         return false;
     }
     strata::gpu::Stream cs = stream;
+    if (!strata::gpu::stream_sync(cs)) {
+        err = std::string("session_replay_full: staging completion: ") + strata::gpu::last_error();
+        return false;
+    }
     stage_token(g, pos, pos_base, s);
     for (int64_t l = 0; l < g.n_layers; ++l) {
         // `pre[l]` then `post[l]`, in the order `session_loop` uses.  The two are ordered on one stream, and
@@ -585,6 +596,11 @@ bool session_loop(const ModelGeometry& g, int64_t pos, int32_t pos_base, Session
     // value, and that is exactly why the buffers are pinned and fixed."  `session_replay` calls `stage_token`;
     // `session_loop` did not.  **A single-token test cannot see a position that never advances** - which is why
     // the whole suite passed while a 20-token prompt rotated every token at position 0.
+    // Host staging and the ring must not be rewritten while an earlier submission still uses them.
+    if (!strata::gpu::stream_sync(cs)) {
+        err = "session_loop: sync before staging: " + std::string(strata::gpu::last_error());
+        return false;
+    }
     stage_token(g, pos, pos_base, s);
 
     // ---- **THE TOKEN PATH ALLOCATES NOTHING (P2.T10, review finding H3).**
@@ -611,6 +627,14 @@ bool session_loop(const ModelGeometry& g, int64_t pos, int32_t pos_base, Session
         return false;
     }
 
+    struct Drain {
+        strata::gpu::Stream stream;
+        bool active = true;
+        ~Drain() {
+            if (active && !strata::gpu::stream_sync(stream)) std::terminate();
+        }
+    } drain{cs};   // declared after LocalFree: drain async users before local staging can be freed
+
     // HOST-side staging for the pool's answer.  It is copied to `gr.parts_dev` before the next launch, on the
     // same stream, so the ordering is the stream's and no captured node is needed for it.
     //
@@ -626,7 +650,10 @@ bool session_loop(const ModelGeometry& g, int64_t pos, int32_t pos_base, Session
 
     // the first layer has no previous layer's experts: `y_miss` starts at zero, which is what "hits are empty
     // in this phase" means once every miss has been computed
-    strata::gpu::copy_async(gr.parts_dev, y_miss, parts_bytes, cs);
+    if (!strata::gpu::copy_async(gr.parts_dev, y_miss, parts_bytes, cs)) {
+        err = "session_loop: initial parts copy: " + std::string(strata::gpu::last_error());
+        return false;
+    }
     doorbell_reset(*s.db);
     uint32_t expected = 0;
 
@@ -651,41 +678,24 @@ bool session_loop(const ModelGeometry& g, int64_t pos, int32_t pos_base, Session
             err = "session_loop: launch pre[0]: " + std::string(strata::gpu::last_error());
             return false;
         }
-        strata::gpu::event_record(probe, cs);
+        if (!strata::gpu::event_record(probe, cs)) {
+            err = "session_loop: record pre[0]: " + std::string(strata::gpu::last_error());
+            return false;
+        }
         (void) t0;
     }
 
     for (int64_t l = 0; l < g.n_layers; ++l) {
         const auto t_launch = std::chrono::steady_clock::now();
 
-        // ---- poll for the ring.  **THE DRIVER CALL IS NOW A FALLBACK, NOT THE MECHANISM.**
         const uint32_t want = ++expected;
-        bool rang = false;
-        bool mid_graph = false;
-        // VOLATILE, because the device writes this through mapped pinned memory and a cached host line would
-        // never see it.  Read through a volatile pointer so the compiler re-issues the load every iteration -
-        // otherwise this whole spin collapses into `while (true) { }`.
-        volatile uint32_t* const seq = s.db->h_seq;
-        for (;;) {
-            // **THE PER-ITERATION DRIVER CALL IS REQUIRED, AND THREE EXPERIMENTS NOW SAY SO.**  Round 287
-            // throttled this to one call in 64 and broke tests 51 and 56; adding `__threadfence_system()` to
-            // `doorbell_ring_kernel` and a volatile read here, then throttling, broke them again.  So the call
-            // is not merely flushing submission (round 195's reading) and it is not a missing fence either: on
-            // this driver, the device's write to mapped pinned memory becomes host-visible only when the driver
-            // is entered.  The fence and the volatile read are kept because they are correct and cost nothing -
-            // without them the ring's ordering against `x_f`/`ids`/`weights` is unstated - but they do not
-            // remove the need for the call, and nothing here should be read as claiming they do.
-            // On Xe the event query also enters the driver; a failed query surfaces at the next runtime wait.
-            const bool done = strata::gpu::event_query(probe);
-            if (!rang && *seq >= want) {
-                rang = true;
-                mid_graph = !done;
-            }
-            if (done) break;              // the graph has ended
-            if (rang) break;                             // rung, and the graph is still running: the overlap
-            STRATA_SPIN_PAUSE();
+        // Completion is the host/device ownership boundary. Never read host-USM seq or payload while
+        // pre is running; a volatile load plus a fence cannot synchronize concurrent CPU/GPU access.
+        if (!strata::gpu::event_sync(probe)) {
+            err = "session_loop: wait pre[" + std::to_string(l) + "]: " + strata::gpu::last_error();
+            return false;
         }
-        if (mid_graph) ++gr.rings_mid_graph;
+        const bool rang = *s.db->h_seq >= want;
         // the window, from just before the launch to the instant the ring was seen
         const auto t_ring = std::chrono::steady_clock::now();
         gr.ms_to_ring += std::chrono::duration<double, std::milli>(t_ring - t_launch).count();
@@ -712,7 +722,10 @@ bool session_loop(const ModelGeometry& g, int64_t pos, int32_t pos_base, Session
         // `sum_j w_{l+1}[j] * expert_{ids_l,j}(x_l)` - both the selection and the input one layer stale while
         // the weights were current.  It produced finite, fluent, deterministic tokens that were not the
         // model's, and no timing test could see it.
-        strata::gpu::copy_async(gr.parts_dev, y_miss, parts_bytes, cs);
+        if (!strata::gpu::copy_async(gr.parts_dev, y_miss, parts_bytes, cs)) {
+            err = "session_loop: parts copy at layer " + std::to_string(l) + ": " + strata::gpu::last_error();
+            return false;
+        }
         // ---- **AND THEN THE COMBINE.**  Stream-ordered after the copy above, so `hit_out` is added to misses
         // that are already in `parts`, and before `post[l]`, whose `moe_combine` reads the sum.  A no-op when
         // there is no VRAM tier or nothing is resident, which is every layer until the cache warms.
@@ -753,7 +766,10 @@ bool session_loop(const ModelGeometry& g, int64_t pos, int32_t pos_base, Session
                 err = "session_loop: launch pre[" + std::to_string(l + 1) + "]: " + strata::gpu::last_error();
                 return false;
             }
-            strata::gpu::event_record(probe, cs);
+            if (!strata::gpu::event_record(probe, cs)) {
+                err = "session_loop: record pre[" + std::to_string(l + 1) + "]: " + strata::gpu::last_error();
+                return false;
+            }
         }
         // ---- **THE SECOND HALF OF THE ROUND TRIP, AND THE HALF NOTHING WAS MEASURING.**
         //
@@ -767,6 +783,7 @@ bool session_loop(const ModelGeometry& g, int64_t pos, int32_t pos_base, Session
         gr.ms_host += std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - t_ring).count();
     }
     if (!strata::gpu::stream_sync(cs)) { err = "session_loop: final sync"; return false; }
+    drain.active = false;
     return true;
 }
 
@@ -821,6 +838,12 @@ namespace strata::core {
 bool session_capture_token(const WeightTable& tables, const ModelGeometry& g, SessionState& s, float* parts_dev,
                            const float* y_miss_host, size_t parts_bytes, TokenGraph& tg, std::string& err,
                            const TokenHits* hits) {
+    // A whole-token graph contains device waits for CPU flags.  Waiting for that graph cannot serialize
+    // the handoff: it would wait on the host work itself.  Use SessionGraphs pre/post pairs instead.
+    if (!strata::gpu::host_handoff_concurrent()) {
+        err = "session_capture_token: concurrent host-USM handoff is unqualified; use per-layer graphs";
+        return false;
+    }
     if (hits != nullptr && !hits->on()) { err = "session_capture_token: incomplete hit configuration"; return false; }
     if (tg.captured) return true;
     if (s.db == nullptr || s.db->d_flag == nullptr || s.db->d_seq == nullptr) {
@@ -891,6 +914,10 @@ bool session_capture_token(const WeightTable& tables, const ModelGeometry& g, Se
 
 bool session_run_token(const ModelGeometry& g, int64_t pos, int32_t pos_base, SessionState& s, TokenGraph& tg,
                        PoolFn pool, void* user, float* y_miss_host, void* stream, std::string& err) {
+    if (!strata::gpu::host_handoff_concurrent(stream)) {
+        err = "session_run_token: concurrent host-USM handoff is unqualified; use per-layer graphs";
+        return false;
+    }
     if (!tg.captured) { err = "session_run_token: not captured"; return false; }
     if (y_miss_host != tg.y_src) { err = "session_run_token: the staging buffer is not the captured one"; return false; }
     strata::gpu::Stream cs = stream;

@@ -97,12 +97,11 @@ void rms_norm_weighted(float* x, const float* w, int64_t rows, int64_t cols, flo
 /// *seq += 1 - AN INCREMENT, NOT A STORE OF A CALLER-SUPPLIED VALUE.  A value passed in is evaluated on the
 /// HOST at CAPTURE time, so a captured graph would ring the same number on every replay.  Reading and
 /// incrementing in memory is what makes the count advance under cudaGraphLaunch.
+/// Xe: host reads the sequence only after the submitting queue/graph completes.
 void doorbell_ring(uint32_t* d_seq, void* stream);
 
-/// Plan v0.3 P3 token graph: one thread spins until the host-written `*d_flag` equals the ring value `*d_seq`
-/// (both mapped pinned memory), then fences so everything the host wrote before the flag is visible to the
-/// nodes that follow.  Captured once per layer between `pre[l]` and the parts copy; it is what lets one graph
-/// hold the whole token (bench/micro/device_wait.cu: 5.2 us per handoff, no driver call).
+/// Legacy resident handshake; Xe rejects valid non-null controls before submission because concurrent
+/// host-USM access is unqualified. Use completed pre/post graph segments for CPU work instead.
 void doorbell_wait(const uint32_t* d_flag, const uint32_t* d_seq, void* stream);
 
 /// Plan v0.3 P3 token graph: copy `n` floats from MAPPED pinned host memory (`src` is its device pointer) into
@@ -114,7 +113,8 @@ void copy_rows_from_mapped(float* dst, const float* src, int64_t rows, int64_t w
                            const int32_t* count, void* stream);
 
 /// Plan v0.3 P3: the doorbell's payload and its ring in ONE kernel.  Copies `x` (n floats), `ids` and `weights`
-/// (k each) into the mapped host regions, fences, and increments the mapped sequence number - replacing three
+/// (k each) into the mapped host regions and increments the sequence; Xe host reads require queue completion.
+/// Replaces three
 /// device-to-host memcpy nodes (copy-engine operations in the middle of the layer chain) and the ring kernel.
 void doorbell_publish(const float* x, const int32_t* ids, const float* weights, int64_t n, int64_t k, float* x_out,
                       int32_t* ids_out, float* weights_out, uint32_t* d_seq, void* stream);

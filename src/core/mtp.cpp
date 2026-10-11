@@ -4,6 +4,7 @@
 // src/core/mtp.cpp - see include/strata/core/mtp.hpp.
 #include "strata/core/mtp.hpp"
 #include "strata/core/coupled_draft.hpp"
+#include "strata/core/context_bounds.hpp"
 #include "strata/core/on_device.hpp"
 
 #include "strata/core/native_head.hpp"
@@ -32,15 +33,14 @@
 #include "strata/kernels/verify_kernels.hpp"
 
 #include <algorithm>
-#include <atomic>
 #include <chrono>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <exception>
 #include <fstream>
-#include <immintrin.h>
 #include <sstream>
+#include <stdexcept>
 #include <vector>
 
 namespace strata::core {
@@ -110,8 +110,94 @@ bool read_file(const std::string& path, std::vector<uint8_t>& out) {
 
 }  // namespace
 
+// Every operation retires its queues before an error return or unwind. Only an
+// explicitly successful asynchronous submission can retain ownership. Persistent
+// mapped records and pf_host_ cannot be rewritten until complete() succeeds.
+struct MtpDrafter::Operation {
+    MtpDrafter& owner;
+    std::string& err;
+    int exceptions = std::uncaught_exceptions();
+    uint64_t submissions = owner.completion_.submissions();
+    bool released = false;
+    ~Operation() {
+        if (released) return;
+        try {
+            // Also covers an exception while selecting the device at API entry.
+            // The entry's OnDevice may already have restored the caller's device.
+            const OnDevice on_device(owner.device_);
+            if (std::uncaught_exceptions() > exceptions) owner.completion_.fail("mtp: exception during an operation");
+            else if ((owner.completion_.pending() || owner.completion_.submissions() != submissions) && !err.empty())
+                owner.completion_.fail(err);
+            if (owner.capturing_) {
+                strata::gpu::abandon_capture(owner.cs_);
+                owner.capturing_ = false;
+                owner.coupled_rec_ = false;
+            }
+            owner.drain_or_stop(true);
+        } catch (...) {
+            std::fprintf(stderr, "strata mtp: cannot qualify cleanup on its device; fail-stop\n");
+            std::terminate();
+        }
+    }
+    bool finish(bool async = false) {
+        if (async ? !owner.completion_.healthy(err) : !owner.complete(err)) return false;
+        released = true;
+        return true;
+    }
+};
+
+bool MtpDrafter::complete(std::string& err, bool all_queues) {
+    return completion_.complete([&] {
+        bool ok = true;
+        // A failed join can leave the shared-expert branch outside cs_'s wait.
+        if (cs_ && !strata::gpu::stream_sync(cs_)) {
+            completion_.fail(std::string("mtp completion: ") + strata::gpu::last_error()); ok = false;
+        }
+        if (side_ && !strata::gpu::stream_sync(side_)) {
+            completion_.fail(std::string("mtp branch completion: ") + strata::gpu::last_error()); ok = false;
+        }
+        // Initialization uses the compute queue. A rejected wait/submission needs
+        // a checked device drain, not an idle/query hint, before cleanup can run.
+        if ((all_queues || !cs_ || !ok || completion_.faulted()) && device_ >= 0) {
+            if (!strata::gpu::device_sync()) {
+                completion_.fail(std::string("mtp device drain: ") + strata::gpu::last_error()); return false;
+            }
+            ok = true;
+        }
+        return ok;
+    }, [] { return std::string("mtp: completion remains unknown"); }, err);
+}
+
+void MtpDrafter::drain_or_stop(bool all_queues) {
+    std::string error;
+    (void) complete(error, all_queues);   // a drained sticky fault is not a reusable/valid state
+    if (completion_.pending()) {
+        std::fprintf(stderr, "strata mtp: %s; completion unknown, fail-stop before cleanup\n", error.c_str());
+        std::terminate();
+    }
+}
+
+bool MtpDrafter::check(bool ok, const char* what, std::string& err) {
+    if (ok) return true;
+    completion_.fail(std::string(what) + ": " + strata::gpu::last_error());
+    drain_or_stop(true);
+    (void) completion_.healthy(err);
+    return false;
+}
+
+bool MtpDrafter::copy_checked(void* dst, const void* src, size_t bytes, const char* what, std::string& err) {
+    Operation operation{*this, err};
+    if (!completion_.submit(err)) return false;
+    if (!check(strata::gpu::copy(dst, src, bytes), what, err)) return false;
+    // The source may be a local vector. Retire this synchronous copy's ownership
+    // before its caller can destroy/reuse that vector, also on failed completion.
+    return operation.finish();
+}
+
 MtpDrafter::~MtpDrafter() {
-    if (cs_) strata::gpu::stream_sync(cs_);
+    const OnDevice on_device(device_);
+    if (capturing_) { strata::gpu::abandon_capture(cs_); capturing_ = false; }
+    drain_or_stop(true);
     for (auto& e : prefill_exec_) if (e) strata::gpu::graph_destroy(e);
     for (auto& e : prefill_dev_exec_) if (e) strata::gpu::graph_destroy(e);
     if (pf_dev_) strata::gpu::free(pf_dev_);
@@ -157,6 +243,8 @@ const void* MtpDrafter::q8(const char* name) const {
 bool MtpDrafter::load(const std::string& rt_dir, const ModelGeometry& g, SessionState& ss, int max_t, std::string& err,
                       int64_t window, const MtpDrafter* shared) {
     device_ = current_device();   // with a layer split, the last stage's GPU (OnDevice)
+    Operation operation{*this, err};
+    if (!complete(err)) return false;
     g_ = &g;
     ss_ = &ss;
     max_t_ = max_t;
@@ -200,7 +288,7 @@ bool MtpDrafter::load(const std::string& rt_dir, const ModelGeometry& g, Session
                   (info ? std::to_string(free_bytes >> 20) + " MiB" : "unknown");
             return false;
         }
-        strata::gpu::copy(dense_, blob.data(), blob.size());
+        if (!copy_checked(dense_, blob.data(), blob.size(), "mtp dense upload", err)) return false;
         vram_ += blob.size();
     }
     // ---- the 512 routed experts, one blob each
@@ -220,7 +308,7 @@ bool MtpDrafter::load(const std::string& rt_dir, const ModelGeometry& g, Session
         for (uint64_t off = 0; off < bytes;) {
             const uint64_t n = std::min<uint64_t>(chunk.size(), bytes - off);
             if (std::fread(chunk.data(), 1, (size_t) n, f) != (size_t) n) { err = "mtp: experts.bin is truncated"; return false; }
-            strata::gpu::copy(experts_ + off, chunk.data(), n);
+            if (!copy_checked(experts_ + off, chunk.data(), n, "mtp expert upload", err)) return false;
             off += n;
         }
         vram_ += bytes;
@@ -251,14 +339,17 @@ bool MtpDrafter::load(const std::string& rt_dir, const ModelGeometry& g, Session
     } restore{kv_hybrid_was, kv_int8_was};
     uint64_t sb = qsa_state_bytes(g, max_cells, false, ring);
     if (!strata::gpu::alloc_device(&state_arena_, sb)) { err = "mtp: the K/V state does not fit"; return false; }
+    if (!completion_.submit(err)) return false;
     if (qsa_state_init(g, max_cells, state_arena_, st_, &ss.qsa_states[ss.qsa_primary()], ring) == 0) {
         if (st_.kv_mode == 0) { err = "mtp: state init failed"; return false; }
         std::fprintf(stderr, "strata mtp: no pinned RAM left for the draft layer's K/V copy; keeping it in VRAM\n");
+        if (!complete(err)) return false;
         strata::gpu::free(state_arena_);
         st_ = QsaState{};
         ring = -1;   // fully resident
         sb = qsa_state_bytes(g, max_cells, false, ring);
         if (!strata::gpu::alloc_device(&state_arena_, sb)) { err = "mtp: the K/V state does not fit"; return false; }
+        if (!completion_.submit(err)) return false;
         if (qsa_state_init(g, max_cells, state_arena_, st_, &ss.qsa_states[ss.qsa_primary()], ring) == 0) {
             err = "mtp: state init failed";
             return false;
@@ -266,8 +357,9 @@ bool MtpDrafter::load(const std::string& rt_dir, const ModelGeometry& g, Session
     }
     qsa_set_kv_int8(kv_int8_was);
     qsa_set_kv_hybrid(kv_hybrid_was);
+    if (!completion_.submit(err)) return false;
     qsa_state_zero(st_, g, nullptr);
-    strata::gpu::device_sync();
+    if (!check(strata::gpu::device_sync(), "mtp state initialization", err)) return false;
     vram_ += sb;
 
     // ---- buffers
@@ -317,7 +409,7 @@ bool MtpDrafter::load(const std::string& rt_dir, const ModelGeometry& g, Session
     Bump count;
     carve(count);
     if (!strata::gpu::alloc_device(&arena_, count.used)) { err = "mtp: buffers do not fit"; return false; }
-    strata::gpu::memset(arena_, 0, count.used);
+    if (!completion_.submit(err) || !check(strata::gpu::memset(arena_, 0, count.used), "mtp buffer zero", err)) return false;
     Bump real;
     real.base = (uint8_t*) arena_;
     carve(real);
@@ -326,7 +418,7 @@ bool MtpDrafter::load(const std::string& rt_dir, const ModelGeometry& g, Session
         std::vector<int32_t> id((size_t) (T * (uint64_t) cap_));
         for (uint64_t t = 0; t < T; ++t)
             for (int64_t i = 0; i < cap_; ++i) id[(size_t) (t * (uint64_t) cap_ + (uint64_t) i)] = (int32_t) i;
-        strata::gpu::copy(ident_, id.data(), id.size() * 4);
+        if (!copy_checked(ident_, id.data(), id.size() * 4, "mtp identity upload", err)) return false;
     }
     cs_ = strata::gpu::stream_create();
     side_ = cs_ ? strata::gpu::stream_create() : nullptr;
@@ -345,7 +437,7 @@ bool MtpDrafter::load(const std::string& rt_dir, const ModelGeometry& g, Session
                      (double) tensors_.back().off / 1048576.0, files_s,
                      files_s > 0 ? ((double) g.n_expert * strata::kernels::cpu::BLOB + (double) tensors_.back().off) /
                                        1048576.0 / files_s : 0.0);
-    return true;
+    return operation.finish();
 }
 
 namespace {
@@ -364,15 +456,14 @@ bool MtpDrafter::top2_env() {
 
 // STRATA_MTP_TOP2=1 (a diagnostic for tree drafts): draft j's runner-up under the draft layer, from the head logits
 // the step just wrote (row 0), on the host.  Slow; only for measuring what a second branch would have caught.
-void MtpDrafter::record_top2(int j) {
+bool MtpDrafter::record_top2(int j, std::string& err) {
+    Operation operation{*this, err};
+    if (!complete(err)) return false;
     const int64_t nv = dhead_ != nullptr ? n_dvocab_ : n_vocab_;
     if ((int64_t) lg_host_.size() < nv) lg_host_.resize((size_t) nv);
     if ((int) top2_.size() < max_t_) top2_.assign((size_t) max_t_, -1);
-    if (j < 0 || j >= max_t_) return;
-    if (!strata::gpu::copy(lg_host_.data(), head_logits_, (size_t) nv * sizeof(float))) {
-        top2_[(size_t) j] = -1;
-        return;
-    }
+    if (j < 0 || j >= max_t_) return operation.finish();
+    if (!copy_checked(lg_host_.data(), head_logits_, (size_t) nv * sizeof(float), "mtp top2 read", err)) return false;
     int64_t b1 = -1, b2 = -1;
     for (int64_t i = 0; i < nv; ++i) {
         const float v = lg_host_[(size_t) i];
@@ -380,6 +471,7 @@ void MtpDrafter::record_top2(int j) {
         else if (b2 < 0 || v > lg_host_[(size_t) b2]) b2 = i;
     }
     top2_[(size_t) j] = b2 < 0 ? -1 : dhead_ != nullptr ? dvocab_host_[(size_t) b2] : (int32_t) b2;
+    return operation.finish();
 }
 
 uint64_t MtpDrafter::bind_bytes(uint64_t head_row_bytes, int64_t n_vocab) const {
@@ -400,12 +492,14 @@ uint64_t MtpDrafter::bind_bytes(uint64_t head_row_bytes, int64_t n_vocab) const 
 }
 
 bool MtpDrafter::setup_coupled(std::string& err) {
+    Operation operation{*this, err};
+    if (!complete(err)) return false;
     const int64_t nv = dhead_ != nullptr ? n_dvocab_ : n_vocab_;
     const size_t scratch = strata::kernels::coupled_draft_scratch_bytes((int) nv);
     if (scratch == 0) {
         std::fprintf(stderr, "strata mtp: STRATA_SPEC_COUPLED: %lld draft logits are too wide for the coupled sampler; "
                              "argmax drafts\n", (long long) nv);
-        return true;
+        return operation.finish();
     }
     const size_t ring = (size_t) (kCoupledHistCap + max_t_) * sizeof(int32_t);
     if (strata::gpu::alloc_device((void**) &cparams_, sizeof(strata::kernels::SamplerParams)) != true ||
@@ -415,42 +509,55 @@ bool MtpDrafter::setup_coupled(std::string& err) {
         err = "mtp: the coupled draft sampler's buffers do not fit";
         return false;
     }
-    strata::gpu::memset(cring_, 0xff, ring);   // -1: no token
+    if (!completion_.submit(err) || !check(strata::gpu::memset(cring_, 0xff, ring), "mtp coupled ring zero", err)) return false;   // -1: no token
     std::fill(h_chist_, h_chist_ + kCoupledHistCap, -1);
     vram_ += sizeof(strata::kernels::SamplerParams) + ring + scratch;
     if (dhead_ != nullptr) {   // token id -> subset index (-1: not in the draft head), for the penalties
         std::vector<int32_t> sub((size_t) n_dvocab_), inv((size_t) n_vocab_, -1);
-        strata::gpu::copy(sub.data(), dvocab_, sub.size() * sizeof(int32_t));
+        if (!copy_checked(sub.data(), dvocab_, sub.size() * sizeof(int32_t), "mtp coupled vocabulary read", err)) return false;
         for (size_t i = 0; i < sub.size(); ++i)
             if (sub[i] >= 0 && sub[i] < n_vocab_ && inv[(size_t) sub[i]] < 0) inv[(size_t) sub[i]] = (int32_t) i;
         if (strata::gpu::alloc_device((void**) &dinv_, inv.size() * sizeof(int32_t)) != true) {
             err = "mtp: the coupled draft sampler's token map does not fit";
             return false;
         }
-        strata::gpu::copy(dinv_, inv.data(), inv.size() * sizeof(int32_t));
+        if (!copy_checked(dinv_, inv.data(), inv.size() * sizeof(int32_t), "mtp coupled map upload", err)) return false;
         vram_ += inv.size() * sizeof(int32_t);
     }
-    if (strata::gpu::device_sync() != true) {
-        err = std::string("mtp: coupled setup: ") + strata::gpu::last_error();
-        return false;
-    }
+    if (!check(strata::gpu::device_sync(), "mtp coupled setup", err)) return false;
     coupled_ok_ = true;
     std::fprintf(stderr, "strata mtp: coupled draft sampling on (STRATA_SPEC_COUPLED): sampled requests draft with the "
                          "target's chain and Philox draw over %lld tokens\n", (long long) nv);
-    return true;
+    return operation.finish();
 }
 
 void MtpDrafter::set_draft_sampling(const strata::kernels::SamplerParams& sp) {
+    std::string err;
+    Operation operation{*this, err};
+    const OnDevice on_device(device_);
+    if (!complete(err)) throw std::runtime_error(err);
     coupled_active_ = coupled_ok_ && !sp.greedy && sp.temperature > 0.0f;
-    if (!coupled_active_) return;
+    if (!coupled_active_) {
+        if (!operation.finish()) throw std::runtime_error(err);
+        return;
+    }
     *h_cparams_ = sp;   // read by the next round graph (after the previous one has synced)
     std::fill(h_chist_, h_chist_ + kCoupledHistCap, -1);
+    if (!operation.finish()) throw std::runtime_error(err);
 }
 
 void MtpDrafter::set_draft_history(const int32_t* tail, int64_t n_tail, int32_t next) {
-    if (!coupled_active_) return;
+    std::string err;
+    Operation operation{*this, err};
+    const OnDevice on_device(device_);
+    if (!complete(err)) throw std::runtime_error(err);
+    if (!coupled_active_) {
+        if (!operation.finish()) throw std::runtime_error(err);
+        return;
+    }
     const int h = coupled_hist_len(h_cparams_->penalty_last_n, kCoupledHistCap);
     coupled_hist_base(tail, n_tail, next, h, h_chist_ + (kCoupledHistCap - h));
+    if (!operation.finish()) throw std::runtime_error(err);
 }
 
 namespace {
@@ -493,7 +600,9 @@ void draft_head_hint(int64_t n_tokens, int64_t row_bytes) {
 
 bool MtpDrafter::bind(const WeightTable& wt, const NativeHead* head, const float* window_R, std::string& err,
                       const MtpDrafter* shared) {
+    Operation operation{*this, err};
     const OnDevice on_device(device_);
+    if (!complete(err)) return false;
     wt_ = &wt;
     head_ = head;
     window_R_ = window_R;
@@ -529,18 +638,19 @@ bool MtpDrafter::bind(const WeightTable& wt, const NativeHead* head, const float
                 draft_head_hint(n_dvocab_, row_bytes);
                 return false;
             }
-            strata::gpu::copy(dvocab_, raw.data(), raw.size());
+            if (!copy_checked(dvocab_, raw.data(), raw.size(), "mtp draft vocabulary upload", err)) return false;
             dvocab_host_.resize((size_t) n_dvocab_);
             std::memcpy(dvocab_host_.data(), raw.data(), raw.size());
+            if (!completion_.submit(err)) return false;
             strata::kernels::gather_rows((const uint8_t*) head->weights(), row_bytes, dvocab_, n_dvocab_, dhead_, nullptr);
-            strata::gpu::device_sync();
+            if (!check(strata::gpu::device_sync(), "mtp draft head gather", err)) return false;
             vram_ += (uint64_t) (n_dvocab_ * row_bytes) + raw.size();
             std::fprintf(stderr, "strata mtp: draft head over %lld tokens (%.1f MiB)\n", (long long) n_dvocab_,
                          (double) (n_dvocab_ * row_bytes) / 1048576.0);
         }
     }
     if (coupled_draft_env() && cparams_ == nullptr && !setup_coupled(err)) return false;
-    return true;
+    return operation.finish();
 }
 
 // The layer for T rows.  full = false stops after the K/V append (the prompt only needs the cache).
@@ -790,45 +900,61 @@ bool MtpDrafter::record_forward(int T, int step_row0, strata::gpu::Stream cs, st
     return true;
 }
 
-namespace {
-bool finish_capture(strata::gpu::Stream cs, bool ok, strata::gpu::Graph*& exec, const char* what, std::string& err) {
+bool MtpDrafter::finish_capture(bool ok, strata::gpu::Graph*& exec, const char* what, std::string& err) {
     if (!ok) {
-        strata::gpu::abandon_capture(cs);
+        strata::gpu::abandon_capture(cs_);
+        capturing_ = false;
+        completion_.fail(err.empty() ? std::string("mtp: ") + what + " recording failed" : err);
+        drain_or_stop();
         return false;
     }
-    if (!strata::gpu::end_capture(cs, &exec)) {
-        err = std::string("mtp: ") + what + " capture: " + strata::gpu::last_error();
-        return false;
-    }
-    strata::gpu::stream_sync(cs);
-    return true;
+    const bool ended = strata::gpu::end_capture(cs_, &exec);
+    if (!ended) strata::gpu::abandon_capture(cs_);
+    capturing_ = false;
+    if (!check(ended, what, err)) return false;
+    // Recording is not execution; a checked completion still qualifies any
+    // earlier upload, and a capture wait error must not be reported as success.
+    return complete(err);
 }
-}  // namespace
 
 bool MtpDrafter::capture_prefill(int T, std::string& err) {
-    if (prefill_exec_[T]) return true;
+    if (T < 1 || T > max_t_ || T > 8) { err = "mtp: prefill graph rows out of range"; return false; }
+    if (prefill_exec_[T]) return completion_.healthy(err);   // immutable graph; no mapped input read/rewrite
+    Operation operation{*this, err};
+    if (!complete(err)) return false;
     using namespace strata::kernels;
-    if (!strata::gpu::begin_capture(cs_)) { err = "mtp: begin capture"; return false; }
+    if (!check(strata::gpu::begin_capture(cs_), "mtp begin capture", err)) return false;
+    capturing_ = true;
     copy_i32_from_mapped(tok_, m_tok_, T, cs_);
     copy_i32_from_mapped(step_, m_step_, (int64_t) T * 4, cs_);
     copy_i32_from_mapped(pos_, m_pos_, (int64_t) T * g_->n_head, cs_);
     const bool ok = record_forward(T, -1, cs_, err);   // K/V only, rows [0, T)
-    return finish_capture(cs_, ok, prefill_exec_[T], "prefill", err);
+    if (!finish_capture(ok, prefill_exec_[T], "prefill", err)) return false;
+    return operation.finish();
 }
 
 bool MtpDrafter::capture_prefill_dev(int T, std::string& err) {
-    if (prefill_dev_exec_[T]) return true;
-    if (!strata::gpu::begin_capture(cs_)) { err = "mtp: begin capture"; return false; }
+    if (T < 1 || T > max_t_ || T > 8) { err = "mtp: device prefill graph rows out of range"; return false; }
+    if (prefill_dev_exec_[T]) return completion_.healthy(err);   // immutable graph; no mapped input read/rewrite
+    Operation operation{*this, err};
+    if (!complete(err)) return false;
+    if (!check(strata::gpu::begin_capture(cs_), "mtp begin capture", err)) return false;
+    capturing_ = true;
     const bool ok = record_forward(T, -1, cs_, err);   // K/V only, rows [0, T); tok_/step_/pos_ filled before launch
-    return finish_capture(cs_, ok, prefill_dev_exec_[T], "prefill (device inputs)", err);
+    if (!finish_capture(ok, prefill_dev_exec_[T], "prefill (device inputs)", err)) return false;
+    return operation.finish();
 }
 
 bool MtpDrafter::capture_round(int T, bool coupled, std::string& err) {
+    if (T < 1 || T > max_t_ || T > 8) { err = "mtp: round graph rows out of range"; return false; }
     strata::gpu::Graph*& exec = coupled ? round_exec_c_[T] : round_exec_[T];
-    if (exec) return true;
+    if (exec) return completion_.healthy(err);
+    Operation operation{*this, err};
+    if (!complete(err)) return false;
     using namespace strata::kernels;
     const int64_t HCN = g_->hc * g_->n_embd;
-    if (!strata::gpu::begin_capture(cs_)) { err = "mtp: begin capture"; return false; }
+    if (!check(strata::gpu::begin_capture(cs_), "mtp begin capture", err)) return false;
+    capturing_ = true;
     bool ok = true;
     // coupled: the request's chain and the penalty history's base, for this round's drafts
     if (coupled) coupled_draft_stage(m_cparams_, m_chist_, cparams_, cring_, kCoupledHistCap, cs_);
@@ -858,18 +984,22 @@ bool MtpDrafter::capture_round(int T, bool coupled, std::string& err) {
     }
     if (ok) mtp_select(R_, HCN, out_ids_, row_ + 1, Rin_, tok_, m_out_, 0, cs_, probs_, m_prob_);
     if (ok && force_on_ && !coupled) force_token(tok_, m_force_, 0, cs_);   // chain_launch: step 1's input
-    return finish_capture(cs_, ok, exec, coupled ? "round (coupled)" : "round", err);
+    if (!finish_capture(ok, exec, coupled ? "round (coupled)" : "round", err)) return false;
+    return operation.finish();
 }
 
 // Chain step j (1..max_t-2): one row at the cell staged in step row `max_t + j - 1`, from the previous step's
 // residual and token (left in Rin_[0] / tok_[0] by mtp_select); draft j and its probability to the mapped outputs.
 bool MtpDrafter::capture_step(int j, bool coupled, std::string& err) {
     strata::gpu::Graph*& exec = coupled ? step_exec_c_[j] : step_exec_[j];
-    if (exec) return true;
+    if (exec) return completion_.healthy(err);
+    Operation operation{*this, err};
+    if (!complete(err)) return false;
     using namespace strata::kernels;
     const int64_t HCN = g_->hc * g_->n_embd;
     const int row = max_t_ + j - 1;
-    if (!strata::gpu::begin_capture(cs_)) { err = "mtp: begin capture"; return false; }
+    if (!check(strata::gpu::begin_capture(cs_), "mtp begin capture", err)) return false;
+    capturing_ = true;
     const int64_t sr = (int64_t) row * 4, pr = (int64_t) row * g_->n_head;
     const MappedCopy in[2] = {{step_ + sr, m_step_ + sr, 4}, {pos_ + pr, m_pos_ + pr, g_->n_head}};
     copy_from_mapped_multi(in, 2, cs_);
@@ -879,30 +1009,38 @@ bool MtpDrafter::capture_step(int j, bool coupled, std::string& err) {
     coupled_rec_ = false;
     if (ok) mtp_select(R_, HCN, out_ids_, row_ + 1, Rin_, tok_, m_out_, j, cs_, probs_, m_prob_);
     if (ok && force_on_ && !coupled) force_token(tok_, m_force_, j, cs_);   // chain_launch: step j+1's input
-    return finish_capture(cs_, ok, exec, coupled ? "step (coupled)" : "step", err);
+    if (!finish_capture(ok, exec, coupled ? "step (coupled)" : "step", err)) return false;
+    return operation.finish();
 }
 
 void MtpDrafter::kv_restore(int64_t upto) {
+    std::string err;
+    Operation operation{*this, err};
     const OnDevice on_device(device_);
-    if (st_.kv_mode != 2 || upto <= 0) return;
-    // the ring's blocks below `upto`, from the host copy: a checkpoint resume may have left later cells in them
+    if (!complete(err)) throw std::runtime_error(err);
+    if (upto < 0 || upto > st_.max_cells) throw std::runtime_error("mtp: restore extent out of range");
+    if (st_.kv_mode != 2 || upto == 0) {
+        if (!operation.finish()) throw std::runtime_error(err);
+        return;
+    }
     const strata::kernels::QsaShapes s = shapes_of(*g_);
     const int64_t b1 = (upto + s.page_size - 1) / s.page_size, b0 = std::max<int64_t>(0, b1 - st_.n_slots);
+    if (!completion_.submit(err)) throw std::runtime_error(err);
     strata::kernels::kv_ring_restore(qsa_attn_pools(st_), st_.host, qsa_kv_format(st_), b0, b1, st_.n_slots, s, cs_);
-    strata::gpu::stream_sync(cs_);
+    if (!operation.finish()) throw std::runtime_error(err);
 }
 
 bool MtpDrafter::idle(std::string& err) {
+    Operation operation{*this, err};
     const OnDevice on_device(device_);
-    if (cs_ && !strata::gpu::stream_sync(cs_)) {
-        err = std::string("mtp: its stream failed: ") + strata::gpu::last_error();
-        return false;
-    }
-    return true;
+    return operation.finish();
 }
 
 bool MtpDrafter::prepare_prefill(std::string& err) {
+    Operation operation{*this, err};
     const OnDevice on_device(device_);
+    if (!complete(err)) return false;
+    if (!g_ || !cs_ || max_t_ < 1) { err = "mtp: prefill preparation before load"; return false; }
     const int64_t per_row = 1 + 4 + g_->n_head;
     if (pf_cap_ < (int64_t) max_t_ * per_row) {
         if (pf_dev_) strata::gpu::free(pf_dev_);
@@ -916,12 +1054,16 @@ bool MtpDrafter::prepare_prefill(std::string& err) {
     }
     for (int T = 1; T <= max_t_; ++T)
         if (!capture_prefill_dev(T, err)) return false;
-    return true;
+    return operation.finish();
 }
 
 bool MtpDrafter::prefill(const float* R_rows, const int32_t* next_tokens, int64_t n, int64_t cell0, std::string& err,
                          bool sync) {
+    Operation operation{*this, err};
     const OnDevice on_device(device_);
+    if (!complete(err)) return false;
+    if (!g_ || !cs_ || max_t_ < 1 || n < 0 || cell0 < 0 || cell0 > st_.max_cells || n > st_.max_cells - cell0 ||
+        (n > 0 && (!R_rows || !next_tokens))) { err = "mtp: prefill span or inputs out of range"; return false; }
     const Clock::time_point t0 = Clock::now();
     const int64_t HCN = g_->hc * g_->n_embd;
     // cells the window can never reach again need no K/V
@@ -956,8 +1098,8 @@ bool MtpDrafter::prefill(const float* R_rows, const int32_t* next_tokens, int64_
             }
             pf_cap_ = n * per_row;
         }
-        std::vector<int32_t> rec((size_t) (n * per_row));
-        int32_t* tk = rec.data();
+        pf_host_.resize((size_t) (n * per_row));
+        int32_t* tk = pf_host_.data();
         int32_t* stp = tk + n;
         int32_t* ps = stp + 4 * n;
         for (int64_t i = 0; i < n; ++i) {
@@ -969,10 +1111,9 @@ bool MtpDrafter::prefill(const float* R_rows, const int32_t* next_tokens, int64_
             stp[i * 4 + 3] = (int32_t) (cell + 1);
             for (int64_t h = 0; h < NHp; ++h) ps[i * NHp + h] = (int32_t) cell;
         }
-        if (!strata::gpu::copy_async(pf_dev_, rec.data(), rec.size() * sizeof(int32_t), cs_)) {
-            err = "mtp prefill: the input records upload failed";
-            return false;
-        }
+        if (!completion_.submit(err) ||
+            !check(strata::gpu::copy_async(pf_dev_, pf_host_.data(), pf_host_.size() * sizeof(int32_t), cs_),
+                   "mtp prefill records upload", err)) return false;
         const int32_t* d_tk = pf_dev_;
         const int32_t* d_stp = d_tk + n;
         const int32_t* d_ps = d_stp + 4 * n;
@@ -980,6 +1121,7 @@ bool MtpDrafter::prefill(const float* R_rows, const int32_t* next_tokens, int64_
             const int T = (int) std::min<int64_t>(max_t_, n - c);
             if (cell0 + c + T <= skip_below) continue;
             if (!capture_prefill_dev(T, err)) return false;
+            if (!completion_.submit(err)) return false;
             if (!strata::gpu::copy_async(tok_, d_tk + c, (size_t) T * 4, cs_) ||
                 !strata::gpu::copy_async(step_, d_stp + c * 4, (size_t) T * 16, cs_) ||
                 !strata::gpu::copy_async(pos_, d_ps + c * NHp, (size_t) (T * NHp) * 4, cs_) ||
@@ -991,14 +1133,11 @@ bool MtpDrafter::prefill(const float* R_rows, const int32_t* next_tokens, int64_
         }
         if (!sync) {   // the caller orders on stream(); the records are staged
             ms_prefill += ms_since(t0);
-            return true;
+            return operation.finish(true);
         }
-        if (!strata::gpu::stream_sync(cs_)) {
-            err = std::string("mtp prefill: ") + strata::gpu::last_error();
-            return false;
-        }
+        if (!complete(err)) return false;
         ms_prefill += ms_since(t0);
-        return true;
+        return operation.finish();
     }
     for (int64_t c = 0; c < n; c += max_t_) {
         const int T = (int) std::min<int64_t>(max_t_, n - c);
@@ -1013,28 +1152,60 @@ bool MtpDrafter::prefill(const float* R_rows, const int32_t* next_tokens, int64_
             h_step_[t * 4 + 3] = (int32_t) (cell + 1);
             for (int64_t h = 0; h < g_->n_head; ++h) h_pos_[t * g_->n_head + h] = (int32_t) cell;
         }
+        if (!completion_.submit(err)) return false;
         if (!strata::gpu::copy_async(Rin_, R_rows + (size_t) c * HCN, (size_t) T * HCN * sizeof(float), cs_) ||
-            !strata::gpu::graph_launch(prefill_exec_[T], cs_) ||
-            !strata::gpu::stream_sync(cs_)) {
+            !strata::gpu::graph_launch(prefill_exec_[T], cs_)) {
             err = std::string("mtp prefill: ") + strata::gpu::last_error();
             return false;
         }
+        if (!complete(err)) return false;   // before the next CPU write to mapped records
     }
     ms_prefill += ms_since(t0);
-    return true;
+    return operation.finish();
 }
 
 bool MtpDrafter::draft(int T, const int32_t* tokens, int64_t p, int a, int32_t* drafts, std::string& err,
-                       float* probs, float min_p, int* n_drafts) {
+                       float* probs, float min_p, int* n_drafts, int64_t remaining_outputs) {
+    Operation operation{*this, err};
     const OnDevice on_device(device_);
-    if (T < 1 || T > max_t_ || a < 0 || a >= T) { err = "mtp: draft arguments out of range"; return false; }
+    if (!complete(err)) return false;
+    if (T < 1 || T > max_t_ || a < 0 || a >= T || !tokens || !drafts || !g_ || !cs_ || !window_R_) {
+        err = "mtp: draft arguments out of range"; return false;
+    }
     if (chain_live_) { err = "mtp: a pipelined chain is still in flight"; return false; }
+    context_bounds::MtpWindow bound;
+    if (!context_bounds::mtp_window(st_.max_cells, p, T, a, max_t_, max_drafts_, remaining_outputs,
+                                     mtp_catchup_all(), bound)) {
+        err = "mtp: catch-up span or output budget out of range"; return false;
+    }
+    for (int t = 0; t < T; ++t) {
+        if (tokens[t] < 0 || (int64_t) tokens[t] >= n_vocab_) {
+            err = "mtp: a catch-up token is outside the vocabulary"; return false;
+        }
+    }
+    const int max_steps = bound.candidates;
+    if (max_steps == 0) {
+        // Preserve the round's accepted K/V catch-up for conversation reuse.
+        // With no candidate, only the prefill front is needed: no attention,
+        // experts, head or sampler, and no step beyond the validated span.
+        if (remaining_outputs > 0) {
+            const Clock::time_point t0 = Clock::now();
+            const double prefill_ms = ms_prefill;
+            if (!stage_source_R(bound.catchup, err) ||
+                !prefill(window_R_, tokens, bound.catchup, p, err)) return false;
+            ms_prefill = prefill_ms;   // this is decode catch-up, not prompt prefill
+            ms_draft += ms_since(t0);
+            ++rounds;
+        }
+        for (int j = 0; j < max_t_ - 1; ++j) { drafts[j] = 0; if (probs) probs[j] = 0.0f; }
+        if (n_drafts) *n_drafts = 0;
+        return operation.finish();   // zero candidate writers; exhausted budgets are a checked no-op
+    }
     // the round runs for the cells up to the accepted row a (T = a + 1): the K/V of the rejected rows is not caught
     // up - no later read reaches a cell past the one being drafted and the next round writes it first
-    if (!mtp_catchup_all()) T = a + 1;
+    T = bound.catchup;
     const bool cp = coupled_active_;   // coupled draft sampling for this request: its own graphs
     if (!capture_round(T, cp, err)) return false;
-    const int max_steps = std::min(max_t_ - 1, max_drafts_);
     for (int j = 1; j < max_steps; ++j)
         if (!capture_step(j, cp, err)) return false;
     const Clock::time_point t0 = Clock::now();
@@ -1052,11 +1223,10 @@ bool MtpDrafter::draft(int T, const int32_t* tokens, int64_t p, int a, int32_t* 
     }
     put(2 * max_t_ - 1, coupled_draft_cell(p, a, 0));   // p + a: draft 0's cell
     for (int j = 1; j < max_steps; ++j) put(max_t_ + j - 1, coupled_draft_cell(p, a, j));   // p + a + j
-    for (int j = 0; j < max_t_ - 1; ++j) ((volatile int32_t*) h_out_)[j] = -1;   // mtp_select writes each token last
+    for (int j = 0; j < max_t_ - 1; ++j) h_out_[j] = -1;   // prior allocation writers have completed
     h_row_[0] = a;
     h_row_[1] = 0;
     if (h_force_ != nullptr) for (int j = 0; j < 16; ++j) h_force_[j] = -1;   // the forcing kernels: no-ops here
-    std::atomic_thread_fence(std::memory_order_seq_cst);
     if (!stage_source_R(T, err)) return false;
     // The next verify window's PLE rows are read while the GPU drafts (upstream a36be1db): its first token is tokens[a],
     // the drafts follow; the window's gather_batch takes them when they are its rows.
@@ -1070,66 +1240,69 @@ bool MtpDrafter::draft(int T, const int32_t* tokens, int64_t p, int a, int32_t* 
         ple_prev[1] = tok;
         ss_->ple.table->prefetch_rows(rows16);
     };
-    // each draft is read once its token reaches the mapped row (written after its probability), not after a stream
-    // sync: the next step starts sooner
+    // Queue completion transfers ownership of the entire mapped allocation.
+    // Volatile/token-last publication and idle hints do not qualify that transfer.
     auto wait_step = [&](int j) {
-        uint32_t spins = 0;
-        while (((volatile int32_t*) h_out_)[j] < 0) {
-            _mm_pause();
-            if ((++spins & 1023u) == 0 && strata::gpu::stream_idle(cs_)) break;
-        }
+        if (!complete(err)) return false;
+        if (h_out_[j] >= 0) return true;
+        err = "mtp: completed graph did not publish a draft";
+        completion_.fail(err);
+        return false;
     };
+    if (!completion_.submit(err)) return false;
     if (!strata::gpu::graph_launch(cp ? round_exec_c_[T] : round_exec_[T], cs_)) {
         err = std::string("mtp draft: ") + strata::gpu::last_error();
         return false;
     }
-    (void) strata::gpu::stream_idle(cs_);
     prefetch_ple(tokens[a]);
-    wait_step(0);
-    drafts[0] = ((volatile int32_t*) h_out_)[0];
-    if (top2_env()) { strata::gpu::stream_sync(cs_); record_top2(0); }
-    float pj = ((volatile float*) h_prob_)[0];
+    if (!wait_step(0)) return false;
+    drafts[0] = h_out_[0];
+    if (top2_env() && !record_top2(0, err)) return false;
+    float pj = h_prob_[0];
     if (probs) probs[0] = pj;
     int n = 1;
     // the chain continues while the last draft is likely enough to be verified
     for (int j = 1; j < max_steps && pj >= min_p; ++j) {
+        if (!completion_.submit(err)) return false;
         if (!strata::gpu::graph_launch(cp ? step_exec_c_[j] : step_exec_[j], cs_)) {
             err = std::string("mtp draft step: ") + strata::gpu::last_error();
             return false;
         }
-        (void) strata::gpu::stream_idle(cs_);
         prefetch_ple(drafts[j - 1]);
-        wait_step(j);
-        drafts[j] = ((volatile int32_t*) h_out_)[j];
-        if (top2_env()) { strata::gpu::stream_sync(cs_); record_top2(j); }
-        pj = ((volatile float*) h_prob_)[j];
+        if (!wait_step(j)) return false;
+        drafts[j] = h_out_[j];
+        if (top2_env() && !record_top2(j, err)) return false;
+        pj = h_prob_[j];
         if (probs) probs[j] = pj;
         ++n;
     }
     prefetch_ple(drafts[n - 1]);
-    if (!strata::gpu::stream_sync(cs_)) {
-        err = std::string("mtp draft: ") + strata::gpu::last_error();
-        return false;
-    }
+    if (!complete(err)) return false;
     for (int j = n; j < max_t_ - 1; ++j) { drafts[j] = 0; if (probs) probs[j] = 0.0f; }
     if (n_drafts) *n_drafts = n;
     ms_draft += ms_since(t0);
     ++rounds;
-    return true;
+    return operation.finish();
 }
 
 bool MtpDrafter::stage_source_R(int T, std::string& err) {
-    if (src_R_ == nullptr || src_R_ == window_R_) return true;
+    if (src_R_ == nullptr || src_R_ == window_R_) return completion_.healthy(err);
+    if (!completion_.submit(err)) return false;
     if (!strata::gpu::copy_async((void*) window_R_, src_R_, (size_t) T * (size_t) (g_->hc * g_->n_embd) * sizeof(float),
                                  cs_)) {
-        err = "mtp: staging the window's residual rows failed";
+        err = std::string("mtp: staging the window's residual rows failed: ") + strata::gpu::last_error();
         return false;
     }
     return true;
 }
 
 bool MtpDrafter::prepare_chain(std::string& err) {
+    Operation operation{*this, err};
     const OnDevice on_device(device_);
+    if (!complete(err)) return false;
+    if (!strata::gpu::host_handoff_concurrent(cs_)) {
+        err = "mtp: asynchronous chains require a qualified host handoff"; return false;
+    }
     if (!force_on_ || h_force_ == nullptr) { err = "mtp: chains need set_force_capture before load"; return false; }
     for (int T = 1; T <= max_t_; ++T)
         if (!capture_round(T, false, err)) return false;
@@ -1144,12 +1317,17 @@ bool MtpDrafter::prepare_chain(std::string& err) {
             err = "mtp: event creation failed";
             return false;
         }
-    return true;
+    return operation.finish();
 }
 
 bool MtpDrafter::chain_launch(int T, const int32_t* tokens, int64_t p, int a, const int32_t* force, int n_force,
-                              int n_out, int n_early, std::string& err) {
+                              int n_out, int n_early, std::string& err, int64_t remaining_outputs) {
+    Operation operation{*this, err};
     const OnDevice on_device(device_);
+    if (!complete(err)) return false;
+    if (!strata::gpu::host_handoff_concurrent(cs_)) {
+        err = "mtp: asynchronous chains require a qualified host handoff"; return false;
+    }
     if (chain_live_) { err = "mtp: a chain is already in flight"; return false; }
     if (!force_on_ || ev_chain_ == nullptr) { err = "mtp: chains need prepare_chain"; return false; }
     if (T < 1 || T > max_t_ || a < 0 || a >= T || n_out < 1 || n_out > max_t_ - 1 || n_force < 0 || n_force > n_out ||
@@ -1157,7 +1335,23 @@ bool MtpDrafter::chain_launch(int T, const int32_t* tokens, int64_t p, int a, co
         err = "mtp: chain arguments out of range";
         return false;
     }
-    if (!mtp_catchup_all()) T = a + 1;   // as draft(): the catch-up up to the accepted row
+    context_bounds::MtpWindow bound;
+    if (!tokens || (n_force > 0 && !force) ||
+        !context_bounds::mtp_window(st_.max_cells, p, T, a, max_t_, max_t_ - 1, remaining_outputs,
+                                     mtp_catchup_all(), bound) || n_out > bound.candidates) {
+        err = "mtp: chain span or output budget out of range"; return false;
+    }
+    for (int t = 0; t < T; ++t) {
+        if (tokens[t] < 0 || (int64_t) tokens[t] >= n_vocab_) {
+            err = "mtp: a chain token is outside the vocabulary"; return false;
+        }
+    }
+    for (int j = 0; j < n_force; ++j) {
+        if (force[j] < -1 || (int64_t) force[j] >= n_vocab_) {
+            err = "mtp: a forced token is outside the vocabulary"; return false;
+        }
+    }
+    T = bound.catchup;   // as draft(): the catch-up up to the accepted row
     if (round_exec_[T] == nullptr) { err = "mtp: chain graphs not prepared"; return false; }
     for (int j = 1; j < n_out; ++j)
         if (step_exec_[j] == nullptr) { err = "mtp: chain graphs not prepared"; return false; }
@@ -1179,7 +1373,8 @@ bool MtpDrafter::chain_launch(int T, const int32_t* tokens, int64_t p, int a, co
     for (int j = 0; j < 16; ++j) h_force_[j] = j < n_force ? force[j] : -1;
     h_row_[0] = a;
     h_row_[1] = 0;
-    std::atomic_thread_fence(std::memory_order_seq_cst);
+    if (!completion_.submit(err)) return false;
+    chain_live_ = true;   // ownership begins before even a residual copy or partial graph launch
     if (!stage_source_R(T, err)) return false;
     chain_early_ = std::max(0, std::min(n_early, n_out));
     bool ok = strata::gpu::graph_launch(round_exec_[T], cs_);
@@ -1193,51 +1388,69 @@ bool MtpDrafter::chain_launch(int T, const int32_t* tokens, int64_t p, int a, co
         return false;
     }
     steps_seen_ = 0;
-    chain_live_ = true;
     chain_n_ = n_out;
     ms_draft += ms_since(t0);
     ++rounds;
-    return true;
+    return operation.finish(true);
 }
 
 int MtpDrafter::chain_outputs_ready(std::string& err) {
-    (void) err;
-    if (!chain_live_) return chain_n_;
+    Operation operation{*this, err};
     const OnDevice on_device(device_);
-    while (steps_seen_ < chain_early_ && strata::gpu::event_query(ev_step_[steps_seen_])) {
-        chain_tok_[steps_seen_] = ((volatile int32_t*) h_out_)[steps_seen_];
-        chain_prob_[steps_seen_] = ((volatile float*) h_prob_)[steps_seen_];
-        ++steps_seen_;
+    if (!complete(err)) return -1;
+    if (!strata::gpu::host_handoff_concurrent(cs_)) {
+        err = "mtp: early chain outputs require a qualified host handoff"; return -1;
     }
-    return steps_seen_;
+    // An event for output j does not retire a later writer to this same host
+    // allocation. Read only after the entire chain completes, even on a future backend.
+    if (chain_poll(err) < 0) return -1;
+    return operation.finish() ? chain_n_ : -1;
 }
 
 int MtpDrafter::chain_poll(std::string& err) {
-    (void) err;
-    if (!chain_live_) return 1;
+    Operation operation{*this, err};
     const OnDevice on_device(device_);
-    if (!strata::gpu::event_query(ev_chain_)) return 0;
-    chain_live_ = false;
+    if (!complete(err)) return -1;
+    if (!chain_live_) return operation.finish() ? 1 : -1;
     for (int j = 0; j < chain_n_; ++j) {
-        chain_tok_[j] = ((volatile int32_t*) h_out_)[j];
-        chain_prob_[j] = ((volatile float*) h_prob_)[j];
+        chain_tok_[j] = h_out_[j];
+        chain_prob_[j] = h_prob_[j];
     }
     for (int j = chain_n_; j < 8; ++j) { chain_tok_[j] = 0; chain_prob_[j] = 0.0f; }
-    return 1;
+    steps_seen_ = chain_n_;
+    chain_live_ = false;   // only after checked whole-allocation completion and output transfer
+    return operation.finish() ? 1 : -1;
 }
 
 bool MtpDrafter::draft_first(int T, const float* R_row, int32_t token, int64_t cell, int32_t* drafts, std::string& err,
-                             float* probs, float min_p, int* n_drafts) {
+                             float* probs, float min_p, int* n_drafts, int64_t remaining_outputs) {
+    Operation operation{*this, err};
     const OnDevice on_device(device_);
-    // row 0 is the real pair; rows 1.. repeat it and only write cells the next round overwrites
+    if (!complete(err)) return false;
+    if (T < 1 || T > max_t_ || !g_ || !window_R_ || !R_row || !drafts || token < 0 || (int64_t) token >= n_vocab_) {
+        err = "mtp: first draft inputs out of range"; return false;
+    }
+    // The bootstrap's requested width is not a verified catch-up span. Repeated
+    // rows are bounded by capacity even with CATCHUP_ALL; the real pair is row 0.
+    T = context_bounds::verifier_window(st_.max_cells, cell, T, std::numeric_limits<int64_t>::max());
+    context_bounds::MtpWindow bound;
+    if (T == 0 || !context_bounds::mtp_window(st_.max_cells, cell, T, 0, max_t_, max_drafts_, remaining_outputs,
+                                              mtp_catchup_all(), bound)) {
+        err = "mtp: first draft cell or output budget out of range"; return false;
+    }
+    if (bound.candidates == 0 && remaining_outputs == 0) {
+        for (int j = 0; j < max_t_ - 1; ++j) { drafts[j] = 0; if (probs) probs[j] = 0.0f; }
+        if (n_drafts) *n_drafts = 0;
+        return operation.finish();
+    }
+    // row 0 is the real pair; rows 1.. repeat it and only write legal cells
     const int64_t HCN = g_->hc * g_->n_embd;
     for (int t = 0; t < T; ++t)
-        if (!strata::gpu::copy((void*) (window_R_ + (size_t) t * HCN), R_row, (size_t) HCN * sizeof(float))) {
-            err = "mtp: staging the first residual failed";
-            return false;
-        }
+        if (!copy_checked((void*) (window_R_ + (size_t) t * HCN), R_row, (size_t) HCN * sizeof(float),
+                          "mtp first residual upload", err)) return false;
     std::vector<int32_t> toks((size_t) T, token);
-    return draft(T, toks.data(), cell, 0, drafts, err, probs, min_p, n_drafts);
+    if (!draft(T, toks.data(), cell, 0, drafts, err, probs, min_p, n_drafts, remaining_outputs)) return false;
+    return operation.finish();
 }
 
 }  // namespace strata::core

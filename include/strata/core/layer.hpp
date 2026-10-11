@@ -420,6 +420,8 @@ bool qsa_layer(const WeightTable& tables, const ModelGeometry& g, int64_t layer,
 /// The memory is MAPPED PINNED, so it has one address for the device and another for the host and both refer
 /// to the same bytes.  Pinned as well as mapped, because a pageable destination would turn the device's write
 /// into a staged copy and give back the overlap this exists for.
+// Xe ownership: device writes only during pre; host reads only after its checked completion.  The legacy
+// token-graph flag handshake below is disabled until matching legal host/device atomics are implemented.
 struct Doorbell {
     int64_t n_embd = 0;
     int64_t k = 0;
@@ -439,10 +441,10 @@ struct Doorbell {
     uint32_t* d_flag = nullptr;
 };
 
-/// Allocates the four mapped-pinned regions.  Returns the bytes, or 0 on failure.
+/// Allocates the five mapped-pinned regions.  Returns the bytes, or 0 on failure.
 uint64_t doorbell_init(const ModelGeometry& g, int64_t k, Doorbell& db);
 void doorbell_free(Doorbell& db);
-/// Zeroes `h_seq` (and `h_flag`), so a caller can wait for it to become `expected` from a known state.
+/// Zeroes `h_seq` and `h_flag`; the caller must first complete every device use of these allocations.
 void doorbell_reset(const Doorbell& db);
 
 // ================================ ONE WHOLE BLOCK ================================

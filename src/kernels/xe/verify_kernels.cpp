@@ -6,9 +6,8 @@
 // the small gathers, copies and selections around them.
 //
 // The per-token arithmetic of each kernel is its single-token original's (fused_gdn, elementwise) with the same
-// operation order, so a verify window reproduces plain decode.  The flag waits use the reading measured in
-// bench/results/2026-09-30-xe-doorbell: a volatile read followed by a system-scope acquire fence.  gpu_stamp writes
-// device-clock ticks, not the nanoseconds of CUDA's %globaltimer.
+// operation order, so a verify window reproduces plain decode.  Concurrent host-USM flag waits are refused;
+// segmented verification uses queue completion. gpu_stamp writes device-clock ticks, not nanoseconds.
 #include "strata/kernels/verify_kernels.hpp"
 #include "strata/core/runtime.hpp"
 #include "device_caps.hpp"
@@ -61,11 +60,6 @@ inline void q8_1_store(const sycl::sub_group& sg, const float xi, uint8_t* block
     const float d = xe::q8_1_finite(amax / 127.0f);
     block[4 + lane] = (uint8_t) xe::q8_1_quant(xi, d, amax);
     if (lane == 0) *reinterpret_cast<sycl::half2*>(block) = sycl::half2(sycl::half(d), sycl::half(xe::q8_1_finite(sum)));
-}
-inline uint32_t read_host(const uint32_t* p) {
-    const uint32_t v = *reinterpret_cast<const volatile uint32_t*>(p);
-    sycl::atomic_fence(sycl::memory_order::acquire, sycl::memory_scope::system);
-    return v;
 }
 
 }  // namespace
@@ -710,39 +704,17 @@ bool graph_branch_pays(void* stream, void* side0, void* side1) {
 }
 
 void wait_flag_ge(const uint32_t* flag, uint32_t value, void* stream) {
-    Q(stream).single_task([=] {
-        while (read_host(flag) < value) {
-        }
-    });
+    (void) flag;
+    (void) value;
+    (void) stream;
+    fail("wait_flag_ge: concurrent host-USM handoff is unqualified");
 }
 
 bool doorbell_visible(void* stream) {
-    auto& q = Q(stream);
-    auto* m = sycl::malloc_host<uint32_t>(4, q);
-    if (m == nullptr) return false;
-    volatile uint32_t* hm = m;
-    hm[0] = 0;
-    hm[1] = 0;
-    hm[2] = 0;
-    uint32_t* ring = m;
-    uint32_t* flag = m + 1;
-    uint32_t* seen = m + 2;
-    // at most 2^21 reads (well under a second on the UHD 770, a few microseconds where the flag arrives)
-    q.single_task([=] {   // the ring as doorbell_ring stores it: volatile, not atomic (elementwise.cpp says why)
-        *reinterpret_cast<volatile uint32_t*>(ring) = 1u;
-        sycl::atomic_fence(sycl::memory_order::release, sycl::memory_scope::system);
-        for (uint32_t i = 0; i < (1u << 21); ++i)
-            if (read_host(flag) == 1u) { *seen = 1u; break; }
-    });
-    const auto t0 = std::chrono::steady_clock::now();
-    bool rang = false;
-    while (!(rang = hm[0] == 1u) && std::chrono::steady_clock::now() - t0 < std::chrono::seconds(2)) {}
-    std::atomic_thread_fence(std::memory_order_seq_cst);
-    hm[1] = 1u;
-    q.wait();
-    const bool ok = rang && hm[2] == 1u;
-    sycl::free(m, q);
-    return ok;
+    // A functional visibility probe would itself race on unqualified host USM.  It cannot establish the
+    // allocation's atomic contract, so do not submit it.  All current Xe handoffs use completed segments.
+    (void) stream;
+    return false;
 }
 
 void resident_plan(const int32_t* ids, int n, int k, const int32_t* res, int n_expert, const uint8_t* cache_base,
@@ -821,11 +793,11 @@ void resident_plan(const int32_t* ids, int n, int k, const int32_t* res, int n_e
 }
 
 void wait_flag_ge_or(const uint32_t* flag, uint32_t value, const uint32_t* skip, void* stream) {
-    Q(stream).single_task([=] {
-        if (read_host(skip) == value) return;
-        while (read_host(flag) < value) {
-        }
-    });
+    (void) flag;
+    (void) value;
+    (void) skip;
+    (void) stream;
+    fail("wait_flag_ge_or: concurrent host-USM handoff is unqualified");
 }
 
 void copy_i32_from_mapped_unless(int32_t* dst, const int32_t* src, long long n, const uint32_t* skip, uint32_t value,

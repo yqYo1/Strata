@@ -24,6 +24,7 @@
 // selection, native indexer) and a profile-filled VRAM expert tier with its residency table on the device.
 #pragma once
 
+#include "strata/core/commit_transaction.hpp"
 #include <cstdio>
 
 #include "strata/core/expert_source.hpp"
@@ -132,7 +133,7 @@ public:
     /// run) calls wait_commit() first (upstream 42b4299, a454dbb).  STRATA_COMMIT_SYNC=1 keeps the wait.
     static void set_commit_async(bool on);
     /// Waits for the last commit graph when commit() did not (an event recorded after it, not the whole device);
-    /// false with `err` when it failed.  Free when nothing is pending.
+    /// false with `err` when it failed. A failed transaction stays invalid even after a successful drain.
     bool wait_commit(std::string& err);
 
     // ---- PIPELINED WINDOWS (--pipeline-windows, a layer split on two GPUs; upstream bfa532e9).  One conversation's
@@ -360,9 +361,8 @@ private:
     bool fetch_branch_ = false;
     strata::gpu::Graph* exec_[9] = {};
     strata::gpu::Graph* commit_exec_ = nullptr;
-    // A device whose running kernels do not see the host's writes (doorbell_visible: the UHD 770) runs a window as
-    // segments the host launches one after another, cut before each layer group's experts; no kernel waits on a
-    // flag.  STRATA_VERIFY_SEGMENTED=1 / 0 forces it either way.
+    // An unqualified concurrent host-USM protocol uses completed segments, cut before each layer group's
+    // experts; no device kernel waits for the host. STRATA_VERIFY_SEGMENTED=0 cannot bypass this safety gate.
     bool segmented_ = false;
     std::vector<strata::gpu::Graph*> segs_[9];
     std::vector<strata::gpu::Graph*>* seg_out_ = nullptr;   // the segments of the window being captured
@@ -382,10 +382,9 @@ private:
     uint32_t* h_flagA_ = nullptr; uint32_t* m_flagA_ = nullptr;  // the GPU plan is in place
     uint32_t* h_flagB_ = nullptr; uint32_t* m_flagB_ = nullptr;  // the PCIe share's DMA copies have landed
     strata::gpu::Event* commit_done_ = nullptr;   // recorded after an async commit (set_commit_async)
-    bool commit_pending_ = false;
+    CommitTransaction commit_state_;   // pending before submit; failures remain sticky through checked drains
     strata::gpu::Stream copy_ = nullptr;                                 // the copy engine's stream (DMA of missed experts)
-    struct FlagSet { uint32_t* flag; uint32_t value; };
-    FlagSet flag_sets_[2 * 64 * 2] = {};                          // host-function arguments, one per (layer, group)
+    std::string dma_error_;   // enqueue errors from the synchronous pool fetch hook; checked before the next segment
     static void fetch_dma(void* ctx, const uint8_t* const* src, int n, size_t bytes);
     static void raise_flag(uint32_t* flag, uint32_t value);
     int32_t* h_plan_ = nullptr;  int32_t* m_plan_ = nullptr;     // counts | start | dst | tok | ptr (as int32 pairs)

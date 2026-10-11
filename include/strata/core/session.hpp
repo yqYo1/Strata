@@ -323,21 +323,10 @@ using PoolFn = void (*)(void* user, const float* x_f, const int32_t* ids, const 
 /// A null pointer means "no VRAM tier" - the default, and what every caller had before R4.
 // The hit hook's type lives in its own header - see `hit_hook.hpp` for why and for the ordering it wants.
 
-/// `phases/phase-2-correct-engine.md` P2.S5's host loop, which is the point of everything above it:
-///
-///     launch G[l] -> poll the doorbell -> read the miss list -> dispatch the pool -> wait for it ->
-///     write y_miss -> launch G[l+1]
-///
-/// **NO `cudaStreamSynchronize` IN THE LOOP**, which is P2.X3.  Waiting is `cudaEventQuery` on an event recorded
-/// right after the launch - a QUERY, and it is not optional: round 195 measured a host spin that only read
-/// memory never running the kernel at all, 5,907,703 spins over 500 ms with the datum flipping only when
-/// `cudaStreamSynchronize` was called.
-///
-/// **THE OVERLAP IS THE ONE-LAYER DELAY.**  A layer publishes `x_f` at ~71% of its own duration, so the pool has
-/// the remaining 29% of that layer to work in; its result is consumed by the NEXT layer, which is why the
-/// combine is not waiting on it.  `overlap = false` runs the same sequence with a synchronisation after every
-/// layer, which is the comparison that says whether the pipeline is worth its complexity - and it is a
-/// parameter rather than a second function so that the two cannot drift.
+/// Runs each layer's pre graph to checked completion, reads its host-USM routing payload, runs the pool,
+/// then enqueues that layer's result copy and post graph.  The next pre completion also completes those
+/// consumers before host staging is reused.  Xe currently cannot qualify a concurrent atomic handoff;
+/// `overlap` never permits live sequence polling. `false` additionally waits after every post graph.
 ///
 /// **`dump_layers`, WHEN NOT NULL, IS THE C1 ORACLE AND IT IS A HOST BUFFER OF `(n_layers + 1) * hc * n_embd`
 /// FLOATS.**  Slot 0 is the residual the function was ENTERED with - the token's embedding broadcast to every
@@ -382,6 +371,8 @@ bool session_loop(const ModelGeometry& g, int64_t pos, int32_t pos_base, Session
 
 // ================================ plan v0.3 P3: THE WHOLE TOKEN AS ONE GRAPH ================================
 //
+// Xe refuses capture and replay of this legacy protocol: its volatile controls do not qualify concurrent
+// host-USM access. Generation uses the checked per-layer loop above.
 // The per-layer loop above makes 96 graph launches per token. The token graph holds
 // all 48 layers.  Between `pre[l]` (which rings the doorbell) and the parts copy, a one-thread kernel waits ON
 // THE DEVICE until the host writes the ring value into `db.h_flag`; the host only polls rings, runs the pool

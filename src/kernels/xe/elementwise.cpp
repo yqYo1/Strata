@@ -116,28 +116,10 @@ void f32_to_bf16_bulk(const float* x, uint16_t* y, int64_t n, void* stream) {
     sync_if_needed(stream, event);
 }
 
-// ---- the doorbell (see the header).  bench/results/2026-09-30-xe-doorbell measured what a spinning kernel sees:
-// a volatile read followed by a system-scope acquire fence observes the host's write; a system-scope atomic load
-// alone sometimes never does.  The GPU-to-host direction is a system-scope fence, then a plain volatile store,
-// not an atomic one: no GPU here reports usm_atomic_host_allocations, and the xe driver serves a discrete
-// GPU's atomic page fault on system memory only by moving the page to VRAM (a userptr cannot move), where a read or
-// a write is simply bound again (xe_vma_need_vram_for_atomic).  The ring has one writer, so it needs no atomicity;
-// the B70 saw the store while the kernel ran in 2,000 of 2,000 runs, sooner than the atomic one (median 4.9 us
-// against 11.0; bench/results/2026-10-11-xe-doorbell-store).
+// The host observes these writes only after the containing pre graph completes.  Queue completion, not
+// volatile accesses or system fences, transfers ownership of the host-USM payload and sequence to the host.
 namespace {
-inline uint32_t read_host(const uint32_t* p) {
-    const uint32_t v = *reinterpret_cast<const volatile uint32_t*>(p);
-    sycl::atomic_fence(sycl::memory_order::acquire, sycl::memory_scope::system);
-    return v;
-}
-// *p += 1, with one fence between the load and the store: a release fence right after read_host's acquire fence
-// crashed intel/llvm 7.1's sycl-optimize-barriers pass (an assertion in CallBase::setArgOperand).
-inline void bump_host(uint32_t* p) {
-    volatile uint32_t* v = p;
-    const uint32_t n = *v + 1u;
-    sycl::atomic_fence(sycl::memory_order::acq_rel, sycl::memory_scope::system);
-    *v = n;
-}
+inline void bump_host(uint32_t* p) { *p += 1u; }
 }  // namespace
 
 // *seq += 1, read and incremented in memory so a captured graph advances it on every replay
@@ -149,16 +131,11 @@ void doorbell_ring(uint32_t* d_seq, void* stream) {
     sync_if_needed(stream, event);
 }
 
-// Spins until the host's flag equals the ring, then everything the host wrote before the flag is visible to the
-// commands that follow.  Unbounded, as in CUDA: a stalled host is reported by the runtime's watchdog on the next
-// host wait, not by the kernel.
+// A resident device wait cannot be used with the current unqualified concurrent host-USM protocol.
 void doorbell_wait(const uint32_t* d_flag, const uint32_t* d_seq, void* stream) {
     if (d_flag == nullptr || d_seq == nullptr) return;
-    queue_for(stream).single_task([=] {
-        const uint32_t want = read_host(d_seq);
-        while (read_host(d_flag) != want) {
-        }
-    });
+    (void) stream;
+    throw core::DeviceError("doorbell_wait: concurrent host-USM handoff is unqualified");
 }
 
 void copy_from_mapped(float* dst, const float* src, int64_t n, void* stream) {
@@ -194,7 +171,7 @@ void copy_rows_from_mapped(float* dst, const float* src, int64_t rows, int64_t w
     });
 }
 
-// the routing payload and its ring in one kernel: copy, fence, then the increment the host polls
+// The routing payload and sequence in one kernel; the host reads both after queue completion.
 void doorbell_publish(const float* x, const int32_t* ids, const float* weights, int64_t n, int64_t k, float* x_out,
                       int32_t* ids_out, float* weights_out, uint32_t* d_seq, void* stream) {
     if (k > 1024) throw core::DeviceError("doorbell_publish: k too large");
@@ -205,12 +182,8 @@ void doorbell_publish(const float* x, const int32_t* ids, const float* weights, 
         const int t = (int) it.get_local_id(0);
         for (int i = t; i < ni; i += wg) x_out[i] = x[i];
         for (int i = t; i < ki; i += wg) { ids_out[i] = ids[i]; weights_out[i] = weights[i]; }
-        sycl::atomic_fence(sycl::memory_order::release, sycl::memory_scope::system);
         sycl::group_barrier(it.get_group());
-        if (t == 0) {
-            sycl::atomic_fence(sycl::memory_order::acq_rel, sycl::memory_scope::system);
-            bump_host(d_seq);
-        }
+        if (t == 0 && d_seq != nullptr) bump_host(d_seq);
     });
 }
 

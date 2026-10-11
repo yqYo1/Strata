@@ -15,6 +15,8 @@
 #include "strata/core/runtime.hpp"
 #include "strata/kernels/matrix_report.hpp"
 #include <oneapi/math/blas.hpp>
+#include <atomic>
+#include <exception>
 #include <future>
 #include <memory>
 #include <mutex>
@@ -54,6 +56,71 @@ struct Backend {
 };
 std::mutex g_mutex;
 std::unordered_map<sycl::device, Backend> g_backends;
+
+[[noreturn]] void prepare_fatal(const char* phase, const char* message) noexcept {
+    std::fprintf(stderr, "strata: oneMath prepare: %s: %s; terminating without unsafe trial teardown\n",
+                 phase, message);
+    std::fflush(stderr);
+    std::_Exit(1);
+}
+
+// Constructed by prepare after its Runtime, so shutdown joins every trial before that Runtime is destroyed.
+// The workers never take g_mutex; keeping it here also prevents publishing another trial during the join.
+struct JoinTrials {
+    ~JoinTrials() {
+        try {
+            std::lock_guard<std::mutex> lock(g_mutex);
+            for (auto& entry : g_backends)
+                if (entry.second.ready.valid()) entry.second.ready.wait();
+        } catch (const std::exception& e) { prepare_fatal("trial join", e.what()); }
+        catch (...) { prepare_fatal("trial join", "unknown exception"); }
+    }
+};
+
+// The scope exists before either allocation. In particular, an allocation or submission exception cannot
+// destroy the private queue or free a partial allocation until the terminal wait has proved completion.
+struct TrialStorage {
+    core::Runtime& runtime;
+    std::shared_ptr<std::atomic<bool>> failed = std::make_shared<std::atomic<bool>>(false);
+    sycl::queue queue;
+    uint16_t* x = nullptr;
+    float* y = nullptr;
+
+    explicit TrialStorage(core::Runtime& owner) : runtime(owner),
+        queue(owner.context(), owner.device(), [error = failed](const sycl::exception_list& errors) {
+            if (!errors.size()) return;
+            for (const auto& exception : errors) {
+                try { std::rethrow_exception(exception); }
+                catch (const std::exception& e) {
+                    std::fprintf(stderr, "strata: oneMath prepare: asynchronous trial error: %s\n", e.what());
+                } catch (...) {
+                    std::fprintf(stderr, "strata: oneMath prepare: unknown asynchronous trial error\n");
+                }
+            }
+            error->store(true, std::memory_order_release);
+        }, sycl::property::queue::in_order{}) {}
+    TrialStorage(const TrialStorage&) = delete;
+    TrialStorage& operator=(const TrialStorage&) = delete;
+
+    void complete(const char* phase) noexcept {
+        try {
+            // The in-order terminal barrier covers all earlier trial submissions. Runtime::wait supplies
+            // the existing watchdog even though this private queue is not an engine stream.
+            runtime.wait(queue.ext_oneapi_submit_barrier(), phase);
+            queue.throw_asynchronous();
+        } catch (const std::exception& e) { prepare_fatal(phase, e.what()); }
+        catch (...) { prepare_fatal(phase, "unknown wait exception"); }
+        if (failed->load(std::memory_order_acquire)) prepare_fatal(phase, "asynchronous trial failure");
+    }
+    ~TrialStorage() {
+        complete("terminal trial drain");
+        try {
+            if (x) sycl::free(x, queue);
+            if (y) sycl::free(y, queue);
+        } catch (const std::exception& e) { prepare_fatal("trial allocation release", e.what()); }
+        catch (...) { prepare_fatal("trial allocation release", "unknown exception"); }
+    }
+};
 
 // The backend of `dev`, its trial's outcome taken in (waited for) the first time
 Backend backend(const sycl::device& dev) {
@@ -116,38 +183,42 @@ bool blas(const uint16_t* X, const uint16_t* W, float* Y, int64_t T, int64_t N, 
 void Gemm::prepare() {
 #if STRATA_ONEMATH
     // A backend's first product loads its library and its kernels (cuBLAS: about 0.6 s on an RTX 4070, inside the
-    // first prompt): one small product of each type on a queue of its own, beside the model's loading.  An error of the
-    // BF16 one (thrown, or reported by the queue afterwards) leaves the BF16 products to XeStrata's own kernels.
-    sycl::queue& c = core::Runtime::get().compute();
+    // first prompt): one small product of each type on a queue of its own, beside the model's loading. A synchronous
+    // oneMath rejection leaves the product to XeStrata's own kernels only after a successful terminal drain.
+    // An asynchronous error or failed wait cannot confirm completion and terminates before trial teardown.
+    core::Runtime& runtime = core::Runtime::get();
+    static JoinTrials join_trials;
+    sycl::queue& c = runtime.compute();
     std::lock_guard<std::mutex> lock(g_mutex);
     Backend& b = g_backends[c.get_device()];
     if (!b.blas || b.ready.valid()) return;
-    b.ready = std::async(std::launch::async, [ctx = c.get_context(), dev = c.get_device()]() -> Trial {
+    b.ready = std::async(std::launch::async, [&runtime]() -> Trial {
         constexpr int64_t n = 16;
         constexpr size_t tile = (size_t) n * n;
-        auto failed = std::make_shared<bool>(false);
-        sycl::queue q(ctx, dev, [failed](const sycl::exception_list& l) { *failed = *failed || l.size() > 0; },
-                      sycl::property::queue::in_order{});
-        auto* x = sycl::malloc_device<uint16_t>(2 * tile, q);
-        auto* y = sycl::malloc_device<float>(tile, q);
+        TrialStorage storage(runtime);
+        sycl::queue& q = storage.queue;
+        storage.x = sycl::malloc_device<uint16_t>(2 * tile, q);
+        if (!storage.x) throw core::DeviceError("oneMath prepare: trial input allocation failed");
+        storage.y = sycl::malloc_device<float>(tile, q);
+        if (!storage.y) throw core::DeviceError("oneMath prepare: trial output allocation failed");
+        auto* x = storage.x;
+        auto* y = storage.y;
         Trial t;
+        q.fill<uint16_t>(x, 0, 2 * tile);
         try {
-            q.fill<uint16_t>(x, 0, 2 * tile);
             product<sycl::half>(q, x, x + tile, y, n, n, n, n, false);
-            q.wait_and_throw();
-            try {
-                product<oneapi::math::bfloat16>(q, x, x + tile, y, n, n, n, n, false);
-                q.wait_and_throw();
-            } catch (const std::exception&) {
-                t.bf16 = false;
-            }
-            t.bf16 = t.bf16 && !*failed;
         } catch (const oneapi::math::exception& e) {
             t.why = e.what();
         }
-        q.wait();
-        sycl::free(x, q);
-        sycl::free(y, q);
+        storage.complete("FP16 trial completion");
+        if (t.why.empty()) {
+            try {
+                product<oneapi::math::bfloat16>(q, x, x + tile, y, n, n, n, n, false);
+            } catch (const oneapi::math::exception&) {
+                t.bf16 = false;
+            }
+            storage.complete("BF16 trial completion");
+        }
         return t;
     }).share();
 #endif

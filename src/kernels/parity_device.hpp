@@ -12,6 +12,9 @@
 #include "strata/core/runtime.hpp"
 
 #include <cstddef>
+#include <cstdio>
+#include <cstdlib>
+#include <exception>
 #include <memory>
 #include <vector>
 
@@ -20,16 +23,34 @@ namespace strata::parity {
 // The compute queue as the kernels' `stream` argument.
 inline void* stream() { return &core::Runtime::get().compute(); }
 
+[[noreturn]] inline void transfer_fatal(const char* operation, const char* message) noexcept {
+    std::fprintf(stderr, "parity: %s: %s; terminating before caller staging can unwind\n", operation, message);
+    std::fflush(stderr);
+    std::_Exit(1);
+}
+
+// A submission can fail after accepting work, and a failed wait is not proof of completion. Catch inside
+// the helper while the caller still owns its host staging; a later process_device drain is too late.
+template<class F> void checked_transfer(const char* operation, F&& work) noexcept {
+    try { work(); }
+    catch (const std::exception& e) { transfer_fatal(operation, e.what()); }
+    catch (...) { transfer_fatal(operation, "unknown exception"); }
+}
+
 template<class T> void copy_in(T* device, const T* host, size_t count) {
-    auto& runtime = core::Runtime::get();
-    runtime.wait(runtime.copy_async(device, host, count * sizeof(T), {runtime.compute().ext_oneapi_submit_barrier()}),
-                 "parity upload");
+    checked_transfer("parity upload", [device, host, count] {
+        auto& runtime = core::Runtime::get();
+        runtime.wait(runtime.copy_async(device, host, count * sizeof(T), {runtime.compute().ext_oneapi_submit_barrier()}),
+                     "parity upload");
+    });
 }
 
 template<class T> void copy_out(T* host, const T* device, size_t count) {
-    auto& runtime = core::Runtime::get();
-    runtime.wait(runtime.copy_async(host, device, count * sizeof(T), {runtime.compute().ext_oneapi_submit_barrier()}),
-                 "parity download");
+    checked_transfer("parity download", [host, device, count] {
+        auto& runtime = core::Runtime::get();
+        runtime.wait(runtime.copy_async(host, device, count * sizeof(T), {runtime.compute().ext_oneapi_submit_barrier()}),
+                     "parity download");
+    });
 }
 
 struct Device {
@@ -46,7 +67,12 @@ struct Device {
     }
 };
 
-inline void sync() { core::Runtime::get().finish(core::Runtime::get().compute()); }
+inline void sync() {
+    checked_transfer("parity sync", [] {
+        auto& runtime = core::Runtime::get();
+        runtime.finish(runtime.compute());
+    });
+}
 
 // Byte-level forms for programs that allocated with cudaMalloc: the buffers live until the process exits.
 // The runtime is created first so that it outlives the allocations it frees.

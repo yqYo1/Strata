@@ -41,6 +41,12 @@ bool stream_sync(Stream s);
 bool stream_idle(Stream s);
 bool device_sync();
 
+/// The current Xe controls use volatile accesses, not matching host/device atomics.  No capability report
+/// makes that protocol legal.  Keep every device on queue-completed handoffs until a qualified atomic
+/// implementation (including the actual host-USM allocation contract) replaces it; unknown is unsupported.
+/// This is a protocol gate, deliberately independent of vendor, device name and visibility probes.
+inline constexpr bool host_handoff_concurrent(Stream = nullptr) { return false; }
+
 void* alloc_device(size_t bytes);
 void* alloc_host(size_t bytes);
 template <class T> bool alloc_device(T** p, size_t bytes) { *p = static_cast<T*>(alloc_device(bytes)); return *p; }
