@@ -11,3 +11,5 @@ release・host ASan/UBSanはfree/contrib-llvmの各モードで12件PASS、nativ
 [32K区間profileの準備](prepared-profile32k/run_root.py)は、過去R205/R207の不正timestamp警告により、現在は新しいraw marker資格receiptを必須にして起動を拒否する。既存foldが取得失敗区間を黙って除外するため、別のSol実装taskがタイミングの失敗検知を作業中。Mainはモデルv5の確認を続ける。イベント区間はCPU/copy待ちを含み、exclusive kernel service timeではない。
 
 [メモリ配分候補](xe-per-layer-profile-fill-capacity-followup-v1.json)は観測した2133MiBのprefill領域、MTPをprefill時に保持するコスト、FP32のGU/Dm一時領域を記録する。精度変更は未実装で、全vocabulary likelihood・task品質・physical262144全域の検証を必要とする。[PCIe補足](xe-per-layer-profile-fill-pcie-metadata-correction-v1.json)はleafの2.5GT/s x1を帯域の上限に使わず、外部祖先のGen4 x4と区別する。新しい転送速度は測っていない。
+
+[モデルv5](model-v5.json)は実行済みPASS。144/144 fill、residency144、最初のprofile pairはlayer28で実slot84を読み戻して検証した。16出力とMTP22提案・7採用、QUIT exit0、後段integer health PASS、新規GPU障害0。[個別解析](model-v5-analysis.json)では変更前と16 greedy IDsは一致したがlogprobは差がある。8Kの診断時間は採用判断に使わず、decodeが速くなったと扱わない。品質とphysical262144全域は未検証のまま。

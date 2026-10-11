@@ -1,0 +1,87 @@
+{
+  "created_utc": "2026-10-11T04:36:31.893899+00:00",
+  "source_revision": "e188dd609b800ea78fb4afc0cc6dcf6ef7e02328",
+  "original_receipt_sha256": "ecc565a33c197c120f7d93a3dc8cd06ec3c0453192b41d3b2e0aa3052e0ac47b",
+  "cache": {
+    "filled": 144,
+    "capacity": 144,
+    "residents": 144,
+    "verified_slot": 84,
+    "per_layer_quota": 3,
+    "geometry_provenance": "Same full48x512 unique ranking/model; per-layer slot ranges and total occupancy imply each of48 layers fills its3 slots. Only one slot readback is the existing byte check, not all144 byte checks."
+  },
+  "first_ranked_pair": {
+    "layer": 28,
+    "expert": 288
+  },
+  "input_equal": true,
+  "output_ids_equal": true,
+  "mtp_counts": [
+    [
+      7,
+      22
+    ],
+    [
+      7,
+      22
+    ]
+  ],
+  "max_absolute_selected_token_logprob_delta": 0.12036900000000006,
+  "logprob_scope": "Paired selected-token LP5 diagnostics for16 greedy outputs only; neither all-vocabulary teacher forcing nor task quality.",
+  "before_diagnostic": {
+    "prompt_ms": 42138.7,
+    "decode_ms": 3006.1,
+    "hits": 244,
+    "lookups": 14880,
+    "filled": 29
+  },
+  "after_diagnostic": {
+    "prompt_ms": 41065.6,
+    "decode_ms": 3265.2,
+    "hits": 1027,
+    "lookups": 14880,
+    "filled": 144
+  },
+  "normal_exit": true,
+  "post_model_integer_health_passed": true,
+  "new_fault_messages": [],
+  "source_runtime_mappings": {
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+      "sha256": "bb6e1311850e4b1a924e42acae80c2b3610934625a4985aaa67967abe31356fc"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libsycl.so.9.0.0-0": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libsycl.so.9.0.0-0",
+      "sha256": "74243bafb2766fd1a038cf80fd62632b4aad9ecfdc0d3ce8711e4515a93d7008"
+    },
+    "/usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1.32.0": {
+      "path": "/usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1.32.0",
+      "sha256": "db1856f379706d51b6ded84ce028d4aa48740ef63793f60e8a1e027c6db6ffb5"
+    },
+    "/usr/lib/x86_64-linux-gnu/libze_validation_layer.so.1.32.0": {
+      "path": "/usr/lib/x86_64-linux-gnu/libze_validation_layer.so.1.32.0",
+      "sha256": "5b5ead80d98959d0f0a27a8981bb911c354720d39a4aa2125dc18266ad67d970"
+    },
+    "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395": {
+      "path": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395",
+      "sha256": "dfa844e5afd8e8f74bf5ce9da3ea2837706d9116bc8efeaed90efba5acaf7b1c"
+    },
+    "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0": {
+      "path": "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0",
+      "sha256": "b764efda507f173560fa6055d433dd5c76140180b4a7c532e1cea813cde67363"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libumf.so.1.1.0": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libumf.so.1.1.0",
+      "sha256": "ebe65269abd5869010ab256375e8663f7a8f8b5453e0be0c78f615eb71581ab9"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0.12.0": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0.12.0",
+      "sha256": "05bcafc4a0d45d33f957f16ffb4ba4776da675e79ade1121b93b94b8549335d8"
+    }
+  },
+  "performance_eligible": false,
+  "performance_conclusion": "None: one8K instrumented diagnostic per source is below the requested32K comparison minimum and lacks repeated independent decode samples. Current decode diagnostic duration is higher; do not adopt a decode speedup from the prefill duration or hit count.",
+  "full_model_quality_qualified": false,
+  "full262144_qualified": false,
+  "next": "Review profiling-interval guard on returned Sol report; Main owns new serial qualification, raw timestamp proof, then32K phase profile and separate quiet repeated prefill/decode comparisons."
+}
