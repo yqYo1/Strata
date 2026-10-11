@@ -1,0 +1,47 @@
+{
+  "artifact": "xe-parity-transfer-source-v1",
+  "spdx_file_copyright_text": "2026 MistVVK and the XeStrata contributors",
+  "spdx_license_identifier": "LGPL-3.0-or-later",
+  "date": "2026-10-11",
+  "owner_consumer": "Main: review, application, commit and serialized qualification",
+  "status": "source-only staging; not built, linted or tested",
+  "source_base": "e32b8b0594095352365db0e140a68d5bf56d8b0f",
+  "source_identity_rule": "immutable snapshot hash defines actual source bytes",
+  "source_snapshot": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-parity-transfer-source-snapshot-v1",
+  "source_snapshot_manifest_sha256": "5ac9d073f7843acf8b2bec4f4cad884eb0d7d70e2076ca48f3a367d8ddbf7b73",
+  "source_pins": {
+    "src/kernels/parity_device.hpp": "4797ad27b398f870d6dd87cf02ae7b7670220875cf0192fa6163443acd966f62"
+  },
+  "companion_runtime_snapshot": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-onemath-prepare-source-snapshot-v1",
+  "companion_pins": {
+    "include/strata/core/runtime.hpp": "1a42ce02127727310614461b1dc2768eb2bce421e9d5e992c4df100c1817dd26",
+    "src/core/device.cpp": "9e33dce3b3b55b00c5aee4db566ceb848b73273837c505b3c27b535a0b30ba2d"
+  },
+  "replacement": {
+    "path": "src/kernels/parity_device.hpp",
+    "target_path": "src/kernels/parity_device.hpp",
+    "sha256": "0a29292188c155628a4f11b8a8a5cb147a3fc76ee428f8f65ba6f2420799a0de"
+  },
+  "patch": {
+    "path": "parity-transfer.patch",
+    "sha256": "71d39c432b2103ea73abf58b55196a9d7ef6a5fb319a62ef1dc35236e1eab071",
+    "format": "exact unified diff a/src/kernels/parity_device.hpp to b/src/kernels/parity_device.hpp",
+    "preimage_sha256": "4797ad27b398f870d6dd87cf02ae7b7670220875cf0192fa6163443acd966f62"
+  },
+  "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/implementation-xe-parity-transfer-failure-scope-v1.txt",
+  "changed_semantics": [
+    "copy_in, copy_out and sync protect Runtime acquisition, submission and checked completion within the helper",
+    "Any std::exception reports exact operation and what(), flushes stderr and exits status 1 without caller unwind",
+    "Any unknown exception reports operation and unknown exception, flushes stderr and exits status 1",
+    "A failed operation never returns success or retries/drains after failure"
+  ],
+  "unchanged_semantics": [
+    "copy compute barrier dependency then transfer copy then Runtime::wait completion",
+    "sync finishes the compute queue through Runtime::finish",
+    "device/host allocations, Device arenas, process_device and byte wrapper routing",
+    "fixtures, references, tolerances and math"
+  ],
+  "not_performed": ["parent source edit", "build", "lint", "test", "runtime/device query", "GPU", "model", "Git", "cleanup"],
+  "secret_contract_read": false,
+  "qualification": "source reasoning only; Main owns runtime/failure and selected legacy parity qualification"
+}

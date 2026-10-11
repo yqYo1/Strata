@@ -1,0 +1,111 @@
+--- a/src/kernels/parity_device.hpp
++++ b/src/kernels/parity_device.hpp
+@@ -12,6 +12,9 @@
+ #include "strata/core/runtime.hpp"
+ 
+ #include <cstddef>
++#include <cstdio>
++#include <cstdlib>
++#include <exception>
+ #include <memory>
+ #include <vector>
+ 
+@@ -20,16 +23,34 @@
+ // The compute queue as the kernels' `stream` argument.
+ inline void* stream() { return &core::Runtime::get().compute(); }
+ 
++[[noreturn]] inline void transfer_fatal(const char* operation, const char* message) noexcept {
++    std::fprintf(stderr, "parity: %s: %s; terminating before caller staging can unwind\n", operation, message);
++    std::fflush(stderr);
++    std::_Exit(1);
++}
++
++// A submission can fail after accepting work, and a failed wait is not proof of completion. Catch inside
++// the helper while the caller still owns its host staging; a later process_device drain is too late.
++template<class F> void checked_transfer(const char* operation, F&& work) noexcept {
++    try { work(); }
++    catch (const std::exception& e) { transfer_fatal(operation, e.what()); }
++    catch (...) { transfer_fatal(operation, "unknown exception"); }
++}
++
+ template<class T> void copy_in(T* device, const T* host, size_t count) {
+-    auto& runtime = core::Runtime::get();
+-    runtime.wait(runtime.copy_async(device, host, count * sizeof(T), {runtime.compute().ext_oneapi_submit_barrier()}),
+-                 "parity upload");
++    checked_transfer("parity upload", [device, host, count] {
++        auto& runtime = core::Runtime::get();
++        runtime.wait(runtime.copy_async(device, host, count * sizeof(T), {runtime.compute().ext_oneapi_submit_barrier()}),
++                     "parity upload");
++    });
+ }
+ 
+ template<class T> void copy_out(T* host, const T* device, size_t count) {
+-    auto& runtime = core::Runtime::get();
+-    runtime.wait(runtime.copy_async(host, device, count * sizeof(T), {runtime.compute().ext_oneapi_submit_barrier()}),
+-                 "parity download");
++    checked_transfer("parity download", [host, device, count] {
++        auto& runtime = core::Runtime::get();
++        runtime.wait(runtime.copy_async(host, device, count * sizeof(T), {runtime.compute().ext_oneapi_submit_barrier()}),
++                     "parity download");
++    });
+ }
+ 
+ struct Device {
+@@ -46,7 +67,12 @@
+     }
+ };
+ 
+-inline void sync() { core::Runtime::get().finish(core::Runtime::get().compute()); }
++inline void sync() {
++    checked_transfer("parity sync", [] {
++        auto& runtime = core::Runtime::get();
++        runtime.finish(runtime.compute());
++    });
++}
+ 
+ // Byte-level forms for programs that allocated with cudaMalloc: the buffers live until the process exits.
+ // The runtime is created first so that it outlives the allocations it frees.
+--- a/src/program/generate.cpp
++++ b/src/program/generate.cpp
+@@ -2612,7 +2612,6 @@
+     // here, before any stage sizes its expert cache (the second verifier per stage and the snapshots are allocated
+     // after the caches, so their room is kept out of them).  What it does not support turns it off, said once.
+     if (o.pipeline_windows > 0) {
+-        const bool helpers = o.expert_cache_remote[0] > 0 || o.expert_cache_remote[1] > 0 || o.expert_cache_remote[2] > 0;
+         const char* off = !strata::gpu::host_handoff_concurrent() ? "host handoff requires serialized windows"
+                         : !o.serve ? "it needs --serve"
+                         : split_same ? "it needs each stage of the layer split on its own GPU"
+@@ -2620,7 +2619,8 @@
+                         : split_devs.size() != 1 ? "it needs a layer split into exactly two stages"
+                         : o.mtp.empty() || o.spec < 2 ? "it needs the MTP drafter (--mtp, --spec)"
+                         : o.batch != 0 ? "not with --batch slots"
+-                        : helpers ? "not with the helper caches (--expert-cache-device1..3)"
++                        : (o.expert_cache_remote[0] > 0 || o.expert_cache_remote[1] > 0 || o.expert_cache_remote[2] > 0)
++                            ? "not with the helper caches (--expert-cache-device1..3)"
+                         : nullptr;
+         if (off != nullptr) {
+             std::fprintf(stderr, "strata generate: --pipeline-windows %d is off: %s\n", o.pipeline_windows, off);
+--- a/tools/test_prefill_dense_gemm.cpp
++++ b/tools/test_prefill_dense_gemm.cpp
+@@ -168,7 +168,7 @@
+         for (int64_t n = 0; n < s.n; ++n) {
+             const size_t o = f.yo + static_cast<size_t>(r * s.ldy + n);
+             // Deliberately nonzero even for beta=0: reading stale Y is an error.
+-            f.y_seed[o] = static_cast<float>((r * 11 + n * 7 + repeat * 13) % 37 - 18) * 0.125f;
++            f.y_seed[o] = static_cast<float>((r * 11 + n * 7 + static_cast<int64_t>(repeat) * 13) % 37 - 18) * 0.125f;
+         }
+ }
+ 
+@@ -296,10 +296,11 @@
+     uint64_t products = 0;
+     for (const Shape& s : kShapes) products += static_cast<uint64_t>(s.t * s.n * s.k) * kRepeats * 3;
+     require(products < kWorkBudget, "CPU oracle exceeds its scalar-product budget");
++    const char* const build_mode = STRATA_PARITY_LICENSE;
+     std::printf("prefill_dense_gemm_parity build_mode=%s STRATA_ONEMATH=%d STRATA_NO_BLAS=%s "
+                 "STRATA_NO_XMX=%s STRATA_NO_BF16_MMA=%s STRATA_BF16_TC=%s "
+                 "device_storage_budget_bytes=%zu oracle_scalar_products=%llu budget=%llu\n",
+-                STRATA_PARITY_LICENSE, STRATA_PARITY_ONEMATH, env("STRATA_NO_BLAS"), env("STRATA_NO_XMX"),
++                build_mode, STRATA_PARITY_ONEMATH, env("STRATA_NO_BLAS"), env("STRATA_NO_XMX"),
+                 env("STRATA_NO_BF16_MMA"), env("STRATA_BF16_TC"), kVramBudget,
+                 static_cast<unsigned long long>(products), static_cast<unsigned long long>(kWorkBudget));
+     (void) strata::core::Runtime::get();

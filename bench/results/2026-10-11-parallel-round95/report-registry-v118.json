@@ -1,0 +1,46 @@
+{
+  "registry_version": 118,
+  "created_utc": "2026-10-11T01:49:04.764436+00:00",
+  "registry_format": "incremental; follow previous_committed_registry for earlier reports",
+  "research_completed": 487,
+  "previous_committed_registry": {
+    "path": "bench/results/2026-10-11-parallel-round94/report-registry-v117.json",
+    "sha256": "16ba5a2cbb20ca92394c855f7a35aa8ec349e7ef3936b074ea53aee46984e472",
+    "reports": 485
+  },
+  "reports": [
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/implementation-xe-onemath-prepare-completion-v1.txt",
+      "archive": "bench/results/2026-10-11-parallel-round95/implementation-xe-onemath-prepare-completion-v1.txt",
+      "sha256": "013d893b6a12f04ab2bba0191e0ece0f2f1a9ba613a8c8fbaa86fe6cf00d84d6",
+      "bytes": 9234,
+      "model": "gpt-6.1-sol",
+      "read_only": false,
+      "qualification": "Staged implementation source only; Main applied and closed free/contrib WERROR builds/CPU tests separately; no actual prepare GPU/fault-injection qualification"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/implementation-xe-parity-transfer-failure-scope-v1.txt",
+      "archive": "bench/results/2026-10-11-parallel-round95/implementation-xe-parity-transfer-failure-scope-v1.txt",
+      "sha256": "cc88b2fb28b324e7e6e8fc8d86f214ec064ef0cfde40c43feda97722a0715f72",
+      "bytes": 6962,
+      "model": "gpt-6.1-sol",
+      "read_only": false,
+      "qualification": "Source staged by Sol, reviewed/applied by Main; both release WERROR builds/CPU tests passed v9; GPU, fault injection and new lint not yet qualified"
+    }
+  ],
+  "new_reports": [
+    "implementation-xe-onemath-prepare-completion-v1.txt",
+    "implementation-xe-parity-transfer-failure-scope-v1.txt"
+  ],
+  "recurring_research_policy": "Repeated distinct read-only Luna scopes, actual prior-report paths shared, no mid-task intervention. Main owns and serializes tests/build/GPU/cleanup.",
+  "live_agent_snapshot": {
+    "observed_utc": "2026-10-11T02:14:57.632903+00:00",
+    "oneMath_prepare_implementer": "completed; oneMath and subsequent parity transfer source applied/release builds closed; GPU/fault injection pending",
+    "research_agents": "no active Luna; service usage limit returned Oct 14 2026 12:33 PM retry; not counted as report; user model unchanged",
+    "Main": "Both v9 release builds closed PASS; preparing v4 lint and ASan v6; no GPU/model"
+  },
+  "root_review_corrections": {
+    "oneMath_prepare": "Runtime::wait accepts private queue terminal event and uses mutex-protected waiter list. JoinTrials constructed after runtimes static vector joins workers before Runtime teardown. New queue async flag is atomic; no unchecked wait authorizes free. Source/WERROR proof only; GPU failure behavior and mathematical parity remain untested.",
+    "parity_transfer": "Caller-local staging could unwind before static DeviceArena cleanup after an exception. Helper catches acquisition/submission/wait failures and flushes _Exit before caller unwind; direct kernel calls remain outside its scope. Source reviewed; qualification pending after active lint closes. Main applied after v3 closed and built all selected parity targets in both free/contrib-llvm v9; no GPU/fault injection."
+  }
+}

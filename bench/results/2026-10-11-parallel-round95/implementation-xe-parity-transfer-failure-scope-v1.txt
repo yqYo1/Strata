@@ -1,0 +1,87 @@
+# SPDX-FileCopyrightText: 2026 MistVVK and the XeStrata contributors
+# SPDX-License-Identifier: LGPL-3.0-or-later
+
+Implementation: parity transfer caller failure scope v1
+Date: 2026-10-11, Asia/Tokyo
+Owner/consumer: Main; source review/application/commit and all serialized qualification.
+Status: source-only implementation; build/lint/test/failure-injection/GPU behavior unverified.
+
+Main identified a caller staging lifetime gap in legacy parity plumbing. A copy submission or wait can
+throw while queued work may still use a caller-local host vector. process_device is static, so its later
+arena destructor cannot keep that local host staging alive during exception unwind. The helper now
+catches transfer/sync failures before control can unwind the caller and fail-stops the process.
+
+This task used immutable snapshot source only. No live parent source was read or edited. No build,
+lint, test, runtime/device query, GPU/kernel/model execution, Git operation or cleanup was performed.
+No new test source was requested or written. The secret prefill-gemm-only-contract-root-v1/record.json
+was not read. Copying source, producing/reading an exact diff and calculating SHA256 are source operations.
+
+Input identities:
+  /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-parity-transfer-source-snapshot-v1
+  manifest.json SHA256 5ac9d073f7843acf8b2bec4f4cad884eb0d7d70e2076ca48f3a367d8ddbf7b73
+  src/kernels/parity_device.hpp SHA256 4797ad27b398f870d6dd87cf02ae7b7670220875cf0192fa6163443acd966f62
+  Source base e32b8b0594095352365db0e140a68d5bf56d8b0f is task-supplied; the hash defines actual bytes.
+Unchanged companion Runtime source read:
+  /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-onemath-prepare-source-snapshot-v1
+  include/strata/core/runtime.hpp SHA256 1a42ce02127727310614461b1dc2768eb2bce421e9d5e992c4df100c1817dd26
+  src/core/device.cpp SHA256 9e33dce3b3b55b00c5aee4db566ceb848b73273837c505b3c27b535a0b30ba2d
+
+Staging root:
+  /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-parity-transfer-source-v1
+  src/kernels/parity_device.hpp SHA256 0a29292188c155628a4f11b8a8a5cb147a3fc76ee428f8f65ba6f2420799a0de
+  parity-transfer.patch SHA256 71d39c432b2103ea73abf58b55196a9d7ef6a5fb319a62ef1dc35236e1eab071
+  manifest.json records preimage, replacement and patch identities.
+The unified patch uses a/src/kernels/parity_device.hpp and b/src/kernels/parity_device.hpp labels.
+Main must compare the live preimage hash before applying. No source application occurred here.
+The existing Strata/XeStrata SPDX copyright lines and LGPL-3.0-or-later license are retained.
+
+Implementation and successful-path semantics:
+  checked_transfer invokes a small pointer/count-only lambda inside its try block. copy_in and copy_out
+  acquire Runtime inside that protected block, submit the same compute barrier, pass it as the same
+  dependency to transfer copy_async, and call the same Runtime::wait with parity upload/download labels.
+  A normal return still requires the existing event wait and Runtime sticky async-error check to succeed.
+  No barriers, waits, data conversions, bytes, tolerances, reference math, queues or streams are added
+  or changed on the successful copy path. Byte wrappers continue to route through the typed helpers.
+  sync now runs Runtime acquisition and finish(compute) inside the same checked wrapper, with operation
+  label parity sync. It obtains Runtime once rather than twice; the compute queue and finish ordering
+  remain the same. Device::alloc/upload, arenas, process_device, alloc_bytes and host allocation logic
+  are byte-unchanged. stream() is also unchanged.
+
+Failure semantics:
+  Runtime::get, compute barrier submission, copy_async or Runtime::wait/finish can throw after prior
+  work has been accepted. checked_transfer catches std::exception and prints the operation plus its
+  exact what() text. A non-standard exception prints the operation plus unknown exception, because no
+  portable message exists. Both paths flush stderr and call std::_Exit(1) without returning or throwing
+  through the caller. The operations are explicitly parity upload, parity download and parity sync.
+  The caller's local vectors and static Device arenas therefore do not reach their C++ destructors on
+  this failure path. No wait failure authorizes release, and no later static arena destructor is relied
+  on to protect host storage. This does not depend on whether an uncaught exception would unwind.
+  There is no catch-to-success, subsequent unchecked drain, retry, error reset, backend fallback,
+  alternate buffer, or attempt to continue validation after unconfirmed completion.
+  Runtime/temporary event bookkeeping may unwind inside the protected operation before the catch;
+  those locals do not own the caller host vector. The guard prevents escape through the helper boundary.
+  The existing Runtime watchdog still fail-stops its monitored wait at its existing deadline; the
+  wrapper introduces no new deadline or polling protocol.
+
+Limits and Main qualification boundary:
+  The change is confined to copy_in/copy_out/sync and their failure wrapper. It does not guard arbitrary
+  direct Runtime or kernel calls elsewhere in parity programs, repair host-USM concurrency, validate
+  graphs, change allocation ownership, or establish model/performance correctness. Device kernels or
+  code that fail outside these helpers retain their own failure contracts. Count/size overflow and
+  allocation behavior are unchanged. Synchronous hangs before the existing wait's watchdog interval
+  still require Main's finite process deadline. OS-level process termination handles resources after
+  _Exit; this is deliberately not a C++ safe-drain success or cleanup receipt.
+  Compile/lint/runtime behavior and injected failure diagnostics are unverified in this agent scope.
+  Main owns application, mandatory free/contrib-llvm WERROR builds/lints, appropriate host checks,
+  and selected isolated legacy GPU parity only after every active gate closes. No oneAPI compiler /
+  contrib-icpx build/test is requested. A prior release/CPU PASS supplied by Main for the separate
+  oneMath prepare fix is not reused as qualification of this new header change.
+
+Prior reports and retention:
+  Latest committed registry v117 at task-supplied 2a4360da is incremental; its metadata/previous link
+  was read. Main's v118 is pending and its commit identity was not used to infer source. This distinct
+  helper failure-scope repair does not duplicate the dense Gemm parity implementation or the oneMath
+  prepare correction. Existing measurement and selection limits remain unchanged. No full traces,
+  profiler captures, tensors or raw API logs were generated, so there is no cleanup/deletion manifest.
+  Keep the exact replacement/patch/manifest and this compact source report for Main's application and
+  qualification work boundary. Main owns committed evidence and any later retirement.

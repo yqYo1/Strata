@@ -1,0 +1,9 @@
+# oneMath試行の寿命とparity転送の失敗処理
+
+oneMathの初回BF16/FP16試行をchecked completionで閉じてから割り当てを解放する修正を、別のgpt-6.1-solが作成しmainが適用した。private queueの非同期エラーはatomicで保持し、待機失敗時は解放前にfail-stopする。静的Runtimeより後に登録したJoinTrialsで、終了時は未完了の試行workerをRuntimeの破棄前にjoinする。通常freeとcontrib-llvmのWERRORビルド・CPUテストは通過したが、GPU上のprepare、故障注入、dense数値比較は未実行。
+
+同じ実装エージェントの完了後、独立したparity helperの失敗処理を依頼した。copy submission/waitの例外でcaller-local stagingが先に解放され得るため、helperの内側で捕捉し、診断をflushして_Exitする。成功時のbarrier/copy/waitは同じ。mainが全reportとpatchを読み、lint v3が閉じた後に適用した。free/contrib-llvm v9で対象parityプログラムもビルドしたが、GPU・故障注入・修正後lintは未実行。直接kernel呼び出しはこのhelperの保護範囲外。
+
+[registry v118](report-registry-v118.json)は前のv117に2報告を追加し、完了報告は487件。元reportのhashとstaging/qualificationを区別した。再開時に実際のagent状態を確認し、Solは完了、Lunaはサービスusage limitで新規調査が実行できていない。指定モデルの代替や未完了報告の加算はしていない。mainはv3の新規指摘を修正して両通常ビルドを閉じ、lint v4と最新ASan/UBSanを準備している。
+
+本家設定の[TODO](../2026-10-11-upstream-parameter-audit/TODO.md)は、履歴監査完了と実際の独立設定探索・検証の未完了を分けている。速度やモデル精度の新しい主張はない。

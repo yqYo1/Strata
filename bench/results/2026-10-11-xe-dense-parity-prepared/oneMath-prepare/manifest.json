@@ -1,0 +1,51 @@
+{
+  "artifact": "xe-onemath-prepare-source-v1",
+  "spdx_file_copyright_text": "2026 MistVVK and the XeStrata contributors",
+  "spdx_license_identifier": "LGPL-3.0-or-later",
+  "date": "2026-10-11",
+  "owner_consumer": "Main: source review, application, commit and serialized qualification",
+  "status": "source-only staged implementation; not built, linted or executed",
+  "source_base": "e32b8b0594095352365db0e140a68d5bf56d8b0f",
+  "source_identity_rule": "snapshot hashes define actual bytes, not the base commit alone",
+  "source_snapshot": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-onemath-prepare-source-snapshot-v1",
+  "source_snapshot_manifest_sha256": "19d72f8af1be6d491f6011851b92f8f8d9c1c3a3b4e2847963a4f99e623d33fb",
+  "source_pins": {
+    "src/prefill/gemm.cpp": "b11d5ab3fc91228cc27cfc23b205ea8190244b29ff7a894b0312682988045027",
+    "include/strata/prefill/gemm.hpp": "5cd6cbd7e44076690bba758a0323a25e379df3ccdb2538477be3f8618f851922",
+    "include/strata/core/gpu.hpp": "54b1a10524c9ee0c9b42979d75bd4f775ee0c45da2839d8129c2a2bd3daa552a",
+    "include/strata/core/runtime.hpp": "1a42ce02127727310614461b1dc2768eb2bce421e9d5e992c4df100c1817dd26",
+    "src/core/device.cpp": "9e33dce3b3b55b00c5aee4db566ceb848b73273837c505b3c27b535a0b30ba2d",
+    "AGENTS.md": "0427d8d4f91c4cf5128e77d3d898ee20783b63394d24718d1ff0b16779424dd0"
+  },
+  "replacement": {
+    "path": "src/prefill/gemm.cpp",
+    "sha256": "bfa40846fddb46a3d03d8c58ef5209b181c46674939beeefe512db0073c9d648",
+    "target_path": "src/prefill/gemm.cpp"
+  },
+  "patch": {
+    "path": "gemm-prepare.patch",
+    "sha256": "618f580f86f5774aaf64fa5bdc38af5601acba7d300f6ec8bbed6668026e9d6e",
+    "format": "exact unified diff, a/src/prefill/gemm.cpp to b/src/prefill/gemm.cpp",
+    "preimage_sha256": "b11d5ab3fc91228cc27cfc23b205ea8190244b29ff7a894b0312682988045027"
+  },
+  "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/implementation-xe-onemath-prepare-completion-v1.txt",
+  "changes": [
+    "TrialStorage owns private queue and partial allocation before allocations start",
+    "Both device allocations checked before use",
+    "Sticky shared atomic async-error flag with actual exception diagnostics",
+    "In-order terminal barrier checked by existing Runtime::wait watchdog, then queue async errors checked",
+    "Failed wait or asynchronous trial error flushes stderr and fail-stops before unsafe unwind/free",
+    "Synchronous oneMath rejection remains fallback only after clean checked completion",
+    "Shutdown guard joins shared futures before Runtime or global backend registry teardown"
+  ],
+  "unchanged": [
+    "dense product math, dimensions, zero inputs and oneMath GEMM parameters",
+    "public Gemm API and production bf16/f16/native/grouped dispatch",
+    "hardware capability selection, environment policy and existing Runtime watchdog deadline",
+    "free path without STRATA_ONEMATH"
+  ],
+  "performed": ["snapshot/source/report reads", "staging writes", "source SHA256 receipts", "exact source diff generation/read"],
+  "not_performed": ["parent edits", "build", "lint", "test", "GPU/runtime query", "kernel", "model", "Git", "cleanup"],
+  "secret_contract_read": false,
+  "qualification": "unverified until Main applies and closes mandatory lint/build/host and isolated runtime qualification"
+}

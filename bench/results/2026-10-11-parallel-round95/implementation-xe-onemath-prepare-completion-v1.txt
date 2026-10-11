@@ -1,0 +1,109 @@
+# SPDX-FileCopyrightText: 2026 MistVVK and the XeStrata contributors
+# SPDX-License-Identifier: LGPL-3.0-or-later
+
+Implementation: oneMath prepare trial completion/lifetime v1
+Date: 2026-10-11, Asia/Tokyo
+Owner/consumer: Main. Source-only staging; all compile/lint/test/GPU behavior unverified.
+
+Separate scope from the completed dense Gemm parity fixture. Main identified the production prepare
+trial's unchecked allocations, shared plain bool, and unchecked terminal q.wait/free lifecycle.
+This implementation changes only that host trial ownership/completion path. Dense product math,
+public dispatch, hardware capability selection and environment/default performance policy stay as
+in the immutable snapshot. No parent worktree edit, build, lint, test, runtime/device query, GPU kernel,
+model, Git operation or cleanup was performed. No secret prefill-gemm-only-contract-root-v1/record.json
+was read. Exact diff generation is a source operation, not a compile or test.
+
+Immutable implementation input:
+  /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-onemath-prepare-source-snapshot-v1
+  manifest.json SHA256 19d72f8af1be6d491f6011851b92f8f8d9c1c3a3b4e2847963a4f99e623d33fb
+  task-supplied base e32b8b0594095352365db0e140a68d5bf56d8b0f; snapshot hashes define actual bytes.
+  src/prefill/gemm.cpp SHA256 b11d5ab3fc91228cc27cfc23b205ea8190244b29ff7a894b0312682988045027
+  include/strata/prefill/gemm.hpp SHA256 5cd6cbd7e44076690bba758a0323a25e379df3ccdb2538477be3f8618f851922
+  include/strata/core/gpu.hpp SHA256 54b1a10524c9ee0c9b42979d75bd4f775ee0c45da2839d8129c2a2bd3daa552a
+  include/strata/core/runtime.hpp SHA256 1a42ce02127727310614461b1dc2768eb2bce421e9d5e992c4df100c1817dd26
+  src/core/device.cpp SHA256 9e33dce3b3b55b00c5aee4db566ceb848b73273837c505b3c27b535a0b30ba2d
+  AGENTS.md SHA256 0427d8d4f91c4cf5128e77d3d898ee20783b63394d24718d1ff0b16779424dd0
+The snapshot was the only implementation source; the active parent mandatory-lint tree was not read or edited.
+
+Staged output root:
+  /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-onemath-prepare-source-v1
+  src/prefill/gemm.cpp SHA256 bfa40846fddb46a3d03d8c58ef5209b181c46674939beeefe512db0073c9d648
+  gemm-prepare.patch SHA256 618f580f86f5774aaf64fa5bdc38af5601acba7d300f6ec8bbed6668026e9d6e
+  manifest.json gives the preimage/replacement/patch identities and exact scope.
+The patch is a unified diff with a/src/prefill/gemm.cpp and b/src/prefill/gemm.cpp labels.
+Main must check the exact preimage before applying or copying the replacement; no application occurred here.
+Source copyright/SPDX lines are preserved, with no new third-party code or dependencies.
+
+Ownership and completion decisions:
+1. TrialStorage is constructed before allocation, and owns the private in-order queue plus initially null
+   X/Y pointers. Each malloc_device result is checked immediately. A null allocation throws DeviceError,
+   and a throwing second allocation still leaves the first pointer owned by the scope. No trial product
+   dereferences a null pointer. Allocation failures are not misclassified as unsupported math backends.
+2. The queue handler retains a shared atomic<bool>, not a shared plain bool. It records actual asynchronous
+   exception text to stderr and makes the sticky failure flag visible with release/acquire operations.
+   The handler does not clear a prior error or modify backend policy. Shared ownership outlives queue
+   handler copies, including queue teardown; the flag's member precedes the queue in construction order.
+3. Each phase submits an in-order terminal barrier, then calls the existing Runtime::wait on that event.
+   The snapshot Runtime::wait accepts an event without requiring ownership of the private queue, tracks
+   the wait in the existing watchdog, calls event.wait_and_throw, and checks the Runtime's sticky errors.
+   Runtime::finish(queue) cannot be used here: it explicitly refuses a queue outside the engine streams.
+   queue.throw_asynchronous then delivers any remaining private-queue error, and the sticky atomic flag
+   is checked. This follows the engine's existing terminal-barrier completion pattern without polling,
+   spin, retries, unchecked q.wait, or changing the watchdog deadline.
+4. Any terminal-barrier submission/wait/async-delivery exception, or a reported private-queue async error,
+   prints the phase/error, flushes stderr and calls std::_Exit(1). It does not throw through TrialStorage,
+   free either trial pointer, destroy the queue, return a fallback result, reset the flag, or retry a wait.
+   An error is never used as proof of GPU completion. The existing Runtime watchdog also fail-stops if
+   its monitored wait exceeds the existing deadline (120 seconds in the snapshot).
+5. TrialStorage's destructor always performs a terminal checked completion before freeing non-null X/Y.
+   This includes normal return, unsupported backend/type fallback, and unwind from a synchronous
+   allocation/fill/product exception. If the cleanup drain fails, fail-stop occurs before free/queue
+   destruction. A free exception also fail-stops rather than unwinding through remaining storage.
+   There is no catch followed by an unchecked wait that authorizes release.
+
+Fallback versus execution failure:
+  The FP16 and BF16 oneMath product calls have separate synchronous oneapi::math::exception catches.
+  FP16 rejection keeps the existing Trial::why -> Backend::blas=false route; BF16 rejection keeps the
+  existing Trial::bf16=false -> own BF16 route. Both pass through checked completion first, because
+  even a synchronous exception could follow an earlier accepted submission. A failed or asynchronous
+  completion never returns either fallback Trial. A non-oneMath synchronous exception propagates via
+  the future after safe scope cleanup; BF16 no longer turns an arbitrary std::exception into a quiet
+  unsupported-type result. The product helper and all operational Gemm math/dispatch below prepare
+  are byte-unchanged. The trial remains a 16x16 FP16 product followed, on FP16 success, by BF16, with
+  the same zero inputs and FP32 output. No warmup repetitions or policy knobs were added.
+
+Future / static lifetime:
+  Using Runtime::wait requires the captured Runtime to outlive the async worker. Gemm::prepare now
+  creates a function-local JoinTrials guard after Runtime::get, before publishing any async future.
+  The Runtime instances belong to the function-local runtimes vector in the snapshot; its destructor
+  is registered before this join guard. The guard therefore runs first during normal static teardown,
+  while the Runtime/watchdog, g_backends and g_mutex are alive. It waits for every still-valid shared
+  future under g_mutex. Workers use only their captured Runtime and private trial scope and never take
+  g_mutex, so this wait does not hold a lock the worker needs. A settled future already finished worker
+  cleanup before ready.get returned; clearing it does not leave an active trial to join later.
+  future.wait here joins the worker; it is not a GPU completion check or a claim that its Trial succeeded.
+  Worker exceptions remain stored for ready.get, and the worker's storage cleanup itself still has to
+  finish the checked drain. A future-join exception is fail-stop. No background worker relies on
+  g_backends' later shared_future destructor to keep an already destroyed Runtime alive.
+
+Limits and Main qualification boundary:
+  This report records source reasoning only, not a fault-injection pass or SYCL/runtime behavior proof.
+  Source review should verify terminal-barrier coverage, private queue async delivery, member ordering,
+  and the shutdown join against the actual compiler/runtime. Mandatory free and contrib-llvm WERROR
+  builds/lints and host qualification belong to Main; contrib-icpx/oneAPI compiler work is not requested.
+  No GPU readiness is claimed. Main can then select its separately staged dense parity target under
+  serialized GPU ownership after all active work and gates close. Main owns actual artifact paths,
+  command lines, binary/runtime hashes, finite process deadline and first-fault stop/retention receipt.
+  The existing Runtime watchdog monitors its event-wait interval; it does not time a backend that
+  hangs synchronously before reaching that interval. The run controller's finite process deadline
+  remains required, as for other synchronous runtime/library operations. No new retry/reset or
+  alternate backend policy is introduced to conceal that condition.
+
+Retention / prior overlap:
+  Current committed registry v116 (task supplied commit 8cc02fbf) is incremental and links v115; its
+  metadata was read. Round94 and the prior implementation-xe-dense-gemm-parity-v1 are Main-owned
+  pending work, not relabelled as GPU passes. This report is a distinct prepare host-lifetime correction,
+  not a duplicate dense parity, R365 measurement-controls or R368 test-selection result. No traces,
+  tensors, raw profiler captures or deletion manifest were generated. Keep the exact staged source,
+  patch, manifest and compact report until Main's application/qualification boundary; Main owns their
+  committed durable record and any later retirement. No separate progress backup was created.
