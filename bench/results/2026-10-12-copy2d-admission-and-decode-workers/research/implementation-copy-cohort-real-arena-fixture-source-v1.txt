@@ -1,0 +1,67 @@
+Actual ArenaExpertSource/PinnedArena owner fixture source-v1
+
+Status: SOURCE_ONLY_UNVERIFIED. Requested gpt-6.1-sol implementation. No target import/AST/test/build/compiler/lint/GPU/runtime/process/Git mutation or cleanup was executed. The only source write is the new tools/test_copy_cohort_arena.cpp in the requested child worktree; existing cohort source and CMake are unchanged. This report is the only external new file.
+
+Worktree: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/impl-native-copy-cohort-arena-fixture-20261012
+Branch: impl/native-copy-cohort-arena-fixture-20261012
+Supplied base: combined9b03c18 plus Main's uncommitted eleven cohort source files. AGENTS read; LOCAL absent. R289 and R287 read. Main owns every actual build/test/runtime operation and commit.
+
+Fixture and ownership scope
+
+The standalone Linux runtime-dependent executable freezes STRATA_ARENA_HOST_USM=1 and STRATA_ARENA_MMAP=0 in its own process before the first open. No usable Runtime device, missing selected-device Host-USM aspect, or reported max allocation below 5,529,600 bytes produces explicit SKIP/exit77. Runtime initialization errors or actual allocation/registration/load/check/drain errors produce FAILED, never PASS or automatic retry. No other Runtime device is opened explicitly. Main must provide the qualified provider/device selection environment.
+
+A unique private mkdtemp directory contains one normally written 8,294,400-byte experts.bin. There is no native_experts.txt, so the actual expert_layout_load installs canonical Q2_0 geometry, two layers by three experts. Each expert begins with a distinct tiny marker; otherwise payload is zero. Actual ArenaExpertSource::open uses one loader worker and real host-USM PinnedArena ownership. No production model/tensor pack, inference, copy2D, GPU arithmetic or new kernel is involved. Runtime initialization and terminal finish still use the existing runtime queue machinery: this is not CPU-only or a zero-driver test.
+
+Active require checks throw on failure and are independent of assert/NDEBUG. They call the real public copy_range virtual path on actual ArenaExpertSource. Each layer accepts 0+2, 0+3 and 1+2 experts and verifies actual blob addresses, host-USM classification, owner base, exact per-layer allocation extent (three BLOBs plus one max_blob pad), and loaded markers. Count0/1/17/SIZE_MAX, negative layer/expert, layer2/expert3, last-expert+2 and count4 reject without changing sentinel output. The count4 rejection proves that allocation padding is not permission to cross a logical layer. Unopened and closed source reject; close/reopen exercises the real owner lifecycle and legal ranges again. Address reuse after reopen is permitted; no false requirement for a new physical address is made.
+
+Supplementary real PinnedArena checks use two 80-byte host-USM pieces for logical bounds0/64/128 with pad16, plus an independent single 80-byte piece. Public host_usm_range accepts a span ending exactly at each actual allocation end. Null/zero, one-byte-over-end, a span crossing a split piece, single-piece one-past-end and final-byte+2 reject with untouched base/extent sentinels. Test address offsets use checked uintptr_t arithmetic rather than relational comparisons across unrelated allocations. The one-past check uses a single-piece owner to avoid an allocator legitimately placing another owned allocation at the exact adjacent address.
+
+Optional --registered runs the real public registered mapping constructor (4KiB, no Host-USM) and checks valid mapping/empty layer_base plus host_usm_range rejection. Main should enable this only after the selected runtime's registration path is admitted. No private ledger, fake pointer ownership, friend/setter or widened API is introduced. Default PASS explicitly labels registered=not_requested and does not claim that negative control ran. A requested registered control that cannot allocate/register is FAILED, not silently skipped or promoted to PASS.
+
+Runtime/allocation lifetimes and temporary files
+
+Owners are unique_ptr variables outside the try/catch. Runtime::finish precedes close/reopen and final destruction. On exceptions, the same Runtime is drained before owners are reset; failed drain prints/flushed failure and _Exit(1), retaining live owners until process retirement. Existing constructors' own failure cleanup is unchanged. No fixture code submits new math/copy commands or adds unsafe handshakes.
+
+Every phase and final status is bounded and flushed. The private pack path is printed after creation, so Main can identify it even on a later fail-stop. Success closes all arena owners then removes only the owned experts.bin and its private directory; PASS is printed after retirement. Failure retains the bounded pack for Main inspection, with a printed path. Main is the cleanup owner and should review/retire that single <=8,294,400-byte fixture after its distinct failure question is resolved. There is no recursive remove_all, retry loop or system-wide cleanup. Main should supply a fresh owned TMPDIR for this executable.
+
+Required CMake lines for Main (not applied)
+
+Inside the existing SYCL/strata_engine build block:
+
+add_executable(copy_cohort_arena_fixture tools/test_copy_cohort_arena.cpp)
+target_link_libraries(copy_cohort_arena_fixture PRIVATE strata_engine)
+
+Prefer manual owned execution, with no ordinary CPU CTest registration. If Main later deliberately registers it, use the gpu_tests/runtime-dependent label, RUN_SERIAL TRUE, SKIP_RETURN_CODE77 and a finite timeout. It must not enter CPU-only qualification or run beside another GPU job.
+
+Main qualification suggestions, all unexecuted
+
+1. Fully review source, public ownership gate, real canonical layout and dependency hashes. Confirm existing eleven cohort files and CMake remain unchanged by this implementer. Build the target in free and contrib-llvm with the qualified source LLVM7.1.1, mandatory warnings/lints/REUSE, and NDEBUG. Actual public linked source must remain the Main-admitted combined/cohort closure.
+2. Main alone executes under the measurement lock, pinned provider/library/binary/device environment, fresh native-integer health/fault cursors before and after, fresh private TMPDIR, <=120s wall, affinity-based CPU budget, finite logs and <=4GiB RSS. No overlapping GPU/model processes, profiler, retries, reset or service changes. Validate flushed progress, exit status and no retained successful pack.
+3. Run the default owner fixture, then the --registered control when the actual selected runtime supports/admitted registration. Check any initialization/registration errors individually; no result promotion. A SKIP is an environment limitation, not a passed owner proof. NDEBUG must retain every legal/reject/sentinel/marker check.
+4. Host ASan/UBSan can check fixture/owner host lifetimes if Main's runtime sanitizer route is qualified. Fault injection and unsuccessful drain are not exercised here. Do not induce a live-runtime fault merely to make a synthetic test; keep a separate safe mock/injection plan.
+
+Limits
+
+This source is not built or run. It does not qualify copy_cohort_async, DMA/copy engine routing, 2D content/event dependencies, staging-ring admission, full16/tail/wrap credit integration, async fault safety, performance, a production model or context262144. R287's GPU copy/admission/failure gates remain separate. Registered negative coverage is explicit and optional, never fabricated. The canonical owner fixture is not a mixed-native-format or arbitrary global-layout mutation test.
+
+New source SHA256: 171a3ebfd96b7940c74d6f1328a24cad7ef42b5e0126ee5f4883dd0f476d5c8f
+Source lines: 235
+
+Dependency SHA256 (read only):
+{
+  "include/strata/core/expert_source.hpp": "4f2d0f65214c67b0a830057f9b79d93a3990cc62d494c80c47cd14137d44d691",
+  "src/core/expert_source.cpp": "a57d64b9ae7d528bf52d93a6e4d4f9844080cb0770e4375c3df36ae8d776d332",
+  "include/strata/core/pinned.hpp": "cd2a000703c32d6ca16c8a534bc4d04bc764a5a28dc02913e97fe0d645a806b7",
+  "src/core/pinned.cpp": "8f82a4ac343cc6ed8d2239e22235100c564c377e0ebbe294947d56b2c630a608",
+  "include/strata/core/gpu.hpp": "44fe364fdd4c3c57f60ca7d041fc03a0df3b77ef6dd52529cefef5526740d3c5",
+  "include/strata/core/runtime.hpp": "cd6df9e08eea91081e36289fc41e58e80af9d203f4965b9bc10672e56b82a106",
+  "include/strata/kernels/cpu/expert_layout.hpp": "6e84ccc039c33f207ef009dff4796a6f39b4c5d1c9a85314aecbf700cacea796",
+  "src/kernels/cpu/expert_layout.cpp": "19f8e71f2bb629a668ccba264add71931be9df948df1d4bfc60d391a34a77b6d",
+  "CMakeLists.txt": "e212f6cfb05e938da84cbc8c7b281273a783fc35800068a74d8b82503bb2550c"
+}
+
+Reference SHA256:
+{
+  "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-copy-cohort-actual-arena-owner-fixture-design-round289-v1.txt": "04cd06b4bb33fac25c85af1c014afe4c001e3308b0ef1affc3565c867a13c09f",
+  "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-native-copy-cohort-source-lifetime-review-round287-v1.txt": "65470ec2bfd7e587e0810ac480514101ddfbe8adac5cae7103216c8b05777668"
+}

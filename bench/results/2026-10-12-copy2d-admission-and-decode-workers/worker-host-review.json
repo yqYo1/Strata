@@ -1,0 +1,250 @@
+{
+  "active": false,
+  "passed": true,
+  "complete": true,
+  "commands": [
+    {
+      "label": "worker-info-fixtures",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-decode-worker-cpu-fixture-v1.py"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-12T12:43:19.668633+00:00",
+      "wall_seconds": 60,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2147208,
+          "start_ticks": 15776379,
+          "sid": 2147208,
+          "pgid": 2147208
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 157763.790225906,
+      "pid": 2147208,
+      "spawn_return_monotonic": 157763.7919351,
+      "direct_identity": {
+        "pid": 2147208,
+        "state": "R",
+        "ppid": 2147162,
+        "pgid": 2147208,
+        "sid": 2147208,
+        "start_ticks": 15776379,
+        "rss_bytes": 598016
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 7933952,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-12T12:43:19.957393+00:00",
+      "elapsed_seconds": 0.28843949499423616,
+      "logs": {
+        "worker-info-fixtures.stdout": {
+          "bytes": 131,
+          "sha256": "a8d88569fc29e552cc80446dfa9add0dbf9774e0b70a68b3c647a0bb1ed99083"
+        },
+        "worker-info-fixtures.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "wrong-order-prelaunch-reject",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-decode-worker-screen-v1.py",
+        "--sample",
+        "1",
+        "--workers",
+        "3",
+        "--engine",
+        "xe",
+        "--phase",
+        "timed1-on",
+        "--qualification",
+        "/nonexistent-worker-admission",
+        "--qualification-sha256",
+        {
+          "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+        }
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-12T12:43:19.958198+00:00",
+      "wall_seconds": 60,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2147219,
+          "start_ticks": 15776408,
+          "sid": 2147219,
+          "pgid": 2147219
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 157764.079644799,
+      "pid": 2147219,
+      "spawn_return_monotonic": 157764.081360675,
+      "direct_identity": {
+        "pid": 2147219,
+        "state": "R",
+        "ppid": 2147162,
+        "pgid": 2147219,
+        "sid": 2147219,
+        "start_ticks": 15776408,
+        "rss_bytes": 450560
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 26591232,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 1,
+      "finished_utc": "2026-10-12T12:43:20.802967+00:00",
+      "elapsed_seconds": 0.8445905050029978,
+      "logs": {
+        "wrong-order-prelaunch-reject.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "wrong-order-prelaunch-reject.stderr": {
+          "bytes": 700,
+          "sha256": "9814010f8e349606f0a265d7121a19456c167c773283a7f698d4a1f26a703fa8"
+        }
+      }
+    },
+    {
+      "label": "invalid-admission-prelaunch-reject",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-decode-worker-screen-v1.py",
+        "--sample",
+        "1",
+        "--workers",
+        "5",
+        "--engine",
+        "xe",
+        "--phase",
+        "timed1-on",
+        "--qualification",
+        "/nonexistent-worker-admission",
+        "--qualification-sha256",
+        {
+          "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+        }
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-12T12:43:20.803757+00:00",
+      "wall_seconds": 60,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2147250,
+          "start_ticks": 15776492,
+          "sid": 2147250,
+          "pgid": 2147250
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 157764.92526184,
+      "pid": 2147250,
+      "spawn_return_monotonic": 157764.926814559,
+      "direct_identity": {
+        "pid": 2147250,
+        "state": "R",
+        "ppid": 2147162,
+        "pgid": 2147250,
+        "sid": 2147250,
+        "start_ticks": 15776492,
+        "rss_bytes": 458752
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 26583040,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 1,
+      "finished_utc": "2026-10-12T12:43:21.559474+00:00",
+      "elapsed_seconds": 0.7554861050157342,
+      "logs": {
+        "invalid-admission-prelaunch-reject.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "invalid-admission-prelaunch-reject.stderr": {
+          "bytes": 1026,
+          "sha256": "b5256f9154d1ec50563e7c5c24147ab6cca9e6c6100a009210b46eb0ebccdac2"
+        }
+      }
+    }
+  ],
+  "gpu_executed": false,
+  "main_reviewed": true,
+  "source_pins": {
+    "main-decode-worker-screen-v1.py": {
+      "sha256": "0f1dec857583eeceae913ac6cc4fab7d066df25f1520a39c264d2e6c9559b0d5"
+    },
+    "main-decode-worker-cpu-fixture-v1.py": {
+      "sha256": "6c5918f577a4b89754cec655082a97d3159ff25ee0c993f1d919a0e4a056613c"
+    },
+    "main-decode-worker-controller-prepare-v1.py": {
+      "sha256": "2393a6d2e719a2657679366c7461b45014bd87571d4fd29527dcd85c9e1a5283"
+    }
+  },
+  "source_review": [
+    "Only argv pool-workers and explicit pool-tasks18 change.",
+    "Same reviewed09caae binary, shared immutable helper/controller/provider admission.",
+    "Every run still fresh32K, exact16 IDs/LP5 baseline, normalQUIT/reap, boot/fault and identity gates.",
+    "Narrow bounded3/4/5 worker INFO policy; reject every other model-setting override.",
+    "Silent service/decode/transfer tracing; finite deadlines, budgets, exclusive lock unchanged.",
+    "5/3/4/4/3/5 fresh processes, two each; screening only, not final selection."
+  ],
+  "environment": {
+    "PATH": "/usr/bin:/bin",
+    "HOME": "/home/yayoi",
+    "LC_ALL": "C.UTF-8",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "evidence": {
+    "worker-info-fixtures": {
+      "stdout": "{\"passed\": true, \"checks\": 36, \"gpu_executed\": false, \"scope\": \"Three bounded worker arms; all other INFO safety gates unchanged\"}\n",
+      "stderr": ""
+    },
+    "wrong-order-prelaunch-reject": {
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-decode-worker-screen-v1.py\", line 591, in <module>\n    raise SystemExit(main())\n                     ^^^^^^\n  File \"/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-decode-worker-screen-v1.py\", line 78, in main\n    require(args.workers == WORKER_ORDER[args.sample - 1], 'fixed counterbalanced worker order5/3/4/4/3/5')\n  File \"/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-integrated-neutral-controller-source-v6/common.py\", line 13, in require\n    raise ValueError(message)\nValueError: fixed counterbalanced worker order5/3/4/4/3/5\n"
+    },
+    "invalid-admission-prelaunch-reject": {
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-decode-worker-screen-v1.py\", line 591, in <module>\n    raise SystemExit(main())\n                     ^^^^^^\n  File \"/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-decode-worker-screen-v1.py\", line 81, in main\n    require(re.fullmatch('[0-9a-f]{64}', digest) and sha(path) == digest, 'resolved Main receipt hash')\n                                                     ^^^^^^^^^\n  File \"/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-integrated-neutral-controller-source-v6/common.py\", line 19, in sha\n    with Path(path).open('rb') as stream:\n         ^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/pathlib.py\", line 1015, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/nonexistent-worker-admission'\n"
+    }
+  }
+}

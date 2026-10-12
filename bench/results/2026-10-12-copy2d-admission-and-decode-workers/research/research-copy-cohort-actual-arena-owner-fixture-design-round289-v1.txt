@@ -1,0 +1,71 @@
+Round 289 — fixture design for the actual arena Host-USM ownership proof
+Date: 2026-10-12
+Status: source-only design; no source edits, builds, tests, runtime, or GPU operations performed.
+
+## Recommended smallest end-to-end fixture
+Use `ArenaExpertSource::open` on a temporary canonical-format pack with a tiny geometry, and explicitly select its `STRATA_ARENA_HOST_USM=1` mode before the process first calls `open`. Then call the public `copy_range` API and independently validate its returned interval against `gpu::is_host_usm`. This is the shortest route through both the real `PinnedArena` Host-USM allocation and the real `ArenaExpertSource` ownership gate without importing a production model or running any GPU arithmetic.
+
+The fixture can be a small standalone executable registered only in the SYCL test configuration and linked to `strata_engine` (which publicly links `strata_core`, `strata_kernels`, and `strata_kernels_cpu`; see CMakeLists.txt:186-200, 352-362 and the existing example targets at 390-392). The headers are `strata/core/expert_source.hpp`, `strata/core/pinned.hpp`, `strata/core/gpu.hpp`, and `strata/kernels/cpu/expert_layout.hpp`. `strata_engine` already compiles `expert_source.cpp`; `strata_core` owns `pinned.cu` and the selected GPU runtime; `strata_kernels_cpu` owns `expert_layout.cpp`.
+
+Suggested fixture pseudocode (intentionally not executed):
+
+```cpp
+// At process start, before the first ArenaExpertSource::open:
+setenv("STRATA_ARENA_HOST_USM", "1", 1); // platform equivalent on Windows
+TempDir pack;
+std::string err;
+constexpr int64_t L = 2, E = 3;
+assert(cpu::expert_layout_load(pack.path(), L, E, err)); // no native_experts.txt => canonical Q2_0 layout
+const auto& layout = cpu::expert_layout();
+const uint64_t want = layout.total;           // L * E * BLOB
+write_sparse_or_zero_file(pack / "experts.bin", want); // exact layout size
+core::ArenaExpertSource source;
+assert(source.open(pack.path(), L, E, /*threads=*/1, err));
+core::ExpertSource::CopyRange r{};
+assert(source.copy_range(/*layer=*/0, /*expert=*/0, /*count=*/2, r));
+assert(r.first == source.blob(0, 0));
+assert(r.allocation == reinterpret_cast<const uint8_t*>(
+       reinterpret_cast<uintptr_t>(r.first) - (layout.blob_offset(0,0) - layout.layer_offset(0))));
+assert(r.extent == layout.blob_bytes(0) * E + layout.max_blob); // layer bytes plus the constructor pad
+assert(gpu::is_host_usm(r.first));
+assert(gpu::is_host_usm(r.allocation));
+assert(r.first >= r.allocation &&
+       size_t(r.first - r.allocation) + 2 * layout.blob_bytes(0) <= r.extent);
+// Also cover count=3 (through the last expert), invalid/reject inputs, then source closes before temp directory removal.
+```
+
+Use temporary-file utilities that already exist in the test suite. `BLOB` is 1,382,400 bytes (`include/strata/kernels/cpu/expert.hpp:45`); with L=2 and E=3, the expert payload is 8,294,400 bytes. `ArenaExpertSource::open` allocates per-layer Host-USM blocks with each layer's bytes plus one `max_blob` pad (`src/core/expert_source.cpp:2515-2519`, `include/strata/core/pinned.hpp:44-50`), then reads exactly the payload. This is a small, bounded fixture: no model shards or tensor contents are needed. A sparse zero file is sufficient because this test only checks ownership and byte boundaries, not numerical contents. To make I/O behavior portable, a normally written small file can replace a sparse file; the bytes still total under 8 MiB.
+
+The allocation-base assertion above may be clearer and less brittle as: call `source.copy_range(0,0,2,r)`, then assert `r.allocation == r.first` for this first expert in the layer; separately call `source.copy_range(0,1,2,r2)`, assert `r2.first == r.allocation + layout.blob_bytes(0)`, and assert both ranges report the same allocation and extent. This directly checks `at(layer_offset)` and the per-layer base relationship without reaching into private fields. Confirm `r.first == source.blob(layer,expert)` only after `open`; `blob()` is public and returns the actual loaded arena address.
+
+## Exact source behavior the fixture traverses
+`expert_layout_load(pack_dir,L,E,err)` with no `native_experts.txt` installs the canonical layout and computes `total` (`src/kernels/cpu/expert_layout.cpp:184-192`). `ArenaExpertSource::open` rejects mismatched layout geometry and requires `experts.bin` to be exactly `layout.total` (or its documented padded form); it constructs `PinnedArena(want + max_blob, bounds, max_blob, host_usm=true, cuts)` and loads the file (`src/core/expert_source.cpp:2390-2419, 2500-2547`). The Host-USM constructor calls `sycl::malloc_host` for one block per layer plus pad and records each actual allocation in `pieces_` (`src/core/pinned.cpp:132-168`). On success, `open` populates the public source object's private arena/base/blob metadata and derives device aliases from the Host-USM blocks (`expert_source.cpp:2586-2612`). `source.copy_range` then checks arguments and layout span and delegates to `PinnedArena::host_usm_range` (`expert_source.cpp:2700-2712`). That helper requires nonempty `layer_base`, non-null pointer, nonzero bytes, and containment in one recorded `pieces_` interval; only then does it return the actual allocation base and extent (`pinned.cpp:346-357`). This exercises the private owner ledger indirectly through the same public production path, without needing test-only access to private fields.
+
+The second, direct lower-level check may instantiate `PinnedArena arena(bytes, bounds, pad, true)` and call `host_usm_range` on `arena.at(offset)`; it isolates `PinnedArena` and can test an exact allocation-end interval and a span that crosses a layer. It cannot establish `ArenaExpertSource`'s private `arena_` wiring or its geometry checks, so it should be supplementary rather than the only fixture.
+
+## Reject cases and expected outcomes
+Use a fresh output struct with conspicuous sentinel members for each failure and assert `false`; implementation assigns the `CopyRange` only after proof succeeds. Through `ArenaExpertSource::copy_range`, reject: count 0/1 and 17; negative layer/expert; expert `E`; a count extending past the layer's last expert (e.g. expert E-1, count 2); layer L; and an unopened/closed source. For the direct `PinnedArena` helper, reject null pointer, zero bytes, a pointer at a piece's one-past-end with positive bytes, and a span beginning in one layer's block that extends over its end. The helper should accept an interval ending exactly at allocation end because it uses `bytes <= piece.second - (address-base)`; it must reject a positive span one byte past that end. Validate the base+offset arithmetic with integer-address comparisons in test code to avoid undefined pointer comparisons across unrelated allocations.
+
+A separate registered-mapping negative control is useful but must not be conflated with the successful Host-USM proof. `PinnedArena(bytes,bounds,pad,false)` leaves `layer_base` empty and stores registration spans only in `pieces_`; `host_usm_range` deliberately returns false because it first requires `layer_base` (`pinned.hpp:44-50,72-78; pinned.cpp:346-357`). Directly testing that constructor proves registration is not accidentally accepted as allocation ownership. It does not give a public way to inject that arena into `ArenaExpertSource` because its `arena_` field is private. Do not add a friend or test-only setter solely for the fixture.
+
+## Unavoidable device/runtime dependence
+A real ownership test cannot be CPU-only or mocked if its claim is “actual Host-USM allocation.” `PinnedArena(...,host_usm=true)` calls `Runtime::get()` and `sycl::malloc_host` (`pinned.cpp:147-158`); `ArenaExpertSource::open` later asks `gpu::device_pointer` for the layer aliases (`expert_source.cpp:2593-2601`). The focused test therefore needs a working SYCL runtime/context and device that supports host-USM allocations, plus the platform's regular driver/runtime initialization. It does not need a compute kernel, a queue submission, a model, or expert arithmetic. On no compatible device, report an explicit skip (or a separately recorded environment limitation), never convert a failed allocation into PASS. Run it as a new small test executable in an approved Main-owned test window; this task did not run or register it.
+
+No `STRATA_ARENA_HOST_USM` mutation should happen after any code has first read the function-local static cached switch at `expert_source.cpp:2509`; set it in the test process environment before opening. This fixture should use a separate process so other tests cannot freeze the cache to another value.
+
+## What mock tests do and do not prove
+A fake `PinnedArena`, fake pointer, or a stub `gpu::is_host_usm` can test arithmetic and expected call structure but cannot prove that `pieces_` names actual `sycl::malloc_host` allocations, that the runtime classifies those pointers as Host-USM in the current context, or that the allocation remains live through owner destruction. A fake `CopyRange` cannot qualify the private owner check. Conversely, the proposed real allocation fixture does not prove copy-engine support, `ext_oneapi_memcpy2d` behavior, event dependency correctness, DMA transfer contents, performance, or safety under injected asynchronous faults. Those require the GPU copy fixture/lifecycle validation; keep them separate from this bounded owner fixture.
+
+## Identity and references
+Registry v167 reports 800 completed investigations; file SHA-256: `86a5e307a5733d8fdc228e9a4c57430080f995b49ebee85fe44928ba8f42862d`.
+Reviewed source SHA-256:
+- `include/strata/core/pinned.hpp`: `cd2a000703c32d6ca16c8a534bc4d04bc764a5a28dc02913e97fe0d645a806b7`
+- `src/core/pinned.cpp`: `8f82a4ac343cc6ed8d2239e22235100c564c377e0ebbe294947d56b2c630a608`
+- `include/strata/core/expert_source.hpp`: `4f2d0f65214c67b0a8300579f7b9d93a3990cc62d494c80c47cd14137d44d691`
+- `src/core/expert_source.cpp`: `a57d64b9ae7d528bf52d93a6e4d4f9844080cb0770e4375c3df36ae8d776d332`
+- `include/strata/kernels/cpu/expert_layout.hpp`: `6e84ccc039c33f207ef009dff4796a6f39b4c5d1c9a85314aecbf700cacea796`
+- `src/kernels/cpu/expert_layout.cpp`: `19f8e71f2bb629a668ccba264add71931be9df948df1d4bfc60d391a34a77b6d`
+- `include/strata/core/gpu.hpp`: `44fe364fdd4c3c57f60ca7d041fc03a0df3b77ef6dd52529cefef5526740d3c5`
+- `CMakeLists.txt`: `e212f6cfb05e938da84cbc8c7b281273a783fc35800068a74d8b82503bb2550c`
+
+Prior context: R287 report is `research-native-copy-cohort-source-lifetime-review-round287-v1.txt`; this report narrows that audit to the real allocation owner fixture design and does not claim any fixture ran.

@@ -1,0 +1,77 @@
+# SPDX-FileCopyrightText: 2026 yayoi
+# SPDX-License-Identifier: LGPL-3.0-or-later
+"""Derive a bounded worker sweep without mutating qualified controller helpers."""
+from pathlib import Path
+
+B = Path('/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007')
+s = (B / 'main-prefill-leaf-service-calibration-v1.py').read_text()
+
+
+def sub(before, after):
+    global s
+    assert s.count(before) == 1, (before[:100], s.count(before))
+    s = s.replace(before, after)
+
+
+sub('Main-owned quiet samebinary profiling0/1 ABBA32K calibration.',
+    'Main-owned same-binary32K worker screening with fixed18 row tasks; no Copy2D.')
+sub("CLEAN_PARENT = B / 'main-prefill-leaf-service-calibration-root-v1'",
+    "CLEAN_PARENT = B / 'main-decode-worker-screen-root-v1'\nWORKER_ORDER = (5, 3, 4, 4, 3, 5)")
+sub('choices=[1,2,3,4]', 'choices=[1,2,3,4,5,6]')
+sub("    parser.add_argument('--profile-arm', required=True, choices=['0','1'])",
+    "    parser.add_argument('--workers', required=True, type=int, choices=[3,4,5])")
+sub("    require(args.profile_arm == {1:'0',2:'1',3:'1',4:'0'}[args.sample], 'fixed fresh-process ABBA order')\n"
+    "    NAMESPACE = CLEAN_PARENT / ('sample-' + str(args.sample) + '-profile-' + args.profile_arm)",
+    "    args.profile_arm = '0'\n"
+    "    require(args.workers == WORKER_ORDER[args.sample - 1], 'fixed counterbalanced worker order5/3/4/4/3/5')\n"
+    "    NAMESPACE = CLEAN_PARENT / ('sample-' + str(args.sample) + '-workers-' + str(args.workers))")
+sub("previous_roots = [CLEAN_PARENT / ('sample-' + str(i) + '-profile-' + {1:'0',2:'1',3:'1',4:'0'}[i]) for i in range(1,args.sample)]",
+    "previous_roots = [CLEAN_PARENT / ('sample-' + str(i) + '-workers-' + str(WORKER_ORDER[i - 1])) for i in range(1,args.sample)]")
+sub("        argv[0] = BINARIES[args.engine]['path']",
+    "        argv[0] = BINARIES[args.engine]['path']\n"
+    "        worker_at = argv.index('--pool-workers') + 1\n"
+    "        require(argv[worker_at] == '5' and '--pool-tasks' not in argv, 'unchanged baseline worker/task recipe')\n"
+    "        argv[worker_at] = str(args.workers)\n"
+    "        argv += ['--pool-tasks', '18']")
+sub('        def save():\n',
+    "        r.update(worker_arm=args.workers, pool_tasks=18, worker_sample=args.sample,\n"
+    "                 measurement_scope='Fresh32K+GEN16 screening, two processes/arm. Fixed18 tasks; no tuning promotion.')\n"
+    "        r['controller_allowed_cpus'] = sorted(os.sched_getaffinity(0))\n"
+    "        r['cpu_topology'] = [{'cpu': cpu,\n"
+    "            'package': Path('/sys/devices/system/cpu', 'cpu'+str(cpu), 'topology/physical_package_id').read_text().strip(),\n"
+    "            'core': Path('/sys/devices/system/cpu', 'cpu'+str(cpu), 'topology/core_id').read_text().strip()}\n"
+    "            for cpu in r['controller_allowed_cpus']]\n"
+    '        def save():\n')
+sub("r['effective_info'] = info(r['startup'], args.engine, expected_info)",
+    "r['effective_info'] = worker_info(r['startup'], args.engine, expected_info, args.workers)")
+sub("                    r['startup_diagnostics'] = diagnostics(initial_stderr, startup=True)",
+    "                    task_line = f'strata generate: CPU pool tasks/phase: 18 (capped by rows), participating threads: {args.workers + 1}'\n"
+    "                    require(initial_stderr.splitlines().count(task_line) == 1, 'actual fixed18 tasks and selected participants')\n"
+    "                    r['pool_task_line'] = task_line\n"
+    "                    tids = sorted(Path('/proc', str(entry['pid']), 'task').iterdir())\n"
+    "                    require(0 < len(tids) <= 128, 'bounded actual owned model thread census')\n"
+    "                    r['ready_thread_affinity'] = {v.name: sorted(os.sched_getaffinity(int(v.name))) for v in tids}\n"
+    "                    r['startup_diagnostics'] = diagnostics(initial_stderr, startup=True)")
+sub("            r['performance_eligible'] = bool(r['performance_sample_eligible'] and\n"
+    "                                            bool(r.get('pair_comparison')) and\n"
+    "                                            r.get('pair_comparison', {}).get('token_logprob_equal'))",
+    "            r['performance_eligible'] = r['performance_sample_eligible']\n"
+    "            r['screening_only'] = True")
+protocol = (B / 'latest-update-integrated-neutral-controller-source-v6/protocol.py').read_text()
+f = protocol[protocol.index('def info('):protocol.index('\n\ndef validate(')]
+f = f.replace('def info(startup, engine, extra):', 'def worker_info(startup, engine, extra, workers):')
+assert f.startswith('def worker_info(')
+f = f.replace("pool_workers='5'", 'pool_workers=str(workers)')
+f = f.replace('    expected = dict(context=',
+              "    require(workers in (3,4,5), 'bounded worker sweep')\n"
+              "    extra = dict(extra)\n"
+              "    require(extra.get('pool_workers', '5') == '5', 'admitted baseline extra workers5')\n"
+              "    extra['pool_workers'] = str(workers)\n"
+              '    expected = dict(context=')
+marker = '\n\ndef main():'
+assert s.count(marker) == 1
+s = s.replace(marker, '\n\n' + f + marker)
+out = B / 'main-decode-worker-screen-v1.py'
+assert not out.exists()
+out.write_text(s)
+print(str(out))

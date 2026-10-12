@@ -1,0 +1,47 @@
+# SPDX-FileCopyrightText: 2026 yayoi
+# SPDX-License-Identifier: LGPL-3.0-or-later
+"""Worker INFO admits only the selected CPU count and retains the model's fixed gates."""
+import importlib.util
+import json
+from pathlib import Path
+import sys
+
+sys.dont_write_bytecode = True
+B = Path('/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007')
+spec = importlib.util.spec_from_file_location('worker_screen_fixture', B / 'main-decode-worker-screen-v1.py')
+screen = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(screen)
+startup = json.loads((B / 'latest-update-integrated-neutral-model-root-v6/xe-startup/record.json').read_text())['startup']
+checks = 0
+
+
+def rejected(lines, extra, workers):
+    global checks
+    try:
+        screen.worker_info(lines, 'xe', extra, workers)
+    except (ValueError, IndexError):
+        checks += 1
+        return
+    raise AssertionError('invalid INFO/worker policy accepted')
+
+
+for worker in (3, 4, 5):
+    lines = [v.replace('pool_workers=5', 'pool_workers=' + str(worker)) for v in startup]
+    parsed = screen.worker_info(lines, 'xe', {}, worker)
+    assert parsed['pool_workers'] == str(worker) and parsed['context'] == '262144'
+    checks += 1
+    rejected(lines, {}, 6)
+    rejected(lines, {'spec': '8'}, worker)
+    rejected(lines, {'pool_workers': '3'}, worker)
+    rejected([v.replace('context=262144', 'context=32768') for v in lines], {}, worker)
+    rejected([v.replace('kv=int8', 'kv=fp16') for v in lines], {}, worker)
+    rejected([v.replace('pool_workers=' + str(worker), 'pool_workers=2') for v in lines], {}, worker)
+    rejected([v.replace('batch_slots=0', 'batch_slots=1') for v in lines], {}, worker)
+    rejected([v for v in lines if not v.startswith('INFO ')], {}, worker)
+    rejected(lines[:-1] + ['READY 32768 stop'], {}, worker)
+    info_line = next(v for v in lines if v.startswith('INFO '))
+    rejected(lines[:-1] + [info_line, lines[-1]], {}, worker)
+    rejected([v + ' context=262144' if v.startswith('INFO ') else v for v in lines], {}, worker)
+assert checks == 36
+print(json.dumps(dict(passed=True, checks=checks, gpu_executed=False,
+                     scope='Three bounded worker arms; all other INFO safety gates unchanged')))

@@ -1,0 +1,855 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 96a13489..d7405970 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -447,6 +447,9 @@ if(STRATA_ENABLE_XE)
+     target_link_libraries(native_grouped_gemm_event_bench PRIVATE strata_kernels)
+     add_executable(prefill_service_event_test tools/prefill_service_event_test.cpp)
+     target_link_libraries(prefill_service_event_test PRIVATE strata_kernels)
++    add_executable(copy_cohort_gpu_fixture tools/test_copy_cohort_gpu.cpp)
++    target_link_libraries(copy_cohort_gpu_fixture PRIVATE strata_kernels)
++    # Manually owned GPU fixture: deliberately no CTest registration.
+     add_executable(nonfinite_gpu_test tools/test_nonfinite_gpu.cpp)
+     target_link_libraries(nonfinite_gpu_test PRIVATE strata_kernels)
+     add_test(NAME nonfinite_gpu_test COMMAND nonfinite_gpu_test)
+@@ -888,6 +891,9 @@ if(STRATA_NATIVE_EXPERTS)
+     add_test(NAME dequant_q5_1_test COMMAND dequant_q5_1_test)
+     # the AVX-2 expert kernels' variants (iq_avx2.cpp, q2_avx2.cpp: gathered, AVX-VNNI) bit for bit against each other
+     # at 1..8 tokens and against ggml-cpu's dot, on random blocks (upstream a7336175, b211ba17); --bench: ms per expert
++    add_executable(copy_cohort_test tests/core/copy_cohort_test.cpp)
++    target_include_directories(copy_cohort_test PRIVATE include)
++    add_test(NAME copy_cohort_test COMMAND copy_cohort_test)
+     add_executable(iq_avx2_parity src/kernels/cpu/iq_avx2_parity.cpp)
+     target_link_libraries(iq_avx2_parity PRIVATE strata_kernels_cpu)
+     add_test(NAME iq_avx2_parity COMMAND iq_avx2_parity)
+diff --git a/include/strata/core/copy_cohort.hpp b/include/strata/core/copy_cohort.hpp
+new file mode 100644
+index 00000000..63916404
+--- /dev/null
++++ b/include/strata/core/copy_cohort.hpp
+@@ -0,0 +1,89 @@
++// SPDX-FileCopyrightText: 2026 MistVVK and the XeStrata contributors
++// SPDX-License-Identifier: LGPL-3.0-or-later
++#pragma once
++#include <cstddef>
++#include <cstdint>
++#include <limits>
++#include <cstdio>
++#include <cstdlib>
++#include <cstring>
++namespace strata::core {
++struct CopyCohortRow {
++    int64_t layer, expert;
++    uintptr_t source, destination;
++    bool direct;
++};
++constexpr bool copy_cohort_adjacent(int64_t layer, int64_t expert, uintptr_t source,
++                                    int64_t next_layer, int64_t next_expert, uintptr_t next_source,
++                                    size_t row, size_t width) {
++    if (!width || width > UINT32_MAX || row > 15 || layer != next_layer || expert < 0 ||
++        expert > INT64_MAX - static_cast<int64_t>(row) ||
++        next_expert != expert + static_cast<int64_t>(row) || source > UINTPTR_MAX - row * width) return false;
++    return next_source == source + row * width;
++}
++// The production issuer's admission scan; allocation provenance is checked separately by ExpertSource.
++// `available` is the caller's remaining sequence AND issued-credit bound, never a speculative release.
++template<class RowAt>
++constexpr size_t copy_cohort_height(bool owned, bool model_ring, bool capturing,
++                                    size_t width, size_t pitch, size_t slot, size_t ring,
++                                    size_t available, RowAt row_at) {
++    if (!owned || model_ring || capturing || !width || width > pitch || pitch > UINT32_MAX ||
++        slot >= ring || available < 2) return 1;
++    const CopyCohortRow first = row_at(0);
++    if (!first.direct || !first.source || !first.destination) return 1;
++    const size_t tail = ring - slot;
++    const size_t end = available < tail ? available : tail;
++    const size_t limit = end < 16 ? end : 16;
++    size_t height = 1;
++    for (size_t row = 1; row < limit; ++row) {
++        const CopyCohortRow next = row_at(row);
++        if (!next.direct || !copy_cohort_adjacent(first.layer, first.expert, first.source,
++            next.layer, next.expert, next.source, row, width) ||
++            first.destination > UINTPTR_MAX - row * pitch ||
++            next.destination != first.destination + row * pitch) break;
++        height = row + 1;
++    }
++    return height;
++}
++constexpr bool copy_cohort_fits(size_t width, size_t height, size_t dp, size_t sp,
++                               size_t dst_available, size_t src_available,
++                               size_t slot, size_t ring, size_t credit) {
++    constexpr size_t u32 = std::numeric_limits<uint32_t>::max();
++    if (!width || height < 2 || height > 16 || width > dp || width > sp ||
++        width > u32 || dp > u32 || sp > u32 || height > credit || slot >= ring || height > ring - slot)
++        return false;
++    const auto fits = [=](size_t pitch, size_t available) {
++        return available >= width && height - 1 <= (available - width) / pitch;
++    };
++    return fits(dp, dst_available) && fits(sp, src_available);
++}
++class CopyCohortCounts {
++public:
++    CopyCohortCounts() {
++        const char* flag = std::getenv("STRATA_PREFILL_COPY_COHORT_COUNTS");
++        enabled_ = flag && std::strcmp(flag, "1") == 0;
++    }
++    void add(bool cohort, size_t rows, size_t width) {
++        if (!enabled_) return;
++        auto sum = [this](uint64_t& value, uint64_t delta) {
++            if (delta > UINT64_MAX - value) overflow_ = true;
++            else value += delta;
++        };
++        if (width && rows > UINT64_MAX / width) { overflow_ = true; return; }
++        sum(cohort ? copies_ : fallback_, 1);
++        sum(cohort ? rows_ : fallback_rows_, rows);
++        sum(cohort ? bytes_ : fallback_bytes_, rows * width);
++    }
++    void complete() { complete_ = true; }
++    ~CopyCohortCounts() {
++        if (enabled_) std::fprintf(stderr, "strata prefill copy cohorts: status=%s copies=%llu rows=%llu bytes=%llu "
++            "fallback_copies=%llu fallback_rows=%llu fallback_bytes=%llu max_height=16 overflow=%d\n",
++            complete_ && !overflow_ ? "complete" : "incomplete", (unsigned long long) copies_,
++            (unsigned long long) rows_, (unsigned long long) bytes_, (unsigned long long) fallback_,
++            (unsigned long long) fallback_rows_, (unsigned long long) fallback_bytes_, (int) overflow_);
++    }
++private:
++    bool enabled_ = false, overflow_ = false, complete_ = false;
++    uint64_t copies_ = 0, rows_ = 0, bytes_ = 0, fallback_ = 0, fallback_rows_ = 0, fallback_bytes_ = 0;
++};
++}  // namespace strata::core
+diff --git a/include/strata/core/expert_source.hpp b/include/strata/core/expert_source.hpp
+index 5ad5fc9e..c15e50ed 100644
+--- a/include/strata/core/expert_source.hpp
++++ b/include/strata/core/expert_source.hpp
+@@ -128,6 +128,8 @@ public:
+     /// immediately and nothing is retained.  A CACHING source must return pointers into the cache, not into a
+     /// reused staging buffer - otherwise the pool would read the next expert's bytes while computing this one.
+     virtual const uint8_t* blob(int64_t layer, int64_t expert) = 0;
++    struct CopyRange { const uint8_t* first = nullptr; const uint8_t* allocation = nullptr; size_t extent = 0; };
++    virtual bool copy_range(int64_t, int64_t, size_t, CopyRange&) const { return false; }
+ 
+     /// Blobs touched, for the driver to report.  A source that does not count returns 0.
+     virtual int64_t reads() const { return 0; }
+@@ -699,6 +701,7 @@ public:
+     const uint8_t* blob(int64_t layer, int64_t expert) override;
+     int64_t reads() const override { return reads_; }
+     bool pinned(int64_t layer, int64_t expert) const override;
++    bool copy_range(int64_t layer, int64_t expert, size_t count, CopyRange& range) const override;
+     const uint8_t* device_alias(int64_t layer, int64_t expert) const override;
+     bool make_kernel_readable(std::string& err) override;
+     void prefetch(int64_t layer, int64_t expert) override;
+diff --git a/include/strata/core/gpu.hpp b/include/strata/core/gpu.hpp
+index f436f10f..f4a038c7 100644
+--- a/include/strata/core/gpu.hpp
++++ b/include/strata/core/gpu.hpp
+@@ -68,6 +68,11 @@ bool copy_async(void* dst, const void* src, size_t bytes, Stream s);
+ /// submissions a copy filled the RTX 4070's stream when the prompt path queued its ring's 384 copies, and each copy
+ /// held its issuer for about 160 us (bench/results/2026-10-09-xe-event-record).
+ bool copy_async_after(void* dst, const void* src, size_t bytes, Stream s, const Event* after, Event* done);
++// Native USM 2D command, no graph/no retry. Caller proves exact allocation extents before entry.
++// All prior-reader events are dependencies; the same returned command is installed into each done event.
++bool copy_cohort_async(void* dst, size_t dp, const void* src, size_t sp, size_t width, size_t height,
++                       Stream stream, const Event* const* after, Event* const* done);
++
+ /// `height` rows of `width` bytes between pitched buffers (cudaMemcpy2DAsync).
+ bool copy2d_async(void* dst, size_t dpitch, const void* src, size_t spitch, size_t width, size_t height, Stream s);
+ bool memset(void* dst, int value, size_t bytes);
+diff --git a/include/strata/core/pinned.hpp b/include/strata/core/pinned.hpp
+index 74c18aaf..8b719769 100644
+--- a/include/strata/core/pinned.hpp
++++ b/include/strata/core/pinned.hpp
+@@ -18,6 +18,7 @@
+ #pragma once
+ 
+ #include <cstdint>
++#include <cstddef>
+ #include <string>
+ #include <vector>
+ 
+@@ -68,6 +69,8 @@ struct PinnedArena {
+     /// copies does not give that on every runtime).  A layer at a time, each layer's pages given back once copied, so
+     /// the arena is never held twice.  False (and `err`) with the mapping and its registrations as they were.
+     bool to_host_usm(uint64_t pad, std::string& err);
++    // Proof is restricted to actual owned host-USM pieces; registration/mmap is not an allocation proof.
++    bool host_usm_range(const uint8_t* pointer, size_t bytes, const uint8_t*& allocation, size_t& extent) const;
+     bool valid() const { return base != nullptr; }
+     uint8_t* data() const { return (uint8_t*) base; }   // one mapping only: null for host USM blocks
+     /// The byte at arena offset `off` (one mapping, or the host USM block of the layer that holds it).
+diff --git a/src/core/expert_source.cpp b/src/core/expert_source.cpp
+index 70066b39..b33a5fc8 100644
+--- a/src/core/expert_source.cpp
++++ b/src/core/expert_source.cpp
+@@ -2697,6 +2697,21 @@ const uint8_t* ArenaExpertSource::device_alias(int64_t layer, int64_t expert) co
+     return dev_slice_[(size_t) layer] + (uint64_t) expert * lay.blob_bytes(layer);
+ }
+ 
++bool ArenaExpertSource::copy_range(int64_t layer, int64_t expert, size_t count, CopyRange& range) const {
++    if (!arena_ || !base_ || n_expert_ <= 0 || layer < 0 || expert < 0 || expert >= n_expert_ || count < 2 || count > 16 ||
++        count > static_cast<size_t>(n_expert_ - expert) || layer >= blobs_ / n_expert_) return false;
++    const auto& layout = strata::kernels::cpu::expert_layout();
++    const size_t width = static_cast<size_t>(layout.blob_bytes(layer));
++    if (!width || count > std::numeric_limits<size_t>::max() / width) return false;
++    const auto* arena = static_cast<const PinnedArena*>(arena_);
++    const uint8_t* first = arena->at(layout.blob_offset(layer, expert));
++    const uint8_t* allocation = nullptr;
++    size_t extent = 0;
++    if (!arena->host_usm_range(first, width * count, allocation, extent)) return false;
++    range = {first, allocation, extent};
++    return true;
++}
++
+ const uint8_t* ArenaExpertSource::blob(int64_t layer, int64_t expert) {
+     if (base_ == nullptr) return nullptr;
+     if (layer < 0 || expert < 0 || expert >= n_expert_) return nullptr;
+diff --git a/src/core/gpu.cpp b/src/core/gpu.cpp
+index 910722b1..0f741b16 100644
+--- a/src/core/gpu.cpp
++++ b/src/core/gpu.cpp
+@@ -5,8 +5,10 @@
+ #include "strata/core/device.hpp"
+ #include "strata/core/on_device.hpp"
+ #include "strata/core/runtime.hpp"
++#include "strata/core/copy_cohort.hpp"
+ 
+ #include <sycl/ext/oneapi/experimental/graph.hpp>
++#include <sycl/ext/oneapi/memcpy2d.hpp>
+ #include <sycl/ext/oneapi/experimental/profiling_tag.hpp>
+ #include <sycl/ext/oneapi/virtual_mem/physical_mem.hpp>
+ #include <sycl/ext/oneapi/virtual_mem/virtual_mem.hpp>
+@@ -269,6 +271,37 @@ bool copy_async_after(void* dst, const void* src, size_t bytes, Stream s, const
+     } catch (const std::exception& e) { return fail("copy_async_after", e); }
+ }
+ 
++bool copy_cohort_async(void* dst, size_t dp, const void* src, size_t sp, size_t width, size_t height,
++                       Stream stream, const Event* const* after, Event* const* done) {
++    try {
++        auto& queue = q(stream);
++        if (!dst || !src || !after || !done || height < 2 || height > 16 || width > dp || width > sp ||
++            !width || height > SIZE_MAX / width || dp > UINT32_MAX || sp > UINT32_MAX || width > UINT32_MAX || is_capturing(stream) ||
++            sycl::get_pointer_type(src, queue.get_context()) != sycl::usm::alloc::host ||
++            sycl::get_pointer_type(dst, queue.get_context()) != sycl::usm::alloc::device ||
++            sycl::get_pointer_device(dst, queue.get_context()) != queue.get_device())
++            throw core::DeviceError("copy cohort: invalid geometry/USM/queue");
++        std::vector<sycl::event> dependencies;
++        dependencies.reserve(height);
++        for (size_t row = 0; row < height; ++row) {
++            if (!done[row]) throw core::DeviceError("copy cohort: missing completion association");
++            if (after[row]) {
++                if (!after[row]->ev) throw core::DeviceError("copy cohort: missing last-reader event");
++                dependencies.push_back(*after[row]->ev);
++            }
++        }
++        const auto before = core::service_now();
++        const auto event = queue.ext_oneapi_memcpy2d(dst, dp, src, sp, width, height, dependencies);
++        const auto submitted = core::service_now();
++        core::ServiceMeta meta;
++        meta.kind = "memcpy2d"; meta.src = "host_usm"; meta.dst = "device_usm";
++        meta.bytes = width * height; meta.groups = static_cast<int64_t>(height);
++        core::record_service_event(queue, event, meta, before, submitted);
++        for (size_t row = 0; row < height; ++row) done[row]->ev = event;
++        return true;
++    } catch (const std::exception& e) { return fail("copy_cohort_async", e); }
++}
++
+ bool copy2d_async(void* dst, size_t dpitch, const void* src, size_t spitch, size_t width, size_t height, Stream s) {
+     if (width == 0 || height == 0) return true;
+     // a kernel rather than ext_oneapi_memcpy2d, which a SYCL graph recording does not accept: the verify window and
+diff --git a/src/core/pinned.cpp b/src/core/pinned.cpp
+index c5f71863..e0863f70 100644
+--- a/src/core/pinned.cpp
++++ b/src/core/pinned.cpp
+@@ -343,6 +343,20 @@ bool PinnedArena::to_host_usm(uint64_t pad, std::string& err) {
+     return true;
+ }
+ 
++bool PinnedArena::host_usm_range(const uint8_t* pointer, size_t bytes,
++                                  const uint8_t*& allocation, size_t& extent) const {
++    if (layer_base.empty() || !pointer || !bytes) return false;
++    const uintptr_t address = reinterpret_cast<uintptr_t>(pointer);
++    for (const auto& piece : pieces_) {
++        const uintptr_t base = reinterpret_cast<uintptr_t>(piece.first);
++        if (address >= base && address - base <= piece.second && bytes <= piece.second - (address - base)) {
++            allocation = static_cast<const uint8_t*>(piece.first); extent = piece.second;
++            return true;
++        }
++    }
++    return false;
++}
++
+ uint8_t* PinnedArena::at(uint64_t off) const {
+     if (layer_base.empty()) return (uint8_t*) base + off;
+     size_t l = (size_t) (std::upper_bound(bounds_.begin(), bounds_.end() - 1, off) - bounds_.begin());
+diff --git a/src/prefill/prefill.cpp b/src/prefill/prefill.cpp
+index 21d6dea3..1aee7307 100644
+--- a/src/prefill/prefill.cpp
++++ b/src/prefill/prefill.cpp
+@@ -9,6 +9,7 @@
+ #include "strata/core/on_device.hpp"
+ #include "strata/core/per_device.hpp"
+ #include "strata/core/runtime.hpp"
++#include "strata/core/copy_cohort.hpp"
+ 
+ #include "strata/core/layout.hpp"
+ #include "strata/kernels/cpu/expert.hpp"
+@@ -453,6 +454,7 @@ struct Prefill::Impl {
+     int32_t* compact_xb_dev = nullptr;        // persistent device bounds, reused only in compute queue order
+     HostVec<int32_t> xb_host;
+     uint8_t* stage_dev[RING_MAX] = {};
++    bool stage_ring_owned = false;
+     int ring = STAGE;                        // the slots of this layout's ring (ring_slots)
+     std::unique_ptr<Stager> stager;          // the unpinned experts' host copies (step 4)
+     strata::gpu::Event *copied[RING_MAX] = {}, *used[RING_MAX] = {};
+@@ -854,7 +856,8 @@ bool Prefill::carve(size_t T, void* alloc) {
+         if (!m.mmq_ctx) m.mmq_ctx = std::make_unique<mmq::Context>();
+     }
+     m.ring = ring_slots(T);
+-    if (o.base == nullptr && m.ring > 0) {
++    m.stage_ring_owned = o.base == nullptr && m.ring > 0;
++    if (m.stage_ring_owned) {
+         // OWNED buffers: the ring in ONE allocation (upstream 4a9b9041).  384 separate 2.7 MiB allocations took
+         // 1,556 MiB on an RTX 4070 (each rounded up to its 2 MiB pages), one of the same total 1,038.  A borrowed
+         // region keeps its per-slot layout (and so its price, `bytes_needed`: the loans' slot counts do not move).
+@@ -1232,6 +1235,7 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
+     if (n == 0) return true;
+     if (tokens == nullptr) { err = "prefill: missing input tokens"; return false; }
+     const core::OnDevice on_device(m.device);
++    core::CopyCohortCounts cohort_counts;
+     core::ServiceScope service_scope(core::Runtime::get().service_events());
+     const core::ModelGeometry& g = *m.g;
+     const auto t_start = Clock::now();
+@@ -1453,33 +1457,85 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
+                 }
+             }
+         } chunk_stager_done{stream_all ? m.stager.get() : nullptr, m.cs, m.copy};
+-        auto issue_until = [&](size_t limit) {
+-            limit = std::min(limit, seq.size());
+-            while (issued < limit) {
+-                const StreamEntry& en = seq[issued];
+-                const int sl = (int) (issued % (size_t) m.ring);
+-                const auto th = Clock::now();
+-                const size_t bytes = (size_t) lay0.blob_bytes(en.l);
+-                const auto timing_kind = en.job < 0 ? IssuerTiming::PinnedDirect :
+-                    (en.blob ? IssuerTiming::UnpinnedStaged : IssuerTiming::TransientStaged);
+-                // the slot's last reader, the copy and its mark in one submission (copy_async_after)
+-                const strata::gpu::Event* after = m.stage_live[sl] ? m.used[m.used_of[sl]] : nullptr;
+-                if (en.job < 0) {
+-                    publication::require(issuer_timing.measure((size_t) (en.l - LB), timing_kind, false, [&] { return strata::gpu::copy_async_after(m.stage_dev[sl], en.blob, bytes, m.copy, after, m.copied[sl]); }), "strata::gpu::copy_async_after(m.stage_dev[sl], en.blob, bytes, m.copy, after, m.copied[sl])", strata::gpu::last_error);
+-                    if (transfer_counts && bytes != 0) chunk_transfers[(size_t) (en.l - LB)].add(1, bytes);
+-                    ++stats_.experts_dma;
+-                } else {
+-                    const uint8_t* hb = issuer_timing.measure((size_t) (en.l - LB), timing_kind, true, [&] { return m.stager->wait(en.job); });
+-                    publication::require(issuer_timing.measure((size_t) (en.l - LB), timing_kind, false, [&] { return strata::gpu::copy_async_after(m.stage_dev[sl], hb, bytes, m.copy, after, m.copied[sl]); }), "strata::gpu::copy_async_after(m.stage_dev[sl], hb, bytes, m.copy, after, m.copied[sl])", strata::gpu::last_error);
+-                    if (transfer_counts && bytes != 0) chunk_transfers[(size_t) (en.l - LB)].add(1, bytes);
+-                    m.stager->issued_one(en.job, m.copy);
++        static const bool cohort_on = [] {
++            const char* flag = std::getenv("STRATA_PREFILL_COPY_COHORT");
++            return flag && std::strcmp(flag, "1") == 0;
++        }();
++        auto issue_range = [&](size_t idx, size_t limit, double& host_ms, int64_t& streamed, int64_t& dma) {
++            size_t height = 1;
++            const auto& first = seq[idx];
++            const size_t slot = idx % static_cast<size_t>(m.ring);
++            const size_t width = static_cast<size_t>(lay0.blob_bytes(first.l));
++            core::ExpertSource::CopyRange source;
++            if (cohort_on) {
++                height = core::copy_cohort_height(m.stage_ring_owned, m.mring != nullptr,
++                    strata::gpu::is_capturing(m.copy), width, MMQ_SLOT(), slot,
++                    static_cast<size_t>(m.ring), limit - idx, [&](size_t row) {
++                        const auto& next = seq[idx + row];
++                        return core::CopyCohortRow{next.l, next.e, reinterpret_cast<uintptr_t>(next.blob),
++                            reinterpret_cast<uintptr_t>(m.stage_dev[slot + row]), next.job < 0};
++                    });
++                if (height > 1 && (!m.src->copy_range(first.l, first.e, height, source) ||
++                    source.first != first.blob || !strata::gpu::is_host_usm(first.blob) ||
++                    !core::copy_cohort_fits(width, height, MMQ_SLOT(), width,
++                        (static_cast<size_t>(m.ring) - slot) * MMQ_SLOT(),
++                        source.extent - static_cast<size_t>(source.first - source.allocation),
++                        slot, static_cast<size_t>(m.ring), limit - idx))) height = 1;
++            }
++            if (height > 1) {
++                const auto before = Clock::now();
++                const strata::gpu::Event* after[16]{};
++                strata::gpu::Event* done[16]{};
++                for (size_t row = 0; row < height; ++row) {
++                    const size_t sl = slot + row;
++                    after[row] = m.stage_live[sl] ? m.used[m.used_of[sl]] : nullptr;
++                    done[row] = m.copied[sl];
++                }
++                publication::require(issuer_timing.measure(static_cast<size_t>(first.l - LB),
++                    IssuerTiming::PinnedDirect, false, [&] {
++                        return strata::gpu::copy_cohort_async(m.stage_dev[slot], MMQ_SLOT(), first.blob,
++                            width, width, height, m.copy, after, done);
++                    }), "native copy cohort", strata::gpu::last_error);
++                // No retry after enqueue: all done associations exist before issued release-publication.
++                for (size_t row = 0; row < height; ++row) {
++                    m.stage_live[slot + row] = true;
++                    issuer_timing.entry(static_cast<size_t>(first.l - LB), IssuerTiming::PinnedDirect, width);
+                 }
+-                issuer_timing.entry((size_t) (en.l - LB), timing_kind, bytes);
+-                m.stage_live[sl] = true;
+-                stats_.ms_experts_host += ms_since(th);
+-                ++stats_.experts_streamed;
+-                ++issued;
++                if (transfer_counts) chunk_transfers[static_cast<size_t>(first.l - LB)].add(1, width * height);
++                dma += static_cast<int64_t>(height); streamed += static_cast<int64_t>(height);
++                host_ms += ms_since(before);
++                cohort_counts.add(true, height, width);
++                return height;
+             }
++            const StreamEntry& en = seq[idx];
++            const int sl = (int) (idx % (size_t) m.ring);
++            const auto th = Clock::now();
++            const size_t bytes = (size_t) lay0.blob_bytes(en.l);
++            const auto timing_kind = en.job < 0 ? IssuerTiming::PinnedDirect :
++                (en.blob ? IssuerTiming::UnpinnedStaged : IssuerTiming::TransientStaged);
++            // the slot's last reader, the copy and its mark in one submission (copy_async_after)
++            const strata::gpu::Event* after = m.stage_live[sl] ? m.used[m.used_of[sl]] : nullptr;
++            if (en.job < 0) {
++                publication::require(issuer_timing.measure((size_t) (en.l - LB), timing_kind, false, [&] { return strata::gpu::copy_async_after(m.stage_dev[sl], en.blob, bytes, m.copy, after, m.copied[sl]); }), "strata::gpu::copy_async_after(m.stage_dev[sl], en.blob, bytes, m.copy, after, m.copied[sl])", strata::gpu::last_error);
++                if (transfer_counts && bytes != 0) chunk_transfers[(size_t) (en.l - LB)].add(1, bytes);
++                ++dma;
++            } else {
++                const uint8_t* hb = issuer_timing.measure((size_t) (en.l - LB), timing_kind, true, [&] { return m.stager->wait(en.job); });
++                publication::require(issuer_timing.measure((size_t) (en.l - LB), timing_kind, false, [&] { return strata::gpu::copy_async_after(m.stage_dev[sl], hb, bytes, m.copy, after, m.copied[sl]); }), "strata::gpu::copy_async_after(m.stage_dev[sl], hb, bytes, m.copy, after, m.copied[sl])", strata::gpu::last_error);
++                if (transfer_counts && bytes != 0) chunk_transfers[(size_t) (en.l - LB)].add(1, bytes);
++                m.stager->issued_one(en.job, m.copy);
++            }
++            issuer_timing.entry((size_t) (en.l - LB), timing_kind, bytes);
++            m.stage_live[sl] = true;
++            host_ms += ms_since(th);
++            ++streamed;
++            cohort_counts.add(false, 1, width);
++            return size_t(1);
++        };
++        auto issue_until = [&](size_t limit) {
++            limit = std::min(limit, seq.size());
++            while (issued < limit)
++                issued += issue_range(issued, limit, stats_.ms_experts_host, stats_.experts_streamed, stats_.experts_dma);
+         };
+         // D-5: the stream is issued by its own host thread, so the thread launching the layers' kernels never waits
+         // behind a host copy of an unpinned blob (that wait left the GPU idle: the 'wait copy' / 'dequant' time of the
+@@ -1513,35 +1569,17 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
+             issuer = std::thread([&] {
+                 try {
+                 const core::OnDevice od(m.device);
+-                for (size_t idx = 0; idx < seq.size(); ++idx) {
++                for (size_t idx = 0; idx < seq.size();) {
+                     while (idx >= a_consumed.load(std::memory_order_acquire) + (size_t) m.ring) {
+                         if (a_stop.load(std::memory_order_acquire)) return;
+                         std::this_thread::yield();
+                     }
+                     if (a_stop.load(std::memory_order_acquire)) return;
+-                    const StreamEntry& en = seq[idx];
+-                    const int sl = (int) (idx % (size_t) m.ring);
+-                    const auto th = Clock::now();
+-                    const size_t bytes = (size_t) lay0.blob_bytes(en.l);
+-                    const auto timing_kind = en.job < 0 ? IssuerTiming::PinnedDirect :
+-                        (en.blob ? IssuerTiming::UnpinnedStaged : IssuerTiming::TransientStaged);
+-                    // the slot's last reader, the copy and its mark in one submission (copy_async_after)
+-                    const strata::gpu::Event* after = m.stage_live[sl] ? m.used[m.used_of[sl]] : nullptr;
+-                    if (en.job < 0) {
+-                        publication::require(issuer_timing.measure((size_t) (en.l - LB), timing_kind, false, [&] { return strata::gpu::copy_async_after(m.stage_dev[sl], en.blob, bytes, m.copy, after, m.copied[sl]); }), "strata::gpu::copy_async_after(m.stage_dev[sl], en.blob, bytes, m.copy, after, m.copied[sl])", strata::gpu::last_error);
+-                        if (transfer_counts && bytes != 0) chunk_transfers[(size_t) (en.l - LB)].add(1, bytes);
+-                        ++iss_dma;
+-                    } else {
+-                        const uint8_t* hb = issuer_timing.measure((size_t) (en.l - LB), timing_kind, true, [&] { return m.stager->wait(en.job); });
+-                        publication::require(issuer_timing.measure((size_t) (en.l - LB), timing_kind, false, [&] { return strata::gpu::copy_async_after(m.stage_dev[sl], hb, bytes, m.copy, after, m.copied[sl]); }), "strata::gpu::copy_async_after(m.stage_dev[sl], hb, bytes, m.copy, after, m.copied[sl])", strata::gpu::last_error);
+-                        if (transfer_counts && bytes != 0) chunk_transfers[(size_t) (en.l - LB)].add(1, bytes);
+-                        m.stager->issued_one(en.job, m.copy);
+-                    }
+-                    issuer_timing.entry((size_t) (en.l - LB), timing_kind, bytes);
+-                    m.stage_live[sl] = true;
+-                    iss_ms += ms_since(th);
+-                    ++iss_streamed;
+-                    a_issued.store(idx + 1, std::memory_order_release);
++                    const size_t credit_end = std::min(seq.size(), a_consumed.load(std::memory_order_acquire) +
++                        static_cast<size_t>(m.ring));
++                    const size_t count = issue_range(idx, credit_end, iss_ms, iss_streamed, iss_dma);
++                    idx += count;
++                    a_issued.store(idx, std::memory_order_release);
+                 }
+                 } catch (...) {
+                     issuer_failure.capture();
+@@ -3037,6 +3075,7 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
+         return false;
+     }
+     stats_.ms_total += ms_since(t_start);
++    cohort_counts.complete();
+     service_scope.complete();  // Existing checked terminal compute sync succeeded; no diagnostic wait.
+     if (pt.on) {
+         pt.fold();
+diff --git a/tests/core/copy_cohort_test.cpp b/tests/core/copy_cohort_test.cpp
+new file mode 100644
+index 00000000..41fcdad6
+--- /dev/null
++++ b/tests/core/copy_cohort_test.cpp
+@@ -0,0 +1,65 @@
++// SPDX-FileCopyrightText: 2026 MistVVK and the XeStrata contributors
++// SPDX-License-Identifier: LGPL-3.0-or-later
++#include "strata/core/copy_cohort.hpp"
++int main() {
++    using strata::core::copy_cohort_fits;
++    using strata::core::copy_cohort_adjacent;
++    static_assert(copy_cohort_adjacent(2, 10, 1000, 2, 12, 1200, 2, 100));
++    static_assert(!copy_cohort_adjacent(2, 10, 1000, 2, 13, 1300, 2, 100)); // resident expert gap
++    static_assert(!copy_cohort_adjacent(2, 10, 1000, 3, 12, 1200, 2, 100)); // layer
++    static_assert(!copy_cohort_adjacent(2, 10, UINTPTR_MAX - 1, 2, 12, 100, 2, 100));
++    static_assert(!copy_cohort_adjacent(2, 10, 1000, 2, 12, 1201, 2, 100)); // source adjacency
++    static_assert(copy_cohort_fits(37, 4, 64, 48, 256, 192, 0, 16, 4));
++    static_assert(!copy_cohort_fits(37, 4, 32, 48, 256, 192, 0, 16, 4));
++    static_assert(!copy_cohort_fits(37, 4, 64, 48, 228, 180, 0, 16, 3)); // credits
++    static_assert(!copy_cohort_fits(37, 4, 64, 48, 256, 192, 14, 16, 4)); // wrap
++    static_assert(!copy_cohort_fits(37, 4, 64, 48, 228, 180, 0, 16, 4)); // short allocation
++    static_assert(!copy_cohort_fits(37, 4, size_t(UINT32_MAX) + 1, 48, SIZE_MAX, 192, 0, 16, 4));
++    static_assert(!copy_cohort_fits(0, 4, 64, 48, 256, 192, 0, 16, 4));
++    static_assert(!copy_cohort_fits(37, 17, 64, 48, 4096, 4096, 0, 32, 17));
++    static_assert(copy_cohort_fits(37, 16, 64, 48, 1024, 768, 0, 16, 16));
++    using strata::core::copy_cohort_height;
++    using strata::core::CopyCohortRow;
++    constexpr auto rows = [](size_t row) {
++        return CopyCohortRow{2, 10 + static_cast<int64_t>(row), 1000 + row * 37, 2000 + row * 64, true};
++    };
++    static_assert(copy_cohort_height(true, false, false, 37, 64, 0, 16, 16, rows) == 16);
++    static_assert(copy_cohort_height(true, false, false, 37, 64, 0, 16, 2, rows) == 2); // credits
++    static_assert(copy_cohort_height(true, false, false, 37, 64, 14, 16, 16, rows) == 2); // ring tail
++    static_assert(copy_cohort_height(true, false, false, 37, 64, 15, 16, 16, rows) == 1);
++    static_assert(copy_cohort_height(true, false, false, 37, 64, 0, 16, 3, rows) == 3); // sequence tail
++    static_assert(copy_cohort_height(false, false, false, 37, 64, 0, 16, 16, rows) == 1); // borrowed
++    static_assert(copy_cohort_height(true, true, false, 37, 64, 0, 16, 16, rows) == 1);
++    static_assert(copy_cohort_height(true, false, true, 37, 64, 0, 16, 16, rows) == 1);
++    static_assert(copy_cohort_height(true, false, false, 37, 32, 0, 16, 16, rows) == 1);
++    constexpr auto gap = [rows](size_t row) {
++        auto value = rows(row);
++        if (row == 3) ++value.expert;
++        return value;
++    };
++    static_assert(copy_cohort_height(true, false, false, 37, 64, 0, 16, 16, gap) == 3); // resident
++    constexpr auto layer = [rows](size_t row) {
++        auto value = rows(row);
++        if (row == 2) ++value.layer;
++        return value;
++    };
++    static_assert(copy_cohort_height(true, false, false, 37, 64, 0, 16, 16, layer) == 2);
++    constexpr auto staged = [rows](size_t row) {
++        auto value = rows(row);
++        if (row == 2) value.direct = false;
++        return value;
++    };
++    static_assert(copy_cohort_height(true, false, false, 37, 64, 0, 16, 16, staged) == 2);
++    constexpr auto separate = [rows](size_t row) {
++        auto value = rows(row);
++        if (row == 1) ++value.destination;
++        return value;
++    };
++    static_assert(copy_cohort_height(true, false, false, 37, 64, 0, 16, 16, separate) == 1);
++    constexpr auto overflow = [rows](size_t row) {
++        auto value = rows(row);
++        value.destination = UINTPTR_MAX - 1;
++        return value;
++    };
++    static_assert(copy_cohort_height(true, false, false, 37, 64, 0, 16, 16, overflow) == 1);
++}
+diff --git a/tools/test_copy_cohort_arena.cpp b/tools/test_copy_cohort_arena.cpp
+new file mode 100644
+index 00000000..c9026a28
+--- /dev/null
++++ b/tools/test_copy_cohort_arena.cpp
+@@ -0,0 +1,235 @@
++// SPDX-FileCopyrightText: 2026 MistVVK and the XeStrata contributors
++// SPDX-License-Identifier: LGPL-3.0-or-later
++// Actual allocation-owner fixture. Runtime/Host-USM required; no model or GPU arithmetic.
++#include "strata/core/expert_source.hpp"
++#include "strata/core/gpu.hpp"
++#include "strata/core/pinned.hpp"
++#include "strata/core/runtime.hpp"
++#include "strata/kernels/cpu/expert_layout.hpp"
++
++#include <array>
++#include <cstdint>
++#include <cstdio>
++#include <cstdlib>
++#include <filesystem>
++#include <fstream>
++#include <limits>
++#include <memory>
++#include <stdexcept>
++#include <string>
++#include <vector>
++
++namespace core = strata::core;
++namespace cpu = strata::kernels::cpu;
++namespace gpu = strata::gpu;
++namespace fs = std::filesystem;
++
++namespace {
++void require(bool condition, const std::string& message) {
++    if (!condition) throw std::runtime_error(message); // Active in NDEBUG builds.
++}
++void progress(const char* phase) {
++    std::fprintf(stderr, "copy cohort arena: phase=%s\n", phase);
++    std::fflush(stderr);
++}
++const uint8_t* at_address(const uint8_t* pointer, size_t offset) {
++    const uintptr_t address = reinterpret_cast<uintptr_t>(pointer);
++    require(offset <= UINTPTR_MAX - address, "fixture address overflow");
++    return reinterpret_cast<const uint8_t*>(address + offset);
++}
++struct Pack {
++    fs::path path;
++    void create() {
++        const std::string pattern = (fs::temp_directory_path() / "strata-copy-arena-XXXXXX").string();
++        std::vector<char> name(pattern.begin(), pattern.end());
++        name.push_back('\0');
++        char* directory = ::mkdtemp(name.data()); // Unique, private 0700 directory; Linux fixture.
++        require(directory != nullptr, "could not create private fixture directory");
++        path = directory;
++    }
++    void write(const cpu::ExpertLayout& layout) const {
++        require(layout.total == 8294400 && !layout.native, "unexpected canonical fixture geometry");
++        std::ofstream file(path / "experts.bin", std::ios::binary | std::ios::trunc);
++        require(static_cast<bool>(file), "could not create experts.bin");
++        const std::array<char, 65536> zeros{};
++        uint64_t remaining = layout.total;
++        while (remaining) {
++            const size_t bytes = remaining < zeros.size() ? static_cast<size_t>(remaining) : zeros.size();
++            file.write(zeros.data(), static_cast<std::streamsize>(bytes));
++            require(static_cast<bool>(file), "could not write canonical payload");
++            remaining -= bytes;
++        }
++        for (int64_t layer = 0; layer < 2; ++layer) {
++            for (int64_t expert = 0; expert < 3; ++expert) {
++                file.seekp(static_cast<std::streamoff>(layout.blob_offset(layer, expert)));
++                file.put(static_cast<char>(1 + layer * 3 + expert));
++                require(static_cast<bool>(file), "could not write expert marker");
++            }
++        }
++        file.close();
++        require(!file.fail() && fs::file_size(path / "experts.bin") == layout.total, "payload close/size failure");
++    }
++    void retire() const {
++        require(fs::remove(path / "experts.bin"), "could not remove owned payload");
++        require(fs::remove(path), "could not remove owned private directory");
++    }
++};
++void rejected_source(const core::ArenaExpertSource& source, int64_t layer, int64_t expert, size_t count) {
++    const uint8_t sentinel = 0x5a;
++    core::ExpertSource::CopyRange range{&sentinel, &sentinel, size_t(0x5a5a)};
++    require(!source.copy_range(layer, expert, count, range), "invalid source range accepted");
++    require(range.first == &sentinel && range.allocation == &sentinel && range.extent == 0x5a5a,
++            "source rejection changed output sentinel");
++}
++void source_ranges(core::ArenaExpertSource& source, const cpu::ExpertLayout& layout) {
++    for (int64_t layer = 0; layer < 2; ++layer) {
++        const size_t width = static_cast<size_t>(layout.blob_bytes(layer));
++        const size_t extent = width * 3 + static_cast<size_t>(layout.max_blob);
++        core::ExpertSource::CopyRange first;
++        require(source.copy_range(layer, 0, 2, first), "legal two-expert range rejected");
++        require(first.first == source.blob(layer, 0) && first.allocation == first.first && first.extent == extent,
++                "actual allocation base/extent mismatch");
++        require(gpu::is_host_usm(first.first) && gpu::is_host_usm(first.allocation), "real Host-USM not classified");
++        core::ExpertSource::CopyRange all, tail;
++        require(source.copy_range(layer, 0, 3, all), "complete layer range rejected");
++        require(source.copy_range(layer, 1, 2, tail), "legal expert tail rejected");
++        require(all.first == first.first && all.allocation == first.allocation && all.extent == extent &&
++                width * 3 <= extent && tail.allocation == first.allocation &&
++                tail.extent == extent && tail.first == at_address(first.first, width), "tail owner mismatch");
++        for (int64_t expert = 0; expert < 3; ++expert) {
++            const uint8_t* actual = source.blob(layer, expert);
++            require(actual == at_address(first.first, static_cast<size_t>(expert) * width), "source row adjacency");
++            require(actual[0] == static_cast<uint8_t>(1 + layer * 3 + expert), "actual arena load marker mismatch");
++        }
++        rejected_source(source, layer, 2, 2); // Padding is not permission to cross the logical layer.
++        rejected_source(source, layer, 0, 4);
++    }
++    for (size_t count : {size_t(0), size_t(1), size_t(17), std::numeric_limits<size_t>::max()})
++        rejected_source(source, 0, 0, count);
++    rejected_source(source, -1, 0, 2);
++    rejected_source(source, 2, 0, 2);
++    rejected_source(source, 0, -1, 2);
++    rejected_source(source, 0, 3, 2);
++}
++void rejected_piece(const core::PinnedArena& arena, const uint8_t* pointer, size_t bytes) {
++    const uint8_t sentinel = 0x33;
++    const uint8_t* allocation = &sentinel;
++    size_t extent = 0x3333;
++    require(!arena.host_usm_range(pointer, bytes, allocation, extent), "invalid allocation span accepted");
++    require(allocation == &sentinel && extent == 0x3333, "piece rejection changed output sentinel");
++}
++void piece_ranges(const core::PinnedArena& split, const core::PinnedArena& single) {
++    const uint8_t* first = split.at(0);
++    const uint8_t* second = split.at(64);
++    const uint8_t* allocation = nullptr;
++    size_t extent = 0;
++    require(gpu::is_host_usm(first) && gpu::is_host_usm(second), "small owner not real Host-USM");
++    require(split.host_usm_range(at_address(first, 60), 20, allocation, extent) && allocation == first && extent == 80,
++            "exact split-allocation end rejected");
++    require(split.host_usm_range(at_address(second, 79), 1, allocation, extent) && allocation == second && extent == 80,
++            "second allocation end rejected");
++    rejected_piece(split, at_address(first, 60), 21);
++    rejected_piece(split, at_address(first, 60), 68); // A logical layer transition is not one allocation.
++    rejected_piece(split, nullptr, 1);
++    rejected_piece(split, first, 0);
++    const uint8_t* base = single.at(0);
++    require(single.host_usm_range(base, 80, allocation, extent) && allocation == base && extent == 80,
++            "entire single allocation rejected");
++    rejected_piece(single, at_address(base, 80), 1); // Single piece avoids an adjacent-allocation address coincidence.
++    rejected_piece(single, at_address(base, 79), 2);
++}
++} // namespace
++
++int main(int argc, char** argv) {
++    const bool registration = argc == 2 && std::string(argv[1]) == "--registered";
++    if (argc != 1 && !registration) return 2;
++    core::Runtime* runtime = nullptr;
++    Pack pack;
++    // Owners survive catch so a failed drain never unwinds past live runtime state.
++    std::unique_ptr<core::ArenaExpertSource> source;
++    std::unique_ptr<core::PinnedArena> split, single, mapped;
++    try {
++        progress("environment");
++        require(::setenv("STRATA_ARENA_HOST_USM", "1", 1) == 0 && ::setenv("STRATA_ARENA_MMAP", "0", 1) == 0,
++                "could not freeze fixture arena mode before first open");
++        if (core::Runtime::count() == 0) {
++            std::fprintf(stderr, "copy cohort arena: SKIP no usable runtime device\n");
++            std::fflush(stderr);
++            return 77;
++        }
++        progress("runtime");
++        runtime = &core::Runtime::get();
++        if (!runtime->device().has(sycl::aspect::usm_host_allocations)) {
++            runtime->finish();
++            std::fprintf(stderr, "copy cohort arena: SKIP selected runtime lacks Host-USM\n");
++            std::fflush(stderr);
++            return 77;
++        }
++        if (runtime->device().get_info<sycl::info::device::max_mem_alloc_size>() < 5529600) {
++            runtime->finish();
++            std::fprintf(stderr, "copy cohort arena: SKIP reported allocation limit below fixture requirement\n");
++            std::fflush(stderr);
++            return 77;
++        }
++        progress("pack");
++        pack.create();
++        std::fprintf(stderr, "copy cohort arena: fixture_pack=%.512s payload_bytes=8294400\n", pack.path.string().c_str());
++        std::fflush(stderr);
++        std::string error;
++        const bool layout_ok = cpu::expert_layout_load(pack.path.string(), 2, 3, error);
++        require(layout_ok, "canonical layout: " + error);
++        const auto& layout = cpu::expert_layout();
++        pack.write(layout);
++        source = std::make_unique<core::ArenaExpertSource>();
++        rejected_source(*source, 0, 0, 2);
++        progress("arena_open");
++        const bool open_ok = source->open(pack.path.string(), 2, 3, 1, error);
++        require(open_ok, "real arena open: " + error);
++        source_ranges(*source, layout);
++        progress("arena_close_reopen");
++        runtime->finish();
++        source->close();
++        rejected_source(*source, 0, 0, 2);
++        error.clear();
++        const bool reopen_ok = source->open(pack.path.string(), 2, 3, 1, error);
++        require(reopen_ok, "real arena reopen: " + error);
++        source_ranges(*source, layout);
++        progress("piece_boundaries");
++        split = std::make_unique<core::PinnedArena>(128, std::vector<uint64_t>{0, 64, 128}, 16, true);
++        single = std::make_unique<core::PinnedArena>(64, std::vector<uint64_t>{0, 64}, 16, true);
++        piece_ranges(*split, *single);
++        if (registration) {
++            progress("registered_mapping");
++            mapped = std::make_unique<core::PinnedArena>(4096, std::vector<uint64_t>{0, 2048, 4096}, 0, false);
++            require(mapped->valid() && mapped->layer_base.empty(), "registered negative control is not a mapping");
++            rejected_piece(*mapped, mapped->at(0), 32);
++        }
++        progress("drain_close");
++        runtime->finish();
++        mapped.reset(); single.reset(); split.reset();
++        source->close();
++        rejected_source(*source, 0, 0, 2);
++        source.reset();
++        pack.retire();
++        std::fprintf(stderr, "copy cohort arena: PASS scope=actual_arena_owner_and_piece_ranges registered=%s\n",
++                     registration ? "checked" : "not_requested");
++        std::fflush(stderr);
++        return 0;
++    } catch (const std::exception& error) {
++        std::fprintf(stderr, "copy cohort arena: FAILED %.512s\n", error.what());
++        std::fflush(stderr);
++        if (runtime) {
++            try { runtime->finish(); }
++            catch (...) {
++                std::fprintf(stderr, "copy cohort arena: drain failed; retaining live owners, fail-stop\n");
++                std::fflush(stderr);
++                std::_Exit(1);
++            }
++        }
++        mapped.reset(); single.reset(); split.reset(); source.reset();
++        if (!pack.path.empty()) std::fprintf(stderr, "copy cohort arena: retained failed pack %.512s\n",
++                                             pack.path.string().c_str());
++        std::fflush(stderr);
++        return 1;
++    }
++}
+diff --git a/tools/test_copy_cohort_gpu.cpp b/tools/test_copy_cohort_gpu.cpp
+new file mode 100644
+index 00000000..14e88633
+--- /dev/null
++++ b/tools/test_copy_cohort_gpu.cpp
+@@ -0,0 +1,57 @@
++// SPDX-FileCopyrightText: 2026 MistVVK and the XeStrata contributors
++// SPDX-License-Identifier: LGPL-3.0-or-later
++#include "strata/core/gpu.hpp"
++#include <cstdio>
++#include <cstdlib>
++#include <cstring>
++#include <stdexcept>
++namespace gpu = strata::gpu;
++int main() {
++    constexpr size_t width = 37, sp = 48, dp = 64, height = 4;
++    gpu::Stream copy = nullptr, reader = nullptr;
++    unsigned char *src = nullptr, *dst = nullptr, *snapshot = nullptr, *result = nullptr;
++    gpu::Event* used[height]{};
++    gpu::Event* done[height]{};
++    const auto require = [](bool ok) { if (!ok) throw std::runtime_error(gpu::last_error()); };
++    try {
++        copy = gpu::stream_create(); reader = gpu::stream_create();
++        src = static_cast<unsigned char*>(gpu::alloc_host(sp * height));
++        dst = static_cast<unsigned char*>(gpu::alloc_device(dp * height));
++        snapshot = static_cast<unsigned char*>(gpu::alloc_host(dp * height));
++        result = static_cast<unsigned char*>(gpu::alloc_host(dp * height));
++        if (!copy || !reader || !src || !dst || !snapshot || !result) throw std::runtime_error("allocation");
++        std::memset(result, 0x5a, dp * height);
++        require(gpu::copy(dst, result, dp * height));
++        for (size_t row = 0; row < height; ++row) {
++            require(gpu::event_create(&used[row])); require(gpu::event_create(&done[row]));
++            if (!used[row] || !done[row]) throw std::runtime_error("event allocation");
++            for (size_t col = 0; col < sp; ++col) src[row * sp + col] = static_cast<unsigned char>(row * 53 + col);
++            // Actual previous reader on another queue, each protected separately.
++            require(gpu::copy_async_after(snapshot + row * dp, dst + row * dp, dp, reader, nullptr, used[row]));
++        }
++        const gpu::Event* dependencies[height] = {used[0], used[1], used[2], used[3]};
++        require(gpu::copy_cohort_async(dst, dp, src, sp, width, height, copy, dependencies, done));
++        require(gpu::stream_sync(copy)); require(gpu::stream_sync(reader));
++        for (size_t row = 0; row < height; ++row) require(gpu::event_sync(done[row]));
++        require(gpu::copy(result, dst, dp * height));
++        for (size_t row = 0; row < height; ++row)
++            for (size_t col = 0; col < dp; ++col) {
++                if (snapshot[row * dp + col] != 0x5a || result[row * dp + col] !=
++                    (col < width ? src[row * sp + col] : 0x5a)) throw std::runtime_error("copy/padding/reader mismatch");
++            }
++        // One-row fallback is the unchanged actual 1D command, never a native2D retry.
++        src[0] ^= 1;
++        require(gpu::copy_async_after(dst, src, width, copy, used[0], done[0]));
++        require(gpu::stream_sync(copy)); require(gpu::copy(result, dst, dp * height));
++        if (std::memcmp(src, result, width)) throw std::runtime_error("one-row fallback mismatch");
++    } catch (const std::exception& error) {
++        std::fprintf(stderr, "copy cohort fixture FAILED: %s\n", error.what());
++        // Fail-stop on unsuccessful drains; never free pending GPU or copy-source state.
++        if ((copy && !gpu::stream_sync(copy)) || (reader && !gpu::stream_sync(reader))) std::_Exit(1);
++        return 1; // Main owns failed-process retirement; retain allocations until process exit.
++    }
++    for (size_t row = 0; row < height; ++row) { gpu::event_destroy(used[row]); gpu::event_destroy(done[row]); }
++    gpu::free(src); gpu::free(dst); gpu::free(snapshot); gpu::free(result);
++    gpu::stream_destroy(copy); gpu::stream_destroy(reader);
++    std::puts("copy cohort fixture PASS");
++}
