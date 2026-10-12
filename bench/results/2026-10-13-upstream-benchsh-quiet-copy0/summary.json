@@ -1,0 +1,127 @@
+{
+  "main_reviewed": true,
+  "mode": "quiet",
+  "copy_engine": 0,
+  "benchmark_method": "Unmodified upstream bench.sh --long --runs 3",
+  "source_revision": "410904c99d273435b5302fa8976cc667d17957f2",
+  "upstream_revision": "7695859aa13afb248bdb4d36f9b2e95707db079d",
+  "binary_sha256": {
+    "sha256": "b54579b536962c7db7652503e0dcb50282ddbc667f290b90f101419b44778554"
+  },
+  "samples": [
+    {
+      "prompt_tokens": 32049,
+      "generated_tokens": 24,
+      "read_tokens": 32049,
+      "reused_tokens": 0,
+      "prompt_tps": 407.5,
+      "prompt_tps_source": "engine",
+      "decode_tps": 9.7,
+      "decode_tps_source": "engine",
+      "prompt_ms": 78653.4,
+      "decode_ms": 2476.1
+    },
+    {
+      "prompt_tokens": 32049,
+      "generated_tokens": 24,
+      "read_tokens": 32049,
+      "reused_tokens": 0,
+      "prompt_tps": 408.0,
+      "prompt_tps_source": "engine",
+      "decode_tps": 8.6,
+      "decode_tps_source": "engine",
+      "prompt_ms": 78557.2,
+      "decode_ms": 2790.5
+    },
+    {
+      "prompt_tokens": 32049,
+      "generated_tokens": 24,
+      "read_tokens": 32049,
+      "reused_tokens": 0,
+      "prompt_tps": 403.0,
+      "prompt_tps_source": "engine",
+      "decode_tps": 7.9,
+      "decode_tps_source": "engine",
+      "prompt_ms": 79533.9,
+      "decode_ms": 3050.0
+    }
+  ],
+  "prefill_median": 407.5,
+  "prefill_range": [
+    403.0,
+    408.0
+  ],
+  "decode_median": 8.6,
+  "decode_range": [
+    7.9,
+    9.7
+  ],
+  "stock_long_comparison_eligible": true,
+  "strict32768_performance_eligible": false,
+  "actual_input_tokens": 32049,
+  "actual_generated_tokens": 24,
+  "normal_quit": {
+    "pid": 318891,
+    "sid": 308090,
+    "method": "original StrataEngine.close",
+    "quit_write_completed": true,
+    "quit_flush_completed": true,
+    "fallback_signals": [],
+    "complete": true,
+    "engine_exit_code": 0,
+    "normal_quit": true
+  },
+  "all_requests_succeeded": true,
+  "no_fresh_gpu_faults": true,
+  "identities_unchanged": true,
+  "native_copy_quiet_executed": false,
+  "optimization_adopted": false,
+  "quality_evaluated": false,
+  "full_physical262144_input_qualified": false,
+  "phase_host_checks": {
+    "release_ndebug_pass": true,
+    "asan_ubsan_pass": true,
+    "server_phase_lifetime_pass": true,
+    "server_suite_pass": true,
+    "initial_system_python_failed_missing_regex": true,
+    "source_pins": {
+      "CMakeLists.txt": {
+        "sha256": "cbf71b9357a6941d569287aca17ef56e3ce1213842df09d924f586d9822de178"
+      },
+      "include/strata/core/phase_cache_owner.hpp": {
+        "sha256": "63a5ead3187dd264477a83d909fc6013d2359b76d73bd532393e178cd782279d"
+      },
+      "include/strata/core/phase_serve_cycle.hpp": {
+        "sha256": "676a41678f131e4ae2efaa56fed97315e83abd5d7cf8a2d0dbd591e5b84dbc49"
+      },
+      "include/strata/core/phase_timing.hpp": {
+        "sha256": "4ead9cc01ec13ba1ba1c02001b465422345c75fb8f141efa936c8cd7f061d787"
+      },
+      "src/core/phase_cache_owner.cpp": {
+        "sha256": "522cfbb6b8f97a43da43d33c319867485d1ef1659474096921d2305697ea0980"
+      },
+      "tests/core/phase_cache_owner_test.cpp": {
+        "sha256": "990549d5ca1f30111b0738ba3e41c842af188e83a4b02d060f4fcb83e95ed1dc"
+      },
+      "serve/server.py": {
+        "sha256": "942d4a03b0340896b2eda5fbaa75268a51513619284acb5650f0605f83131bbe"
+      },
+      "serve/test_server.py": {
+        "sha256": "8e4fa978d57c2b05a1a3ec644dae9fb9ad141ef281c726b1e5bac12f5ca53345"
+      }
+    },
+    "gpu_vmm_unverified": true,
+    "free_and_contrib_llvm_full_builds_pending": true,
+    "source_worktree_uncommitted": true
+  },
+  "source_audit_notes": [
+    "Phase prompt_ms now covers previous GEN retirement/reinit and current grow/fill/readback/publication; source reviewed, model execution unverified.",
+    "Main corrected phase docs: PrefillStats.ms_total includes Prefill::run transfer/synchronization wall time, not GPU compute-only time.",
+    "R354 header freeb54579c is a typo; actual binary b54579b.",
+    "R348 inventory omitted current QSA spans and used a different compact MoE sum; R356/R357 recompute current source dimensions and max-set clipping.",
+    "Generic Q5_K startup text does not prove head format; reported521472000 bytes are Q6_K-compatible arithmetic, actual type still needs tensor evidence.",
+    "R359 was given malformed registry filename json881; Main verified correct v183 exists with881 entries. Original report preserves its limited dedup scope.",
+    "R359 encoded-ceiling arithmetic corrected below; neither transfer ceiling nor historical6GB/s is current application throughput."
+  ],
+  "next_step": "Matched quiet COPY1 on the same measured binary/client; keep phases separate and repeat decode campaigns if variation prevents a decision. Main owns full phase builds/lints and actual VMM/model qualification."
+}

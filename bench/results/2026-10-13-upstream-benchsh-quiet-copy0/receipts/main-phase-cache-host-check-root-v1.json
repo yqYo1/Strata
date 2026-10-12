@@ -1,0 +1,841 @@
+{
+  "active": false,
+  "passed": false,
+  "complete": false,
+  "main_reviewed": true,
+  "gpu_executed": false,
+  "model_executed": false,
+  "commands": [
+    {
+      "label": "configure-phase-host",
+      "argv": [
+        "/usr/bin/cmake",
+        "-S",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-phase-cache-stock-bench-20261013",
+        "-G",
+        "Ninja",
+        "-DCMAKE_BUILD_TYPE=Release",
+        "-DCMAKE_CXX_COMPILER=/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+        "-DCMAKE_C_COMPILER=/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang",
+        "-DSTRATA_LICENSE=free",
+        "-DSTRATA_ENABLE_XE=OFF",
+        "-DSTRATA_BUILD_TESTS=ON",
+        "-DSTRATA_CUDA_ARCHS=",
+        "-DSTRATA_HIP_ARCHS=",
+        "-DSTRATA_ONEMKL=OFF",
+        "-DSTRATA_WERROR=ON",
+        "-DSTRATA_PORTABLE=OFF",
+        "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+        "-DSTRATA_GGML_DIR=/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",
+        "-B",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-phase-cache-stock-bench-20261013/build/phase-host"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-12T23:21:03.091518+00:00",
+      "wall_seconds": 180,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 418158,
+          "start_ticks": 19602721,
+          "sid": 418158,
+          "pgid": 418158
+        },
+        {
+          "pid": 418190,
+          "start_ticks": 19602748,
+          "sid": 418158,
+          "pgid": 418158
+        },
+        {
+          "pid": 418193,
+          "start_ticks": 19602750,
+          "sid": 418158,
+          "pgid": 418193
+        },
+        {
+          "pid": 418194,
+          "start_ticks": 19602750,
+          "sid": 418158,
+          "pgid": 418193
+        },
+        {
+          "pid": 418196,
+          "start_ticks": 19602751,
+          "sid": 418158,
+          "pgid": 418193
+        },
+        {
+          "pid": 418216,
+          "start_ticks": 19602773,
+          "sid": 418158,
+          "pgid": 418158
+        },
+        {
+          "pid": 418217,
+          "start_ticks": 19602774,
+          "sid": 418158,
+          "pgid": 418217
+        },
+        {
+          "pid": 418218,
+          "start_ticks": 19602774,
+          "sid": 418158,
+          "pgid": 418217
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 196027.21305301,
+      "pid": 418158,
+      "spawn_return_monotonic": 196027.214545739,
+      "direct_identity": {
+        "pid": 418158,
+        "state": "R",
+        "ppid": 418134,
+        "pgid": 418158,
+        "sid": 418158,
+        "start_ticks": 19602721,
+        "rss_bytes": 299008
+      },
+      "peak_live_owned_identities": 5,
+      "peak_session_rss_bytes": 85139456,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-12T23:21:04.721724+00:00",
+      "elapsed_seconds": 1.6299718740046956,
+      "logs": {
+        "configure-phase-host.stdout": {
+          "bytes": 1757,
+          "sha256": "0c1f8a05ac7ca29ab4495eeb9bb40bac28e9f1620f385a81d23b4c40d59eb3f5"
+        },
+        "configure-phase-host.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "build-phase-host",
+      "argv": [
+        "/usr/bin/cmake",
+        "--build",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-phase-cache-stock-bench-20261013/build/phase-host",
+        "--parallel",
+        "2",
+        "--target",
+        "phase_cache_owner_test"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-12T23:21:04.722806+00:00",
+      "wall_seconds": 180,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 418332,
+          "start_ticks": 19602884,
+          "sid": 418332,
+          "pgid": 418332
+        },
+        {
+          "pid": 418333,
+          "start_ticks": 19602885,
+          "sid": 418332,
+          "pgid": 418332
+        },
+        {
+          "pid": 418334,
+          "start_ticks": 19602885,
+          "sid": 418332,
+          "pgid": 418334
+        },
+        {
+          "pid": 418335,
+          "start_ticks": 19602885,
+          "sid": 418332,
+          "pgid": 418335
+        },
+        {
+          "pid": 418336,
+          "start_ticks": 19602885,
+          "sid": 418332,
+          "pgid": 418334
+        },
+        {
+          "pid": 418337,
+          "start_ticks": 19602885,
+          "sid": 418332,
+          "pgid": 418335
+        },
+        {
+          "pid": 418511,
+          "start_ticks": 19603122,
+          "sid": 418332,
+          "pgid": 418511
+        },
+        {
+          "pid": 418512,
+          "start_ticks": 19603122,
+          "sid": 418332,
+          "pgid": 418511
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 196028.844439245,
+      "pid": 418332,
+      "spawn_return_monotonic": 196028.846530309,
+      "direct_identity": {
+        "pid": 418332,
+        "state": "R",
+        "ppid": 418134,
+        "pgid": 418332,
+        "sid": 418332,
+        "start_ticks": 19602884,
+        "rss_bytes": 442368
+      },
+      "peak_live_owned_identities": 6,
+      "peak_session_rss_bytes": 339611648,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-12T23:21:07.260488+00:00",
+      "elapsed_seconds": 2.5373517039988656,
+      "logs": {
+        "build-phase-host.stdout": {
+          "bytes": 318,
+          "sha256": "bebf721753b1f7277556a98139f3ee896bb6d8a4817781271182762a6588d61b"
+        },
+        "build-phase-host.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "ctest-phase-host",
+      "argv": [
+        "/usr/bin/ctest",
+        "--test-dir",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-phase-cache-stock-bench-20261013/build/phase-host",
+        "-R",
+        "^phase_cache_owner_test$",
+        "--output-on-failure"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-12T23:21:07.261297+00:00",
+      "wall_seconds": 180,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 418518,
+          "start_ticks": 19603138,
+          "sid": 418518,
+          "pgid": 418518
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 196031.382860862,
+      "pid": 418518,
+      "spawn_return_monotonic": 196031.384530623,
+      "direct_identity": {
+        "pid": 418518,
+        "state": "R",
+        "ppid": 418134,
+        "pgid": 418518,
+        "sid": 418518,
+        "start_ticks": 19603138,
+        "rss_bytes": 425984
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 12144640,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-12T23:21:07.461302+00:00",
+      "elapsed_seconds": 0.19972756298375316,
+      "logs": {
+        "ctest-phase-host.stdout": {
+          "bytes": 449,
+          "sha256": "5a9bd5455eae9ba772da57837e1d352f375608564e2f0efd0ed34c15a62ecb9c"
+        },
+        "ctest-phase-host.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "configure-phase-host-asan",
+      "argv": [
+        "/usr/bin/cmake",
+        "-S",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-phase-cache-stock-bench-20261013",
+        "-G",
+        "Ninja",
+        "-DCMAKE_BUILD_TYPE=Release",
+        "-DCMAKE_CXX_COMPILER=/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+        "-DCMAKE_C_COMPILER=/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang",
+        "-DSTRATA_LICENSE=free",
+        "-DSTRATA_ENABLE_XE=OFF",
+        "-DSTRATA_BUILD_TESTS=ON",
+        "-DSTRATA_CUDA_ARCHS=",
+        "-DSTRATA_HIP_ARCHS=",
+        "-DSTRATA_ONEMKL=OFF",
+        "-DSTRATA_WERROR=ON",
+        "-DSTRATA_PORTABLE=OFF",
+        "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+        "-DSTRATA_GGML_DIR=/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",
+        "-B",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-phase-cache-stock-bench-20261013/build/phase-host-asan",
+        "-DSTRATA_SANITIZE=address,undefined"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-12T23:21:07.463455+00:00",
+      "wall_seconds": 180,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 418530,
+          "start_ticks": 19603158,
+          "sid": 418530,
+          "pgid": 418530
+        },
+        {
+          "pid": 418604,
+          "start_ticks": 19603210,
+          "sid": 418530,
+          "pgid": 418530
+        },
+        {
+          "pid": 418605,
+          "start_ticks": 19603210,
+          "sid": 418530,
+          "pgid": 418605
+        },
+        {
+          "pid": 418606,
+          "start_ticks": 19603210,
+          "sid": 418530,
+          "pgid": 418605
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 196031.585318852,
+      "pid": 418530,
+      "spawn_return_monotonic": 196031.587367737,
+      "direct_identity": {
+        "pid": 418530,
+        "state": "R",
+        "ppid": 418134,
+        "pgid": 418530,
+        "sid": 418530,
+        "start_ticks": 19603158,
+        "rss_bytes": 569344
+      },
+      "peak_live_owned_identities": 4,
+      "peak_session_rss_bytes": 85999616,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-12T23:21:09.065331+00:00",
+      "elapsed_seconds": 1.6013530049822293,
+      "logs": {
+        "configure-phase-host-asan.stdout": {
+          "bytes": 1762,
+          "sha256": "39ad5a2b0c23171ae13294519772854bc28116e3f05508f549e1fc8c9de5cd0f"
+        },
+        "configure-phase-host-asan.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "build-phase-host-asan",
+      "argv": [
+        "/usr/bin/cmake",
+        "--build",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-phase-cache-stock-bench-20261013/build/phase-host-asan",
+        "--parallel",
+        "2",
+        "--target",
+        "phase_cache_owner_test"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-12T23:21:09.066351+00:00",
+      "wall_seconds": 180,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 418708,
+          "start_ticks": 19603318,
+          "sid": 418708,
+          "pgid": 418708
+        },
+        {
+          "pid": 418710,
+          "start_ticks": 19603319,
+          "sid": 418708,
+          "pgid": 418708
+        },
+        {
+          "pid": 418711,
+          "start_ticks": 19603320,
+          "sid": 418708,
+          "pgid": 418711
+        },
+        {
+          "pid": 418712,
+          "start_ticks": 19603320,
+          "sid": 418708,
+          "pgid": 418712
+        },
+        {
+          "pid": 418713,
+          "start_ticks": 19603320,
+          "sid": 418708,
+          "pgid": 418711
+        },
+        {
+          "pid": 418714,
+          "start_ticks": 19603320,
+          "sid": 418708,
+          "pgid": 418712
+        },
+        {
+          "pid": 418911,
+          "start_ticks": 19603695,
+          "sid": 418708,
+          "pgid": 418911
+        },
+        {
+          "pid": 418912,
+          "start_ticks": 19603695,
+          "sid": 418708,
+          "pgid": 418911
+        },
+        {
+          "pid": 418917,
+          "start_ticks": 19603703,
+          "sid": 418708,
+          "pgid": 418911
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 196033.187990238,
+      "pid": 418708,
+      "spawn_return_monotonic": 196033.189752062,
+      "direct_identity": {
+        "pid": 418708,
+        "state": "R",
+        "ppid": 418134,
+        "pgid": 418708,
+        "sid": 418708,
+        "start_ticks": 19603318,
+        "rss_bytes": 274432
+      },
+      "peak_live_owned_identities": 6,
+      "peak_session_rss_bytes": 363872256,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-12T23:21:13.615825+00:00",
+      "elapsed_seconds": 4.549120768002467,
+      "logs": {
+        "build-phase-host-asan.stdout": {
+          "bytes": 318,
+          "sha256": "bebf721753b1f7277556a98139f3ee896bb6d8a4817781271182762a6588d61b"
+        },
+        "build-phase-host-asan.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "ctest-phase-host-asan",
+      "argv": [
+        "/usr/bin/ctest",
+        "--test-dir",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-phase-cache-stock-bench-20261013/build/phase-host-asan",
+        "-R",
+        "^phase_cache_owner_test$",
+        "--output-on-failure"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "ASAN_OPTIONS": "detect_leaks=1:halt_on_error=1",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+      },
+      "started_utc": "2026-10-12T23:21:13.616983+00:00",
+      "wall_seconds": 180,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 418967,
+          "start_ticks": 19603773,
+          "sid": 418967,
+          "pgid": 418967
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 196037.738672613,
+      "pid": 418967,
+      "spawn_return_monotonic": 196037.740311046,
+      "direct_identity": {
+        "pid": 418967,
+        "state": "R",
+        "ppid": 418134,
+        "pgid": 418967,
+        "sid": 418967,
+        "start_ticks": 19603773,
+        "rss_bytes": 380928
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 11972608,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-12T23:21:13.889527+00:00",
+      "elapsed_seconds": 0.27212689799489453,
+      "logs": {
+        "ctest-phase-host-asan.stdout": {
+          "bytes": 459,
+          "sha256": "0401d19675e95af7421242f15c8f77966a4bbd2b04bd94027eece8d8c123bc69"
+        },
+        "ctest-phase-host-asan.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "server-phase-lifetime",
+      "argv": [
+        "/usr/bin/python3",
+        "-m",
+        "unittest",
+        "serve.test_server.PhaseExperimentLifetime",
+        "-v"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-12T23:21:13.893470+00:00",
+      "wall_seconds": 180,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 418980,
+          "start_ticks": 19603801,
+          "sid": 418980,
+          "pgid": 418980
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 196038.015193507,
+      "pid": 418980,
+      "spawn_return_monotonic": 196038.017239817,
+      "direct_identity": {
+        "pid": 418980,
+        "state": "R",
+        "ppid": 418134,
+        "pgid": 418980,
+        "sid": 418980,
+        "start_ticks": 19603801,
+        "rss_bytes": 393216
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 9924608,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-12T23:21:14.302965+00:00",
+      "elapsed_seconds": 0.40904630700242706,
+      "logs": {
+        "server-phase-lifetime.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "server-phase-lifetime.stderr": {
+          "bytes": 398,
+          "sha256": "dd8f559358801408a500df51e9ddd528da0acef07950df26305d5df9e5e31a61"
+        }
+      }
+    },
+    {
+      "label": "server-suite",
+      "argv": [
+        "/usr/bin/python3",
+        "-m",
+        "unittest",
+        "serve.test_server",
+        "-v"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-12T23:21:14.304492+00:00",
+      "wall_seconds": 180,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 418999,
+          "start_ticks": 19603842,
+          "sid": 418999,
+          "pgid": 418999
+        },
+        {
+          "pid": 420804,
+          "start_ticks": 19606235,
+          "sid": 418999,
+          "pgid": 418999
+        },
+        {
+          "pid": 420856,
+          "start_ticks": 19606292,
+          "sid": 418999,
+          "pgid": 418999
+        },
+        {
+          "pid": 420882,
+          "start_ticks": 19606344,
+          "sid": 418999,
+          "pgid": 418999
+        },
+        {
+          "pid": 420910,
+          "start_ticks": 19606402,
+          "sid": 418999,
+          "pgid": 418999
+        },
+        {
+          "pid": 420952,
+          "start_ticks": 19606454,
+          "sid": 418999,
+          "pgid": 418999
+        },
+        {
+          "pid": 420981,
+          "start_ticks": 19606512,
+          "sid": 418999,
+          "pgid": 418999
+        },
+        {
+          "pid": 421743,
+          "start_ticks": 19607633,
+          "sid": 418999,
+          "pgid": 418999
+        },
+        {
+          "pid": 421767,
+          "start_ticks": 19607654,
+          "sid": 418999,
+          "pgid": 418999
+        },
+        {
+          "pid": 424167,
+          "start_ticks": 19611442,
+          "sid": 418999,
+          "pgid": 418999
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 196038.426256188,
+      "pid": 418999,
+      "spawn_return_monotonic": 196038.427964632,
+      "direct_identity": {
+        "pid": 418999,
+        "state": "R",
+        "ppid": 418134,
+        "pgid": 418999,
+        "sid": 418999,
+        "start_ticks": 19603842,
+        "rss_bytes": 458752
+      },
+      "peak_live_owned_identities": 2,
+      "peak_session_rss_bytes": 140419072,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 1,
+      "finished_utc": "2026-10-12T23:22:36.675776+00:00",
+      "elapsed_seconds": 82.37080156500451,
+      "logs": {
+        "server-suite.stdout": {
+          "bytes": 27840,
+          "sha256": "5c1e62af99382ac0f4e836b748e54c416c8ff451d8c7984ae83812ce82b63401"
+        },
+        "server-suite.stderr": {
+          "bytes": 39932,
+          "sha256": "09d067fe751c075db29d8d13719b7d5fcfe7870cbff4246ff8b0d3c20f6ef23a"
+        }
+      }
+    }
+  ],
+  "evidence": {
+    "configure-phase-host": {
+      "stdout": "-- The CXX compiler identification is Clang 22.1.0\n-- Detecting CXX compiler ABI info\n-- Detecting CXX compiler ABI info - done\n-- Check for working CXX compiler: /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++ - skipped\n-- Detecting CXX compile features\n-- Detecting CXX compile features - done\n-- AMD architectures ''\n-- Performing Test CMAKE_HAVE_LIBC_PTHREAD\n-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success\n-- Found Threads: TRUE  \n-- Performing Test STRATA_HAVE_AVXVNNI_INTRINSICS\n-- Performing Test STRATA_HAVE_AVXVNNI_INTRINSICS - Success\n-- The C compiler identification is Clang 22.1.0\n-- Detecting C compiler ABI info\n-- Detecting C compiler ABI info - done\n-- Check for working C compiler: /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang - skipped\n-- Detecting C compile features\n-- Detecting C compile features - done\n-- The ASM compiler identification is Clang with GNU-like command-line\n-- Found assembler: /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang\n-- Warning: ccache not found - consider installing it for faster compilation or disable this warning with GGML_CCACHE=OFF\n-- CMAKE_SYSTEM_PROCESSOR: x86_64\n-- GGML_SYSTEM_ARCH: x86\n-- Including CPU backend\n-- x86 detected\n-- Adding CPU backend variant ggml-cpu: -march=native \n-- ggml version: 0.24.0\n-- ggml commit:  3cf03257f\n-- Configuring done (1.5s)\n-- Generating done (0.0s)\n-- Build files have been written to: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-phase-cache-stock-bench-20261013/build/phase-host\n",
+      "stderr": ""
+    },
+    "build-phase-host": {
+      "stdout": "[1/4] Building CXX object CMakeFiles/strata_phase_cache_owner.dir/src/core/phase_cache_owner.cpp.o\n[2/4] Linking CXX static library libstrata_phase_cache_owner.a\n[3/4] Building CXX object CMakeFiles/phase_cache_owner_test.dir/tests/core/phase_cache_owner_test.cpp.o\n[4/4] Linking CXX executable phase_cache_owner_test\n",
+      "stderr": ""
+    },
+    "ctest-phase-host": {
+      "stdout": "Internal ctest changing into directory: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-phase-cache-stock-bench-20261013/build/phase-host\nTest project /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-phase-cache-stock-bench-20261013/build/phase-host\n    Start 6: phase_cache_owner_test\n1/1 Test #6: phase_cache_owner_test ...........   Passed    0.09 sec\n\n100% tests passed, 0 tests failed out of 1\n\nTotal Test time (real) =   0.09 sec\n",
+      "stderr": ""
+    },
+    "configure-phase-host-asan": {
+      "stdout": "-- The CXX compiler identification is Clang 22.1.0\n-- Detecting CXX compiler ABI info\n-- Detecting CXX compiler ABI info - done\n-- Check for working CXX compiler: /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++ - skipped\n-- Detecting CXX compile features\n-- Detecting CXX compile features - done\n-- AMD architectures ''\n-- Performing Test CMAKE_HAVE_LIBC_PTHREAD\n-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success\n-- Found Threads: TRUE  \n-- Performing Test STRATA_HAVE_AVXVNNI_INTRINSICS\n-- Performing Test STRATA_HAVE_AVXVNNI_INTRINSICS - Success\n-- The C compiler identification is Clang 22.1.0\n-- Detecting C compiler ABI info\n-- Detecting C compiler ABI info - done\n-- Check for working C compiler: /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang - skipped\n-- Detecting C compile features\n-- Detecting C compile features - done\n-- The ASM compiler identification is Clang with GNU-like command-line\n-- Found assembler: /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang\n-- Warning: ccache not found - consider installing it for faster compilation or disable this warning with GGML_CCACHE=OFF\n-- CMAKE_SYSTEM_PROCESSOR: x86_64\n-- GGML_SYSTEM_ARCH: x86\n-- Including CPU backend\n-- x86 detected\n-- Adding CPU backend variant ggml-cpu: -march=native \n-- ggml version: 0.24.0\n-- ggml commit:  3cf03257f\n-- Configuring done (1.4s)\n-- Generating done (0.0s)\n-- Build files have been written to: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-phase-cache-stock-bench-20261013/build/phase-host-asan\n",
+      "stderr": ""
+    },
+    "build-phase-host-asan": {
+      "stdout": "[1/4] Building CXX object CMakeFiles/strata_phase_cache_owner.dir/src/core/phase_cache_owner.cpp.o\n[2/4] Linking CXX static library libstrata_phase_cache_owner.a\n[3/4] Building CXX object CMakeFiles/phase_cache_owner_test.dir/tests/core/phase_cache_owner_test.cpp.o\n[4/4] Linking CXX executable phase_cache_owner_test\n",
+      "stderr": ""
+    },
+    "ctest-phase-host-asan": {
+      "stdout": "Internal ctest changing into directory: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-phase-cache-stock-bench-20261013/build/phase-host-asan\nTest project /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-phase-cache-stock-bench-20261013/build/phase-host-asan\n    Start 6: phase_cache_owner_test\n1/1 Test #6: phase_cache_owner_test ...........   Passed    0.17 sec\n\n100% tests passed, 0 tests failed out of 1\n\nTotal Test time (real) =   0.17 sec\n",
+      "stderr": ""
+    },
+    "server-phase-lifetime": {
+      "stdout": "",
+      "stderr": "test_exact_child_flag_is_frozen_without_spawning (serve.test_server.PhaseExperimentLifetime.test_exact_child_flag_is_frozen_without_spawning) ... ok\ntest_failed_phase_request_cannot_run_reload_hooks (serve.test_server.PhaseExperimentLifetime.test_failed_phase_request_cannot_run_reload_hooks) ... ok\n\n----------------------------------------------------------------------\nRan 2 tests in 0.013s\n\nOK\n"
+    },
+    "server-suite": {
+      "stdout": "[strata] model unloaded; the next request loads it again\n[strata] refused a request for Host 'rebind.example.com' from 127.0.0.1: not a name this server answers to (add it to \"allowed_hosts\" in the config or STRATA_ALLOWED_HOSTS, or set an API key)\n[strata] model unloaded; the next request loads it again\n[strata] loading the model again (it was unloaded) ...\n[strata] the engine is running again\n[strata] done: 10 tokens in 0 s (93206.8 tok/s) (length, cancel=False)\n[strata] done: 10 tokens in 0 s (110376.4 tok/s) (length, cancel=False)\n[strata] done: 10 tokens in 0 s (121222.7 tok/s) (length, cancel=False)\n[strata] done: 0 tokens in 1 s (0.0 tok/s) (cancel, cancel=True)\n[strata] done: 0 tokens in 1 s (0.0 tok/s) (cancel, cancel=True)\n[strata] 400 invalid request: tools[0] (f): \"parameters\" must be an object (the JSON schema of its parameters), not str\n[strata] 400 invalid request: tools[0] (f): \"parameters\" must be an object (the JSON schema of its parameters), not list\n[strata] 400 invalid request: tools[0] (f): \"parameters\" must be an object (the JSON schema of its parameters), not int\n[strata] 400 invalid request: tools[0] (f): \"input_schema\" must be an object (the JSON schema of its parameters), not str\n[strata] 400 invalid request: tools[0] (f): \"input_schema\" must be an object (the JSON schema of its parameters), not list\n[strata] 400 invalid request: tools[0] (f): \"input_schema\" must be an object (the JSON schema of its parameters), not bool\n[strata] done: 8 tokens in 0 s (118566.9 tok/s) (length, cancel=False)\n[strata] done: 8 tokens in 0 s (114912.4 tok/s) (length, cancel=False)\n[strata] done: 8 tokens in 0 s (82646.4 tok/s) (length, cancel=False)\n[strata] done: 12 tokens in 0 s (134576.6 tok/s) (stop, cancel=False)\n[strata] 400 invalid request: tools must be a list of tool objects, each {\"type\": \"function\", \"function\": {\"name\": ..., \"parameters\": {...}}}\n[strata] 400 invalid request: tools must be a list of tool objects, each {\"type\": \"function\", \"function\": {\"name\": ..., \"parameters\": {...}}}\n[strata] 400 invalid request: tools[0] has no name: each tool must be {\"type\": \"function\", \"function\": {\"name\": ..., \"parameters\": {...}}}\n[strata] 400 invalid request: tools must be a list of tool objects, each {\"type\": \"function\", \"function\": {\"name\": ..., \"parameters\": {...}}}\n[strata] 400 invalid request: tools[0] has no name: each tool must be {\"type\": \"function\", \"function\": {\"name\": ..., \"parameters\": {...}}}\n[strata] 400 invalid request: tools[0] has no name: each tool must be {\"type\": \"function\", \"function\": {\"name\": ..., \"parameters\": {...}}}\n[strata] 400 invalid request: tools must be a list of tool objects, each {\"name\": ..., \"input_schema\": {...}}\n[strata] 400 invalid request: tools must be a list of tool objects, each {\"name\": ..., \"input_schema\": {...}}\n[strata] 400 invalid request: tools[0] has no name: each tool must be {\"name\": ..., \"input_schema\": {...}}\n[strata] 400 invalid request: tools must be a list of tool objects, each {\"name\": ..., \"input_schema\": {...}}\n[strata] 400 invalid request: tools[0] has no name: each tool must be {\"name\": ..., \"input_schema\": {...}}\n[strata] 400 invalid request: tools[0] has no name: each tool must be {\"name\": ..., \"input_schema\": {...}}\n[strata] done: 8 tokens in 0 s (94786.5 tok/s) (length, cancel=False)\n[strata] done: 12 tokens in 0 s (157286.4 tok/s) (stop, cancel=False)\n[strata] 400 invalid request: messages must be a list of objects\n[strata] done: 12 tokens in 0 s (161319.4 tok/s) (stop, cancel=False)\n[strata] 400 invalid request: messages must be a list of objects\n[strata] 400 invalid request: No user query found in messages.\n[strata] done: 12 tokens in 0 s (129387.3 tok/s) (stop, cancel=False)\n[strata] done: 12 tokens in 0 s (121574.0 tok/s) (stop, cancel=False)\n[strata] done: 12 tokens in 0 s (126780.0 tok/s) (stop, cancel=False)\n[strata] done: 12 tokens in 0 s (115971.5 tok/s) (stop, cancel=False)\n[strata] done: 12 tokens in 0 s (164482.5 tok/s) (stop, cancel=False)\n[strata] done: 8 tokens in 0 s (88768.3 tok/s) (length, cancel=False)\n[strata] done: 8 tokens in 0 s (112977.9 tok/s) (length, cancel=False)\n[strata] done: 8 tokens in 0 s (143395.0 tok/s) (length, cancel=False)\n[strata] done: 8 tokens in 0 s (95869.8 tok/s) (length, cancel=False)\n[strata] done: 8 tokens in 0 s (149796.6 tok/s) (length, cancel=False)\n[strata] done: 8 tokens in 0 s (83055.5 tok/s) (length, cancel=False)\n[strata] done: 8 tokens in 0 s (78398.2 tok/s) (length, cancel=False)\n[strata] done: 13 tokens in 0 s (141994.7 tok/s) (stop, cancel=False)\n[strata] done: 13 tokens in 0 s (42202.7 tok/s) (stop, cancel=False)\n[strata] done: 10 tokens in 0 s (85077.2 tok/s) (length, cancel=False)\n[strata] done: 10 tokens in 0 s (127486.4 tok/s) (length, cancel=False)\n[strata] done: 10 tokens in 0 s (125955.1 tok/s) (length, cancel=False), expert cache 90.0% hit\n[strata] the engine reported an error: verify: layer 31 never rang (an illegal memory access was encountered)\n[strata] done: 0 tokens in 0 s (0.0 tok/s) (error, cancel=False)\n[strata] the engine reported an error: verify: layer 31 never rang (an illegal memory access was encountered)\n[strata] done: 0 tokens in 0 s (0.0 tok/s) (error, cancel=False)\n[strata] the engine stopped unexpectedly (exit code -9).  The next request starts the engine again.\n[strata] done: 5 tokens in 0 s (81920.0 tok/s) (error, cancel=False)\n[strata] the engine had stopped (exit code None); starting it again (a minute or two) ...\n[strata] the engine is running again\n[strata] done: 50 tokens in 0 s (120456.7 tok/s) (length, cancel=False)\n[strata] done: 50 tokens in 0 s (116767.9 tok/s) (length, cancel=False)\n[strata] done: 1 tokens in 0 s (49932.2 tok/s) (length, cancel=False)\n[strata] the reply reached max tokens while still thinking, so it has no answer: a thinking budget (reasoning_budget_tokens, in the request or in xestrata-<model>.json for every request) leaves room to answer\n[strata] 400 invalid request: request exceeds the context window: prompt (4088 tokens) leaves no room to answer in the context (4096); requests are never truncated\n[strata] done: 2011 tokens in 0 s (7945.9 tok/s) (stop, cancel=False)\n[strata] done: 2011 tokens in 0 s (7556.7 tok/s) (stop, cancel=False)\n[strata] done: 5 tokens in 0 s (115228.1 tok/s) (length, cancel=False)\n[strata] done: 272 tokens in 0 s (27516.9 tok/s) (stop, cancel=False)\n[strata] done: 272 tokens in 0 s (13951.4 tok/s) (stop, cancel=False)\n[strata] done: 272 tokens in 0 s (49923.5 tok/s) (stop, cancel=False)\n[strata] done: 272 tokens in 0 s (22273.1 tok/s) (stop, cancel=False)\n[strata] done: 203 tokens in 0 s (63445.9 tok/s) (stop, cancel=False)\n[strata] done: 203 tokens in 0 s (13861.7 tok/s) (stop, cancel=False)\n[strata] done: 203 tokens in 0 s (67494.5 tok/s) (stop, cancel=False)\n[strata] done: 203 tokens in 0 s (12114.2 tok/s) (stop, cancel=False)\n[strata] tool_choice {\"type\": \"tool\", \"name\": \"nope\"} is not supported here (or names no tool of the request): the model decides, as with \"auto\"\n[strata] done: 203 tokens in 0 s (64586.5 tok/s) (stop, cancel=False)\n[strata] tool_choice {\"type\": \"tool\", \"name\": \"nope\"} is not supported here (or names no tool of the request): the model decides, as with \"auto\"\n[strata] done: 203 tokens in 0 s (22331.2 tok/s) (stop, cancel=False)\n[strata] done: 203 tokens in 0 s (49583.3 tok/s) (stop, cancel=False)\n[strata] done: 203 tokens in 0 s (51009.1 tok/s) (stop, cancel=False)\n[strata] done: 203 tokens in 0 s (60070.8 tok/s) (stop, cancel=False)\n[strata] done: 272 tokens in 0 s (45370.9 tok/s) (stop, cancel=False)\n[strata] done: 272 tokens in 0 s (22563.0 tok/s) (stop, cancel=False)\n[strata] done: 272 tokens in 0 s (50136.3 tok/s) (stop, cancel=False)\n[strata] done: 272 tokens in 0 s (31625.3 tok/s) (stop, cancel=False)\n[strata] thinking budget reached (20 tokens): wrapping up the thinking\n[strata] done: 181 tokens in 0 s (65389.2 tok/s) (stop, cancel=False)\n[strata] done: 272 tokens in 0 s (47458.3 tok/s) (stop, cancel=False)\n[strata] tool_choice {\"type\": \"function\", \"function\": {\"name\": \"nope\"}} is not supported here (or names no tool of the request): the model decides, as with \"auto\"\n[strata] done: 203 tokens in 0 s (27721.7 tok/s) (stop, cancel=False)\n[strata] tool_choice {\"type\": \"function\"} is not supported here (or names no tool of the request): the model decides, as with \"auto\"\n[strata] done: 203 tokens in 0 s (63102.6 tok/s) (stop, cancel=False)\n[strata] tool_choice \"required\" is not supported here (or names no tool of the request): the model decides, as with \"auto\"\n[strata] done: 203 tokens in 0 s (62395.1 tok/s) (stop, cancel=False)\n[strata] tool_choice {\"type\": \"banana\"} is not supported here (or names no tool of the request): the model decides, as with \"auto\"\n[strata] done: 203 tokens in 0 s (65982.9 tok/s) (stop, cancel=False)\n[strata] tool_choice \"sometimes\" is not supported here (or names no tool of the request): the model decides, as with \"auto\"\n[strata] done: 203 tokens in 0 s (39327.7 tok/s) (stop, cancel=False)\n[strata] done: 64 tokens in 0 s (112222.2 tok/s) (stop, cancel=False)\n[strata] done: 64 tokens in 0 s (21587.1 tok/s) (stop, cancel=False)\n[strata] done: 56 tokens in 0 s (127722.1 tok/s) (stop, cancel=False)\n[strata] done: 56 tokens in 0 s (7676.1 tok/s) (stop, cancel=False)\n[strata] a picture a tool returned was left out of the prompt: this server has no image encoder\n[strata] a picture a tool returned was left out of the prompt: this server has no image encoder\n[strata] a picture a tool returned was left out of the prompt: this image format needs Pillow\n[strata] a picture a tool returned was left out of the prompt: the image URL could not be read\n[strata] refused an API request from the web page 'https://evil.example' (no API key; add its host to \"allowed_hosts\" or its origin to \"cors_origins\" in the config)\n[strata] 400 invalid request: a web page of another origin cannot have a file on this computer read as an image: send it as a data: URL (or add the page's origin to the config's trusted_origins)\n[strata] 400 invalid request: a web page of another origin cannot have a file on this computer read as an image: send it as a data: URL (or add the page's origin to the config's trusted_origins)\n[strata] 400 invalid request: a web page of another origin cannot have a file on this computer read as an image: send it as a data: URL (or add the page's origin to the config's trusted_origins)\n[strata] 400 invalid request: a web page of another origin cannot have a file on this computer read as an image: send it as a data: URL (or add the page's origin to the config's trusted_origins)\n[strata] done: 8 tokens in 0 s (105849.9 tok/s) (length, cancel=False)\n[strata] done: 8 tokens in 0 s (119410.8 tok/s) (length, cancel=False)\n[strata] done: 8 tokens in 0 s (127583.4 tok/s) (length, cancel=False)\n[strata] done: 8 tokens in 0 s (115704.9 tok/s) (length, cancel=False)\n[strata] the engine stopped unexpectedly (exit code -9).  The next request starts the engine again.\n[strata] done: 3 tokens in 0 s (3578.8 tok/s) (error, cancel=False)\n[strata] done: 30 tokens in 1 s (50.0 tok/s) (length, cancel=False)\n[strata] the reply reached max tokens while still thinking, so it has no answer: a thinking budget (reasoning_budget_tokens, in the request or in xestrata-<model>.json for every request) leaves room to answer\n[strata] the engine said nothing for 1 s during the request; the server ended the engine. The engine and the server lost step (issue #481; a very slow PC can raise \"engine_silence_s\" in the config, 0 = wait forever). If it happens again, please add the end of the engine log to an issue at github.com/MistVVK/XeStrata/issues. The next request starts the engine again.\n[strata] done: 1 tokens in 1 s (2.0 tok/s) (error, cancel=False)\n[strata] the engine had stopped (exit code -9); starting it again (a minute or two) ...\n[strata] the engine is running again\n[strata] done: 2 tokens in 0 s (18935.9 tok/s) (length, cancel=False)\n[strata] the engine said nothing for 1 s during the request; the server ended the engine. The engine and the server lost step (issue #481; a very slow PC can raise \"engine_silence_s\" in the config, 0 = wait forever). If it happens again, please add the end of the engine log to an issue at github.com/MistVVK/XeStrata/issues. The next request starts the engine again.\n[strata] done: 1 tokens in 1 s (2.0 tok/s) (error, cancel=False)\n[strata] the engine had stopped (exit code -9); starting it again (a minute or two) ...\n[strata] the engine is running again\n[strata] done: 2 tokens in 0 s (620.2 tok/s) (length, cancel=False)\n[strata] the engine did not finish the request after it was stopped (STOP) within 0 s; the server ended the engine. The engine and the server lost step (issue #481; a very slow PC can raise \"engine_silence_s\" in the config, 0 = wait forever). If it happens again, please add the end of the engine log to an issue at github.com/MistVVK/XeStrata/issues. The next request starts the engine again.\n[strata] done: 2 tokens in 1 s (4.0 tok/s) (error, cancel=False)\n[strata] the engine had stopped (exit code -9); starting it again (a minute or two) ...\n[strata] the engine is running again\n[strata] done: 2 tokens in 0 s (27324.5 tok/s) (length, cancel=False)\n[strata] done: 8 tokens in 0 s (142179.8 tok/s) (length, cancel=False)\n[strata] done: 50 tokens in 0 s (62920.9 tok/s) (length, cancel=False)\n[strata] done: 50 tokens in 0 s (117950.1 tok/s) (length, cancel=False)\n[strata] done: 50 tokens in 0 s (73973.6 tok/s) (length, cancel=False)\n[strata] done: 50 tokens in 0 s (91940.0 tok/s) (length, cancel=False)\n[strata] done: 1500 tokens in 0 s (10290.7 tok/s) (length, cancel=False)\n[strata] done: 1500 tokens in 0 s (9980.0 tok/s) (length, cancel=False)\n[strata] 400 invalid request: request exceeds the context window: prompt (29 tokens) + max tokens (4096) exceeds the context (4096); requests are never truncated. Send a smaller max_tokens (at most 4059 here), or add \"fit_max_tokens\": true to the model's xestrata-<model>.json to shorten it to the room left (#545)\n[strata] 400 invalid request: request exceeds the context window: prompt (29 tokens) + max tokens (4096) exceeds the context (4096); requests are never truncated. Send a smaller max_tokens (at most 4059 here), or add \"fit_max_tokens\": true to the model's xestrata-<model>.json to shorten it to the room left (#545)\n[strata] done: 2011 tokens in 0 s (7421.5 tok/s) (stop, cancel=False)\n[strata] done: 2011 tokens in 0 s (6470.0 tok/s) (stop, cancel=False)\n[strata] done: 2011 tokens in 0 s (7288.6 tok/s) (stop, cancel=False)\n[strata] done: 2011 tokens in 0 s (6575.8 tok/s) (stop, cancel=False)\n[strata] done: 2011 tokens in 0 s (8196.7 tok/s) (stop, cancel=False)\n[strata] done: 2011 tokens in 0 s (6941.1 tok/s) (stop, cancel=False)\n[strata] done: 2011 tokens in 0 s (8109.6 tok/s) (stop, cancel=False)\n[strata] done: 2011 tokens in 0 s (7230.2 tok/s) (stop, cancel=False)\n[strata] done: 2011 tokens in 0 s (6907.2 tok/s) (stop, cancel=False)\n[strata] done: 2011 tokens in 0 s (6255.1 tok/s) (stop, cancel=False)\n[strata] done: 1 tokens in 0 s (43690.7 tok/s) (length, cancel=False)\n[strata] the reply reached max tokens while still thinking, so it has no answer: a thinking budget (reasoning_budget_tokens, in the request or in xestrata-<model>.json for every request) leaves room to answer\n[strata] done: 1 tokens in 0 s (41120.6 tok/s) (length, cancel=False)\n[strata] the reply reached max tokens while still thinking, so it has no answer: a thinking budget (reasoning_budget_tokens, in the request or in xestrata-<model>.json for every request) leaves room to answer\n[strata] done: 5 tokens in 0 s (113975.7 tok/s) (length, cancel=False)\n[strata] the reply reached max tokens while still thinking, so it has no answer: a thinking budget (reasoning_budget_tokens, in the request or in xestrata-<model>.json for every request) leaves room to answer\n[strata] 400 invalid request: request exceeds the context window: prompt (4088 tokens) leaves no room to answer in the context (4096); requests are never truncated\n[strata] done: 1 tokens in 0 s (32263.9 tok/s) (length, cancel=False)\n[strata] the reply reached max tokens while still thinking, so it has no answer: a thinking budget (reasoning_budget_tokens, in the request or in xestrata-<model>.json for every request) leaves room to answer\n[strata] done: 5 tokens in 0 s (96642.9 tok/s) (length, cancel=False)\n[strata] the reply reached max tokens while still thinking, so it has no answer: a thinking budget (reasoning_budget_tokens, in the request or in xestrata-<model>.json for every request) leaves room to answer\n[strata] 400 invalid request: request exceeds the context window: prompt (4088 tokens) leaves no room to answer in the context (4096); requests are never truncated\n[strata] done: 8 tokens in 0 s (103883.7 tok/s) (length, cancel=False)\n[strata] done: 8 tokens in 0 s (136956.9 tok/s) (length, cancel=False)\n[strata] done: 8 tokens in 0 s (150468.3 tok/s) (length, cancel=False)\n[strata] done: 8 tokens in 0 s (160547.5 tok/s) (length, cancel=False)\n[strata] done: 8 tokens in 0 s (156067.1 tok/s) (length, cancel=False)\n[strata] done: 8 tokens in 0 s (170327.1 tok/s) (length, cancel=False)\n[strata] done: 8 tokens in 0 s (157532.5 tok/s) (length, cancel=False)\n[strata] done: 8 tokens in 0 s (129055.5 tok/s) (length, cancel=False)\n[strata] done: 8 tokens in 0 s (126620.5 tok/s) (length, cancel=False)\n[strata] done: 8 tokens in 0 s (151830.0 tok/s) (length, cancel=False)\n[strata] done: 8 tokens in 0 s (151146.1 tok/s) (length, cancel=False)\n[strata] done: 8 tokens in 0 s (156796.4 tok/s) (length, cancel=False)\n[strata] done: 40 tokens in 0 s (5966.1 tok/s) (length, cancel=False)\n[strata] the reply reached max tokens while still thinking, so it has no answer: a thinking budget (reasoning_budget_tokens, in the request or in xestrata-<model>.json for every request) leaves room to answer\n[strata] done: 40 tokens in 0 s (9905.1 tok/s) (length, cancel=False)\n[strata] the reply reached max tokens while still thinking, so it has no answer: a thinking budget (reasoning_budget_tokens, in the request or in xestrata-<model>.json for every request) leaves room to answer\n[strata] done: 18 tokens in 0 s (122164.2 tok/s) (stop, cancel=False)\n[strata] done: 36 tokens in 0 s (77792.3 tok/s) (stop, cancel=False)\n[strata] the reply ended inside its thinking with no answer: closing the thinking once and continuing (reasoning_close_retry)\n[strata] done: 64 tokens in 0 s (106776.2 tok/s) (stop, cancel=False)\n[strata] other apps now use the Chat settings: temperature=0.3\n[strata] done: 16 tokens in 0 s (95869.8 tok/s) (stop, cancel=False)\n[strata] other apps use their own settings again\n[strata] other apps now use the Chat settings: temperature=0.3\n[strata] other apps use their own settings again\n[strata] done: 16 tokens in 0 s (131844.5 tok/s) (stop, cancel=False)\n[strata] other apps now use the Chat settings: temperature=1.0\n[strata] other apps now use the Chat settings: temperature=0.3, top_p=0.9, top_k=10, seed=7, max_tokens=77, reasoning_effort=low, experimental_speed_projection=False\n[strata] done: 16 tokens in 0 s (80369.9 tok/s) (stop, cancel=False)\n[strata] done: 5 tokens in 0 s (121927.4 tok/s) (length, cancel=False)\n[strata] the reply reached max tokens while still thinking, so it has no answer: a thinking budget (reasoning_budget_tokens, in the request or in xestrata-<model>.json for every request) leaves room to answer\n[strata] other apps now use the Chat settings: temperature=1.0\n[strata] model unloaded; the next request loads it again\n[strata] before loading: /usr/bin/python3 -c open('/tmp/tmp613lki5v/ran', 'w').close()\n[strata] loading the model again (it was unloaded) ...\n[strata] the engine is running again\n[strata] done: 13 tokens in 0 s (139096.8 tok/s) (stop, cancel=False)\n[strata] the model unloads after 1 s without requests\n[strata] model unloaded after 1 s idle; the next request loads it again\n[strata] loading the model again (it was unloaded) ...\n[strata] the engine is running again\n[strata] done: 13 tokens in 0 s (128598.9 tok/s) (stop, cancel=False)\n[strata] model unloaded; the next request loads it again\n[strata] loading the model again (it was unloaded) ...\n[strata] the engine is running again\n[strata] model unloaded; the next request loads it again\n[strata] model unloaded after 1 s idle; the next request loads it again\n[strata] loading the model again (it was unloaded) ...\n[strata] the engine is running again\n[strata] done: 13 tokens in 0 s (143489.3 tok/s) (stop, cancel=False)\n[strata] model unloaded; the next request loads it again\n[strata] loading the model again (it was unloaded) ...\n[strata] the engine is running again\n[strata] done: 13 tokens in 0 s (134632.0 tok/s) (stop, cancel=False)\n[strata] model unloaded; the next request loads it again\n[strata] loading the model again (it was unloaded) ...\n[strata] the engine is running again\n[strata] done: 13 tokens in 0 s (110825.1 tok/s) (stop, cancel=False)\n[strata] model unloaded; the next request loads it again\n[strata] starting the vision encoder ...\n[strata] loading the model again (it was unloaded) ...\n[strata] the engine is running again\n[strata] done: 13 tokens in 0 s (97892.2 tok/s) (stop, cancel=False)\n[strata] done: 15 tokens in 0 s (26760.8 tok/s) (disconnect, cancel=False)\n[strata] done: 20 tokens in 0 s (108801.7 tok/s) (length, cancel=False)\n[strata] done: 36 tokens in 0 s (72593.7 tok/s) (stop, cancel=False)\n[strata] done: 36 tokens in 0 s (3090.4 tok/s) (stop, cancel=False)\n[strata] done: 36 tokens in 0 s (90146.2 tok/s) (stop, cancel=False)\n[strata] done: 36 tokens in 0 s (5687.6 tok/s) (stop, cancel=False)\n[strata] 400 invalid request: stop takes at most 4 strings\n[strata] 400 invalid request: stop must be a string or a list of strings\n[strata] 400 invalid request: stop_sequences must be a list of strings\n[strata] 400 invalid request: stop_sequences must be a list of strings\n[strata] done: 19 tokens in 0 s (101777.5 tok/s) (stop, cancel=False)\n[strata] done: 19 tokens in 0 s (1558.4 tok/s) (stop, cancel=False)\n[strata] done: 19 tokens in 0 s (92129.2 tok/s) (stop, cancel=False)\n[strata] done: 19 tokens in 0 s (8578.2 tok/s) (stop, cancel=False)\n[strata] done: 36 tokens in 0 s (105738.8 tok/s) (stop, cancel=False)\n[strata] done: 36 tokens in 0 s (99996.7 tok/s) (stop, cancel=False)\n[strata] done: 36 tokens in 0 s (97416.1 tok/s) (stop, cancel=False)\n[strata] done: 36 tokens in 0 s (2767.5 tok/s) (stop, cancel=False)\n[strata] done: 36 tokens in 0 s (3844.8 tok/s) (stop, cancel=False)\n[strata] done: 36 tokens in 0 s (5143.2 tok/s) (stop, cancel=False)\n[strata] done: 36 tokens in 0 s (129387.3 tok/s) (stop, cancel=False)\n[strata] done: 36 tokens in 0 s (99996.7 tok/s) (stop, cancel=False)\n[strata] done: 36 tokens in 0 s (112014.1 tok/s) (stop, cancel=False)\n[strata] done: 36 tokens in 0 s (1943.3 tok/s) (stop, cancel=False)\n[strata] done: 36 tokens in 0 s (5059.5 tok/s) (stop, cancel=False)\n[strata] done: 36 tokens in 0 s (5473.6 tok/s) (stop, cancel=False)\n[strata] done: 29 tokens in 0 s (108216.0 tok/s) (stop, cancel=False)\n[strata] done: 24 tokens in 0 s (102092.6 tok/s) (stop, cancel=False)\n[strata] done: 24 tokens in 0 s (2769.8 tok/s) (stop, cancel=False)\n[strata] done: 24 tokens in 0 s (117734.8 tok/s) (stop, cancel=False)\n[strata] done: 24 tokens in 0 s (6131.3 tok/s) (stop, cancel=False)\n[strata] 400 invalid request: reasoning_budget_tokens='lots': expected a whole number of tokens (0: no budget)\n[strata] 400 invalid request: reasoning_budget_tokens=2.5: expected a whole number of tokens (0: no budget)\n[strata] 400 invalid request: reasoning_budget_tokens=True: expected a whole number of tokens (0: no budget)\n[strata] 400 invalid request: reasoning_budget_tokens=[1]: expected a whole number of tokens (0: no budget)\n[strata] done: 211 tokens in 0 s (61659.5 tok/s) (stop, cancel=False)\n[strata] thinking budget reached (20 tokens): wrapping up the thinking\n[strata] done: 112 tokens in 0 s (51055.5 tok/s) (stop, cancel=False)\n[strata] done: 211 tokens in 0 s (64541.9 tok/s) (stop, cancel=False)\n[strata] thinking budget reached (20 tokens): wrapping up the thinking\n[strata] done: 108 tokens in 0 s (81501.4 tok/s) (stop, cancel=False)\n[strata] thinking budget reached (30 tokens): wrapping up the thinking\n[strata] done: 122 tokens in 0 s (6610.2 tok/s) (stop, cancel=False)\n[strata] done: 20 tokens in 0 s (88301.1 tok/s) (length, cancel=False)\n[strata] the reply reached max tokens while still thinking, so it has no answer: a thinking budget (reasoning_budget_tokens, in the request or in xestrata-<model>.json for every request) leaves room to answer\n[strata] done: 211 tokens in 0 s (64181.5 tok/s) (stop, cancel=False)\n[strata] thinking budget reached (20 tokens): wrapping up the thinking\n[strata] done: 112 tokens in 0 s (21437.6 tok/s) (stop, cancel=False)\n[strata] thinking budget reached (20 tokens): wrapping up the thinking\n[strata] done: 112 tokens in 0 s (86720.0 tok/s) (stop, cancel=False)\n[strata] done: 211 tokens in 0 s (64401.0 tok/s) (stop, cancel=False)\n[strata] done: 17 tokens in 0 s (127783.5 tok/s) (stop, cancel=False)\n[strata] done: 119 tokens in 0 s (76930.1 tok/s) (length, cancel=False)\n[strata] done: 119 tokens in 0 s (10935.1 tok/s) (length, cancel=False)\n[strata] done: 119 tokens in 0 s (56621.9 tok/s) (length, cancel=False)\n[strata] done: 119 tokens in 0 s (9339.5 tok/s) (length, cancel=False)\n[strata] done: 120 tokens in 0 s (83998.1 tok/s) (stop, cancel=False)\n[strata] done: 120 tokens in 0 s (11026.8 tok/s) (stop, cancel=False)\n[strata] done: 120 tokens in 0 s (63526.0 tok/s) (stop, cancel=False)\n[strata] done: 120 tokens in 0 s (7530.5 tok/s) (stop, cancel=False)\n[strata] done: 147 tokens in 0 s (77003.0 tok/s) (stop, cancel=False)\n[strata] done: 147 tokens in 0 s (14423.2 tok/s) (stop, cancel=False)\n[strata] done: 147 tokens in 0 s (73061.1 tok/s) (stop, cancel=False)\n[strata] done: 147 tokens in 0 s (12912.0 tok/s) (stop, cancel=False)\n[strata] done: 13 tokens in 0 s (89976.8 tok/s) (stop, cancel=False), expert cache 90.0% hit\n[strata] done: 5 tokens in 0 s (97542.0 tok/s) (length, cancel=False)\n[strata] the reply reached max tokens while still thinking, so it has no answer: a thinking budget (reasoning_budget_tokens, in the request or in xestrata-<model>.json for every request) leaves room to answer\n[strata] done: 13 tokens in 0 s (97716.8 tok/s) (stop, cancel=False), expert cache 90.0% hit\n[strata] done: 13 tokens in 0 s (7084.1 tok/s) (stop, cancel=False), expert cache 90.0% hit\n[strata] done: 13 tokens in 0 s (7363.4 tok/s) (stop, cancel=False), expert cache 90.0% hit\n[strata] done: 13 tokens in 0 s (93848.5 tok/s) (stop, cancel=False), expert cache 90.0% hit\n[strata] 400 invalid request: request exceeds the context window: prompt (43 tokens) + max tokens (8) exceeds the context (48); requests are never truncated. Send a smaller max_tokens (at most 0 here), or add \"fit_max_tokens\": true to the model's xestrata-<model>.json to shorten it to the room left (#545)\n[strata] 400 invalid request: request exceeds the context window: prompt (43 tokens) + max tokens (8) exceeds the context (48); requests are never truncated. Send a smaller max_tokens (at most 0 here), or add \"fit_max_tokens\": true to the model's xestrata-<model>.json to shorten it to the room left (#545)\n[strata] done: 8 tokens in 0 s (135300.1 tok/s) (length, cancel=False)\n[strata] done: 8 tokens in 0 s (116508.4 tok/s) (length, cancel=False)\n[strata] done: 5 tokens in 0 s (99391.1 tok/s) (length, cancel=False)\n[strata] the reply reached max tokens while still thinking, so it has no answer: a thinking budget (reasoning_budget_tokens, in the request or in xestrata-<model>.json for every request) leaves room to answer\n",
+      "stderr": "test_a_body_a_handler_read_is_not_waited_for (serve.test_server.AnswerBeforeTheBody.test_a_body_a_handler_read_is_not_waited_for)\n#594: /config and /load read their body themselves: the close must not wait for the drain's 5 s. ... /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-phase-cache-stock-bench-20261013/serve/telemetry.py:334: ResourceWarning: unclosed file <_io.TextIOWrapper name='/proc/stat' mode='r' encoding='UTF-8'>\n  f = [int(x) for x in open(\"/proc/stat\").readline().split()[1:]]\nResourceWarning: Enable tracemalloc to get the object allocation traceback\n/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-phase-cache-stock-bench-20261013/serve/telemetry.py:322: ResourceWarning: unclosed file <_io.TextIOWrapper name='/proc/cpuinfo' mode='r' encoding='utf-8'>\n  return line.split(\":\", 1)[1].strip()\nResourceWarning: Enable tracemalloc to get the object allocation traceback\n/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-phase-cache-stock-bench-20261013/serve/telemetry.py:349: ResourceWarning: unclosed file <_io.TextIOWrapper name='/proc/meminfo' mode='r' encoding='UTF-8'>\n  info = dict(line.split(\":\", 1) for line in open(\"/proc/meminfo\"))\nResourceWarning: Enable tracemalloc to get the object allocation traceback\nok\ntest_a_body_that_comes_in_drops_does_not_hold_the_connection (serve.test_server.AnswerBeforeTheBody.test_a_body_that_comes_in_drops_does_not_hold_the_connection)\nA client that announces a body and sends it a byte at a time is let go after DRAIN_SECONDS, with its ... ok\ntest_a_host_the_server_does_not_answer_to (serve.test_server.AnswerBeforeTheBody.test_a_host_the_server_does_not_answer_to) ... ok\ntest_a_method_with_no_handler (serve.test_server.AnswerBeforeTheBody.test_a_method_with_no_handler) ... ok\ntest_a_wrong_key (serve.test_server.AnswerBeforeTheBody.test_a_wrong_key) ... ok\ntest_a_wrong_key_and_a_body_of_megabytes (serve.test_server.AnswerBeforeTheBody.test_a_wrong_key_and_a_body_of_megabytes)\nAn agent client's conversation, or one screenshot, is several MiB, and a rotated key is when the 401 ... ok\ntest_load_and_unload (serve.test_server.AnswerBeforeTheBody.test_load_and_unload) ... ok\ntest_not_the_apps_own_page (serve.test_server.AnswerBeforeTheBody.test_not_the_apps_own_page) ... ok\ntest_a_blank_key_is_an_error_not_no_key (serve.test_server.ApiKeyForms.test_a_blank_key_is_an_error_not_no_key) ... ok\ntest_a_key_outside_ascii_matches_as_utf8_and_as_latin1 (serve.test_server.ApiKeyForms.test_a_key_outside_ascii_matches_as_utf8_and_as_latin1) ... ok\ntest_a_utf8_key_over_http (serve.test_server.ApiKeyForms.test_a_utf8_key_over_http) ... ok\ntest_the_key_loses_what_a_header_cannot_carry (serve.test_server.ApiKeyForms.test_the_key_loses_what_a_header_cannot_carry) ... ok\ntest_a_budget_that_fits_is_quiet (serve.test_server.BudgetOverRam.test_a_budget_that_fits_is_quiet) ... ok\ntest_no_budget_argument_is_quiet (serve.test_server.BudgetOverRam.test_no_budget_argument_is_quiet) ... ok\ntest_over_free_ram_warns (serve.test_server.BudgetOverRam.test_over_free_ram_warns) ... ok\ntest_over_total_less_headroom_warns (serve.test_server.BudgetOverRam.test_over_total_less_headroom_warns) ... ok\ntest_history_and_totals (serve.test_server.CancelledRead.test_history_and_totals) ... ok\ntest_parse_done_read_field (serve.test_server.CancelledRead.test_parse_done_read_field) ... ok\ntest_prompt_tokens_seen (serve.test_server.CancelledRead.test_prompt_tokens_seen) ... ok\ntest_a_plain_version_is_kept (serve.test_server.ClaudeCodeBillingStamp.test_a_plain_version_is_kept) ... ok\ntest_bounds (serve.test_server.ClaudeCodeBillingStamp.test_bounds) ... ok\ntest_cc_version_tail_is_pinned (serve.test_server.ClaudeCodeBillingStamp.test_cc_version_tail_is_pinned) ... ok\ntest_cch_is_pinned (serve.test_server.ClaudeCodeBillingStamp.test_cch_is_pinned) ... ok\ntest_only_at_the_start_of_the_system_prompt (serve.test_server.ClaudeCodeBillingStamp.test_only_at_the_start_of_the_system_prompt) ... ok\ntest_string_system_is_pinned (serve.test_server.ClaudeCodeBillingStamp.test_string_system_is_pinned) ... ok\ntest_two_turns_share_the_whole_system_prompt (serve.test_server.ClaudeCodeBillingStamp.test_two_turns_share_the_whole_system_prompt) ... ok\ntest_non_streamed (serve.test_server.ClientHangUp.test_non_streamed) ... ----------------------------------------\nException occurred during processing of request from ('127.0.0.1', 53524)\nTraceback (most recent call last):\n  File \"/usr/lib/python3.12/socketserver.py\", line 692, in process_request_thread\n    self.finish_request(request, client_address)\n  File \"/usr/lib/python3.12/socketserver.py\", line 362, in finish_request\n    self.RequestHandlerClass(request, client_address, self)\n  File \"/usr/lib/python3.12/socketserver.py\", line 761, in __init__\n    self.handle()\n  File \"/usr/lib/python3.12/http/server.py\", line 436, in handle\n    self.handle_one_request()\n  File \"/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-phase-cache-stock-bench-20261013/serve/server.py\", line 4476, in handle_one_request\n    super().handle_one_request()\n  File \"/usr/lib/python3.12/http/server.py\", line 424, in handle_one_request\n    method()\n  File \"/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-phase-cache-stock-bench-20261013/serve/server.py\", line 4848, in do_POST\n    self._post()\n  File \"/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-phase-cache-stock-bench-20261013/serve/server.py\", line 4955, in _post\n    self._openai(req)\n  File \"/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-phase-cache-stock-bench-20261013/serve/server.py\", line 5239, in _openai\n    return self._json(200, openai_collect(chunks))\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-phase-cache-stock-bench-20261013/serve/server.py\", line 4687, in _json\n    self.wfile.write(body)\n  File \"/usr/lib/python3.12/socketserver.py\", line 840, in write\n    self._sock.sendall(b)\nBrokenPipeError: [Errno 32] Broken pipe\n----------------------------------------\nok\ntest_streamed (serve.test_server.ClientHangUp.test_streamed) ... ok\ntest_a_tool_schema_that_is_not_an_object_is_a_400 (serve.test_server.ClientShapes.test_a_tool_schema_that_is_not_an_object_is_a_400) ... ok\ntest_anthropic_mid_conversation_system (serve.test_server.ClientShapes.test_anthropic_mid_conversation_system) ... ok\ntest_leading_system_unchanged (serve.test_server.ClientShapes.test_leading_system_unchanged) ... ok\ntest_malformed_tools_are_a_400 (serve.test_server.ClientShapes.test_malformed_tools_are_a_400) ... ok\ntest_messages_as_a_json_string_over_http (serve.test_server.ClientShapes.test_messages_as_a_json_string_over_http) ... ok\ntest_messages_sent_as_a_json_string (serve.test_server.ClientShapes.test_messages_sent_as_a_json_string) ... ok\ntest_no_user_turn_is_a_400 (serve.test_server.ClientShapes.test_no_user_turn_is_a_400) ... ok\ntest_openai_late_developer_and_system (serve.test_server.ClientShapes.test_openai_late_developer_and_system) ... ok\ntest_query_string (serve.test_server.ClientShapes.test_query_string) ... ok\ntest_tool_call_malformed_arguments_fallback (serve.test_server.ClientShapes.test_tool_call_malformed_arguments_fallback) ... ok\ntest_vision_temp_image_removed_when_the_pipe_fails (serve.test_server.ClientShapes.test_vision_temp_image_removed_when_the_pipe_fails) ... ok\ntest_well_formed_tools_still_work (serve.test_server.ClientShapes.test_well_formed_tools_still_work) ... ok\ntest_a_blank_key_is_refused (serve.test_server.ConfigApiKey.test_a_blank_key_is_refused) ... ok\ntest_a_key_and_no_key (serve.test_server.ConfigApiKey.test_a_key_and_no_key) ... ok\ntest_an_empty_key_is_a_warning (serve.test_server.ConfigApiKey.test_an_empty_key_is_a_warning) ... ok\ntest_a_non_streamed_answer_says_the_connection_closes (serve.test_server.ConnectionClose.test_a_non_streamed_answer_says_the_connection_closes) ... ok\ntest_a_streamed_answer_says_the_connection_closes (serve.test_server.ConnectionClose.test_a_streamed_answer_says_the_connection_closes) ... ok\ntest_drafts_in_history_and_totals (serve.test_server.DraftCounts.test_drafts_in_history_and_totals) ... ok\ntest_an_older_engine_gets_the_advice_in_words (serve.test_server.DraftHeadHint.test_an_older_engine_gets_the_advice_in_words) ... ok\ntest_other_failures_and_earlier_starts_add_nothing (serve.test_server.DraftHeadHint.test_other_failures_and_earlier_starts_add_nothing) ... ok\ntest_the_engines_hint_is_relayed (serve.test_server.DraftHeadHint.test_the_engines_hint_is_relayed) ... ok\ntest_changing_the_effort_keeps_the_conversation (serve.test_server.EffortAtTheEnd.test_changing_the_effort_keeps_the_conversation) ... ok\ntest_the_config (serve.test_server.EffortAtTheEnd.test_the_config) ... ok\ntest_the_default_prompt_is_unchanged (serve.test_server.EffortAtTheEnd.test_the_default_prompt_is_unchanged) ... ok\ntest_the_next_turn_reuses_the_checkpoint (serve.test_server.EffortAtTheEnd.test_the_next_turn_reuses_the_checkpoint) ... ok\ntest_the_trailing_turn (serve.test_server.EffortAtTheEnd.test_the_trailing_turn) ... ok\ntest_engine_err_mid_stream (serve.test_server.EngineDeath.test_engine_err_mid_stream)\nThe engine's ERR line after the stream started reaches the client as an error event (it used to be a ... ok\ntest_error_then_restart (serve.test_server.EngineDeath.test_error_then_restart) ... ok\ntest_a_budget_that_fits_is_unchanged (serve.test_server.FitMaxTokens.test_a_budget_that_fits_is_unchanged) ... ok\ntest_no_room_is_still_a_400 (serve.test_server.FitMaxTokens.test_no_room_is_still_a_400) ... ok\ntest_overshoot_is_clamped_to_the_room (serve.test_server.FitMaxTokens.test_overshoot_is_clamped_to_the_room) ... ok\ntest_a_call_cut_by_max_tokens_is_not_a_tool_call (serve.test_server.ForcedToolChoice.test_a_call_cut_by_max_tokens_is_not_a_tool_call) ... ok\ntest_anthropic_any_tool_none (serve.test_server.ForcedToolChoice.test_anthropic_any_tool_none) ... ok\ntest_auto_absent_and_none_leave_the_tools_to_the_model (serve.test_server.ForcedToolChoice.test_auto_absent_and_none_leave_the_tools_to_the_model) ... ok\ntest_required_and_named_after_the_thinking (serve.test_server.ForcedToolChoice.test_required_and_named_after_the_thinking) ... ok\ntest_the_budget_wrap_up_opens_the_call (serve.test_server.ForcedToolChoice.test_the_budget_wrap_up_opens_the_call) ... ok\ntest_the_flat_shape_names_a_function (serve.test_server.ForcedToolChoice.test_the_flat_shape_names_a_function) ... ok\ntest_values_it_cannot_honour_act_as_auto (serve.test_server.ForcedToolChoice.test_values_it_cannot_honour_act_as_auto)\nNot a 400: an odd tool_choice is logged and the model decides. ... ok\ntest_without_thinking_the_prompt_ends_with_the_opening (serve.test_server.ForcedToolChoice.test_without_thinking_the_prompt_ends_with_the_opening) ... ok\ntest_env (serve.test_server.GpuChoice.test_env) ... ok\ntest_anthropic_tool_result_image (serve.test_server.ImageMarkers.test_anthropic_tool_result_image)\nClaude Code's Read of a picture returns it inside a tool_result: it reaches the encoder, in place. ... ok\ntest_literal_marker_with_an_image (serve.test_server.ImageMarkers.test_literal_marker_with_an_image) ... ok\ntest_the_whole_marker_in_text_before_images (serve.test_server.ImageMarkers.test_the_whole_marker_in_text_before_images) ... ok\ntest_a_page_of_another_site_cannot_name_a_file (serve.test_server.ImageSources.test_a_page_of_another_site_cannot_name_a_file) ... ok\ntest_a_url_is_downloaded_outside_the_fifo (serve.test_server.ImageSources.test_a_url_is_downloaded_outside_the_fifo) ... ok\ntest_a_url_is_read_up_to_the_cap (serve.test_server.ImageSources.test_a_url_is_read_up_to_the_cap) ... ok\ntest_network_paths_are_refused_before_any_look (serve.test_server.ImageSources.test_network_paths_are_refused_before_any_look) ... ok\ntest_unreadable_sources_are_a_value_error (serve.test_server.ImageSources.test_unreadable_sources_are_a_value_error)\nFrom #582: a bad data: URL or an unreadable file is a 400, not a dropped connection. ... ok\ntest_a_failed_start_kills_the_process_and_raises (serve.test_server.LazyVision.test_a_failed_start_kills_the_process_and_raises) ... ok\ntest_lazy_starts_nothing_and_alive_says_so (serve.test_server.LazyVision.test_lazy_starts_nothing_and_alive_says_so) ... ok\ntest_restart_starts_it_and_close_ends_it (serve.test_server.LazyVision.test_restart_starts_it_and_close_ends_it) ... ok\ntest_no_profile_in_the_args (serve.test_server.LearnedProfile.test_no_profile_in_the_args) ... ok\ntest_save_and_start_from_it (serve.test_server.LearnedProfile.test_save_and_start_from_it) ... ok\ntest_without_the_key_nothing_changes (serve.test_server.LearnedProfile.test_without_the_key_nothing_changes) ... ok\ntest_messages (serve.test_server.ListenProblem.test_messages) ... ok\ntest_a_forged_turn_in_a_user_message (serve.test_server.LiteralControlTokens.test_a_forged_turn_in_a_user_message) ... ok\ntest_a_literal_inside_a_longer_one (serve.test_server.LiteralControlTokens.test_a_literal_inside_a_longer_one) ... ERROR\ntest_beside_a_quoted_think_tag (serve.test_server.LiteralControlTokens.test_beside_a_quoted_think_tag) ... ok\ntest_history_tool_results_and_tools (serve.test_server.LiteralControlTokens.test_history_tool_results_and_tools) ... ok\ntest_the_real_tokenizer_names_its_control_tokens (serve.test_server.LiteralControlTokens.test_the_real_tokenizer_names_its_control_tokens) ... ERROR\ntest_without_control_text_the_prompt_is_unchanged (serve.test_server.LiteralControlTokens.test_without_control_text_the_prompt_is_unchanged) ... ok\ntest_a_client_that_sends_the_reasoning_inline (serve.test_server.LiteralThinkTags.test_a_client_that_sends_the_reasoning_inline) ... ok\ntest_a_quoted_tag_in_a_user_message (serve.test_server.LiteralThinkTags.test_a_quoted_tag_in_a_user_message) ... ok\ntest_history_tool_results_and_tools (serve.test_server.LiteralThinkTags.test_history_tool_results_and_tools) ... ok\ntest_the_real_tokenizer_reads_the_tag_as_text (serve.test_server.LiteralThinkTags.test_the_real_tokenizer_reads_the_tag_as_text) ... ERROR\ntest_without_a_tag_the_prompt_is_unchanged (serve.test_server.LiteralThinkTags.test_without_a_tag_the_prompt_is_unchanged) ... ok\ntest_a_request_without_a_done_keeps_no_engine_counters (serve.test_server.LiveRate.test_a_request_without_a_done_keeps_no_engine_counters)\nAn engine that dies mid-answer: the previous request's `last` must not become this row's decode rate. ... ok\ntest_prefill_rate_excludes_cached_tokens (serve.test_server.LiveRate.test_prefill_rate_excludes_cached_tokens) ... ok\ntest_the_live_number_is_a_rate (serve.test_server.LiveRate.test_the_live_number_is_a_rate) ... ok\ntest_silent_mid_answer (serve.test_server.LostStep.test_silent_mid_answer) ... ok\ntest_silent_mid_stream (serve.test_server.LostStep.test_silent_mid_stream) ... ok\ntest_stop_never_acknowledged (serve.test_server.LostStep.test_stop_never_acknowledged) ... ok\ntest_anthropic_thinks_only_when_asked (serve.test_server.MaxTokens.test_anthropic_thinks_only_when_asked) ... ok\ntest_count_tokens_is_the_prompt_messages_reads (serve.test_server.MaxTokens.test_count_tokens_is_the_prompt_messages_reads) ... ok\ntest_debug_log_shows_the_resolved_budget (serve.test_server.MaxTokens.test_debug_log_shows_the_resolved_budget) ... ok\ntest_explicit_budget_is_honoured (serve.test_server.MaxTokens.test_explicit_budget_is_honoured) ... ok\ntest_explicit_budget_over_the_context_is_rejected (serve.test_server.MaxTokens.test_explicit_budget_over_the_context_is_rejected) ... ok\ntest_request_line_parses_the_engine_summary (serve.test_server.MaxTokens.test_request_line_parses_the_engine_summary) ... ok\ntest_unset_budget_is_the_rest_of_the_context (serve.test_server.MaxTokens.test_unset_budget_is_the_rest_of_the_context) ... ok\ntest_unset_budget_with_a_near_full_prompt (serve.test_server.MaxTokens.test_unset_budget_with_a_near_full_prompt) ... ok\ntest_models_lists_them (serve.test_server.ModelAliases.test_models_lists_them) ... ok\ntest_requests_are_answered_under_the_alias (serve.test_server.ModelAliases.test_requests_are_answered_under_the_alias) ... ok\ntest_set_aliases (serve.test_server.ModelAliases.test_set_aliases) ... ok\ntest_without_aliases_nothing_changes (serve.test_server.ModelAliases.test_without_aliases_nothing_changes) ... ok\ntest_engine_done_line_raises (serve.test_server.NonFiniteLogits.test_engine_done_line_raises)\nStrataEngine.generate: `DONE ... nonfinite` raises EngineNonFinite after the tokens before it. ... ok\ntest_mid_reply_ends_without_retry (serve.test_server.NonFiniteLogits.test_mid_reply_ends_without_retry) ... ok\ntest_nonfinite_invalidates_all_slot_prefixes (serve.test_server.NonFiniteLogits.test_nonfinite_invalidates_all_slot_prefixes) ... ok\ntest_nothing_emitted_is_retried_once (serve.test_server.NonFiniteLogits.test_nothing_emitted_is_retried_once) ... ok\ntest_twice_is_an_error (serve.test_server.NonFiniteLogits.test_twice_is_an_error) ... ok\ntest_twice_over_http (serve.test_server.NonFiniteLogits.test_twice_over_http) ... ok\ntest_history (serve.test_server.PcieShare.test_history) ... ok\ntest_exact_child_flag_is_frozen_without_spawning (serve.test_server.PhaseExperimentLifetime.test_exact_child_flag_is_frozen_without_spawning) ... ok\ntest_failed_phase_request_cannot_run_reload_hooks (serve.test_server.PhaseExperimentLifetime.test_failed_phase_request_cannot_run_reload_hooks) ... ok\ntest_a_client_that_asks_gets_one_progress_per_chunk (serve.test_server.PromptProgress.test_a_client_that_asks_gets_one_progress_per_chunk) ... ok\ntest_a_client_that_does_not_ask_gets_nothing (serve.test_server.PromptProgress.test_a_client_that_does_not_ask_gets_nothing) ... ok\ntest_nothing_before_the_first_chunk (serve.test_server.PromptProgress.test_nothing_before_the_first_chunk) ... ok\ntest_the_line_that_says_the_prompt_is_read_is_dropped (serve.test_server.PromptProgress.test_the_line_that_says_the_prompt_is_read_is_dropped) ... ok\ntest_nothing_under_batch (serve.test_server.PromptProgressBatch.test_nothing_under_batch) ... ok\ntest_a_reply_that_answered_is_not_touched (serve.test_server.ReasoningCloseRetry.test_a_reply_that_answered_is_not_touched) ... ok\ntest_off_by_default_the_reply_stays_empty (serve.test_server.ReasoningCloseRetry.test_off_by_default_the_reply_stays_empty) ... ok\ntest_on_it_closes_the_thinking_once_and_answers (serve.test_server.ReasoningCloseRetry.test_on_it_closes_the_thinking_once_and_answers) ... ok\ntest_context_zero_is_503 (serve.test_server.RestartWindow.test_context_zero_is_503) ... ok\ntest_not_alive_until_ready (serve.test_server.RestartWindow.test_not_alive_until_ready) ... ok\ntest_checkpoint_key (serve.test_server.SamplingKeys.test_checkpoint_key) ... ok\ntest_penalty_window (serve.test_server.SamplingKeys.test_penalty_window) ... ok\ntest_top_k (serve.test_server.SamplingKeys.test_top_k) ... ok\ntest_tune_keys (serve.test_server.SamplingKeys.test_tune_keys) ... ok\ntest_chars_end_inside_a_message (serve.test_server.SharedPrefix.test_chars_end_inside_a_message) ... ok\ntest_messages_resolve_to_the_boundary_token (serve.test_server.SharedPrefix.test_messages_resolve_to_the_boundary_token) ... ok\ntest_pin_key (serve.test_server.SharedPrefix.test_pin_key) ... ok\ntest_tokens_and_unusable_prefixes (serve.test_server.SharedPrefix.test_tokens_and_unusable_prefixes) ... ok\ntest_without_the_field_nothing_changes (serve.test_server.SharedPrefix.test_without_the_field_nothing_changes) ... ok\ntest_a_body_without_the_defaults_wrapper_is_rejected (serve.test_server.SharedSettings.test_a_body_without_the_defaults_wrapper_is_rejected)\nA body with no \"defaults\" key is a mistake, not the documented \"clear them\" ({\"defaults\": null}). ... ok\ntest_a_trusted_origin_is_strata_s_own_page (serve.test_server.SharedSettings.test_a_trusted_origin_is_strata_s_own_page) ... ok\ntest_off_again (serve.test_server.SharedSettings.test_off_again) ... ok\ntest_only_strata_s_own_page_may_set_them (serve.test_server.SharedSettings.test_only_strata_s_own_page_may_set_them) ... ok\ntest_other_apps_get_the_chat_settings (serve.test_server.SharedSettings.test_other_apps_get_the_chat_settings) ... ok\ntest_proxy_headers_do_not_make_a_page_strata_s_own (serve.test_server.SharedSettings.test_proxy_headers_do_not_make_a_page_strata_s_own) ... ok\ntest_they_need_the_key_when_one_is_set (serve.test_server.SharedSettings.test_they_need_the_key_when_one_is_set) ... ok\ntest_before_load_runs_first (serve.test_server.SharingTheGpu.test_before_load_runs_first) ... ok\ntest_idle_unload (serve.test_server.SharingTheGpu.test_idle_unload) ... ok\ntest_load_endpoint (serve.test_server.SharingTheGpu.test_load_endpoint) ... ok\ntest_min_free_vram_refuses_to_load (serve.test_server.SharingTheGpu.test_min_free_vram_refuses_to_load) ... ok\ntest_min_free_vram_unreadable_loads (serve.test_server.SharingTheGpu.test_min_free_vram_unreadable_loads) ... ok\ntest_off_by_default (serve.test_server.SharingTheGpu.test_off_by_default) ... ok\ntest_unload_refused_while_a_request_runs (serve.test_server.SharingTheGpu.test_unload_refused_while_a_request_runs) ... ok\ntest_unload_then_the_next_request_loads (serve.test_server.SharingTheGpu.test_unload_then_the_next_request_loads) ... ok\ntest_vision_encoder_unloads_and_starts_first (serve.test_server.SharingTheGpu.test_vision_encoder_unloads_and_starts_first) ... ok\ntest_a_long_first_chunk_is_allowed (serve.test_server.SilentEngine.test_a_long_first_chunk_is_allowed) ... ok\ntest_a_stop_never_acknowledged (serve.test_server.SilentEngine.test_a_stop_never_acknowledged) ... ok\ntest_config (serve.test_server.SilentEngine.test_config) ... ok\ntest_prompt_chunks_set_the_wait (serve.test_server.SilentEngine.test_prompt_chunks_set_the_wait) ... ok\ntest_silence_mid_answer_ends_the_engine (serve.test_server.SilentEngine.test_silence_mid_answer_ends_the_engine) ... ok\ntest_zero_waits_as_before (serve.test_server.SilentEngine.test_zero_waits_as_before) ... ok\ntest_the_last_lines_of_this_start (serve.test_server.StartFailureLog.test_the_last_lines_of_this_start) ... ok\ntest_the_start_error_has_them (serve.test_server.StartFailureLog.test_the_start_error_has_them) ... ok\ntest_a_mapped_start (serve.test_server.StartNarrator.test_a_mapped_start) ... ok\ntest_an_arena_start (serve.test_server.StartNarrator.test_an_arena_start) ... ok\ntest_the_words_follow_the_flags (serve.test_server.StartNarrator.test_the_words_follow_the_flags) ... ok\ntest_abort_then_the_next_request (serve.test_server.StatusHandover.test_abort_then_the_next_request) ... ok\ntest_status (serve.test_server.StatusNeedsTheKey.test_status) ... ok\ntest_a_prefix_that_is_not_a_stop_is_sent (serve.test_server.StopStrings.test_a_prefix_that_is_not_a_stop_is_sent)\n\"ENDX\" begins like the answer's \"END\" but is not in it: the held tail goes out and nothing is lost. ... ok\ntest_bad_values_are_a_400 (serve.test_server.StopStrings.test_bad_values_are_a_400) ... ok\ntest_cut_at_the_stop_string (serve.test_server.StopStrings.test_cut_at_the_stop_string) ... ok\ntest_matcher_holds_back_only_a_possible_prefix (serve.test_server.StopStrings.test_matcher_holds_back_only_a_possible_prefix) ... ok\ntest_no_stop_and_an_empty_list (serve.test_server.StopStrings.test_no_stop_and_an_empty_list) ... ok\ntest_openai_takes_a_string (serve.test_server.StopStrings.test_openai_takes_a_string) ... ok\ntest_the_first_of_several (serve.test_server.StopStrings.test_the_first_of_several) ... ok\ntest_probe_errors_are_logged_and_swallowed (serve.test_server.TemplateCaps.test_probe_errors_are_logged_and_swallowed) ... ok\ntest_a_bad_value_is_a_400 (serve.test_server.ThinkingBudget.test_a_bad_value_is_a_400) ... ok\ntest_a_budget_the_thinking_stays_under (serve.test_server.ThinkingBudget.test_a_budget_the_thinking_stays_under) ... ok\ntest_a_reply_cut_while_thinking_is_named_in_the_log (serve.test_server.ThinkingBudget.test_a_reply_cut_while_thinking_is_named_in_the_log)\n#530: max tokens reached inside the thinking gives an empty answer; the server log says what helps. ... ok\ntest_a_shared_budget_must_be_a_whole_number_of_tokens (serve.test_server.ThinkingBudget.test_a_shared_budget_must_be_a_whole_number_of_tokens) ... ok\ntest_a_shared_budget_reaches_a_request_that_sets_none (serve.test_server.ThinkingBudget.test_a_shared_budget_reaches_a_request_that_sets_none)\nThe Chat settings shared with other apps may carry a thinking budget too, like max_tokens and the effort. ... ok\ntest_a_stop_string_is_found_in_the_answer_after_the_wrap_up (serve.test_server.ThinkingBudget.test_a_stop_string_is_found_in_the_answer_after_the_wrap_up)\n#454: the continuation after the thinking budget is cut at a stop string too. ... ok\ntest_anthropic_stream (serve.test_server.ThinkingBudget.test_anthropic_stream) ... ok\ntest_no_room_left_to_answer (serve.test_server.ThinkingBudget.test_no_room_left_to_answer) ... ok\ntest_off_by_default (serve.test_server.ThinkingBudget.test_off_by_default) ... ok\ntest_the_budget_wraps_up_the_thinking (serve.test_server.ThinkingBudget.test_the_budget_wraps_up_the_thinking) ... ok\ntest_the_config_default_and_a_request_that_turns_it_off (serve.test_server.ThinkingBudget.test_the_config_default_and_a_request_that_turns_it_off) ... ok\ntest_without_thinking_there_is_nothing_to_limit (serve.test_server.ThinkingBudget.test_without_thinking_there_is_nothing_to_limit) ... ok\ntest_draft_fields (serve.test_server.TimingsDrafts.test_draft_fields) ... ok\ntest_both_frontends_render_it (serve.test_server.ToolArguments.test_both_frontends_render_it) ... ok\ntest_helper (serve.test_server.ToolArguments.test_helper) ... ok\ntest_bare_function_stays_text_where_it_is_not_a_call (serve.test_server.ToolCallRecovery.test_bare_function_stays_text_where_it_is_not_a_call) ... ok\ntest_bare_function_without_the_wrapper (serve.test_server.ToolCallRecovery.test_bare_function_without_the_wrapper) ... ok\ntest_broken_json_is_content_not_an_error (serve.test_server.ToolCallRecovery.test_broken_json_is_content_not_an_error) ... ok\ntest_json_in_the_wrapper (serve.test_server.ToolCallRecovery.test_json_in_the_wrapper) ... ok\ntest_json_never_closed_is_content (serve.test_server.ToolCallRecovery.test_json_never_closed_is_content) ... ok\ntest_json_of_an_unknown_tool_is_content (serve.test_server.ToolCallRecovery.test_json_of_an_unknown_tool_is_content) ... ok\ntest_parameter_as_the_opener (serve.test_server.ToolCallRecovery.test_parameter_as_the_opener) ... ok\ntest_parameter_opener_that_is_not_a_tool_is_content (serve.test_server.ToolCallRecovery.test_parameter_opener_that_is_not_a_tool_is_content) ... ok\ntest_two_calls_in_one_wrapper (serve.test_server.ToolCallRecovery.test_two_calls_in_one_wrapper) ... ok\ntest_a_batch_is_one_call (serve.test_server.ToolCallRecoveryOff.test_a_batch_is_one_call) ... ok\ntest_drifted_forms_stay_text (serve.test_server.ToolCallRecoveryOff.test_drifted_forms_stay_text) ... ok\ntest_switch (serve.test_server.ToolCallRecoverySwitch.test_switch) ... ok\ntest_named_tag_is_content (serve.test_server.ToolCallTagInProse.test_named_tag_is_content) ... ok\ntest_tag_alone_at_the_end_is_content (serve.test_server.ToolCallTagInProse.test_tag_alone_at_the_end_is_content) ... ok\ntest_values_keep_the_terminators (serve.test_server.ToolCallTerminators.test_values_keep_the_terminators) ... ok\ntest_a_call_cut_at_the_token_limit (serve.test_server.UnfinishedToolCall.test_a_call_cut_at_the_token_limit)\nThe same cut by max_tokens: \"length\" / \"max_tokens\", and the whole (non-streamed) answers leave the call ... ok\ntest_a_cut_call (serve.test_server.UnfinishedToolCall.test_a_cut_call) ... ok\ntest_a_whole_call (serve.test_server.UnfinishedToolCall.test_a_whole_call) ... ok\ntest_collect_keeps_calls_whose_arguments_parse (serve.test_server.UnfinishedToolCall.test_collect_keeps_calls_whose_arguments_parse) ... ok\ntest_parser (serve.test_server.UnfinishedToolCall.test_parser) ... ok\ntest_engine_that_never_says_ready_is_ended (serve.test_server.UntimedReads.test_engine_that_never_says_ready_is_ended) ... ok\ntest_vision_encode_read_times_out (serve.test_server.UntimedReads.test_vision_encode_read_times_out) ... ok\ntest_vision_ready_read_times_out (serve.test_server.UntimedReads.test_vision_ready_read_times_out) ... ok\ntest_anthropic (serve.test_server.UsageAndStatus.test_anthropic) ... ok\ntest_cors_for_the_configured_origins_on_the_api_only (serve.test_server.UsageAndStatus.test_cors_for_the_configured_origins_on_the_api_only) ... ok\ntest_cors_is_off_by_default (serve.test_server.UsageAndStatus.test_cors_is_off_by_default) ... ok\ntest_no_clock (serve.test_server.UsageAndStatus.test_no_clock)\nAn engine without a clock (MockEngine): no timings, nothing cached. ... ok\ntest_openai (serve.test_server.UsageAndStatus.test_openai) ... ok\ntest_openai_stream (serve.test_server.UsageAndStatus.test_openai_stream) ... ok\ntest_origin_lists_are_checked (serve.test_server.UsageAndStatus.test_origin_lists_are_checked) ... ok\ntest_sse_is_not_buffered_by_proxies (serve.test_server.UsageAndStatus.test_sse_is_not_buffered_by_proxies) ... ok\ntest_v1_status (serve.test_server.UsageAndStatus.test_v1_status) ... ok\ntest_min_tokens_is_passed_only_when_set (serve.test_server.VisionArgs.test_min_tokens_is_passed_only_when_set) ... ok\ntest_one_request_with_more_than_64_images_keeps_all_its_files (serve.test_server.VisionCacheEviction.test_one_request_with_more_than_64_images_keeps_all_its_files) ... ok\ntest_plain_encode_still_evicts_the_oldest (serve.test_server.VisionCacheEviction.test_plain_encode_still_evicts_the_oldest) ... ok\ntest_shutdown_removes_the_work_dir_but_close_keeps_it (serve.test_server.VisionShutdown.test_shutdown_removes_the_work_dir_but_close_keeps_it) ... ok\ntest_a_refused_request_writes_none (serve.test_server.VisionTempFiles.test_a_refused_request_writes_none) ... ok\ntest_over_http (serve.test_server.VisionTempFiles.test_over_http) ... ----------------------------------------\nException occurred during processing of request from ('127.0.0.1', 60558)\nTraceback (most recent call last):\n  File \"/usr/lib/python3.12/socketserver.py\", line 692, in process_request_thread\n    self.finish_request(request, client_address)\n  File \"/usr/lib/python3.12/socketserver.py\", line 362, in finish_request\n    self.RequestHandlerClass(request, client_address, self)\n  File \"/usr/lib/python3.12/socketserver.py\", line 761, in __init__\n    self.handle()\n  File \"/usr/lib/python3.12/http/server.py\", line 436, in handle\n    self.handle_one_request()\n  File \"/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-phase-cache-stock-bench-20261013/serve/server.py\", line 4476, in handle_one_request\n    super().handle_one_request()\n  File \"/usr/lib/python3.12/http/server.py\", line 424, in handle_one_request\n    method()\n  File \"/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-phase-cache-stock-bench-20261013/serve/server.py\", line 4848, in do_POST\n    self._post()\n  File \"/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-phase-cache-stock-bench-20261013/serve/server.py\", line 4955, in _post\n    self._openai(req)\n  File \"/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-phase-cache-stock-bench-20261013/serve/server.py\", line 5229, in _openai\n    _debug_req(\"openai\", req, messages, tools, max_new, thinking, len(ids))\n  File \"/usr/lib/python3.12/unittest/mock.py\", line 1134, in __call__\n    return self._mock_call(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/unittest/mock.py\", line 1138, in _mock_call\n    return self._execute_mock_call(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/unittest/mock.py\", line 1193, in _execute_mock_call\n    raise effect\nConnectionResetError: the client is gone\n----------------------------------------\n----------------------------------------\nException occurred during processing of request from ('127.0.0.1', 60564)\nTraceback (most recent call last):\n  File \"/usr/lib/python3.12/socketserver.py\", line 692, in process_request_thread\n    self.finish_request(request, client_address)\n  File \"/usr/lib/python3.12/socketserver.py\", line 362, in finish_request\n    self.RequestHandlerClass(request, client_address, self)\n  File \"/usr/lib/python3.12/socketserver.py\", line 761, in __init__\n    self.handle()\n  File \"/usr/lib/python3.12/http/server.py\", line 436, in handle\n    self.handle_one_request()\n  File \"/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-phase-cache-stock-bench-20261013/serve/server.py\", line 4476, in handle_one_request\n    super().handle_one_request()\n  File \"/usr/lib/python3.12/http/server.py\", line 424, in handle_one_request\n    method()\n  File \"/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-phase-cache-stock-bench-20261013/serve/server.py\", line 4848, in do_POST\n    self._post()\n  File \"/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-phase-cache-stock-bench-20261013/serve/server.py\", line 4957, in _post\n    self._anthropic(req)\n  File \"/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-phase-cache-stock-bench-20261013/serve/server.py\", line 5458, in _anthropic\n    _debug_req(\"anthropic\", req, messages, tools, max_new, thinking, len(ids))\n  File \"/usr/lib/python3.12/unittest/mock.py\", line 1134, in __call__\n    return self._mock_call(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/unittest/mock.py\", line 1138, in _mock_call\n    return self._execute_mock_call(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/unittest/mock.py\", line 1193, in _execute_mock_call\n    raise effect\n  File \"/usr/lib/python3.12/socketserver.py\", line 692, in process_request_thread\n    self.finish_request(request, client_address)\n  File \"/usr/lib/python3.12/socketserver.py\", line 362, in finish_request\n    self.RequestHandlerClass(request, client_address, self)\n  File \"/usr/lib/python3.12/socketserver.py\", line 761, in __init__\n    self.handle()\n  File \"/usr/lib/python3.12/http/server.py\", line 436, in handle\n    self.handle_one_request()\n  File \"/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-phase-cache-stock-bench-20261013/serve/server.py\", line 4476, in handle_one_request\n    super().handle_one_request()\n  File \"/usr/lib/python3.12/http/server.py\", line 424, in handle_one_request\n    method()\n  File \"/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-phase-cache-stock-bench-20261013/serve/server.py\", line 4848, in do_POST\n    self._post()\n  File \"/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-phase-cache-stock-bench-20261013/serve/server.py\", line 4955, in _post\n    self._openai(req)\n  File \"/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-phase-cache-stock-bench-20261013/serve/server.py\", line 5229, in _openai\n    _debug_req(\"openai\", req, messages, tools, max_new, thinking, len(ids))\n  File \"/usr/lib/python3.12/unittest/mock.py\", line 1134, in __call__\n    return self._mock_call(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/unittest/mock.py\", line 1138, in _mock_call\n    return self._execute_mock_call(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.12/unittest/mock.py\", line 1193, in _execute_mock_call\n    raise effect\nConnectionResetError: the client is gone\n----------------------------------------\nok\ntest_combined_file_is_written_whole_and_removable (serve.test_server.VisionWorkDir.test_combined_file_is_written_whole_and_removable) ... ok\ntest_combined_file_stays_off_a_small_shm (serve.test_server.VisionWorkDir.test_combined_file_stays_off_a_small_shm) ... ok\ntest_enc_line_names_files_relative_to_the_encoder_dir (serve.test_server.VisionWorkDir.test_enc_line_names_files_relative_to_the_encoder_dir) ... ok\ntest_smart_app_control_is_said_in_words (serve.test_server.VisionWorkDir.test_smart_app_control_is_said_in_words) ... ok\ntest_work_dir_has_no_space_when_temp_has_one (serve.test_server.VisionWorkDir.test_work_dir_has_no_space_when_temp_has_one) ... ok\ntest_build_model_path_and_slot_status (serve.test_server.WebApp.test_build_model_path_and_slot_status) ... ok\ntest_discovery_does_not_restart_a_dead_engine (serve.test_server.WebApp.test_discovery_does_not_restart_a_dead_engine) ... ok\ntest_discovery_needs_the_api_key (serve.test_server.WebApp.test_discovery_needs_the_api_key) ... ok\ntest_metrics (serve.test_server.WebApp.test_metrics) ... ok\ntest_metrics_need_the_key_when_one_is_set (serve.test_server.WebApp.test_metrics_need_the_key_when_one_is_set) ... ok\ntest_model_discovery_and_props (serve.test_server.WebApp.test_model_discovery_and_props) ... ok\ntest_only_the_app_files_are_served (serve.test_server.WebApp.test_only_the_app_files_are_served) ... ok\ntest_page_and_files (serve.test_server.WebApp.test_page_and_files) ... ok\ntest_props_caps_are_ready_for_concurrent_requests (serve.test_server.WebApp.test_props_caps_are_ready_for_concurrent_requests) ... ok\ntest_props_caps_follow_the_active_template (serve.test_server.WebApp.test_props_caps_follow_the_active_template) ... ok\ntest_props_total_slots_follows_the_batch_slots (serve.test_server.WebApp.test_props_total_slots_follows_the_batch_slots) ... ok\ntest_slot_reports_the_context_in_use (serve.test_server.WebApp.test_slot_reports_the_context_in_use)\n/slots in llama.cpp's names: a front-end's context meter divides n_prompt_tokens by n_ctx, so a server ... ok\ntest_slots_lists_every_batch_slot (serve.test_server.WebApp.test_slots_lists_every_batch_slot) ... ok\ntest_the_endpoints_keep_the_context_while_the_engine_restarts (serve.test_server.WebApp.test_the_endpoints_keep_the_context_while_the_engine_restarts)\n#351: max_context is 0 until READY; the endpoints report the last known one. ... ok\n\n======================================================================\nERROR: test_a_literal_inside_a_longer_one (serve.test_server.LiteralControlTokens.test_a_literal_inside_a_longer_one)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-phase-cache-stock-bench-20261013/serve/test_server.py\", line 730, in test_a_literal_inside_a_longer_one\n    import strata_tokenizer as ST\n  File \"/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-phase-cache-stock-bench-20261013/tools/strata_tokenizer.py\", line 25, in <module>\n    import regex\nModuleNotFoundError: No module named 'regex'\n\n======================================================================\nERROR: test_the_real_tokenizer_names_its_control_tokens (serve.test_server.LiteralControlTokens.test_the_real_tokenizer_names_its_control_tokens)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-phase-cache-stock-bench-20261013/serve/test_server.py\", line 742, in test_the_real_tokenizer_names_its_control_tokens\n    import strata_tokenizer as ST\n  File \"/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-phase-cache-stock-bench-20261013/tools/strata_tokenizer.py\", line 25, in <module>\n    import regex\nModuleNotFoundError: No module named 'regex'\n\n======================================================================\nERROR: test_the_real_tokenizer_reads_the_tag_as_text (serve.test_server.LiteralThinkTags.test_the_real_tokenizer_reads_the_tag_as_text)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-phase-cache-stock-bench-20261013/serve/test_server.py\", line 656, in test_the_real_tokenizer_reads_the_tag_as_text\n    import strata_tokenizer as ST\n  File \"/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-phase-cache-stock-bench-20261013/tools/strata_tokenizer.py\", line 25, in <module>\n    import regex\nModuleNotFoundError: No module named 'regex'\n\n----------------------------------------------------------------------\nRan 249 tests in 81.933s\n\nFAILED (errors=3)\n"
+    }
+  },
+  "production_admitted": false,
+  "phase_cache_adopted": false,
+  "source_pins": {
+    "CMakeLists.txt": {
+      "sha256": "cbf71b9357a6941d569287aca17ef56e3ce1213842df09d924f586d9822de178"
+    },
+    "include/strata/core/phase_cache_owner.hpp": {
+      "sha256": "63a5ead3187dd264477a83d909fc6013d2359b76d73bd532393e178cd782279d"
+    },
+    "include/strata/core/phase_serve_cycle.hpp": {
+      "sha256": "676a41678f131e4ae2efaa56fed97315e83abd5d7cf8a2d0dbd591e5b84dbc49"
+    },
+    "include/strata/core/phase_timing.hpp": {
+      "sha256": "4ead9cc01ec13ba1ba1c02001b465422345c75fb8f141efa936c8cd7f061d787"
+    },
+    "src/core/phase_cache_owner.cpp": {
+      "sha256": "522cfbb6b8f97a43da43d33c319867485d1ef1659474096921d2305697ea0980"
+    },
+    "tests/core/phase_cache_owner_test.cpp": {
+      "sha256": "990549d5ca1f30111b0738ba3e41c842af188e83a4b02d060f4fcb83e95ed1dc"
+    },
+    "serve/server.py": {
+      "sha256": "942d4a03b0340896b2eda5fbaa75268a51513619284acb5650f0605f83131bbe"
+    },
+    "serve/test_server.py": {
+      "sha256": "8e4fa978d57c2b05a1a3ec644dae9fb9ad141ef281c726b1e5bac12f5ca53345"
+    }
+  },
+  "phase-host": {
+    "binary_sha256": {
+      "sha256": "5a21c5694636cac01d9f4f7fd5bf2562be63a1401f65018c71e20aa9f747e8b7"
+    },
+    "compile_commands_sha256": {
+      "sha256": "49a3088b36570b1b468d6c8234a2ae25e9339fe4b1f68082209087da9161f46d"
+    },
+    "release_ndebug": true,
+    "sanitizer": null
+  },
+  "phase-host-asan": {
+    "binary_sha256": {
+      "sha256": "ca0cdb45ae27d6e2b69b715cfdf2752cb74c803124dcc7446386dda934c1149b"
+    },
+    "compile_commands_sha256": {
+      "sha256": "26f43e3c058ca811b2da9830505954694a74a1ff33479c3dfb15870b6c81481a"
+    },
+    "release_ndebug": true,
+    "sanitizer": "address,undefined"
+  },
+  "error": "AssertionError('server-suite')",
+  "finished_utc": "2026-10-12T23:22:36.677719+00:00"
+}
