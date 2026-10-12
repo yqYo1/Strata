@@ -1,0 +1,196 @@
+{
+  "main_reviewed": true,
+  "benchmark_method": "Unmodified upstream bench.sh --long --runs 3",
+  "mode": "quiet",
+  "source_revision": "410904c99d273435b5302fa8976cc667d17957f2",
+  "upstream_revision": "7695859aa13afb248bdb4d36f9b2e95707db079d",
+  "binary_sha256": {
+    "sha256": "b54579b536962c7db7652503e0dcb50282ddbc667f290b90f101419b44778554"
+  },
+  "samples_by_copy_engine": [
+    [
+      {
+        "prompt_tokens": 32049,
+        "generated_tokens": 24,
+        "read_tokens": 32049,
+        "reused_tokens": 0,
+        "prompt_tps": 407.5,
+        "prompt_tps_source": "engine",
+        "decode_tps": 9.7,
+        "decode_tps_source": "engine",
+        "prompt_ms": 78653.4,
+        "decode_ms": 2476.1
+      },
+      {
+        "prompt_tokens": 32049,
+        "generated_tokens": 24,
+        "read_tokens": 32049,
+        "reused_tokens": 0,
+        "prompt_tps": 408.0,
+        "prompt_tps_source": "engine",
+        "decode_tps": 8.6,
+        "decode_tps_source": "engine",
+        "prompt_ms": 78557.2,
+        "decode_ms": 2790.5
+      },
+      {
+        "prompt_tokens": 32049,
+        "generated_tokens": 24,
+        "read_tokens": 32049,
+        "reused_tokens": 0,
+        "prompt_tps": 403.0,
+        "prompt_tps_source": "engine",
+        "decode_tps": 7.9,
+        "decode_tps_source": "engine",
+        "prompt_ms": 79533.9,
+        "decode_ms": 3050.0
+      }
+    ],
+    [
+      {
+        "prompt_tokens": 32049,
+        "generated_tokens": 24,
+        "read_tokens": 32049,
+        "reused_tokens": 0,
+        "prompt_tps": 478.0,
+        "prompt_tps_source": "engine",
+        "decode_tps": 9.3,
+        "decode_tps_source": "engine",
+        "prompt_ms": 67052.5,
+        "decode_ms": 2575.9
+      },
+      {
+        "prompt_tokens": 32049,
+        "generated_tokens": 24,
+        "read_tokens": 32049,
+        "reused_tokens": 0,
+        "prompt_tps": 470.8,
+        "prompt_tps_source": "engine",
+        "decode_tps": 8.6,
+        "decode_tps_source": "engine",
+        "prompt_ms": 68071.0,
+        "decode_ms": 2792.9
+      },
+      {
+        "prompt_tokens": 32049,
+        "generated_tokens": 24,
+        "read_tokens": 32049,
+        "reused_tokens": 0,
+        "prompt_tps": 474.8,
+        "prompt_tps_source": "engine",
+        "decode_tps": 8.7,
+        "decode_tps_source": "engine",
+        "prompt_ms": 67493.7,
+        "decode_ms": 2754.9
+      }
+    ]
+  ],
+  "prefill_by_copy_engine": [
+    {
+      "samples": [
+        407.5,
+        408.0,
+        403.0
+      ],
+      "median": 407.5,
+      "minimum": 403.0,
+      "maximum": 408.0
+    },
+    {
+      "samples": [
+        478.0,
+        470.8,
+        474.8
+      ],
+      "median": 474.8,
+      "minimum": 470.8,
+      "maximum": 478.0
+    }
+  ],
+  "decode_by_copy_engine": [
+    {
+      "samples": [
+        9.7,
+        8.6,
+        7.9
+      ],
+      "median": 8.6,
+      "minimum": 7.9,
+      "maximum": 9.7
+    },
+    {
+      "samples": [
+        9.3,
+        8.6,
+        8.7
+      ],
+      "median": 8.7,
+      "minimum": 8.6,
+      "maximum": 9.3
+    }
+  ],
+  "prefill_median_change_percent": 16.515337423312882,
+  "order": [
+    0,
+    1
+  ],
+  "stock_long_comparison_eligible": true,
+  "strict32768_performance_eligible": false,
+  "actual_input_tokens": 32049,
+  "actual_generated_tokens": 24,
+  "all_requests_succeeded": true,
+  "no_fresh_gpu_faults": true,
+  "identities_unchanged": true,
+  "normal_quit": true,
+  "native_copy_quiet_executed": true,
+  "optimization_adopted": false,
+  "quality_evaluated": false,
+  "full_physical262144_input_qualified": false,
+  "phase_uncertain_mapping_fix": {
+    "implemented": true,
+    "release_ndebug_pass": true,
+    "host_asan_ubsan_pass": true,
+    "source_pins": {
+      "CMakeLists.txt": {
+        "sha256": "cbf71b9357a6941d569287aca17ef56e3ce1213842df09d924f586d9822de178"
+      },
+      "include/strata/core/phase_cache_owner.hpp": {
+        "sha256": "a78d6d53d3b7c5666ca8272e9deb4e495f7b7b3cc276c9c24517a4950dccfd21"
+      },
+      "include/strata/core/phase_serve_cycle.hpp": {
+        "sha256": "676a41678f131e4ae2efaa56fed97315e83abd5d7cf8a2d0dbd591e5b84dbc49"
+      },
+      "include/strata/core/phase_timing.hpp": {
+        "sha256": "4ead9cc01ec13ba1ba1c02001b465422345c75fb8f141efa936c8cd7f061d787"
+      },
+      "src/core/phase_cache_owner.cpp": {
+        "sha256": "d16d4fe6bffce01ad1c9298dd072b5310ae97280fd7b9c172be035e6fdc85dc8"
+      },
+      "tests/core/phase_cache_owner_test.cpp": {
+        "sha256": "f422c5f00ef5cd4639da3b022133e4673672236d5daada247b5f5d4d15abc210"
+      },
+      "serve/server.py": {
+        "sha256": "942d4a03b0340896b2eda5fbaa75268a51513619284acb5650f0605f83131bbe"
+      },
+      "serve/test_server.py": {
+        "sha256": "8e4fa978d57c2b05a1a3ec644dae9fb9ad141ef281c726b1e5bac12f5ca53345"
+      }
+    },
+    "unknown_state_subprocess_cases": 11,
+    "real_provider_failure_atomicity_proven": false,
+    "gpu_vmm_model_unqualified": true
+  },
+  "source_audit_notes": [
+    "R361 labels the supplied prefill TPS values as ms in two passages; their correct unit is tok/s. Its38293 session notation is a shell session identifier, not GPU PID.",
+    "The server phase flag uses env is None to match subprocess inheritance; explicit empty env does not inherit, so the proposed empty-env mismatch was not found.",
+    "R360 raises failed-map rollback preconditions; actual provider failure semantics and a safe fail-stop policy are reviewed in R362 before candidate GPU admission.",
+    "R362 incorrectly says no CPU backend mock was found: tests/core/phase_cache_owner_test.cpp exists and passed Release/ASan in the preceding report. Existing mock success does not establish actual provider failure atomicity.",
+    "Scratch aliases preserve FP32 raw y and all math. Source implementation is archived, but physical fit/parity/build/performance are not qualified."
+  ],
+  "limitations": [
+    "One COPY0 then COPY1 campaign; stock tags and generated histories vary per request.",
+    "Decode has24 generated tokens and substantial COPY0 variance; no sustained decode or decode-equivalence claim.",
+    "Default route is unchanged; no precision, chunk, phase-cache or head-lease candidate was measured."
+  ],
+  "next_step": "Repeat matched quiet decode arms if their distributions prevent a phase-specific decision; Main serially owns candidate builds, lints and bounded GPU qualification."
+}
