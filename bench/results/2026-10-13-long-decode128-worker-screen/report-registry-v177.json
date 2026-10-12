@@ -1,0 +1,74 @@
+{
+  "research_completed": 850,
+  "prior": {
+    "path": "../2026-10-13-model-comparison-policy/report-registry-v176.json",
+    "sha256": "b96ce8b26ef195b998a90943298c91d5dcbff28ecfd19250083ec32208767da8"
+  },
+  "new_reports": [
+    {
+      "path": "research/research-production-fixed-history-quality-hook-round319-v1.txt.json",
+      "sha256": "44d7bb509d6d9718192c2cabf988b61701632095897d32fddd51a73f6c0189a4"
+    },
+    {
+      "path": "research/research-segmented-decode-handoff-exposed-wait-round320-v1.txt.json",
+      "sha256": "3a4c0dbc69ff80c827516de10d10dee4188131050f6d20379f0e7ac8c195d9c6"
+    },
+    {
+      "path": "research/research-no-mtp-prefill-retirement-decode-cache-growth-round321-v1.txt.json",
+      "sha256": "d0aec451c1cb599bd2cc7d8ecc041a5882694aa80ba4a1a1ffb11eb884fc42b3"
+    },
+    {
+      "path": "research/research-persistent-serve-prefill-retirement-cache-growth-round322-v1.txt.json",
+      "sha256": "e446b088b3830d5940f3005c7e22cda76b80109d44ae02a7025f6867d6faa27a"
+    },
+    {
+      "path": "research/research-fixed-history-standalone-vs-serve-safety-round323-v1.txt.json",
+      "sha256": "b53f8f4defd4875b8ae874868eeded4ab7920bf1af438002abcc17c22c639450"
+    },
+    {
+      "path": "research/research-current-adaptive-decode-cache-knob-round324-v1.txt.json",
+      "sha256": "ca70b2e0e043106743545b7f7827264c3dae29e247a4ac06453b7a6e3c40b8a1"
+    },
+    {
+      "path": "research/research-free-decode-dense-head-kernel-criticalpath-round325-v1.txt.json",
+      "sha256": "d4910a2ce85b16f9c0de5acd849fe31dab60a76ec94438516299ba7211b4216d"
+    },
+    {
+      "path": "research/research-actual-native-head-dense-format-ledger-round327-v1.txt.json",
+      "sha256": "1f739b44a8f59419374eae944791a7b5aad0c6932ccb62014f6553decf1da783"
+    },
+    {
+      "path": "research/research-current-pool-host-affinity-criticalpath-round328-v1.txt.json",
+      "sha256": "d9a5ed9a9dcf000c2c74d52a807a4a555c9ce9f102f426b0a0ff392c3cd22175"
+    },
+    {
+      "path": "research/research-current-maxnew16-vs128-route-discriminator-round329-v1.txt.json",
+      "sha256": "4c4ccf219cb7b24eb9ccd3e359d4932ffb8d4fc3aa3e14baeee67351231a0863"
+    },
+    {
+      "path": "research/research-actual-serve-no-mtp-maxnew-route-round330-v1.txt.json",
+      "sha256": "f84f5deb783ae9d0df2b837b3a3afeb6fc4fc119dbcfc1b3567a4e78d4fa07e7"
+    },
+    {
+      "path": "research/research-fixed-history-full-logit-file-comparator-contract-round331-v1.txt.json",
+      "sha256": "f75666bdc670be84f52a7e42a768cb60f856cf54245094889f733fc640b32f88"
+    },
+    {
+      "path": "research/implementation-prefill-native-copy-queue-source-v1.txt.json",
+      "sha256": "cfe9231e495d50a3b5ce07b28bfd5338a050de6cc05b1db4042632c367bc78c8"
+    },
+    {
+      "path": "research/implementation-phase-decode-cache-growth-source-v1.txt.json",
+      "sha256": "d54f2c6718dbdcd1a89889d499c9954282af8f81edf55e3ed15c425427da38e1"
+    }
+  ],
+  "main_only_test_execution": true,
+  "corrections": [
+    "R322 corrects R321: persistent Prefill must be re-created for a subsequent GEN after retirement.",
+    "R324 default adaptive-swap advice is not active: actual argv sets --adapt-swaps 0.",
+    "R330 corrects R329: actual no-MTP/no-draft serve calls T=1 throughout both first16 prefixes.",
+    "R323 was overwritten by a legacy agent after its first return. The earlier reported hash bb4a4aa3e15680d43999a4db2fbbabdb7fd09785c536326a7dc8a9330689c406 is not evidence of retained bytes. This registry archives only the verified current version.",
+    "R326 was requested but not returned; it is not counted as completed.",
+    "All implementation packets are source-only; no new inference implementation was adopted."
+  ]
+}
