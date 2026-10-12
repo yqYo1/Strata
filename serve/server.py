@@ -208,6 +208,7 @@ RATE_MIN_SPAN_S = 0.25      # younger than this there is no rate yet: the mean s
 # server (the engine's main thread waits, untimed, for its next command): the engine is ended and the request fails;
 # the next request starts it again.  The config's "engine_silence_s" sets it (0: wait forever, as before).
 ENGINE_SILENCE_S = 300.0
+QUEUE_BEAT_S = 10.0         # keep-alive while waiting for the single request turn (#1619)
 # Disk sessions: the longest allowance an engine may announce (`SWAIT <phase> <s>`) for one step that blocks in a
 # single call (a file flush, the host->device transfer); the engine's own bound is the same (session_phase_limit_s).
 SESSION_WAIT_MAX_S = 3600
@@ -615,8 +616,9 @@ class StrataEngine:
                 pass
             why = (f"the engine did not report READY within {ENGINE_READY_S:.0f} s" if timed_out else
                    "the engine exited before it was ready")
-            raise RuntimeError(why + (f" (see {log})" if log else "") +
-                               start_failure_hint(log, log_start) + start_log_tail(log, log_start))
+            # The request path handles EngineDied as 503, including a failed lazy first start (#1527).
+            raise EngineDied(why + (f" (see {log})" if log else "") +
+                             start_failure_hint(log, log_start) + start_log_tail(log, log_start))
         self.known_ctx = self.max_context   # survives a failed restart: requests keep their limit and restart it
         # (from PR #41, midhatn) a locally built engine can sit next to another release's BUILD.json: engines that
         # report their own version (INFO engine=, 0.1.8+) win, the manifest stays the fallback for older ones
@@ -832,8 +834,10 @@ class StrataEngine:
                     time.sleep(self.RESTART_RETRY_S)
         finally:
             self.starting = False
-            with self.slot_cv:                   # #1012: wake the requests that waited through it: they go on with the
-                self.slot_cv.notify_all()        # new engine, or (it did not start) end with a clean EngineDied
+            # A lazy first start may fail before the post-READY condition variable is made (#1527).
+            if "slot_cv" in self.__dict__:
+                with self.slot_cv:               # #1012: keep and wake the existing restart waiters
+                    self.slot_cv.notify_all()
         self.info = {**info, **self.info}
 
     def _parse_done(self, line):
@@ -3321,7 +3325,32 @@ class Service:
             self.status["queued"] += 1
         try:
             # --batch: the engine runs several requests at once (StrataEngine.generate_batched orders them)
-            with (contextlib.nullcontext() if par else self.fifo):
+            turn = contextlib.ExitStack()
+            if not par:
+                # #1619: queued single-turn streams keep their connection alive without taking the turn.
+                # Closing at a ping or cancelling leaves the queue; only an acquired turn is released.
+                got = False
+                try:
+                    while not cancel.is_set():
+                        got = self.fifo.acquire(timeout=QUEUE_BEAT_S)
+                        if got:
+                            turn.callback(self.fifo.release)
+                            break
+                        if not cancel.is_set():
+                            yield "ping", None
+                except BaseException:
+                    turn.close()
+                    with self.status_lock:
+                        self.status["queued"] -= 1
+                    raise
+                if cancel.is_set():
+                    turn.close()                        # cancellation can race with successful acquisition
+                    with self.status_lock:
+                        self.status["queued"] -= 1
+                    yield "done", {"finish": "cancel", "completion_tokens": 0, "reused": 0, "timings": None,
+                                   "reasoning_tokens": 0, "reasoning_recoveries": 0}
+                    return
+            with turn:
                 try:
                     with self.status_lock:
                         if trace is not None:
