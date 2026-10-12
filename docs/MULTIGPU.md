@@ -161,3 +161,32 @@ At K=24 with `STRATA_IQ_MT_MIN=1 --pcie-frac 0 --adapt-every 0`, the first GPU's
 ## Limits
 
 - One PC only: no GPUs over the network.
+
+## Independent replicas (Linux SYCL)
+
+`replicas` is an opt-in server feature. Each GPU group owns an independent engine, model RAM,
+KV and conversation cache. It is separate from one engine's layer split; defaults stay unchanged.
+Use `--replicas N` to partition the GPUs selected by setup's `--gpus` evenly. Saved identifiers are PCI addresses.
+An explicit config can use `"replicas": [{"devices": ["05:00.0"]}, {"devices": ["06:00.0"]}]`.
+A GPU cannot belong to two groups. A layer split is used only within a group containing several GPUs.
+
+Positive `--replica-ram-mib` (config: `replica_ram_mib`) and `--replica-vram-mib` (`replica_vram_mib`)
+reservations are required. Estimate peak model, KV, cache and session RAM for each engine.
+The reservation must cover a conservative model-file size floor. Before startup, reload and recovery,
+checks intersect host and all memory-cgroup ancestor availability and check free VRAM on every selected GPU.
+Reservations do not change native allocator limits or replace native allocation checks.
+An unreadable standard `/sys/fs/cgroup` layout returns an error rather than admitting unknown capacity.
+
+On Linux, physical cores in the parent's allowed CPU mask are partitioned with SMT siblings kept together.
+An independent child launcher changes only its own affinity and execs the configured engine with the same PID.
+There is no threaded-server `preexec_fn` or affinity change to the parent or other processes.
+Insufficient cores or unavailable topology is an error; explicit `"replica_cpus": false` disables partitioning.
+Qualification must include the launcher's Python executable, `serve/cpu_affinity.py`, configured executable and actual engine identity.
+
+Requests are routed using load and bounded conversation-prefix hints; native prefix checks remain authoritative.
+Monitor `/metrics` shows replica states, request counts, separate cache logs and totals. Log, learned profile and
+conversation persistence paths are separate per replica. Single-file `/slots/0` SAVE/RESTORE and dynamic VRAM
+operations are not offered by the replica front. Initial startup is serial; failure closes every created child.
+If one running replica dies, others serve while recovery rechecks reservations. Shutdown closes recovery threads
+before ending the owned engines. Use a separate non-replica config for single-engine native calibration.
+This feature makes no throughput or speedup promise.

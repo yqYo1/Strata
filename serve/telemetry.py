@@ -356,7 +356,7 @@ class _CpuRamFallback:
 
 # ------------------------------------------------------------------------------------------------ the sampler
 class Telemetry:
-    def __init__(self, extra=None, gpu_pci=None):
+    def __init__(self, extra=None, gpu_pci=None, gpu_pcis=None):
         """`extra()` -> dict of more series to record each second (the server's tok/s).  `gpu_pci`: the PCI address
         of the card the engine runs on (setup's gpu_pci), or None for the first card on the xe driver (else NVML's
         first)."""
@@ -365,7 +365,7 @@ class Telemetry:
         self.now: dict = {}
         self.sampled_at: float | None = None
         self.hist = collections.defaultdict(lambda: collections.deque(maxlen=HISTORY))
-        self.gpus = [(0, _gpu(gpu_pci))]
+        self.gpus = [(i, _gpu(pci)) for i, pci in enumerate(gpu_pcis)] if gpu_pcis else [(0, _gpu(gpu_pci))]
         self.gpus = [(i, g) for i, g in self.gpus if g.ok()] or self.gpus[:1]
         self.gpu = self.gpus[0][1]
         try:
