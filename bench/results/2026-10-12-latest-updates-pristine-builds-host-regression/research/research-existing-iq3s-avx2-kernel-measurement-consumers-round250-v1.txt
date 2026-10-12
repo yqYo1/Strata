@@ -1,0 +1,43 @@
+# R250 — Existing IQ3_S AVX2 kernel measurements and consumers
+
+Date: 2026-10-12 (JST). Read-only audit of committed reports, their cited receipts, and source descriptions on immutable WN `sync-xe-v0143-nonfinite-20261012` @`0691bcdf`. No build, test, benchmark execution, process/device/GPU/profiler query, Git command, cleanup, or source edit was performed. Main's official cache51232K run and Sol's private histogram patch were not touched.
+
+## Decision
+
+The proposed `iq_avx2_parity --bench --dispatch --pairs iq3_s/iq4_nl --nt 1,8 --mb 256 --reps 5` is not a duplicate of any retained valid per-sample measurement located in the committed evidence reviewed here. R248 documents this as a prospective benchmark command and source capability, not completed results. No exact IQ3_S/AVX2 parity benchmark receipt with samples, binary identity, compiler identity, or measured values was found. Therefore it would provide new kernel-only synthetic-fixture data if run after the owner’s active run closes. This is not a recommendation to execute it during the current run.
+
+The command would still repeat a previously studied *mechanism* (Strata IQ row dispatch and NT selection), rather than uncover a new kernel. Round33 states that existing implementation history had found the multi-row path faster at three tokens, but no faster at one due to codebook lookup costs. That historical statement has no raw per-sample table or executable/compiler hashes in the report and is not a substitute for the proposed reproducible IQ3_S/IQ4_NL pair benchmark. It also does not establish current WN0691 timings.
+
+## What the candidate measures
+
+On the audited source, the parity harness fixes H=2560 and FF=640, synthesizes valid IQ3_S GU and IQ4_NL Down expert blobs in a 256-MiB pool, constructs and quantizes activations before timed regions, and times selected dispatch/kernel methods. `--dispatch` exercises engine dispatch. It does not run the production expert pool, model routing, file/mmap reads, activation quantization, or GPU work. NT1 is a one-row kernel service case; NT8 is a maximum-size verifier-window reuse case, not a claim about the actual NT distribution. The synthetic blob pool exceeds the host’s 32-MiB L3, but that only establishes working-set capacity; it does not show each sample reached DRAM. Timings from it must be reported as synthetic host-resident kernel service, not physical DDR bandwidth or per-request cost.
+
+At H=2560/FF=640, the logical packed payload per expert is 1,408,000 B for IQ3_S gate+up and 921,600 B for IQ4_NL Down, 2,329,600 B total. These are serialized extents, not measured memory-controller traffic. The actual model pool groups repeated expert IDs into jobs and counts token rows (`nt`); pool job construction, intermediate quantization, scheduling and worker tail are outside this benchmark.
+
+## Existing measured evidence and non-matches
+
+- The closest existing CPU microbench *measurement* in the reviewed IQ3_S material is R213's closed NT1 native-service calibration, but it measures **IQ4_NL Down20 only**, not IQ3_S GU or the paired command. On actual host-resident IQ4_NL weights with fixed synthetic activations, 25-round medians were 0.0805–0.0846 ms per call. Four fresh processes, 25 samples per arm/cohort, six pinned CPUs and 384 selected actual IQ3_S expert blobs (756,940,800 B aggregate) describe the wider cohort/calibration setup; they do not turn the Down20 measurement into IQ3_S service. Each train/holdout cohort exceeded L3, but the report explicitly does not prove every load reached DRAM. Pool fit/holdout gates all failed; 14.8–17.5 ms per 192-job cohort must not be divided by jobs and labeled per-expert latency. This evidence is a different format, kernel, shape and scope.
+- R248 records R53/R54 as a 512-MiB RAM read reference and R365 as a seven-sample/three-process aggregate 36.87 GB/s read result on the B570/5600X host. These are standalone stream/read probes, not IQ3_S service, and R245's 13.743 GB/s is an ordinary-RAM copy control. None duplicates or substitutes for the proposed kernel benchmark.
+- R33 discusses prior dispatch/mechanism history and a partial production histogram, but it has no per-sample IQ3_S parity benchmark values. Its partial counts are exposure, not timing. The historical `--stats` route/pool measurements describe production execution and scheduling, with different denominators; they cannot be converted into isolated kernel samples.
+- R244 and R245 references in R248 concern, respectively, decode caller/capacity semantics and a host-copy/concurrency audit. They are not the current official profile-uniqueness report or official parameter-tuning report. No claim here uses them as IQ3_S timing evidence.
+
+Thus there is no existing measurement in this audit that matches all of: type-21 IQ3_S GU plus type-20 IQ4_NL Down, 5600X runtime dispatch, H=2560/FF=640, NT1 and NT8 samples, 256-MiB fixture, and retained five-repetition per-sample results.
+
+## Source, executable, and compiler identity limits
+
+The source description in R248 names `src/kernels/cpu/iq_avx2_parity.cpp` and its source ranges (4–20, 52–56, 128–151, 394–493), along with `native_expert.cpp` dispatch and `iq_avx2.cpp` kernels. R248 records WN identity `0691bcdf`, but does not provide source SHA-256, a built `iq_avx2_parity` binary hash, compile command, compiler version, or a run receipt because no benchmark was performed. Consequently exact binary/compiler identities and per-sample settings/values do not exist for this proposed run in the retained report. Do not impute them from another build's source-hash record or from a compatible historical production binary.
+
+R213's source/build is explicitly the older W0141 worktree at source revision `7d0105f2a942ac72ca20fef69d4c2e7960653de3`, with pinned GGML `3cf03257`; it is not WN0691. Its Down20 results must not be presented as samples from the current proposed binary.
+
+## Decision boundary
+
+If the owner later runs the proposed command in an authorized quiet window, retain executable and source hashes, compiler and effective flags, CPU-feature/variant printout, relevant environment overrides, exact pool construction and residency policy, all raw repetitions per cell, and correctness results. Label outputs kernel-only and synthetic; keep them separate from actual routed-pool timings and from RAM bandwidth. The test would be new evidence, but not a measured production roofline until matched to actual format/NT job counts and production pool service.
+
+## Evidence trail with full paths and hashes
+
+- R248 design/eligibility report: `/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-5600x-iq3s-measured-roofline-tool-eligibility-round248-v1.txt` — SHA-256 `5dc417b5f527e1ef62309016f4f36fc87dfeaded6635d740e1970c27d450149e`.
+- R163 production dispatch contract: `/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-xe-native-decode-cpu-avx2-multirow-service-dispatch-contract-round163-v1.txt` — SHA-256 `26bfb965427cb83194dd2cec3ca9e30639dfc274bc5fc6f7156a69c347d09e67`.
+- R33 NT1 GGML hot-path history: `/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/native-nt1-ggml-hotpath-round33.txt` (used for qualitative dispatch history; no IQ3_S parity sample table).
+- R213 native CPU service synthesis: `/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round213-native-cpu-roof-and-production-nt-gap.txt` — SHA-256 `3b4caa9a4e5a5cc1b02288d1d271626a8650f18df2f8ade50e672def09aef884`.
+- R213's exact closed calibration report: `/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/native-service-calibration-22-20-nt1-summary-v3/REPORT.md` — SHA-256 `08014fb3a412236f1026f5b342578d878029409314612a22e508152c78709163`.
+- R170 dequant report was reviewed only as a negative match: it concerns Xe GPU IQ3_S dequant and contains no CPU AVX2 GEMM samples: `/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-current-native-iq3s-dequant-quiet-microbench-roofline-round170-v1.txt` — SHA-256 `95bb4178c1cc0a4d0adceda7a6a18f8852c0d9a9b36e9f362b065832fa6e294d`.

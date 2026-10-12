@@ -1,0 +1,39 @@
+# R255 — serial prompt CPU job histogram: counter meaning and attribution
+
+日付: 2026-10-12。WN0691と未適用候補の静的ソース監査のみ。テスト、import、ビルド、GPU/プロセス照会、Git、掃除、ソース変更はしていない。候補の出力や測定結果は存在すると主張しない。
+
+## 結論
+
+パッチのhookはnative `ExpertJobMulti`を実際に組み立てた`expert_pool_dispatch_multi`から、変更しない`run_split_multi_native`呼び出し直前に置かれている。このため、prompt中にCPUへ割り当てたexpert missの集計として妥当である。`layer`は0起点の実レイヤー、`jobs`は各dispatchで異なるCPU expertごとに作られたjob数、`rows`はそのjobの`nt`の合計、`nt1..nt8`は各サイズのjob数を表す。GPU cache hits、PCIe/remote offloadは含まれない。実際のrun結果や計算性能の測定とは別物である。
+
+数値解釈で必要な明確化は一つ。候補のcontractは「dispatch attempts, not proof completed math」と保守的に書くが、native pool呼び出しは同期し、各phaseの完了を待って戻る。したがって`status=prompt_complete`の記録なら、集計対象jobはpoolの処理を戻りまで終えたものといえる。これは数値正当性の証明ではない。`cancelled_or_nonfinite`や`error_or_early_exit`では部分範囲の集計なので、完全なprompt histogramとして使ってはいけない。読み手は`status=prompt_complete`かつ`invalid=0`, `overflow=0`を必須条件にすべきである。statusを必ず判定する契約なら追加コード修正は不要。機械処理でstatus判定を徹底させたいなら、`complete=0/1`を別フィールドで出す小さな明示化が有用。
+
+## 実装と識別子の対応
+
+対象候補: `/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/implementation-prefill-cpu-job-histogram-source-v1/`。`SOURCE_CONTRACT.txt` SHA-256 `86257173355e5d754afc07c7513ae39a2d00a162ad7bd2b89ba23a798362b634`; `changes.patch` `7b4011a6f6ad57978c11a1ab424f93d7f51d21505b8319fa8c19de3f0de13146`; candidate `after/src/core/expert_source.cpp` `178c6d87f9f71e783526efd6bbd4ebd555a6986d94ffb16b26b852c06e24be3b`; candidate `after/src/program/generate.cpp` `b27fd104b79007814a3eedc8f575d390eeefc986bc82ff01225c6d5b6a4d5ca9`.
+
+基準WN source hashes: `src/core/expert_source.cpp` `7915f5ceb462a5c14655bbe585408f72ef9abd581b95ed14f08d9533d20f2edc`; `src/program/generate.cpp` `f9e6a45a4f7494cbc48c0b0e944b30d493f0ee97219fb2535a001f3a5913db05`; `src/kernels/cpu/pool.cpp` `c114539980d496ea69c17fee2ddaf1b7229668afe07586142f572d96cb8a7036`; `include/strata/kernels/cpu/expert.hpp` `2bba8a28370e2da88e6141341c70033b409c86d1501d576138a243605604a511`.
+
+- **layerはoff-by-oneではない。** verify-window callback `drive_pool_multi(..., layer)` が`d.layers=layer`を設定する (`generate.cpp:832–840`)。serial `read_windows`は各windowの前に`drive.d.layers=0`へ戻して`ver.run(T,...)`を呼ぶ (`generate.cpp:8766–8786`)。そのcallbackのlayer引数がadapterの`lay.fmt[d.layers]`選択にも使われ、候補hookはその同じ値でformat pairとhistogram行を照合する (`expert_source.cpp:1640–1664, 1805–1810`)。decode時のsingle-token `drive_pool`がadapterの進行後に使う`d.layers-1`とは異なる経路である。
+- **jobs/rows/NTの意味。** dispatcherは`n_tok*k`個のrouteを走査し、CPU missに限って`job_of[expert]`で同じexpertを一つの`ExpertJobMulti`にまとめる。新jobで`nt=0`にし、そのexpertに割り当てられたtokenごとにactivation/outputを格納して`nt`を増やす (`expert_source.cpp:1823–1865`)。候補はnative pool呼び出し直前に`njobs`個のjobを読み、jobごとに`jobs++`, `rows+=nt`, `nt[nt-1]++`を記録する。よって一つのjobは「同じdispatch/windowで同じexpertを処理する複数token row」のまとまり。`rows`合計はそのlayerでCPUへ振られたtoken×expert row数の合計であり、prompt token数やdistinct expert総数、bytes、時間、FLOPsではない。複数windowにまたがる同一expertはdispatchごとに再度jobとして数える。
+- **cache/remote/PCIe除外。** base dispatcherは`kind[i] >= 0`をVRAM hitまたはPCIe/remote側の行として出力を処理し、CPU jobを作らずcontinueする。`kind[i] < 0`だけをmissとしてblobを得てjobへ追加する (`expert_source.cpp:1673–1689, 1836–1864`)。候補hookはこの組立後に限るので、histogramはrouter全体でなくCPU miss分だけを数える。
+- **1..8と128の安全上限。** `ExpertPool::MAXT=8` (`expert.hpp:142`)。poolは各native jobの`nt`が`1..MAXT`であることを実行時に検査する (`pool.cpp:452–467`)。dispatcherは`n_tok<=MAXT`, `k<=128/n_tok`を検査し、最大`n_tok*k<=128` route entryを固定配列に収める (`expert_source.cpp:1525–1530, 1644–1653`)。distinct CPU jobsはentry数以下なので、パッチの`count<=128`上限は実ループの上限を包含する。active top-k=10, 8-row windowなら最大80 route entries/job slotsであり、NT histogramのNT8はjob一つの最大row数であって、8192-token batchを表すものではない。
+- **prompt枝とbatched枝。** request scopeはprompt初期化後に作られ、`read_windows`内でのみbindingされる (`generate.cpp` patch around 8622, 8766–8775)。pipelined windowはread_windows冒頭で別関数へreturnするが、scope eligibilityも`!pipe && n_stages==1`を要求する。`read_part`は別経路で、`note_batched()`を一回記録し、`o.batch>0`なら内部chunk loop、そうでなければ`sp.run`を呼ぶ。したがって`batched_parts`はlogical read_part呼出し数で、batch chunk数やwindows数ではない。`o.batch>0`のmixed request全体はscope eligibilityから除外され、純batched8192はserial bindingなしで、候補のcontractどおりNT8192を捏造しない。scopeを作るだけで実際にread_windowsが起きないケースも、serial_parts=0として区別される。
+
+## finish境界と測定上の制限
+
+正常経路では`read_windows`内のdispatcherが`run_split_multi_native`を呼び、native poolはGU phase、intermediate quantize、Down phaseを実行する。`run_phase`は`wait_parked`, `wait_done`, 次phase前後のpark完了を同期的に待つ (`pool.cpp:381–391, 470–506`)。prompt全partの後、最終`refill`が済んでprompt完了を出す前にhistogramをfinishする (`generate.cpp` patch around 9169; baseの次境界はprompt_ms/REUSED/decode)。従って`prompt_complete`ならCPU poolの実行中jobを残してfinishする経路ではない。CPU worker stallや不正jobはpool側でengine abortとなり、正常なcomplete reportには至らない。
+
+ただし候補はjobをpool呼出し直前に数えるため、数値だけから出力の有限性や正しさまでは証明しない。またcancel/nonfinite/early returnはそれまでに組んだjobを集計した部分結果を出し得る。statusを無視して完全なrequest histogramとして合算すると誤る。明示status、invalid/overflow flagsを必須にすれば解決する。既存のR248が指摘したとおり、これはprompt `read_windows`の実work shapeを測るcounterであり、batched8192のCPU expert GEMMや時間計測ではない。R249の`--stats`は別のprocess-lifetime/phase aggregateであり、このprompt histogramを時間に変換するものではない。
+
+## 修正要否
+
+1. **必要な数値式・layer mappingの変更は見つからない。** type pairはNativeFmtから、layerは実callback引数から採られ、NT/job groupingと128上限は実配列・実pool guardに一致する。
+2. **完了ラベルの解釈を狭く固定する。** parser/consumerは`status=prompt_complete`, `invalid=0`, `overflow=0`だけをfull prompt histogramとして採用する。自由形式statusの判定を保証できない場合のみ`complete=0/1`を出力へ追加する。部分終了を完全結果とみなす既存消費者はここでは確認していない。
+3. **performance claimをしない。** countsはfrequency weightsのみ。`pool.cpp:500–506`や既存stats timingと結合しても、この追加counter単体ではprompt timing、仕事完了の数値正当性、CPU roofline、kernel throughputは測れない。測定解釈の拡張は不要。
+
+## 既存報告とregistry
+
+v158 registry: `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-12-latest-updates-pristine-builds-host-regression/report-registry-v158.json`, SHA-256 `631858a38502831972064da685a92e662a4e37b3dc83e983fbb73d381d24586b`。
+
+参照: R248 `research-5600x-iq3s-measured-roofline-tool-eligibility-round248-v1.txt` (SHA `5dc417b5f527e1ef62309016f4f36fc87dfeaded6635d740e1970c27d450149e`); R249 `research-request-phase-counter-boundaries-round249-v1.txt` (SHA `1807459b5cdfd094761ea8d275c4085d1665ce09929a5050832167f9a928e1a9`); R253 `research-upstream-v0143-server-compatibility-coverage-round253-v1.txt` (SHA `ae5a9b62a0e716df34833b7adb0a30b17af1821fc364121ceb2925c3e7ba84f3`). R248's missing prompt grouped-job distribution is exactly what this candidate's bounded counters are designed to describe; the candidate remains unimplemented/unmeasured and requires Main review.

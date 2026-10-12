@@ -1,0 +1,50 @@
+# R256 — Minimum source-only XMX eligibility diagnostic
+
+Date: 2026-10-12 (JST). Static review of the pinned Strata SYCL source, the supplied LLVM 7.1.1 install headers, and closed reports only. No compiler/build, import, process, GPU/device query, kernel launch, test, profiler, Git operation, cleanup, or source edit was performed. This report specifies what a future diagnostic can establish; it contains no local B570 property result and no XMX admission result.
+
+## Decision
+
+Use a two-stage, opt-in diagnostic in the owning WN tree:
+
+1. A host-only **property packet** reads the selected `sycl::device` and emits raw subgroup sizes, the complete `matrix_combinations` tuple fields, relevant aspects (at minimum fp16, fp64 if useful, and device USM), selected device identity/driver/runtime, `STRATA_NO_XMX`, and oneMath/MM A override state. This allocates no device memory and launches no kernel. It can establish only that the installed runtime reports the necessary capabilities and that source-level environment switches do not disable the route.
+2. If those property predicates pass, request an executable kernel bundle for the **exact grouped functor** instantiated by `xmx_gemm_grouped`: `GroupedKernel<128,256,3>`, with its `grf_size<256>` and subgroup-16 properties, FP16 joint-matrix body and current device target. Record the exact kernel ID, device, build result or complete exception, compiler/runtime identity, and whether this was a fresh compile or a cached executable. This is a compile/JIT admission probe, not a launch or performance test. Do not allocate operands, call `parallel_for`, or claim the kernel executed.
+
+The existing generic probe is close but not exact: `large_grf_ok()` asks for an executable bundle for `GemmKernel<sycl::half,128,256,3>`, while grouped MoE dispatch launches `GroupedKernel<128,256,3>`. Sharing the 256-GRF/subgroup property macro does not make the former a compile receipt for the latter. The minimum useful extension is to factor the property packet from `xmx_gemm.cpp`'s current predicates and add a grouped-functor bundle check beside the existing generic check; leave routing and kernel execution unchanged. Emit the result as `reported-capable`, `exact-grouped-compile-pass/fail`, or `route-disabled`, never as “XMX executed.”
+
+## What the current code proves
+
+- `matrix_report.cpp::matrix_combinations()` returns the runtime's reported combinations, with optional BF16 and INT8 tuples filtered by environment switches. It does not itself print the raw tuples, query a matrix engine, or test an instruction. The FP16 tuple remains relevant; explicitly report the filters so a missing tuple is interpretable.
+- `device_has_xmx()` requires subgroup size 16 and a runtime tuple matching FP16×FP16, FP32 accumulator/output, and the source tile 8×16×16 (including maximum-dimension tuples). This is an eligibility predicate based on reported properties, not proof that the grouped functor builds or launches.
+- `large_grf_ok()` requests an executable bundle for a **single-expert `GemmKernel`**. It catches `sycl::exception` and falls back. It does not probe `GroupedKernel`, the grouped launch geometry, an actual runtime dispatch, or correctness.
+- `GroupedKernel` and `GemmKernel` both request 256 GRF and subgroup 16. The grouped path currently instantiates `<WM=128, WN=256, PD=3>` and uses FP16 A/B, FP32 accumulation/output. The grouped call can instead select oneMath `mma_gemm_grouped` when that route is forced or XMX is unavailable, or DP4a when XMX is unavailable. `STRATA_NO_XMX` also forces fallback. A positive XMX-eligibility diagnostic does not say which product path a real call selected.
+- Device identity, max allocation and host/shared-atomic flags do not establish any of the above. In particular the supplied `normalmax10132807680` and `host/sharedAtomicFalse` do not establish subgroup 16, the FP16 tuple, exact grouped compilation, device-USM availability, launch success or external-memory behavior.
+
+## Evidence boundary
+
+| Diagnostic evidence | Establishes | Does not establish |
+|---|---|---|
+| Raw SYCL property packet | What this runtime reports for the selected device; whether the source's subgroup/matrix tuple conditions are met | That the exact grouped kernel compiles, is selected, launches, is correct, or uses XMX instructions |
+| Exact `GroupedKernel<128,256,3>` executable bundle succeeds | This compiler/runtime can produce an executable bundle for that exact kernel specialization and requested properties on that device | Successful submission/launch, hardware execution, lack of runtime launch failure, correct output, XMX instruction issue, or performance |
+| Actual dispatch/path receipt | Which branch the caller selected for that call (XMX, oneMath joint-matrix, or DP4a) | Kernel correctness or speed without execution validation and measurements |
+| Correctness-checked execution with event and completion receipts | That the selected implementation ran and produced accepted output for the tested shapes | General correctness outside those shapes, XMX instruction use absent selected-kernel evidence, or roofline/saturation |
+
+A kernel-bundle query can trigger compilation/JIT and therefore is not part of this source-only audit or a zero-activity property query. The proposed compile probe is a later diagnostic step and must run only when separately scheduled as authorized GPU/runtime work. The property packet itself should remain callable without allocating buffers or submitting a command group.
+
+## Minimal result schema
+
+One machine-readable record plus a concise text line should include: diagnostic/source revision and binary/compiler identity; platform/device name, vendor/device ID, driver/runtime; aspect values; subgroup-size vector; all matrix tuple fields (`atype`, `btype`, `ctype`, `dtype`, `msize/nsize/ksize`, maxima); relevant environment switches; `property_predicate_f16`; exact kernel specialization and requested properties; bundle result/failure; `kernel_launched=false`. Avoid a single boolean `xmx=true`: preserve each independent gate and the distinction between reported capability and compile admission.
+
+If actual-use proof is later required, add a separate execution qualification: capture caller route selection and the actual grouped call shape; execute a bounded correctness case using device buffers; retain event and terminal-completion/error status and output comparison. Hardware instruction evidence would require an appropriate compiler/kernel disassembly or supported device instrumentation tied to that exact binary/kernel. None of these is necessary to answer property/compile eligibility and they must not be implied by the minimum diagnostic.
+
+## Pinned inputs and source evidence
+
+Target tree: `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-xe-v0143-nonfinite-20261012` (WN, supplied pin `0691bcdf`). Runtime install supplied by parent: `/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install`; source LLVM pin supplied: `504366f4b82ff00bbac7b0c956635eed8bc599d8` plus 17 patches. No runtime values were queried.
+
+- `src/kernels/xe/xmx_gemm.cpp` — SHA-256 `2d2144e7331b3dd66a2289a9c67b541b1c136332be53f31c935c9176880085d1`; exact tuple predicate and generic GRF check around lines 207–253; grouped functor and launch around lines 159–179 and 316–340.
+- `src/kernels/xe/matrix_report.cpp` — SHA-256 `8434f9b7294414a5c0d5c63a7a4a05306f3998338f9c70d548fb2ed07f000542`; runtime tuple retrieval and environment filtering.
+- `include/strata/kernels/matrix_report.hpp` — SHA-256 `ed91ca0a833ff586739c69c79c4e2e377320129446b23d2cb02ca67a6d9bba95`; report/helper contract and filter comments.
+- `src/kernels/xe/device_caps.hpp` — SHA-256 `4fbd77ac2ba184559dd7cd34855db73dd9cc91c490cbfb2919017586299ad3a2`; max-workgroup and FP64 helpers, not an XMX property report.
+- `src/kernels/xe/device_target.hpp` — SHA-256 `811e210daefe806a77a762850ac59a20503bc3b039b8653e1a53096b205eeeda`; non-Intel device compile guard and subgroup mapping.
+- Existing B570 source/runtime gate analysis: `/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/round290-xestrata-arc-b570-xmx-grouped-gemm-eligibility.txt` — SHA-256 `decfd7d921cb975e7f7e9dd98a9a137fdc0c8fe58e268d86d8b45e50e4d1d1aa`.
+- Existing roofline gap and requirement boundary: `/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-native-free-gpu-kernel-roofline-eligibility-round252-v1.txt` — SHA-256 `3eada58f5bc2d9bfd6f4f7ab032b129f224c2c5142f8f9598760b8bc2b211079`.
+- Existing source-matched measurement design (used only for the execution-vs-event evidence boundary): `/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-xe-eligible-prefill-compute-memory-microbenchmark-design-round146-v1.txt` — SHA-256 `d49f7cf02bd700c09c20fdaa3489ab200099a5e3e21b9bbd4457c37ccaae4fd6`.

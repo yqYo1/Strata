@@ -1,0 +1,51 @@
+# R251 — active native Dm storage precision eligibility
+
+Date: 2026-10-12
+Status: static source audit only. No runtime, import, test, build, device/process query, profile, Git, cleanup, or source change. The current Sol packet was not inspected. Source conclusions below do not establish that a particular launch actually took the route.
+
+## Result
+
+For the specified WN0691 native IQ3_S batched 8192 configuration, a narrow Dm16 **store after FP32 output has been computed** is source-eligible in the compact fallback. It is not limited to a compact-only/non-MMQ proposal: the compact `fallback_products` branch accepts the fallback grouped GEMM/XMX writers, whose output pointer is FP32 Dm. The existing combine reads FP32 Dm. IQ3_S itself is MMQ-eligible for both products at the stated geometry; with MMQ explicitly disabled (`STRATA_PREFILL_MMQ=0`), the same type/geometry chooses fallback instead. This is a source eligibility finding, not proof of actual launch flags, selected writer, saved arena bytes, fit, quality, or speed.
+
+## Source and exact gates
+
+Primary source is immutable WN0691 `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-xe-v0143-nonfinite-20261012`.
+
+- `src/prefill/prefill.cpp`, SHA-256 `2922806c8b56b64e1bc20096d93c852a105ed225ff3bf9dcf113436c79964d9c`.
+- `src/prefill/moe_mmq.cpp`, SHA-256 `4e444a2d05d47c71693ff90fbe27ff4260138bb2a1d6768c78c510267958b844`.
+- `src/kernels/xe/iq_mmq.cpp`, SHA-256 `dd71b2cf2281e234775a00e0853af72f384be26fbe61d6cc48a18606e75df304`.
+- `src/prefill/kernels.cpp`, SHA-256 `0e89bbb83220ad85257d17fc6b98f2332a5c17e8d2832937a98a1e3ae300ab81`.
+- `src/prefill/gemm.cpp`, SHA-256 `bfa40846fddb46a3d03d8c58ef5209b181c46674939beeefe512db0073c9d648`.
+- `include/strata/prefill/compact_moe.hpp`, SHA-256 `433897666aa6c93d645ead09eba04d872e67bdbce3b7aa232f553168595fac72`.
+
+The source names two independent controls: `STRATA_PREFILL_MMQ` in `mmq_plan()` (lines 603–626) and `STRATA_PREFILL_FUSED` in the fallback routing setup (1995–2009). There is no literal `FUSED_MMQ` environment variable in this caller. I interpret the task's `FUSED_MMQ0` shorthand as the stated fused/MMQ-off configuration; for an auditable launch receipt, record both exact variables separately. `STRATA_PREFILL_NATIVE_DEQUANT_BATCH=0` disables the optional native batch dequant path (2227–2230). Compact scratch is enabled only when requested, no MMQ layer is planned, the plan has fallback, and `STRATA_DBG_NAN` is absent (628–639); otherwise initialization rejects a compact request (668–670). The `host issuer0` setting must also be preserved in the launch receipt. It does not change the Dm format of the GPU fallback writer.
+
+At lines 640–653 and 821–825, `m.Dm` is allocated as `float[T*K*N]` even when compact mode is on. Compact mode only reduces other expert scratch to T rows. Thus compact mode by itself does not narrow Dm or change its allocation format.
+
+## MMQ versus fallback by type and pack geometry
+
+The native IQ MMQ support predicate is the explicit type switch in `src/kernels/xe/iq_mmq.cpp:623–627`: accepted IDs are 16, 17, 18, 20, 21, 22, 23, 29, and 42. The adjacent decoder specialization identifies ID 21 as IQ3_S (`iq_mmq.cpp:121+`). `mmq_plan()` (prefill.cpp:612–623) selects MMQ for each layer only if both GU and down types are supported and `up_off == mmq::matrix_bytes(gu_type, 640, N)`; the enabled plan requires `mmq::built()`, native layout, and MMQ not explicitly disabled.
+
+For IQ3_S/type 21, row bytes are derived with QK=256 at `iq_mmq.cpp:630–640`. The requested geometry has N=2560, hidden width 640, and doubled gate/up width 1280; all are multiples of 256. Therefore type 21 GU and down are each in the supported-type set and their row shapes are block-compatible. The packed GU/up offset equality is a separate layout check and is computed from the actual native pack. If both actual per-layer types are 21 and that offset test passes, MMQ is eligible when compiled/enabled. If either type is unsupported or the offset check fails, that layer is fallback. With `STRATA_PREFILL_MMQ=0`, all layers are fallback regardless of the supported types; `MmqPlan` begins `fallback=true`, and compact mode can be admitted if the other guards pass.
+
+This answers source eligibility, not the actual per-layer type map for the active file. The no-live-packet restriction means the actual pack metadata is not claimed here. The report must use the run's retained per-layer `gu_type`/`down_type` receipt to say “all layers are IQ3_S”; a model label alone is insufficient.
+
+## Exact Dm writer/reader route under the requested fallback
+
+For `use_mmq == false`, the main MoE route enters the fallback branch at prefill.cpp:2120 onward. With native-dequant batching off and fused kernels off, it reaches `fallback_products` at 2185. Under `m.compact_moe`, it partitions expert rows into groups (2186–2200), gathers FP16 activations, then calls `Gemm::f16_groups(..., dst, ...)` with `dst = m.Dm + group.row0*N` (2196–2209). If that backend declines, it calls `xmx_gemm_grouped(..., dst, ...)` with the same FP32 Dm destination. These are both real output writers eligible for a post-product Dm16 store; the exact choice between oneMKL grouped f16 and XMX fallback is backend/runtime dependent. The source signatures and Dm type remain float, so a candidate must preserve each writer's FP32 accumulation and convert only its completed result before combine.
+
+`moe_combine(m.Dm, ...)` is the reader at prefill.cpp:2868, after the optional CPU-tail copy (2848–2859). `src/prefill/kernels.cpp:1000+` defines the combine with `const float* Dm`; the Dm contribution is widened/not applicable today because it is already float, then weighted route contributions are accumulated into FP32 output. A Dm16 candidate needs a matching reader that converts each stored value to float and preserves route rank order and FP32 accumulation. The CPU tail is excluded by host issuer0; if any CPU rows are admitted, its FP32 copy at 2858 is another writer that must be converted or the candidate gated off. MMQ Dm writers at 2468/2754 are excluded by `use_mmq == false`, and fused writers are excluded by the requested fused-off setting.
+
+The R239/R301 8K raw Dm size reduction cannot be called an arena saving here. In this integrated source, the shared region is the maximum of overlaid GDN/QSA/MoE terms; no actual max-after-conversion, fit, or selected chunk result is inferred by this audit.
+
+## What bounded runtime evidence is still needed
+
+Existing WN source has opt-in `STRATA_PREFILL_TRANSFER_COUNTS` evidence. The per-layer `strata prefill expert H2D` receipt includes `gu_type`, `down_type`, layer, and `issuer` (prefill.cpp:3074–3097). The matching `strata prefill route census v1` includes `mmq_enabled`, `plan_fallback`, mode, issuer, routing-row coverage, and native-dequant GU/down call counts (3100–3119). This is bounded per prefill stage/chunk and is enough to confirm the type map, `mmq_enabled=0`, complete routing, and absence of native-batch dequant calls for the requested mode, when the exact launch receipt confirms the corresponding flags.
+
+What source does **not** log in those records is `compact_moe` admission or an explicit Dm writer/backend identity (oneMKL grouped versus XMX fallback). Therefore the missing evidence is a retained single 8192-token route-census set plus the exact run environment/config receipt proving compact requested, fused/MMQ/dequant batch disabled, CPU issuer/share zero, and `STRATA_DBG_NAN` absent. The source predicates then establish compact admission and the eligible fallback. If the review requires proof of the selected grouped backend, current route census does not provide it; one bounded per-layer/per-chunk writer counter or existing backend status would be required. No such runtime result was observed in this read-only audit.
+
+Do not use that routing evidence to claim Dm16 correctness. Separate, bounded numerical evidence must compare pre-store FP32 writer outputs with post-roundtrip values, final combined FP32 outputs, and the predeclared task/logit checks; capacity evidence must report the actual shared-region maximum and fit. This report does not provide or imply any of those results.
+
+## Prior-art boundary and provenance
+
+Read R239 (`research-integrated-v0143-persistent-fp32-precision-gaps-round239-v1.txt`) and R301 (`round301-dm-lowprecision-store-candidate-contract.txt`) to avoid repeating the old-source proposal. They did not establish this integrated-tree native batched8192 compact writer eligibility. The v158 registry consulted is `/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-main-integrated-results-boundary-root-v1/staged/report-registry-v158.json`, SHA-256 `46a7cd21fc3ceb9cef3abf7f4bb0f0fc1d1fc8b0bd5fc7886ee166904e91e04e`.

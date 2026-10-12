@@ -1,0 +1,27 @@
+# Request phase and counter boundaries in pristine v0.1.43 SYCL
+
+Date: 2026-10-12
+Scope: read-only source audit of request-level `--stats`/`DONE` telemetry in pristine official SYCL and immutable WN0691 source. No run, build, test, GPU, process query or implementation change was performed. Conclusions below are source-derived, not measured runtime findings.
+
+## Finding
+
+`DONE` provides request-level total prompt and decode wall times, but its traffic deltas do not cover prompt work, and it has no CPU/GPU time split. `--stats` provides useful host-phase/pool attribution but is printed at process end from process-lifetime accumulators. It therefore cannot attribute those counters to one request in a persistent serving process. For the long serial `read_windows` request, this leaves no complete request-scoped CPU/RAM/GPU attribution.
+
+## Official pristine source boundaries
+
+Audited `/home/yayoi/ghq/github.com/Niko1221/Strata/.worktree/bench-upstream-v0143-pristine-20261012/sycl/src/program/generate.cpp`, SHA-256 `8112c1808dc317e89d9635ad1b6e46b080fc16e67a0b2f63923d5231f355fa07`.
+
+- Request timer `r0` starts at line 9540. `prompt_ms` is sampled at 10360 after prompt consumption and slot refill. It includes the request's prompt path, including session/checkpoint matching and any work in the prompt loop; it is a wall-clock duration, not a CPU-only duration.
+- Immediately before decode, at lines 10405–10413, snapshots are taken for decode hit/lookups, source RAM/file blob reads and bytes, and offload entries. `decode_ms` is sampled at 11277 after the serial decode loop, before the final `ver.wait_commit` at 11279. Thus it includes decode loop host and GPU-reach waiting but excludes that final commit wait.
+- `DONE` at 11444–11462 emits generated/prompt token counts, `prompt_ms`, `decode_ms`, completion reason, draft counts, reused count, hit/lookups, RAM/file reads, logical file MB, prompt tokens read, and offloads. The RAM/file/hit/offload fields subtract the pre-decode snapshots, so they cover decode only. The prompt path has separate `PP`-style details for batch/prefill paths, but serial `read_windows` does not populate `PrefillStats` for a matching prompt attribution.
+- The `--stats` report at 12652 onward prints host phase averages (`PLE`, embed, layers, head, readback, sample), CPU expert-pool time, pool wait/drain/re-park, expert blobs, and cache counters. Source comments at 12667–12702 explicitly note that pool/drive counts accumulate through both prefill and decode. These are process-wide counters, not reset or snapshotted per request. The phases are wall-clock host intervals and do not represent GPU kernel execution time. GPU time/idle time cannot be inferred by subtracting host phase sums from `decode_ms` because the intervals include waits/overlap and use different aggregation boundaries.
+
+## RAM counter meaning
+
+In WN `src/core/expert_source.cpp` lines 1348–1374 (SHA-256 `7915f5ceb462a5c14655bbe585408f72ef9abd581b95ed14f08d9533d20f2edc`), `ram_reads` increments when the complement/resident lookup returns a blob; `file_reads` increments for successful file-backed reads when the complement tier is active. `file_read_bytes` adds the logical layer-blob size for mapped/staged reads. These count expert-blob source events and logical bytes, not OS physical disk I/O, page faults, memory bandwidth, or general RAM traffic. They do not describe activation/KV allocations or GPU transfer bytes. The same counter-boundary pattern is present in official `DONE`; WN source’s counters are likewise cumulative except where an explicit snapshot delta is used.
+
+## Smallest bounded additional telemetry
+
+Keep `DONE` stable and add an opt-in request-scoped diagnostics record for serial `read_windows` only. At request entry, snapshot existing cumulative host phase totals, `drive.calls`/`drive.cpu_ms`, pool phase totals, source blob counters, and any existing decode timing snapshots; snapshot again at request completion and emit deltas with the already measured prompt/decode wall times. Add a narrow prompt boundary snapshot for the source blob counters (or split one request total from its prompt and decode portions) so prompt reads are not omitted. Label source values as logical resident/file expert-blob reads/bytes. If actual GPU execution attribution is required, existing host wall timers and offload counts are insufficient: use already-supported device event timings only if they can be reset/delta-scoped per request; otherwise report GPU timing as unavailable rather than estimating it from wall time. Avoid new per-token polling or traces; one record at request end bounds overhead and output.
+
+This is a proposal only. It does not assert that these counters are currently request-scoped or that any timing gap is GPU execution.

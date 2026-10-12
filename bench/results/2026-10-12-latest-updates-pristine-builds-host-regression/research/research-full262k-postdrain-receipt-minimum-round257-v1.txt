@@ -1,0 +1,36 @@
+# R257 — minimum post-drain receipt for the 262,144-cell probe
+
+Date: 2026-10-12 (Asia/Tokyo). Read-only source/design audit. No source edits, builds, tests, runtime/GPU/model operations, Git operations, cleanup, or live Main/probe receipt inspection. The conclusions below are source-derived. The reviewed baseline is the retained integrated Xe worktree `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-xe-v0143-nonfinite-20261012`; audited file hashes are listed below.
+
+## Finding
+
+The current probe has a real checked device synchronization before snapshot capture and restore validation, and another checked synchronization after streamed residency invalidation. However, the textual `PASS` is printed at `generate.cpp:1427-1429`, while the function's `FullProbeDrain` destructor calls `device_sync()` only when the function is already returning (`1170-1176`). The caller then returns process status 0 (`10353-10356`). Consequently PASS precedes that destructor's final synchronization. An earlier checked synchronization is useful evidence, but it is not the post-PASS drain event the receipt claims to represent. Destructor failure is fail-stop via `std::terminate`, so a stale PASS can precede an abnormal termination. This is an ordering/receipt defect, not evidence that queued work was observed to be incomplete.
+
+The existing proof of target extent is aggregate: Prefill callback coverage and draft completion (`1318-1334`), Prefill's total token/chunk stats (`1337-1352`), then full-extent snapshots and byte checks for each owned QSA state (`1361` onward). No counter is attached to the actual per-layer K/V append dispatches in `prefill.cpp:1706-1722`. Thus it does not independently receipt that every target QSA layer received all append ranges. Snapshot geometry and equal before/after fingerprints prove captured/restored bytes agree; they do not say which append calls wrote those bytes.
+
+## Smallest bounded correction
+
+1. Keep the existing aggregate snapshot/restore verification. Add a fixed-size counter array indexed by owned main QSA layer, with fields `{dispatches, cells, first_pos, end_pos}`. At each QSA layer's append site, after issuing the K/V append operation(s), record the interval `[p0,p0+T)` exactly once for that layer. Reject invalid layer index, nonpositive `T`, overflow, noncontiguous intervals, duplicate/overlapping intervals, or dispatches beyond the known expected chunk count. Do not log per token/cell. For the hybrid K/V path, the K and V append calls together count as one cell interval, not two.
+2. After `Prefill::run` completes, require for every owned QSA layer: `dispatches == stats.chunks == expected_chunks`, `cells == 262144`, `first_pos == 0`, and `end_pos == 262144`. With irregular chunking, preserve actual dispatch count and contiguous ranges; do not hardcode 64 unless the admitted chunk is 4096. The resulting final stored position is `end_pos-1 == 262143`.
+3. Refactor `FullProbeDrain` to expose a checked, idempotent `drain()` that calls `device_sync`, and make its destructor drain only on early/error exits. Invoke the checked drain after final streamed-residency invalidation and before emitting any success receipt. If it fails, print failure and fail-stop/return nonzero without emitting PASS. The successful path should not perform a later unreported work-bearing drain; if retaining an idempotent outer guard, it must already be marked drained. This makes the barrier that supports PASS explicit in source order.
+4. After the checked drain, emit one bounded machine-readable `layer_append` record per main QSA layer and a compact final record containing exact input/capacity, final position, real successor/probe row counts, total chunks, `drain=ok`, snapshot/restore status, and `generated=0`. Emit `PASS` only after all required counters, snapshot/restore checks, and the checked drain succeed. No raw tensor, token, or per-position trace is needed.
+
+A line format is adequate for this one diagnostic, e.g. `full-context-probe: layer_append layer=0 dispatches=64 cells=262144 begin=0 end=262144 last_pos=262143 drain=ok`. The final record should identify the same invocation/model/source externally. The receipt consumer must require exactly one record for each expected QSA ordinal (no gaps or duplicates), verify contiguous full-span totals and a single successful final drain, require the final PASS record after the drain and all layer records, and reject a missing/nonzero exit or truncated output. The external run manifest should bind executable/source hash, model/tokenizer identity, exact argv, device/runtime/driver, and process exit; the in-process fingerprints are not substitutes for these identities. Capture the compact receipt as the successful artifact; keep failure diagnostics only under the existing retention rules.
+
+## Meaning of the physical boundary
+
+This mode stores exactly 262,144 input cells at indices `[0,262144)`. Its last stored cell and final position are 262,143. The MTP successor stream contains 262,143 real successors plus one explicitly labeled terminal storage-probe row for position 262,143; it never reads/appends cell 262,144 or performs decode there. Therefore the terminal row is a storage-only probe, not a prediction-quality claim or proof of a legal next decode. The source admits exact extent and `--max-new=0` (`generate.cpp:2474-2496` and R242 source audit); the proposed receipt must preserve that distinction.
+
+## Evidence and limits
+
+Relevant current source locations: queue guard `generate.cpp:1168-1176`; probe setup/coverage `1243-1275,1318-1344`; checked pre-snapshot synchronizations and aggregate extent `1337-1352`; snapshot and per-layer state checks `1361` onward; residency invalidation `1422-1425`; premature PASS `1427-1430`; caller process success `10353-10360`; QSA append dispatches `prefill.cpp:1706-1722`. The pre-existing implementation note `implementation-xe-e32-full-context-probe-v3.txt` also states that no `prefill.cpp` append counter was added and no run qualified the diagnostic. R242 (`research-integrated-full262144-runtime-consumer-gap-round242-v1.txt`) documented the same two gaps; this report makes the narrowest ordering and receipt contract explicit.
+
+Audited SHA-256:
+
+```
+src/program/generate.cpp f9e6a45a4f7494cbc48c0b0e944b30d493f0ee97219fb2535a001f3a5913db05
+src/prefill/prefill.cpp 2922806c8b56b64e1bc20096d93c852a105ed225ff3bf9dcf113436c79964d9c
+include/strata/program/full_context_probe.hpp c7463aee451e41d3b25c7dac12814b93aaa99443a7a78f851dd5cb6faf51f963
+```
+
+No full-context runtime PASS is claimed. The recommendation is a source-level receipt design only; source lines do not establish that any actual Xe GPU run has completed.
