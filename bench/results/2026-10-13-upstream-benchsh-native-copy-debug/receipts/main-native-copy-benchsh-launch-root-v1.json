@@ -1,0 +1,269 @@
+{
+  "active": false,
+  "passed": true,
+  "complete": true,
+  "main_reviewed": true,
+  "commands": [
+    {
+      "label": "embedding-state",
+      "argv": [
+        "/usr/bin/systemctl",
+        "--user",
+        "show",
+        "llama-server-qwen3embed.service",
+        "-p",
+        "ActiveState"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "XDG_RUNTIME_DIR": "/run/user/1000",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-12T22:08:27.377622+00:00",
+      "wall_seconds": 30,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 138816,
+          "start_ticks": 19167149,
+          "sid": 138816,
+          "pgid": 138816
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 191671.499109548,
+      "pid": 138816,
+      "spawn_return_monotonic": 191671.500771939,
+      "direct_identity": {
+        "pid": 138816,
+        "state": "R",
+        "ppid": 138780,
+        "pgid": 138816,
+        "sid": 138816,
+        "start_ticks": 19167149,
+        "rss_bytes": 425984
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-12T22:08:27.520570+00:00",
+      "elapsed_seconds": 0.1427230309927836,
+      "logs": {
+        "embedding-state.stdout": {
+          "bytes": 21,
+          "sha256": "9bf2451134cf07027a1e5d0b7b71598867aaf8ba6db4f4afb1f9f3611eda0c68"
+        },
+        "embedding-state.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "upstream-benchsh-debug",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-upstream-benchsh-supervisor-source-v3/supervisor.py.txt",
+        "--main-config",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-copy-benchsh-launch-root-v1/main-config.json",
+        "--main-config-sha256",
+        {
+          "sha256": "b477133ea2f080730658f21bb15f989b337f400fce71c9a58abe6c767aa0c7f3"
+        }
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "XDG_RUNTIME_DIR": "/run/user/1000",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-12T22:08:27.881859+00:00",
+      "wall_seconds": 2600,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 138834,
+          "start_ticks": 19167200,
+          "sid": 138834,
+          "pgid": 138834
+        },
+        {
+          "pid": 149017,
+          "start_ticks": 19184673,
+          "sid": 138834,
+          "pgid": 138834
+        },
+        {
+          "pid": 149078,
+          "start_ticks": 19184754,
+          "sid": 138834,
+          "pgid": 138834
+        },
+        {
+          "pid": 149156,
+          "start_ticks": 19184821,
+          "sid": 138834,
+          "pgid": 138834
+        },
+        {
+          "pid": 151181,
+          "start_ticks": 19189070,
+          "sid": 138834,
+          "pgid": 138834
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 191672.00330491,
+      "pid": 138834,
+      "spawn_return_monotonic": 191672.005545711,
+      "direct_identity": {
+        "pid": 138834,
+        "state": "R",
+        "ppid": 138780,
+        "pgid": 138834,
+        "sid": 138834,
+        "start_ticks": 19167200,
+        "rss_bytes": 458752
+      },
+      "peak_live_owned_identities": 4,
+      "peak_session_rss_bytes": 2203287552,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-12T22:32:14.339818+00:00",
+      "elapsed_seconds": 1426.4577672189916,
+      "logs": {
+        "upstream-benchsh-debug.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "upstream-benchsh-debug.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "source_revision": "410904c99d273435b5302fa8976cc667d17957f2",
+  "upstream_revision": "7695859aa13afb248bdb4d36f9b2e95707db079d",
+  "mode": "debug",
+  "performance_eligible": false,
+  "quality_evaluated": false,
+  "adopted": false,
+  "retry_count": 0,
+  "reset_executed": false,
+  "service_changes": false,
+  "host_available_bytes": 87460564992,
+  "allowed_cpus": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11
+  ],
+  "boot_id": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+  "embedding_state": "ActiveState=inactive",
+  "main_config": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-copy-benchsh-launch-root-v1/main-config.json",
+    "sha256": "b477133ea2f080730658f21bb15f989b337f400fce71c9a58abe6c767aa0c7f3"
+  },
+  "stdout": "",
+  "stderr": "",
+  "supervisor_result": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-benchsh-debug-copy1-root-v1/supervisor-record.json",
+    "sha256": "8fb1b7042d94eb42970749b29adf2481e6f3c5a860048bd41a42817f3fe04fa2"
+  },
+  "normal_quit": {
+    "pid": 149156,
+    "sid": 138834,
+    "method": "original StrataEngine.close",
+    "quit_write_completed": true,
+    "quit_flush_completed": true,
+    "fallback_signals": [],
+    "complete": true,
+    "engine_exit_code": 0,
+    "normal_quit": true
+  },
+  "upstream_result": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-benchsh-debug-copy1-root-v1/upstream-results/2026-10-13-community-gpu-e20c-at-0000-05-00-0-qwen3-8-flash-next-iq3-s/results.json",
+    "sha256": "cc03f19dc75b2904b275fae81b9d33eda0916a810f563ec5e71c1ddaf6a13279"
+  },
+  "result_assessment": {
+    "actual_prompt_tokens": [
+      32049,
+      32049,
+      32049
+    ],
+    "samples": [
+      {
+        "prompt_tokens": 32049,
+        "generated_tokens": 24,
+        "read_tokens": 32049,
+        "reused_tokens": 0,
+        "prompt_tps": 475.1,
+        "prompt_tps_source": "engine",
+        "decode_tps": 8.2,
+        "decode_tps_source": "engine",
+        "prompt_ms": 67450.3,
+        "decode_ms": 2927.7
+      },
+      {
+        "prompt_tokens": 32049,
+        "generated_tokens": 24,
+        "read_tokens": 32049,
+        "reused_tokens": 0,
+        "prompt_tps": 477.3,
+        "prompt_tps_source": "engine",
+        "decode_tps": 9.1,
+        "decode_tps_source": "engine",
+        "prompt_ms": 67145.4,
+        "decode_ms": 2629.1
+      },
+      {
+        "prompt_tokens": 32049,
+        "generated_tokens": 24,
+        "read_tokens": 32049,
+        "reused_tokens": 0,
+        "prompt_tps": 480.0,
+        "prompt_tps_source": "engine",
+        "decode_tps": 9.1,
+        "decode_tps_source": "engine",
+        "prompt_ms": 66774.4,
+        "decode_ms": 2650.5
+      }
+    ],
+    "available_engine_metrics_complete": true,
+    "at_least32768": [
+      false,
+      false,
+      false
+    ],
+    "long_row": "32K",
+    "short_and_agent_scope": "auxiliary; not32K evidence",
+    "quality_evaluated": false,
+    "performance_calculated_by": "pristine upstream bench.sh only"
+  },
+  "finished_utc": "2026-10-12T22:32:14.341390+00:00"
+}

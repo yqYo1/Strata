@@ -22,9 +22,11 @@ Small kernel, transfer-bandwidth and profiler checks remain diagnostic measureme
 ## Assessing results
 
 `--long` adds approximately 32K input tokens. Check each request's actual input and
-reused token counts rather than its label alone. Exclude samples below 32,768 tokens
-from long-input adoption decisions while retaining their results. Keep short-input
-and agent-session measurements as supporting results. Document any method change
+reused token counts rather than its label alone. Compare the stock long-input case
+with the same model and client. Record an actual 32,049-token input as that count,
+and distinguish it from testing at least 32,768 tokens. Missing the target count
+alone does not turn a successful stock case into a failed measurement. Keep
+short-input and agent-session measurements as supporting results. Document any method change
 needed to add 64K input.
 
 Assess prefill and decode separately. Keep at least three individual samples,
