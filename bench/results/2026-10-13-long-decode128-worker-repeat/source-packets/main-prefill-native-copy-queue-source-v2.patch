@@ -1,0 +1,762 @@
+# SPDX-FileCopyrightText: 2026 yayoi
+# SPDX-License-Identifier: LGPL-3.0-or-later
+
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -208,6 +208,23 @@
+ add_executable(strata-plan src/plan/plan_main.cpp)
+ target_link_libraries(strata-plan PRIVATE strata_plan)
+ 
++if(STRATA_BUILD_TESTS AND CMAKE_SYSTEM_NAME STREQUAL "Linux")
++  enable_testing()
++  add_executable(native_copy_lifetime_test tools/test_native_copy_lifetime.cpp)
++  target_include_directories(native_copy_lifetime_test PRIVATE include)
++  target_link_libraries(native_copy_lifetime_test PRIVATE strata_warnings)
++  add_test(NAME native_copy_lifetime_success COMMAND native_copy_lifetime_test success)
++  add_test(NAME native_copy_lifetime_pre_import COMMAND native_copy_lifetime_test pre-import)
++  set_tests_properties(native_copy_lifetime_success native_copy_lifetime_pre_import PROPERTIES TIMEOUT 10)
++  # Fatal-path modes are checked by Main's bounded process owner, including
++  # exact exit and absence of release markers, rather than WILL_FAIL alone.
++  add_executable(copy_stream_policy_test tools/test_copy_stream_policy.cpp)
++  target_include_directories(copy_stream_policy_test PRIVATE include)
++  target_link_libraries(copy_stream_policy_test PRIVATE strata_warnings)
++  add_test(NAME copy_stream_policy_test COMMAND copy_stream_policy_test)
++  set_tests_properties(copy_stream_policy_test PROPERTIES TIMEOUT 10)
++endif()
++
+ # ---- host-only platform and n-gram reader ----------------------------------
+ # These never touched the GPU runtime; they sat inside the CUDA build only because their consumers did.
+ add_library(strata_platform STATIC src/platform/memory.cpp src/platform/direct_file.cpp)
+@@ -371,7 +388,8 @@
+   add_library(strata_core STATIC src/core/device.cpp src/core/pinned.cpp src/core/gpu.cpp src/core/graph.cpp
+                                  src/core/weights.cpp src/core/layout.cpp)
+   target_include_directories(strata_core PUBLIC include)
+-  target_link_libraries(strata_core PUBLIC strata_sycl strata_warnings strata_plan strata_platform)
++  target_link_libraries(strata_core PUBLIC strata_sycl strata_warnings strata_plan strata_platform
++                                           ${CMAKE_DL_LIBS})
+ 
+   add_executable(strata-device src/core/device_main.cpp)
+   target_link_libraries(strata-device PRIVATE strata_core)
+@@ -445,6 +463,9 @@
+     # Manually owned synthetic event diagnostic; deliberately not registered with CTest.
+     add_executable(native_grouped_gemm_event_bench tools/native_grouped_gemm_event_bench.cpp)
+     target_link_libraries(native_grouped_gemm_event_bench PRIVATE strata_kernels)
++    # Manually owned runtime fixture: no unguarded GPU CTest registration.
++    add_executable(native_copy_stream_test tools/test_native_copy_stream.cpp)
++    target_link_libraries(native_copy_stream_test PRIVATE strata_core)
+     add_executable(prefill_service_event_test tools/prefill_service_event_test.cpp)
+     target_link_libraries(prefill_service_event_test PRIVATE strata_kernels)
+     add_executable(nonfinite_gpu_test tools/test_nonfinite_gpu.cpp)
+--- /dev/null
++++ b/include/strata/core/copy_stream_policy.hpp
+@@ -0,0 +1,14 @@
++// SPDX-FileCopyrightText: 2026 MistVVK and the XeStrata contributors
++// SPDX-License-Identifier: LGPL-3.0-or-later
++#pragma once
++#include <cstdlib>
++#include <cstring>
++namespace strata::core {
++inline bool copy_engine_opt_in(const char* value) {
++    return value && std::strcmp(value, "1") == 0;
++}
++inline bool copy_engine_requested() {
++    static const bool requested = copy_engine_opt_in(std::getenv("STRATA_COPY_ENGINE"));
++    return requested;
++}
++}  // namespace strata::core
+--- a/include/strata/core/gpu.hpp
++++ b/include/strata/core/gpu.hpp
+@@ -35,6 +35,8 @@
+ const char* last_error();
+ 
+ Stream stream_create();
++/// Exact STRATA_COPY_ENGINE=1 opts into copy/event-only native import.
++Stream copy_stream_create();
+ void stream_destroy(Stream s);
+ bool stream_sync(Stream s);
+ /// True when every command submitted to `s` has completed (cudaStreamQuery == cudaSuccess).
+--- /dev/null
++++ b/include/strata/core/native_copy_lifetime.hpp
+@@ -0,0 +1,48 @@
++// SPDX-FileCopyrightText: 2026 MistVVK and the XeStrata contributors
++// SPDX-License-Identifier: LGPL-3.0-or-later
++#pragma once
++
++#include <cstdio>
++#include <cstdlib>
++#include <utility>
++
++namespace strata::core::native_copy {
++// Shared with Runtime's fatal path. No C++ unwinding, static destruction or
++// atexit handlers: borrowed native handles and pending USM remain until exit.
++[[noreturn]] inline void fail_stop(const char* message) noexcept {
++    std::fprintf(stderr, "Xe runtime: %s; terminating without releasing in-flight allocations\n", message);
++    std::fflush(stderr);
++    std::_Exit(1);
++}
++
++// The caller retains the native list/loader outside this function. Enter only
++// after native creation and input preparation, immediately before make_queue.
++// Import failure is ambiguous: SYCL may already have created a UR borrower.
++// Catch here, before caller ownership unwinds. Never retry/fallback afterward.
++// On insertion failure catch inside the live local queue's scope, so even its
++// destructor cannot run before fail-stop. Production makes no submissions here.
++template <class Import, class Insert>
++auto import_and_store(Import&& import, Insert&& insert) {
++    try {
++        auto queue = std::forward<Import>(import)();
++        try {
++            return std::forward<Insert>(insert)(std::move(queue));
++        } catch (...) {
++            fail_stop("native copy queue insertion failed after import; native resources retained");
++        }
++    } catch (...) {
++        fail_stop("native copy import attempted with uncertain UR ownership; native resources retained");
++    }
++}
++
++// Used by actual list/loader destruction and checked native-stream drain.
++// Both API error results and C++ exceptions must stop before subsequent owners
++// or allocations release. The callback's true result means checked success.
++template <class Operation>
++void checked_release(Operation&& operation, const char* message) noexcept {
++    try {
++        if (std::forward<Operation>(operation)()) return;
++    } catch (...) {}
++    fail_stop(message);
++}
++}  // namespace strata::core::native_copy
+--- a/include/strata/core/runtime.hpp
++++ b/include/strata/core/runtime.hpp
+@@ -10,6 +10,8 @@
+ #include <condition_variable>
+ #include <exception>
+ #include <list>
++#include <memory>
++#include <utility>
+ #include <mutex>
+ #include <thread>
+ 
+@@ -45,6 +47,10 @@
+     // stream handed to a kernel is one of these, compute() or null (compute()), or a queue of another device's
+     // runtime (the kernel then runs there); anything else is refused.
+     sycl::queue* create_stream();
++    // Exact opt-in only; native stream accepts copies/barriers, never kernels.
++    sycl::queue* create_copy_stream();
++    sycl::queue& stream_for_copy(void* stream);
++    bool copy_only(const sycl::queue* stream);
+     void destroy_stream(sycl::queue* stream);
+     sycl::queue& stream(void* stream);
+ 
+@@ -86,7 +92,15 @@
+     sycl::context context_;
+     sycl::queue compute_, transfer_;
+     std::mutex streams_mutex_;
+-    std::list<sycl::queue> streams_;
++    struct EngineStream {
++        // Reverse destruction: borrowed queue dies before its native owner.
++        std::shared_ptr<void> native_owner;
++        sycl::queue queue;
++        bool copy_only;
++        EngineStream(const sycl::queue& q, std::shared_ptr<void> owner = {}, bool copy = false)
++            : native_owner(std::move(owner)), queue(q), copy_only(copy) {}
++    };
++    std::list<EngineStream> streams_;
+     std::mutex watch_mutex_;
+     std::condition_variable watch_cv_;
+     std::list<Waiter> waiters_;
+--- a/src/core/device.cpp
++++ b/src/core/device.cpp
+@@ -4,6 +4,18 @@
+ #include "strata/core/on_device.hpp"
+ #include "strata/core/runtime.hpp"
+ #include "strata/core/gpu.hpp"
++#include "strata/core/copy_stream_policy.hpp"
++#include "strata/core/native_copy_lifetime.hpp"
++
++#if defined(__linux__) && __has_include(<level_zero/ze_api.h>) && \
++    __has_include(<sycl/ext/oneapi/backend/level_zero.hpp>)
++#include <level_zero/ze_api.h>
++#include <sycl/ext/oneapi/backend/level_zero.hpp>
++#if defined(SYCL_EXT_ONEAPI_BACKEND_LEVEL_ZERO) && SYCL_EXT_ONEAPI_BACKEND_LEVEL_ZERO >= 4
++#include <dlfcn.h>
++#define STRATA_NATIVE_COPY_IMPORT 1
++#endif
++#endif
+ 
+ 
+ #include <algorithm>
+@@ -115,9 +127,7 @@
+ }
+ 
+ [[noreturn]] void fatal(const char* message) {
+-    std::fprintf(stderr, "Xe runtime: %s; terminating without releasing in-flight allocations\n", message);
+-    std::fflush(stderr);
+-    std::_Exit(1);
++    native_copy::fail_stop(message);
+ }
+ 
+ // The xe driver resets a job after its job_timeout_ms (5 s here, at most 10 s), which completes the event with an
+@@ -267,7 +277,8 @@
+ 
+ sycl::queue* Runtime::create_stream() {
+     std::lock_guard<std::mutex> lock(streams_mutex_);
+-    return &streams_.emplace_back(context_, device_, handler(), runtime_queue_properties(device_));
++    return &streams_.emplace_back(sycl::queue(context_, device_, handler(),
++                                            runtime_queue_properties(device_))).queue;
+ }
+ 
+ void Runtime::destroy_stream(sycl::queue* stream) {
+@@ -276,23 +287,141 @@
+         throw DeviceError("destroy_stream: not an engine stream of the Xe runtime");
+     finish(*stream);
+     std::lock_guard<std::mutex> lock(streams_mutex_);
+-    streams_.remove_if([stream](const sycl::queue& q) { return &q == stream; });
++    streams_.remove_if([stream](const EngineStream& entry) { return &entry.queue == stream; });
+ }
+ 
+ bool Runtime::owns(const sycl::queue* queue) {
+     if (queue == &compute_ || queue == &transfer_) return true;
+     std::lock_guard<std::mutex> lock(streams_mutex_);
+-    for (const auto& q : streams_)
+-        if (&q == queue) return true;
++    for (const auto& entry : streams_)
++        if (&entry.queue == queue) return true;
+     return false;
+ }
+ 
+-sycl::queue& Runtime::stream(void* stream) {
++sycl::queue& Runtime::stream_for_copy(void* stream) {
+     if (!stream) return compute_;
+     auto* q = static_cast<sycl::queue*>(stream);
+     // a queue of another device's runtime is that device's: a kernel goes where its stream is, as with CUDA streams
+     if (!owns(q) && owner_of_stream(q) == nullptr) throw DeviceError("the stream is not a queue of the Xe runtime");
+     return *q;
++}
++
++bool Runtime::copy_only(const sycl::queue* queue) {
++    if (!copy_engine_requested()) return false;
++    std::lock_guard<std::mutex> lock(streams_mutex_);
++    for (const auto& entry : streams_)
++        if (&entry.queue == queue) return entry.copy_only;
++    return false;
++}
++
++sycl::queue& Runtime::stream(void* handle) {
++    auto& queue = stream_for_copy(handle);
++    if (!copy_engine_requested()) return queue;
++    auto* owner = owner_of_stream(&queue);
++    if (owner && owner->copy_only(&queue))
++        throw DeviceError("copy-only stream refuses compute, graph and host-task work");
++    return queue;
++}
++
++sycl::queue* Runtime::create_copy_stream() {
++    if (!copy_engine_requested()) return create_stream();
++    const char* reason = "native import unavailable in this build/backend";
++#ifdef STRATA_NATIVE_COPY_IMPORT
++    if (service_events_requested()) {
++        reason = "service profiling uses the qualified generic queue";
++    } else if (device_.get_backend() == sycl::backend::ext_oneapi_level_zero) {
++        struct Library {
++            void* handle = nullptr;
++            ~Library() {
++                if (handle)
++                    native_copy::checked_release([&] { return dlclose(handle) == 0; },
++                                                 "native copy-loader close failed");
++            }
++        };
++        struct NativeOwner {
++            using Destroy = decltype(&zeCommandListDestroy);
++            std::shared_ptr<Library> library;
++            Destroy destroy = nullptr;
++            ze_command_list_handle_t list = nullptr;
++            ~NativeOwner() {
++                if (list)
++                    native_copy::checked_release([&] { return destroy(list) == ZE_RESULT_SUCCESS; },
++                                                 "native copy-list destroy failed; refusing unsafe teardown");
++            }
++        };
++        try {
++            // Allocate control blocks before acquiring the loader/native handles.
++            auto library = std::make_shared<Library>();
++            library->handle = dlopen("libze_loader.so.1", RTLD_NOW | RTLD_NOLOAD);
++            if (!library->handle) library->handle = dlopen("libze_loader.so.1", RTLD_NOW);
++            using Groups = decltype(&zeDeviceGetCommandQueueGroupProperties);
++            using Immediate = decltype(&zeCommandListCreateImmediate);
++            auto groups = library->handle ? reinterpret_cast<Groups>(
++                dlsym(library->handle, "zeDeviceGetCommandQueueGroupProperties")) : nullptr;
++            auto immediate = library->handle ? reinterpret_cast<Immediate>(
++                dlsym(library->handle, "zeCommandListCreateImmediate")) : nullptr;
++            auto destroy = library->handle ? reinterpret_cast<NativeOwner::Destroy>(
++                dlsym(library->handle, "zeCommandListDestroy")) : nullptr;
++            if (groups && immediate && destroy) {
++                const auto device = sycl::get_native<sycl::backend::ext_oneapi_level_zero>(device_);
++                const auto context = sycl::get_native<sycl::backend::ext_oneapi_level_zero>(context_);
++                uint32_t count = 0;
++                if (groups(device, &count, nullptr) == ZE_RESULT_SUCCESS && count > 0 && count <= 64) {
++                    std::vector<ze_command_queue_group_properties_t> properties(count);
++                    for (auto& property : properties)
++                        property.stype = ZE_STRUCTURE_TYPE_COMMAND_QUEUE_GROUP_PROPERTIES;
++                    const uint32_t capacity = count;
++                    if (groups(device, &count, properties.data()) == ZE_RESULT_SUCCESS && count <= capacity) {
++                        for (uint32_t ordinal = 0; ordinal < count; ++ordinal) {
++                            const auto& property = properties[ordinal];
++                            if (!(property.flags & ZE_COMMAND_QUEUE_GROUP_PROPERTY_FLAG_COPY) ||
++                                (property.flags & ZE_COMMAND_QUEUE_GROUP_PROPERTY_FLAG_COMPUTE) ||
++                                property.numQueues == 0) continue;
++                            auto owner = std::make_shared<NativeOwner>();
++                            owner->library = library;
++                            owner->destroy = destroy;
++                            ze_command_queue_desc_t descriptor{};
++                            descriptor.stype = ZE_STRUCTURE_TYPE_COMMAND_QUEUE_DESC;
++                            descriptor.ordinal = ordinal;
++                            descriptor.flags = ZE_COMMAND_QUEUE_FLAG_IN_ORDER;
++                            descriptor.mode = ZE_COMMAND_QUEUE_MODE_ASYNCHRONOUS;
++                            descriptor.priority = ZE_COMMAND_QUEUE_PRIORITY_NORMAL;
++                            if (immediate(context, device, &descriptor, &owner->list) != ZE_RESULT_SUCCESS ||
++                                !owner->list) continue;
++                            // Input preparation is still pre-import: no UR borrower exists yet.
++                            // Once make_queue is attempted, any exception is fatal, including
++                            // non-std exceptions and insertion failure. Do not unwind owner.
++                            sycl::backend_input_t<sycl::backend::ext_oneapi_level_zero, sycl::queue> input(
++                                owner->list, device_, sycl::ext::oneapi::level_zero::ownership::keep,
++                                sycl::property_list{sycl::property::queue::in_order{}});
++                            // Prepare the handler before crossing the import boundary.
++                            auto async_handler = handler();
++                            auto* result = native_copy::import_and_store([&] {
++                                return sycl::make_queue<sycl::backend::ext_oneapi_level_zero>(
++                                    input, context_, async_handler);
++                            }, [&](sycl::queue&& queue) {
++                                std::lock_guard<std::mutex> lock(streams_mutex_);
++                                // Pass a reference into emplacement: allocation can fail
++                                // before EngineStream copies/moves the queue. No by-value
++                                // queue parameter can unwind a borrower inside this lambda.
++                                return &streams_.emplace_back(queue, owner, true).queue;
++                            });
++                            std::fprintf(stderr, "strata: native copy-only queue selected group=%u "
++                                                 "STRATA_COPY_ENGINE=1 ownership=keep\n", ordinal);
++                            return result;
++                        }
++                    }
++                }
++            }
++            reason = "no usable bounded copy-only API group/import";
++        } catch (const std::exception& error) {
++            std::fprintf(stderr, "strata: native copy-only pre-import preparation failed (%s); generic fallback\n", error.what());
++            return create_stream();
++        }
++    }
++#endif
++    std::fprintf(stderr, "strata: native copy-only queue generic fallback (%s)\n", reason);
++    return create_stream();
+ }
+ 
+ void Runtime::preload_kernels() {
+@@ -384,8 +513,15 @@
+ 
+ void Runtime::finish(sycl::queue& queue) {
+     if (!owns(&queue)) throw DeviceError("cannot drain a queue not owned by the Xe runtime");
+-    wait(queue.ext_oneapi_submit_barrier(), &queue == &compute_ ? "compute queue drain"
+-                                            : &queue == &transfer_ ? "transfer queue drain" : "engine stream drain");
++    auto drain = [&] {
++        wait(queue.ext_oneapi_submit_barrier(), &queue == &compute_ ? "compute queue drain"
++                                                : &queue == &transfer_ ? "transfer queue drain" : "engine stream drain");
++        return true;
++    };
++    if (copy_only(&queue))
++        native_copy::checked_release(drain, "native copy queue drain failed; refusing unsafe teardown");
++    else
++        (void) drain();
+ }
+ void Runtime::finish() {
+     finish(compute_);
+@@ -393,7 +529,7 @@
+     std::vector<sycl::queue*> streams;
+     {
+         std::lock_guard<std::mutex> lock(streams_mutex_);
+-        for (auto& q : streams_) streams.push_back(&q);
++        for (auto& entry : streams_) streams.push_back(&entry.queue);
+     }
+     for (auto* q : streams) finish(*q);
+ }
+--- a/src/core/gpu.cpp
++++ b/src/core/gpu.cpp
+@@ -82,7 +82,7 @@
+     if (!s) return rt().compute();
+     core::Runtime* owner = core::Runtime::owner_of_stream(s);
+     if (!owner) throw core::DeviceError("the stream is not a queue of the Xe runtime");
+-    return owner->stream(s);
++    return owner->stream_for_copy(s);
+ }
+ core::Runtime& rt_of(Stream s) {
+     if (!s) return rt();
+@@ -90,6 +90,8 @@
+     return owner ? *owner : rt();
+ }
+ 
++sycl::queue& compute_q(Stream s) { return rt_of(s).stream(s); }
++
+ // the recordings in progress, by queue
+ std::mutex g_capture_mutex;
+ std::map<const sycl::queue*, sx::command_graph<sx::graph_state::modifiable>> g_captures;
+@@ -101,6 +103,11 @@
+ Stream stream_create() {
+     try { return rt().create_stream(); }
+     catch (const std::exception& e) { fail("stream_create", e); return nullptr; }
++}
++
++Stream copy_stream_create() {
++    try { return rt().create_copy_stream(); }
++    catch (const std::exception& e) { fail("copy_stream_create", e); return nullptr; }
+ }
+ 
+ void stream_destroy(Stream s) {
+@@ -274,7 +281,7 @@
+     // a kernel rather than ext_oneapi_memcpy2d, which a SYCL graph recording does not accept: the verify window and
+     // the drafter record this copy
+     try {
+-        auto& queue = q(s);
++        auto& queue = compute_q(s);
+         const bool words = ((uintptr_t) dst | (uintptr_t) src | dpitch | spitch | width) % 4 == 0;
+         if (words) {
+             const size_t w = width / 4, dp = dpitch / 4, sp = spitch / 4;
+@@ -299,7 +306,7 @@
+ 
+ bool memset_async(void* dst, int value, size_t bytes, Stream s) {
+     if (bytes == 0) return true;
+-    try { memset_pieces(q(s), dst, value, bytes); return true; }
++    try { memset_pieces(compute_q(s), dst, value, bytes); return true; }
+     catch (const std::exception& e) { return fail("memset_async", e); }
+ }
+ 
+@@ -341,7 +348,7 @@
+ 
+ bool launch_host(Stream s, std::function<void()> fn) {
+     try {
+-        q(s).submit([&](sycl::handler& h) { h.host_task([fn = std::move(fn)] { fn(); }); });
++        compute_q(s).submit([&](sycl::handler& h) { h.host_task([fn = std::move(fn)] { fn(); }); });
+         return true;
+     } catch (const std::exception& e) { return fail("launch_host", e); }
+ }
+@@ -358,8 +365,11 @@
+     // an event without timing is a barrier where the runtime measured timestamps to slow the waits (measure_marks)
+     try {
+         auto& queue = q(s);
+-        e->ev = e->timing || !rt_of(s).marks_by_barrier() ? sx::submit_profiling_tag(queue)
+-                                                          : queue.ext_oneapi_submit_barrier();
++        const bool copy_only = rt_of(s).copy_only(&queue);
++        if (copy_only && e->timing)
++            throw core::DeviceError("copy-only stream refuses timing/profiling tags");
++        e->ev = !copy_only && (e->timing || !rt_of(s).marks_by_barrier())
++                    ? sx::submit_profiling_tag(queue) : queue.ext_oneapi_submit_barrier();
+         return true;
+     }
+     catch (const std::exception& ex) { return fail("event_record", ex); }
+@@ -402,7 +412,7 @@
+ 
+ bool begin_capture(Stream s) {
+     try {
+-        auto& queue = q(s);
++        auto& queue = compute_q(s);
+         std::lock_guard<std::mutex> lock(g_capture_mutex);
+         if (g_captures.count(&queue)) { g_error = "begin_capture: the stream is already recording"; return false; }
+         auto it = g_captures.emplace(&queue, sx::command_graph<sx::graph_state::modifiable>(queue.get_context(),
+@@ -415,7 +425,7 @@
+ bool end_capture(Stream s, Graph** out) {
+     *out = nullptr;
+     try {
+-        auto& queue = q(s);
++        auto& queue = compute_q(s);
+         std::lock_guard<std::mutex> lock(g_capture_mutex);
+         auto it = g_captures.find(&queue);
+         if (it == g_captures.end()) { g_error = "end_capture: the stream is not recording"; return false; }
+@@ -431,7 +441,7 @@
+ 
+ void abandon_capture(Stream s) {
+     try {
+-        auto& queue = q(s);
++        auto& queue = compute_q(s);
+         std::lock_guard<std::mutex> lock(g_capture_mutex);
+         auto it = g_captures.find(&queue);
+         if (it == g_captures.end()) return;
+@@ -449,8 +459,8 @@
+ 
+ bool stream_fork(Stream from, Stream to) {
+     try {
+-        auto& a = q(from);
+-        auto& b = q(to);
++        auto& a = compute_q(from);
++        auto& b = compute_q(to);
+         {
+             std::lock_guard<std::mutex> lock(g_capture_mutex);
+             auto it = g_captures.find(&a);
+@@ -469,8 +479,8 @@
+ 
+ bool stream_join(Stream into, Stream from) {
+     try {
+-        auto& a = q(into);
+-        auto& b = q(from);
++        auto& a = compute_q(into);
++        auto& b = compute_q(from);
+         const sycl::event e = b.ext_oneapi_submit_barrier();
+         a.ext_oneapi_submit_barrier({e});
+         std::lock_guard<std::mutex> lock(g_capture_mutex);
+@@ -493,7 +503,7 @@
+ 
+ bool graph_launch(const Graph* g, Stream s) {
+     if (!g) { g_error = "graph_launch: null graph"; return false; }
+-    try { q(s).ext_oneapi_graph(g->exec); return true; }
++    try { compute_q(s).ext_oneapi_graph(g->exec); return true; }
+     catch (const std::exception& e) { return fail("graph_launch", e); }
+ }
+ 
+--- a/src/prefill/prefill.cpp
++++ b/src/prefill/prefill.cpp
+@@ -702,7 +702,7 @@
+         m.owned.push_back(m.tok_dev);
+         m.tok_host.resize((size_t) chunk);
+     }
+-    if (!(m.copy = strata::gpu::stream_create())) { err = "prefill: copy stream"; return false; }
++    if (!(m.copy = strata::gpu::copy_stream_create())) { err = "prefill: copy stream"; return false; }
+     const size_t T = (size_t) chunk;
+     m.T_max = chunk;
+     m.borrowed = borrow != nullptr;
+--- /dev/null
++++ b/tools/test_copy_stream_policy.cpp
+@@ -0,0 +1,16 @@
++// SPDX-FileCopyrightText: 2026 MistVVK and the XeStrata contributors
++// SPDX-License-Identifier: LGPL-3.0-or-later
++#include "strata/core/copy_stream_policy.hpp"
++#include <cstdio>
++#include <initializer_list>
++int main() {
++    using strata::core::copy_engine_opt_in;
++    if (copy_engine_opt_in(nullptr) || !copy_engine_opt_in("1")) return 1;
++    for (const char* value : {"", "0", "01", "1 ", " 1", "+1", "-1", "true", "2", "1x"})
++        if (copy_engine_opt_in(value)) return 1;
++    const bool original = strata::core::copy_engine_requested();
++    if (setenv("STRATA_COPY_ENGINE", original ? "0" : "1", 1) != 0) return 1;
++    if (strata::core::copy_engine_requested() != original) return 1;
++    std::puts("PASS exact opt-in and frozen policy");
++    return 0;
++}
+--- /dev/null
++++ b/tools/test_native_copy_lifetime.cpp
+@@ -0,0 +1,84 @@
++// SPDX-FileCopyrightText: 2026 MistVVK and the XeStrata contributors
++// SPDX-License-Identifier: LGPL-3.0-or-later
++// CPU only. Run each mode in a fresh supervised process. Fatal cases must exit
++// 1, with the expected boundary message and without UNWIND or RELEASE markers.
++// These are fake native resources feeding the production helper, not SYCL/UR.
++#include "strata/core/native_copy_lifetime.hpp"
++#include <cstdio>
++#include <cstring>
++#include <memory>
++#include <stdexcept>
++#include <utility>
++
++namespace {
++using strata::core::native_copy::checked_release;
++using strata::core::native_copy::import_and_store;
++void mark(const char* message) {
++    std::puts(message);
++    std::fflush(stdout);
++}
++struct Borrower {
++    ~Borrower() { mark("RELEASE borrower"); }
++};
++struct Owner {
++    const char* mode;
++    ~Owner() {
++        checked_release([&] {
++            if (std::strcmp(mode, "list-throw") == 0) throw 7;
++            return std::strcmp(mode, "list-error") != 0;
++        }, "fixture list teardown failure");
++        mark("RELEASE native");
++        checked_release([&] { return std::strcmp(mode, "loader-error") != 0; },
++                        "fixture loader teardown failure");
++        mark("RELEASE loader");
++    }
++};
++struct Unwind {
++    ~Unwind() { mark("UNWIND outer"); }
++};
++}
++int main(int argc, char** argv) {
++    if (argc != 2) return 2;
++    const char* mode = argv[1];
++    const char* modes[] = {"success", "pre-import", "import-before", "import-after",
++                          "insertion", "drain-error", "drain-throw", "list-error",
++                          "list-throw", "loader-error"};
++    bool known = false;
++    for (const char* value : modes) known = known || std::strcmp(mode, value) == 0;
++    if (!known) return 2;
++    Unwind outer;
++    Owner owner{mode};
++    mark("CREATED native");
++    if (std::strcmp(mode, "pre-import") == 0) {
++        // Production input preparation may throw before any UR borrower exists.
++        try { throw std::runtime_error("input preparation"); }
++        catch (...) { mark("FALLBACK pre-import only"); }
++        return 0;
++    }
++    std::unique_ptr<Borrower> stored;
++    auto* result = import_and_store([&] {
++        mark("IMPORT attempted");
++        if (std::strcmp(mode, "import-before") == 0) throw 7;
++        // Represents a raw UR queue created before queue_impl::create throws.
++        // It deliberately has no local RAII owner, matching the audited gap.
++        auto* raw = new Borrower;
++        mark("CREATED borrower");
++        if (std::strcmp(mode, "import-after") == 0) throw std::runtime_error("queue_impl");
++        return std::unique_ptr<Borrower>(raw);
++    }, [&](std::unique_ptr<Borrower>&& queue) {
++        mark("INSERT attempted");
++        if (std::strcmp(mode, "insertion") == 0) throw std::bad_alloc();
++        stored = std::move(queue);
++        return stored.get();
++    });
++    if (!result || !stored) return 3;
++    checked_release([&] {
++        mark("DRAIN attempted");
++        if (std::strcmp(mode, "drain-throw") == 0) throw 7;
++        return std::strcmp(mode, "drain-error") != 0;
++    }, "fixture drain failure");
++    mark("DRAIN checked");
++    stored.reset();
++    mark("SUCCESS before native teardown");
++    return 0;
++}
+--- /dev/null
++++ b/tools/test_native_copy_stream.cpp
+@@ -0,0 +1,129 @@
++// SPDX-FileCopyrightText: 2026 MistVVK and the XeStrata contributors
++// SPDX-License-Identifier: LGPL-3.0-or-later
++// Explicit runtime-dependent fixture; never register as an unguarded CPU CTest.
++#include "strata/core/gpu.hpp"
++#include "strata/core/runtime.hpp"
++#include <sycl/sycl.hpp>
++#include <cstdio>
++#include <initializer_list>
++#include <cstdlib>
++#include <cstring>
++#include <stdexcept>
++
++namespace {
++void require(bool condition, const char* message) {
++    if (!condition) throw std::runtime_error(message);
++}
++void progress(const char* message) {
++    std::puts(message);
++    std::fflush(stdout);
++}
++}
++
++int main(int argc, char** argv) {
++    if (argc != 2 || (std::strcmp(argv[1], "--require-native") != 0 &&
++                      std::strcmp(argv[1], "--require-generic") != 0)) {
++        std::fputs("usage: test_native_copy_stream --require-native|--require-generic\n", stderr);
++        return 2;
++    }
++    const bool want_native = std::strcmp(argv[1], "--require-native") == 0;
++    const char* flag = std::getenv("STRATA_COPY_ENGINE");
++    if (want_native && (!flag || std::strcmp(flag, "1") != 0)) return 2;
++    namespace gpu = strata::gpu;
++    strata::core::Runtime* runtime = nullptr;
++    try { runtime = &strata::core::Runtime::get(); }
++    catch (const std::exception& error) {
++        std::fprintf(stderr, "SKIP runtime unavailable: %s\n", error.what());
++        return 77;
++    }
++    auto& rt = *runtime;
++    gpu::Stream copy = nullptr;
++    gpu::Event *copied = nullptr, *read_done = nullptr, *second = nullptr, *timing = nullptr;
++    unsigned char *source = nullptr, *output = nullptr, *device = nullptr;
++    unsigned int* observed = nullptr;
++    constexpr size_t guard = 16, payload = 1024, extent = payload + 2 * guard;
++    // Under 8 KiB total. All resources remain owned across the catch/drain boundary.
++    int result = 1;
++    try {
++        progress("BEGIN native-copy fixture allocation");
++        copy = gpu::copy_stream_create();
++        require(copy != nullptr, gpu::last_error());
++        auto& queue = rt.stream_for_copy(copy);
++        require(queue.get_context() == rt.context() && queue.get_device() == rt.device(),
++                "copy queue identity mismatch");
++        const bool native = rt.copy_only(&queue);
++        std::printf("ROUTE native=%d\n", native ? 1 : 0);
++        std::fflush(stdout);
++        if (native != want_native) {
++            progress("SKIP requested treatment not selected");
++            result = 77;
++        } else {
++            source = static_cast<unsigned char*>(gpu::alloc_host(extent));
++            output = static_cast<unsigned char*>(gpu::alloc_host(extent));
++            observed = static_cast<unsigned int*>(gpu::alloc_host(sizeof(unsigned int)));
++            device = static_cast<unsigned char*>(gpu::alloc_device(extent));
++            require(source && output && observed && device, "USM allocation failed");
++            require(gpu::is_host_usm(source) && gpu::is_host_usm(output), "host-USM fixture required");
++            *observed = 0;
++            std::memset(source, 0xA5, extent);
++            for (size_t i = 0; i < payload; ++i) source[guard + i] = static_cast<unsigned char>(i * 17 + 3);
++            require(gpu::event_create(&copied) && gpu::event_create(&read_done) &&
++                    gpu::event_create(&second) && gpu::event_create(&timing, true), "event allocation failed");
++            require(gpu::copy_async_after(device, source, extent, copy, nullptr, copied), gpu::last_error());
++            require(gpu::stream_wait_event(nullptr, copied), gpu::last_error());
++            // Compute observer is on the existing compute queue, never the copy-only queue.
++            auto* data = device;
++            auto* check = observed;
++            rt.compute().single_task([=] {
++                unsigned int errors = 0;
++                for (size_t i = 0; i < extent; ++i) {
++                    const unsigned char expected = i < guard || i >= guard + payload ? 0xA5 :
++                        static_cast<unsigned char>((i - guard) * 17 + 3);
++                    errors += data[i] != expected;
++                }
++                // Reader writes a distinguishable value: the next copy must run after it.
++                data[guard] = 0xEE;
++                *check = errors + 1;
++            });
++            require(gpu::event_record(read_done, nullptr), gpu::last_error());
++            // Source stays immutable until the two copy events and the reader are drained.
++            require(gpu::copy_async_after(device + guard, source + guard, payload, copy,
++                                         read_done, second), gpu::last_error());
++            require(gpu::stream_wait_event(nullptr, second), gpu::last_error());
++            require(gpu::copy_async(output, device, extent, nullptr), gpu::last_error());
++            rt.finish();
++            require(*observed == 1, "compute observer saw incorrect first copy");
++            require(std::memcmp(source, output, extent) == 0, "copy/reader dependency or canary mismatch");
++            if (native) {
++                bool refused = false;
++                try { (void) rt.stream(copy); } catch (const strata::core::DeviceError&) { refused = true; }
++                require(refused, "native stream accepted the kernel queue accessor");
++                require(!gpu::memset_async(device, 0, extent, copy), "native stream accepted memset");
++                require(!gpu::copy2d_async(device, 32, source, 32, 16, 2, copy),
++                        "native stream accepted copy2d parallel_for");
++                require(!gpu::launch_host(copy, [] {}), "native stream accepted host_task");
++                require(!gpu::begin_capture(copy), "native stream accepted graph capture");
++                require(!gpu::event_record(timing, copy), "native stream accepted profiling tag");
++                require(gpu::event_record(second, copy), gpu::last_error());
++            }
++            rt.finish();
++            result = 0;
++        }
++    } catch (const std::exception& error) {
++        std::fprintf(stderr, "FAIL native-copy fixture: %s\n", error.what());
++        result = 1;
++    }
++    // Never release resources or report PASS while pending/async-failed work is undrained.
++    try { rt.finish(); }
++    catch (const std::exception& error) {
++        std::fprintf(stderr, "FAIL drain; retaining resources until process exit: %s\n", error.what());
++        std::fflush(stderr);
++        std::_Exit(1);
++    }
++    for (auto* event : {copied, read_done, second, timing}) gpu::event_destroy(event);
++    for (const void* pointer : {static_cast<void*>(source), static_cast<void*>(output),
++                               static_cast<void*>(observed), static_cast<void*>(device)}) gpu::free(pointer);
++    if (copy) gpu::stream_destroy(copy);
++    if (result == 0) progress("PASS native-copy fixture drained");
++    return result;
++}

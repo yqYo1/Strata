@@ -1,0 +1,916 @@
+# SPDX-FileCopyrightText: 2026 yayoi
+# SPDX-License-Identifier: LGPL-3.0-or-later
+
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -210,2 +210,11 @@
+ 
++if(STRATA_BUILD_TESTS)
++  enable_testing()
++  add_executable(phase_cache_owner_test tests/core/phase_cache_owner_test.cpp src/core/phase_cache_owner.cpp)
++  target_include_directories(phase_cache_owner_test PRIVATE include)
++  target_link_libraries(phase_cache_owner_test PRIVATE strata_warnings)
++  add_test(NAME phase_cache_owner_test COMMAND phase_cache_owner_test)
++  set_tests_properties(phase_cache_owner_test PROPERTIES TIMEOUT 15)
++endif()
++
+ # ---- host-only platform and n-gram reader ----------------------------------
+@@ -371,3 +380,4 @@
+   add_library(strata_core STATIC src/core/device.cpp src/core/pinned.cpp src/core/gpu.cpp src/core/graph.cpp
+-                                 src/core/weights.cpp src/core/layout.cpp)
++                                 src/core/weights.cpp src/core/layout.cpp
++                                 src/core/phase_cache_owner.cpp src/core/phase_cache_backend.cpp)
+   target_include_directories(strata_core PUBLIC include)
+@@ -447,2 +457,5 @@
+     target_link_libraries(native_grouped_gemm_event_bench PRIVATE strata_kernels)
++    # Explicitly Main-owned finite actual VMM fixture; not registered with CTest.
++    add_executable(phase_cache_vmm_test tools/test_phase_cache_vmm.cpp)
++    target_link_libraries(phase_cache_vmm_test PRIVATE strata_core)
+     add_executable(prefill_service_event_test tools/prefill_service_event_test.cpp)
+--- a/include/strata/core/gpu.hpp
++++ b/include/strata/core/gpu.hpp
+@@ -86,2 +86,4 @@
+ void vmem_free(void* va, size_t bytes);
++/// Checked release; failure retains the caller's reservation owner for fail-stop teardown.
++bool vmem_free_checked(void* va, size_t bytes);
+ /// A new physical segment of `bytes` mapped read-write at `va`; null when the device has no memory for it.
+--- /dev/null
++++ b/include/strata/core/phase_cache_owner.hpp
+@@ -0,0 +1,95 @@
++// SPDX-FileCopyrightText: 2026 MistVVK and the XeStrata contributors
++// SPDX-License-Identifier: LGPL-3.0-or-later
++#pragma once
++#include <cstddef>
++#include <cstdint>
++#include <functional>
++#include <memory>
++#include <string>
++#include <vector>
++
++namespace strata::core {
++// Backend methods either succeed completely or return failure. An unsuccessful
++// attach/detach is treated as uncertain: its physical owner must remain retained.
++struct PhaseCacheBackend {
++    struct Caps { bool vmm = false, free_known = false; uint64_t granularity = 0, maximum = 0, free = 0; };
++    virtual ~PhaseCacheBackend() = default;
++    virtual bool caps(Caps&, std::string&) noexcept = 0;
++    virtual void* reserve(uint64_t, std::string&) noexcept = 0;
++    virtual bool release(void*, uint64_t, std::string&) noexcept = 0;
++    virtual void* physical(uint64_t, std::string&) noexcept = 0;
++    virtual bool attach(void*, void*, uint64_t, std::string&) noexcept = 0;
++    virtual bool detach(void*, uint64_t, std::string&) noexcept = 0;
++    virtual void destroy_physical(void*) noexcept = 0;
++    virtual bool drain(std::string&) noexcept = 0;
++    virtual bool write(void*, const void*, uint64_t, std::string&) noexcept = 0;
++    virtual bool read(void*, const void*, uint64_t, std::string&) noexcept = 0;
++};
++std::shared_ptr<PhaseCacheBackend> make_phase_cache_gpu_backend(int ordinal);
++
++// Independent opt-in owner, not wired into generate. No session/settings/mode
++// changes. Source/ranked-profile identity and native format validation are caller
++// admission requirements. A quiesce callback MUST commit verifier/adaptive work
++// and exclude all concurrent readers; backend drain alone cannot prove that.
++class PhaseCacheOwner {
++public:
++    using Quiesce = std::function<bool(std::string&)>;
++    using Publish = std::function<bool(const int32_t*, size_t, std::string&)>;
++    static constexpr uint64_t guard_bytes = uint64_t{512} << 20;
++    explicit PhaseCacheOwner(std::shared_ptr<PhaseCacheBackend> backend);
++    ~PhaseCacheOwner();  // Unclosed native owners fail-stop; never implicit unsafe free.
++    PhaseCacheOwner(const PhaseCacheOwner&) = delete;
++    PhaseCacheOwner& operator=(const PhaseCacheOwner&) = delete;
++    bool reserve(const std::vector<int64_t>& layer_blobs, uint32_t experts,
++                 uint64_t virtual_cap, std::string& error);
++    bool map_base(const Quiesce&, std::string& error);
++    bool map_extras(const Quiesce&, std::string& error);
++    bool fill_checked(uint32_t layer, uint32_t expert, uint32_t slot,
++                      const void* immutable_blob, uint64_t bytes, std::string& error);
++    bool publish(const Publish&, std::string& error);
++    bool invalidate_extras(const Publish&, std::string& error);
++    bool unmap_extras(const Quiesce&, std::string& error);
++    // release_readers must retire every retained cache/table/graph reference.
++    // Failed detach/release retains remaining physical handles/virtual range.
++    bool close(const Quiesce& release_readers, std::string& error);
++    uint32_t capacity() const { return static_cast<uint32_t>(offsets_.size()); }
++    uint32_t mapped_slots() const;
++    uint64_t mapped_bytes() const;
++    uint64_t retained_physical_bytes() const;
++    uint64_t reserved_bytes() const { return reserved_; }
++    bool poisoned() const { return poisoned_; }
++    bool open() const { return base_ != nullptr; }
++    const uint64_t* capacity_offsets() const { return offsets_.data(); }
++    const int32_t* host_residency() const { return published_.data(); }
++    size_t residency_size() const { return published_.size(); }
++    void* base() const { return base_; }
++    void* device_slot(uint32_t slot) const;
++    uint64_t slot_bytes(uint32_t slot) const;
++    uint64_t slot_stride(uint32_t slot) const;
++    struct Mapping { uint64_t offset, bytes; bool owns_physical, mapped, uncertain; };
++    std::vector<Mapping> mapping_snapshot() const;
++    std::vector<uint32_t> layer_slots(uint32_t layer) const;
++    int32_t vacant_slot(uint32_t layer) const;
++    int32_t resident_slot(uint32_t layer, uint32_t expert) const;
++private:
++    struct Extent { uint64_t offset = 0, bytes = 0; void* physical = nullptr; bool attached = false, maybe_attached = false; };
++    bool fail(const char*, std::string&);
++    bool quiesce(const Quiesce&, std::string&);
++    bool map_extent(size_t, std::string&);
++    bool budget(uint64_t, std::string&);
++    bool detach_extent(size_t, std::string&);
++    bool extra(uint32_t slot) const { return slot >= layers_ * 3; }
++    uint32_t slot_layer(uint32_t slot) const;
++    bool mapped(uint32_t slot) const;
++    bool upload(const Publish&, std::string&);
++    std::shared_ptr<PhaseCacheBackend> backend_;
++    void* base_ = nullptr;
++    uint32_t layers_ = 0, experts_ = 0;
++    uint64_t reserved_ = 0, granularity_ = 0, maximum_ = 0;
++    bool poisoned_ = false;
++    std::vector<Extent> extents_; // baseline then one two-slot extent/layer
++    std::vector<uint64_t> offsets_, strides_, blobs_;
++    std::vector<int32_t> filled_, staged_, published_;
++    std::vector<uint8_t> verification_; // survives failed/pending D2H until checked close
++};
++}  // namespace strata::core
+--- a/src/core/gpu.cpp
++++ b/src/core/gpu.cpp
+@@ -178,2 +178,9 @@
+     catch (const std::exception& e) { fail("vmem_free", e); }
++}
++
++bool vmem_free_checked(void* va, size_t bytes) {
++    try {
++        sx::free_virtual_mem(reinterpret_cast<uintptr_t>(va), bytes, rt().context());
++        return true;
++    } catch (const std::exception& e) { return fail("vmem_free_checked", e); }
+ }
+--- /dev/null
++++ b/src/core/phase_cache_backend.cpp
+@@ -0,0 +1,104 @@
++// SPDX-FileCopyrightText: 2026 MistVVK and the XeStrata contributors
++// SPDX-License-Identifier: LGPL-3.0-or-later
++#include "strata/core/phase_cache_owner.hpp"
++#include "strata/core/gpu.hpp"
++#include "strata/core/on_device.hpp"
++#include "strata/core/runtime.hpp"
++#include <exception>
++
++namespace strata::core {
++namespace {
++class GpuBackend final : public PhaseCacheBackend {
++public:
++    explicit GpuBackend(int ordinal) : ordinal_(Runtime::at(ordinal).ordinal()) {}
++    bool caps(Caps& output, std::string& error) noexcept override {
++        try {
++            const OnDevice selected(ordinal_);
++            Caps actual;
++            actual.vmm = gpu::vmem_supported();
++            actual.granularity = gpu::vmem_granularity();
++            actual.maximum = Runtime::get().device().get_info<sycl::info::device::max_mem_alloc_size>();
++            size_t free = 0, total = 0;
++            actual.free_known = gpu::mem_info(&free, &total);
++            actual.free = free;
++            output = actual;
++            if (!actual.vmm || !actual.granularity || !actual.maximum || !actual.free_known) {
++                error = "phase cache: actual Runtime VMM/free/capability query unavailable";
++                return false;
++            }
++            return true;
++        } catch (const std::exception& exception) { error = exception.what(); return false; }
++    }
++    void* reserve(uint64_t bytes, std::string& error) noexcept override {
++        try {
++            const OnDevice selected(ordinal_);
++            void* result = gpu::vmem_reserve(static_cast<size_t>(bytes));
++            if (!result) error = gpu::last_error();
++            return result;
++        } catch (const std::exception& exception) { error = exception.what(); return nullptr; }
++    }
++    bool release(void* pointer, uint64_t bytes, std::string& error) noexcept override {
++        try {
++            const OnDevice selected(ordinal_);
++            if (gpu::vmem_free_checked(pointer, static_cast<size_t>(bytes))) return true;
++            error = gpu::last_error();
++        } catch (const std::exception& exception) { error = exception.what(); }
++        return false;
++    }
++    void* physical(uint64_t bytes, std::string& error) noexcept override {
++        try {
++            const OnDevice selected(ordinal_);
++            auto* result = gpu::vmem_new(static_cast<size_t>(bytes));
++            if (!result) error = gpu::last_error();
++            return result;
++        } catch (const std::exception& exception) { error = exception.what(); return nullptr; }
++    }
++    bool attach(void* physical, void* address, uint64_t bytes, std::string& error) noexcept override {
++        try {
++            const OnDevice selected(ordinal_);
++            if (gpu::vmem_attach(static_cast<gpu::VmemSegment*>(physical), address, static_cast<size_t>(bytes)))
++                return true;
++            error = gpu::last_error();
++        } catch (const std::exception& exception) { error = exception.what(); }
++        return false;
++    }
++    bool detach(void* address, uint64_t bytes, std::string& error) noexcept override {
++        try {
++            const OnDevice selected(ordinal_);
++            if (gpu::vmem_detach(address, static_cast<size_t>(bytes))) return true;
++            error = gpu::last_error();
++        } catch (const std::exception& exception) { error = exception.what(); }
++        return false;
++    }
++    void destroy_physical(void* physical) noexcept override {
++        try {
++            const OnDevice selected(ordinal_);
++            gpu::vmem_delete(static_cast<gpu::VmemSegment*>(physical));
++        } catch (...) { std::terminate(); }
++    }
++    bool drain(std::string& error) noexcept override {
++        try {
++            const OnDevice selected(ordinal_);
++            Runtime::get().finish();
++            return true;
++        } catch (const std::exception& exception) { error = exception.what(); return false; }
++    }
++    bool write(void* destination, const void* source, uint64_t bytes, std::string& error) noexcept override {
++        try {
++            const OnDevice selected(ordinal_);
++            if (gpu::copy(destination, source, static_cast<size_t>(bytes))) return true;
++            error = gpu::last_error();
++        } catch (const std::exception& exception) { error = exception.what(); }
++        return false;
++    }
++    bool read(void* destination, const void* source, uint64_t bytes, std::string& error) noexcept override {
++        return write(destination, source, bytes, error);
++    }
++private:
++    int ordinal_;
++};
++}
++std::shared_ptr<PhaseCacheBackend> make_phase_cache_gpu_backend(int ordinal) {
++    return std::make_shared<GpuBackend>(ordinal);
++}
++}  // namespace strata::core
+--- /dev/null
++++ b/src/core/phase_cache_owner.cpp
+@@ -0,0 +1,302 @@
++// SPDX-FileCopyrightText: 2026 MistVVK and the XeStrata contributors
++// SPDX-License-Identifier: LGPL-3.0-or-later
++#include "strata/core/phase_cache_owner.hpp"
++#include <algorithm>
++#include <cstring>
++#include <exception>
++#include <limits>
++#include <numeric>
++#include <utility>
++
++namespace strata::core {
++namespace {
++bool add(uint64_t a, uint64_t b, uint64_t& out) {
++    if (b > std::numeric_limits<uint64_t>::max() - a) return false;
++    out = a + b;
++    return true;
++}
++bool round(uint64_t value, uint64_t gran, uint64_t& out) {
++    if (!gran) return false;
++    return value % gran ? add(value, gran - value % gran, out) : (out = value, true);
++}
++bool alignment(uint64_t native, uint64_t& out) {
++    if (!native || native % 256) return false;
++    const uint64_t unit = uint64_t{2} << 20;
++    const uint64_t factor = unit / std::gcd(native, unit);
++    if (native > std::numeric_limits<uint64_t>::max() / factor) return false;
++    out = native * factor;
++    return true;
++}
++}
++PhaseCacheOwner::PhaseCacheOwner(std::shared_ptr<PhaseCacheBackend> backend) : backend_(std::move(backend)) {}
++PhaseCacheOwner::~PhaseCacheOwner() {
++    if (base_) std::terminate(); // close must succeed before destruction; retain unsafe native owners.
++}
++bool PhaseCacheOwner::fail(const char* message, std::string& error) {
++    poisoned_ = true;
++    error = message;
++    return false;
++}
++bool PhaseCacheOwner::reserve(const std::vector<int64_t>& blobs, uint32_t experts,
++                              uint64_t virtual_cap, std::string& error) {
++    if (!backend_ || base_ || poisoned_ || blobs.empty() || blobs.size() > 48 || experts < 5 || experts > 512)
++        return fail("phase cache: invalid owner/layer/expert admission", error);
++    PhaseCacheBackend::Caps caps;
++    uint64_t gran = 0;
++    if (!backend_->caps(caps, error) || !caps.vmm || !caps.free_known || !caps.maximum ||
++        !alignment(caps.granularity, gran) || !virtual_cap)
++        return fail("phase cache: actual VMM/granularity/allocation/free capabilities unavailable", error);
++    layers_ = static_cast<uint32_t>(blobs.size());
++    experts_ = experts;
++    granularity_ = gran;
++    maximum_ = caps.maximum;
++    offsets_.assign(layers_ * 5, 0);
++    strides_.assign(offsets_.size(), 0);
++    blobs_.assign(layers_, 0);
++    filled_.assign(offsets_.size(), -1);
++    staged_.assign(static_cast<size_t>(layers_) * experts_, -1);
++    published_.assign(staged_.size(), -1);
++    uint64_t largest_blob = 0;
++    for (const auto bytes : blobs) {
++        if (bytes <= 0) return fail("phase cache: nonpositive source blob", error);
++        largest_blob = std::max(largest_blob, static_cast<uint64_t>(bytes));
++    }
++    if (largest_blob > virtual_cap || largest_blob > maximum_ || largest_blob > static_cast<uint64_t>(std::numeric_limits<size_t>::max()))
++        return fail("phase cache: verification buffer exceeds bounded capacity", error);
++    verification_.resize(static_cast<size_t>(largest_blob));
++    extents_.assign(layers_ + 1, {}); // All bookkeeping allocated BEFORE native ownership.
++    uint64_t at = 0;
++    for (uint32_t layer = 0; layer < layers_; ++layer) {
++        if (blobs[layer] <= 0) return fail("phase cache: nonpositive native blob size", error);
++        uint64_t stride = 0;
++        blobs_[layer] = static_cast<uint64_t>(blobs[layer]);
++        if (!round(blobs_[layer], 256, stride)) return fail("phase cache: blob stride overflow", error);
++        for (uint32_t row = 0; row < 3; ++row) {
++            const uint32_t slot = layer * 3 + row;
++            offsets_[slot] = at;
++            strides_[slot] = stride;
++            if (!add(at, stride, at)) return fail("phase cache: base geometry overflow", error);
++        }
++    }
++    if (!round(at, gran, at) || at > maximum_) return fail("phase cache: base physical maximum exceeded", error);
++    extents_[0] = {0, at, nullptr, false};
++    for (uint32_t layer = 0; layer < layers_; ++layer) {
++        const uint64_t stride = strides_[layer * 3];
++        uint64_t pair = 0, mapped = 0;
++        if (!add(stride, stride, pair) || !round(pair, gran, mapped) || mapped > maximum_)
++            return fail("phase cache: extra physical maximum/overflow", error);
++        extents_[layer + 1] = {at, mapped, nullptr, false};
++        offsets_[layers_ * 3 + layer * 2] = at;
++        if (!add(at, stride, offsets_[layers_ * 3 + layer * 2 + 1]) || !add(at, mapped, at))
++            return fail("phase cache: extra reservation overflow", error);
++        strides_[layers_ * 3 + layer * 2] = stride;
++        strides_[layers_ * 3 + layer * 2 + 1] = stride;
++    }
++    if (at > virtual_cap || at > static_cast<uint64_t>(std::numeric_limits<size_t>::max()) ||
++        at > static_cast<uint64_t>(std::numeric_limits<int64_t>::max()))
++        return fail("phase cache: bounded reservation capacity exceeded", error);
++    reserved_ = at;
++    base_ = backend_->reserve(at, error);
++    if (!base_) return fail("phase cache: virtual reservation failed", error);
++    if (at > std::numeric_limits<uintptr_t>::max() - reinterpret_cast<uintptr_t>(base_))
++        return fail("phase cache: virtual pointer range overflow", error); // retained for checked close
++    error.clear();
++    return true;
++}
++bool PhaseCacheOwner::quiesce(const Quiesce& proof, std::string& error) {
++    if (!proof) return fail("phase cache: explicit caller quiescence callback missing", error);
++    try {
++        if (!proof(error) || !backend_->drain(error)) {
++            poisoned_ = true;
++            return false;
++        }
++    } catch (const std::exception& exception) { return fail(exception.what(), error); }
++    return true;
++}
++bool PhaseCacheOwner::budget(uint64_t needed, std::string& error) {
++    PhaseCacheBackend::Caps caps;
++    uint64_t gran = 0;
++    if (!backend_->caps(caps, error) || !caps.vmm || !caps.free_known ||
++        !alignment(caps.granularity, gran) || gran != granularity_ || caps.maximum < maximum_ ||
++        needed > caps.free || caps.free - needed < guard_bytes)
++        return fail("phase cache: fresh actual free/max/granularity admission failed (512MiB guard)", error);
++    return true;
++}
++bool PhaseCacheOwner::map_extent(size_t index, std::string& error) {
++    auto& extent = extents_[index];
++    if (extent.physical) return fail("phase cache: mapping already owns a physical handle", error);
++    extent.physical = backend_->physical(extent.bytes, error);
++    if (!extent.physical) { poisoned_ = true; return false; }
++    // Mark uncertain BEFORE attach: a failed/throwing backend must not authorize deletion.
++    extent.maybe_attached = true;
++    if (!backend_->attach(extent.physical, static_cast<uint8_t*>(base_) + extent.offset, extent.bytes, error)) {
++        poisoned_ = true;
++        return false;
++    }
++    extent.attached = true;
++    return true;
++}
++bool PhaseCacheOwner::detach_extent(size_t index, std::string& error) {
++    auto& extent = extents_[index];
++    if (!extent.physical) return true;
++    if (extent.maybe_attached &&
++        !backend_->detach(static_cast<uint8_t*>(base_) + extent.offset, extent.bytes, error)) {
++        poisoned_ = true;
++        extent.attached = false; // failed detach is uncertain, not known mapped/unmapped
++        return false; // DO NOT delete the physical handle or claim unmapped capacity.
++    }
++    extent.attached = false;
++    extent.maybe_attached = false;
++    backend_->destroy_physical(extent.physical);
++    extent.physical = nullptr;
++    return true;
++}
++bool PhaseCacheOwner::map_base(const Quiesce& proof, std::string& error) {
++    if (!base_ || poisoned_ || extents_[0].physical) return fail("phase cache: base map state invalid", error);
++    if (!quiesce(proof, error) || !budget(extents_[0].bytes, error)) return false;
++    return map_extent(0, error);
++}
++bool PhaseCacheOwner::map_extras(const Quiesce& proof, std::string& error) {
++    if (!base_ || poisoned_ || !extents_[0].physical) return fail("phase cache: extra map state invalid", error);
++    uint64_t needed = 0;
++    for (size_t i = 1; i < extents_.size(); ++i) {
++        if (extents_[i].physical || !add(needed, extents_[i].bytes, needed))
++            return fail("phase cache: extra map state/size invalid", error);
++    }
++    if (!quiesce(proof, error) || !budget(needed, error)) return false;
++    for (size_t i = 1; i < extents_.size(); ++i) {
++        if (map_extent(i, error)) continue;
++        const std::string cause = error;
++        // No inference work is submitted during mapping. Checked drain precedes rollback.
++        // Failure remains poisoned even after successful rollback; no automatic map retry.
++        if (!backend_->drain(error)) return false;
++        for (size_t j = i; j > 0; --j)
++            if (!detach_extent(j, error)) return false;
++        error = cause;
++        return false;
++    }
++    return true;
++}
++uint32_t PhaseCacheOwner::slot_layer(uint32_t slot) const {
++    return extra(slot) ? (slot - layers_ * 3) / 2 : slot / 3;
++}
++bool PhaseCacheOwner::mapped(uint32_t slot) const {
++    if (!base_ || slot >= capacity()) return false;
++    const auto& extent = extents_[extra(slot) ? slot_layer(slot) + 1 : 0];
++    return extent.physical && extent.attached;
++}
++void* PhaseCacheOwner::device_slot(uint32_t slot) const {
++    return !poisoned_ && mapped(slot) ? static_cast<uint8_t*>(base_) + offsets_[slot] : nullptr;
++}
++uint64_t PhaseCacheOwner::slot_bytes(uint32_t slot) const {
++    return slot < capacity() ? blobs_[slot_layer(slot)] : 0;
++}
++uint64_t PhaseCacheOwner::slot_stride(uint32_t slot) const {
++    return slot < capacity() ? strides_[slot] : 0;
++}
++std::vector<PhaseCacheOwner::Mapping> PhaseCacheOwner::mapping_snapshot() const {
++    std::vector<Mapping> result;
++    result.reserve(extents_.size());
++    for (const auto& extent : extents_)
++        result.push_back({extent.offset, extent.bytes, extent.physical != nullptr, extent.attached,
++                          extent.physical && extent.maybe_attached && !extent.attached});
++    return result;
++}
++std::vector<uint32_t> PhaseCacheOwner::layer_slots(uint32_t layer) const {
++    if (!base_ || poisoned_ || layer >= layers_) return {};
++    return {layer * 3, layer * 3 + 1, layer * 3 + 2,
++            layers_ * 3 + layer * 2, layers_ * 3 + layer * 2 + 1};
++}
++int32_t PhaseCacheOwner::vacant_slot(uint32_t layer) const {
++    if (poisoned_) return -1;
++    for (const uint32_t slot : layer_slots(layer)) if (mapped(slot) && filled_[slot] < 0) return static_cast<int32_t>(slot);
++    return -1;
++}
++int32_t PhaseCacheOwner::resident_slot(uint32_t layer, uint32_t expert) const {
++    return !poisoned_ && layer < layers_ && expert < experts_ ? published_[static_cast<size_t>(layer) * experts_ + expert] : -1;
++}
++bool PhaseCacheOwner::fill_checked(uint32_t layer, uint32_t expert, uint32_t slot,
++                                  const void* source, uint64_t bytes, std::string& error) {
++    if (poisoned_ || layer >= layers_ || expert >= experts_ || slot >= capacity() ||
++        slot_layer(slot) != layer || !mapped(slot) || filled_[slot] >= 0 || !source || bytes != blobs_[layer])
++        return fail("phase cache: fill source/geometry/mapped admission invalid", error);
++    const size_t entry = static_cast<size_t>(layer) * experts_ + expert;
++    if (staged_[entry] >= 0) return fail("phase cache: duplicate profile expert", error);
++    void* destination = device_slot(slot);
++    if (!backend_->write(destination, source, bytes, error) ||
++        !backend_->read(verification_.data(), destination, bytes, error)) {
++        poisoned_ = true;
++        return false;
++    }
++    if (std::memcmp(source, verification_.data(), static_cast<size_t>(bytes)) != 0)
++        return fail("phase cache: immutable source/slot byte mismatch", error);
++    filled_[slot] = static_cast<int32_t>(expert);
++    staged_[entry] = static_cast<int32_t>(slot); // NOT visible through host_residency yet
++    return true;
++}
++bool PhaseCacheOwner::upload(const Publish& callback, std::string& error) {
++    if (!callback) return fail("phase cache: checked residency upload callback missing", error);
++    for (size_t entry = 0; entry < staged_.size(); ++entry) {
++        const int32_t slot = staged_[entry];
++        if (slot >= 0 && (static_cast<uint32_t>(slot) >= capacity() || !mapped(static_cast<uint32_t>(slot)) ||
++                         slot_layer(static_cast<uint32_t>(slot)) != entry / experts_ ||
++                         filled_[static_cast<size_t>(slot)] != static_cast<int32_t>(entry % experts_)))
++            return fail("phase cache: residency names an unmapped/unverified/wrong-layer slot", error);
++    }
++    try {
++        if (!callback(staged_.data(), staged_.size(), error) || !backend_->drain(error)) {
++            poisoned_ = true;
++            return false;
++        }
++    } catch (const std::exception& exception) { return fail(exception.what(), error); }
++    std::copy(staged_.begin(), staged_.end(), published_.begin()); // stable host pointer
++    return true;
++}
++bool PhaseCacheOwner::publish(const Publish& callback, std::string& error) {
++    if (!base_ || poisoned_) return fail("phase cache: closed/poisoned owner cannot publish", error);
++    return upload(callback, error);
++}
++bool PhaseCacheOwner::invalidate_extras(const Publish& callback, std::string& error) {
++    if (!base_ || poisoned_) return fail("phase cache: invalidation state invalid", error);
++    for (auto& slot : staged_) if (slot >= static_cast<int32_t>(layers_ * 3)) slot = -1;
++    return upload(callback, error);
++}
++bool PhaseCacheOwner::unmap_extras(const Quiesce& proof, std::string& error) {
++    if (!base_ || poisoned_) return fail("phase cache: unmap state invalid", error);
++    for (const auto slot : staged_)
++        if (slot >= static_cast<int32_t>(layers_ * 3)) return fail("phase cache: extra resident still published", error);
++    if (!quiesce(proof, error)) return false;
++    for (size_t i = extents_.size(); i > 1; --i) {
++        if (!detach_extent(i - 1, error)) return false;
++        const uint32_t layer = static_cast<uint32_t>(i - 2);
++        filled_[layers_ * 3 + layer * 2] = filled_[layers_ * 3 + layer * 2 + 1] = -1;
++    }
++    return true;
++}
++bool PhaseCacheOwner::close(const Quiesce& proof, std::string& error) {
++    if (!base_) return true;
++    if (!quiesce(proof, error)) return false;
++    for (size_t i = extents_.size(); i > 0; --i) if (!detach_extent(i - 1, error)) return false;
++    if (!backend_->release(base_, reserved_, error)) { poisoned_ = true; return false; }
++    base_ = nullptr;
++    std::fill(filled_.begin(), filled_.end(), -1);
++    std::fill(staged_.begin(), staged_.end(), -1);
++    std::fill(published_.begin(), published_.end(), -1);
++    return true;
++}
++uint32_t PhaseCacheOwner::mapped_slots() const {
++    uint32_t count = 0;
++    for (uint32_t slot = 0; slot < capacity(); ++slot) if (mapped(slot)) ++count;
++    return count;
++}
++uint64_t PhaseCacheOwner::mapped_bytes() const {
++    uint64_t bytes = 0;
++    for (const auto& extent : extents_) if (extent.physical && extent.attached) bytes += extent.bytes;
++    return bytes;
++}
++uint64_t PhaseCacheOwner::retained_physical_bytes() const {
++    uint64_t bytes = 0;
++    for (const auto& extent : extents_) if (extent.physical) bytes += extent.bytes;
++    return bytes;
++}
++}  // namespace strata::core
+--- /dev/null
++++ b/tests/core/phase_cache_owner_test.cpp
+@@ -0,0 +1,238 @@
++// SPDX-FileCopyrightText: 2026 MistVVK and the XeStrata contributors
++// SPDX-License-Identifier: LGPL-3.0-or-later
++#include "strata/core/phase_cache_owner.hpp"
++#include <algorithm>
++#include <cstdio>
++#include <cstring>
++#include <initializer_list>
++#include <map>
++#include <stdexcept>
++#include <vector>
++
++namespace {
++using Owner = strata::core::PhaseCacheOwner;
++using Backend = strata::core::PhaseCacheBackend;
++void check(bool value, const char* message) { if (!value) throw std::runtime_error(message); }
++class Mock final : public Backend {
++public:
++    enum class Fault { None, Caps, Reserve, Physical, Attach, Detach, Write, Read, Release, Drain, Corrupt };
++    Fault fault = Fault::None;
++    int nth = 1, calls = 0, destroyed = 0, unsafe_destroy = 0, released = 0;
++    uint64_t free_bytes = uint64_t{8} << 30;
++    std::vector<uint8_t> storage;
++    std::map<void*, bool> handles;
++    uint8_t* pending_read = nullptr;
++    bool force_detach_failure = false;
++    bool hit(Fault kind) { return fault == kind && ++calls == nth; }
++    void inject(Fault kind, int index = 1) { fault = kind; nth = index; calls = 0; }
++    bool caps(Caps& out, std::string& error) noexcept override {
++        if (hit(Fault::Caps)) { error = "injected caps"; return false; }
++        out = {true, true, uint64_t{2} << 20, uint64_t{64} << 20, free_bytes};
++        return true;
++    }
++    void* reserve(uint64_t bytes, std::string& error) noexcept override {
++        if (hit(Fault::Reserve)) { error = "injected reserve"; return nullptr; }
++        storage.resize(static_cast<size_t>(bytes), 0xA5);
++        return storage.data();
++    }
++    bool release(void*, uint64_t, std::string& error) noexcept override {
++        if (hit(Fault::Release)) { error = "injected release"; return false; }
++        if (!handles.empty()) { error = "live physical handles at release"; return false; }
++        ++released;
++        return true;
++    }
++    void* physical(uint64_t, std::string& error) noexcept override {
++        if (hit(Fault::Physical)) { error = "injected physical"; return nullptr; }
++        auto* handle = new int(7);
++        handles[handle] = false;
++        return handle;
++    }
++    bool attach(void* handle, void* address, uint64_t, std::string& error) noexcept override {
++        addresses[address] = handle;
++        handles[handle] = true; // model an error after the backend may have attached
++        if (hit(Fault::Attach)) { error = "injected uncertain attach"; return false; }
++        return true;
++    }
++    bool detach(void* address, uint64_t, std::string& error) noexcept override {
++        if (force_detach_failure || hit(Fault::Detach)) { error = "injected detach"; return false; }
++        auto selected = addresses.find(address);
++        if (selected == addresses.end()) { error = "detach address has no owned mapping"; return false; }
++        handles[selected->second] = false;
++        return true;
++    }
++    std::map<void*, void*> addresses;
++    void destroy_physical(void* handle) noexcept override {
++        if (handles[handle]) ++unsafe_destroy;
++        handles.erase(handle);
++        for (auto it = addresses.begin(); it != addresses.end();) {
++            if (it->second == handle) it = addresses.erase(it); else ++it;
++        }
++        delete static_cast<int*>(handle);
++        ++destroyed;
++    }
++    bool drain(std::string& error) noexcept override {
++        if (hit(Fault::Drain)) { error = "injected drain"; return false; }
++        if (pending_read) { pending_read[0] = 0x55; pending_read = nullptr; }
++        return true;
++    }
++    bool write(void* out, const void* in, uint64_t bytes, std::string& error) noexcept override {
++        std::memcpy(out, in, static_cast<size_t>(bytes));
++        if (hit(Fault::Write)) { error = "injected write"; return false; }
++        return true;
++    }
++    bool read(void* out, const void* in, uint64_t bytes, std::string& error) noexcept override {
++        if (hit(Fault::Read)) {
++            pending_read = static_cast<uint8_t*>(out); // actual owner scratch must survive failed D2H
++            error = "injected pending read";
++            return false;
++        }
++        std::memcpy(out, in, static_cast<size_t>(bytes));
++        if (hit(Fault::Corrupt)) static_cast<uint8_t*>(out)[0] ^= 1;
++        return true;
++    }
++};
++const Owner::Quiesce quiet = [](std::string&) { return true; }; // CPU backend only, no claimed GPU proof
++const Owner::Publish publish = [](const int32_t*, size_t, std::string&) { return true; };
++void finish(Owner& owner, const std::shared_ptr<Mock>& backend, std::string& error) {
++    backend->inject(Mock::Fault::None); // repair fault injection only for explicit fixture cleanup
++    backend->force_detach_failure = false;
++    check(owner.close(quiet, error), "mock checked close failed");
++    check(backend->handles.empty() && backend->unsafe_destroy == 0 && !owner.open(), "owner leaked/deleted mapped handle");
++}
++}
++int main() {
++    try {
++        std::string error;
++        std::vector<uint8_t> bytes(1024);
++        for (size_t i = 0; i < bytes.size(); ++i) bytes[i] = static_cast<uint8_t>(i * 19 + 7);
++        {
++            auto backend = std::make_shared<Mock>();
++            Owner owner(backend);
++            check(owner.reserve({1024, 1024}, 8, uint64_t{16} << 20, error), "reserve");
++            const uint64_t* offsets = owner.capacity_offsets();
++            const int32_t* table = owner.host_residency();
++            check(owner.capacity() == 10 && owner.mapped_slots() == 0 && !owner.device_slot(0), "unmapped reserve exposed");
++            check(owner.map_base(quiet, error) && owner.mapped_slots() == 6 && !owner.device_slot(6), "base membership");
++            void* old = owner.device_slot(3);
++            check(offsets[3] == 3072 && offsets[6] == (uint64_t{2} << 20) && owner.slot_stride(5) == 1024,
++                  "old geometry moved");
++            check(owner.fill_checked(0, 0, 0, bytes.data(), bytes.size(), error), "baseline fill");
++            check(owner.resident_slot(0, 0) == -1, "resident published before checked upload");
++            check(owner.publish(publish, error) && owner.resident_slot(0, 0) == 0, "baseline publication");
++            for (int request = 0; request < 2; ++request) {
++                check(owner.map_extras(quiet, error) && owner.mapped_slots() == 10, "extras map");
++                check(owner.device_slot(3) == old && owner.capacity_offsets() == offsets && owner.host_residency() == table,
++                      "reader pointer changed across phase");
++                check(owner.fill_checked(0, 2, 6, bytes.data(), bytes.size(), error), "extra fill");
++                check(owner.resident_slot(0, 2) == -1, "extra published before copy/check/upload");
++                check(owner.publish(publish, error) && owner.resident_slot(0, 2) == 6, "extra publish");
++                check(owner.invalidate_extras(publish, error), "extra invalidation");
++                check(owner.resident_slot(0, 2) == -1 && owner.resident_slot(0, 0) == 0, "base residency lost");
++                check(owner.unmap_extras(quiet, error) && owner.mapped_slots() == 6 && !owner.device_slot(6), "extra detach");
++                check(std::memcmp(owner.device_slot(0), bytes.data(), bytes.size()) == 0, "baseline bytes changed");
++            }
++            finish(owner, backend, error);
++        }
++        for (const auto fault : {Mock::Fault::Caps, Mock::Fault::Reserve}) {
++            auto backend = std::make_shared<Mock>();
++            backend->inject(fault);
++            Owner owner(backend);
++            check(!owner.reserve({1024}, 8, uint64_t{16} << 20, error) && !owner.open() && backend->handles.empty(),
++                  "reserve/caps fault leaked or promoted PASS");
++        }
++        {
++            auto backend = std::make_shared<Mock>();
++            Owner owner(backend);
++            check(owner.reserve({1024}, 8, uint64_t{16} << 20, error) && owner.map_base(quiet, error) &&
++                  owner.fill_checked(0, 0, 0, bytes.data(), bytes.size(), error), "publish failure setup");
++            const Owner::Publish rejected = [](const int32_t*, size_t, std::string& message) {
++                message = "injected upload failure"; return false;
++            };
++            check(!owner.publish(rejected, error) && owner.host_residency()[0] == -1 && owner.poisoned(),
++                  "failed upload published host residency");
++            finish(owner, backend, error);
++        }
++        for (const auto fault : {Mock::Fault::Physical, Mock::Fault::Attach}) {
++            for (int index = 1; index <= 2; ++index) {
++                auto backend = std::make_shared<Mock>();
++                Owner owner(backend);
++                check(owner.reserve({1024, 1024}, 8, uint64_t{16} << 20, error) && owner.map_base(quiet, error), "rollback setup");
++                backend->inject(fault, index);
++                check(!owner.map_extras(quiet, error) && owner.poisoned(), "map fault promoted PASS");
++                check(owner.retained_physical_bytes() == (uint64_t{2} << 20), "rollback failed to preserve base only");
++                finish(owner, backend, error);
++            }
++        }
++        {
++            auto backend = std::make_shared<Mock>();
++            Owner owner(backend);
++            check(owner.reserve({1024}, 8, uint64_t{16} << 20, error) && owner.map_base(quiet, error) &&
++                  owner.map_extras(quiet, error), "detach setup");
++            backend->inject(Mock::Fault::Detach);
++            const int destroyed = backend->destroyed;
++            check(!owner.unmap_extras(quiet, error) && owner.poisoned(), "detach failure promoted PASS");
++            check(backend->destroyed == destroyed && owner.retained_physical_bytes() == (uint64_t{4} << 20),
++                  "failed detach deleted physical handle");
++            check(!owner.device_slot(0) && owner.mapping_snapshot()[1].uncertain,
++                  "poisoned/uncertain owner remained readable or was reported complete");
++            finish(owner, backend, error);
++        }
++        {
++            auto backend = std::make_shared<Mock>();
++            Owner owner(backend);
++            check(owner.reserve({1024, 1024}, 8, uint64_t{16} << 20, error) && owner.map_base(quiet, error),
++                  "rollback-detach failure setup");
++            backend->inject(Mock::Fault::Physical, 2);
++            backend->force_detach_failure = true;
++            check(!owner.map_extras(quiet, error) && owner.retained_physical_bytes() == (uint64_t{4} << 20) &&
++                  backend->destroyed == 0, "failed rollback deleted a possibly mapped physical handle");
++            finish(owner, backend, error);
++        }
++        for (const auto fault : {Mock::Fault::Write, Mock::Fault::Read, Mock::Fault::Corrupt}) {
++            auto backend = std::make_shared<Mock>();
++            Owner owner(backend);
++            check(owner.reserve({1024}, 8, uint64_t{16} << 20, error) && owner.map_base(quiet, error), "fill fault setup");
++            backend->inject(fault);
++            check(!owner.fill_checked(0, 0, 0, bytes.data(), bytes.size(), error) && owner.poisoned(), "bad fill promoted");
++            check(owner.host_residency()[0] == -1, "failed bytes published");
++            finish(owner, backend, error); // ASan observes pending read into retained owner scratch.
++        }
++        for (const auto fault : {Mock::Fault::Release, Mock::Fault::Drain}) {
++            auto backend = std::make_shared<Mock>();
++            Owner owner(backend);
++            check(owner.reserve({1024}, 8, uint64_t{16} << 20, error) && owner.map_base(quiet, error), "close fault setup");
++            backend->inject(fault);
++            check(!owner.close(quiet, error) && owner.open(), "failed close lost virtual owner");
++            finish(owner, backend, error);
++        }
++        {
++            auto backend = std::make_shared<Mock>();
++            Owner owner(backend);
++            check(owner.reserve({1024}, 8, uint64_t{16} << 20, error), "budget setup");
++            backend->free_bytes = Owner::guard_bytes + (uint64_t{2} << 20) - 1;
++            check(!owner.map_base(quiet, error) && owner.retained_physical_bytes() == 0, "fresh guard ignored");
++            finish(owner, backend, error);
++        }
++        {
++            auto backend = std::make_shared<Mock>();
++            Owner owner(backend);
++            check(owner.reserve({1024}, 8, uint64_t{16} << 20, error), "missing proof setup");
++            check(!owner.map_base({}, error), "missing quiescence fabricated");
++            finish(owner, backend, error);
++        }
++        {
++            auto backend = std::make_shared<Mock>();
++            Owner owner(backend);
++            check(owner.reserve({1024}, 8, uint64_t{16} << 20, error) && owner.map_base(quiet, error) &&
++                  owner.map_extras(quiet, error) && owner.fill_checked(0, 0, 3, bytes.data(), bytes.size(), error) &&
++                  owner.publish(publish, error), "published unmap setup");
++            check(!owner.unmap_extras(quiet, error) && backend->destroyed == 0, "unmapped published resident");
++            finish(owner, backend, error);
++        }
++        std::puts("PASS actual phase owner CPU bookkeeping/fault contract");
++        return 0;
++    } catch (const std::exception& exception) {
++        std::fprintf(stderr, "FAIL phase owner CPU fixture: %s\n", exception.what());
++        return 1;
++    }
++}
+--- /dev/null
++++ b/tools/test_phase_cache_vmm.cpp
+@@ -0,0 +1,114 @@
++// SPDX-FileCopyrightText: 2026 MistVVK and the XeStrata contributors
++// SPDX-License-Identifier: LGPL-3.0-or-later
++// Manually owned, runtime-dependent fixture; no unguarded GPU CTest.
++#include "strata/core/phase_cache_owner.hpp"
++#include "strata/core/gpu.hpp"
++#include "strata/core/runtime.hpp"
++#include <algorithm>
++#include <array>
++#include <cstdio>
++#include <cstdlib>
++#include <cstring>
++#include <limits>
++#include <numeric>
++#include <stdexcept>
++#include <vector>
++
++namespace {
++void check(bool value, const char* message) { if (!value) throw std::runtime_error(message); }
++void check(bool value, const std::string& message) { if (!value) throw std::runtime_error(message); }
++void progress(const char* text) { std::puts(text); std::fflush(stdout); }
++}
++int main(int argc, char** argv) {
++    if (argc != 2 || std::strcmp(argv[1], "--small-vmm") != 0) return 2;
++    using Owner = strata::core::PhaseCacheOwner;
++    std::shared_ptr<strata::core::PhaseCacheBackend> backend;
++    try { backend = strata::core::make_phase_cache_gpu_backend(0); }
++    catch (const std::exception& error) {
++        std::fprintf(stderr, "SKIP runtime unavailable: %s\n", error.what());
++        return 77;
++    }
++    std::string error;
++    strata::core::PhaseCacheBackend::Caps caps;
++    if (!backend->caps(caps, error) || !caps.vmm || !caps.free_known || !caps.granularity) {
++        std::fprintf(stderr, "SKIP actual VMM/free capability unavailable: %s\n", error.c_str());
++        return 77;
++    }
++    constexpr uint64_t limit = uint64_t{16} << 20, unit = uint64_t{2} << 20;
++    const uint64_t factor = unit / std::gcd(caps.granularity, unit);
++    if (caps.granularity % 256 || caps.granularity > std::numeric_limits<uint64_t>::max() / factor) return 77;
++    const uint64_t gran = caps.granularity * factor;
++    if (gran > (limit - 65536) / 2 || gran > caps.maximum || caps.free < Owner::guard_bytes + gran * 2) {
++        progress("SKIP real granularity/maximum/free exceeds finite small fixture admission");
++        return 77;
++    }
++    Owner owner(backend);
++    std::vector<uint8_t> padding(static_cast<size_t>(gran), 0xA5);
++    std::vector<uint8_t> readback(static_cast<size_t>(gran));
++    // All host/device buffers survive catch and failed completion until checked close.
++    void* source = nullptr;
++    void* d_res = nullptr;
++    std::array<int32_t, 8> map_readback{};
++    const Owner::Quiesce quiet = [&](std::string& message) { return backend->drain(message); };
++    int result = 1;
++    try {
++        progress("BEGIN tiny one-layer real VMM owner");
++        source = strata::gpu::alloc_host(1024);
++        d_res = strata::gpu::alloc_device(map_readback.size() * sizeof(int32_t));
++        check(source && d_res && strata::gpu::is_host_usm(source), "fixture USM allocation failed");
++        for (size_t i = 0; i < 1024; ++i) static_cast<uint8_t*>(source)[i] = static_cast<uint8_t>(i * 23 + 9);
++        check(owner.reserve({1024}, 8, limit - 65536, error), error);
++        check(owner.capacity() == 5 && owner.reserved_bytes() <= limit && !owner.device_slot(0), "reserved membership");
++        const auto* offsets = owner.capacity_offsets();
++        const auto* host_table = owner.host_residency();
++        check(owner.map_base(quiet, error) && owner.mapped_slots() == 3, error);
++        check(strata::gpu::copy(owner.base(), padding.data(), padding.size()), strata::gpu::last_error());
++        void* old = owner.device_slot(0);
++        check(owner.fill_checked(0, 0, 0, source, 1024, error), error);
++        const Owner::Publish upload = [&](const int32_t* table, size_t count, std::string& message) {
++            if (count != map_readback.size()) { message = "residency geometry mismatch"; return false; }
++            if (!strata::gpu::copy(d_res, table, count * sizeof(int32_t))) {
++                message = strata::gpu::last_error(); return false;
++            }
++            return true;
++        };
++        check(owner.publish(upload, error), error);
++        for (int request = 0; request < 2; ++request) {
++            progress("PHASE map/fill/publish/verify extras");
++            check(owner.map_extras(quiet, error), error);
++            check(owner.mapped_slots() == 5 && owner.mapped_bytes() <= limit &&
++                  owner.retained_physical_bytes() <= limit, "physical budget/membership");
++            check(owner.device_slot(0) == old && owner.capacity_offsets() == offsets && owner.host_residency() == host_table,
++                  "full reader pointers moved");
++            check(strata::gpu::copy(owner.device_slot(3), padding.data(), padding.size()), strata::gpu::last_error());
++            check(owner.fill_checked(0, 1, 3, source, 1024, error), error);
++            check(owner.resident_slot(0, 1) == -1 && owner.publish(upload, error), "premature/failed residency publication");
++            check(strata::gpu::copy(map_readback.data(), d_res, sizeof(map_readback)), strata::gpu::last_error());
++            check(std::equal(map_readback.begin(), map_readback.end(), owner.host_residency()), "host/device residency mismatch");
++            check(strata::gpu::copy(readback.data(), owner.device_slot(3), readback.size()), strata::gpu::last_error());
++            check(std::memcmp(readback.data(), source, 1024) == 0 &&
++                  std::all_of(readback.begin() + 1024, readback.end(), [](uint8_t byte) { return byte == 0xA5; }),
++                  "extra payload/padding canary changed");
++            check(owner.invalidate_extras(upload, error) && owner.unmap_extras(quiet, error), error);
++            check(owner.mapped_slots() == 3 && !owner.device_slot(3), "extra invalidation/detach incomplete");
++            check(strata::gpu::copy(readback.data(), owner.device_slot(0), readback.size()), strata::gpu::last_error());
++            check(std::memcmp(readback.data(), source, 1024) == 0 &&
++                  std::all_of(readback.begin() + 1024, readback.end(), [](uint8_t byte) { return byte == 0xA5; }),
++                  "retained base payload/padding changed");
++        }
++        result = 0;
++    } catch (const std::exception& exception) {
++        std::fprintf(stderr, "FAIL VMM owner fixture: %s\n", exception.what());
++    }
++    // No graphs/verifier/other readers in this fixture. The callback explicitly
++    // retires fixture access and drains the bound Runtime before releasing owners.
++    if (!owner.close(quiet, error) || !backend->drain(error)) {
++        std::fprintf(stderr, "FAIL checked close; retaining owners/buffers until process exit: %s\n", error.c_str());
++        std::fflush(stderr);
++        std::_Exit(1);
++    }
++    strata::gpu::free(source);
++    strata::gpu::free(d_res);
++    if (result == 0) progress("PASS tiny actual VMM owner closed (no model inference)");
++    return result;
++}
