@@ -1,0 +1,215 @@
+{
+  "active": false,
+  "complete": true,
+  "passed": true,
+  "commands": [
+    {
+      "label": "free",
+      "argv": [
+        "gitleaks",
+        "detect",
+        "--no-git",
+        "--redact",
+        "--source",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-latest-updates-20261012/bench/results/2026-10-13-xe-b9-update/receipts/main-current-xe-b9-xe-free-build-root-v1.json",
+        "--report-format",
+        "json",
+        "--report-path",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-current-xe-b9-publication-leak-diagnosis-root-v1/free.json"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-12T16:23:45.726769+00:00",
+      "wall_seconds": 30,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 3009425,
+          "start_ticks": 17098984,
+          "sid": 3009425,
+          "pgid": 3009425
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 170989.848362077,
+      "pid": 3009425,
+      "spawn_return_monotonic": 170989.85004386,
+      "direct_identity": {
+        "pid": 3009425,
+        "state": "R",
+        "ppid": 3009376,
+        "pgid": 3009425,
+        "sid": 3009425,
+        "start_ticks": 17098984,
+        "rss_bytes": 1011712
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 55013376,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 1,
+      "finished_utc": "2026-10-12T16:23:46.298175+00:00",
+      "elapsed_seconds": 0.5710914950177539,
+      "logs": {
+        "free.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "free.stderr": {
+          "bytes": 197,
+          "sha256": "c8d963046a1509793674558445916cc101e657020966b93ee08dd359ecc37059"
+        }
+      }
+    },
+    {
+      "label": "contrib-llvm",
+      "argv": [
+        "gitleaks",
+        "detect",
+        "--no-git",
+        "--redact",
+        "--source",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-latest-updates-20261012/bench/results/2026-10-13-xe-b9-update/receipts/main-current-xe-b9-xe-contrib-llvm-build-root-v1.json",
+        "--report-format",
+        "json",
+        "--report-path",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-current-xe-b9-publication-leak-diagnosis-root-v1/contrib-llvm.json"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-12T16:23:46.304793+00:00",
+      "wall_seconds": 30,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 3009458,
+          "start_ticks": 17099042,
+          "sid": 3009458,
+          "pgid": 3009458
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 170990.42633717,
+      "pid": 3009458,
+      "spawn_return_monotonic": 170990.428386215,
+      "direct_identity": {
+        "pid": 3009458,
+        "state": "R",
+        "ppid": 3009376,
+        "pgid": 3009458,
+        "sid": 3009458,
+        "start_ticks": 17099042,
+        "rss_bytes": 823296
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 55283712,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 1,
+      "finished_utc": "2026-10-12T16:23:46.917457+00:00",
+      "elapsed_seconds": 0.6124126869835891,
+      "logs": {
+        "contrib-llvm.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "contrib-llvm.stderr": {
+          "bytes": 197,
+          "sha256": "00d84fa9c9716fad471cf006cc5e0c40d7f17f6edca5f2687f61652730297f48"
+        }
+      }
+    }
+  ],
+  "gpu_executed": false,
+  "findings": [
+    {
+      "rule": "generic-api-key",
+      "line": 3927,
+      "field": "bench/results/2026-10-07-community-arc-b65-v01402/api-checks.json",
+      "file": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-latest-updates-20261012/bench/results/2026-10-13-xe-b9-update/receipts/main-current-xe-b9-xe-free-build-root-v1.json"
+    },
+    {
+      "rule": "generic-api-key",
+      "line": 4557,
+      "field": "bench/results/exchange-rotation-token-ids.json",
+      "file": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-latest-updates-20261012/bench/results/2026-10-13-xe-b9-update/receipts/main-current-xe-b9-xe-free-build-root-v1.json"
+    },
+    {
+      "rule": "generic-api-key",
+      "line": 4951,
+      "field": "tests/core/native_dense_ple_key_test.cpp",
+      "file": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-latest-updates-20261012/bench/results/2026-10-13-xe-b9-update/receipts/main-current-xe-b9-xe-free-build-root-v1.json"
+    },
+    {
+      "rule": "generic-api-key",
+      "line": 5067,
+      "field": "tools/strata_tokenizer.py",
+      "file": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-latest-updates-20261012/bench/results/2026-10-13-xe-b9-update/receipts/main-current-xe-b9-xe-free-build-root-v1.json"
+    },
+    {
+      "rule": "generic-api-key",
+      "line": 5088,
+      "field": "tools/test_strata_tokenizer.py",
+      "file": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-latest-updates-20261012/bench/results/2026-10-13-xe-b9-update/receipts/main-current-xe-b9-xe-free-build-root-v1.json"
+    },
+    {
+      "rule": "generic-api-key",
+      "line": 5089,
+      "field": "tools/test_tokenizer_plain_spans.py",
+      "file": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-latest-updates-20261012/bench/results/2026-10-13-xe-b9-update/receipts/main-current-xe-b9-xe-free-build-root-v1.json"
+    },
+    {
+      "rule": "generic-api-key",
+      "line": 4216,
+      "field": "bench/results/2026-10-07-community-arc-b65-v01402/api-checks.json",
+      "file": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-latest-updates-20261012/bench/results/2026-10-13-xe-b9-update/receipts/main-current-xe-b9-xe-contrib-llvm-build-root-v1.json"
+    },
+    {
+      "rule": "generic-api-key",
+      "line": 4846,
+      "field": "bench/results/exchange-rotation-token-ids.json",
+      "file": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-latest-updates-20261012/bench/results/2026-10-13-xe-b9-update/receipts/main-current-xe-b9-xe-contrib-llvm-build-root-v1.json"
+    },
+    {
+      "rule": "generic-api-key",
+      "line": 5240,
+      "field": "tests/core/native_dense_ple_key_test.cpp",
+      "file": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-latest-updates-20261012/bench/results/2026-10-13-xe-b9-update/receipts/main-current-xe-b9-xe-contrib-llvm-build-root-v1.json"
+    },
+    {
+      "rule": "generic-api-key",
+      "line": 5356,
+      "field": "tools/strata_tokenizer.py",
+      "file": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-latest-updates-20261012/bench/results/2026-10-13-xe-b9-update/receipts/main-current-xe-b9-xe-contrib-llvm-build-root-v1.json"
+    },
+    {
+      "rule": "generic-api-key",
+      "line": 5377,
+      "field": "tools/test_strata_tokenizer.py",
+      "file": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-latest-updates-20261012/bench/results/2026-10-13-xe-b9-update/receipts/main-current-xe-b9-xe-contrib-llvm-build-root-v1.json"
+    },
+    {
+      "rule": "generic-api-key",
+      "line": 5378,
+      "field": "tools/test_tokenizer_plain_spans.py",
+      "file": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-latest-updates-20261012/bench/results/2026-10-13-xe-b9-update/receipts/main-current-xe-b9-xe-contrib-llvm-build-root-v1.json"
+    }
+  ],
+  "original_receipt_sha256": "acd40c6674e08d1a12393de8041583bf97115008de23786108993d8447985e9e"
+}

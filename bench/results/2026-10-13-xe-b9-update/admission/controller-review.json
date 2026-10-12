@@ -1,0 +1,42 @@
+{
+  "passed": true,
+  "complete": true,
+  "active": false,
+  "main_reviewed": true,
+  "gpu_executed": false,
+  "model_executed": false,
+  "controller_source_pins": {
+    "protocol.py": "90f1d5b2b58735bc492606721b9cde0fe0bd549c00e32ff8572d6389c69aa0ed",
+    "common.py": "3aab55ebbd7a520ef9a2638b902ff5b04f72903ff5bba42cfabebfa1a02580c6",
+    "mock_model.py": "933fff6b6caf3a75b3edce157e90ac9302ab46ec3ee7a712014af7bf9d0c762e",
+    "mapping.py": "fbcf528ca27de0daee9bb3619d38438b941c8b79c52170429ffe39df53aa2984",
+    "policy.py": "26ea042fb2a29cfa7d6feafe4dea2f9e7eb7e1878d5262648b7d46424d321c28",
+    "controller_cpu_fixtures.py": "ced54dca7e6779ac990df9c304a5d52a32b12a29ea7be65a3d41434d806bb549",
+    "run_root.py": "c7e8815c492d9e645a6a4595f26e9036a6769ba8d133c0d3f68823408779752f"
+  },
+  "original_source_only_report": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/implementation-xe-b9-pristine-controller-source-v1.txt",
+    "sha256": "7dc3024488387effc635d469416f3078338f07c464a64ccef2a8dccc2ca354a0"
+  },
+  "cpu_proof": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-current-xe-b9-controller-cpu-root-v1/record.json",
+    "sha256": "773ad4e2a15a068b06fe8ff580be93bf573ec6abf93d843e2785170f5b927bb8"
+  },
+  "selected_route_report": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-xe-b9-segmented-serve-route-round308-v1.txt",
+    "sha256": "98eaca685cb9c2af3116d3a24ff5db3152e0f21d2539b05f33be3c0d5b95ddad"
+  },
+  "main_review": [
+    "Seven actual helper diffs reviewed; source-only parent unchanged.",
+    "No-batch/no-MTP serial serve returns before one-shot session loop.",
+    "Segmented verify waits for compute before payload reads and copy before next launch.",
+    "Resident graph and new interop copy stream explicitly disabled.",
+    "Host-only stager atomics with event-gated buffer reuse; no device polling.",
+    "Strict complete32K/GEN16 LP5, live diagnostic scanning, finite owner budgets, normalQUIT retained."
+  ],
+  "limitations": [
+    "Source admission only; no whole-engine portable safety, model quality, full262144 or RESTORE claim.",
+    "Unmodified Xe ignores some intermediate event return values; severe runtime diagnostics fail.",
+    "Controlled prior settings, not an optimized parameter comparison."
+  ]
+}

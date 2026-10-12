@@ -1,0 +1,78 @@
+{
+  "active": false,
+  "complete": true,
+  "passed": true,
+  "commands": [
+    {
+      "label": "actual-admission",
+      "argv": [
+        "/usr/bin/python3",
+        "-B",
+        "-c",
+        "from pathlib import Path;from common import admit,load;from policy import HERE; q=load(Path(__import__('sys').argv[1]));admit(q,'xe',load(HERE/'production-source-pins.json'));print('PASS b9 exact-source admission; no GPU launch')",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-current-xe-b9-admission-root-v1/qualification.json"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-12T16:17:49.515312+00:00",
+      "wall_seconds": 120,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2988520,
+          "start_ticks": 17063363,
+          "sid": 2988520,
+          "pgid": 2988520
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 170633.636779479,
+      "pid": 2988520,
+      "spawn_return_monotonic": 170633.63835412,
+      "direct_identity": {
+        "pid": 2988520,
+        "state": "R",
+        "ppid": 2988345,
+        "pgid": 2988520,
+        "sid": 2988520,
+        "start_ticks": 17063363,
+        "rss_bytes": 458752
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 14311424,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-12T16:17:51.876780+00:00",
+      "elapsed_seconds": 2.361277996998979,
+      "logs": {
+        "actual-admission.stdout": {
+          "bytes": 46,
+          "sha256": "97614e4ae249115f0f804748ab8d12f7cb5a5e5e3994ee76306fc594e0c34399"
+        },
+        "actual-admission.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "controller_sha256": "e1f7b5ef5f1101b7327372f03aa8d81da42cfc3cbc6319be8d5cbffc77cb9fd3",
+  "started_utc": "2026-10-12T16:17:47.462736+00:00",
+  "main_reviewed": true,
+  "gpu_executed": false,
+  "model_executed": false,
+  "qualification": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-current-xe-b9-admission-root-v1/qualification.json",
+    "sha256": "1297d31f2c7ddb81e322f47d2092401730a8e699a723aa669b31e1ef66a5c121"
+  },
+  "finished_utc": "2026-10-12T16:17:51.877548+00:00"
+}
