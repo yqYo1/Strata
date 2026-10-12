@@ -1,0 +1,264 @@
+{
+  "original": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-main-admission-prepare-root-v5/record.json",
+    "sha256": "9fd606d636e60b554912a7f6a8f909dc7dd5b61ffe0d5c7a90e63a088cd517e6",
+    "bytes": 7806
+  },
+  "derivative": true,
+  "original_status_preserved": true,
+  "original_passed": true,
+  "receipt": {
+    "active": false,
+    "passed": true,
+    "complete": true,
+    "commands": [
+      {
+        "label": "mapping-fixtures",
+        "argv": [
+          "/usr/bin/python3",
+          "-B",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-main-mapping-cpu-fixtures-v2.py",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-main-admission-prepare-root-v5/mapping-fixtures"
+        ],
+        "environment": {
+          "PATH": "/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8"
+        },
+        "started_utc": "2026-10-12T01:35:35.600245+00:00",
+        "wall_seconds": 120,
+        "errors": [],
+        "owners": [
+          {
+            "pid": 3767018,
+            "start_ticks": 11769972,
+            "sid": 3767018,
+            "pgid": 3767018
+          }
+        ],
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 117699.721844399,
+        "pid": 3767018,
+        "spawn_return_monotonic": 117699.723435568,
+        "direct_identity": {
+          "pid": 3767018,
+          "state": "R",
+          "ppid": 3766971,
+          "pgid": 3767018,
+          "sid": 3767018,
+          "start_ticks": 11769972,
+          "rss_bytes": 589824
+        },
+        "peak_live_owned_identities": 1,
+        "peak_session_rss_bytes": 23523328,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 0,
+        "finished_utc": "2026-10-12T01:35:36.325618+00:00",
+        "elapsed_seconds": 0.725058085998171,
+        "logs": {
+          "mapping-fixtures.stdout": {
+            "bytes": 357,
+            "sha256": "801e42d6867d60b41cf12f8587fcdd346055731f6f0703564e36473ae5b453bd"
+          },
+          "mapping-fixtures.stderr": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      {
+        "label": "resolve",
+        "argv": [
+          "/usr/bin/python3",
+          "-B",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-pristine-admission-resolver-main-v6.py",
+          "--manifest",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-main-admission-prepare-root-v5/input-manifest.json",
+          "--output",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-main-admission-prepare-root-v5/resolved"
+        ],
+        "environment": {
+          "PATH": "/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8"
+        },
+        "started_utc": "2026-10-12T01:35:36.572345+00:00",
+        "wall_seconds": 120,
+        "errors": [],
+        "owners": [
+          {
+            "pid": 3767127,
+            "start_ticks": 11770069,
+            "sid": 3767127,
+            "pgid": 3767127
+          }
+        ],
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 117700.693849099,
+        "pid": 3767127,
+        "spawn_return_monotonic": 117700.696479116,
+        "direct_identity": {
+          "pid": 3767127,
+          "state": "R",
+          "ppid": 3766971,
+          "pgid": 3767127,
+          "sid": 3767127,
+          "start_ticks": 11770069,
+          "rss_bytes": 573440
+        },
+        "peak_live_owned_identities": 1,
+        "peak_session_rss_bytes": 12685312,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 0,
+        "finished_utc": "2026-10-12T01:35:36.801887+00:00",
+        "elapsed_seconds": 0.22931607099599205,
+        "logs": {
+          "resolve.stdout": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "resolve.stderr": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      {
+        "label": "actual-both-admission",
+        "argv": [
+          "/usr/bin/python3",
+          "-B",
+          "-c",
+          "from pathlib import Path;from common import admit,load;from policy import HERE; q=load(Path(__import__('sys').argv[1]));prod=load(HERE/'production-source-pins.json');[admit(q,e,prod) for e in ('xe','official')];print('PASS actual resolved admission for both pristine binaries; no owner import or engine launch')",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-main-admission-prepare-root-v5/resolved/qualification.json"
+        ],
+        "environment": {
+          "PATH": "/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8"
+        },
+        "started_utc": "2026-10-12T01:35:36.802672+00:00",
+        "wall_seconds": 120,
+        "errors": [],
+        "owners": [
+          {
+            "pid": 3767137,
+            "start_ticks": 11770092,
+            "sid": 3767137,
+            "pgid": 3767137
+          }
+        ],
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 117700.924173471,
+        "pid": 3767137,
+        "spawn_return_monotonic": 117700.926640531,
+        "direct_identity": {
+          "pid": 3767137,
+          "state": "R",
+          "ppid": 3766971,
+          "pgid": 3767137,
+          "sid": 3767137,
+          "start_ticks": 11770092,
+          "rss_bytes": 458752
+        },
+        "peak_live_owned_identities": 1,
+        "peak_session_rss_bytes": 15069184,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 0,
+        "finished_utc": "2026-10-12T01:35:43.863717+00:00",
+        "elapsed_seconds": 7.060819714999525,
+        "logs": {
+          "actual-both-admission.stdout": {
+            "bytes": 92,
+            "sha256": "6f2c607d7a2245687c8f8c9ccd4c70dc0fca5751e518e0bc83813e4f4a4486b7"
+          },
+          "actual-both-admission.stderr": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      }
+    ],
+    "main_reviewed": true,
+    "gpu_executed": false,
+    "model_launch_attempted": false,
+    "controller_sha256": "da70cdfeb7158f419d71473e179e5b0222c3f533bdb378972920e5a45c7b3ca0",
+    "whole_wall_seconds": 360,
+    "evidence": {
+      "mapping-fixtures": {
+        "stdout": {
+          "bytes": 357,
+          "sha256": "801e42d6867d60b41cf12f8587fcdd346055731f6f0703564e36473ae5b453bd",
+          "content": "{\"passed\": true, \"gpu_executed\": false, \"optional_build_id_absence_passed\": true, \"exact_gnu_build_id_passed\": true, \"malformed_elf_cases\": [\"bad-magic\", \"truncated\", \"bad-ph-stride\", \"too-many-ph\", \"ph-outside-file\"], \"aggregate_budget_rejection_passed\": true, \"scope\": \"CPU synthetic map-selection fixtures; no claim of actual pristine process mapping.\"}\n"
+        },
+        "stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "content": ""
+        }
+      },
+      "resolve": {
+        "stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "content": ""
+        },
+        "stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "content": ""
+        }
+      },
+      "actual-both-admission": {
+        "stdout": {
+          "bytes": 92,
+          "sha256": "6f2c607d7a2245687c8f8c9ccd4c70dc0fca5751e518e0bc83813e4f4a4486b7",
+          "content": "PASS actual resolved admission for both pristine binaries; no owner import or engine launch\n"
+        },
+        "stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "content": ""
+        }
+      }
+    },
+    "mapping_fixtures": {
+      "passed": true,
+      "gpu_executed": false,
+      "optional_build_id_absence_passed": true,
+      "exact_gnu_build_id_passed": true,
+      "malformed_elf_cases": [
+        "bad-magic",
+        "truncated",
+        "bad-ph-stride",
+        "too-many-ph",
+        "ph-outside-file"
+      ],
+      "aggregate_budget_rejection_passed": true,
+      "scope": "CPU synthetic map-selection fixtures; no claim of actual pristine process mapping."
+    },
+    "qualification": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-main-admission-prepare-root-v5/resolved/qualification.json",
+      "sha256": "67071a223d2ea5784366ae9f42b77e0984c8cfda3119c5c9af8a4e16a5da0c6f"
+    },
+    "finished_utc": "2026-10-12T01:35:43.865084+00:00"
+  }
+}

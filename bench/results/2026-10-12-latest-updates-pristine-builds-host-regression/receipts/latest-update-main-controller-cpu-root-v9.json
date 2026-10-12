@@ -1,0 +1,114 @@
+{
+  "original": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-main-controller-cpu-root-v9/record.json",
+    "sha256": "3f4062563c859a25a08ae06cdc5a7d1ec7713d0e249fe55d5ca7e52460b9d814",
+    "bytes": 4420
+  },
+  "derivative": true,
+  "original_status_preserved": true,
+  "original_passed": false,
+  "receipt": {
+    "passed": false,
+    "complete": false,
+    "active": false,
+    "commands": [
+      {
+        "label": "parser-owned-mock-pending",
+        "argv": [
+          "/usr/bin/python3",
+          "-B",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-integrated-neutral-controller-source-v3/controller_cpu_fixtures.py",
+          "--owned-mock-output",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-main-controller-cpu-root-v9/mock",
+          "--owned-stop-output",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-main-controller-cpu-root-v9/stop-mock",
+          "--invalid-pending-output",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-main-controller-cpu-root-v9/invalid-pending"
+        ],
+        "environment": {
+          "PATH": "/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "XDG_RUNTIME_DIR": "/run/user/1000",
+          "DBUS_SESSION_BUS_ADDRESS": "unix:path=/run/user/1000/bus"
+        },
+        "started_utc": "2026-10-12T02:15:19.193612+00:00",
+        "wall_seconds": 45,
+        "errors": [],
+        "owners": [
+          {
+            "pid": 3915451,
+            "start_ticks": 12008331,
+            "sid": 3915451,
+            "pgid": 3915451
+          }
+        ],
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 120083.31517958,
+        "pid": 3915451,
+        "spawn_return_monotonic": 120083.31679285,
+        "direct_identity": {
+          "pid": 3915451,
+          "state": "R",
+          "ppid": 3915374,
+          "pgid": 3915451,
+          "sid": 3915451,
+          "start_ticks": 12008331,
+          "rss_bytes": 458752
+        },
+        "peak_live_owned_identities": 1,
+        "peak_session_rss_bytes": 23924736,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 1,
+        "finished_utc": "2026-10-12T02:15:19.863824+00:00",
+        "elapsed_seconds": 0.6699228910001693,
+        "logs": {
+          "parser-owned-mock-pending.stdout": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "parser-owned-mock-pending.stderr": {
+            "bytes": 849,
+            "sha256": "4e6d729c3c1b95b0789e80f537923c544efe61c288b92c602fa7131e070dd0a0"
+          }
+        }
+      }
+    ],
+    "main_reviewed": true,
+    "gpu_executed": false,
+    "model_launch_attempted": false,
+    "controller_source_pins": {
+      "common.py": "d77e67598ceaa038979db89cf89a1e1dffe7356d87da22fc95cd31fa64d713ed",
+      "controller_cpu_fixtures.py": "1424e2a235cb1876b8265d666138ecef90bc2bed374236178432828a9dc9dd56",
+      "mapping.py": "fbcf528ca27de0daee9bb3619d38438b941c8b79c52170429ffe39df53aa2984",
+      "mock_model.py": "eaaf35828350537872e2729b63ca326e5fde8763b78a4970c5e7a1d9f4c9ac0b",
+      "policy.py": "40c3d66f57c058d7369ddc53ed6ddd765f4344ca21c3e1bc865b2d8a38931f25",
+      "protocol.py": "80a51a22f487d70b6739f38615d511c2e125488c19757e58fd518521a270c1a7",
+      "run_root.py": "120ba6199ed31a10a540dfe061d4c17da5e4eded761e3923247b74ca47d99f9a"
+    },
+    "controller_sha256": "cd9e04f914c117fe02136981985825ad5f25b6f41cc534857a0797028e400061",
+    "whole_wall_seconds": 120,
+    "evidence": {
+      "parser-owned-mock-pending": {
+        "stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "content": ""
+        },
+        "stderr": {
+          "bytes": 849,
+          "sha256": "4e6d729c3c1b95b0789e80f537923c544efe61c288b92c602fa7131e070dd0a0",
+          "content": "Traceback (most recent call last):\n  File \"/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-integrated-neutral-controller-source-v3/controller_cpu_fixtures.py\", line 340, in <module>\n    result.update(owned_stop_mock(args.owned_stop_output))\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-integrated-neutral-controller-source-v3/controller_cpu_fixtures.py\", line 284, in owned_stop_mock\n    require(strong(c) and c['exit_code'] == 0 and record['budget_stop_send_completed'] and\n  File \"/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-integrated-neutral-controller-source-v3/common.py\", line 13, in require\n    raise ValueError(message)\nValueError: cancel closes/reaps normally without PASS\n"
+        }
+      }
+    },
+    "error": "RuntimeError('parser-owned-mock-pending')",
+    "finished_utc": "2026-10-12T02:15:19.864847+00:00"
+  }
+}

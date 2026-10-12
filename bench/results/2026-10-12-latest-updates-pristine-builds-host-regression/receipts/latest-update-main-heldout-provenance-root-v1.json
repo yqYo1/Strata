@@ -1,0 +1,281 @@
+{
+  "original": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-main-heldout-provenance-root-v1/record.json",
+    "sha256": "f73d2807787c2bb2684f2750f86435c710b6eabd292f0c05686cce1f9aa58d04",
+    "bytes": 23194
+  },
+  "derivative": true,
+  "original_status_preserved": true,
+  "original_passed": true,
+  "receipt": {
+    "passed": true,
+    "complete": true,
+    "active": false,
+    "main_reviewed": true,
+    "provenance_reviewed": true,
+    "gpu_executed": false,
+    "model_executed": false,
+    "commands": [
+      {
+        "label": "exact-whole-prompt-input-verification",
+        "argv": [
+          "/usr/bin/python3",
+          "-B",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-main-heldout-provenance-v1.py",
+          "--check"
+        ],
+        "environment": {
+          "PATH": "/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8"
+        },
+        "started_utc": "2026-10-12T02:19:04.074478+00:00",
+        "wall_seconds": 60,
+        "errors": [],
+        "owners": [
+          {
+            "pid": 3930760,
+            "start_ticks": 12030819,
+            "sid": 3930760,
+            "pgid": 3930760
+          }
+        ],
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 120308.195974,
+        "pid": 3930760,
+        "spawn_return_monotonic": 120308.197553556,
+        "direct_identity": {
+          "pid": 3930760,
+          "state": "R",
+          "ppid": 3930724,
+          "pgid": 3930760,
+          "sid": 3930760,
+          "start_ticks": 12030819,
+          "rss_bytes": 458752
+        },
+        "peak_live_owned_identities": 1,
+        "peak_session_rss_bytes": 13365248,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 0,
+        "finished_utc": "2026-10-12T02:19:04.318912+00:00",
+        "elapsed_seconds": 0.24419255400425754,
+        "logs": {
+          "exact-whole-prompt-input-verification.stdout": {
+            "bytes": 9712,
+            "sha256": "e3786b79d3dc6dbd370a594433e3abbb913950b23052ceb51b5add97c7a2005b"
+          },
+          "exact-whole-prompt-input-verification.stderr": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      }
+    ],
+    "controller": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-main-heldout-provenance-v1.py",
+      "sha256": "e34dd60c64e6025a7323089bb4ffe9fb6e2d703cc8af43ed8c94fdc4e09a5101"
+    },
+    "evidence": {
+      "stdout": "{\"input\": {\"path\": \"/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/independent-prompt-actual-pack-cpu-validation-v3/bundle/validation.tokens.txt\", \"sha256\": \"1c7eb5878f521890c5f7e511bea7d1f73146b61a784d6c86169c16713bd36d3c\"}, \"tokens\": 37462, \"token_count\": 37462, \"original_preparation\": {\"path\": \"/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/independent-prompt-actual-pack-cpu-validation-v3/record.json\", \"sha256\": \"974dbdfd6e59a2b61c65a06f4555750edaaa095d62f1054ad33898d88f52986b\"}, \"original_candidate\": {\"path\": \"/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/independent-prompt-actual-pack-cpu-validation-v3/bundle/record.json\", \"sha256\": \"dc43ba8f0ddcd6e6ef22ae8e2e10457c70b7fb0b1e6b7868ec684be12a544b93\"}, \"source_manifest\": {\"path\": \"/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/independent-prompt-actual-pack-cpu-validation-v3/bundle/manifest.json\", \"sha256\": \"4881239ef30f643a55ad13c1bff17c49bcc04abb921139bc97975b5eacbf8e40\"}, \"rendered_input\": {\"path\": \"/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/independent-prompt-actual-pack-cpu-validation-v3/bundle/validation.rendered.txt\", \"sha256\": \"d62898d335b3e8ab478a02793b8e5655e9eae88c9992626b2e69ad34a0db3fcf\"}, \"selected_documents\": [{\"path\": \"/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-cache-route-pairs-v0141-20261010/src/kernels/cpu/pool.cpp\", \"sha256\": \"5ef33f7d2020a17ecc36ad15796c6f021b4b5963998aa964dccedbe733637368\", \"source_id\": \"strata@66aaec3a:src/kernels/cpu/pool.cpp:5ef33f7d\", \"version\": \"source-commit-66aaec3a66ad9ed12e6d042cffe743c47e364432\"}, {\"path\": \"/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-cache-route-pairs-v0141-20261010/src/kernels/cpu/native_expert.cpp\", \"sha256\": \"767f02f33aca4da9fabbe113c50ce1d7cb2aa9f25b4234df59224ec46a5985cd\", \"source_id\": \"strata@66aaec3a:src/kernels/cpu/native_expert.cpp:767f02f3\", \"version\": \"source-commit-66aaec3a66ad9ed12e6d042cffe743c47e364432\"}, {\"path\": \"/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-cache-route-pairs-v0141-20261010/src/kernels/cpu/expert.cpp\", \"sha256\": \"31b7b1a628e29f22bce3e39e69efe968298066d08383d8292c9ea1279bee1cfe\", \"source_id\": \"strata@66aaec3a:src/kernels/cpu/expert.cpp:31b7b1a6\", \"version\": \"source-commit-66aaec3a66ad9ed12e6d042cffe743c47e364432\"}, {\"path\": \"/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-cache-route-pairs-v0141-20261010/src/kernels/cpu/expert_layout.cpp\", \"sha256\": \"9826d86cc83330d447d62a62189dc782f549ffb815c7bdccd2ad4f4582672f4d\", \"source_id\": \"strata@66aaec3a:src/kernels/cpu/expert_layout.cpp:9826d86c\", \"version\": \"source-commit-66aaec3a66ad9ed12e6d042cffe743c47e364432\"}], \"original_host_tokenizer_helper\": {\"path\": \"/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-static-quota-oracle-v0141-20261010/sycl/tools/prepare_independent_prompt_tokens_v2.py\", \"sha256\": \"829f6335ff7b47d587832c40b9f30b9aafddce112e7b980095aa17225b0940cd\"}, \"tokenizer_asset_pins\": {\"chat_template.jinja\": {\"path\": \"/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/chat_template.jinja\", \"sha256\": \"12827f24b742ea4e80cdc12dbcf9622227056b9f797252a3149263d4f9aaadce\"}, \"merges.txt\": {\"path\": \"/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/merges.txt\", \"sha256\": \"4ba698529766c7a2f5052083ea10cdf2485577f5237a332ee291054eb11e3332\"}, \"token_type.json\": {\"path\": \"/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/token_type.json\", \"sha256\": \"5088c8c298fc06af8382ddb3b76c888703ac2634e82263b97eedcc2ad202738b\"}, \"tokenizer.json\": {\"path\": \"/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/tokenizer.json\", \"sha256\": \"c0bd435efbc6c3b28964b47999afe16c4ad268c7c7c4e8cb3af410796a6f30bf\"}, \"vocab.json\": {\"path\": \"/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/vocab.json\", \"sha256\": \"4ba64f0332abcfb0b600b7df1537d1e836e68009d5fb7cdb77339738dc6365c4\"}}, \"source_tokenizer_pins\": {\"serve/frontend.py\": {\"path\": \"/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-cache-route-pairs-v0141-20261010/serve/frontend.py\", \"sha256\": \"095bbac7d49b19d815d2634457d14d216ba9bd4e98998a4e3b4288f20a25e923\"}, \"tools/strata_tokenizer.py\": {\"path\": \"/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-cache-route-pairs-v0141-20261010/tools/strata_tokenizer.py\", \"sha256\": \"9b0327e25aa62754406a924db6cc137e6edb1d93c7af76a4f3d14a8920ea72c8\"}}, \"canonical_overlap\": {\"common_prefix_ids\": 1, \"shared_unique_16_id_shingles\": 45, \"smaller_unique_shingle_count\": 32462, \"near_copy_threshold_passed\": true}, \"source_provenance\": {\"selected_documents\": [{\"path\": \"/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-cache-route-pairs-v0141-20261010/src/kernels/cpu/pool.cpp\", \"sha256\": \"5ef33f7d2020a17ecc36ad15796c6f021b4b5963998aa964dccedbe733637368\", \"source_id\": \"strata@66aaec3a:src/kernels/cpu/pool.cpp:5ef33f7d\", \"version\": \"source-commit-66aaec3a66ad9ed12e6d042cffe743c47e364432\"}, {\"path\": \"/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-cache-route-pairs-v0141-20261010/src/kernels/cpu/native_expert.cpp\", \"sha256\": \"767f02f33aca4da9fabbe113c50ce1d7cb2aa9f25b4234df59224ec46a5985cd\", \"source_id\": \"strata@66aaec3a:src/kernels/cpu/native_expert.cpp:767f02f3\", \"version\": \"source-commit-66aaec3a66ad9ed12e6d042cffe743c47e364432\"}, {\"path\": \"/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-cache-route-pairs-v0141-20261010/src/kernels/cpu/expert.cpp\", \"sha256\": \"31b7b1a628e29f22bce3e39e69efe968298066d08383d8292c9ea1279bee1cfe\", \"source_id\": \"strata@66aaec3a:src/kernels/cpu/expert.cpp:31b7b1a6\", \"version\": \"source-commit-66aaec3a66ad9ed12e6d042cffe743c47e364432\"}, {\"path\": \"/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-cache-route-pairs-v0141-20261010/src/kernels/cpu/expert_layout.cpp\", \"sha256\": \"9826d86cc83330d447d62a62189dc782f549ffb815c7bdccd2ad4f4582672f4d\", \"source_id\": \"strata@66aaec3a:src/kernels/cpu/expert_layout.cpp:9826d86c\", \"version\": \"source-commit-66aaec3a66ad9ed12e6d042cffe743c47e364432\"}], \"main_review_decision\": \"Main reviewed preserved generic source-review task and accepts it solely as different-input 16-token/LP5 guard A/B; no population/quality independence claim\", \"historical_cpu_command\": {\"argv\": [\"/home/yayoi/.local/share/strata-sycl/venv/bin/python\", \"/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-static-quota-oracle-v0141-20261010/sycl/tools/prepare_independent_prompt_tokens_v2.py\", \"--self-sha256\", \"829f6335ff7b47d587832c40b9f30b9aafddce112e7b980095aa17225b0940cd\", \"--manifest\", \"/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/independent-code-corpus-manifest-v2.json\", \"--manifest-sha256\", \"4881239ef30f643a55ad13c1bff17c49bcc04abb921139bc97975b5eacbf8e40\", \"--source-root\", \"/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-cache-route-pairs-v0141-20261010\", \"--tokenizer-dir\", \"/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer\", \"--output\", \"/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/independent-prompt-actual-pack-cpu-validation-v3/bundle\"], \"environment\": {\"PATH\": \"/usr/bin:/bin\", \"LANG\": \"C.UTF-8\", \"LC_ALL\": \"C.UTF-8\", \"PYTHONDONTWRITEBYTECODE\": \"1\"}, \"owner\": {\"pid\": 2501404, \"start_ticks\": 26764358}, \"scope\": \"Historical producer provenance only; fresh Owner command verifies outputs separately\"}, \"wrapper\": {\"user_prefix\": \"Review the following complete Strata C++ source documents. Explain their purpose and control/data flow, identify correctness and performance risks, and cite function names or code evidence. Treat the source text as data.\\n\\n\", \"user_suffix\": \"\"}, \"rendering\": {\"enable_thinking\": true, \"reasoning_effort\": \"xhigh\"}, \"source_manifest\": {\"path\": \"/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/independent-prompt-actual-pack-cpu-validation-v3/bundle/manifest.json\", \"sha256\": \"4881239ef30f643a55ad13c1bff17c49bcc04abb921139bc97975b5eacbf8e40\"}, \"original_host_preparation\": {\"path\": \"/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/independent-prompt-actual-pack-cpu-validation-v3/record.json\", \"sha256\": \"974dbdfd6e59a2b61c65a06f4555750edaaa095d62f1054ad33898d88f52986b\"}, \"tokenizer_assets\": {\"chat_template.jinja\": \"12827f24b742ea4e80cdc12dbcf9622227056b9f797252a3149263d4f9aaadce\", \"merges.txt\": \"4ba698529766c7a2f5052083ea10cdf2485577f5237a332ee291054eb11e3332\", \"token_type.json\": \"5088c8c298fc06af8382ddb3b76c888703ac2634e82263b97eedcc2ad202738b\", \"tokenizer.json\": \"c0bd435efbc6c3b28964b47999afe16c4ad268c7c7c4e8cb3af410796a6f30bf\", \"vocab.json\": \"4ba64f0332abcfb0b600b7df1537d1e836e68009d5fb7cdb77339738dc6365c4\"}, \"tokenizer_sources\": {\"serve/frontend.py\": \"095bbac7d49b19d815d2634457d14d216ba9bd4e98998a4e3b4288f20a25e923\", \"tools/strata_tokenizer.py\": \"9b0327e25aa62754406a924db6cc137e6edb1d93c7af76a4f3d14a8920ea72c8\"}, \"task_boundary\": \"Complete four source documents follow generic review instruction; complete template generation prefix\"}, \"whole_document_preserved\": true, \"altered_to_fit\": false, \"model_executed\": false, \"gpu_executed\": false, \"scope\": \"Fresh token/asset/provenance identity checks of complete frozen 37462-ID input; no retokenization or inference\", \"limitations\": [\"Distinct input for numerical guard A/B; same repository is not independent authorship or population data\", \"Generic complete-source review instruction at start; no question appended at end\", \"Sixteen-token/LP5 agreement is narrow numerical evidence, not answer-quality or full-logit validation\", \"Original candidate status and original CPU preparation ownership provenance stay unchanged\"]}\n",
+      "stderr": ""
+    },
+    "input": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/independent-prompt-actual-pack-cpu-validation-v3/bundle/validation.tokens.txt",
+      "sha256": "1c7eb5878f521890c5f7e511bea7d1f73146b61a784d6c86169c16713bd36d3c"
+    },
+    "tokens": 37462,
+    "token_count": 37462,
+    "original_preparation": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/independent-prompt-actual-pack-cpu-validation-v3/record.json",
+      "sha256": "974dbdfd6e59a2b61c65a06f4555750edaaa095d62f1054ad33898d88f52986b"
+    },
+    "original_candidate": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/independent-prompt-actual-pack-cpu-validation-v3/bundle/record.json",
+      "sha256": "dc43ba8f0ddcd6e6ef22ae8e2e10457c70b7fb0b1e6b7868ec684be12a544b93"
+    },
+    "source_manifest": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/independent-prompt-actual-pack-cpu-validation-v3/bundle/manifest.json",
+      "sha256": "4881239ef30f643a55ad13c1bff17c49bcc04abb921139bc97975b5eacbf8e40"
+    },
+    "rendered_input": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/independent-prompt-actual-pack-cpu-validation-v3/bundle/validation.rendered.txt",
+      "sha256": "d62898d335b3e8ab478a02793b8e5655e9eae88c9992626b2e69ad34a0db3fcf"
+    },
+    "selected_documents": [
+      {
+        "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-cache-route-pairs-v0141-20261010/src/kernels/cpu/pool.cpp",
+        "sha256": "5ef33f7d2020a17ecc36ad15796c6f021b4b5963998aa964dccedbe733637368",
+        "source_id": "strata@66aaec3a:src/kernels/cpu/pool.cpp:5ef33f7d",
+        "version": "source-commit-66aaec3a66ad9ed12e6d042cffe743c47e364432"
+      },
+      {
+        "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-cache-route-pairs-v0141-20261010/src/kernels/cpu/native_expert.cpp",
+        "sha256": "767f02f33aca4da9fabbe113c50ce1d7cb2aa9f25b4234df59224ec46a5985cd",
+        "source_id": "strata@66aaec3a:src/kernels/cpu/native_expert.cpp:767f02f3",
+        "version": "source-commit-66aaec3a66ad9ed12e6d042cffe743c47e364432"
+      },
+      {
+        "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-cache-route-pairs-v0141-20261010/src/kernels/cpu/expert.cpp",
+        "sha256": "31b7b1a628e29f22bce3e39e69efe968298066d08383d8292c9ea1279bee1cfe",
+        "source_id": "strata@66aaec3a:src/kernels/cpu/expert.cpp:31b7b1a6",
+        "version": "source-commit-66aaec3a66ad9ed12e6d042cffe743c47e364432"
+      },
+      {
+        "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-cache-route-pairs-v0141-20261010/src/kernels/cpu/expert_layout.cpp",
+        "sha256": "9826d86cc83330d447d62a62189dc782f549ffb815c7bdccd2ad4f4582672f4d",
+        "source_id": "strata@66aaec3a:src/kernels/cpu/expert_layout.cpp:9826d86c",
+        "version": "source-commit-66aaec3a66ad9ed12e6d042cffe743c47e364432"
+      }
+    ],
+    "original_host_tokenizer_helper": {
+      "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-static-quota-oracle-v0141-20261010/sycl/tools/prepare_independent_prompt_tokens_v2.py",
+      "sha256": "829f6335ff7b47d587832c40b9f30b9aafddce112e7b980095aa17225b0940cd"
+    },
+    "tokenizer_asset_pins": {
+      "chat_template.jinja": {
+        "path": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/chat_template.jinja",
+        "sha256": "12827f24b742ea4e80cdc12dbcf9622227056b9f797252a3149263d4f9aaadce"
+      },
+      "merges.txt": {
+        "path": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/merges.txt",
+        "sha256": "4ba698529766c7a2f5052083ea10cdf2485577f5237a332ee291054eb11e3332"
+      },
+      "token_type.json": {
+        "path": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/token_type.json",
+        "sha256": "5088c8c298fc06af8382ddb3b76c888703ac2634e82263b97eedcc2ad202738b"
+      },
+      "tokenizer.json": {
+        "path": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/tokenizer.json",
+        "sha256": "c0bd435efbc6c3b28964b47999afe16c4ad268c7c7c4e8cb3af410796a6f30bf"
+      },
+      "vocab.json": {
+        "path": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/vocab.json",
+        "sha256": "4ba64f0332abcfb0b600b7df1537d1e836e68009d5fb7cdb77339738dc6365c4"
+      }
+    },
+    "source_tokenizer_pins": {
+      "serve/frontend.py": {
+        "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-cache-route-pairs-v0141-20261010/serve/frontend.py",
+        "sha256": "095bbac7d49b19d815d2634457d14d216ba9bd4e98998a4e3b4288f20a25e923"
+      },
+      "tools/strata_tokenizer.py": {
+        "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-cache-route-pairs-v0141-20261010/tools/strata_tokenizer.py",
+        "sha256": "9b0327e25aa62754406a924db6cc137e6edb1d93c7af76a4f3d14a8920ea72c8"
+      }
+    },
+    "canonical_overlap": {
+      "common_prefix_ids": 1,
+      "shared_unique_16_id_shingles": 45,
+      "smaller_unique_shingle_count": 32462,
+      "near_copy_threshold_passed": true
+    },
+    "source_provenance": {
+      "selected_documents": [
+        {
+          "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-cache-route-pairs-v0141-20261010/src/kernels/cpu/pool.cpp",
+          "sha256": "5ef33f7d2020a17ecc36ad15796c6f021b4b5963998aa964dccedbe733637368",
+          "source_id": "strata@66aaec3a:src/kernels/cpu/pool.cpp:5ef33f7d",
+          "version": "source-commit-66aaec3a66ad9ed12e6d042cffe743c47e364432"
+        },
+        {
+          "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-cache-route-pairs-v0141-20261010/src/kernels/cpu/native_expert.cpp",
+          "sha256": "767f02f33aca4da9fabbe113c50ce1d7cb2aa9f25b4234df59224ec46a5985cd",
+          "source_id": "strata@66aaec3a:src/kernels/cpu/native_expert.cpp:767f02f3",
+          "version": "source-commit-66aaec3a66ad9ed12e6d042cffe743c47e364432"
+        },
+        {
+          "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-cache-route-pairs-v0141-20261010/src/kernels/cpu/expert.cpp",
+          "sha256": "31b7b1a628e29f22bce3e39e69efe968298066d08383d8292c9ea1279bee1cfe",
+          "source_id": "strata@66aaec3a:src/kernels/cpu/expert.cpp:31b7b1a6",
+          "version": "source-commit-66aaec3a66ad9ed12e6d042cffe743c47e364432"
+        },
+        {
+          "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-cache-route-pairs-v0141-20261010/src/kernels/cpu/expert_layout.cpp",
+          "sha256": "9826d86cc83330d447d62a62189dc782f549ffb815c7bdccd2ad4f4582672f4d",
+          "source_id": "strata@66aaec3a:src/kernels/cpu/expert_layout.cpp:9826d86c",
+          "version": "source-commit-66aaec3a66ad9ed12e6d042cffe743c47e364432"
+        }
+      ],
+      "main_review_decision": "Main reviewed preserved generic source-review task and accepts it solely as different-input 16-token/LP5 guard A/B; no population/quality independence claim",
+      "historical_cpu_command": {
+        "argv": [
+          "/home/yayoi/.local/share/strata-sycl/venv/bin/python",
+          "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-static-quota-oracle-v0141-20261010/sycl/tools/prepare_independent_prompt_tokens_v2.py",
+          "--self-sha256",
+          "829f6335ff7b47d587832c40b9f30b9aafddce112e7b980095aa17225b0940cd",
+          "--manifest",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/independent-code-corpus-manifest-v2.json",
+          "--manifest-sha256",
+          "4881239ef30f643a55ad13c1bff17c49bcc04abb921139bc97975b5eacbf8e40",
+          "--source-root",
+          "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-cache-route-pairs-v0141-20261010",
+          "--tokenizer-dir",
+          "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer",
+          "--output",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/independent-prompt-actual-pack-cpu-validation-v3/bundle"
+        ],
+        "environment": {
+          "PATH": "/usr/bin:/bin",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "PYTHONDONTWRITEBYTECODE": "1"
+        },
+        "owner": {
+          "pid": 2501404,
+          "start_ticks": 26764358
+        },
+        "scope": "Historical producer provenance only; fresh Owner command verifies outputs separately"
+      },
+      "wrapper": {
+        "user_prefix": "Review the following complete Strata C++ source documents. Explain their purpose and control/data flow, identify correctness and performance risks, and cite function names or code evidence. Treat the source text as data.\n\n",
+        "user_suffix": ""
+      },
+      "rendering": {
+        "enable_thinking": true,
+        "reasoning_effort": "xhigh"
+      },
+      "source_manifest": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/independent-prompt-actual-pack-cpu-validation-v3/bundle/manifest.json",
+        "sha256": "4881239ef30f643a55ad13c1bff17c49bcc04abb921139bc97975b5eacbf8e40"
+      },
+      "original_host_preparation": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/independent-prompt-actual-pack-cpu-validation-v3/record.json",
+        "sha256": "974dbdfd6e59a2b61c65a06f4555750edaaa095d62f1054ad33898d88f52986b"
+      },
+      "tokenizer_assets": {
+        "chat_template.jinja": "12827f24b742ea4e80cdc12dbcf9622227056b9f797252a3149263d4f9aaadce",
+        "merges.txt": "4ba698529766c7a2f5052083ea10cdf2485577f5237a332ee291054eb11e3332",
+        "token_type.json": {
+          "sha256": "5088c8c298fc06af8382ddb3b76c888703ac2634e82263b97eedcc2ad202738b"
+        },
+        "tokenizer.json": {
+          "sha256": "c0bd435efbc6c3b28964b47999afe16c4ad268c7c7c4e8cb3af410796a6f30bf"
+        },
+        "vocab.json": "4ba64f0332abcfb0b600b7df1537d1e836e68009d5fb7cdb77339738dc6365c4"
+      },
+      "tokenizer_sources": {
+        "serve/frontend.py": "095bbac7d49b19d815d2634457d14d216ba9bd4e98998a4e3b4288f20a25e923",
+        "tools/strata_tokenizer.py": {
+          "sha256": "9b0327e25aa62754406a924db6cc137e6edb1d93c7af76a4f3d14a8920ea72c8"
+        }
+      },
+      "task_boundary": "Complete four source documents follow generic review instruction; complete template generation prefix"
+    },
+    "whole_document_preserved": true,
+    "altered_to_fit": false,
+    "scope": "Fresh token/asset/provenance identity checks of complete frozen 37462-ID input; no retokenization or inference",
+    "limitations": [
+      "Distinct input for numerical guard A/B; same repository is not independent authorship or population data",
+      "Generic complete-source review instruction at start; no question appended at end",
+      "Sixteen-token/LP5 agreement is narrow numerical evidence, not answer-quality or full-logit validation",
+      "Original candidate status and original CPU preparation ownership provenance stay unchanged"
+    ],
+    "finished_utc": "2026-10-12T02:19:04.319626+00:00"
+  }
+}

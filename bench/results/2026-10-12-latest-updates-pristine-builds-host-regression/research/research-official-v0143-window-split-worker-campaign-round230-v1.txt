@@ -1,0 +1,45 @@
+# R230 — official v0.1.43 read_windows split and CPU worker campaign
+
+Date: 2026-10-12 Asia/Tokyo. Read-only source analysis for pristine official v0.1.43 at requested revision `7695859aa13afb248bdb4d36f9b2e95707db079d`. No GPU/runtime/process query, build, test, import/AST, Git, cleanup, or source modification was performed. Main owns the active official FULL32K run. This is a source-based eligibility decision, not a timing or correctness result.
+
+## Decision
+
+The safe first measurement matrix is three fresh-process arms against the fixed `read_windows`-8 baseline, holding all other options and environment variables fixed: (A) `STRATA_VERIFY_SPLIT=0`, workers 5; (B) split enabled/default, `--pool-workers 3`; (C) split disabled, `--pool-workers 3`. Add split enabled/default, workers 3 as the shared comparison anchor if it is not already in the campaign. Keep `STRATA_VERIFY_STEPPED=1 STRATA_VERIFY_PIPE=0 STRATA_VERIFY_NO_HOST=0 STRATA_VERIFY_DEVICE_PLAN=1`, `--no-spec-split`, no batch-recording, and the fixed route/cache/KV/profile/affinity settings. This permits independent main effects and one interaction check without changing the service protocol. Use a fresh process for every split setting because `split_on` is a function-static environment read on first capture; likewise compare workers by the startup-reported effective count. Do not combine this with PIPE, EAGER, NO_HOST, Prefill, cache, or route changes.
+
+For a full 48-layer, miss-bearing T=8 window with one group per layer, source arithmetic predicts:
+
+| `STRATA_VERIFY_SPLIT` | kind1 serve boundaries | kind0 extra boundaries | executable segments / graph submissions per window (`PIPE=0`) |
+|---|---:|---:|---:|
+| enabled/default | 48 | 48 | 97 |
+| `0` | 48 | 0 | 49 |
+
+The count is `boundaries + 1` because capture starts one segment before the first boundary and closes the final segment. It assumes `lb=0, le=48`, `G=1`, stepped segmented capture, `ar_off`, and no eager path. If the run reports fewer participating layers, groups, or a zero-doorbell all-resident path, use that run's actual window route and don't apply this table blindly. `--no-spec-split` makes `split_` false; the two-way group split (`G=2`) is controlled separately from `STRATA_VERIFY_SPLIT`.
+
+`STRATA_VERIFY_SPLIT=0` removes only kind0 boundaries placed after a group's plan-copy/VRAM expert work. It does not remove the kind1 boundary after each layer's doorbell publish, the `cs_->wait()`/ring and payload checks, the host `drive_pool_multi` service, plan publication, DMA copy queue wait, or flags. With PIPE off, kind0 supplies no host-pool overlap; turning it off reduces graph submissions while retaining the layer handoff. The source offers no throughput prediction.
+
+The pool setting affects only the CPU worker pool axis. `ExpertPool` uses positive `--pool-workers` literally: 3 means three pinned worker threads; 5 means five. The selected default `host_works=true` also lets the serving host thread claim pool jobs, so those settings provide up to four versus six participating compute threads during `run()`, not three versus five total. Pool startup INFO is the effective-count receipt. Each safe T=8 layer service routes at most 80 entries (8 tokens × 10 experts), within the fixed 128-entry window table. `expert_pool_dispatch_multi` builds its per-call job descriptors in persistent `ExpertDispatch` vectors and only calls synchronous `pool->run_split_multi_native` when CPU misses produced `njobs > 0`; the exact number of worker-run calls therefore depends on actual cache hits/misses, although the callback/service boundary count is 48 for the stated full-layer window. `ExpertPool::run` documents that jobs outlive the call and waits until workers have parked before returning.
+
+## Handoff, dependencies, and lifetime
+
+In `capture_segments`, kind1 is installed as `step_hook_` unconditionally for stepped segment capture. The kind0 hook is installed only if the process-static `STRATA_VERIFY_SPLIT` switch is on. `record_window` invokes kind1 from `pre(l, group)` after router/plan/doorbell publication and invokes kind0 from `post(l, group)` after mapped plan copy and VRAM expert groups. In the stepped replay, each kind1 serve first waits for `cs_` to drain, validates the ring sequence and waits for the mapped payload to arrive whole, then calls the pool inline because `PIPE=0`. It waits for `copy_` to drain fetch-DMA and its host task, raises flag B, applies required PLE staging if active, then fences and raises M before submitting the next segment. GPU graph waits are ordered around flags A (plan), B (PCIe stage), and M (CPU miss rows). These service barriers are retained with split disabled.
+
+The GPU queue wait precedes host reads from `h_x_`, `h_ids_`, and writes into mapped `h_ymiss_`; the host pool completes synchronously before the graph is allowed beyond the corresponding waits. The verifier owns those mapped handoff arrays and segment graph vectors for its lifetime; `Drive` owns the `ExpertDispatch`, whose job/activation vectors persist and are reused only after the synchronous pool call returns. `kind[]`, dedup tables, and fetch descriptor arrays in `expert_pool_dispatch_multi` are stack-local but are consumed during that synchronous call; the GPU does not reference them. Plan data itself is copied/published through persistent mapped sink storage, and graph/device pointers refer to verifier-owned buffers, not these temporary arrays. Thus the two knobs add no new overlapping host/GPU access or temporary-lifetime escape on the selected inline stepped path. This source inspection does not independently certify hardware/driver behavior or the overall baseline; retain the run's existing fault/output/commit checks.
+
+With PIPE=0, the for-loop submits each captured segment once via `cs_->ext_oneapi_graph`: 97 submissions with split on, 49 with split off under the table assumptions. Every kind1 boundary still produces one host serve and one queue drain before CPU service (48 per window). Worker count changes CPU parallelism inside those calls but does not change segment count, graph ordering, or GPU plan/flag protocol. Prompt `read_windows` may have CPU misses too; report prompt/TTFT and decode separately rather than treating workers as a decode-only setting.
+
+## Acceptance and exclusions
+
+Measure each setting in fresh processes, interleave arms, preserve all failures, and confirm the measured windows actually use segmented `read_windows` T=8, `G=1`, and the expected boundary/submission counts. Record effective pool workers and actual CPU-miss jobs, full committed positions, output/correctness, queue/runtime errors and faults. Compare prompt and decode separately. The source evidence admits split-off and workers 3/5 individually and together within the stated path; it does not select a winner or establish a measured effect.
+
+Do not set `STRATA_VERIFY_PIPE=1`: it introduces a helper thread and a different concurrency/placement interaction. Do not set `STRATA_VERIFY_NO_HOST=1`: miss-bearing windows need CPU service. Do not use `STRATA_VERIFY_EAGER=1`: that bypasses segmented stepped replay. Do not treat `--spec-split` as the same knob: it changes `G` and window grouping. Do not route these cases through batched native Prefill; this report does not remove the existing host-USM marker-poll concern.
+
+## Pinned sources and hashes
+
+- `sycl/src/core/verify.cpp`: `fa054779c47fd22abea9d9d71d55ab01af1df7d745f87e52e8ff3538a732d11e`
+- `sycl/src/program/generate.cpp`: `8112c1808dc317e89d9635ad1b6e46b080fc16e67a0b2f63923d5231f355fa07`
+- `sycl/src/core/expert_source.cpp`: `8c59920c0317a35be12c2562593b997f20be5221561528a698bfbbd78c67b541`
+- `sycl/include/strata/core/expert_source.hpp`: `4d255e9902c6b4a0bd4d17514bb467662f156fd494ab10640879a30daf14195b`
+- `../src/kernels/cpu/pool.cpp`: `4b9b8ec1eeaabca0524a3a4aef39907ad90583e798d1e03a2ae1f6318e9105bc`
+- `../include/strata/kernels/cpu/pool.hpp`: `5f7e7ee3f48ce6505ad25975c320310e647551df3304a87052ce3c7e2b414936`
+
+Primary source anchors: `sycl/src/core/verify.cpp:823–842` (G/groups); `:1359–1365` and `:1453–1465` (kind1/kind0 call sites); `:1700–1737` (capture hook selection and closing segment); `:2041–2165` (stepped submit/serve ordering, queue waits and flags); `sycl/src/program/generate.cpp:469–470, 4744, 5632, 7194–7211` (worker option, constructor, startup count, verifier split option); `sycl/src/core/expert_source.cpp:2547–2564, 2630–2700, 2780–2804` (window table bounds, plan and synchronous CPU jobs); `../include/strata/kernels/cpu/pool.hpp:123–145` and `../src/kernels/cpu/pool.cpp:437–460` (worker count and host participation).

@@ -1,0 +1,70 @@
+SPDX-FileCopyrightText: 2026 MistVVK and the XeStrata contributors
+SPDX-License-Identifier: LGPL-3.0-or-later
+
+R229 read-only compiled-source closure reconciliation
+
+Scope
+
+Read-only comparison of the original free Xe build receipt, the integrated neutral-controller source pins, Main's current-source boundary receipt, the finalization-host-v8 test receipt, and the actual device-fixture receipts. No import, AST, build, test, Git command, process query, GPU action, cleanup, or source mutation was performed for this report. Do not read the prohibited prefill-gemm-only contract receipt. Original result statuses remain unchanged.
+
+Finding
+
+The selected integration revision `0691bcdf5af63a85b3b25650f367d3276db64035` can be reconciled to the original v4 free build at the source-byte/compile-closure level. The source-only build subset audit compares 460 pinned paths and identifies exactly one byte difference: `serve/test_session_save_retry.py`. The old build receipt's source pin is `8da3a32386d10d8643484fbde3b5b59c399aeff736e7486273466325975a770a`; the selected revision's pin is `15917adc5b5e391640af016ad7c7bbdb3e756a0ac6c97a5d8be1887ede6e55de`. Every other path in that comparison has the exact original pinned digest.
+
+The exception is narrowly noncompiled. The original receipt records a full CMake/Ninja configure/build of the C++ `strata` binary and listed C++ test/parity targets. Its captured compile/link recipe has C++ translation units, C++ headers and link inputs, and no Python test file. Its explicit build targets also contain no Python test runner. `serve/test_session_save_retry.py` is not an input to C++ compilation or linking. The exact same CMakeLists and packaging/build scripts are pinned on both sides. This is a path-specific exclusion supported by the recorded recipe and byte map, not a conclusion from the `.py` suffix alone.
+
+This supports a new Main-reviewed `compiled-source-closure-equivalent` receipt for the existing ELF if Main accepts byte-identical compiled closure as sufficient. It does not justify labeling the original build as a build of commit 0691, rewriting its original status, or claiming the Python test was run. If Main's admission rule requires a binary freshly emitted at the selected commit, perform a fresh exact build and bind its new receipt; the source-only equivalence does not replace that requirement.
+
+What the old build actually proves
+
+`xe-v0143-nonfinite-free-qualification-root-v4/record.json` is a passing build/CPU-test receipt with `gpu_executed=false`, `model_executed=false`, `nonfinite_gpu_parity_qualified=false`, and `performance_eligible=false`. Its checked out `HEAD` was `337255086026f6eef21a861c297183d05a5f7a22`, but the build tree was intentionally dirty relative to that base. The recorded `git diff --name-only HEAD` and untracked lists include the integrated C++ work; therefore HEAD equality alone would not describe what was compiled. The receipt also pins 460 source-file hashes and records the actual build commands and recipes. The source audit correctly compares those source bytes against the new committed source instead of treating the historical base commit as the build source revision.
+
+The recorded configure used CMake/Ninja, Release, `STRATA_ENABLE_XE=ON`, free license, native experts, tests and Werror, with the pinned llama.cpp worktree and Intel LLVM 7.1.1 compiler path. Compiler receipt reports DPC++ 7.1.0 prerelease based on clang 22.1.0. The captured successful build command used four jobs and explicitly built `strata`, C++ unit tests, and parity/device targets. The full `ninja -t commands` output is retained in the original record (136,899 bytes); the original configure `CMakeCache.txt`, `compile_commands.json`, and `BUILD.json` hashes are recorded there. The C++ source path list and direct recipes are the relevant evidence for excluding the Python test.
+
+Newer receipts and their limits
+
+Main's source boundary receipt (`latest-update-main-source-boundary-root-v1/record.json`) binds the clean selected revision 0691 and source review hash `e7e1725e19365d1981b28f2201de68a9e3af3a92e0e0d695631782c49fcc092b`; it is a source/commit boundary receipt, not a build receipt.
+
+The newer `latest-update-main-finalization-host-root-v8/record.json` is passing and Main-reviewed, but it reports `gpu_executed=false` and `model_executed=false`. Its affected test is the 11-test `serve.test_logit_bias` suite (2.345 s). It does not run `serve.test_session_save_retry`, the changed noncompiled file, and it does not compile or relink `strata`; its source review binds the API finalization work. Do not use it as evidence for the changed test or binary build closure.
+
+Main's separate current-revision free and contrib-LLVM device-root receipts do report 324 actual nonfinite detector cases passing with graph support on commit 0691. That is new runtime evidence for the detector test executable/source at the selected revision, but it is a no-model device fixture, not a full model run or a new `strata` build receipt. It does not expand the original build receipt's scope.
+
+Guard semantics and detector coverage
+
+The selected C++ source implements a post-head-logit detector. `src/kernels/xe/verify_kernels.cpp` scans FP32 logits for exponent-all-ones bit patterns (infinity or NaN), writing flags by row and vocabulary block. `include/strata/core/nonfinite.hpp` reduces completed host-USM flags into an active-row bit mask. In `src/core/verify.cpp`, `STRATA_NAN_GUARD` defaults on; only the exact string `0` turns it off. After queue/event completion, the last stage reads flags, records the first bad row and token position, and exposes the mask through `include/strata/core/verify.hpp`. The guard does not repair or substitute logits. On a hit, `generate.cpp` suppresses that window's output, terminates the request/slot as `nonfinite`, clears cached state, taints other live slots as required, and forces the next request to start from prompt token zero.
+
+The recorded 324-device-case fixture covers the actual detector and mask helper on FP32 synthetic logits: vocab widths 17 and 4099; rows 1, 2 and 8; direct launches and captured graph replay; positive/negative infinity and positive/negative quiet-NaN bit patterns at first/middle/last columns; active-row overwrite after poisoned data; mixed/all-bad rows; stale inactive tails; flag canaries; and invalid-argument rejection before runtime initialization. It is not 324 model cases. It does not test model-generated logits, the full model's BF16/other precision computation paths, every kernel that can numerically cause nonfinite values, long-context quality, or end-to-end server recovery. The free and contrib roots both preserve the `graph_supported=1`, 324-case completion line.
+
+Exact current-to-original source pins
+
+Every line below has the same digest in original v4 `source_pins` and current `production-source-pins.json`, except the expressly marked Python test:
+
+`CMakeLists.txt` — `289eddbcdbcfe077bec97176435abeaebfe20d52d32d963c55e331eb200377b0`
+`cmake/packaging.cmake` — `b2c3b3e753b138caff53376cd37ac36bedd8a902ae8546300c74551511d1cb69`
+`tools/package/build.sh` — `3dae8cf3b862ffea72c4715260abf39a21f34e00c260d9805a6277cf59e35646`
+`include/strata/core/nonfinite.hpp` — `3e78ba94c28752c4710846fa1a68dfd42d0b6aa0772b3a95c77f757d3fd645de`
+`include/strata/core/verify.hpp` — `fce81f0a78b9bfba0e11a454373e8640f5202cb0a6de3837a2d357dfe9a98875`
+`include/strata/kernels/verify_kernels.hpp` — `7802005daff5c22e261cb1dbc5bd8090563e7ec9d1af42989d0a3e784031c412`
+`src/core/verify.cpp` — `efc5c8d37c1b6b18efa1a203c4ed8f0a4bc3c8c1098dbf0e87f8ab11cd845cad`
+`src/kernels/xe/verify_kernels.cpp` — `5ed83f06c5677fcc435bd8f3705aaff5674a3efca83e87c583b287d756738efd`
+`src/program/generate.cpp` — `f9e6a45a4f7494cbc48c0b0e944b30d493f0ee97219fb2535a001f3a5913db05`
+`tools/test_nonfinite_gpu.cpp` — `8f818376e8ddccf5f9d288a3cb3e26b21046f258cab30539f62666a83c011fb9`
+`serve/test_session_save_retry.py` — original `8da3a32386d10d8643484fbde3b5b59c399aeff736e7486273466325975a770a`; current `15917adc5b5e391640af016ad7c7bbdb3e756a0ac6c97a5d8be1887ede6e55de` (sole differing path).
+
+Recommended exact Main proof
+
+Create a new closure-reconciliation receipt bound to: original v4 record SHA; its 460-path source map; current selected commit 0691 and clean status; current complete source pin map; source-subset-audit SHA; original configure/cache, compile_commands, Ninja command-list and build target-list hashes; compiler binary/version and flags; and the llama.cpp/dependency revision. Mechanically assert that the only source-byte delta is the exact Python test above, that it is absent from every recorded compile/link source and dependency input, and that all build-system files and all C/C++ source/header/link inputs are byte-identical. Record the old ELF path/hash and identify the result as source-closure-equivalent reuse, preserving the old v4 receipt as historical evidence. Separately state that the changed Python test was not run by finalization-host-v8. If any build-system or compiled-input path differs, this exclusion proof fails and Main must obtain a new exact build receipt.
+
+Artifact identities (SHA-256)
+
+Original v4 build receipt: `8ce60db2f5d18b02d3d061f70c7a027b983083fbae8cab9c1ca376bf1f7fe1d2`
+Original v4 free ELF: `ed65b895b7373669d1e93e4adf9082fa2cddf109266e0255fc6a5b72ede5f27a`
+Current source subset audit: `eafe9bf286dd86443fbe0bd0c36a391f419cd5d5c6e89433fe34759ecd0dd8c3`
+Current production source pins: `f6a1678590224a317f894c4f5c47c75762af2c539a626a1aff7767106627b8f6`
+Selected-source manifest: `bdb702d60656bd8f394e87c7293b746ec34ab47620811784c534299652c4b97d`
+Main source boundary record: `76a184d1604b4e50eeb1010fccddad899d75431128e40263d4bfe4bb0c051b70`
+Finalization-host-v8 record: `ecc9f9344ed5d25495906cc424e635816110ce7d299b8ec5ded5876dc4c755cf`
+Free device-root record (324 cases): `f883c9d3e91d96ed2c6a9f07bf30546a0ab30240f6ac8c8bab532f26ab1c6be8`
+Contrib-LLVM device-root record (324 cases): `2e4fb4f37f3267905dbf0a4f3777abc3023775e6f68b9ec84ceb30ab1b0d3d85`
+
+Read sources: original v4 build `record.json`; neutral-controller `SOURCE_CONTRACT.txt`, `build-source-subset-audit.json`, `production-source-pins.json`, and `manifest.json`; Main source-boundary and finalization-host-v8 records; free and contrib device-root records; selected `CMakeLists.txt`, nonfinite/verify headers, `verify.cpp`, Xe detector source, `generate.cpp`, and `test_nonfinite_gpu.cpp`. No new status or result was written to any of those records.

@@ -1,0 +1,65 @@
+# R228 — official v0.1.43 window-path expert-cache capacity campaign
+
+Date: 2026-10-12 Asia/Tokyo. Read-only source and layout accounting for pristine official v0.1.43, requested revision `7695859aa13afb248bdb4d36f9b2e95707db079d`. No import/AST, build, test, Git, process, GPU/runtime, model/profile payload, cleanup, or source change was performed. The current official 32K run remains owned by Main. Candidate byte counts below are arithmetic from pinned metadata and source, not measured allocations, capacity qualification, or a performance result.
+
+## Decision
+
+Keep the current safe `read_windows`-8 baseline intact. The supplied baseline facts are 144 allocated and populated per-layer slots (281 MiB cache) and 4,177 MiB free at READY. A larger cache is source-admissible and could reduce CPU-served misses while preserving the same verifier-window route, but neither its exact profile residency nor startup fit/quality/performance is established here. The two bounded next settings to qualify after the baseline are:
+
+1. `--expert-cache 512 --expert-cache-per-layer`, with all route, model, profile, KV, context, reserve, worker and adaptive settings held fixed. If the per-layer sizing cap is not reduced by actual free memory, the source arithmetic predicts 13 slots/layer = 624 total, 1,276,953,600 B (1,217.80 MiB).
+2. `--expert-cache auto --expert-cache-per-layer`, same configuration otherwise. It is preferable to a manual 1024 first because the native path derives capacity from actual free memory and the auto-allocation loop zero-touches and rechecks the configured reserve, shrinking on shortfall. Its selected capacity is intentionally data-dependent and cannot be calculated from the 4,177 MiB READY value.
+
+`--expert-cache 1024 --expert-cache-per-layer` is a higher-bound challenger, not a selected safe setting. With enough space it would request 27 slots/layer = 1,296 slots, 2,652,134,400 B (2,529.27 MiB). The arithmetic delta from the current 281.03 MiB is 2,248.24 MiB. Subtracting that delta from the supplied READY free gives 1,928.76 MiB only as a same-run/same-other-allocations arithmetic illustration; it is not measured fit. Defer 1024 until the 512/auto startup and route receipts show headroom, accurate residency, and no allocator/graph/workspace pressure.
+
+## Pinned source and layout
+
+Official checkout: `/home/yayoi/ghq/github.com/Niko1221/Strata/.worktree/bench-upstream-v0143-pristine-20261012/sycl` (revision supplied above). Key hashes:
+
+- `sycl/src/program/generate.cpp`: `8112c1808dc317e89d9635ad1b6e46b080fc16e67a0b2f63923d5231f355fa07`
+- `sycl/src/core/expert_cache.cpp`: `48959dd9ae6c96b96f58c0f30878823accd1ecc1bdbcea0e6d908f267a13f6fa`
+- `sycl/src/core/verify.cpp`: `fa054779c47fd22abea9d9d71d55ab01af1df7d745f87e52e8ff3538a732d11e`
+- `sycl/src/prefill/prefill.cpp`: `110fc8bdc7d62057031c2b76317dbcfd686d6ab37f37548e311bc2fb27920d6d`
+- `include/strata/core/expert_cache.hpp`: `ff3cd4357e397ff944bc8c814e769975ecd243b3445b050234cbb62d9260bd54`
+- compact layout `/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-prefill-native-transfer-layout-v1.json`: `c9b40d122d19f277280560a495ad0a1c6ce98376ef0660c1f75e9b3026bd642b` (native-expert text metadata SHA in that file: `d9ac2dfa3ee63c55c9c6a6db26f72da0cec0ee41733f007e5cbbbba71617aa5d`). It records 48 layers, 512 experts/layer, 98,227,200 B summed layer blob bytes (256-byte aligned), layer 28 2,329,600 B, and maximum 2,662,400 B at layer 47. `gpu_executed=false`.
+
+## Source-bounded cache sizes
+
+For native expert packs and per-layer admission, `generate.cpp` treats the requested N as a byte budget of `N * max_blob`, subtracts the default 700 MiB VRAM reserve from the free figure, caps budget by that free room, and sets the same whole-number quota `q=floor(cap / sum(aligned layer blob bytes))` in every layer. It then builds `q` slot sizes for each layer using that layer's actual blob extent and changes effective slot count to `48*q`. Thus “--expert-cache 512” is not 512 physical slots; with full requested budget it is 624 slots. The source's formula is:
+
+`q = min(512, floor(min(N * 2,662,400, free_at_sizing - 700 MiB) / 98,227,200))`
+
+with negative free room treated as zero. For the supplied layout and a full budget:
+
+| Requested N (largest-blob budget slots) | Budget | q/layer | Effective slots | Sized payload (aligned sum) |
+|---:|---:|---:|---:|---:|
+| 128 baseline | 340,787,200 B (325 MiB) | 3 | 144 | 294,681,600 B (281.03 MiB) |
+| 512 candidate | 1,363,148,800 B (1,300 MiB) | 13 | 624 | 1,276,953,600 B (1,217.80 MiB) |
+| 1024 challenger | 2,726,297,600 B (2,600 MiB) | 27 | 1,296 | 2,652,134,400 B (2,529.27 MiB) |
+
+The actual q may be smaller because `free_at_sizing` is read after weights, session, draft state, etc. and is not the later READY free. For explicit manual sizes, if `q>0` the source admits whatever q the free-room cap permits; it does not promise the requested q. A separate native profile cap does not determine this per-layer sizing branch, although it determines which pairs can be filled. The 48×512 unique-pair ceiling is 24,576 experts; q=13/27 is below it. The profile payload itself was not opened.
+
+The non-per-layer native profile path instead budgets a ranked prefix by each profile pair's aligned size and free room. It is not equivalent to per-layer quotas and must not be substituted invisibly in this comparison. Likewise, the generic uniform-slot path uses `max_blob` for every slot and is not the sized native path.
+
+## Offsets, integer limits, and allocation policy
+
+`ExpertCache::open_sized` constructs a cumulative `uint64_t` offset table, rounding every layer-specific slot to 256 bytes. It calls the normal allocation path once for the summed byte extent, then records `slots_` as the number of logical slots and `blob_` as the maximum slot size. `device_slot(i)` returns `base + offset[i]`; `slot_of(layer,expert)` returns the per-pair `int32_t` slot ID. Per-layer admission assigns the pair inside the layer's contiguous logical slot range. Fill/hit calls use the current layer's actual blob-byte count, bounded by `blob_`, rather than writing the maximum blob size into every slot. For the candidates, logical IDs 624/1,296 are safely within `int32_t`; cumulative byte offsets 1.28/2.65 billion fit `uint64_t` and signed 64-bit allocation arguments. Source does not add explicit checked-add guards to the cumulative offset loop, but these particular metadata-derived values are far below integer limits.
+
+The allocation is one contiguous cache block, not 48 independent allocations. `open()` checks requested total bytes against the current free-memory query, then calls the device allocator and zeroes the whole extent. There is no source query of B570's maximum single-allocation limit. The source comment mentions a separate Arc A750 4 GiB allocation cap unless relaxed Level Zero limits are enabled; that anecdote is not a B570 limit and cannot qualify 2.65 GiB. Level Zero reports `maxMemAllocSize` in `ze_device_properties_t`, and its allocation APIs require a request no larger than that property. Therefore actual device/driver limit and real free memory must come from the target runtime receipt or a failed/successful exact allocation, not the 10 GiB product label. See the primary [Level Zero device-property definition](https://oneapi-src.github.io/level-zero-spec/level-zero/latest/core/api/apis/device.html) and [allocation size requirement](https://oneapi-src.github.io/level-zero-spec/level-zero/latest/core/api/apis/mem.html).
+
+Auto and explicit allocation differ materially. `--expert-cache auto` starts from the free-memory measurement after weights/session/draft allocations, reserves configured headroom and any owned prompt/pipeline resources, and caps by profile size. In native per-layer mode it then applies the sized-slot calculation. The auto allocation loop zero-touches the cache, re-reads free VRAM, and shrinks/reopens while the configured reserve is short (with source-specific slack/retries). Explicit 512/1024 does not get that post-zero shrink loop: allocation failure returns an error, and successful allocation still needs later graph, verifier and prompt-path allocations. This is why auto is the second recommended capacity arm and not a claim that it will necessarily fit or outperform.
+
+## Window, graph, workspace, and profile effects
+
+The fixed `--short-read`/`--spec 8 --no-spec-split` settings govern whether eligible text runs through the 8-row verifier loop; cache size does not raise verifier width or change the number of prompt positions. For a clean cache A/B, hold the exact prompt and `read_windows` route fixed and reject any arm that silently falls back to batched `Prefill::run`. Under the safe window route, prompt work is verifier-window work, not a 32K/64K chunked prefill job. `--prefill 8` can still cause small Prefill setup/workspace objects to be initialized at startup; `Prefill::bytes_needed(g,ss,chunk)` and the serve borrow/loan logic derive workspace from effective chunk. The same chunk, borrowing mode, and READY measurement must remain fixed across cache arms. Larger cache capacity is not permission to change to a larger chunk or to multi-chunk prefill.
+
+A cache increase changes the `host_res` residency map and therefore the number of experts computed on-device in verifier windows versus misses served by the CPU pool. With a full, unique profile and no other route change, q=13 or 27 gives a larger candidate set than q=3, but source does not give this prompt's routed-set overlap or resulting hit rate. Prompt miss service and decode service must be timed separately; keep profile/cache sizes fixed when deciding graph/window parameters and keep graph/window settings fixed when deciding cache size. Startup fill copies more expert bytes and takes additional startup work; payload estimates are 281 MiB, 1,218 MiB and 2,529 MiB respectively, not measured transfer traffic or time. The source's one-slot readback check verifies only its selected first profile entry, not all newly admitted slots.
+
+The official v0.1.43 reader checks header/version/model dimensions, pair bounds and truncation but accepts duplicate `(layer, expert)` pairs. The per-layer fill loop continues after a full layer and scans until its success counter reaches `want`; because repeated pairs return their existing slot, duplicates can increment fill count without increasing distinct residency, so require startup `prefilled`, per-layer residency and actual hit summaries rather than infer occupancy from `expert_slots`. The prior R224 duplicate-rejection correction applies to the adopted integration, not pristine official v0.1.43.
+
+## Qualification order and gates
+
+After the baseline closes, run only one cache-policy change per fresh-process arm. First `512/per-layer`, then `auto/per-layer`; defer 1024 unless their READY receipts show clear room and cache residency is accurately reported. For each record asked/effective slot count, actual bytes, per-layer q, post-zero reserve/free value, READY free, startup fill count, unique resident pairs and source profile identity. Require successful full cache startup/check, READY reserve gate, unchanged model/prompt/context/KV/window settings, exact observed `read_windows` route, no batched prefill fallback, no sync/runtime fault, complete normal QUIT, same output/quality gate, and no memory paging or allocation error. Preserve all failed attempts. Report cache-startup cost, prompt-window service, first-token timing and decode separately; do not convert a formula or one run's free-MiB arithmetic into an optimized default.
+
+## Prior reports reviewed
+
+Registry v155 reports 725 completed research entries and includes the R217–R227 corrections. Reviewed those reports' scope plus the relevant cache/window material in R208, R219, R221, R223, and R225. R217 supplies native-pack/PLE compatibility scope; R218 the post-READY gate context; R219 separates safe verifier-window work from batched-prefill hazards and keeps decode decisions independent; R220 ranks the earlier slot-84 mismatch hypotheses; R221 distinguishes native arena pointer/transfer behavior and cache slot extents; R222/R224 cover per-layer profile fill and the selected integration's duplicate rejection; R223 covers full-context boundaries; R225 defines the current safe 32K/64K window campaign. This report does not reinterpret the earlier canceled 32K result (incomplete at 11,816 consumed + 620.397 s; no fault) or its CPU-time-limit status (3,512.5 s against a 3,600 s ceiling) as a pass/fault or as evidence for cache capacity.

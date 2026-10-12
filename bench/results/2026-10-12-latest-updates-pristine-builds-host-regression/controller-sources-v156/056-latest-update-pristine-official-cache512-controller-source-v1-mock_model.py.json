@@ -1,0 +1,9 @@
+{
+  "scope": "Reproducible source; cache512 remains source-only, not runtime qualification",
+  "identity": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-pristine-official-cache512-controller-source-v1/mock_model.py",
+    "sha256": "933fff6b6caf3a75b3edce157e90ac9302ab46ec3ee7a712014af7bf9d0c762e",
+    "bytes": 1048
+  },
+  "content": "# SPDX-FileCopyrightText: 2026 MistVVK and the XeStrata contributors\n# SPDX-License-Identifier: LGPL-3.0-or-later\n\"\"\"CPU-only owner/protocol fixture, never an admitted real engine.\"\"\"\nimport sys\n\nprint('INFO context=262144 kv=int8 kv_resident=32768 expert_slots=144 spec=8 lookup=0 '\n      'pool_workers=5 pcie_frac=0.00 conversation_cache_mib=0 vram_free_mib=1024', flush=True)\nprint('READY 262144 stop', flush=True)\nfor command in sys.stdin:\n    if command == 'QUIT\\n':\n        raise SystemExit(0)\n    if not command.startswith('GEN 16 ckpt=0 logprobs=5 '):\n        print('ERR fixture command', flush=True)\n        continue\n    ids = command.split(' ', 4)[4].strip().split(',')\n    if len(ids) != 32768:\n        print('ERR fixture input count', flush=True)\n        continue\n    print('RESUME 0')\n    print('PP 32767 32768 100 327670')\n    print('REUSED 0')\n    for _ in range(16):\n        print('T 123')\n        print('LP -0.1 123:-0.1 124:-1 125:-2 126:-3 127:-4')\n    print('DONE 16 32768 100 200 length 0 0 0 2 3 4 0 0.0 32768 0', flush=True)\n"
+}

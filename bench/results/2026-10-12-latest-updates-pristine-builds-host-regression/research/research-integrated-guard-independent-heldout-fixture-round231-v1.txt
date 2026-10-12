@@ -1,0 +1,55 @@
+SPDX-FileCopyrightText: 2026 MistVVK and the XeStrata contributors
+SPDX-License-Identifier: LGPL-3.0-or-later
+
+R231 read-only held-out input and evidence audit
+
+Scope
+
+Read only the integrated neutral-controller source and pending qualification, the canonical 64K/32K fixture generator and metadata, host tokenizer/preparer sources and metadata, existing host-only independent-prompt reports/receipts, and report-registry-v155. No fixture/prompt/token payload was opened for content, no tokenizer was invoked, and no import, AST, test, build, Git/process/GPU/model action or cleanup was performed. This report does not admit or execute the campaign.
+
+Finding
+
+The held-out input is still pending: qualification.pending.json sets `main_reviewed=false`, `held_out=false`, and the input path/hash to PENDING_MAIN. Controller source requires Main to supply a separately pinned input, then verifies the exact identity, at most 2 MiB, exactly 32,768 integer IDs, and every ID in `[0, 248320)`. The generated campaign prompt is exactly the first 32,719 IDs plus the canonical 64K fixture's final 49 IDs. Held-out validation only requires that the supplied ID list differ from that campaign list. It does not enforce source provenance, task-boundary review, a maximum shared prefix, or a shingle-overlap threshold. Those are Main admission obligations, not facts established by the parser.
+
+The existing canonical fixture is explicitly historical, not independent. Its manifest says the 65,487-ID body is taken from the first 65,487 IDs of a 262,145-ID historical coding context; it appends a 49-ID suffix verified against the current host tokenizer, producing a 65,536-ID fixture. The 32K fixture is the first 32,719 IDs of the historical context plus the same 49-ID tail. Its manifest marks `template_rendered=false`, says the body can cut source code, and lists overlapping lineage with the 32K fixture as a limitation. Using this same prefix and changing only some or all of the 49-ID tail would create a different hash but a very weakly independent task. The current controller's inequality check alone would accept it.
+
+Available reproducible host tokenizer
+
+An offline production-path tokenizer already exists. R64/R65 identify `tools/strata_tokenizer.py` at SHA-256 `9b0327e25aa62754406a924db6cc137e6edb1d93c7af76a4f3d14a8920ea72c8`, `serve/frontend.py` at `095bbac7d49b19d815d2634457d14d216ba9bd4e98998a4e3b4288f20a25e923`, and the pack's `chat_template.jinja` at `12827f24b742ea4e80cdc12dbcf9622227056b9f797252a3149263d4f9aaadce`. The exact qwen3.8-flash-next-iq3_s tokenizer files are the five pinned pack assets documented in R65: `vocab.json`, `merges.txt`, `token_type.json`, `tokenizer.json`, and `chat_template.jinja`. This pure host Python BPE reconstructs the pack tokenizer without model weights. The pinned independent preparer v2 loads the exact tokenizer and text frontend sources, renders a simple user message with the pinned template, and uses `encode(parse_special=True)`; it does not import server.py or open model payloads. Hugging Face or an engine tokenization command is not needed. Do not use the older historical tokenizer SHA (`0a1d68e...`) as current source identity; the canonical fixture builder separately verifies only that the 49 suffix IDs round-trip under the current source.
+
+The reusable actual-prompt preparer is not already an exact 32K held-out builder. `prepare_independent_prompt_tokens_v2.py` selects complete document prefixes in `[32768,65536]` and accepts the first qualifying whole-document prefix. The previously recorded actual-pack CPU bundle has 36,004 train IDs and 37,462 validation IDs from distinct source files in one codebase. Truncating either token file to 32,768 would violate its whole-document rule and would not make it an exact held-out task. A new narrow host-only held-out generator (or reviewed mode) should reuse the same pinned tokenizer/frontend/assets but require `token_count == 32768` after rendering and BPE; it must fail closed if a complete task does not land exactly on the target. Do not crop, pad, repeat, splice, or patch token IDs to reach 32K.
+
+Recommended minimum Main preparation and admission
+
+1. Define one new task whose substantive prompt body comes from complete, hashed source documents that do not occur in the canonical context lineage or campaign task. Prefer a distinct frozen source corpus/repository and a newly written review question. Pin its immutable source revision or corpus version, every selected source path/hash, stable source IDs, selection rule and task-boundary description. The user instruction must remain visible at the intended end of the rendered user body; do not inherit the canonical tail or change only the old suffix.
+2. Run a host-only, source-hash-pinned generator using the production tokenizer/frontend and all five exact pack assets. Record exact rendering options (simple user text, thinking enabled, explicit xhigh, generation prefix true, no manually appended BOS/EOS or copied template suffix), rendered-text SHA-256 and byte length, selected complete-document IDs/hashes, tokenizer source and asset hashes, model/pack identity, and the token serialization SHA-256. Exclude marker-looking control literals from source text or implement/review production-equivalent literal escaping.
+3. Require exact output geometry without alteration: exactly 32,768 IDs; true integer values (not booleans); each `0 <= id < 248320`; canonical serialization and `0 < file_bytes <= 2 MiB`; complete source/task boundary and hashes verified. Store the exact `held_out_prompt.input.path` and SHA in qualification, plus a separately pinned preparation/source receipt so Main can review how the IDs correspond to the task. Check file identity again immediately before the held-out pair.
+4. Before setting `main_reviewed=true` and `held_out=true`, compare the new rendered text and IDs with the canonical campaign input. Require a different full hash, record longest common prefix and token n-gram overlap, and reject a shared canonical prefix/tail construction. Existing preparer v2 offers a 16-ID unique-shingle gate that rejects >=80% containment, but its source explicitly says that this is only a heuristic, not statistical independence. Use it as an additional alarm if desired; still perform task and corpus provenance review. The held-out input must not be the same 32,719-token prefix with a replacement 49-token suffix.
+5. Only after fresh qualification, provider/build/source and health gates pass, run the controller's existing serial `heldout-off` then `heldout-on` roots using that same reviewed file. Source guarantees a fresh GEN16 with no reuse; protocol requires `RESUME 0`, `REUSED 0`, Xe PP endpoints 8192/16384/24576/32767, DONE prompt count 32768 and output count 16, all IDs within vocabulary, LP5 finite and well-shaped. Require the `-on` root's immutable previous-off receipt and exact token/LP5 fingerprint equality. Preserve all root hashes and per-run samples. No held-out root runs before separate qualification and sameboot health admission.
+
+What guard-off/on agreement means
+
+For this one 32K prompt and 16 greedy output steps, exact token and LP5 fingerprint equality shows the reported output-token IDs and serialized top-five logprob records matched between the two fresh processes. It is a useful check that enabling the guard did not change those observed outputs or that reported LP5 sample for this case. The guard scans final FP32 head logits for nonfinite values and reports/cancels affected windows; it does not replace their values.
+
+This equality is not full-logit parity. It does not compare every vocabulary logit, probability mass below the five reported alternatives, internal activations, all 32,768 prompt positions' numerical tensors, or steps after the 16 generated tokens. It does not establish answer quality, semantic correctness, correctness over other prompts/seeds, all kernel precision paths, session/RESTORE behavior, 262,144-token lifecycle behavior, or performance benefit/optimality. Held-out is explicitly non-performance-eligible in the packet. Report it as a paired 16-token/LP5 sample only.
+
+Report registry and prior fixture evidence
+
+Registry v155 records 725 completed research entries and chains to v154 (SHA-256 `92f40ce598ad38cb427d0c79cd7d63328c18db86c7fc977b2dd6c95b9950c005`). Its 14 new entries include R227 controller source/admission review and related implementation reports; they do not establish a Main-reviewed independent held-out prompt. The current pending qualification remains the controlling evidence. Prior R63-R68 reports and the actual-pack CPU preparer receipt distinguish synthetic fixtures from actual host-tokenized documents and explicitly warn that distinct files within one repository are not independent authorship/population evidence. The earlier CPU receipt prepared 36,004/37,462-ID prompts only, with no model opened or inference run; it is useful as tokenizer-path precedent, not as the required exact held-out file.
+
+Reviewed identities (SHA-256)
+
+Registry v155: `abe17ed02dcea306fa789c014ef43262f9d0a20ff47432275365abfed294c9e1`
+Neutral controller SOURCE_CONTRACT.txt: `c873299618666c9648b0e69d9e0dfa0132afe20ae3d6df25584a4cd37bb939ec`
+Neutral controller run_root.py: `e9dea04ccd54f8a2a3da10280fadc4d4f9819c1b7dafef07baaaedcf1d18848b`
+Neutral controller common.py: `ae430060ed72cb31ab659063c8de17d9d378a777a39aec046d36cb865fded44a`
+Neutral controller protocol.py: `84d3ab97b46ae654a3e71919bf420a63a951e71126acd7646812813a608c4fa5`
+Canonical 64K fixture manifest: `0fbf6a16a90b55a3767145d1217b2027e218c0537a487faa428ab6527e6771b1`
+Canonical 64K fixture ID file: `5284d8fa53d1ef28f6ba916a629faf901c890bc0c669bf986ee04ed72aa2c3ff`
+Historical 32K fixture metadata: `2df376e5f5e6cab14e5caee90acd7acf316ab401194c83f828b9182668834dc6`
+Canonical 64K builder source: `2ed5723dc6f48041c5dc117059a66d68f49ced704ce3f8aeea0faa41d557a893`
+Independent prompt preparer v2: `829f6335ff7b47d587832c40b9f30b9aafddce112e7b980095aa17225b0940cd`
+Independent prompt fixture source: `a6e36b7da9bc8d7928bc7417a6eb4d4277f87f72ae435dda95afe3191c68a729`
+Independent code corpus manifest v2: `4881239ef30f643a55ad13c1bff17c49bcc04abb921139bc97975b5eacbf8e40`
+
+Reviewed source basis: neutral-controller SOURCE_CONTRACT, common.py, run_root.py, protocol.py, pending heldout qualification; canonical clean64k builder and manifest metadata (not fixture text); 32K metadata; independent preparer v2 and fixture sources; corpus manifest metadata (not corpus documents); R63-R68 reports; report-registry-v155. No prompt/source payload was read or copied.

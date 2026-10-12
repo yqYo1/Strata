@@ -1,0 +1,58 @@
+SPDX-FileCopyrightText: 2026 MistVVK and the XeStrata contributors
+SPDX-License-Identifier: LGPL-3.0-or-later
+
+R235 read-only review of Main's held-out provenance and compiled-build reuse sources
+
+Scope
+
+Reviewed only the two new, unexecuted Main source files, the integrated controller source-v3 admission predicate/pending schema, and R229/R233 evidence. Did not execute either script or read a prohibited v4 receipt/tainted artifact. No test, GPU, process query, import, AST, build, Git command, cleanup, prompt payload, or source-v4 receipt was accessed. Conclusions are source-level and do not certify future outputs.
+
+Held-out provenance source
+
+`/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-main-heldout-provenance-v1.py` SHA-256 `a8034233329ce65b648c8c1798caf81b961e76abbcea43b5ddb8167d8c180f33`.
+
+The core checks are materially tied to the v3 `common.held_geometry` contract:
+
+- Lines 23–43 pin the prior CPU preparation record and every listed bundle output; they require the recorded closed run to have passed, exited 0, be inactive, and not have cleanup/survivors/GPU/model use. They require the candidate validation summary to equal the prior summary and count 37,462 IDs from four documents.
+- Lines 44–52 rehash the selected complete source files, tokenizer helper and tokenizer/frontend source; lines 46–50 verify each candidate-listed tokenizer asset against the current pack path and verify source files. The pack's current five tokenizer asset hashes match the hashes recorded in the original manifest (independently confirmed by source-level hashing in R233).
+- Lines 53–60 read, but do not rewrite or retokenize, the existing serialized IDs; they enforce 37,462 decimal values, vocabulary range, canonical spacing and a final LF. Lines 61–75 compare the exact sequence to the canonical campaign input and calculate common-prefix and unique 16-ID shingle overlap.
+- Lines 76–90 bind the rendered file, generic review wrapper, selected source-document hashes, render options, source manifest, tokenizer assets and source code into `source_provenance`. The helper's pinned source enforces complete-document first-prefix selection and rejects special-token literals; the prior recorded successful execution is required and all candidate output hashes are rechecked. Thus “whole document” and “not altered to fit” are supported by actual output/source identity and generator semantics, not only the booleans.
+- Lines 91–96 explicitly label scope and limitations. The whole body has four complete source files after a generic task instruction at the beginning; the wrapper suffix is empty. It is not a new question appended at the end, and same-repository source separation is not independent authorship/population evidence.
+- Lines 118–130 run the re-verification child through the new Owner and require anchored normal exit 0. This closes the *new verification command*. It is distinct from the historical CPU preparation receipt.
+
+This output shape satisfies the v3 proof fields if it is later written as a completed inactive Owner receipt and its exact `input` pin and `tokens=37462` are copied unchanged into qualification. Controller source-v3 `common.py:204–218` requires count 32,768–65,536, `whole_document_preserved=true`, matching proof/input path+hash/count, Main and provenance review, `altered_to_fit=false`, no model/GPU execution, and nonempty `source_provenance`. The pending schema at `qualification.pending.json:563–575` still has false review booleans and PENDING input/count/receipt; nothing is admitted now.
+
+Evidence gaps to close before treating the output as a complete preparation certificate
+
+1. The script sets `main_reviewed=True`, `provenance_reviewed=True`, `whole_document_preserved=True` and `altered_to_fit=False` as literals in the record at line 111 and return values at line 91. These booleans alone do not prove those statements. The independent evidence chain does most of the work, but the source should bind a specific Main review artifact/decision to the task's intended held-out role and limitation. The R233 source-disjoint prompt is acceptable only as an input-disjoint paired guard sample if Main accepts the generic review task; it must not be labeled independent quality/generalization data.
+2. The historical receipt is treated as evidence, not independently re-closed. Lines 25–28 check its pinned status, exit code, and flags; line 118 closes only the new `--check` subprocess. Do not present the new Owner closure as closure of the original tokenization run. The original record's command/owner provenance should be explicitly surfaced and checked against its recorded argv, source helper SHA, manifest SHA, output path and tokenizer directory. In particular, lines 51–52 check only the original argv's helper path/hash; they do not assert the full recorded argv equals the intended source-root, manifest, current pack tokenizer directory and bundle output. Add those direct argv cross-checks, including the exact asset-name set, rather than relying only on prior receipt metadata.
+3. Lines 39–50 compare the wrapper prefix and candidate metadata but do not directly assert manifest render options equal candidate render options, or that the selected-document list is exactly the manifest's validation first-prefix. The pinned helper and historical output record make those relationships plausible, but explicit comparisons would make the new receipt's document/task provenance self-contained and auditable. Keep the no-payload rule: compare metadata and hashes only.
+4. The task-boundary string in line 90 correctly admits that the instruction is at the start and there is no question at the end. Main must decide that this is the intended whole-document task before setting `held_out=true`; a nonempty provenance dictionary is not that decision.
+5. The new receipt records the old CPU run identity as provenance, but the old receipt's ownership/closure is an assertion from that historical record. Keep the two events and scopes separate in downstream reporting. Do not claim model execution, quality, or statistical independence.
+
+Build-reuse source
+
+`/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-main-integrated-build-reuse-v1.py` SHA-256 `55dba46d24a211485569d748aa15a3f5d0e5c66fb89a92c35156666ca65bc385`.
+
+R229 recommends a new Main-reviewed `compiled-source-closure-equivalent` receipt, preserving the old build status, with exact source-map reconciliation, compiled-input exclusion, old ELF identity, configure/build recipes, compiler and dependency provenance, and a separate statement about the changed Python test. The source implements much of that plan: lines 52–73 compare all 460 paths and require the sole delta be `serve/test_session_save_retry.py`, then verify pinned old build recipes and its absence from compile commands; lines 75–82 compare current Ninja command/dependency output and preserve the original C++ target argv; lines 83–104 pin the original ELF, report source-closure equivalence and explicitly limit claims; lines 87–89 run the changed Python test separately; lines 90–100 carry original build/compiler/dependency metadata into the new record. R229 report SHA-256 is `7c13b521fd57359d7fc653d028c56d5b272a973e52eff872564f5f762bf92140`.
+
+Do not run this source under the current instruction. Its line 13 sets `OLD` to `/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-v0143-nonfinite-free-qualification-root-v4/record.json`, and line 52 would read that file. That source-v4 receipt is within the explicit read prohibition. The script also launches Git and unittest commands at lines 57–59, 75, 78 and 87; none were run in this review.
+
+Remaining R229 proof requirements / edits
+
+- Make the required original build inputs explicit rather than accepting an arbitrary nonempty `old['build_recipe']`: require and record named CMakeCache/configure state, BUILD metadata, `compile_commands.json`, Ninja command/link recipe and target argv, and the exact selected-source audit/map. The script pins all recipe entries that happen to be present, and compares compile commands/Ninja outputs, but it does not assert a required complete key set at lines 70–82.
+- Add an explicit compiler executable identity/hash and the effective compile/link flags, plus the pinned llama.cpp/dependency revision. Lines 90–100 carry a compiler-receipt hash/version and `ggml-head` command evidence, but do not assert the compiler binary identity, a required compiler-receipt input, or a reviewed expected dependency revision. A copied field is provenance only if the source proves its exact value and origin.
+- The changed test command is actually included in this new source at line 87. Keep its normal-exit result and output evidence separate from the historical build proof; R229 states the earlier finalization-host-v8 did not run it. It cannot be retroactively attributed to that older receipt.
+- Preserve the source-closure-equivalent label and old receipt's status. This is not a fresh build of the selected commit. If policy requires a clean receipt or any closure prerequisite cannot be verified through a permitted evidence source, do not use this reuse proof.
+
+The source-pin JSON referenced by the build script is under source-v1, but its SHA-256 is the same as source-v3's `production-source-pins.json` (`f6a1678590224a317f894c4f5c47c75762af2c539a626a1aff7767106627b8f6`). This does not validate the build script or allow bypassing the prohibited receipt.
+
+Reviewed v3 identities
+
+`common.py`: `d77e67598ceaa038979db89cf89a1e1dffe7356d87da22fc95cd31fa64d713ed`.
+`run_root.py`: `120ba6199ed31a10a540dfe061d4c17da5e4eded761e3923247b74ca47d99f9a`.
+`protocol.py`: `80a51a22f487d70b6739f38615d511c2e125488c19757e58fd518521a270c1a7`.
+`qualification.pending.json`: `97506e5020b21f1d3112e18a11d81fa873d0fd49c74d274deae3199678a28e25`.
+`SOURCE_CONTRACT.txt`: `df9c17b0b6febe238c8126ac31ee99b963dfcd11ba5b411acbcdf79de0077137`.
+
+Boundary: neither Main script was executed; no output receipt was created or qualification edited. The recommendations above are source-review fixes, not a pass or permission to run either script.

@@ -1,0 +1,58 @@
+SPDX-FileCopyrightText: 2026 MistVVK and the XeStrata contributors
+SPDX-License-Identifier: LGPL-3.0-or-later
+
+R233 read-only audit: existing whole-document 37,462-token validation input
+
+Scope
+
+Inspected file identities and JSON receipts/manifests, the pinned v2 host-only prompt preparer source, prior R63–R68/R231 reports, report-registry-v155, and the current integrated controller source-v3 input geometry. Did not read rendered prompt or token-ID payload contents. No tokenizer, model, GPU, process query, source execution/import/AST, test, build, Git action, cleanup, or new fixture was performed. This report does not admit a campaign arm.
+
+Finding
+
+The existing validation candidate is a genuine completed whole-document host preparation, with 37,462 IDs. It is already within integrated controller source-v3's supported held-out range of 32,768–65,536 IDs. That source-v3 path reads the complete held-out ID file, checks its declared count and vocabulary bounds, and copies the entire sequence into the run input; it does not slice, pad, splice, or retokenize it. Thus the v3 controller resolves the prior exact-32,768 incompatibility. The current `latest-update-integrated-neutral-controller-source-v3` qualification is still pending: its held-out path/hash and preparation-receipt pin are not supplied, and its Main review flags remain false/PENDING.
+
+Exact candidate identity and recorded closed CPU-only preparation
+
+Outer receipt: `/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/independent-prompt-actual-pack-cpu-validation-v3/record.json`, SHA-256 `974dbdfd6e59a2b61c65a06f4555750edaaa095d62f1054ad33898d88f52986b`. It records `complete=true`, `passed=true`, `exit_code=0`, actual pack tokenization true, model opened false, inference false, GPU work false, adopted false, and no cleanup. This is a recorded completed host preparation, not model evidence.
+
+The prepared validation files are in `/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/independent-prompt-actual-pack-cpu-validation-v3/bundle/`:
+
+- `validation.tokens.txt`: 157,375 bytes, SHA-256 `1c7eb5878f521890c5f7e511bea7d1f73146b61a784d6c86169c16713bd36d3c`; recorded count 37,462; ASCII decimal IDs separated by spaces, final LF.
+- `validation.rendered.txt`: 109,904 bytes, SHA-256 `d62898d335b3e8ab478a02793b8e5655e9eae88c9992626b2e69ad34a0db3fcf`.
+- `manifest.json`: 4,750 bytes, SHA-256 `4881239ef30f643a55ad13c1bff17c49bcc04abb921139bc97975b5eacbf8e40`.
+- Candidate `record.json`: SHA-256 `dc43ba8f0ddcd6e6ef22ae8e2e10457c70b7fb0b1e6b7868ec684be12a544b93`.
+
+The exact recorded command argv was `/home/yayoi/.local/share/strata-sycl/venv/bin/python /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-static-quota-oracle-v0141-20261010/sycl/tools/prepare_independent_prompt_tokens_v2.py --self-sha256 829f6335ff7b47d587832c40b9f30b9aafddce112e7b980095aa17225b0940cd --manifest /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/independent-code-corpus-manifest-v2.json --manifest-sha256 4881239ef30f643a55ad13c1bff17c49bcc04abb921139bc97975b5eacbf8e40 --source-root /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-cache-route-pairs-v0141-20261010 --tokenizer-dir /home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer --output /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/independent-prompt-actual-pack-cpu-validation-v3/bundle`. Recorded child environment was `PATH=/usr/bin:/bin`, `LANG=LC_ALL=C.UTF-8`, `PYTHONDONTWRITEBYTECODE=1`, with a 180-second outer deadline and 120/121-second CPU soft/hard limits, 1 GiB address-space limit, 768 MiB RSS poll limit, 32 MiB file-size limit and 64 descriptors. The receipt reports peak RSS 185,151,488 bytes and 0.93 seconds elapsed. The invocation's source helper was pinned at SHA-256 `829f6335ff7b47d587832c40b9f30b9aafddce112e7b980095aa17225b0940cd`; the corpus manifest was pinned at `4881239ef30f643a55ad13c1bff17c49bcc04abb921139bc97975b5eacbf8e40`.
+
+Whole-document and task boundary
+
+The manifest selection rule is `manifest-order-first-complete-prefix`, with minimum 32,768 and maximum 65,536 IDs. The helper appends complete decoded source files with two-LF separators, renders the complete user body, tokenizes it, and returns the first whole-document prefix in range; it rejects overage and does not truncate, pad, repeat, or splice IDs. The validation selection contains four complete files, each pinned by path, source ID and SHA-256, from source commit `66aaec3a66ad9ed12e6d042cffe743c47e364432`:
+
+- `src/kernels/cpu/pool.cpp`: `5ef33f7d2020a17ecc36ad15796c6f021b4b5963998aa964dccedbe733637368`
+- `src/kernels/cpu/native_expert.cpp`: `767f02f33aca4da9fabbe113c50ce1d7cb2aa9f25b4234df59224ec46a5985cd`
+- `src/kernels/cpu/expert.cpp`: `31b7b1a628e29f22bce3e39e69efe968298066d08383d8292c9ea1279bee1cfe`
+- `src/kernels/cpu/expert_layout.cpp`: `9826d86cc83330d447d62a62189dc782f549ffb815c7bdccd2ad4f4582672f4d`
+
+The user task instruction is the manifest's generic review wrapper at the beginning; `user_suffix` is explicitly empty. The complete source documents follow it and the rendered user body ends at the end of the fourth complete file. This is whole-document preservation, but it is not a separately authored question appended after the source. The current receipt does not establish that this is the particular task Main wants; Main should review whether this generic source-review task is adequate for the held-out purpose before adoption.
+
+Control-literal handling is source-supported. The v2 preparer scans both wrapper strings and every selected source document and fails if any tokenizer special literal appears, then uses the pinned production frontend/template and `encode(..., parse_special=True)`. The outer receipt records clean exit 0, so this precondition passed for the pinned documents and wrapper at preparation time. The preparer output record is deliberately a candidate (`completed=false`, `ready_for_owner_validation=true`), not a standalone admission certificate.
+
+Tokenizer and pack identity
+
+The five files under `/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer` currently match the recorded manifest hashes exactly: `vocab.json` `4ba64f0332abcfb0b600b7df1537d1e836e68009d5fb7cdb77339738dc6365c4`; `merges.txt` `4ba698529766c7a2f5052083ea10cdf2485577f5237a332ee291054eb11e3332`; `token_type.json` `5088c8c298fc06af8382ddb3b76c888703ac2634e82263b97eedcc2ad202738b`; `tokenizer.json` `c0bd435efbc6c3b28964b47999afe16c4ad268c7c7c4e8cb3af410796a6f30bf`; `chat_template.jinja` `12827f24b742ea4e80cdc12dbcf9622227056b9f797252a3149263d4f9aaadce`. The production host sources are `tools/strata_tokenizer.py` SHA-256 `9b0327e25aa62754406a924db6cc137e6edb1d93c7af76a4f3d14a8920ea72c8` and `serve/frontend.py` SHA-256 `095bbac7d49b19d815d2634457d14d216ba9bd4e98998a4e3b4288f20a25e923`. The renderer records thinking enabled, explicit xhigh, generation prompt enabled, `parse_special=true`, and no BOS. These match the current pack hashes, but Main must still recheck exact file identities before admitting the pending held-out pair.
+
+Lineage, overlap and independence limits
+
+This validation split is separate from the prepared train split at the source-file/hash level, but both are files from the same Strata repository/source commit. The preparation record explicitly says this gives no independent-authorship or population claim. Its diagnostic overlap with train was 88 common-prefix IDs and 92 shared 16-ID shingles, below its 80% rejection threshold; that is only a near-copy alarm, not evidence of statistical independence. The held-out content is also not from an unrelated repository. It must not be described as independent generalization data.
+
+The canonical 32K campaign remains the first 32,719 IDs plus the 49-ID tail from a historical 65,536 fixture. R231 documents its shared historical lineage and warns that changing only the tail would be weak independence. The candidate's different source and token hashes show it is not that exact token sequence; they do not prove novel authorship, task independence, or quality generalization. For the proposed guard-off/on comparison it can be an input-disjoint paired sample, with that narrower wording.
+
+Controller-v3 admission and Main handoff
+
+Current integrated source-v3 `common.py` permits held-out geometry 32,768–65,536 and requires `whole_document_preserved=true`; `run_root.py` carries the full measured held-out sequence without crop/splice/pad; `protocol.py` validates the actual supplied prompt length. The current 37,462-token file therefore fits the source-level geometry. The source-v3 pending qualification still has `main_reviewed=false`, `held_out=false`, and no reviewed input pin.
+
+Source-v3 additionally requires a separate pinned `preparation_receipt`. Its verifier expects a passed, complete, inactive, Main-reviewed and provenance-reviewed receipt, `whole_document_preserved=true`, `altered_to_fit=false`, `model_executed=false`, and exact equality of input path/hash and token count. The v2 preparer candidate record does not satisfy this schema (`completed=false`; it has no Main/provenance review fields). The outer CPU receipt is useful closed-command provenance, but is not that preparation receipt either. Main must create and review a separate immutable receipt binding the exact candidate path/hash, count 37,462, complete four-document/task provenance, tokenizer/source pins, and the existing closed CPU run receipt; then pin both the input and receipt in the v3 qualification. Recheck both hashes and all five pack assets before the first held-out root. Do not edit or retrofit the old candidate record and do not set Main review flags until task and provenance review is complete.
+
+Prior evidence and registry
+
+Registry v155 is `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-12-latest-updates-pristine-builds-host-regression/report-registry-v155.json`, SHA-256 `abe17ed02dcea306fa789c014ef43262f9d0a20ff47432275365abfed294c9e1`; it chains from v154 and has no Main-held-out acceptance. R231 report SHA-256 is `aeb7af1d747af52de4b1655fbddf2047231f55b681da57efd8ab25ed462b3f51`. Relevant prior reviews are R66 production semantics, R67 v2 admission and R68 reference-controller contract. The v2 preparer source SHA is `829f6335ff7b47d587832c40b9f30b9aafddce112e7b980095aa17225b0940cd`; fixture test source SHA is `a6e36b7da9bc8d7928bc7417a6eb4d4277f87f72ae435dda95afe3191c68a729`; corpus manifest SHA is `4881239ef30f643a55ad13c1bff17c49bcc04abb921139bc97975b5eacbf8e40`.

@@ -1,0 +1,9 @@
+{
+  "scope": "Reproducible source; cache512 remains source-only, not runtime qualification",
+  "identity": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-integrated-neutral-controller-source-v5/option-source-audit.json",
+    "sha256": "7790df168da504029166b580cbcbf660f0029ba06393314976f438c912f18352",
+    "bytes": 1285
+  },
+  "content": "{\n  \"status\": \"SourceOnly\",\n  \"selected_tree\": \"/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-xe-v0143-nonfinite-20261012\",\n  \"revision\": \"0691bcdf5af63a85b3b25650f367d3276db64035\",\n  \"source_anchors\": {\n    \"guard\": \"src/core/verify.cpp STRATA_NAN_GUARD\",\n    \"prefill\": [\n      \"src/prefill/prefill.cpp:630 compact\",\n      \"src/prefill/prefill.cpp:1997 fused\",\n      \"src/prefill/prefill.cpp:2229 native batching\"\n    ],\n    \"preload\": \"src/core/device.cpp:255\",\n    \"trace_presence\": \"src/program/generate.cpp:7121\",\n    \"mtp_prefill_sync\": {\n      \"consumer\": \"src/core/mtp.cpp:1082 MtpDrafter::prefill\",\n      \"setter\": \"src/program/generate.cpp:2495 full-context-probe only\",\n      \"xe_kernel_consumer\": false,\n      \"selected_campaign_effect\": \"no-MTP: no MTP prefill invocation, flag retained no-op\"\n    }\n  },\n  \"main_required\": \"Review actual argv/env against selected pins, inherited profile/CLI source assumptions and actual routes; no execution done.\",\n  \"held_out_geometry\": {\n    \"min\": 32768,\n    \"max\": 65536,\n    \"debug_timed\": 32768,\n    \"whole_document_required\": true,\n    \"provenance_receipt_required\": true,\n    \"prefill_chunk\": 8192,\n    \"prefill_last\": \"actual input.tokens-1\",\n    \"scope\": \"source-only; actual held-out not selected/qualified\"\n  }\n}\n"
+}

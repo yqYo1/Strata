@@ -1,0 +1,45 @@
+# Round 234: integrated heldout KV-resident boundary source audit
+
+Date: 2026-10-12 (Asia/Tokyo)
+Status: static source audit only; no device execution, process inspection, test, build, import, AST, Git operation, or cleanup was performed.
+
+## Scope and source pin
+
+Audited the WN0691 / controller-source-v3 scenario from the prior qualification records: 37,462 prompt tokens, context 262,144, KV resident 32,768, prefill chunk 8,192, issuer 0, ARENA_HOST_USM1, FIRST0, MTP disabled. The controller record remains an unverified qualification; this report establishes source-path behavior, not runtime success. Source root: `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-xe-v0143-nonfinite-20261012`, revision `0691bcdf5af63a85b3b25650f367d3276db64035`.
+
+SHA-256 pins:
+
+- `src/prefill/prefill.cpp`: `2922806c8b56b64e1bc20096d93c852a105ed225ff3bf9dcf113436c79964d9c`
+- `src/kernels/xe/kv_stream.cpp`: `cd3bb7877dd848497a1d7d50cbcf75ae28cffdd187b5c18b6234b917520f7fbf`
+- `src/program/generate.cpp`: `f9e6a45a4f7494cbc48c0b0e944b30d493f0ee97219fb2535a001f3a5913db05`
+- `src/core/layer.cpp`: `fefc457de582573a8f1132c02139a61161d90fe50dcacda46c8c64cf0b581c97`
+- `include/strata/prefill/publication.hpp`: `c266156f02854f6578ca526203525249e6e9035ca56102a4aeb815280d42e2ee`
+- `include/strata/kernels/qsa.hpp`: `b4cd8272a20d5fdca4c7090261a7acec175bc984cacb13f201846d12d39e8a79`
+
+## Exact position and page arithmetic
+
+`generate.cpp:10377-10379` batches `n_prompt - 1` tokens, so for 37,462 the prefill request is 37,461 tokens at position zero. `prefill.cpp:1289-1293` chunks that request as `[0,8192)`, `[8192,16384)`, `[16384,24576)`, `[24576,32768)`, then `[32768,37461)` (4,693 tokens). The decode loop resumes at `pos_start=37461` (`generate.cpp:10404-10410`), processes the final prompt token there, and samples the first generated token. For 16 outputs, decode positions are 37,461 through 37,476 inclusive. Thus the KV cell span reached is `[0,37477)`; the final cell index is 37,476, below the physical 262,144-cell limit.
+
+The artifact QSA page size is 4 cells (`include/strata/kernels/qsa.hpp:113-121`). 32,768 resident cells are exactly 8,192 pages. The 37,462-cell prompt needs 9,366 pages; 16 decode cells reach 9,370 pages. `layer.cpp:615-631` clamps resident allocation to at least 20,480 cells and rounds to pages; 32,768 is above that minimum and aligned. Therefore the pages for cells `[0,32768)` fit in resident slots; pages beginning at cell 32,768 and later are in the host-backed portion of streamed mode 1. No page straddles this boundary.
+
+`publication::valid_span` checks nonnegative position and length and uses `n <= max_cells - pos0` (`include/strata/prefill/publication.hpp:14-19`); `Prefill::run` rejects an invalid full span before starting chunks (`prefill.cpp:1224-1233`). Chunk positions derive from `pos0 + c0`, with `T=min(chunk,n-c0)` (`prefill.cpp:1289-1293`). The prompt's final batched cell is 37,460; the last prompt token is subsequently decoded at 37,461. The generation loop checks `pos >= max_context` before the token work (`generate.cpp:10425-10430`). The 64-cell allowance in the KVG ensure target is allocation slack, not addressable context: `o.max_context` is still 262,144.
+
+## Prefill KV spill, reload, and ownership
+
+In streamed mode, each QSA layer owns a host-USM authoritative KV copy (`layer.cpp:785-818`). The pinned host allocation is mapped to a device pointer before the pools are exposed to kernels. The host allocation is part of the persistent QSA state, not a prompt-local buffer. For the main QSA layers, `kv_mode==1` selects streaming; prompt state initialization creates an identity page table for the staging pool (`prefill.cpp:745-755`).
+
+For each prompt chunk and QSA layer, `prefill.cpp:1688-1722` stages all prior complete pages from the host copy into the layer staging pool using `ceil(p0/page_size)`, then appends this chunk's K/V to its host copy and staging pool. With page size 4 and chunk starts at multiples of 8,192, the prior-page count at `p0=32768` is exactly 8,192 pages, cells `[0,32768)`. The append for the tail chunk writes cells `[32768,37460]` into the host copy and staging pool; attention then reads from the staged pools (`prefill.cpp:1852-1865`). At chunk end, the ordinary compute stream remains ordered through projections, append, selection, and attention. The tail's subsequent decode append at position 37,461 follows the same streamed write path in `layer.cpp:1066-1086`.
+
+For decode, `qsa_kv_resolve` calls the resolver only when `kv_mode==1` (`layer.cpp:888-893`). On the Xe path, `kv_stream_resolve` submits a resolve kernel and then the host-to-slot gather-copy kernel on the same runtime queue (`kv_stream.cpp:212-243`); the attention consumer is subsequently enqueued on that stream. The resolver guards against fewer slots than the workgroup size (`kv_stream.cpp:218-230`); configured slots here are 8,192, so that guard is not near its boundary. The host-side source regions selected for each format come from `runs_of` (`kv_stream.cpp:35-65`), and the device kernel copies only blocks selected as misses (`kv_stream.cpp:231-243`).
+
+## Buffer lifetime and completion dependencies
+
+The host KV pools are persistent QSA state allocations; the staging pools are part of Prefill's carved device region and survive all chunks of this `Prefill` object. `kv_stage_from_host` enqueues its copies on the supplied stream and only explicitly finishes for a null stream (`kv_stream.cpp:269-276`); in the audited call it receives `m.cs`, so stream submission order supplies the dependency before subsequent appends/attention. The full run drains `m.cs` before returning success (`prefill.cpp:3034-3038`). Error unwinding drains both compute and expert-copy streams before the buffers are released (`prefill.cpp:3132-3140`); `release()` likewise syncs both (`prefill.cpp:541-544`). Cleanup treats failed synchronization as unconfirmed completion and exits before freeing referenced host buffers (`publication.hpp:23-30`).
+
+The separate expert H2D path is not the KV spill path. For expert blobs, compute waits on the per-slot `copied` event before consuming a staged slot; stager workers wait for the earlier DMA completion before reusing host staging buffers (`prefill.cpp:1464-1474`, `Stager::work` around lines 316-329). The issuer joins and drains before stager buffers retire (`prefill.cpp:1504-1509`). This is consistent with the controller's source-side ARENA_HOST_USM1 setting, but this source audit does not establish actual host-USM overlap qualification or run completion.
+
+## Findings
+
+No new static out-of-bounds or lifetime defect was found for the stated boundary. The 32,768-cell boundary is page-aligned, the final partial prefill chunk is bounded to 4,693 tokens, and the final prompt token is handled at the next decode position. The existing physical-span, position, resolver-slot, and drain guards cover the relevant source path.
+
+Unresolved evidence gap: static review cannot confirm that this exact controller run used these source hashes, reached all eleven qualification roots, completed every event wait, or passed numerical/fault validation. The prior qualification explicitly remains unverified. No claim of measured correctness or performance is made here.
