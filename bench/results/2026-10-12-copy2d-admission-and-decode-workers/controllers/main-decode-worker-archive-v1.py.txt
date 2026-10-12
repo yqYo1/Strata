@@ -1,0 +1,145 @@
+# SPDX-FileCopyrightText: 2026 yayoi
+# SPDX-License-Identifier: LGPL-3.0-or-later
+"""Close the screening boundary with all samples; never promote a noisy GEN16 arm."""
+from pathlib import Path
+import fcntl
+import hashlib
+import importlib.util
+import json
+import shutil
+import statistics
+
+B = Path('/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007')
+G = Path('/home/yayoi/ghq/github.com/yqYo1/Strata')
+W = G / '.worktree/perf-native-copy-cohorts-qualified-20261012'
+F = W / 'bench/results/2026-10-12-copy2d-admission-and-decode-workers'
+ROOT = B / 'main-decode-worker-screen-root-v1'
+ORDER = (5, 3, 4, 4, 3, 5)
+O = B / 'xe-llvm-v711-source-v5/direct_owner.py'
+assert hashlib.sha256(O.read_bytes()).hexdigest() == 'a29d8257eecc77c4ad9ae6671d092b56f4c09a35c4247c125fed3a8c8bc1f95f'
+spec = importlib.util.spec_from_file_location('worker_archive_owner', O)
+m = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(m)
+
+
+def public(value, key=''):
+    if isinstance(value, dict):
+        return {k: public(v, k) for k, v in value.items()}
+    if isinstance(value, list):
+        return [public(v, key) for v in value]
+    if isinstance(value, str) and len(value) == 64 and all(c in '0123456789abcdef' for c in value) and 'sha256' not in key:
+        return {'sha256': value}
+    return value
+
+
+with (B / 'owned-v0141-measurement.lock').open('a') as lock:
+    fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    out = B / 'main-decode-worker-archive-root-v1'
+    assert not out.exists()
+    out.mkdir()
+    records, paths, samples = [], [], []
+    boot = Path('/proc/sys/kernel/random/boot_id').read_text().strip()
+    for index, worker in enumerate(ORDER, 1):
+        path = ROOT / f'sample-{index}-workers-{worker}/xe-timed1-on/record.json'
+        value = json.loads(path.read_text())
+        assert value['passed'] and value['complete'] and not value['active'] and not value.get('error')
+        assert value['boot_id'] == boot and value['model_normal_close'] and value['kernel_gate_passed']
+        assert value['worker_arm'] == worker and value['pool_tasks'] == 18 and value['worker_sample'] == index
+        assert value['performance_sample_eligible'] and value['performance_eligible'] and value['screening_only']
+        assert all(m.closed(c) and c['session_anchored'] and c['exit_code'] == 0
+                   for c in value['commands'] + value['guard_commands'])
+        validation = value['validation']
+        assert validation['prompt_tokens'] == 32768 and validation['generated_tokens'] == 16
+        assert validation['token_logprob_sha256'] == 'f8aca127a7f45238d7567368ee8ad5c26c4a3488fc0cc6b83a4d19d50a6cbd6f'
+        assert value['environment']['STRATA_PREFILL_SERVICE_EVENTS'] == '0'
+        assert 'STRATA_IQ256_PAIRED_GU' not in value['environment'] and 'STRATA_PREFILL_COPY_COHORT' not in value['environment']
+        if records:
+            assert value['binary'] == records[0]['binary'] and value['environment'] == records[0]['environment']
+            assert value['controller_allowed_cpus'] == records[0]['controller_allowed_cpus']
+            assert value['cpu_topology'] == records[0]['cpu_topology']
+        records.append(value)
+        paths.append(path)
+        samples.append(dict(sample=index, workers=worker, tasks=18,
+                            engine_prefill_ms=validation['engine_prefill_ms'],
+                            engine_decode_ms=validation['engine_decode_ms'],
+                            prefill_tps=32768000 / validation['engine_prefill_ms'],
+                            decode_tps=16000 / validation['engine_decode_ms'],
+                            host_wall_samples=value['host_wall_samples'],
+                            original_receipt=dict(path=str(path), sha256=m.sha(path)),
+                            passed=True, token_lp5_equal=True, fault_free=True, normal_close=True))
+    summary = dict(passed=True, complete=True, main_reviewed=True, active=False,
+                   source_controller=dict(path=str(Path(__file__)), sha256=m.sha(Path(__file__))),
+                   boot_id=boot, binary=records[0]['binary'], individual_samples=samples, groups={},
+                   adopted=False, performance_promotion=False,
+                   decision='No worker promotion: GEN16 screening has large variation. Follow with longer decode, holding32K and tasks18.',
+                   full_context_runtime_qualified=False, restore_qualified=False,
+                   scope='Same binary,32K actual input, exact16 token/LP5 pairs only; two fresh processes per worker arm.')
+    for worker in (3, 4, 5):
+        selected = [s for s in samples if s['workers'] == worker]
+        summary['groups'][str(worker)] = dict(
+            count=len(selected), mean_prefill_ms=statistics.mean(s['engine_prefill_ms'] for s in selected),
+            mean_decode_ms=statistics.mean(s['engine_decode_ms'] for s in selected),
+            mean_individual_prefill_tps=statistics.mean(s['prefill_tps'] for s in selected),
+            mean_individual_decode_tps=statistics.mean(s['decode_tps'] for s in selected),
+            min_decode_ms=min(s['engine_decode_ms'] for s in selected),
+            max_decode_ms=max(s['engine_decode_ms'] for s in selected))
+    receipt_dir = F / 'worker-receipts'
+    assert not receipt_dir.exists()
+    receipt_dir.mkdir()
+    derivations = []
+    for index, (path, record) in enumerate(zip(paths, records), 1):
+        dest = receipt_dir / f'sample-{index}.json'
+        dest.write_text(json.dumps(public(record), indent=2) + '\n')
+        derivations.append(dict(original_path=str(path), original_sha256=m.sha(path),
+                                archived_path=str(dest.relative_to(W)), archived_sha256=m.sha(dest),
+                                operation='Only digest-valued leaves get explicit sha256 keys. All original statuses, samples, commands and evidence retained.'))
+    (F / 'worker-screening.json').write_text(json.dumps(public(summary), indent=2) + '\n')
+    reports = ['research-paired-gu-prior-evidence-and-current-route-round294-v1.txt',
+               'research-intermediate-prefill-chunk-byte-admission-round295-v1.txt']
+    new_reports = []
+    for name in reports:
+        p = B / 'research-20261009' / name
+        shutil.copyfile(p, F / 'research' / name)
+        assert m.sha(p) == m.sha(F / 'research' / name)
+        new_reports.append(dict(path='research/' + name, sha256=m.sha(p)))
+    registry = dict(research_completed=808,
+                    prior=dict(path='report-registry-v168.json', sha256=m.sha(F / 'report-registry-v168.json')),
+                    new_reports=new_reports, main_only_test_execution=True,
+                    main_adjustments=['Six actual worker arms passed exact reported output/lifecycle gates. No setting adopted from noisyGEN16.',
+                                      'R294 source fixture remains unrun; format inventory is not current CPU service share.',
+                                      'R295 source byte count is a projection, not actual peak/admission or physical262K validation.'])
+    (F / 'report-registry-v169.json').write_text(json.dumps(public(registry), indent=2) + '\n')
+    for name in ['main-decode-worker-run-v1.py', 'main-decode-worker-archive-v1.py']:
+        shutil.copyfile(B / name, F / 'controllers' / (name + '.txt'))
+    canonical = B / 'main-decode-criticalpath-model-root-v1/xe-timed1-on/tokens.txt'
+    assert canonical.is_file() and m.sha(canonical) == '94cbdd7fdc6c9f32a08c0c4f8b50c1cc27a7ffc3f383d23c5c6ac24e8ec7f2c9'
+    retired = []
+    for path, record in zip(paths, records):
+        for p in path.parent.rglob('*'):
+            if not p.is_file() or p == path:
+                continue
+            if p.suffix not in ('.stdout', '.stderr') and p.name != 'tokens.txt':
+                continue
+            retired.append(dict(path=str(p), sha256=m.sha(p), bytes=p.stat().st_size,
+                                retained='worker-receipts/sample-' + str(record['worker_sample']) + '.json',
+                                reason='Closed/reaped successful screening. Full output/progress/provider/kernel evidence retained; canonical32K input remains.'))
+    manifest = dict(passed=False, complete=False, active=False, original_statuses_preserved=True,
+                    source_derivations=derivations, deletions=retired,
+                    removed_logical_bytes=sum(p['bytes'] for p in retired),
+                    original_structured_receipts_retained_byte_identical=True,
+                    canonical_input_consumer='Future long-decode comparison',
+                    canonical_input=dict(path=str(canonical), sha256=m.sha(canonical)),
+                    next_review='After longer worker comparison supersedes screening; full context and RESTORE still open.')
+    (F / 'worker-retention.json').write_text(json.dumps(public(manifest), indent=2) + '\n')
+    for item in retired:
+        p = Path(item['path'])
+        assert p.stat().st_size == item['bytes'] and m.sha(p) == item['sha256']
+    for item in retired:
+        Path(item['path']).unlink()
+    manifest.update(passed=True, complete=True)
+    (F / 'worker-retention.json').write_text(json.dumps(public(manifest), indent=2) + '\n')
+    for path, sample in zip(paths, samples):
+        assert m.sha(path) == sample['original_receipt']['sha256']
+    (out / 'record.json').write_text(json.dumps(dict(passed=True, complete=True, active=False,
+        samples=6, groups=summary['groups'], removed_logical_bytes=manifest['removed_logical_bytes']), indent=2) + '\n')
+    print(json.dumps(dict(passed=True, groups=summary['groups'], removed_logical_bytes=manifest['removed_logical_bytes'])))

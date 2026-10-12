@@ -1,0 +1,43 @@
+Round 294 — paired IQ3_S Gate/Up prior evidence and current-route gate
+
+Decision
+
+`STRATA_IQ256_PAIRED_GU=1` is already implemented as an opt-in in the specified combined CPU source. The prior source and report trail contains no completed bit-parity test, model-accuracy result, assembly/spill inspection, component timing, or model performance result for that exact type-21 / NT1 path. It is an unqualified existing candidate, not a new kernel idea and not a previously measured regression.
+
+The current selected setup supplied for this audit names binary `WP09caae`, profile OFF, task count 18, workers 5/3/4/4/3/5, and says no other math flags changed. The source switch freezes its environment decision on first use and enables only for the exact value `1`; the default is OFF (`iq_avx2.cpp:517–525`). Therefore, under the supplied selected setup, the candidate is OFF. I did not inspect a live worker record. The permitted closed R273 record contains no `STRATA_IQ256_PAIRED_GU` entry either, but it is a prefill/H2D diagnostic and cannot prove the environment of the current decode worker. This OFF conclusion is source-default plus the supplied selection description, not a captured live process environment.
+
+What prior evidence says
+
+A search of the prior research reports for the exact environment name finds it only in `implementation-avx2-paired-iq3s-gu-source-v1.txt` and `research-native-iq3s-decode-cpu-memory-scheduling-round293-v1.txt`; registry v168 also summarizes R293 as an existing opt-in with no speed evidence and unmeasured type21/NT1 share (lines 33–39). The implementation packet says `SOURCE_ONLY_UNVERIFIED`, calls the flag default-off, specifies type 21, NT1, H=2560, FF=640 and scalar/gather variants, and explicitly says no parity or speed claim exists (lines 1–13). Its fixture plan is not a test result.
+
+R293 is the closest and controlling current-source report. It says the gated IQ3_S NT1 loop is present in the combined source, requires a meaningful production type21/NT1 CPU route before considering a discriminator, and makes no performance claim (R293 lines 8–10, 24–30, 45–51). Its operation-order inspection is source reasoning only; it explicitly requires actual byte-for-byte parity and complete request correctness before timing, and assembly review before attributing a benefit. The report states that no current exact CPU job/NT denominator or current service share is available.
+
+Earlier paired-GU mentions are different evidence, not a rejected result for this switch:
+
+- R17 suggested activation-load reuse for multi-token IQ rows, with NT2/3 as its first screen. It flags L1-resident activation lines and Zen 3 register pressure as risks, but reports no implementation, parity result, spill finding, or measured paired-kernel regression (round17 lines 12–16, 28–30). Its target is the same 5600X architecture, but its proposed NT differs from this NT1 helper.
+- R25 discussed a separate Q2_0/type-8 GU path and high-NT accumulator pressure. It was a low-priority conditional proposal, not a test or a result for IQ3_S (round25 lines 9–19).
+- R33's NT1 comparison concerns the ordinary unpaired Strata/GGML IQ row paths and codebook-lookup behavior. It does not test the paired helper. R85 is an unmeasured prototype contract for IQ2_S/type22 NT1, not IQ3_S/type21 (round33 lines 17–24; round85 lines 1–5, 59–78). Neither is evidence of paired-IQ3_S failure.
+
+Thus no prior exact-flag or exact-type/shape paired-GU bad outcome was found. The old spill comments are warnings to inspect generated code, not observations of spills in this NT1 implementation. The closest negative NT1 measurement/source note for an unpaired decoder must not be relabeled as a failure of activation-load pairing. The pair interleaves independent work, so the changed register schedule still needs a real compiler-output check on the current toolchain; neither source structure nor another hardware/NT configuration answers that question.
+
+Actual model format mix and CPU denominator
+
+The closed R273 prefill transfer receipt records 48 MoE layers over four chunks. Its `gu_type` row counts are 68 type18, 40 type21, 80 type22 and 4 type23; dividing by the four repeated chunk rows gives 17, 10, 20 and 1 layers respectively. This matches the verified layer format summary in R17 (lines 8–10). Type21 is a material part of the *model's format inventory*, but these are H2D transfer rows: they show which packed layer blobs the GPU prefill path copied, not CPU-owned expert jobs, NT values or kernel service. Do not use them as an NT1 denominator.
+
+R282's closed task-6 dispatch report observes only GU type22 NT1/NT2 cells in its diagnostic, plus Down20; its status is diagnostic-only and it does not represent the current default request (R282 lines 25–40). The separate default task-0 phase receipt has aggregate jobs but no type/NT histogram (line 42). R293 confirms the gap for the current selected route. No allowed closed receipt supplies a current CPU type21 NT1 job or row count. Therefore the exact type21/NT1 production share, GU time, and attainable request-level ceiling remain unknown; GPU H2D bytes and total model layer counts do not fill this gap.
+
+Smallest CPU correctness fixture already present
+
+The combined source already contains `tests/core/iq3s_paired_gu_test.cpp`, registered as a CPU CTest target in `CMakeLists.txt:894–898`. It builds a valid type21, H=2560/FF=640 GU-only packed fixture with finite IQ3_S FP16 scales, quantizes four deterministic activation patterns through `cpu::q8k_quant_avx2`, and compares every output float bitwise between the paired helper and the scalar/gather baseline. It exercises all 640 output rows through three partition ranges with canary elements, then checks unsupported NT/type/variant/range inputs leave the output unchanged (`tests/core/iq3s_paired_gu_test.cpp:26–82`). This is the smallest existing CPU unit-parity fixture for the candidate and uses the production Q8_K quantizer. It is source-present, not run or passed in this audit.
+
+Limits: the weight bytes are synthetic valid IQ3_S data, not model blobs; this unit fixture does not establish that a real route reaches the helper, does not report actual dispatch selection, does not inspect spills/instructions, and does not test model logits/state/accuracy or performance. The test directly calls the paired helper, which is useful even when the environment switch is off. The wrapper check at the end does not by itself prove that the opt-in branch was selected unless a fresh test process starts with the switch enabled; the switch is cached in a function-local static. No test execution or environment manipulation was performed.
+
+Minimal next evidence if Main chooses to reopen it
+
+First obtain a closed, matched default-route CPU census keyed by request/window/layer/GU type/NT/selected kernel. If type21/NT1 is absent or too small to matter, stop. If eligible, run the existing CPU fixture on the exact 5600X CPU build, then inspect emitted code for the paired helper versus baseline for one Q8 activation load per segment, preserved independent accumulators/FMA/reduction order, and new YMM spills/reloads. Only after those pass should Main compare paired OFF/ON with fresh processes and identical inputs, route, worker/task settings and other flags; keep GU component time separate from whole request wall, and require the existing numerical/lifecycle gates. This is a proposed gate, not authorization or a performance prediction.
+
+Read-only source evidence
+
+Current combined source: `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-latest-updates-20261012`, as supplied for source review. `src/kernels/cpu/iq_avx2.cpp` SHA-256 `09722bf282c5f7b4c928aa8d63fe5f2489833301564968d5240e35e29ab76b30`; `src/kernels/cpu/iq_avx2_rows.inl` `94a5ffb3971b3a68ba24f7b1dc272d7bfc43678144787ccfe7c14f431c59d4fd`; `tests/core/iq3s_paired_gu_test.cpp` `033690c6e0923612e881b2a77725b88073809b9db78ac7c113edf529ce54c005`; `CMakeLists.txt` `f41ea29137100ece91a16f4c79cd578d480266281655c90a999fb897f6901c2f`.
+
+Status source: report registry v168 at `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/perf-native-copy-cohorts-qualified-20261012/bench/results/2026-10-12-copy2d-admission-and-decode-workers/report-registry-v168.json`, `research_completed=806`, R293 listed at lines 25–27 with SHA-256 `1a84ebd26e257aeb19d5b13496ca0d0b38d2085945fd46641c52abd5e3c93392`. No source, test, build, measurement, live worker, or Git action was performed; only this requested report was written.

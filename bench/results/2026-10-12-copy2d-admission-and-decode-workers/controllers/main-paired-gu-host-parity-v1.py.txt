@@ -1,0 +1,74 @@
+# SPDX-FileCopyrightText: 2026 yayoi
+# SPDX-License-Identifier: LGPL-3.0-or-later
+"""Build and exercise the existing CPU-only candidate fixture in both supported modes."""
+from pathlib import Path
+import fcntl
+import hashlib
+import importlib.util
+import json
+
+B = Path('/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007')
+W = Path('/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-prefill-leaf-service-events-20261012')
+X = Path('/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011')
+T = X / '.tools/intel-llvm-v711/install'
+O = B / 'xe-llvm-v711-source-v5/direct_owner.py'
+assert hashlib.sha256(O.read_bytes()).hexdigest() == 'a29d8257eecc77c4ad9ae6671d092b56f4c09a35c4247c125fed3a8c8bc1f95f'
+spec = importlib.util.spec_from_file_location('paired_gu_host_owner', O)
+m = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(m)
+ENV = dict(PATH=str(T / 'bin') + ':/usr/bin:/bin', HOME='/home/yayoi', LC_ALL='C.UTF-8',
+           LD_LIBRARY_PATH=str(T / 'lib') + ':/opt/intel/oneapi/mkl/2026.1/lib', OMP_NUM_THREADS='1')
+FILES = ['tests/core/iq3s_paired_gu_test.cpp', 'src/kernels/cpu/iq_avx2.cpp',
+         'src/kernels/cpu/iq_avx2_rows.inl', 'src/kernels/cpu/native_expert.cpp', 'CMakeLists.txt']
+with (B / 'owned-v0141-measurement.lock').open('a') as lock:
+    fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    out = B / 'main-paired-gu-host-parity-root-v1'
+    assert not out.exists()
+    out.mkdir()
+    r = dict(active=True, passed=False, complete=False, commands=[], gpu_executed=False,
+             model_executed=False, main_reviewed=True, adopted=False,
+             source_pins={p: m.sha(W / p) for p in FILES},
+             scope='Synthetic valid IQ3_S weights, four production-quantized activation patterns,640 rows,scalar/gather,canaries/rejection gates. No real-model or performance qualification.')
+
+    def save():
+        (out / 'record.json').write_text(json.dumps(r, indent=2) + '\n')
+
+    owner = m.Owner(out / 'commands', save)
+    r['commands'] = owner.commands
+
+    def run(label, args, env=ENV, wall=120):
+        c, so, se = owner.run(label, args, env, W, wall=wall, cpu=wall * 4,
+                             rss_cap=12 << 30, text_cap=4 << 20, total_cap=32 << 20, file_cap=128 << 20)
+        r.setdefault('evidence', {})[label] = dict(stdout=so.read_text(), stderr=se.read_text())
+        save()
+        assert m.closed(c) and c['session_anchored'] and c['exit_code'] == 0, label
+        return so.read_text()
+
+    try:
+        for mode in ['free', 'contrib-llvm']:
+            build = W / 'build' / mode
+            assert build.is_dir() and (build / 'CMakeCache.txt').is_file()
+            cache = (build / 'CMakeCache.txt').read_text()
+            assert 'CMAKE_HOME_DIRECTORY:INTERNAL=' + str(W) in cache
+            assert 'STRATA_WERROR:BOOL=ON' in cache
+            run('build-' + mode, ['/usr/bin/cmake', '--build', str(build), '--parallel', '4',
+                                  '--target', 'iq3s_paired_gu_test'], wall=600)
+            binary = build / 'iq3s_paired_gu_test'
+            dynamic = run('elf-' + mode, ['/usr/bin/readelf', '-d', str(binary)])
+            assert not any(v in dynamic.lower() for v in ['libsycl', 'libze_loader', 'libur_adapter', 'libur_loader'])
+            r.setdefault('binaries', {})[mode] = dict(path=str(binary), sha256=m.sha(binary), bytes=binary.stat().st_size)
+            for flag in ['0', '1']:
+                text = run('parity-' + mode + '-flag-' + flag, [str(binary)],
+                           env=dict(ENV, STRATA_IQ256_PAIRED_GU=flag))
+                assert text.strip() == 'IQ3_S paired GU actual-kernel parity complete'
+            save()
+        assert all(m.sha(W / p) == d for p, d in r['source_pins'].items())
+        r['complete'] = True
+    except BaseException as error:
+        r['error'] = repr(error)
+    finally:
+        r['active'] = owner.active is not None
+        r['passed'] = bool(r['complete'] and not r['active'] and not r.get('error'))
+        save()
+    print(json.dumps({k: r.get(k) for k in ['passed', 'complete', 'error']}))
+    raise SystemExit(0 if r['passed'] else 1)

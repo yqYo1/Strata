@@ -1,0 +1,67 @@
+# R295 — Intermediate prefill chunk byte admission
+Date: 2026-10-12 (Asia/Tokyo)
+
+## Finding
+
+For the current combined source and the stated 262,144-context / int8 KV / 32,768 resident / no-MTP / spec-4 / suffix-draft-0 recipe, the next sensible no-source-change size is **10,240 tokens**. Under the explicit source assumptions below, moving from the closed 8,192 baseline adds 613,785,600 device-request bytes (585.352 MiB), including the separate token-ID buffer. Subtracting that from the supplied ~1,761 MiB READY free reading leaves ~1,175.6 MiB as arithmetic context, about 663.6 MiB above a 512 MiB launch guard. This is a projection only; it does not prove allocation or peak fit.
+
+12,288 has no QSA/GDN/GEMM shape blocker, but without a workspace reduction it consumes 1,227,571,200 B (1,170.703 MiB) over the 8,192 case, leaving only ~590.3 MiB from the same READY sample: about 78.3 MiB above a 512 MiB guard before allocator variability and excluded first-use/runtime memory. The already-reviewed triple-plane lifetime alias saves 240 MiB at 12,288 and would raise that projection to ~830.3 MiB (~318.3 MiB over the guard), but requires an implementation and lifetime/correctness validation. 16,384 adds 2,455,142,400 B (2,341.406 MiB) and projects negative free space; the same alias saves 320 MiB and still leaves a deficit. The ~1,761 MiB value is treated only as the parent-supplied closed INFO context, not evidence that any candidate fits.
+
+No numeric change to activations, weights, KV, or MoE arithmetic is proposed. Chunk size changes batch shapes and may change backend GEMM dispatch/rounding, so output/state parity remains a required qualification. Source accounting is exact for the listed `Alloc::take` requests under the flags below; device allocator physical peak, fragmentation, library/runtime allocations, and per-buffer success must be measured in an authorized run.
+
+## Source-counted device requests
+
+The audited source is the parent-identified combined HEAD `9b03c18b643e974e5475f68a2a9d2f26ea9613b0` at `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-latest-updates-20261012`. The sizing below follows `Prefill::bytes_needed` and its source `Alloc::take` rounding, not the coarse `160 MiB + 680 KiB × T` cache-planning formula.
+
+Assumptions for this table: geometry N=2,560, HC=4, D=10,240, LR=320, K=10, 512 experts; full QSA max-cells 262,144; no BF16X2 extra planes; MMQ absent with FP16 fallback; compact MoE enabled (`STRATA_PREFILL_COMPACT_MOE_SCRATCH=1`, no NaN debug, in-order queue); `g_expert_group=16`; native dequant batch enabled; `STRATA_PREFILL_RING=16`; expert max blob 2,662,400 B; and KV stage ownership held constant. `nativebatch=1` changes the dequant batching schedule but adds no T-sized device array; its batch pointer list is stack storage. If compact MoE is refused because MMQ is active or the queue/debug gates fail, the reported MoE and counted region will differ substantially.
+
+| T | `bytes_needed` source count (includes its 8 MiB alignment slack) | shared region request (`max(GDN,QSA,MoE)`) | separate device token-ID request `4T` | PLE host upload buffers (2 × T × N × 4; pinned or pageable) | delta including token IDs vs. 8,192 | free projection from 1,761 MiB |
+|---:|---:|---:|---:|---:|---:|---:|
+| 8,192 | 2,730,548,992 B / 2,604.054 MiB | 1,180,698,624 B / 1,126.002 MiB | 32,768 B | 167,772,160 B / 160 MiB | baseline | ~1,761 MiB |
+| 10,240 | 3,344,326,400 B / 3,189.398 MiB | 1,475,872,768 B / 1,407.502 MiB | 40,960 B | 209,715,200 B / 200 MiB | 613,785,600 B / 585.352 MiB | ~1,175.648 MiB |
+| 12,288 | 3,958,103,808 B / 3,774.742 MiB | 1,771,046,912 B / 1,689.002 MiB | 49,152 B | 251,658,240 B / 240 MiB | 1,227,571,200 B / 1,170.703 MiB | ~590.297 MiB |
+| 16,384 | 5,185,658,624 B / 4,945.429 MiB | 2,361,395,200 B / 2,252.002 MiB | 65,536 B | 335,544,320 B / 320 MiB | 2,455,142,400 B / 2,341.406 MiB | ~−580.406 MiB |
+
+The source count contains the shared-region take once, although that region is carved into disjoint GDN, QSA and MoE views reused in program order. It also counts 16 expert-ring slots as 16 separate takes; no-borrow `init` allocates the owned ring in one contiguous request, so the count differs from the actual ring request by only 3,840 guard bytes. The helper adds 8 MiB slack which is not itself allocated. The `4T` token-ID request is allocated separately by `init` and is not in `bytes_needed`; the free projection adds its delta. Fixed `GEMM_SCRATCH` (32 Mi uint16 elements = 64 MiB) and the two dequant workspaces for 16 experts (about 150 MiB) are already included in `bytes_needed`.
+
+At 262,144 max cells, QSA uses `cap=2,051`, `max_blocks=65,538`, fixed `sel_scores[256,65538]`, and 32 × 204,400 float attention scratch. The fixed score/scratch terms are counted inside the shared QSA candidate at every T; they do not scale with the prompt chunk. The current source's per-take `Alloc` cost is `round_up(n*sizeof(T)+256, 256)`.
+
+### Shared-region comparison
+
+The source formulas give `gdn_set_bytes(T)` as 144,128 raw bytes per token before the eight takes' alignment overhead; `qsa_set_bytes` has 125,452 raw bytes per token plus its fixed 64 MiB score table and ~24.95 MiB scratch; compact `moe_set_bytes` is ~132,772 raw bytes per token plus small alignment. GDN remains the maximum at all four chunk sizes. At 16,384, the QSA region is ~2,049.143 MiB and compact MoE is ~2,074.566 MiB, below GDN's ~2,252.002 MiB.
+
+This corrects old GDN planning arithmetic: R275/R284 reported 156,416 B/token (2,444 MiB at 16K), but the audited combined source's actual `gdn_set_bytes` has one `y_h` uint16 plane (`T*ZV`) and totals 144,128 B/token, not 156,416. Thus current source's 16K GDN region is 2,252 MiB before the take guard, not 2,444 MiB. The extra 12,288 B/token in the old reported formula materially overstated the GDN region. The current code, rather than the earlier prose arithmetic, is authoritative for this count.
+
+## Separate allocations and what the count omits
+
+- **KV stage:** At max-context 262,144, page size 4 yields 65,536 pages. Int8 K/V plus scales for the stage pool are 264 MiB plus four take guards, fixed across T. With `STRATA_KV_STAGE_OWN=1`, `take_stage` allocates this outside `bytes_needed` (the count helper intentionally returns early). If stage ownership is off, the same fixed takes are included by `bytes_needed`; do not add them a second time. The READY free sample already includes whichever option was active in its 8K run.
+- **Identity page table:** KV mode 1 creates a fixed `65,536 × 4 = 262,144 B` device identity table outside `bytes_needed`; this does not scale with T. The session's own full-context K/V, page/index state and RoPE are persistent allocations and are not chunk workspace.
+- **Host storage:** the two `ple_emb_host` arrays are 160 / 200 / 240 / 320 MiB for the four T values; these are pinned host USM if allocation succeeds, otherwise pageable vectors. Host `steps/ids/slot/src`, PLE row indices, token IDs, and the expert Stager are also outside `bytes_needed`. They affect RAM/pinning and startup behavior, not the device-free projection above.
+- **Conditional layer-split handoff:** when a successor Prefill stage exists, init allocates two pinned `T*D*4` host handoff arrays (640 / 800 / 960 / 1,280 MiB total). They are absent in the monolithic no-next-stage path assumed by the recipe; if that topology differs, include them as host RAM, not VRAM.
+- **Backend/runtime peak:** per-allocation device requests, allocator page/fragmentation effects, graph capture, oneMKL/SYCL/JIT first-use scratch and desktop use are not predicted by the source sum. The largest device take is the shared region: about 1.126 / 1.408 / 1.689 / 2.252 GiB. Aggregate free memory does not establish that this single request will succeed.
+
+The 144 effective expert-cache slots / ~281 MiB, main head, verifier, session and KV allocations remain live. Since the 1,761 MiB reading is post-startup, the table subtracts only the chunk-workspace growth relative to the closed 8,192 baseline; it does not subtract fixed cache/KV allocations again. If the free sample was taken at a different chunk, source identity, ring, stage ownership, or effective cache size, this projection is invalid.
+
+## Shape admission
+
+All candidates pass source-level shape checks for this model. Each T is a multiple of both QSA's 256-query selection batch and 32-query attention batch, and of GDN's 64-token convolution tile. `gdn_conv` remains in its tiled path (`T > 64`); all four choices have no last-tile tail. The full-context QSA cap/block dimensions are independent of T. Native dequant batch flushes at 16 experts and has no chunk-divisibility requirement. MoE route arrays use `T*K` and compact MoE checks int32/allocation bounds; these values are far below those bounds. GEMM receives T as its batch dimension, with no source maximum near these values. Therefore 10,240, 12,288 and 16,384 do not introduce an unsupported shape transition; memory and numerical/backend validation are the gates.
+
+The fixed `STRATA_PREFILL_RING=16` selection also remains stable because all candidates exceed the stream-all threshold. The expert-ring byte request is not T-scaled. The KV stage, 32K resident set, 262K QSA selection table and effective spec=4 do not shrink when T changes.
+
+## Existing unchanged-math plane reuse
+
+The previously audited lifetime alias of `m.emb`, `m.bo`, and `m.ple_emb` is still present as an opportunity: all are distinct T×2560 FP32 takes in current `carve`. Removing two guarded takes saves 167,772,672 / 209,715,712 / 251,658,752 / 335,544,832 B at the four chunk sizes (160 / 200 / 240 / 320 MiB plus 512 B). It does not alter the algebra if the proven in-order same-queue lifetime conditions from R284 remain true. This report does not repeat the alias implementation proposal; it applies the exact current source savings to the new capacity seam. With the same 8K no-alias free sample as reference, those amounts project ~1,375.649 MiB at 10K, ~830.297 MiB at 12K, and ~−260.406 MiB at 16K. The 12K estimate is materially more comfortable only after alias implementation, and still needs memory high-water and full-context parity.
+
+## Recommendation and limits
+
+1. Use **10,240** as the first practical fixed-chunk admission candidate without source changes. It is shape-aligned and leaves a more useful projected reserve than 12,288 under the supplied post-startup free reading.
+2. Consider **12,288** only if a no-math-change workspace saving such as the already-reviewed triple-plane alias is implemented and review-checked first. Without it, its nominal 512 MiB reserve margin is only ~78 MiB.
+3. Do not attempt to justify **16,384** from this baseline: even with the alias it misses the supplied free-space context by ~260 MiB before runtime variability.
+
+Before treating a candidate as admitted, record the effective chunk actually selected, the startup free value for that exact binary/settings, each allocation result and failure's requested size, allocator high-water/free after Prefill init and verifier/session startup, and the 512 MiB owner gate. Then run the full 262,144-token prompt at the same int8/resident32K/no-MTP/spec4/suffix0/cache144/ring16/no-borrow/compactMoE1/nativebatch1 settings with correctness/state validation. No allocation, initialization, model run, or performance result is claimed here.
+
+## Provenance
+
+- Source worktree: `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-latest-updates-20261012`; parent supplied combined identity `9b03c18b643e974e5475f68a2a9d2f26ea9613b0`. File SHA-256: `src/prefill/prefill.cpp` `ececd50d16cb9f41b20a5890a461ca2dad33873693ac9a6d5d0ec499bbaa9183`; `src/prefill/kernels.cpp` `0e89bbb83220ad85257d17fc6b98f2332a5c17e8d2832937a98a1e3ae300ab81`; `src/prefill/gemm.cpp` `bfa40846fddb46a3d03d8c58ef5209b181c46674939beeefe512db0073c9d648`; `src/kernels/xe/qsa_decode_attn.cpp` `526194966d5d28bb2cba1d129bc42aa32c8aa4f69d0a288b4c192e01cb86be50`; `src/core/layer.cpp` `fefc457de582573a8f1132c02139a61161d90fe50dcacda46c8c64cf0b581c97`; `src/program/generate.cpp` `b27fd104b79007814a3eedc8f575d390eeefc986bc82ff01225c6d5b6a4d5ca9`.
+- Registry v168 (806 reports), SHA-256 `1d8cfc58b042d0cf928ebc585b84e4a3f5269dd9c2143b31e1288316a2693b7a`.
+- Prior reports consulted: R279 fixed-16K source-count/peak report; R284 plane-alias lifecycle analysis; R275 GDN tile accounting; R290 prefill/decode lifetime report; current registry v168 and its correction that R275/R284's GDN-size arithmetic should be rechecked against the current `gdn_set_bytes` implementation.

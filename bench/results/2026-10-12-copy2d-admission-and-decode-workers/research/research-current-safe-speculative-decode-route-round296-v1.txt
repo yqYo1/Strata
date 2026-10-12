@@ -1,0 +1,47 @@
+# R296 — Current safe speculative decode route on the Xe recipe
+
+Date: 2026-10-12 (JST). Read-only source and retained-report audit for the current LLVM 7.1.1 / no concurrent host-USM handoff / segmented verifier recipe. No source edit, project command, build, test, model inference, GPU/process query, Git operation, or cleanup was performed. This report does not claim that the reviewed combined source is the currently linked binary.
+
+## Decision
+
+Two routes can produce verifier windows wider than one without using the unsupported host-polling handshake:
+
+1. **MTP draft steps** in the current combined source are serialized: after every draft graph launch, `MtpDrafter::draft` waits for whole-operation completion before reading its mapped token/probability output. This is the best source-backed candidate for *model-driven* T>1, but requires a compatible MTP pack and adds draft-model work plus a full completion barrier at each step. The source audit establishes a safe ownership boundary, not performance or numerical qualification on the current LLVM runtime.
+2. **Suffix/prompt lookup** is already supported without MTP weights. It drafts token IDs from earlier repeated context; the regular verifier checks them. It needs no MTP mapped output, but usefulness depends on repeat matches in the prompt/generated text. It is the smallest low-cost arm to test against a matching corpus. It cannot be treated as a general source of drafts or a 70-token/s solution absent measured match/acceptance rates.
+
+Keep the current no-MTP / suffix-draft-zero / T=1 recipe as control. Do not enable the asynchronous MTP chain, pipelined windows, or batch-MTP on the no-concurrent-host-USM device. Source guards reject those routes. The reports reviewed do not contain a current-runtime result establishing any speculative setting's speedup or output parity for this LLVM 7.1.1 configuration.
+
+## Current source contract
+
+Reviewed combined source root: `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-latest-updates-20261012`. SHA-256: `generate.cpp` `b27fd104b79007814a3eedc8f575d390eeefc986bc82ff01225c6d5b6a4d5ca9`; `mtp.cpp` `11c00990bed018d9a4bf5cb658d97582875b969016d4af1e0bb38c6d5c951a8c`; `verify.cpp` `efc5c8d37c1b6b18efa1a203c4ed8f0a4bc3c8c1098dbf0e87f8ab11cd845cad`.
+
+- MTP `draft` validates the span and output budget at `src/core/mtp.cpp:1167-1207`. It launches the round, calls `complete(err)`, and only then reads `h_out_[0]`/`h_prob_[0]` (`1243-1263`). Each later draft step is launched and likewise completed before output read (`1264-1277`); the function completes again before return (`1279-1285`). This is a host-side serialized queue completion, not a polling handoff. On a device where concurrent host/device access is unqualified, it is the relevant safe boundary.
+- The MTP asynchronous chain path explicitly refuses to prepare or launch without `host_handoff_concurrent` (`1303-1305`, `chain_launch` around `1330+`). Early chain-output reads are also refused without the capability (`1397-1407`). `Verifier::init` selects segmented execution whenever that capability is absent (`verify.cpp:415-421)); normal `run` synchronizes each compute segment before reading its progress and synchronizes expert-copy work before reusing staging (`1547-1554,1577-1607`). Batch and pipeline entry points explicitly reject missing concurrent handoff (`1937-1942,2460`).
+- Suffix lookup is enabled by default with `suffix_draft=3` (`generate.cpp:501,629`). `--suffix-draft 0` disables it. For raw `--spec >= 2`, positive suffix drafting preserves that raw span as `mtp_max_t` and widens verifier capacity by up to two, capped at 8 (`2722-2732`). The standalone decode loop calls `SuffixDrafter::propose` after the first window and can select a lookup proposal through `DraftPolicy::choose` (`10841-10852,10867-10883)); `sfx.append` records prompt and emitted tokens. The serve setup says no-MTP drafts come from suffix lookup or one token per round, and keeps MTP conversation-KV save/cache features disabled (`5760-5767)). In the no-MTP path, `--lookup-chain` is not the standalone fallback: its condition requires `use_mtp` (`10885-10897`).
+- Verification remains the correctness gate. The suffix proposals are placed in candidate rows, then `ver.run(T,...)` evaluates that window (`10909-10929)); speculative proposal does not itself commit output.
+
+A source detail to preserve when planning: the decode loop initializes a proposal width from `S_mtp` even when `use_mtp` is false (`10818-10819,10867-10874`). The current default CLI/parser transformation affects `o.spec` and `mtp_max_t` as above. Therefore test the exact startup-effective `spec`, `mtp_max_t`, first-window rule, and actual proposal counters from the chosen binary; do not infer that “no MTP” implies T=1 for every raw `--spec`/suffix combination. The Main control is specifically T=1, suffix disabled.
+
+## Prior evidence and limits
+
+- R290 records the suffix default and parser's raw-spec-to-effective-spec behavior; it is source-derived and does not report a speculative throughput test.
+- R355 found an unsafe mapped MTP output polling/read overlap in its older Xe e32 source: the CPU polled/consumed mapped `h_out_`/`h_prob_` while the graph could still write them. Do not carry that version's MTP route forward.
+- R359 reviewed a later e32 MTP v4 completion implementation and callers. It found waits before mapped output reads and safe serial caller ordering, but explicitly did not qualify fresh LLVM runtime/compiler, numerical behavior, or performance. That worktree's hashes differ from this combined source; it is supporting history, not proof of the current linked objects.
+- R363 is source arithmetic on MTP context bounds, not numerical/performance evidence. It notes that raw `--spec 4` with suffix enabled may widen verifier width to 6 while limiting MTP depth to 4; `--suffix-draft 0` keeps raw/effective width 4. Preserve current context-bound checks and test final-context limits.
+- Current-parent evidence says no-MTP/suffix-zero GEN16 with worker candidates produced roughly 7.3–7.8 tokens/s, with T=1 and noisy results. This is a parent-provided result, not independently re-read here. No historical number reviewed here demonstrates MTP or suffix drafting reaching 70 tokens/s.
+
+No compatible MTP model pack was located by filename under a confirmed pack directory in this audit; availability and exact model/config compatibility remain unverified. The runtime's exact `host_handoff_concurrent=false` capability and segmented/no-device-plan flags are also parent-provided run settings, not queried here.
+
+## Smallest useful qualification
+
+1. Keep the recorded T=1, no-MTP, suffix-zero baseline unchanged.
+2. If an exact compatible MTP pack is already available, qualify MTP at a modest draft depth (for example raw `--spec 3`, explicitly `--suffix-draft 0`, no asynchronous chain/pipeline/batch options). Confirm startup-effective values and capability gating. Compare greedy generated tokens and all final outputs against the target-only baseline, record draft counts accepted/offered, per-step and end-to-end timing, and fault/completion results. This directly tests the safe serialized route and its cost.
+3. Independently test suffix drafting on both a prompt with repeated text and a control prompt without repeats. Hold all other flags fixed; capture `DONE`/suffix offered and accepted counts, verifier-window histogram, exact output equality, total decode time, and repeat-to-repeat variance. Do not interpret a single high-match prompt as general performance.
+4. Advance only a route that passes exact output/correctness checks and improves end-to-end throughput across the user's actual prompt mix. A wider verifier window by itself is not a speedup; MTP's serial completion barrier and low proposal acceptance can erase the saved target passes.
+
+For the 70-token/s objective, use these as isolated source candidates, not as a forecast. No measurement here supports a predicted throughput.
+
+## Sources
+
+Local source references above are in the combined root and bound to the hashes in the identity section. Historical reports: `research-prefill-phase-table-and-decode-vram-lifetime-round290-v1.txt`, `round355-xe-mtp-and-qsa-metadata-caller-reachability.txt`, `round359-xe-mtp-v4-completion-and-caller-qualification.txt`, `round360-xe-final-context-speculative-window-bounds.txt`, and `round363-official-mtp-context-counterexample-recalculation.txt` in `/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/`.
+

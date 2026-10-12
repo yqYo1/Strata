@@ -1,0 +1,29 @@
+# SPDX-FileCopyrightText: 2026 yayoi
+# SPDX-License-Identifier: LGPL-3.0-or-later
+"""Run the reviewed six-arm screening sequentially; first failure stops the campaign."""
+from pathlib import Path
+import hashlib
+import json
+import os
+import subprocess
+
+B = Path('/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007')
+review = json.loads((B / 'main-decode-worker-host-review-root-v1/record.json').read_text())
+assert review['passed'] and review['complete'] and not review['active'] and not review.get('error')
+for p, digest in review['source_pins'].items():
+    assert hashlib.sha256((B / p).read_bytes()).hexdigest() == digest
+env = dict(PATH='/usr/bin:/bin', HOME='/home/yayoi', LC_ALL='C.UTF-8', PYTHONDONTWRITEBYTECODE='1')
+q = B / 'latest-update-main-integrated-admission-root-v4/qualification.json'
+q_sha = 'b142776e0656f1c767e7076607917ec8c771e6c13190e75ac7b2d07ddd643219'
+assert hashlib.sha256(q.read_bytes()).hexdigest() == q_sha
+for sample, workers in enumerate((5, 3, 4, 4, 3, 5), 1):
+    for p, digest in review['source_pins'].items():
+        assert hashlib.sha256((B / p).read_bytes()).hexdigest() == digest
+    print(f'START worker-screen sample={sample} workers={workers} tasks=18', flush=True)
+    code = subprocess.call(['/usr/bin/python3', str(B / 'main-decode-worker-screen-v1.py'),
+                            '--sample', str(sample), '--workers', str(workers),
+                            '--engine', 'xe', '--phase', 'timed1-on',
+                            '--qualification', str(q), '--qualification-sha256', q_sha], env=env)
+    if code:
+        raise SystemExit(code)
+    print(f'CLOSED worker-screen sample={sample} workers={workers}', flush=True)
