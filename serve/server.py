@@ -494,6 +494,120 @@ FATAL_PREFIXES = ("ERR verify: timed out at layer ", "ERR verify batch: timed ou
                   "ERR verify: an earlier window never finished", "ERR verify batch: an earlier window never finished")
 
 
+class ConvCacheLog:
+    """Bounded current-run cache log view, serialized across simultaneous /metrics requests."""
+    EVENT = re.compile(r"conversation cache: (parked|skipped|restored) (\d+) tokens.*?parked=(\d+) bytes=(\d+)"
+                       r"(?: evictions=(\d+))?")
+    DROPPED = re.compile(r"conversation cache: dropped \d+ superseded .*?parked=(\d+)")
+    READ_MAX = 1 << 20
+    LINE_MAX = 4096
+
+    def __init__(self):
+        self.lock = threading.Lock()
+        self.key: tuple[str, int, object] | None = None
+        self.pos = 0
+        self.file_id: tuple[int, int] | None = None
+        self._reset()
+
+    def _reset(self):
+        # Called only during construction or while holding lock.
+        self.state: dict = {"parked": 0, "bytes": 0, "evictions": 0, "parks": 0, "restores": 0, "last_event": None,
+                            "last_tokens": None, "last_at": None, "available": False, "complete": True}
+
+    @staticmethod
+    def number(text):
+        if text is None:
+            return None
+        if len(text) > 20:
+            raise ValueError("cache log number exceeds uint64")
+        value = int(text)
+        if value > 18446744073709551615:
+            raise ValueError("cache log number exceeds uint64")
+        return value
+
+    def poll(self, path, start, run=None) -> dict:
+        with self.lock:
+            if not path or not isinstance(start, int) or isinstance(start, bool) or start < 0:
+                self.key, self.pos, self.file_id = None, 0, None
+                self._reset()
+                return dict(self.state)
+            key = (str(path), start, run)
+            if self.key != key:
+                self.key, self.pos, self.file_id = key, start, None
+                self._reset()
+            try:
+                with open(path, "rb") as stream:
+                    stat = os.fstat(stream.fileno())
+                    identity = (stat.st_dev, stat.st_ino)
+                    size = stat.st_size
+                    if (self.file_id is not None and self.file_id != identity) or size < self.pos:
+                        self.pos = 0
+                        self._reset()
+                        self.state["complete"] = False   # old log history was lost
+                        self.state["parked"], self.state["bytes"] = None, None
+                    self.file_id = identity
+                    skipped = size - self.pos > self.READ_MAX
+                    if skipped:
+                        self.pos = size - self.READ_MAX
+                        self.state["complete"] = False
+                        # A skipped event may have changed occupancy or the last switch.
+                        self.state["parked"], self.state["bytes"] = None, None
+                        self.state["last_event"], self.state["last_tokens"], self.state["last_at"] = None, None, None
+                    stream.seek(self.pos)
+                    data = stream.read(min(self.READ_MAX, max(0, size - self.pos)))
+            except OSError:
+                self.state["available"] = False
+                return dict(self.state)
+            self.state["available"] = True
+            end = data.rfind(b"\n") + 1
+            self.pos += end                            # preserve a trailing partial line for the next bounded read
+            lines = data[:end].decode("utf-8", "replace").splitlines()
+            if skipped and lines:
+                lines = lines[1:]                      # the seek may start inside a previous line
+            for line in lines:
+                if len(line) > self.LINE_MAX:
+                    self.state["complete"] = False
+                    continue
+                if "conversation cache:" not in line:
+                    continue
+                match = self.EVENT.search(line)
+                try:
+                    if match:
+                        tokens, parked, used, evictions = (self.number(match.group(i)) for i in (2, 3, 4, 5))
+                        self.state["parked"], self.state["bytes"] = parked, used
+                        if evictions is not None:
+                            self.state["evictions"] = evictions
+                        if match.group(1) != "skipped":
+                            name = "parks" if match.group(1) == "parked" else "restores"
+                            if self.state[name] >= 18446744073709551615:
+                                self.state["complete"] = False
+                            else:
+                                self.state[name] += 1
+                            self.state["last_event"], self.state["last_tokens"] = match.group(1), tokens
+                            self.state["last_at"] = time.time()
+                    else:
+                        match = self.DROPPED.search(line)
+                        if match:
+                            self.state["parked"] = self.number(match.group(1))
+                            self.state["bytes"] = None  # this log form does not report the updated byte total
+                except ValueError:
+                    self.state["complete"] = False      # malformed data cannot fail the HTTP request
+            return dict(self.state)
+
+
+def conversation_cache_view(info: dict, hist: list, totals: dict, parked: dict) -> dict:
+    """#596: the Monitor's Conversation cache card: the parked conversations (the engine's opt-in
+    --conversation-cache-mib: budget, slots, what its log says) and how much of the prompts the cache gave back."""
+    mib = info.get("conversation_cache_mib")
+    last = hist[-1] if hist else None
+    return {"enabled": isinstance(mib, int) and mib > 0, "budget_mib": mib if isinstance(mib, int) else None,
+            "slots": info.get("conversation_cache_slots"), **parked,
+            "requests": len(hist), "requests_reused": sum(1 for r in hist if (r.get("reused") or 0) > 0),
+            "reused_tokens": totals.get("reused", 0), "prompt_tokens": totals.get("prompt_tokens", 0),
+            "last_reused": last.get("reused") if last else None,
+            "last_prompt": last.get("prompt_tokens") if last else None}
+
+
 class StrataEngine:
     """The resident engine: `strata --serve` reads `GEN <max_new> <ids>` lines and streams `T <id>` lines, then
     `DONE ...`.  Requests are serialized by the service's FIFO, so one pipe is enough.
@@ -553,6 +667,8 @@ class StrataEngine:
         self.log = open(log, "a", encoding="utf-8") if log else subprocess.DEVNULL
         loading = threading.Event()                     # set once READY: the narrator below stops
         log_start = os.path.getsize(log) if log else 0  # where this start's lines begin (start_failure_hint)
+        self.log_start = log_start
+        self.log_cursor = (log, log_start, object())     # one atomic current-run identity/offset for metrics
         if log:
             threading.Thread(target=narrate_start, args=(log, os.path.getsize(log), args, loading),
                              daemon=True).start()
@@ -2505,6 +2621,7 @@ class Service:
         self.last_request_at: float | None = None        # when a request last started or finished
         self.started_at = time.time()
         self.status_lock = threading.Lock()
+        self.conv_log = ConvCacheLog()
         self.mcp = None                                  # serve/mcp.py's McpHub when MCP servers are configured
         # sharing the GPU with other programs (all off by default): unload the engine after this many idle seconds,
         # only start it again when this much VRAM is free, and run this command first (e.g. to unload another
@@ -2948,7 +3065,12 @@ class Service:
         engine = {"model": self.model, "max_context": self.reported_ctx(), "images": self.vision is not None,
                   **dict(getattr(self.engine, "info", {}) or {})}
         tel = self.telemetry.snapshot() if getattr(self, "telemetry", None) else {"now": {}, "history": {}, "static": {}}
+        cursor = getattr(self.engine, "log_cursor", None)
+        if cursor is None:
+            cursor = (getattr(self.engine, "log_path", None), getattr(self.engine, "log_start", None), None)
+        parked = self.conv_log.poll(*cursor)
         return {"engine": engine, "live": live, "requests": hist[::-1][:None if all_requests else 12],
+                "conversation_cache": conversation_cache_view(engine, hist, totals, parked),
                 "requests_kept": len(hist), "totals": totals, "hardware": tel["now"],
                 "hardware_static":
                 tel["static"], "history": tel["history"], "time": now}

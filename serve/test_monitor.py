@@ -205,5 +205,221 @@ class Monitor(unittest.TestCase):
         self.assertEqual(self.request("/web/../server.py")[0], 404)
 
 
+class ConversationCacheCard(unittest.TestCase):
+    """#596: /metrics' "conversation_cache": the parked conversations from the engine's log lines, the budget and
+    slots from its INFO line, and how much of the prompts the cache gave back."""
+
+    PARK = ("strata serve: conversation cache: parked 5000 tokens in 12.0 ms; parked=1 bytes=104857600 evictions=0 "
+            "snapshot_bytes=104857600 reused_kv_bytes=0\n")
+    RESTORE = "strata serve: conversation cache: restored 4000 tokens (exact) in 30.0 ms; parked=2 bytes=209715200\n"
+
+    def test_the_log(self):
+        from serve.server import ConvCacheLog
+        import tempfile
+        with tempfile.TemporaryDirectory() as d:
+            log = Path(d) / "strata.log"
+            log.write_text("an earlier run\n" + self.PARK, encoding="utf-8")
+            start = log.stat().st_size                 # this run starts here: the earlier run's park is not counted
+            c = ConvCacheLog()
+            self.assertEqual(c.poll(str(log), start)["parked"], 0)
+            with open(log, "a", encoding="utf-8") as f:
+                f.write("strata serve: something else\n" + self.PARK + self.RESTORE + "strata serve: conversation ca")
+            st = c.poll(str(log), start)
+            self.assertEqual((st["parked"], st["bytes"], st["parks"], st["restores"]), (2, 209715200, 1, 1))
+            self.assertEqual((st["last_event"], st["last_tokens"]), ("restored", 4000))
+            with open(log, "a", encoding="utf-8") as f:   # the cut line is read once it is whole
+                f.write("che: dropped 1 superseded copy of this conversation; parked=1\n")
+            dropped = c.poll(str(log), start)
+            self.assertEqual(dropped["parked"], 1)
+            self.assertIsNone(dropped["bytes"])
+            self.assertEqual(c.poll(str(log), log.stat().st_size)["parked"], 0)   # the engine started again
+            self.assertEqual(c.poll(None, None)["parked"], 0)
+
+    def test_metrics(self):
+        tok = ByteTokenizer()
+        engine = MockEngine(tok, "Thought.</think>\nHello.", max_context=4096)
+        engine.info = {"conversation_cache_mib": 8192, "conversation_cache_slots": 4}
+        svc = Service(engine, tok, ChatTemplate(Path(__file__).parent / "test_chat_template.jinja"))
+        httpd = serve(svc, port=0)
+        base = f"http://127.0.0.1:{httpd.server_address[1]}"
+        try:
+            with urllib.request.urlopen(base + "/metrics", timeout=10) as r:
+                c = json.loads(r.read())["conversation_cache"]
+            self.assertEqual((c["enabled"], c["budget_mib"], c["slots"], c["parked"], c["requests"]),
+                             (True, 8192, 4, 0, 0))
+            req = urllib.request.Request(base + "/v1/chat/completions", headers={"Content-Type": "application/json"},
+                                         data=json.dumps({"messages": [{"role": "user", "content": "hi"}]}).encode())
+            with urllib.request.urlopen(req, timeout=10) as r:
+                r.read()
+            with urllib.request.urlopen(base + "/metrics", timeout=10) as r:
+                c = json.loads(r.read())["conversation_cache"]
+            self.assertEqual(c["requests"], 1)
+            self.assertGreater(c["last_prompt"], 0)
+            engine.info = {}
+            with urllib.request.urlopen(base + "/metrics", timeout=10) as r:
+                self.assertFalse(json.loads(r.read())["conversation_cache"]["enabled"])   # off: the reuse lines only
+        finally:
+            httpd.shutdown()
+            httpd.server_close()
+
+    def test_partial_line_no_log_and_unreadable_log(self):
+        from serve.server import ConvCacheLog
+        import tempfile
+        with tempfile.TemporaryDirectory() as directory:
+            log = Path(directory) / "cache.log"
+            cut = len(self.PARK) // 2
+            log.write_text(self.PARK[:cut])
+            cache = ConvCacheLog()
+            self.assertEqual(cache.poll(log, 0)["parks"], 0)
+            with log.open("a") as stream:
+                stream.write(self.PARK[cut:])
+            self.assertEqual(cache.poll(log, 0)["parks"], 1)
+            self.assertEqual(cache.poll(log, 0)["parks"], 1)
+            self.assertFalse(cache.poll(Path(directory) / "missing", 0)["available"])
+            state = cache.poll(None, None)
+            self.assertEqual(state["parks"], 0)
+            self.assertFalse(state["available"])
+
+    def test_run_identity_and_replaced_log_reset_state(self):
+        from serve.server import ConvCacheLog
+        import tempfile
+        with tempfile.TemporaryDirectory() as directory:
+            log = Path(directory) / "cache.log"
+            log.write_text(self.PARK)
+            cache = ConvCacheLog()
+            run = object()
+            self.assertEqual(cache.poll(log, 0, run)["parks"], 1)
+            self.assertEqual(cache.poll(log, log.stat().st_size, object())["parks"], 0)
+            log.write_text(self.RESTORE)
+            state = cache.poll(log, log.stat().st_size + 100, object())
+            self.assertEqual((state["parks"], state["restores"]), (0, 1))
+            self.assertFalse(state["complete"])
+
+    def test_read_bound_and_numeric_limits(self):
+        from serve.server import ConvCacheLog
+        import tempfile
+        with tempfile.TemporaryDirectory() as directory:
+            log = Path(directory) / "cache.log"
+            log.write_text("x" * 1024 + "\n" + self.PARK)
+            cache = ConvCacheLog()
+            with log.open("rb") as stream:
+                reader = mock.MagicMock()
+                reader.__enter__.return_value = reader
+                reader.fileno.side_effect = stream.fileno
+                reader.seek.side_effect = stream.seek
+                reader.read.side_effect = stream.read
+                with mock.patch.object(cache, "READ_MAX", 256), mock.patch("builtins.open", return_value=reader):
+                    state = cache.poll(log, 0)
+                reader.read.assert_called_once_with(256)
+            self.assertFalse(state["complete"])
+            self.assertEqual(state["parks"], 1)
+            with log.open("a") as stream:
+                stream.write("conversation cache: parked " + "9" * 100 + " tokens; parked=1 bytes=1\n")
+            state = cache.poll(log, 0)
+            self.assertEqual(state["parks"], 1)
+            self.assertFalse(state["complete"])
+
+    def test_concurrent_metrics_count_each_line_once(self):
+        import tempfile
+        tok = ByteTokenizer()
+        engine = MockEngine(tok, "ok")
+        with tempfile.TemporaryDirectory() as directory:
+            log = Path(directory) / "cache.log"
+            log.write_text(self.PARK)
+            engine.log_path, engine.log_start = str(log), 0
+            engine.info = {"conversation_cache_mib": 8192, "conversation_cache_slots": 4}
+            svc = Service(engine, tok, ChatTemplate(Path(__file__).parent / "test_chat_template.jinja"))
+            with ThreadPoolExecutor(max_workers=8) as pool:
+                states = list(pool.map(lambda _: svc.metrics()["conversation_cache"], range(32)))
+            self.assertTrue(all(state["parks"] == 1 for state in states))
+            self.assertEqual(svc.metrics()["conversation_cache"]["parks"], 1)
+
+    def test_rotation_without_a_new_snapshot_does_not_report_old_occupancy(self):
+        from serve.server import ConvCacheLog
+        import tempfile
+        with tempfile.TemporaryDirectory() as directory:
+            log = Path(directory) / "cache.log"
+            log.write_text(self.PARK)
+            cache, run = ConvCacheLog(), object()
+            self.assertEqual(cache.poll(log, 0, run)["parks"], 1)
+            replacement = Path(directory) / "replacement.log"
+            replacement.write_text("unrelated log line\n" * 30)
+            replacement.replace(log)                 # a larger file, same path and run, different inode
+            state = cache.poll(log, 0, run)
+            self.assertFalse(state["complete"])
+            self.assertIsNone(state["parked"])
+            self.assertIsNone(state["bytes"])
+            self.assertEqual((state["parks"], state["restores"]), (0, 0))
+            with log.open("a") as stream:
+                stream.write(self.RESTORE)
+            state = cache.poll(log, 0, run)
+            self.assertEqual((state["parked"], state["bytes"], state["restores"]), (2, 209715200, 1))
+
+    def test_backlog_without_a_snapshot_clears_unknown_occupancy(self):
+        from serve.server import ConvCacheLog
+        import tempfile
+        with tempfile.TemporaryDirectory() as directory:
+            log = Path(directory) / "cache.log"
+            log.write_text(self.PARK)
+            cache = ConvCacheLog()
+            self.assertEqual(cache.poll(log, 0)["parks"], 1)
+            with log.open("a") as stream:
+                stream.write("unrelated log line\n" * 100)
+            with mock.patch.object(cache, "READ_MAX", 256):
+                state = cache.poll(log, 0)
+            self.assertFalse(state["complete"])
+            self.assertIsNone(state["parked"])
+            self.assertIsNone(state["bytes"])
+            self.assertIsNone(state["last_event"])
+            self.assertEqual(state["parks"], 1)        # count of observed events, not a full-history total
+
+    def test_long_lines_and_uint64_overflow_leave_valid_snapshots_intact(self):
+        from serve.server import ConvCacheLog
+        import tempfile
+        with tempfile.TemporaryDirectory() as directory:
+            log = Path(directory) / "cache.log"
+            log.write_text(self.PARK + "x" * 5000 + "\n" +
+                           "conversation cache: parked 1 tokens; parked=1 bytes=18446744073709551616\n")
+            state = ConvCacheLog().poll(log, 0)
+            self.assertFalse(state["complete"])
+            self.assertEqual((state["parks"], state["bytes"]), (1, 104857600))
+
+    def test_engine_restart_records_the_new_log_offset(self):
+        import subprocess
+        import sys
+        import tempfile
+        import serve.server as server
+        from serve.server import StrataEngine
+        real_popen = subprocess.Popen
+        code = ("import sys\nprint('READY 4096 stop', flush=True)\n"
+                "for line in sys.stdin:\n    if line.startswith('QUIT'): break\n")
+        with tempfile.TemporaryDirectory() as directory:
+            script, log = Path(directory) / "fake_engine.py", Path(directory) / "engine.log"
+            script.write_text(code)
+            log.write_text(self.PARK)
+            with mock.patch.object(server, "ENGINE_READY_S", 5.0), \
+                    mock.patch.object(server.subprocess, "Popen",
+                                      lambda cmd, **kw: real_popen([sys.executable, str(script), *cmd[1:]], **kw)):
+                engine = StrataEngine(str(script), [], log=str(log))
+                try:
+                    first = engine.log_cursor
+                    self.assertEqual(engine.log_start, len(self.PARK.encode()))
+                    with log.open("a") as stream:
+                        stream.write(self.RESTORE)
+                    engine.restart(tries=1)
+                    self.assertGreater(engine.log_start, first[1])
+                    self.assertIsNot(engine.log_cursor[2], first[2])
+                    self.assertEqual(engine.log_cursor[:2], (str(log), engine.log_start))
+                finally:
+                    engine.close()
+
+    def test_the_card_is_on_the_page(self):
+        web = Path(__file__).parent / "web"
+        html, js = (web / "index.html").read_text(encoding="utf-8"), (web / "app.js").read_text(encoding="utf-8")
+        for el in ("cc-card", "cc-slots-text", "cc-mem-text", "cc-facts", "cc-note"):
+            self.assertIn(f'id="{el}"', html)
+            self.assertIn(f'"{el}"', js)
+
+
 if __name__ == "__main__":
     unittest.main()
