@@ -1,0 +1,33 @@
+{
+  "main_reviewed": true,
+  "source_only_agent_final_received": true,
+  "agent_report_sha256": "2ef8e42b26de62f217149e9dd0b40619fcb9987d815554788e16b0c6fa9dc3a1",
+  "baseline_shared_source": "840db05f23bfb5070003a3f9693eb5117c287e47",
+  "source_pins": {
+    "docs/MULTIGPU.ja.md": "3eafe5c71db8fce9113a3d3d29bc806d0c8c9efa4655009ccd6fe8a6beaf2ee2",
+    "docs/MULTIGPU.md": "50d22ce7a9bec949a8f7527b669f2780b30945307348f4102d2eec5672da421c",
+    "serve/cpu_affinity.py": "c4401941776dacc89fd9c6b1504c057f869a797ba065cb1f123a9bb708d14899",
+    "serve/replica_admission.py": "248cb1498098d583586bf1ea4cacbad9f635dda8b878380d16dc2940883378e9",
+    "serve/replicas.py": "a86472370410303733a3b30b93b433b314c1cc062dcc1f7eebc456ebb33956ab",
+    "serve/server.py": "5ca941366553d941096da5bd648abbc4d8e82f0f3bd22e22b3f97bddb6268f87",
+    "serve/telemetry.py": "3cb06910893f791eefd94852a5fc2b1281a98871640d49e18e1cd2d5796c2e25",
+    "serve/test_cpu_affinity.py": "e2d86c2c2e15fc52a8f6808744ef545bd1a753c45796be90ad12c8aa2e2bf536",
+    "serve/test_replica_admission.py": "5cefa2dfdc7cfeacb455cc49639f4395c4752a4dc8468ac50134e0b3febb02b9",
+    "serve/test_replicas.py": "354094adcc542fd4ae1462f1390257ea8e00aca49e41155a635e84bdb4c0a5cd",
+    "serve/test_upstream_stream_recovery.py": "3154a5c8d038b75b0207bdadf0fbf1d9473177aba3de23c1b3d38b6ce965fc2d",
+    "setup.py": "ba4f322df78669e84a04c6b009df4e603afffbf9c287c85234114fb55fb34ba5",
+    "tools/test_setup_replicas.py": "ab9dff0baa8e2c94d0c0c9d1a3fafff7f8084b377045fe1617bed301df7995a0"
+  },
+  "main_adjustments": [
+    "All GGUF shards included in model RAM floor; missing shards rejected before hardware checks.",
+    "First lazy load rolls back all owned replicas after one READY failure; unload and close visit every owner.",
+    "Native normal DONE after EOS consumer close establishes input-only hints; cancellation, queued cancellation and nonfinite cannot publish new hints.",
+    "Request-local last setter, immutable DONE snapshots and per-replica slot/device/INFO ownership.",
+    "No preexec_fn and no real GPU inactivity termination; child CPU mask uses isolated exec helper.",
+    "Static type/line-wrap fixes introduce no findings; no lint rules suppressed.",
+    "Preserve instance-level restart initialization hook and old no-mask argument list; unchanged restart-waiter assertion passes."
+  ],
+  "new_gpu_or_model_executed": false,
+  "engine_cpp_or_cmake_changed": false,
+  "multiple_real_sycl_devices_qualified": false
+}

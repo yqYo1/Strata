@@ -2269,6 +2269,10 @@ def calibrate_config(cfg_path: Path) -> bool:
     sys.path.insert(0, str(ROOT / "tools"))
     import calibrate as CAL
     cfg = json.loads(cfg_path.read_text(encoding="utf-8-sig"))
+    from serve.replicas import gpu_groups
+    if gpu_groups(cfg):
+        warn("native calibration is a single-engine tool; calibrate a separate non-replica config")
+        return False
     say()
     say("  Tuning Strata for this PC: the output speed is measured with a few engine settings (the PCIe share, the")
     say("  draft depth, the CPU threads, the expert cache). It takes about 10 minutes; the PC is busy meanwhile.")
@@ -2299,6 +2303,9 @@ def bench_config(cfg_path: Path, data: Path, verbose: bool, original: str | None
     sys.path.insert(0, str(ROOT / "tools"))
     BENCH = importlib.import_module("bench")           # tools/bench.py (to mypy, `bench` is the records' folder)
     cfg = json.loads(cfg_path.read_text(encoding="utf-8-sig"))
+    from serve.replicas import gpu_groups
+    if gpu_groups(cfg):
+        fail("native --bench is a single-engine tool", "use the attached HTTP benchmark or a non-replica config")
     found = gpus()
     pcis = [cfg.get("gpu_pci"), *(cfg.get("split_pci") or [])]
     chosen = ([x for p in pcis if p for x in found if x["pci"] == p] or [gpu_info()]) if found else []
@@ -2479,7 +2486,8 @@ def settings_summary(cfg: dict, port=None) -> str:
         srv.append("api key set")
     if cfg.get("open_browser") is False:               # #609
         srv.append("no browser")
-    for k in ("gpu", "draft_vocab", "fit_max_tokens", "reasoning_budget_tokens", "anthropic_thinking"):
+    for k in ("gpu", "draft_vocab", "fit_max_tokens", "reasoning_budget_tokens", "anthropic_thinking",
+              "replicas", "replica_ram_mib", "replica_vram_mib"):
         if cfg.get(k) is not None:
             v = cfg[k]
             v = ",".join(map(str, v)) if isinstance(v, list) else str(v).lower() if isinstance(v, bool) else v
@@ -2509,11 +2517,42 @@ def offer_http_bench(cfg_path: Path, port: int, yes=False):
     return True
 
 
+def replica_options(options):
+    """Leave existing start-call arguments unchanged when no replica option was supplied."""
+    return {name: value for name, value in (("replicas", options.replicas),
+            ("replica_ram_mib", options.replica_ram_mib), ("replica_vram_mib", options.replica_vram_mib))
+            if value is not None}
+
+
+def configure_replicas(cfg: dict, count=None, ram=None, vram=None):
+    """Host-only config admission; hardware availability is rechecked by the server before any child starts."""
+    from serve.replicas import gpu_groups, ReplicaConfigError
+    from serve.replica_admission import positive
+    if count is not None:
+        if type(count) is not int or count < 1:
+            raise ReplicaConfigError("--replicas must be a positive count")
+        cfg["replicas"] = count
+    if ram is not None:
+        cfg["replica_ram_mib"] = ram
+    if vram is not None:
+        cfg["replica_vram_mib"] = vram
+    groups = gpu_groups(cfg)
+    if groups:
+        positive(cfg, "replica_ram_mib")
+        positive(cfg, "replica_vram_mib")
+    return groups
+
+
 def start(cfg_path: Path, port: int | None, gpu: int | list | None = None, open_browser=True, yes=False,
-          layer_split=None, reserve: int | None = None, browser: bool | None = None) -> int:
+          layer_split=None, reserve: int | None = None, browser: bool | None = None,
+          replicas=None, replica_ram_mib=None, replica_vram_mib=None) -> int:
     """reserve: --vram-reserve-mib given on this start, kept in the model's args from now on (#493).  browser:
     --no-browser (False) or --browser (True) given on this start, kept in the config's "open_browser" (#609)."""
     cfg = upgrade_config(cfg_path, json.loads(cfg_path.read_text(encoding="utf-8-sig")))
+    if replicas is not None:
+        if type(replicas) is not int or replicas < 1:
+            fail("--replicas must be positive", "use 1 for the existing single-engine route")
+        cfg["replicas"] = replicas
     missing = [p for p in [cfg["exe"], *[a for a in cfg["args"] if a.endswith(".gguf")]] if not Path(p).exists()]
     if missing:
         fail(f"{cfg_path.name} refers to missing files: {missing[0]}", "run it again with --setup to repair")
@@ -2543,9 +2582,12 @@ def start(cfg_path: Path, port: int | None, gpu: int | list | None = None, open_
         cfg["gpu_pci"], cfg["split_pci"] = cards[0]["pci"], [x["pci"] for x in cards[1:]]
         if layer_split:
             cfg["layer_split"] = str(layer_split)
-        cfg_path.write_text(json.dumps(cfg, indent=1), encoding="utf-8")
-        ok("saved for this model: the layers split across " + " + ".join(gpu_name(x) for x in cards) +
+        label = "selected replica GPU pool: " if cfg.get("replicas") not in (None, False, 1) else \
+            "saved for this model: the layers split across "
+        ok(label + " + ".join(gpu_name(x) for x in cards) +
            f" ({cfg.get('layer_split') or 'auto'})")
+    elif gpu is not None and cfg.get("replicas") not in (None, False, 1):
+        fail("a single-GPU override conflicts with replicas", "use --gpus with --replicas, or --replicas 1")
     elif gpu is not None:                              # --gpu N: this start only, by the card's PCI address
         check_gpus(gpu if isinstance(gpu, list) else [gpu], found)
         g = next(x for x in found if x["index"] == (gpu[0] if isinstance(gpu, list) else gpu))
@@ -2563,6 +2605,19 @@ def start(cfg_path: Path, port: int | None, gpu: int | list | None = None, open_
     elif usable:
         g = next((x for x in usable if x["pci"] == cfg.get("gpu_pci")), usable[0])
         ok("GPU: " + gpu_name(g))
+    try:
+        groups = configure_replicas(cfg, replicas, replica_ram_mib, replica_vram_mib)
+        if groups:
+            for group in groups:
+                for pci in group:
+                    card = next((x for x in found if x["pci"].lower().removeprefix("0000:") ==
+                                 pci.removeprefix("0000:")), None)
+                    if card is None or gpu_problem(card) is not None:
+                        raise ValueError(f"replica GPU {pci} is missing or unusable")
+        if replicas is not None or replica_ram_mib is not None or replica_vram_mib is not None or isinstance(gpu, list):
+            cfg_path.write_text(json.dumps(cfg, indent=1), encoding="utf-8")
+    except ValueError as error:
+        fail(str(error), "give disjoint GPU groups and positive --replica-ram-mib/--replica-vram-mib reservations")
     open_browser = open_browser and cfg.get("open_browser") is not False   # #609: "open_browser": false
     if open_browser:
         cmd.append("--open")
@@ -2905,6 +2960,12 @@ def main() -> int:
                                   "the most VRAM); the engine takes it by PCI address")
     ap.add_argument("--gpus", help="a layer split across these GPUs, e.g. 0,1 (numbered as --check lists them; the "
                                    "first runs the early layers; docs/MULTIGPU.md); saved for the model")
+    ap.add_argument("--replicas", type=int, metavar="N",
+                    help="opt-in independent engines on N equal groups of --gpus, stored as PCI addresses")
+    ap.add_argument("--replica-ram-mib", type=int, metavar="MIB",
+                    help="reviewed RAM reservation per replica including model, KV and caches; required with replicas")
+    ap.add_argument("--replica-vram-mib", type=int, metavar="MIB",
+                    help="free VRAM required per selected replica GPU; required with replicas")
     ap.add_argument("--layer-split", help="with --gpus: the first layer of each later GPU's share (e.g. 36), or auto "
                                           "(the default: measured on this PC)")
     ap.add_argument("--host", help="where the server listens: 127.0.0.1 = this PC only (default), 0.0.0.0 = also other "
@@ -3095,12 +3156,12 @@ def main() -> int:
             pick_cfg = have[int(ask("Tune which one?", [str(i) for i in range(1, len(have) + 1)], "1", a.yes)) - 1]
         calibrate_config(pick_cfg)
         return 0 if a.no_start else start(pick_cfg, a.port, run_gpu, yes=a.yes, layer_split=a.layer_split,
-                                          reserve=a.vram_reserve_mib, browser=a.browser)
+                                          reserve=a.vram_reserve_mib, browser=a.browser, **replica_options(a))
     if have and not (a.setup or a.model or a.family or a.check or a.no_start):
         update_installed_engine()
         if len(have) == 1:
             return start(have[0], a.port, run_gpu, yes=a.yes, layer_split=a.layer_split, reserve=a.vram_reserve_mib,
-                         browser=a.browser)
+                         browser=a.browser, **replica_options(a))
         say()
         for i, c in enumerate(have, 1):
             say(f"  {i}) {json.loads(c.read_text(encoding='utf-8-sig')).get('model_name', c.stem)}")
@@ -3108,7 +3169,7 @@ def main() -> int:
         pick = int(ask("Which one?", [str(i) for i in range(1, len(have) + 2)], "1", a.yes))
         if pick <= len(have):
             return start(have[pick - 1], a.port, run_gpu, yes=a.yes, layer_split=a.layer_split,
-                         reserve=a.vram_reserve_mib, browser=a.browser)
+                         reserve=a.vram_reserve_mib, browser=a.browser, **replica_options(a))
 
     # ---- 1. the PC
     step(1, "checking your PC")
@@ -3671,6 +3732,10 @@ def main() -> int:
         import calibrate as CAL
         cfg["args"] = CAL.apply(cfg["args"], cal.get("settings") or {})
         ok("the settings tuned for this PC earlier are used" + (f" ({cal['date']})" if cal.get("date") else ""))
+    try:
+        configure_replicas(cfg, a.replicas, a.replica_ram_mib, a.replica_vram_mib)
+    except ValueError as error:
+        fail(str(error), "replicas need multiple selected GPUs and explicit RAM/VRAM reservations")
     write_setup_config(cfg_path, cfg, adopted if adopted is not None and adopted.name == cfg_path.name else None)
     script = None if PACKAGED else write_run_script(tag, cfg_path, port, cfg.get("open_browser") is not False)
     if not a.no_warmup:

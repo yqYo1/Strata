@@ -161,3 +161,32 @@ K=24、`STRATA_IQ_MT_MIN=1 --pcie-frac 0 --adapt-every 0`、最初の GPU のキ
 ## いまの限界
 
 - 1 台の PC の中だけです。ネットワークの先の GPU は使えません。
+
+## 独立した replica（Linux SYCL）
+
+`replicas` は明示的に有効にするサーバ機能です。各 GPU group が独立した engine、モデルの RAM、
+KV、会話キャッシュを持ちます。単一 engine の層分割とは別で、既定の動作は変わりません。
+setup の `--gpus` で選んだ GPU を `--replicas N` で等分します。保存される識別子は PCI アドレスです。
+直接 config に書く場合は、例えば `"replicas": [{"devices": ["05:00.0"]}, {"devices": ["06:00.0"]}]`
+とします。同じ GPU を複数 group に入れることはできません。各 group 内で複数 GPU を使う場合だけ層分割を行います。
+
+`--replica-ram-mib`（config: `replica_ram_mib`）と `--replica-vram-mib`（`replica_vram_mib`）の
+正の予約量が必要です。RAM 予約は各 engine のモデル、KV、cache、セッションを含むピークを見積もって指定します。
+モデルファイル容量の保守的な下限以上でなければ受け付けません。開始・reload・故障後の復旧前に、
+ホストと memory cgroup の全 ancestor の空き RAM、各 GPU の空き VRAM を確認します。
+予約量は native allocator の上限を変更せず、native の割当検査を置き換えません。
+標準の `/sys/fs/cgroup` 配置を読めない場合、情報不足のまま開始せず error を返します。
+
+Linux では親の許可 CPU mask の physical core を等分し、SMT sibling を一緒にします。
+独立した子 launcher が自分にだけ affinity を設定し、同じ PID で指定 engine を exec します。
+threaded server の `preexec_fn`、親や他のプロセスの affinity 変更は使いません。
+必要な core/topology がないときは error です。明示的な `"replica_cpus": false` で分割を無効にできます。
+launcher の Python executable、`serve/cpu_affinity.py`、config の実行可能ファイルと実際の engine identity も検証対象です。
+
+要求は負荷と bounded な会話 prefix hint で割り振ります。engine 自身の prefix 検査が最終判断です。
+Monitor `/metrics` は replica ごとの状態・要求数・cache log と合計を示します。log/profile/会話保存先は
+replica ごとに分かれます。単一ファイルの `/slots/0` SAVE/RESTORE と動的 VRAM 操作は replica front では提供しません。
+初回は逐次起動し、失敗したら作成済みの子をすべて閉じます。稼働中の一台が終了した場合は他の台が応答し、
+予約量を再確認して復旧します。shutdown は復旧 thread を閉じてから所有 engine を終了します。
+単一 engine 用の native calibration は、別の replica 無効 config で行ってください。
+この機能から throughput や速度向上を約束するものではありません。

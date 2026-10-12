@@ -22,6 +22,7 @@ import platform
 import sys
 import threading
 import time
+import math
 
 HISTORY = 60
 
@@ -355,15 +356,16 @@ class _CpuRamFallback:
 
 # ------------------------------------------------------------------------------------------------ the sampler
 class Telemetry:
-    def __init__(self, extra=None, gpu_pci=None):
+    def __init__(self, extra=None, gpu_pci=None, gpu_pcis=None):
         """`extra()` -> dict of more series to record each second (the server's tok/s).  `gpu_pci`: the PCI address
         of the card the engine runs on (setup's gpu_pci), or None for the first card on the xe driver (else NVML's
         first)."""
         self.extra = extra
         self.lock = threading.Lock()
         self.now: dict = {}
+        self.sampled_at: float | None = None
         self.hist = collections.defaultdict(lambda: collections.deque(maxlen=HISTORY))
-        self.gpus = [(0, _gpu(gpu_pci))]
+        self.gpus = [(i, _gpu(pci)) for i, pci in enumerate(gpu_pcis)] if gpu_pcis else [(0, _gpu(gpu_pci))]
         self.gpus = [(i, g) for i, g in self.gpus if g.ok()] or self.gpus[:1]
         self.gpu = self.gpus[0][1]
         try:
@@ -436,14 +438,28 @@ class Telemetry:
 
     def _loop(self):
         while True:
+            sampled_at = time.monotonic()
             s = self.sample()
             with self.lock:
                 self.now = s
+                self.sampled_at = sampled_at
                 for k in ("gpu_util", "gpu_mem_used", "gpu_temp", "gpu_power", "gpu_pcie_rx_mb", "cpu", "ram_used",
                           "disk_read_mb", "tok_s", "prefill_tok_s_mean"):
                     v = s.get(k)
                     self.hist[k].append(round(v, 2) if isinstance(v, float) else v)
             time.sleep(1.0)
+
+    def gpu_activity(self) -> bool | None:
+        """Positive display readings veto a stall; zero does not prove device inactivity."""
+        with self.lock:
+            value, sampled = self.now.get("gpu_util"), self.sampled_at
+        if (sampled is None or not 0 <= time.monotonic() - sampled <= 5.0
+                or isinstance(value, bool) or not isinstance(value, (int, float))
+                or not math.isfinite(value) or not 0 <= value <= 100):
+            return None
+        # A DRM display gauge can be zero when no clients were observed. No provider here
+        # establishes continuous, engine-specific inactivity, so it cannot authorize a kill.
+        return True if value > 0 else None
 
     def snapshot(self):
         with self.lock:
