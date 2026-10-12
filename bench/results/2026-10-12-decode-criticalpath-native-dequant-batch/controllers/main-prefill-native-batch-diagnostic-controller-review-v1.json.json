@@ -1,0 +1,8 @@
+{
+  "original": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prefill-native-batch-diagnostic-controller-review-v1.json",
+    "sha256": "8f268ca2a7d0357fb9b3c1365d47b39af6d15c76ab5e7daf6d4d620cb6695992",
+    "bytes": 1158
+  },
+  "content": "{\n  \"source\": \"/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prefill-native-batch-diagnostic-model-v1.py\",\n  \"sha256\": \"3976a1a4b169e48345d404261f7384712edb2b96da5d1a8cd8b5f99889b51217\",\n  \"main_source_review\": true,\n  \"baseline\": \"/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-decode-criticalpath-model-root-v1/xe-timed1-on/record.json\",\n  \"baseline_sha256\": \"de826d6cd915b121801ebb3ba5d5f86f0945d82ae6f0819a59bc974c094b71dc\",\n  \"native_batch_source\": \"src/prefill/prefill.cpp 2227..2590 and src/kernels/xe/iq_kernels.cpp 1669..1774\",\n  \"effective_ring\": 16,\n  \"ring16_scope\": \"source ring_slots clamps requested8 to16 for every8192/8191 actualchunk; explicit16 preserves capacity\",\n  \"source_kernel_parity_basis\": \"R159 same iq_kernels.cpp hash75f2ac1dfdb337c424bba19e62c34159a1bde547a776b9b5d6cf7975dfc29d50; seven realGPU output pairs/width1,8,16. Current caller qualification is this diagnostic, not assumed.\",\n  \"diagnostic_only\": true,\n  \"quiet_paired_speed_claim\": false,\n  \"configured_context\": 262144,\n  \"input_tokens\": 32768,\n  \"no_driver_reset\": true,\n  \"no_concurrent_host_device_polling\": true\n}\n"
+}
