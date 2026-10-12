@@ -1,0 +1,282 @@
+{
+  "active": false,
+  "passed": true,
+  "complete": true,
+  "main_reviewed": true,
+  "model_executed": false,
+  "model_qualified": false,
+  "adopted": false,
+  "reset_executed": false,
+  "originals": [
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-copy-queue-tiny-root-v1/record.json",
+      "sha256": "80a382c9b666ddf80b5500cc6bcc8eba4db1aecacb7b74916e3a7c6e60a5315e",
+      "bytes": 161231,
+      "passed": false,
+      "complete": false,
+      "active": false
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-copy-queue-tiny-root-v2/record.json",
+      "sha256": "b77684725ea91984758b1274e9d4989ff6ef8fa273d2be02e8b719996fbe5f46",
+      "bytes": 734423,
+      "passed": true,
+      "complete": true,
+      "active": false
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-copy-queue-tiny-root-v3/record.json",
+      "sha256": "4b2b51bbf645e9dc11c304a9459dfeb934b97b0bd4be040737db3c88c3c87ffe",
+      "bytes": 1308078,
+      "passed": true,
+      "complete": true,
+      "active": false
+    }
+  ],
+  "compact_receipts": [
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-copy-queue-tiny-qualification-root-v3/tiny-root-v1-compact.json",
+      "sha256": "82a6c192491bb59e6019b018b0a14ac9ef5dc001b1731b0f4d62104210366c02"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-copy-queue-tiny-qualification-root-v3/tiny-root-v2-compact.json",
+      "sha256": "4f4568c87db5af39a8a59698831fa592bc9419cddc94f2bd46b79c74d57347a1"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-copy-queue-tiny-qualification-root-v3/tiny-root-v3-compact.json",
+      "sha256": "5396de1bb382a5c7702453aa07d48a24bd08fadc1436af37e81004281869eec5"
+    }
+  ],
+  "cases": {
+    "free-generic": {
+      "passed": true,
+      "complete": true,
+      "exit_code": 0,
+      "flag": "0",
+      "binary_sha256": {
+        "sha256": "8da7b2efffa30e01d20bec31bfe17d7d184728d3163fdc2286233c36dc094a08"
+      },
+      "scope": "Actual tiny copy/event/canary/role/normal teardown"
+    },
+    "free-native": {
+      "passed": true,
+      "complete": true,
+      "exit_code": 0,
+      "flag": "1",
+      "binary_sha256": {
+        "sha256": "8da7b2efffa30e01d20bec31bfe17d7d184728d3163fdc2286233c36dc094a08"
+      },
+      "scope": "Actual tiny copy/event/canary/role/normal teardown"
+    },
+    "free-native-tag": {
+      "passed": true,
+      "complete": true,
+      "exit_code": 0,
+      "flag": "1",
+      "mode": "free",
+      "expected_native": "1",
+      "overrides": {
+        "STRATA_EVENT_MARK": "tag"
+      },
+      "binary_sha256": {
+        "sha256": "8da7b2efffa30e01d20bec31bfe17d7d184728d3163fdc2286233c36dc094a08"
+      },
+      "scope": "Actual tiny copy/event/canary/role/normal teardown; explicit profiling generic fallback is not native treatment"
+    },
+    "free-service-generic": {
+      "passed": true,
+      "complete": true,
+      "exit_code": 0,
+      "flag": "1",
+      "mode": "free",
+      "expected_native": "0",
+      "overrides": {
+        "STRATA_PREFILL_SERVICE_EVENTS": "1"
+      },
+      "binary_sha256": {
+        "sha256": "8da7b2efffa30e01d20bec31bfe17d7d184728d3163fdc2286233c36dc094a08"
+      },
+      "scope": "Actual tiny copy/event/canary/role/normal teardown; explicit profiling generic fallback is not native treatment"
+    },
+    "contrib-llvm-generic": {
+      "passed": true,
+      "complete": true,
+      "exit_code": 0,
+      "flag": "0",
+      "mode": "contrib-llvm",
+      "expected_native": "0",
+      "overrides": {},
+      "binary_sha256": {
+        "sha256": "8da7b2efffa30e01d20bec31bfe17d7d184728d3163fdc2286233c36dc094a08"
+      },
+      "scope": "Actual tiny copy/event/canary/role/normal teardown; explicit profiling generic fallback is not native treatment"
+    },
+    "contrib-llvm-native": {
+      "passed": true,
+      "complete": true,
+      "exit_code": 0,
+      "flag": "1",
+      "mode": "contrib-llvm",
+      "expected_native": "1",
+      "overrides": {},
+      "binary_sha256": {
+        "sha256": "8da7b2efffa30e01d20bec31bfe17d7d184728d3163fdc2286233c36dc094a08"
+      },
+      "scope": "Actual tiny copy/event/canary/role/normal teardown; explicit profiling generic fallback is not native treatment"
+    }
+  },
+  "native_associations": {
+    "free-native": {
+      "group_ordinal": 1,
+      "handle": "0x16523b58",
+      "marker": "strata: native copy-only queue selected group=1 STRATA_COPY_ENGINE=1 ownership=keep",
+      "copies_bytes": [
+        1056,
+        1024
+      ],
+      "successful_native_kernel_launch_count": 0,
+      "destroy_count": 1,
+      "create_copy_drain_destroy_order": true,
+      "selected_success_api_lines": [
+        "[2026-10-13 04:59:56.798] [thread-id: 137038967781440] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListCreateImmediate(hContext=0x1650ca68, hDevice=0x164eaf28, altdesc={stype=0x7ffd2163f0f0, ordinal=1, index=0, flags=2, mode=0x7ffd2163f10c, priority=0x7ffd2163f110}, phCommandList=0x16523b58)",
+        "[2026-10-13 04:59:56.802] [thread-id: 137038967781440] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListAppendMemoryCopy(hCommandList=0x16523b58, dstptr=0xffffffffff600000, srcptr=0x7ca2c9400000, size=1056, hSignalEvent=0x165483d8, numWaitEvents=0, phWaitEvents=nullptr)",
+        "[2026-10-13 04:59:56.812] [thread-id: 137038967781440] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListAppendMemoryCopy(hCommandList=0x16523b58, dstptr=0xffffffffff600010, srcptr=0x7ca2c9400010, size=1024, hSignalEvent=0x16547ec8, numWaitEvents=1, phWaitEvents=0x1654a8d0)",
+        "[2026-10-13 04:59:56.819] [thread-id: 137038967781440] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListHostSynchronize(hCommandList=0x16523b58, timeout=18446744073709551615)",
+        "[2026-10-13 04:59:56.819] [thread-id: 137038967781440] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListDestroy(hCommandList=0x16523b58)"
+      ],
+      "scope": "Actual normal native-list association/drain/destruction only; no UR exception-leak proof"
+    },
+    "free-native-tag": {
+      "group_ordinal": 1,
+      "handle": "0x168c0b58",
+      "marker": "strata: native copy-only queue selected group=1 STRATA_COPY_ENGINE=1 ownership=keep",
+      "copies_bytes": [
+        1056,
+        1024
+      ],
+      "successful_native_kernel_launch_count": 0,
+      "destroy_count": 1,
+      "create_copy_drain_destroy_order": true,
+      "selected_success_api_lines": [
+        "[2026-10-13 05:02:54.847] [thread-id: 138794037352512] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListCreateImmediate(hContext=0x168a9a68, hDevice=0x16887f28, altdesc={stype=0x7fff186f9900, ordinal=1, index=0, flags=2, mode=0x7fff186f991c, priority=0x7fff186f9920}, phCommandList=0x168c0b58)",
+        "[2026-10-13 05:02:54.851] [thread-id: 138794037352512] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListAppendMemoryCopy(hCommandList=0x168c0b58, dstptr=0xffffffffff600000, srcptr=0x7e3b6ba00000, size=1056, hSignalEvent=0x168e53d8, numWaitEvents=0, phWaitEvents=nullptr)",
+        "[2026-10-13 05:02:54.861] [thread-id: 138794037352512] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListAppendMemoryCopy(hCommandList=0x168c0b58, dstptr=0xffffffffff600010, srcptr=0x7e3b6ba00010, size=1024, hSignalEvent=0x168e4ec8, numWaitEvents=1, phWaitEvents=0x168e78d0)",
+        "[2026-10-13 05:02:54.866] [thread-id: 138794037352512] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListHostSynchronize(hCommandList=0x168c0b58, timeout=18446744073709551615)",
+        "[2026-10-13 05:02:54.866] [thread-id: 138794037352512] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListDestroy(hCommandList=0x168c0b58)"
+      ],
+      "scope": "Actual normal native-list association/drain/destruction only; no UR exception-leak proof"
+    },
+    "contrib-llvm-native": {
+      "group_ordinal": 1,
+      "handle": "0x183f2b58",
+      "marker": "strata: native copy-only queue selected group=1 STRATA_COPY_ENGINE=1 ownership=keep",
+      "copies_bytes": [
+        1056,
+        1024
+      ],
+      "successful_native_kernel_launch_count": 0,
+      "destroy_count": 1,
+      "create_copy_drain_destroy_order": true,
+      "selected_success_api_lines": [
+        "[2026-10-13 05:02:57.136] [thread-id: 128627140278336] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListCreateImmediate(hContext=0x183dba68, hDevice=0x183b9f28, altdesc={stype=0x7ffdbb6d1550, ordinal=1, index=0, flags=2, mode=0x7ffdbb6d156c, priority=0x7ffdbb6d1570}, phCommandList=0x183f2b58)",
+        "[2026-10-13 05:02:57.141] [thread-id: 128627140278336] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListAppendMemoryCopy(hCommandList=0x183f2b58, dstptr=0xffffffffff600000, srcptr=0x74fc41400000, size=1056, hSignalEvent=0x184173d8, numWaitEvents=0, phWaitEvents=nullptr)",
+        "[2026-10-13 05:02:57.149] [thread-id: 128627140278336] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListAppendMemoryCopy(hCommandList=0x183f2b58, dstptr=0xffffffffff600010, srcptr=0x74fc41400010, size=1024, hSignalEvent=0x18416ec8, numWaitEvents=1, phWaitEvents=0x184198d0)",
+        "[2026-10-13 05:02:57.155] [thread-id: 128627140278336] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListHostSynchronize(hCommandList=0x183f2b58, timeout=18446744073709551615)",
+        "[2026-10-13 05:02:57.155] [thread-id: 128627140278336] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeCommandListDestroy(hCommandList=0x183f2b58)"
+      ],
+      "scope": "Actual normal native-list association/drain/destruction only; no UR exception-leak proof"
+    }
+  },
+  "source_revision": "a825e23a2f706d232bd62f6455e41e773aa36f8f",
+  "source_pins": {
+    "CMakeLists.txt": {
+      "sha256": "761f2c1ec205ac8fc08bcfb068b4561bd1f8174f3358a378d32fb56a38b1e380"
+    },
+    "include/strata/core/copy_stream_policy.hpp": {
+      "sha256": "6f504dd294598b6559f766915ce8c91f452c279592306593eacbdfa6a5c4795f"
+    },
+    "include/strata/core/gpu.hpp": {
+      "sha256": "84d741eb04120efcb3d2bb2cf2533392433229d1a50d74b1d4ea5676eea49871"
+    },
+    "include/strata/core/native_copy_lifetime.hpp": {
+      "sha256": "c5f3f434a3334ecc26298a942811ae5d631772573d3598f075dd6a7e7643deb6"
+    },
+    "include/strata/core/runtime.hpp": {
+      "sha256": "f01fba41277d23e3cae3b325ad0bac65b32e49fa5d2f78d4c7beeff717b107ea"
+    },
+    "src/core/device.cpp": {
+      "sha256": "680f6c0403f2ccd9d35138f4f5bcc61fe0443d73f1a4eedd472436d5544decb5"
+    },
+    "src/core/gpu.cpp": {
+      "sha256": "b56286363cfa9741a813d251438b05bc5637f1162081302c4a9109497def68d4"
+    },
+    "src/prefill/prefill.cpp": {
+      "sha256": "0c7fbdcf4d013d7dd9bafc85e0c2646c3fdd6686ed4428a4e1555303eef1d21b"
+    },
+    "tools/test_copy_stream_policy.cpp": {
+      "sha256": "be751eee88444d553dd5ea8c4ff19b6cd0876583b067561430321dea3db250f6"
+    },
+    "tools/test_native_copy_lifetime.cpp": {
+      "sha256": "a5e69fe6a6435ab4c64e8bab6d0bf4db70ee05d2f100a5d8efa541328eff7f1f"
+    },
+    "tools/test_native_copy_stream.cpp": {
+      "sha256": "7a99a01ad8b8d4a78fdd8d56679edd70a139c698d8cb313a4c05060caee4d1ae"
+    }
+  },
+  "qualification_receipts": {
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-copy-queue-build-root-v2/record.json": {
+      "sha256": "9ab98d11ecc5cd49538a0a1836907e5bb75cc0c4f6b5838e923a4e8778482e33"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-copy-queue-host-review-root-v3/record.json": {
+      "sha256": "02f21772445683eaca3b463a7254090c539d61a51b59674b0b088f0cdb30a6b0"
+    },
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-copy-queue-host-publication-root-v2/record.json": {
+      "sha256": "02aa77c828c312bd7b3039cc9f7cabe98eecdf380783a6fb12b0787b1283316d"
+    }
+  },
+  "boot_id": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+  "expected_provider_libraries": [
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libsycl.so.9.0.0-0",
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libumf.so.1.1.0",
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0.12.0",
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+    "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395",
+    "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0",
+    "/usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1.32.0",
+    "/usr/lib/x86_64-linux-gnu/libze_validation_layer.so.1.32.0"
+  ],
+  "expected_library_hashes": {
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libsycl.so.9.0.0-0": {
+      "sha256": "74243bafb2766fd1a038cf80fd62632b4aad9ecfdc0d3ce8711e4515a93d7008"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libumf.so.1.1.0": {
+      "sha256": "ebe65269abd5869010ab256375e8663f7a8f8b5453e0be0c78f615eb71581ab9"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0.12.0": {
+      "sha256": "05bcafc4a0d45d33f957f16ffb4ba4776da675e79ade1121b93b94b8549335d8"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0": {
+      "sha256": "bb6e1311850e4b1a924e42acae80c2b3610934625a4985aaa67967abe31356fc"
+    },
+    "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395": {
+      "sha256": "dfa844e5afd8e8f74bf5ce9da3ea2837706d9116bc8efeaed90efba5acaf7b1c"
+    },
+    "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0": {
+      "sha256": "b764efda507f173560fa6055d433dd5c76140180b4a7c532e1cea813cde67363"
+    },
+    "/usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1.32.0": {
+      "sha256": "db1856f379706d51b6ded84ce028d4aa48740ef63793f60e8a1e027c6db6ffb5"
+    },
+    "/usr/lib/x86_64-linux-gnu/libze_validation_layer.so.1.32.0": {
+      "sha256": "5b5ead80d98959d0f0a27a8981bb911c354720d39a4aa2125dc18266ad67d970"
+    }
+  },
+  "native_tiny_route_qualified": true,
+  "raw_api_history_question_resolved": true,
+  "finished_utc": "2026-10-12T20:17:36.676289+00:00",
+  "scope": "Tiny copy/events/canaries/role and normal native-list teardown; no model/speed/quality/full-context qualification",
+  "owner": "Main",
+  "consumer": "Next bounded >=32768-token native-copy Prefill model diagnostic",
+  "byte_budget": 2097152,
+  "next_review": "After model diagnostic admission"
+}
