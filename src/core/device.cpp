@@ -4,6 +4,18 @@
 #include "strata/core/on_device.hpp"
 #include "strata/core/runtime.hpp"
 #include "strata/core/gpu.hpp"
+#include "strata/core/copy_stream_policy.hpp"
+#include "strata/core/native_copy_lifetime.hpp"
+
+#if defined(__linux__) && __has_include(<level_zero/ze_api.h>) && \
+    __has_include(<sycl/ext/oneapi/backend/level_zero.hpp>)
+#include <level_zero/ze_api.h>
+#include <sycl/ext/oneapi/backend/level_zero.hpp>
+#if defined(SYCL_EXT_ONEAPI_BACKEND_LEVEL_ZERO) && SYCL_EXT_ONEAPI_BACKEND_LEVEL_ZERO >= 4
+#include <dlfcn.h>
+#define STRATA_NATIVE_COPY_IMPORT 1
+#endif
+#endif
 
 
 #include <algorithm>
@@ -115,9 +127,7 @@ thread_local int t_current = 0;
 }
 
 [[noreturn]] void fatal(const char* message) {
-    std::fprintf(stderr, "Xe runtime: %s; terminating without releasing in-flight allocations\n", message);
-    std::fflush(stderr);
-    std::_Exit(1);
+    native_copy::fail_stop(message);
 }
 
 // The xe driver resets a job after its job_timeout_ms (5 s here, at most 10 s), which completes the event with an
@@ -267,7 +277,8 @@ bool Runtime::measure_marks() {
 
 sycl::queue* Runtime::create_stream() {
     std::lock_guard<std::mutex> lock(streams_mutex_);
-    return &streams_.emplace_back(context_, device_, handler(), runtime_queue_properties(device_));
+    return &streams_.emplace_back(sycl::queue(context_, device_, handler(),
+                                            runtime_queue_properties(device_))).queue;
 }
 
 void Runtime::destroy_stream(sycl::queue* stream) {
@@ -276,23 +287,138 @@ void Runtime::destroy_stream(sycl::queue* stream) {
         throw DeviceError("destroy_stream: not an engine stream of the Xe runtime");
     finish(*stream);
     std::lock_guard<std::mutex> lock(streams_mutex_);
-    streams_.remove_if([stream](const sycl::queue& q) { return &q == stream; });
+    streams_.remove_if([stream](const EngineStream& entry) { return &entry.queue == stream; });
 }
 
 bool Runtime::owns(const sycl::queue* queue) {
     if (queue == &compute_ || queue == &transfer_) return true;
     std::lock_guard<std::mutex> lock(streams_mutex_);
-    for (const auto& q : streams_)
-        if (&q == queue) return true;
+    for (const auto& entry : streams_)
+        if (&entry.queue == queue) return true;
     return false;
 }
 
-sycl::queue& Runtime::stream(void* stream) {
+sycl::queue& Runtime::stream_for_copy(void* stream) {
     if (!stream) return compute_;
     auto* q = static_cast<sycl::queue*>(stream);
     // a queue of another device's runtime is that device's: a kernel goes where its stream is, as with CUDA streams
     if (!owns(q) && owner_of_stream(q) == nullptr) throw DeviceError("the stream is not a queue of the Xe runtime");
     return *q;
+}
+
+bool Runtime::copy_only(const sycl::queue* queue) {
+    if (!copy_engine_requested()) return false;
+    std::lock_guard<std::mutex> lock(streams_mutex_);
+    for (const auto& entry : streams_)
+        if (&entry.queue == queue) return entry.copy_only;
+    return false;
+}
+
+sycl::queue& Runtime::stream(void* handle) {
+    auto& queue = stream_for_copy(handle);
+    if (!copy_engine_requested()) return queue;
+    auto* owner = owner_of_stream(&queue);
+    if (owner && owner->copy_only(&queue))
+        throw DeviceError("copy-only stream refuses compute, graph and host-task work");
+    return queue;
+}
+
+sycl::queue* Runtime::create_copy_stream() {
+    if (!copy_engine_requested()) return create_stream();
+    const char* reason = "native import unavailable in this build/backend";
+#ifdef STRATA_NATIVE_COPY_IMPORT
+    if (service_events_requested()) {
+        reason = "service profiling uses the qualified generic queue";
+    } else if (device_.get_backend() == sycl::backend::ext_oneapi_level_zero) {
+        struct Library {
+            void* handle = nullptr;
+            ~Library() {
+                if (handle)
+                    native_copy::checked_release([&] { return dlclose(handle) == 0; },
+                                                 "native copy-loader close failed");
+            }
+        };
+        struct NativeOwner {
+            using Destroy = decltype(&zeCommandListDestroy);
+            std::shared_ptr<Library> library;
+            Destroy destroy = nullptr;
+            ze_command_list_handle_t list = nullptr;
+            ~NativeOwner() {
+                if (list)
+                    native_copy::checked_release([&] { return destroy(list) == ZE_RESULT_SUCCESS; },
+                                                 "native copy-list destroy failed; refusing unsafe teardown");
+            }
+        };
+        try {
+            // Allocate control blocks before acquiring the loader/native handles.
+            auto library = std::make_shared<Library>();
+            library->handle = dlopen("libze_loader.so.1", RTLD_NOW | RTLD_NOLOAD);
+            if (!library->handle) library->handle = dlopen("libze_loader.so.1", RTLD_NOW);
+            using Groups = decltype(&zeDeviceGetCommandQueueGroupProperties);
+            using Immediate = decltype(&zeCommandListCreateImmediate);
+            auto groups = library->handle ? reinterpret_cast<Groups>(
+                dlsym(library->handle, "zeDeviceGetCommandQueueGroupProperties")) : nullptr;
+            auto immediate = library->handle ? reinterpret_cast<Immediate>(
+                dlsym(library->handle, "zeCommandListCreateImmediate")) : nullptr;
+            auto destroy = library->handle ? reinterpret_cast<NativeOwner::Destroy>(
+                dlsym(library->handle, "zeCommandListDestroy")) : nullptr;
+            if (groups && immediate && destroy) {
+                const auto device = sycl::get_native<sycl::backend::ext_oneapi_level_zero>(device_);
+                const auto context = sycl::get_native<sycl::backend::ext_oneapi_level_zero>(context_);
+                uint32_t count = 0;
+                if (groups(device, &count, nullptr) == ZE_RESULT_SUCCESS && count > 0 && count <= 64) {
+                    std::vector<ze_command_queue_group_properties_t> properties(count);
+                    for (auto& property : properties)
+                        property.stype = ZE_STRUCTURE_TYPE_COMMAND_QUEUE_GROUP_PROPERTIES;
+                    const uint32_t capacity = count;
+                    if (groups(device, &count, properties.data()) == ZE_RESULT_SUCCESS && count <= capacity) {
+                        for (uint32_t ordinal = 0; ordinal < count; ++ordinal) {
+                            const auto& property = properties[ordinal];
+                            if (!(property.flags & ZE_COMMAND_QUEUE_GROUP_PROPERTY_FLAG_COPY) ||
+                                (property.flags & ZE_COMMAND_QUEUE_GROUP_PROPERTY_FLAG_COMPUTE) ||
+                                property.numQueues == 0) continue;
+                            auto owner = std::make_shared<NativeOwner>();
+                            owner->library = library;
+                            owner->destroy = destroy;
+                            ze_command_queue_desc_t descriptor{ZE_STRUCTURE_TYPE_COMMAND_QUEUE_DESC,
+                                nullptr, ordinal, 0, ZE_COMMAND_QUEUE_FLAG_IN_ORDER,
+                                ZE_COMMAND_QUEUE_MODE_ASYNCHRONOUS, ZE_COMMAND_QUEUE_PRIORITY_NORMAL};
+                            if (immediate(context, device, &descriptor, &owner->list) != ZE_RESULT_SUCCESS ||
+                                !owner->list) continue;
+                            // Input preparation is still pre-import: no UR borrower exists yet.
+                            // Once make_queue is attempted, any exception is fatal, including
+                            // non-std exceptions and insertion failure. Do not unwind owner.
+                            sycl::backend_input_t<sycl::backend::ext_oneapi_level_zero, sycl::queue> input(
+                                owner->list, device_, sycl::ext::oneapi::level_zero::ownership::keep,
+                                sycl::property_list{sycl::property::queue::in_order{}});
+                            // Prepare the handler before crossing the import boundary.
+                            auto async_handler = handler();
+                            auto* result = native_copy::import_and_store([&] {
+                                return sycl::make_queue<sycl::backend::ext_oneapi_level_zero>(
+                                    input, context_, async_handler);
+                            }, [&](sycl::queue&& queue) {
+                                std::lock_guard<std::mutex> lock(streams_mutex_);
+                                // Pass a reference into emplacement: allocation can fail
+                                // before EngineStream copies/moves the queue. No by-value
+                                // queue parameter can unwind a borrower inside this lambda.
+                                return &streams_.emplace_back(queue, owner, true).queue;
+                            });
+                            std::fprintf(stderr, "strata: native copy-only queue selected group=%u "
+                                                 "STRATA_COPY_ENGINE=1 ownership=keep\n", ordinal);
+                            return result;
+                        }
+                    }
+                }
+            }
+            reason = "no usable bounded copy-only API group/import";
+        } catch (const std::exception& error) {
+            std::fprintf(stderr, "strata: native copy-only pre-import preparation failed (%s); generic fallback\n", error.what());
+            return create_stream();
+        }
+    }
+#endif
+    std::fprintf(stderr, "strata: native copy-only queue generic fallback (%s)\n", reason);
+    return create_stream();
 }
 
 void Runtime::preload_kernels() {
@@ -384,8 +510,15 @@ void Runtime::wait(sycl::event event, const char* what) {
 
 void Runtime::finish(sycl::queue& queue) {
     if (!owns(&queue)) throw DeviceError("cannot drain a queue not owned by the Xe runtime");
-    wait(queue.ext_oneapi_submit_barrier(), &queue == &compute_ ? "compute queue drain"
-                                            : &queue == &transfer_ ? "transfer queue drain" : "engine stream drain");
+    auto drain = [&] {
+        wait(queue.ext_oneapi_submit_barrier(), &queue == &compute_ ? "compute queue drain"
+                                                : &queue == &transfer_ ? "transfer queue drain" : "engine stream drain");
+        return true;
+    };
+    if (copy_only(&queue))
+        native_copy::checked_release(drain, "native copy queue drain failed; refusing unsafe teardown");
+    else
+        (void) drain();
 }
 void Runtime::finish() {
     finish(compute_);
@@ -393,7 +526,7 @@ void Runtime::finish() {
     std::vector<sycl::queue*> streams;
     {
         std::lock_guard<std::mutex> lock(streams_mutex_);
-        for (auto& q : streams_) streams.push_back(&q);
+        for (auto& entry : streams_) streams.push_back(&entry.queue);
     }
     for (auto* q : streams) finish(*q);
 }

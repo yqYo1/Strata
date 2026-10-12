@@ -208,6 +208,23 @@ target_link_libraries(strata_plan INTERFACE strata_warnings)
 add_executable(strata-plan src/plan/plan_main.cpp)
 target_link_libraries(strata-plan PRIVATE strata_plan)
 
+if(STRATA_BUILD_TESTS AND CMAKE_SYSTEM_NAME STREQUAL "Linux")
+  enable_testing()
+  add_executable(native_copy_lifetime_test tools/test_native_copy_lifetime.cpp)
+  target_include_directories(native_copy_lifetime_test PRIVATE include)
+  target_link_libraries(native_copy_lifetime_test PRIVATE strata_warnings)
+  add_test(NAME native_copy_lifetime_success COMMAND native_copy_lifetime_test success)
+  add_test(NAME native_copy_lifetime_pre_import COMMAND native_copy_lifetime_test pre-import)
+  set_tests_properties(native_copy_lifetime_success native_copy_lifetime_pre_import PROPERTIES TIMEOUT 10)
+  # Fatal-path modes are checked by Main's bounded process owner, including
+  # exact exit and absence of release markers, rather than WILL_FAIL alone.
+  add_executable(copy_stream_policy_test tools/test_copy_stream_policy.cpp)
+  target_include_directories(copy_stream_policy_test PRIVATE include)
+  target_link_libraries(copy_stream_policy_test PRIVATE strata_warnings)
+  add_test(NAME copy_stream_policy_test COMMAND copy_stream_policy_test)
+  set_tests_properties(copy_stream_policy_test PROPERTIES TIMEOUT 10)
+endif()
+
 # ---- host-only platform and n-gram reader ----------------------------------
 # These never touched the GPU runtime; they sat inside the CUDA build only because their consumers did.
 add_library(strata_platform STATIC src/platform/memory.cpp src/platform/direct_file.cpp)
@@ -371,7 +388,8 @@ if(STRATA_ENABLE_XE)
   add_library(strata_core STATIC src/core/device.cpp src/core/pinned.cpp src/core/gpu.cpp src/core/graph.cpp
                                  src/core/weights.cpp src/core/layout.cpp)
   target_include_directories(strata_core PUBLIC include)
-  target_link_libraries(strata_core PUBLIC strata_sycl strata_warnings strata_plan strata_platform)
+  target_link_libraries(strata_core PUBLIC strata_sycl strata_warnings strata_plan strata_platform
+                                           ${CMAKE_DL_LIBS})
 
   add_executable(strata-device src/core/device_main.cpp)
   target_link_libraries(strata-device PRIVATE strata_core)
@@ -445,6 +463,9 @@ if(STRATA_ENABLE_XE)
     # Manually owned synthetic event diagnostic; deliberately not registered with CTest.
     add_executable(native_grouped_gemm_event_bench tools/native_grouped_gemm_event_bench.cpp)
     target_link_libraries(native_grouped_gemm_event_bench PRIVATE strata_kernels)
+    # Manually owned runtime fixture: no unguarded GPU CTest registration.
+    add_executable(native_copy_stream_test tools/test_native_copy_stream.cpp)
+    target_link_libraries(native_copy_stream_test PRIVATE strata_core)
     add_executable(prefill_service_event_test tools/prefill_service_event_test.cpp)
     target_link_libraries(prefill_service_event_test PRIVATE strata_kernels)
     add_executable(nonfinite_gpu_test tools/test_nonfinite_gpu.cpp)

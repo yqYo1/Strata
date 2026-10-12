@@ -82,13 +82,15 @@ sycl::queue& q(Stream s) {
     if (!s) return rt().compute();
     core::Runtime* owner = core::Runtime::owner_of_stream(s);
     if (!owner) throw core::DeviceError("the stream is not a queue of the Xe runtime");
-    return owner->stream(s);
+    return owner->stream_for_copy(s);
 }
 core::Runtime& rt_of(Stream s) {
     if (!s) return rt();
     core::Runtime* owner = core::Runtime::owner_of_stream(s);
     return owner ? *owner : rt();
 }
+
+sycl::queue& compute_q(Stream s) { return rt_of(s).stream(s); }
 
 // the recordings in progress, by queue
 std::mutex g_capture_mutex;
@@ -101,6 +103,11 @@ const char* last_error() { return g_error.c_str(); }
 Stream stream_create() {
     try { return rt().create_stream(); }
     catch (const std::exception& e) { fail("stream_create", e); return nullptr; }
+}
+
+Stream copy_stream_create() {
+    try { return rt().create_copy_stream(); }
+    catch (const std::exception& e) { fail("copy_stream_create", e); return nullptr; }
 }
 
 void stream_destroy(Stream s) {
@@ -274,7 +281,7 @@ bool copy2d_async(void* dst, size_t dpitch, const void* src, size_t spitch, size
     // a kernel rather than ext_oneapi_memcpy2d, which a SYCL graph recording does not accept: the verify window and
     // the drafter record this copy
     try {
-        auto& queue = q(s);
+        auto& queue = compute_q(s);
         const bool words = ((uintptr_t) dst | (uintptr_t) src | dpitch | spitch | width) % 4 == 0;
         if (words) {
             const size_t w = width / 4, dp = dpitch / 4, sp = spitch / 4;
@@ -299,7 +306,7 @@ bool memset(void* dst, int value, size_t bytes) {
 
 bool memset_async(void* dst, int value, size_t bytes, Stream s) {
     if (bytes == 0) return true;
-    try { memset_pieces(q(s), dst, value, bytes); return true; }
+    try { memset_pieces(compute_q(s), dst, value, bytes); return true; }
     catch (const std::exception& e) { return fail("memset_async", e); }
 }
 
@@ -341,7 +348,7 @@ void host_unregister(void* p) {
 
 bool launch_host(Stream s, std::function<void()> fn) {
     try {
-        q(s).submit([&](sycl::handler& h) { h.host_task([fn = std::move(fn)] { fn(); }); });
+        compute_q(s).submit([&](sycl::handler& h) { h.host_task([fn = std::move(fn)] { fn(); }); });
         return true;
     } catch (const std::exception& e) { return fail("launch_host", e); }
 }
@@ -358,8 +365,11 @@ bool event_record(Event* e, Stream s) {
     // an event without timing is a barrier where the runtime measured timestamps to slow the waits (measure_marks)
     try {
         auto& queue = q(s);
-        e->ev = e->timing || !rt_of(s).marks_by_barrier() ? sx::submit_profiling_tag(queue)
-                                                          : queue.ext_oneapi_submit_barrier();
+        const bool copy_only = rt_of(s).copy_only(&queue);
+        if (copy_only && e->timing)
+            throw core::DeviceError("copy-only stream refuses timing/profiling tags");
+        e->ev = !copy_only && (e->timing || !rt_of(s).marks_by_barrier())
+                    ? sx::submit_profiling_tag(queue) : queue.ext_oneapi_submit_barrier();
         return true;
     }
     catch (const std::exception& ex) { return fail("event_record", ex); }
@@ -402,7 +412,7 @@ bool event_elapsed_ms(float* ms, const Event* from, const Event* to) {
 
 bool begin_capture(Stream s) {
     try {
-        auto& queue = q(s);
+        auto& queue = compute_q(s);
         std::lock_guard<std::mutex> lock(g_capture_mutex);
         if (g_captures.count(&queue)) { g_error = "begin_capture: the stream is already recording"; return false; }
         auto it = g_captures.emplace(&queue, sx::command_graph<sx::graph_state::modifiable>(queue.get_context(),
@@ -415,7 +425,7 @@ bool begin_capture(Stream s) {
 bool end_capture(Stream s, Graph** out) {
     *out = nullptr;
     try {
-        auto& queue = q(s);
+        auto& queue = compute_q(s);
         std::lock_guard<std::mutex> lock(g_capture_mutex);
         auto it = g_captures.find(&queue);
         if (it == g_captures.end()) { g_error = "end_capture: the stream is not recording"; return false; }
@@ -431,7 +441,7 @@ bool end_capture(Stream s, Graph** out) {
 
 void abandon_capture(Stream s) {
     try {
-        auto& queue = q(s);
+        auto& queue = compute_q(s);
         std::lock_guard<std::mutex> lock(g_capture_mutex);
         auto it = g_captures.find(&queue);
         if (it == g_captures.end()) return;
@@ -449,8 +459,8 @@ void abandon_capture(Stream s) {
 
 bool stream_fork(Stream from, Stream to) {
     try {
-        auto& a = q(from);
-        auto& b = q(to);
+        auto& a = compute_q(from);
+        auto& b = compute_q(to);
         {
             std::lock_guard<std::mutex> lock(g_capture_mutex);
             auto it = g_captures.find(&a);
@@ -469,8 +479,8 @@ bool stream_fork(Stream from, Stream to) {
 
 bool stream_join(Stream into, Stream from) {
     try {
-        auto& a = q(into);
-        auto& b = q(from);
+        auto& a = compute_q(into);
+        auto& b = compute_q(from);
         const sycl::event e = b.ext_oneapi_submit_barrier();
         a.ext_oneapi_submit_barrier({e});
         std::lock_guard<std::mutex> lock(g_capture_mutex);
@@ -493,7 +503,7 @@ bool is_capturing(Stream s) {
 
 bool graph_launch(const Graph* g, Stream s) {
     if (!g) { g_error = "graph_launch: null graph"; return false; }
-    try { q(s).ext_oneapi_graph(g->exec); return true; }
+    try { compute_q(s).ext_oneapi_graph(g->exec); return true; }
     catch (const std::exception& e) { return fail("graph_launch", e); }
 }
 

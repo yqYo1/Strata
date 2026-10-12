@@ -10,6 +10,8 @@
 #include <condition_variable>
 #include <exception>
 #include <list>
+#include <memory>
+#include <utility>
 #include <mutex>
 #include <thread>
 
@@ -45,6 +47,10 @@ public:
     // stream handed to a kernel is one of these, compute() or null (compute()), or a queue of another device's
     // runtime (the kernel then runs there); anything else is refused.
     sycl::queue* create_stream();
+    // Exact opt-in only; native stream accepts copies/barriers, never kernels.
+    sycl::queue* create_copy_stream();
+    sycl::queue& stream_for_copy(void* stream);
+    bool copy_only(const sycl::queue* stream);
     void destroy_stream(sycl::queue* stream);
     sycl::queue& stream(void* stream);
 
@@ -86,7 +92,15 @@ private:
     sycl::context context_;
     sycl::queue compute_, transfer_;
     std::mutex streams_mutex_;
-    std::list<sycl::queue> streams_;
+    struct EngineStream {
+        // Reverse destruction: borrowed queue dies before its native owner.
+        std::shared_ptr<void> native_owner;
+        sycl::queue queue;
+        bool copy_only;
+        EngineStream(const sycl::queue& q, std::shared_ptr<void> owner = {}, bool copy = false)
+            : native_owner(std::move(owner)), queue(q), copy_only(copy) {}
+    };
+    std::list<EngineStream> streams_;
     std::mutex watch_mutex_;
     std::condition_variable watch_cv_;
     std::list<Waiter> waiters_;

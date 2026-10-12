@@ -35,6 +35,8 @@ struct Graph;
 const char* last_error();
 
 Stream stream_create();
+/// Exact STRATA_COPY_ENGINE=1 opts into copy/event-only native import.
+Stream copy_stream_create();
 void stream_destroy(Stream s);
 bool stream_sync(Stream s);
 /// True when every command submitted to `s` has completed (cudaStreamQuery == cudaSuccess).
