@@ -3379,21 +3379,22 @@ class StatusHandover(unittest.TestCase):
 
             def __init__(self):
                 self.lock, self.armed = threading.Lock(), False
+                self.handed_over = False
 
-            def acquire(self, blocking=True):
-                return self.lock.acquire(blocking)
+            def acquire(self, blocking=True, timeout=-1):
+                return self.lock.acquire(blocking, timeout)
 
             def __enter__(self):
                 self.lock.acquire()
 
             def __exit__(self, *exc):
-                self.lock.release()
-                if self.armed:
-                    self.armed = False
-                    second_running.wait(5)
+                self.release()
 
             def release(self):
                 self.lock.release()
+                if self.armed:
+                    self.armed = False
+                    self.handed_over = second_running.wait(5)
 
         svc = Service(Engine(tok, "</think>\n\n" + "y" * 40, max_context=CTX), tok,
                       ChatTemplate(ROOT / "serve/test_chat_template.jinja"))
@@ -3418,6 +3419,7 @@ class StatusHandover(unittest.TestCase):
         self.assertEqual(svc.status.get("queued"), 1, "the second request never queued")
         svc.fifo.armed = True
         first.close()                                   # the client went away: GeneratorExit in the first request
+        self.assertTrue(svc.fifo.handed_over, "the releasing thread did not observe the next request's tokens")
         waiter.join(10)
         self.assertFalse(waiter.is_alive())
         self.assertEqual(errors, [])
