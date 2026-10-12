@@ -1,0 +1,47 @@
+# Official v0.1.43: atomic-host-free batched-prefill admission (R206)
+
+Date: 2026-10-12
+Scope: read-only source/standards review of the pristine official v0.1.43 tree at `/home/yayoi/ghq/github.com/Niko1221/Strata/.worktree/bench-upstream-v0143-pristine-20261012`. No build, test, compiler, device, GPU, runtime, process, Git, or source-edit work was performed. This report is the only artifact written for this investigation.
+
+## Finding
+
+An actual batched prompt-prefill route already exists without host/device concurrent polling: the normal MoE fallback in `Prefill::run_impl` groups the routed experts on the CPU at an explicit queue completion boundary. Its correctness contract is exclusive ownership in phases: device writes routed IDs; host waits for the queue and reads IDs/builds grouping tables; device work is then enqueued to consume the tables. That path does not require `aspect::usm_atomic_host_allocations`.
+
+The separate all-experts-known streamed fused path also groups on the GPU and chains staging/computation with events/barriers. Neither path uses a host-side volatile doorbell. Host-USM *atomic* support is therefore not the admission requirement for batched prefill. Host allocation support can select a mapped-copy optimization; when that allocation is unavailable or disabled, the code has pageable-vector copies as a fallback.
+
+Admission should be based on selecting actual batched prefill (the short-read verifier must not consume the prompt first), then retaining the queue-boundary or GPU-event synchronization route. Do not infer that `STRATA_VERIFY_STEPPED=1` is a batched-prefill control: prior R202 evidence identifies it as a verifier/decode control only. Prior R203 evidence says a 65536 short-read setting enters the verifier; `--short-read 0` is needed to expose the actual prefill route. The queue-wait fallback is already present in pristine v0.1.43; no alternate implementation or blocker is required for lack of atomic host allocations.
+
+## Source evidence
+
+Tree: `/home/yayoi/ghq/github.com/Niko1221/Strata/.worktree/bench-upstream-v0143-pristine-20261012`
+
+- `sycl/src/prefill/prefill.cpp:3209-3217`: router kernel enqueues routed expert IDs before the MoE branch chooses a path.
+- `sycl/src/prefill/prefill.cpp:3232-3285`: the fused path is limited to streamed/all-known expert placement; it performs GPU `fused::group` and places a barrier on the last copied staging event before using staged blobs. This is event/queue dependency ordering, not host polling.
+- `sycl/src/prefill/prefill.cpp:3309-3337`: fallback selects host grouping, enqueues the ID copy (`copy_i32` from mapped host USM, or queue `memcpy` to a pageable vector), then calls `m.cs->wait()` before host reads. This is the critical happens-before boundary.
+- `sycl/src/prefill/prefill.cpp:3338-3414`: only after the wait does host code count IDs, build offsets/order, and fill slot/source tables. It then copies those tables back to device; subsequent kernels are enqueued on the same prefill queue.
+- `sycl/src/prefill/prefill.cpp:1005-1050`: grouping storage tries `sycl::malloc_host` and device aliasing unless forced pageable; failure leaves the mapped pointers null and retains the existing `ids_host`, `slot_host`, and `src_host` vector fallback. This concerns host-USM availability, not atomic host-USM availability.
+- `sycl/src/prefill/kernels.dp.cpp:2899-2913`: `copy_i32` itself is a queued kernel used to transfer IDs/tables in the mapped route; synchronization before host observation comes from the explicit queue wait above.
+
+## Standards evidence
+
+The Khronos [SYCL 2020 specification, revision 12](https://registry.khronos.org/SYCL/specs/sycl-2020/html/sycl-2020.html) defines `aspect::usm_atomic_host_allocations` as support for the host and device to *concurrently* access and atomically modify host allocations (section 4.6.4.5; specification lines 4311-4312 in the browsed version). Its USM discussion says host allocations require proper host/device synchronization (section 4.8.2; lines 11718-11720). `queue::wait()` blocks until commands previously submitted to that queue have completed (section 4.6.5.2; lines 4937-4942). Thus the source's serialized host phase does not rely on the concurrent atomic capability. This standards fact does not claim every backend supports `malloc_host`; the code has a pageable fallback for that case.
+
+## Route and control separation
+
+- **Batched prompt:** `Prefill::run_impl` processes a prompt chunk in layers. On non-fused MoE layers it uses the synchronized host-group branch described above. On eligible streamed layers it can use the GPU-grouped fused branch.
+- **Verifier:** stepped/serial verification avoids the verifier's concurrent host/device signaling mechanism. That is useful for a verifier that cannot use host atomics, but it is not a substitute for or gate on actual batched prompt prefill.
+- **Short-read:** `--short-read 0` is the control indicated by R203 to avoid consuming prompt tokens in the short-read verifier and reach batched prefill. Verify the log/route before attributing a run to prefill.
+
+## Practical recommendation / limits
+
+On a device that lacks `usm_atomic_host_allocations`, admit batched prefill through the existing synchronized route: use the real batched prompt path, allow the `m.cs->wait()` before CPU grouping, and retain the pageable fallback if mapped host allocations are unsupported. A performance experiment may compare mapped versus pageable grouping copies, but it must preserve the wait before host reads and queue ordering before device reads. Do not replace these boundaries with a busy poll over host memory.
+
+This is a static source-and-spec conclusion, not a runtime validation on a particular Level Zero device. It proves that a synchronization-correct path is present and that its algorithm does not require atomic host allocations; it does not establish performance, backend conformance of a specific driver, or a successful hardware run. No such run was made under this task's restrictions.
+
+## Prior evidence checked
+
+- Report registry `report-registry-v153.json` in `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-12-latest-updates-pristine-builds-host-regression/`.
+- R202: stepped serial verifier candidate and its relevant controls; scope is verifier synchronization.
+- R203: short-read/verifier routing and the requirement to use `--short-read 0` to expose actual batched prefill.
+
+These reports are retained in their existing locations; this investigation did not alter or clean them.

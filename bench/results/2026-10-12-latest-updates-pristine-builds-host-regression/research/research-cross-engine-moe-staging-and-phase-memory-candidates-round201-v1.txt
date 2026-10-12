@@ -1,0 +1,69 @@
+# R201 — Cross-engine MoE staging and phase-memory candidate screen
+
+Date: 2026-10-12 (Asia/Tokyo). Read-only screen of primary vLLM, SGLang, Intel IPEX-LLM / LLM Scaler and adjacent implementations for safe MoE prefill staging, prefill-to-decode memory handoff, and redundant host-to-device traffic on small VRAM. No project code was executed, imported, compiled or tested; no GPU, runtime, model, process, Git state, scratch artifact or prior report was touched. Only this report was written.
+
+## Decision
+
+No new implementation candidate passed the novelty and transferability gate. The concrete mechanisms found are either already present in the Strata work or require a GPU-side format/kernel contract the current WN/W337 paths do not provide. In particular, source evidence does not support per-token expert prefetch as a remedy for MoE route misses: an expert request is known only after the previous layer has produced router logits. The most promising external cache patterns (deduplicate a prefill's expert set, protect its active set from eviction, publish fixed-slot mappings only after transfer completion) are already represented by Strata's route-grouping, cache-borrowing, staging and event/lifetime contracts recorded in prior reports. Reapplying them under a new name would not be a new candidate.
+
+This is a source screen, not a claim that existing Strata staging is optimal. It provides no B570 timing, transfer count or memory receipt.
+
+## Scope and prior-art boundary
+
+The prior-art review covered shared reports in `/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009`, including R81, R142, R189, R197, R257, R273, R298, R302, R323, R326, R335 and R351, plus current-family phase/cache reports R157 and R186. The supplied v153 registry path from the task was absent at this location, so I relied on the existing report files themselves and did not substitute a different registry or alter one.
+
+Relevant existing Strata findings:
+
+- R142 already found that the non-fused long-prefill MMQ route path copies O(TK) route IDs to host, groups them, and copies O(TK) maps back, while the fused path already GPU-groups routes. It proposed extending GPU grouping to the MMQ path; it does not save expert-weight bytes.
+- R189 already screened double-buffering the layer-major full-layer expert cache across adjacent layers. It is headroom-gated and saves exposed staging time only, not bytes.
+- R157 describes the existing expert-cache borrowing boundary, host/device residency map authority, and the requirement to refresh captured pointers after a cache plan change. R273 covers chunk sizing and the MTP/cache lease lifecycle.
+- R298, R302, R323 and R326 record route/staging publication and failure-safe buffer/event retirement requirements. R351 covers an unsupported concurrent CPU read and DMA read of the same host-USM expert arena under a particular CPU-share route.
+- R197 records upstream fused IQ expert dequantization as a separately eligible launch-reduction path. It does not change transfer traffic.
+
+These boundaries exclude generic route deduplication, ordinary copy/compute overlap, layer-major prefetch, cache borrowing/release, volatile host-doorbell protocols, and PLE/embedding aliasing as new results here.
+
+## External source findings
+
+### vLLM incremental expert offload: cache mechanisms are relevant but duplicate or format-incompatible
+
+The vLLM [incremental MoE offload RFC #38256](https://github.com/vllm-project/vllm/issues/38256) describes a fixed-address GPU expert-slot cache backed by pinned host memory, a persistent global-expert-to-slot map, LFRU eviction, and a `prepare(topk_ids)` step that deduplicates the requested expert IDs. It explicitly keeps the active top-k working set protected during eviction. The RFC reports the author's separate tinyserve result on an RTX PRO 2000 8 GB for GPT-OSS-20B MXFP4 (30 tokens/s and 97–100% cache hit rate), and explicitly warns that other batch/hardware configurations differ. Those values do not transfer to B570, native IQ weights or Strata's chunk scheduler.
+
+The cache shape is concrete, but no new Strata lead emerged: R157 already identifies the fixed residency map/cache authority; R142 already handles route grouping; R298/R326 cover staging publication and slot lifetimes. Adapting its remapped IDs directly would also be unsafe for quantized weights: the RFC's own discussion records a scale-index mismatch when slot-indexed weights were paired with global-expert-indexed scales, and settles on a persistent global-ID `expert_map` instead. Strata would need to preserve its native format/scale ownership and exact expert index semantics. Do not treat the RFC's CUDA cache as a tested SYCL implementation.
+
+The same RFC gives a useful negative result: data-dependent routing means the next layer's expert set cannot be known until the prior layer computes its router logits; a cache miss discovered at that point is already on the critical path. Its reported host gather cost and decode-throughput impact are from one H100/DeepSeek configuration, not an Arc measurement. This argues against adding a speculative per-token prefetch proposal without independent prediction evidence.
+
+A newer [vLLM expert-granular UVA RFC #57794](https://github.com/vllm-project/vllm/issues/57794) proposes periodically demoting a fraction of cold experts based on existing EPLB load windows, while keeping hot experts device resident and dispatching separate hot/cold expert banks. The proposal itself rejects per-token swap-on-demand for the same route-latency reason. It reports host-gather numbers for H100 and proposes CUDA UVA access to pinned host memory. This is not a safe direct transfer to WN/W337: a SYCL host-USM pointer is not proof that the current native IQ GEMM/gather path supports remote host residency, its page behavior, or concurrent CPU/DMA access. R351 already found a conditional host-USM CPU-read versus DMA-read hazard for Strata's expert arena. A two-bank split would additionally need per-bank scale/format consistency, exact combination order, and an allocation/performance gate. No candidate until an Intel SYCL implementation demonstrates the exact access model and a bottleneck receipt shows that avoiding full-expert H2D costs more than PCIe remote reads.
+
+### SGLang Expert Pack: generation-aware slots and active-set protection are not a new Strata transfer
+
+The primary [SGLang Expert Pack source](https://github.com/sgl-project/sglang/blob/main/python/sglang/srt/layers/moe/expert_pack.py) implements a validated packed-object store with a host/device cache. Its `acquire` path deduplicates route IDs into requested (layer, expert) keys, uses a cache hit when the resident generation matches, protects the request's active set when choosing a victim, waits for a slot's prior use before replacement, and records a ready event for the installed copy. The source maintains cache-hit/miss/eviction, staging, H2D-byte and per-layer route counters. Those are useful review/test invariants, not a new Strata optimization: the route set is already grouped; staging ring slots have copy/used event semantics; and prior reports specify failure propagation and retirement. Its object layout is explicitly MXFP4/identity-block based and its copy path uses `torch.cuda`, so it does not establish support for Strata's GGUF native IQ experts, SYCL queues, host-USM behavior, or B570 performance. No transferable byte saving is established.
+
+The code's active-set protection could matter only if a future Strata cache candidate evicts experts while the same expert set is still being consumed. That is an invariant to retain in any such design, not an independently admitted candidate.
+
+### Intel IPEX-LLM / LLM Scaler: published platform work does not identify this seam
+
+The [IPEX-LLM repository](https://github.com/intel/ipex-llm) describes Intel XPU acceleration and its archived README advertises FlashMoE on Arc A770/B580 for very large MoE models. The [Intel LLM Scaler repository](https://github.com/intel/llm-scaler) documents vLLM-based support for Arc Pro B60/B70 and model streaming load to reduce peak load-time memory. The latter concerns model loading peak memory, not request-time expert H2D staging or reclaim/reuse at the prompt-to-decode boundary. The public landing/README evidence does not expose a concrete SYCL small-VRAM expert staging implementation with a safe lifetime contract that Strata can adopt. B60/B70 claims, model coverage and load-time memory benefits are not B570 measurements or proof for the WN/W337 execution path. No candidate admitted from this screen.
+
+### Independent Intel SYCL paths and OpenVINO offload
+
+Intel LLM Scaler is a packaging/deployment repository for upstream engines rather than evidence of a new native-SYCL expert cache schedule in the inspected public descriptions. OpenVINO's [Intel GPU options](https://github.com/openvinotoolkit/openvino/blob/master/src/plugins/intel_gpu/include/intel_gpu/runtime/options.inl) expose an expert-only weight offload ratio and a zero-copy cache-load option, but the option declaration alone does not prove request-time residency changes, H2D elimination, B570 support, or a compatible packed-IQ execution path. A separate OpenVINO model/runtime integration is outside the current WN/W337 transfer seam. Do not port a setting based only on its name.
+
+## Candidate disposition and evidence needed to reopen
+
+No implementation action is recommended from this screen. A later candidate would need to name one concrete WN/W337 source seam and satisfy all of these gates before code changes:
+
+1. A current matched B570 receipt must show repeated expert H2D bytes/cost or a specific exposed layer-boundary wait. Route counts or theoretical PCIe arithmetic alone are insufficient.
+2. The proposed residency source must be supported by the actual SYCL kernel/access path and packed IQ format. Host-USM availability is not equivalent to a GPU-readable, performant cache.
+3. The ownership plan must prove each expert buffer is immutable until all consumer queues finish; staging/eviction must wait for the matching generation's copy-ready and last-use events. On any submit/wait error, do not publish the slot or release its source buffer.
+4. The memory ledger must include cache slots plus Prefill scratch, session/KV/MTP state, and required decode headroom at the actual phase boundary. A cache that saves transfers but displaces live decode state is ineligible.
+5. Route/map, scale, output/logit/state parity must be checked, followed by isolated prefill timing and decode timing after the phase handoff. External RTX/H100/B60/B70 numbers cannot substitute.
+
+The most useful external negative result is therefore narrow: route-dependent cold-expert fetch cannot be assumed to overlap compute merely by adding lookahead; the only concrete external alternatives require a persistent cache, host-UVA kernel support or a new hot/cold execution split already beyond the safe transferability evidence. Existing Strata grouping, staging and lease work covers the directly transferable parts. No B570 performance result or source modification is claimed.
+
+## Sources
+
+- vLLM [Incremental MoE Expert Offloading RFC #38256](https://github.com/vllm-project/vllm/issues/38256)
+- vLLM [Expert-granular MoE residency / UVA RFC #57794](https://github.com/vllm-project/vllm/issues/57794)
+- SGLang [Expert Pack implementation](https://github.com/sgl-project/sglang/blob/main/python/sglang/srt/layers/moe/expert_pack.py)
+- Intel [IPEX-LLM](https://github.com/intel/ipex-llm) and [LLM Scaler](https://github.com/intel/llm-scaler)
+- OpenVINO [Intel GPU runtime options](https://github.com/openvinotoolkit/openvino/blob/master/src/plugins/intel_gpu/include/intel_gpu/runtime/options.inl)

@@ -1,0 +1,52 @@
+# R202 — Final Linux single-GPU functional delta audit
+
+Date: 2026-10-12 (Asia/Tokyo). Read-only source comparison for Linux, one GPU, between official Strata v0.1.43, XeStrata v0.1.42, and the current mutable WN integration. Scope: operationally useful server/setup/API functions, protocol recovery, and claims about engine capability. CUDA/HIP and multi-GPU functions are excluded. No code, imports, AST, tests, build, compiler, runtime, GPU, model, process query, Git command, temporary scratch, cleanup, or existing report edit was used. Only this report was written.
+
+## Determination
+
+One narrow user-visible gap remains in the WN integration: a non-empty `logit_bias` supplied through config/shared sampling defaults is rejected by the unsupported-engine guard when Anthropic streaming reaches the engine adapter, but the Anthropic route has already sent HTTP 200 and its `message_start` SSE event. OpenAI Chat and Responses validate the same effective defaults before beginning their streams. No bias is advertised by the WN native `INFO`, and the adapter does prevent the unsupported value from reaching native generation through normal service calls; this is a pre-stream error-ordering gap, not unsupported native inference being presented as available.
+
+The rest of the specifically named single-GPU Linux functions are present in the current WN source. This is source-presence evidence only; no test or runtime qualification is claimed.
+
+## Inputs and file identities
+
+The supplied committed registry v153 exists and was read at `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-12-latest-updates-pristine-builds-host-regression/report-registry-v153.json`, SHA-256 `7c678fd2c895e6b4f8fa56e2eb427a9d55b1c491cbbdd87296bc062af5befad2`. Prior source-audit reports R190, R192, R194, R198 and R199 were reviewed to avoid repeating resolved items.
+
+The compared official v0.1.43 snapshot is `/home/yayoi/ghq/github.com/Niko1221/Strata/.worktree/bench-upstream-v0143-pristine-20261012`; Xe v0.1.42 is `/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/bench-xestrata-xe0142-pristine-20261012`. The current mutable WN source is `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-xe-v0143-nonfinite-20261012`. These worktree paths and source hashes identify the read inputs; the current WN tree has uncommitted integration files/edits and cannot be identified from its base revision alone.
+
+| File | Official v0.1.43 | Xe v0.1.42 | Current mutable WN |
+|---|---|---|---|
+| `serve/server.py` | `55ee9d1160f0da457cabe6f9dfea9884296b6d70fd3d14abd4ed42e6f79dd72b` | `0635cc7951e82a0a0d4e44c424027bbe939fe7e62daa0803c2f8d98f8628183e` | `5e684d53f7da2db75b60d2d8849bf8cb340afadc251ee56806b8102196bda16d` |
+| `serve/runconfig.py` | `08c5ee5af5b599d11c25778725613948b8f6b8b74432aa6b645845e6d145bf31` | `f303263f51e54795e8dae3d75082322216d49993bd5536a0027a455e4fa82969` | `f303263f51e54795e8dae3d75082322216d49993bd5536a0027a455e4fa82969` |
+| `setup.py` | `dcc428f1cc62860a6734c3ddcb65229147e3e18f894241c23b463f98a3c44a79` | `6d841de9f4fc72a199d1f42d31bddaa369f24f0cc85a7d25193e783cbe8b9e39` | `c537e11811da54bea26e8feda28c9252054e13465ce4e68f16ffcfdffe22f462` |
+| `src/program/generate.cpp` | `23c2b4d0aba33b9f891f52ad10ef988e11b29ffe079aae6cbae1888900c1c47d` | `11ef3ab19817c2deddd5c68bb78192542dde3e79a971a8af01f3239fce6398aa` | `e74fa4d8612e2f5b11a654ba4ab1b955962fc977fe51f3a2a55432dd916170c1` |
+
+Additional current WN identities: `serve/logit_bias.py` `120cf40b04411eacf24a447d84b7fd1b045476eb3937a668016498d2af896d1b`; `serve/test_logit_bias.py` `e4639335a8566f6fc453076760adff283bd82b92d68fd529418e7d6e4d5b55b8`; `serve/session_save_retry.py` `3a235efbb9a38fbbc8125bfb9d14e41829dd56765e7b4443f2213d3b971d61a2`; `serve/cache_drop.py` `4957023310bc553cd704772c5999de618acb1c33b71e9a591c8abdc0c956fac3`; `tools/strata_bench.py` `5403895e57df27384931ea978711ab096157ee93f0e4bcfbb25c5abba013c0d6`.
+
+## Remaining finding: fail closed before Anthropic SSE for unsupported bias defaults
+
+The current WN `serve/logit_bias.py:54-62` checks non-empty bias against `engine.info["logit_bias"] == 1` and rejects it when the engine lacks that capability. WN `src/program/generate.cpp:7160-7164` emits its monitor `INFO` fields without `logit_bias=1`; unlike the compared official and Xe sources, WN's native parser at `generate.cpp:8151-8177` treats unknown sampling keys as skipped. The WN server-side gate is therefore material: it prevents normal API requests from being silently interpreted as unbiased generation. No `logit_bias` native execution path or capability advertisement was found in WN.
+
+For OpenAI Chat, `server.py:4900-4912` calls `svc.validate_logit_bias(req)` before the streaming branch. Responses similarly validates at `:5071-5108` before response events begin. But `clean_shared_defaults` and `sampling_defaults_from_config` accept and normalize a non-empty bias without knowing the active engine capability (`:5422-5450, 5494-5510`). `Service.run` merges those defaults into each request (`:3265-3268`). The Anthropic handler `_anthropic` loads the engine and prepares the prompt at `:5144-5158`, then creates `anthropic_events`; the generator yields `message_start` first (`:4048-4052`) and only afterward enters `svc.run` (`:4059`). The route sends SSE headers at `:5163` before iterating that generator. The final rejection occurs later in `StrataEngine.generate` / `generate_batched` (`:1469-1477, 1168-1178`), after the client has already received a successful stream start. A non-empty bias in saved shared settings can therefore make an Anthropic streaming request return HTTP 200 plus a partial message/error event instead of a clear pre-stream unsupported-feature response. A directly supplied extra `logit_bias` key can take the same path because the request dict becomes the sampling dict in `anthropic_events`.
+
+This gap is newly visible because the WN branch deliberately leaves native bias unsupported while the service's generic adapter guard is lazy. It does not imply the normal request reaches native generation: the guard raises before the `GEN` write. It is a response-status/error-contract issue at the Anthropic route boundary.
+
+Minimal remedy: after `svc.load()` and before prompt work or any SSE event, validate the effective merged bias for the Anthropic request (the existing `svc.validate_logit_bias(req)` already incorporates config and shared defaults), and map its `ValueError` to the route's pre-stream 400 error shape. Add a focused offline regression using an unsupported mock engine and a non-empty config/shared default; for `stream=true`, assert no `message_start`, no engine generation, and an explicit unsupported error. Preserve absent/empty bias as unchanged. This is a source-level recommendation; no test was run.
+
+The existing `serve/test_logit_bias.py` covers Chat and Responses pre-stream rejection for malformed values (around lines 110-174), the capability helper, and transport only with a mock advertising support (around lines 176+). It does not exercise unsupported-engine bias defaults through `/v1/messages`. The source review did not find a test that closes the identified ordering gap.
+
+## Other single-GPU Linux functions checked
+
+- **Non-finite recovery:** WN engine code emits `DONE/BDONE ... nonfinite` and drops only the affected request/slot's cached prefix; the service recognizes the finish, retries once only before any token was sent, and does not leak tokens from the poisoned window. Source/test anchors include `src/program/generate.cpp:6428-6436, 7521-7527, 9127, 9651-9661, 9878-9884`, `serve/server.py:852-855, 1043-1044, 1094-1097, 3355-3445`, and `serve/test_server.py:4564-4698` / `serve/test_parallel.py:506+`. These are present; this audit did not run them or qualify GPU behavior.
+- **Session SAVE reclaim and memory limits:** WN parses `--session-save-reclaim` / `--memory-limit-mib`, applies cgroup/explicit-cap-aware sampling in `src/core/conversation_memory.cpp`, invokes native reclaim before SAVE admission, and only uses the bounded Python retry wrapper when opted in. Current `session_save_retry.py` rechecks both same-process identity and deadline immediately before retry dispatch, addressing R199's source finding. The filesystem/API implementations are present; no memory-pressure exercise was run.
+- **Context, reasoning defaults and launcher:** WN retains prompt/token context checks, OpenAI-compatible context error wording, and Responses `context_length_exceeded` mapping; reasoning defaults/lifting and Intel launcher target resolution are present in `serve/server.py` and the adapted helper/test. No API contract tests were run.
+- **Setup archive recovery:** `setup.py` catches `zipfile.BadZipFile`, removes the damaged archive and completion marker, then rethrows; `tools/test_setup_llama_archive.py` is present. No download/extraction/setup test was executed.
+- **Page-cache drop:** `serve/cache_drop.py` is default-off, POSIX-only, advises model files only after the child engine exits; the server shutdown hook and `serve/test_cache_drop.py` are present. No cache-drop action was run.
+- **HTTP benchmark:** `tools/strata_bench.py` is present as the attach-only HTTP benchmark tooling requested in the integration. Presence does not establish endpoint safety or benchmark results; it was not run.
+- **Excluded features:** official Windows-only keep-awake and multi-GPU replica routing are not needed for the specified Linux single-GPU target. No new missing endpoint was identified for the supported Chat Completions, Anthropic Messages and Responses routes.
+
+Official v0.1.43 and Xe v0.1.42 each include a native `logit_bias=1` INFO capability and corresponding request parser/sampler path, confirmed by their pinned `src/program/generate.cpp` sources. WN intentionally does not inherit that native feature. This audit recommends only tightening its unsupported-error timing for Anthropic streaming, not claiming or enabling bias support.
+
+## Evidence limits
+
+All conclusions are from source and test-file inspection. Presence of a helper, INFO field, or unit-test name is not a test result. No server was started, no request was sent, no test/build was run, and no engine/device behavior was observed. The one finding is a predictable control-flow consequence of the audited code paths, not a reproduced HTTP response.

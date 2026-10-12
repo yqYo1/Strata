@@ -1,0 +1,24 @@
+# Public release/default-branch check and post-pin functional deltas (round 203)
+
+Observed: 2026-10-11 22:54:24 UTC. Scope: GitHub public primary pages only; no Git commands or source checkout inspection. Compared with the supplied official pins: Strata `7695859aa13afb248bdb4d36f9b2e95707db079d` (`v0.1.43`) and XeStrata `da3d426079019daa6e01388d03b0d94ae67070b7` (`xe0.1.42`).
+
+## Release status
+
+- **Strata:** GitHub's `/releases/latest` redirects to `/releases/tag/v0.1.43`, marked Latest, published 11 Oct 2026, and points to short SHA `7695859`. This is the same commit as the supplied pin. Therefore there is no newer Strata release to import. The release notes describe performance/default changes and fixes relative to v0.1.42, but these are already represented by the pin.
+- **XeStrata:** GitHub's `/releases/latest` redirects to `/releases/tag/xe0.1.42`, marked Latest, published 11 Oct 2026, and points to short SHA `da3d426`. This is the same commit as the supplied pin. Therefore there is no newer XeStrata release to import. The release notes document compiler machine-code target correction and package verification, server/API features, concurrency/setup fixes, and measured GPU changes; they belong to the pin, not a post-pin delta.
+
+## Default branch status and limitation
+
+The repository landing pages identify `main` as the default branch. GitHub's public `/commits/main`, `/tree/main`, and `/branches` pages were blocked/restricted in the browser retrieval path; GitHub API requests were also unavailable. Thus I cannot provide a verifiable full SHA for either current `main` head or establish whether either head advanced after its latest release. Search-indexed Strata commit history was stale (showed Oct 4), so it is not evidence of the Oct 11/12 branch head. The current XeStrata README page was crawled on Oct 11 and describes Ubuntu 26.04/Fedora 44 packages, but it does not expose a commit SHA and cannot establish a post-release source delta. Do not treat the release pins as verified current default-branch heads.
+
+Primary pages:
+- Strata latest release: https://github.com/Niko1221/Strata/releases/latest
+- Strata repository (default branch shown as `main`): https://github.com/Niko1221/Strata
+- Strata commit history attempt: https://github.com/Niko1221/Strata/commits/main
+- XeStrata latest release: https://github.com/MistVVK/XeStrata/releases/latest
+- XeStrata repository (default branch shown as `main`): https://github.com/MistVVK/XeStrata
+- XeStrata commit history attempt: https://github.com/MistVVK/XeStrata/commits/main
+
+## Linux single-GPU server/setup conclusion
+
+No post-pin functional delta is established from the accessible primary evidence, because the latest releases match both supplied pins and the branch-head pages were unavailable. The release notes/readme do identify changes versus earlier releases, but those are already in the pinned source. No further Linux single-GPU server/setup change is justified on this evidence alone. This is a version/evidence conclusion, not runtime qualification. Recheck default branch heads directly when GitHub's commit/API pages are accessible before making a claim about unreleased main changes.

@@ -1,0 +1,41 @@
+Implementation — fused IQ GU/down prefill source v1
+Date: 2026-10-12
+Status: SOURCE_ONLY_UNVERIFIED
+
+Package: /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-fused-iq-gu-down-prefill-source-v1
+Source-only isolated experiment, not integrated. Main sole execution/qualification owner.
+Read full R197/R198, WN AGENTS/LOCAL and canonical artifact retention policy.
+No existing source/package/report edits, Git mutations, compilation, AST/import, tests, lint/formatter, GPU/runtime/model/process queries or cleanup.
+Only source text reads/copy/edit/hash and package-local patch/manifest generation performed.
+The first editing command used unavailable `python` and exited127 before creating/writing the package; subsequent source transformations used python3 without importing any target code.
+
+Functional boundary
+Default OFF exact-1 frozen STRATA_PF_DQ_FUSED; only two nonbatched native-pair paths.
+256-work-item/eight-SG32 contiguous superblock mapping, independent types, checked products/spans/capacities/overlap and queue/device/context USM admission.
+Original grouped-native/batch drain/decode/verify/precision/math and used-slot/event/GEMM handoff preserved.
+Actual old pair versus actual fused full FP16 fixture, 54 proposed cases, output/input canaries and invalid-call no-write checks.
+CPU no-Runtime invalid contract fixture. Device fixture labelled gpu_tests, serial180s; CPU30s.
+Source lifetimes survive failure until successful drain; undrainable failures fail-stop without freeing.
+No GPU parity, resource fit, performance or full model qualification claimed.
+
+Limitations/remaining Main gates
+See SOURCE_CONTRACT.txt in full: Main hunk review; LLVM7.1.1 free+contrib-llvm builds/warnings/lints, CPU and host sanitizer checks; fresh owned health/fault-gated actual GPU parity; only then production/native-pack/full-logit/state qualification and separately measured speed.
+Synthetic shipped-pair inventory is existing CMake inventory, not certified exhaustive real pack inventory. Odd-ff tails are flat decode cases, deliberately not native row-admission claims. GGML quantizer/type42 layout and device compiler compatibility remain unverified.
+Auxiliary kernel.fragment is a retained initial review fragment, not final source or patch input. Main may retire after review; no cleanup performed.
+
+Complete package file SHA256/bytes
+4eddf70cef577715bd0d87596bc45c1fc6d88af3d0db333b9781e288bf9f36cd 77 ABSENT.txt
+2dc125033b8a9907f61f2083a261f86acee764c50846abbd47ac0eb7b64e34a4 6308 SOURCE_CONTRACT.txt
+e4b4229433ce13ecfca25e9369a606ee6202099d9c719226a96e4706b7d8780a 61538 after/CMakeLists.txt
+a8caf77c1d86f7536a0bb911aa1afa0f52da2789348a24ea1364370d85371c60 8637 after/include/strata/kernels/iq_kernels.hpp
+56ec745c35d61860d620c4ae4721bed7f1b0be7da0e35e1d8928344532020ba9 113503 after/src/kernels/xe/iq_kernels.cpp
+54b0781047a30e7acfda391e3b9e8a48a29cd725f0a9ba889794aca432652a6a 212769 after/src/prefill/prefill.cpp
+d9b53f09795049e6aa5911b99556466cc418927b87e29bbb60d4bb6bd30f0b91 1534 after/tools/test_fused_iq_dequant_contract.cpp
+b863b022e6a7db13da6ab6042806c7f928214f039ca75ef5a1a4e58a26b98ebd 10895 after/tools/test_fused_iq_dequant_gpu.cpp
+289eddbcdbcfe077bec97176435abeaebfe20d52d32d963c55e331eb200377b0 60745 before/CMakeLists.txt
+61513ccb71831d1065bd25829541c508adf3ae58e1e3df6d3bc0c9681cb54f6d 7880 before/include/strata/kernels/iq_kernels.hpp
+75f2ac1dfdb337c424bba19e62c34159a1bde547a776b9b5d6cf7975dfc29d50 109316 before/src/kernels/xe/iq_kernels.cpp
+2922806c8b56b64e1bc20096d93c852a105ed225ff3bf9dcf113436c79964d9c 210721 before/src/prefill/prefill.cpp
+8e1a44faec17d660b2375e311dabd8dd1ab027822004309eba9cb51ded501ff0 24799 changes.patch
+4c1b2139d621d81b38ba291ea66372c0914491daaae38518537f94335c284eea 4232 kernel.fragment
+93b05d116502062303c158162e8de78dd6f95b5fea795750fb39b3a6cd98fd71 1820 manifest.json

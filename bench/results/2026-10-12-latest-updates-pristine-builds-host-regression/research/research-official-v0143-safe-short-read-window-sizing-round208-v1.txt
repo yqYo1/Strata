@@ -1,0 +1,71 @@
+# Official v0.1.43 safe short-read window sizing (R208)
+
+Date: 2026-10-12
+Scope: read-only source review of pristine official v0.1.43 at `/home/yayoi/ghq/github.com/Niko1221/Strata/.worktree/bench-upstream-v0143-pristine-20261012`. No source edits, execution/imports/AST, tests/build/compiler, GPU/runtime/model/process/Git, scratch, or cleanup. This report addresses the `--serve` short-read verifier route and does not change prior reports.
+
+## Finding
+
+The largest legal verifier window in pristine v0.1.43 is **8 tokens total**. There is no `STRATA_VERIFY_MAX_T` setting and no existing command-line or environment control raises the fixed limit. `--short-read` chooses whether a fresh text segment goes through verifier windows or batched prompt prefill; it does not set verifier window width. `--spec` sets the prompt verifier's nominal width, subject to the default suffix-draft adjustment and the hard cap of 8. The effective size of each verifier call is `min(effective --spec, remaining text tokens)`.
+
+For an unpatched >=32,768-token text segment in `--serve`, raise `--short-read` to at least the length of every text segment that should use windows (for example `--short-read 65536` for one 32,768-token segment), then set `--spec 8`. This sends the segment through serial verifier windows, each of up to 8 rows. At exactly 32,768 positions that is 4,096 maximum-size windows; at width 4 it is 8,192. This is an arithmetic count of window calls, not a time/speed prediction. It remains repeated verifier-window execution, not chunked-prefill.
+
+Under `STRATA_VERIFY_STEPPED=1`, `STRATA_VERIFY_PIPE=0`, and `STRATA_VERIFY_NO_HOST=0`, a mixed-residency miss remains host-served at queue boundaries. `--spec 8 --no-spec-split` retains the largest single group and avoids doubling the per-layer host service boundaries. The verifier still runs its batched multi-row matrix paths within each window (keep `STRATA_DEC_BATCH` enabled/default); this route does not turn a 32K prompt into one 32K matrix operation.
+
+## Actual control semantics
+
+- `--short-read N` is `--serve` only (help text says default 64 and 0 disables the short-read window route). `windows_ok(a,b)` returns false when `b-a > req_short_read`, when `STRATA_CKPT_REREAD` is set, or when any position in that segment has image/embedding rows. Thus every eligible text part must fit under the threshold independently. Serve may split prompt reading at cache-root, message, turn and final-token boundaries; the test is run separately for each segment.
+- `--short-read 0` sends nonempty text segments to the batched prompt path; it is not the setting for the verifier-window test. Conversely, a threshold at least as large as the segment enables `read_windows()` for that segment. This task uses the latter.
+- `read_windows()` computes `S = o.spec`, forms `T = min(S, b-q)`, calls `ver.run(T,...)`, commits all T positions, and advances q by T. The last call can be smaller than S.
+- `--spec T` is parsed as an integer. Default `--suffix-draft 3` may change a requested `spec >= 2` by setting `mtp_max_t` to the requested size and then increasing `o.spec` by 2, capped at 8. Thus `--spec 4` with default suffix-draft has effective window width 6 in this source. `--suffix-draft 0` makes a direct `--spec` A/B explicit; `--spec 8` remains 8 either way. An explicit nonzero `--mtp-max-t` also prevents that automatic `spec+2` step, but it controls MTP draft width and is not an independent verifier-cap override.
+- `--spec-split` sets the verifier's internal split flag. For `T >= 2` and non-batch-recursive mode, `record_window()` uses two groups: `[0,ceil(T/2))` and `[ceil(T/2),T)`. With T=8, this is two 4-row groups. It does not increase T, `max_t`, or the 8-token ceiling. The source describes its layer-group interleaving; it adds a second host-service group for each layer in stepped mode. Use `--no-spec-split` for one 8-row group per layer.
+- `--mtp-max-t`, `--lookup-chain`, `--pipeline-windows`, and `--batch` are not larger prompt-window controls. Lookup-chain can extend a decode window only up to 8; MTP max-t controls draft rows; pipeline-windows adds a separate staged verifier path (and is off by default); batch is slots/rows and is also capped at 8. The prompt window in `read_windows()` is `o.spec`, not these quantities.
+- The additional implementation caps agree: `include/strata/kernels/verify_kernels.hpp` defines `kVerifyMaxT = 8`; the CPU expert pool sets `MAXT = 8`; verifier initialization rejects `max_t > kVerifyMaxT` or `max_t > cpu::MAXT`; `Verifier::run` rejects `T > max_t_`; verification kernel entry points bound token count by `kVerifyMaxT`; buffers/stack arrays and GDN/QSA/PLE/head paths are laid out for that ceiling. The CPU window planner allows up to `8 * 10 = 80` routed entries (under its 128-entry table capacity), consistent with K=10. Raising only a CLI or env value would overrun existing shape assumptions or be refused.
+- Exact search of the pristine source for `STRATA_VERIFY_MAX_T` returns no matches. `STRATA_VERIFY_STEPPED`, `STRATA_VERIFY_PIPE`, `STRATA_VERIFY_NO_HOST`, `STRATA_VERIFY_SPLIT`, and `STRATA_DEC_BATCH` affect synchronization, helper overlap, device-vs-host handling, segment capture, or row batching; none changes the fixed maximum.
+
+## Safe mixed-residency route and device-plan behavior
+
+With `STRATA_VERIFY_STEPPED=1`, a non-all-resident verifier captures the window as queue-separated graph segments. Before serving each CPU-expert group, the host waits for `cs_` to drain, checks the layer/group sequence and payload, then runs the pool. `STRATA_VERIFY_PIPE=0` disables the helper-thread overlap branch; it does not disable host-miss service. With `STRATA_VERIFY_NO_HOST=0`, host service remains available and the `lean` no-host graph is not selected.
+
+If `STRATA_VERIFY_DEVICE_PLAN=1` is also active, `device_plan_` may build the resident portion of a routed group's plan on device. `device_plan_` is separate from `all_resident_`: `ar_on()` means every expert in the verifier's layer range is resident. When a group has a host miss, stepped serving still calls the pool after the segment wait, so the missing rows are computed/placed by the host pool and the normal flag/plan handoff is completed before later graph work. The all-resident zero-doorbell path is not an acceptable substitute for this miss case; `STRATA_VERIFY_NO_HOST=1` is only safe for the all-resident route documented in source, not for mixed-residency misses.
+
+`STRATA_VERIFY_PIPE=0` refers to the helper thread inside the stepped verifier's per-layer service. The separate `--pipeline-windows` option overlaps windows across a two-GPU layer split and is disabled by default; keep it off for this serial single-route candidate. These controls preserve synchronization but do not widen rows.
+
+## Admissible candidate matrix
+
+| Candidate | Effective prompt verifier T | Rows per per-layer group | Prompt route and sync |
+|---|---:|---:|---|
+| `--short-read >= segment_length`, `--spec 4 --suffix-draft 0 --no-spec-split` | Up to 4 | 4 | `read_windows`; stepped, inline host-pool service; batched row math where supported |
+| `--short-read >= segment_length`, `--spec 8 --suffix-draft 0 --no-spec-split` | Up to 8 | 8 | Same route; maximal legal shape; halves maximum-size window-call count versus T=4 for same length |
+| `--short-read >= segment_length`, `--spec 8 --spec-split` | Up to 8 | 4 + 4 | Same route; two groups per layer; still no more than 8 total, with more host-service boundaries |
+| `--short-read 0` | N/A | N/A | Nonempty text takes batched prefill, so this does not test short-read verifier sizing |
+| `--spec > 8` | Rejected or clamped by suffix setup | N/A | Cannot raise the kernel/pool shape ceiling |
+
+For the intended mixed-residency safety configuration use the first or second candidate with `STRATA_VERIFY_STEPPED=1`, `STRATA_VERIFY_PIPE=0`, `STRATA_VERIFY_NO_HOST=0`, and retain the existing `STRATA_VERIFY_DEVICE_PLAN=1` only if it is part of the target run (it is not needed to select window width). Leave `STRATA_DEC_BATCH` unset/default or nonzero to retain multi-row operations; setting it to 0 changes row-batching decisions, not shape legality. Do not include `--pipeline-windows` for this candidate. Any threshold must cover the actual largest segment after serve's prompt-boundary splitting and the segment must be text-only.
+
+## Source evidence in pristine v0.1.43
+
+- `sycl/src/program/generate.cpp:669`: `short_read` default 64.
+- `sycl/src/program/generate.cpp:1807,1825,1853,1907`: parser for `--spec`, `--spec-split`, `--short-read`, and `--no-spec-split`.
+- `sycl/src/program/generate.cpp:2270-2279`: suffix-draft / lookup-chain adjustments and their explicit cap at 8.
+- `sycl/src/program/generate.cpp:9838-9844`: short-read eligibility checks (`segment length <= threshold`, no checkpoint-reread, no image rows).
+- `sycl/src/program/generate.cpp:10296-10320`: per-segment dispatch to `read_windows` versus batched `read_part`.
+- `sycl/src/program/generate.cpp:9958-10008`: `read_windows()` loops by S, calls `ver.run(T,...)`, commits every teacher-forced token, and advances by T.
+- `sycl/src/core/verify.cpp:488-490,2001-2005`: verifier init/runtime shape checks.
+- `include/strata/kernels/verify_kernels.hpp:21`: fixed `kVerifyMaxT = 8`; `src/kernels/cpu/kq_avx2.cpp:28`: CPU pool `MAXT = 8`.
+- `sycl/src/core/expert_source.cpp:2541-2558` (or shared CPU planner source in `src/core/expert_source.cpp`): fixed 128-entry window table, 80 routed entries at 8 tokens x K=10, and rejection if `n_tok > MAXT`.
+- `sycl/src/core/verify.cpp:823-824,836-837`: `--spec-split` maps a T-token window to two groups using `ceil(T/2)`.
+- `sycl/src/core/verify.cpp:701-729,1334-1353,1448-1479,2041-2047,2064-2139`: mixed/all-resident vs device-plan state, device-built resident plan, stepped queue-segment execution, host pool service and flag sequence.
+- `sycl/src/core/verify.cpp:2092` (in `serve()`): `STRATA_VERIFY_PIPE=0` disables the helper-thread path.
+- `sycl/src/program/generate.cpp:7141-7143`: served verifier capacity is initialized from `max(o.spec,o.batch)` (or fixed max for batch-MTP), still subject to verifier's hard cap.
+- `sycl/src/core/verify.cpp:831` and `sycl/src/core/verify.cpp:1305-1318`: multi-row (`STRATA_DEC_BATCH`, default on) router path for `n > 1`; the grouped expert and other multi-row paths receive the group row count.
+
+## Limits of this conclusion
+
+This is a static source admission and shape review, not a hardware validation or a speed claim. It establishes a legal width-8 candidate and source-defined host-miss ordering under the requested stepped settings. It does not establish that any particular 32K prompt segment is eligible (image rows, checkpoint-re-read, or serve's boundaries can change routing), that a specific device run passes, or that width 8 improves wall time. Any measured comparison should keep exact prompt tokens, segment boundaries, model/expert placement, and all environment controls fixed, while comparing only legal T choices; Main owns any such runtime evaluation.
+
+## Prior evidence consulted
+
+- `report-registry-v153.json` under `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-12-latest-updates-pristine-builds-host-regression/`.
+- R202 (`research-official-v0143-icpx-first-launch-safety-contract-round202-v1.txt`): safe stepped host-miss control values and the distinction between MTP and verifier.
+- R203 (`round203-prefill-decode-bottleneck-evidence-audit.txt`): prior routing distinction for `--short-read`; not reused as evidence for verifier width.
+- R207 (`research-official-v0143-whole-path-stager-ple-admission-round207-v1.txt`): unrelated correction to whole-path batched-prefill admission; no prefill handoff claim is made here.

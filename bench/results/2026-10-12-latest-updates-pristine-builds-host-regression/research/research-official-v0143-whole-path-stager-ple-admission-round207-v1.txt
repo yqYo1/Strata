@@ -1,0 +1,69 @@
+# Official v0.1.43 whole-path Stager and PLE admission (R207)
+
+Date: 2026-10-12
+Scope: read-only correction and reconciliation of R206 against pristine official v0.1.43 at `/home/yayoi/ghq/github.com/Niko1221/Strata/.worktree/bench-upstream-v0143-pristine-20261012`. No execution, imports, AST, tests, build, compiler, GPU/runtime/model/process/Git, scratch, cleanup, or source changes. R206 is preserved unchanged.
+
+## Decision
+
+R206 correctly identified the CPU MoE grouping queue wait, but its whole-path admission conclusion was too broad. `STRATA_PREFILL_STREAM_ALL=0`, `STRATA_PLE_BATCH=0`, and `STRATA_PREFILL_ISSUER=0` do **not** remove every host/device polling handoff from an ordinary batched prefill.
+
+Two additional paths matter:
+
+1. `Stager::buffer_free()` polls a page-locked `done_seq` value written by the device/copy queue. The route-all-off setting selects routed-only staging, but that route still uses Stager for nonresident unpinned expert blobs. `STRATA_PREFILL_ISSUER=0` only prevents the separate stream-all issuer thread; it does not turn off Stager, its copy markers, or its worker thread.
+2. With PLE enabled, PLE rows are double buffered across chunks. `ple_land()` queues a device write to `ple_done_seq`; when another prompt chunk follows, the host polls the previous buffer's raw marker before starting its refill. `STRATA_PLE_BATCH=0` changes the PLE arithmetic path only; it does not disable PLE upload, double buffering, or this wait.
+
+Therefore there is no general environment-only admission on a device where concurrent device/host access to host USM is unsupported. A narrow conditional route exists: use actual batched prefill (`--short-read 0`), force one prefill chunk (`STRATA_PREFILL_FIRST=0` and prompt length `n <= m.T`), disable stream-all/issuer (`STRATA_PREFILL_STREAM_ALL=0`, `STRATA_PREFILL_ISSUER=0`), and guarantee that every routed nonresident expert is source-pinned (or every routed expert is already resident) so no Stager job calls `issued_one()`. In this route the PLE marker is written but no next-buffer host poll occurs, because there is no next chunk. The guarantee must cover every MoE layer and every routed expert; an unpinned nonresident expert revokes the admission. This is a source-derived configuration contract, not a validated performance or hardware result.
+
+If one cannot guarantee the one-chunk and no-unpinned-Stager-job conditions, retract whole-path admission pending a different implementation using queue/event waits or a proven supported host/device synchronization primitive for those handoffs. R206's host grouping proof by itself remains valid only for that particular phase.
+
+## Handoff classes and controls
+
+| Site | Writer / reader | Mechanism | Effective condition / control |
+|---|---|---|---|
+| Routed-only or stream-all Stager reuse | Queue/device writes `done_seq`; Stager worker reads it as `volatile uint64_t` in `buffer_free()` | Raw device-written host-USM sequence marker; polling, not an event completion wait or a `std::atomic` | Any queued Stager job can publish the marker; later reuse of that buffer polls it. Stream-all-off still has routed-only Stager use. Avoid by ensuring no unpinned nonresident expert creates a Stager job. |
+| PLE alternating upload buffers | Queue/device writes `ple_done_seq`; host reads previous buffer as `volatile uint64_t` | Raw device-written host-USM marker; host polling | `ple_on` and a following chunk (`c0 + T < n`). `STRATA_PLE_BATCH=0` does not affect it. Avoid the poll with one chunk, e.g. `STRATA_PREFILL_FIRST=0` and `n <= m.T`; PLE may still be on and upload its only buffer. |
+| Optional stream-all issuer sequencing | Host issuer writes `a_issued`; host consumer reads it | C++ `std::atomic<size_t>` host-to-host synchronization | `threaded_issue = stream_all && issuer_on`; `STRATA_PREFILL_ISSUER=0` makes issue inline. This does not affect the Stager's device-written `done_seq`. |
+| Stager blob readiness | Stager worker writes `ready[j]`; launching host thread reads it | C++ `std::atomic<int>` host-to-host synchronization | Used by `Stager::wait`; it is not the host/device marker and is not evidence of `usm_atomic_host_allocations`. |
+| Routed ID and CPU-built group tables | GPU writes routed IDs, host waits on queue, host groups, then queues transfer/use | Explicit `m.cs->wait()` boundary and queue ordering | The valid R206 evidence: this handoff itself does not poll concurrently shared host USM. |
+| Staged expert slot use (after copy) | Copy queue records `m.copied`; compute queue submits barrier before reading stage slot | SYCL event/queue dependency | Not the `done_seq`/PLE raw-marker polling path. |
+
+Host `std::atomic` readiness/issuer variables are ordinary host atomics. They are categorically different from `done_seq` and `ple_done_seq`: those are `sycl::malloc_host<uint64_t>` buffers modified by queued copy/fill commands and observed through volatile non-atomic loads. Calling those latter handoffs “host atomics” would be inaccurate; they are raw device-written host-USM polling markers whose concurrent access is the concern.
+
+## Source trace
+
+- `sycl/src/prefill/prefill.cpp:364-390`: Stager's `done_seq`/`src_seq` declarations and host allocations. `done_seq` allocation is mandatory for successful Stager initialization; when it is unavailable, `init()` fails rather than selecting the routed grouping fallback.
+- `sycl/src/prefill/prefill.cpp:449-470`: Stager worker calls `buffer_free(b)` before reusing its source buffer, including between generations/layers when a previous queue copy may still be pending.
+- `sycl/src/prefill/prefill.cpp:510-523`: `issued_one()` queues the device-visible completion value via copy or fill; `buffer_free()` reads that host-USM location through `volatile const uint64_t*`.
+- `sycl/src/prefill/prefill.cpp:217-225`: `STRATA_PREFILL_STREAM_ALL=0` makes `ring_slots()` return the small `STAGE` ring; it selects routed-only staging, not a no-Stager mode.
+- `sycl/src/prefill/prefill.cpp:2464-2465`: `stream_all` is computed from ring size, chunk length, and expert source. With the explicit stream-all-off setting it is false.
+- `sycl/src/prefill/prefill.cpp:3809-3830`: in the normal non-stream-all expert branch, the per-layer route creates Stager jobs for nonresident, non-pinned experts and initializes the stager even though `stream_all` is false.
+- `sycl/src/prefill/prefill.cpp:3835-3865`: `stage_one()` bypasses Stager only when `m.src->pinned(l,e)` is true; otherwise it calls `m.stager->wait()`, queues a host-to-device blob copy, and calls `m.stager->issued_one()`.
+- `sycl/src/prefill/prefill.cpp:2179-2188`: `STRATA_PLE_BATCH=0` only affects the `ple_batch` compute selection.
+- `sycl/src/prefill/prefill.cpp:1078-1081`: PLE's two-element `ple_done_seq` is allocated as host USM when PLE is enabled in setup.
+- `sycl/src/prefill/prefill.cpp:2189-2200`: PLE is enabled based on model/readiness and layer range; `STRATA_PREFILL_FIRST` can shorten the first chunk by default, including for all-cached models.
+- `sycl/src/prefill/prefill.cpp:2219-2220`: chunk iteration is driven by `chunk_len(c0)`; setting first-chunk size to zero avoids that automatic short first chunk.
+- `sycl/src/prefill/prefill.cpp:2326-2362`: `ple_land()` enqueues the PLE row upload and the raw `ple_done_seq` marker; only if another chunk remains does it poll the alternating buffer.
+- `sycl/src/prefill/prefill.cpp:2621-2681`: issuer env, `threaded_issue = stream_all && issuer_on`, host atomics for issuer coordination, and inline issue path when threaded issue is off.
+- `sycl/src/prefill/prefill.cpp:3315-3337`: the CPU MoE grouping path copies IDs and waits for `m.cs` before host access, consistent with R206.
+- `sycl/src/prefill/prefill.cpp:2747` and `4415`: PLE row upload is landed before layer 1 reads it and again at stage end; these calls do not add the previous-buffer poll when the prompt is one chunk.
+
+## Meaning of the narrow route
+
+For each MoE layer, routed experts already resident in the device cache require no expert staging. A routed expert outside the device cache may be copied directly from the source if `m.src->pinned(l,e)` is true. Those paths use copy-queue/event ordering and do not call Stager's `issued_one()`. Any nonresident, unpinned expert follows Stager and can cause the device-written marker handoff. Consequently “most weights pinned,” “all expert blobs are host accessible,” and “Stager buffers happen to be page-locked” are not adequate guarantees; the relevant predicate is that no routed nonresident expert takes the unpinned `stage_one` branch during this run.
+
+A single-chunk prompt removes the *host poll* in PLE's alternate-buffer reuse condition. It does not remove the PLE marker allocation or the queued marker write. Since no host polls that marker in the one-chunk case, this specific overlap is absent. For two or more chunks, including a prompt split by the automatic short first chunk, the wait path is reachable. `STRATA_PLE_BATCH=0` cannot be used as a substitute for the one-chunk condition.
+
+`--short-read 0` remains the prior R203 means to avoid consuming the prompt in short-read verification and expose actual batched prefill. It does not disable Stager or change the PLE chunk loop. Preserve `STRATA_PREFILL_STREAM_ALL=0` to avoid the all-experts stream path; keep issuer inline for clarity, although its host atomics are a separate host-to-host mechanism. These controls are useful but insufficient without the explicit source-pinned/resident expert guarantee and one-chunk PLE condition.
+
+## Standards context and limits
+
+The Khronos [SYCL 2020 specification, revision 12](https://registry.khronos.org/SYCL/specs/sycl-2020/html/sycl-2020.html) defines `aspect::usm_atomic_host_allocations` in terms of concurrent host/device access and atomic modification of host USM, and separately requires users to synchronize host and device access to host allocations (sections 4.6.4.5 and 4.8.2). `queue::wait()` completes all previously submitted queue commands (section 4.6.5.2). This supports the distinction between R206's exclusive queue-wait CPU phase and the raw-marker polling handoffs found here. It does not establish backend support for the marker approach on a device lacking the aspect.
+
+No runtime run was made, so the report establishes source reachability and a conditional route only. It does not prove actual routing results, backend behavior, timing, or that a specific weight/source configuration meets the narrow predicate. `STRATA_PLE_BATCH=0` is included as requested and explicitly shown to be insufficient for the upload wait; the one-chunk constraint is the operative PLE condition.
+
+## Prior records checked
+
+- Existing report registry: `report-registry-v153.json` in `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/docs-sycl-storage-retention-20261009/bench/results/2026-10-12-latest-updates-pristine-builds-host-regression/`.
+- R202: stepped serial verifier is a verifier synchronization control only.
+- R203: `--short-read 0` exposes real batched prompt prefill.
+- R206: `/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-official-v0143-atomic-host-free-batched-prefill-admission-round206-v1.txt`, preserved unchanged; its CPU grouping synchronization finding remains valid but its broad whole-path admission is corrected here.

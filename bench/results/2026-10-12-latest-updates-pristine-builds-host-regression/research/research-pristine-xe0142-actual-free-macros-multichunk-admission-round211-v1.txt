@@ -1,0 +1,41 @@
+# Pristine Xe 0.1.42: actual build macros and 32K-input / 8192-chunk admission
+
+Date: 2026-10-12 (source-only audit)
+Tree: `/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/bench-xestrata-xe0142-pristine-20261012`
+
+## Decision
+
+The proposed prompt is at least 32768 fresh input tokens, processed in four 8192-token `Prefill::run` chunks. It is not a single 32768-token chunk. With `--short-read 0`, `--prefill 8192`, and the normal serial serve path, `generate.cpp` selects the batched prompt path for fresh text; `Prefill::run` loops over `c0 += m.T` and sets `T=min(m.T,n-c0)` (`src/prefill/prefill.cpp:1224-1230`). This source audit does not establish that those allocations fit 10 GiB or that a binary/model run succeeds.
+
+A significant correction to R209/R199: the pristine `build/free/compile_commands.json` compiles `src/core/verify.cpp` and `src/prefill/prefill.cpp` with `-DSTRATA_BACKEND="xe" -fsycl`, but **without** `STRATA_ENABLE_SYCL`; CMake cache says `STRATA_ENABLE_XE=ON`. The BUILD.json calls this device/host-memory/transfers/parity scope and explicitly says “no inference executable.” Thus this is evidence about the generated XE component compile configuration, not proof that an inference binary was built. In this configuration, `#ifdef STRATA_ENABLE_SYCL` branches are not selected. `STRATA_SYCL_VERIFY_OVERLAP` and `STRATA_SYCL_PREFILL_SAME_QUEUE` do not control this Xe component. R199's statement that segmented mode omits in-device wait kernels is incorrect for this target compile: in `verify.cpp`, the non-`STRATA_ENABLE_SYCL` `wait_flag_ge` calls remain compiled.
+
+## Chunked prompt path and queue ordering
+
+`Prefill::init` accepts the compute stream supplied by its caller as `m.cs` and unconditionally creates a distinct `m.copy` stream (`prefill.cpp:651-656, 679`). In `device.cpp`, `Runtime::compute_` and `transfer_` are separate in-order queues, and `create_stream()` constructs another in-order queue (`device.cpp:187-189, 225-228`). No same-queue option is selected by the relevant Xe macro configuration; setting `STRATA_SYCL_PREFILL_SAME_QUEUE=1` cannot force these queues together because the corresponding preprocessor path is gated on `STRATA_ENABLE_SYCL` in this target.
+
+The batched path issues embedding/step uploads and compute on `m.cs`; streamed experts copy on `m.copy`. It connects expert DMA lifetime with events: prior slot reuse can be waited on with `stream_wait_event(m.copy, used)`, compute waits on copied slot events with `stream_wait_event(m.cs, copied)`, and it records the consumed-slot event before the copy stream reuses a ring slot (`prefill.cpp:1363-1373, 2290-2317`). The Xe wrapper maps `stream_sync` to `Runtime::finish(q)` (`gpu.cpp:81-88, 113-115`), event record to a SYCL profiling tag or queue barrier, `event_sync` to runtime wait, and stream-wait-event to `ext_oneapi_submit_barrier({event})` (`gpu.cpp:341-369`). These are queue/event dependencies, not a host/device atomic polling protocol.
+
+The same source does contain ignored error returns on some prefill event/copy operations (for example `event_sync` at `prefill.cpp:1306`, and copy/event operations near 1303-1304 and 1367-1372). This is a real error-reporting/robustness limitation: a source-order argument cannot claim those event API failures are handled. Other final chunk/error boundaries call checked `stream_sync` (`prefill.cpp:2429, 2481, 2513`); this does not repair ignored intermediate event failures.
+
+For 32768 input with `--prefill 8192`, runtime memory planning sees an 8192 chunk, not a 32768 chunk. `--no-prefill-borrow` is a real parser option (`generate.cpp:2249`) and forces prompt-owned buffers in the planner (`generate.cpp:3032-3045; 4114-4134`); this can increase simultaneous memory demand. `--prefill-experts 16` is real (`generate.cpp:392, 2251`) and sets the grouped expert count (`generate.cpp:5545`). It does not prove fit. `--short-read 0` is parsed as zero (`generate.cpp:2323-2324`) and is the setting used in R199 to request all fresh prompt text through prefill, rather than verifier decode windows.
+
+## Verifier ownership boundary for the full request
+
+The actual supported fallback here is `STRATA_VERIFY_SEGMENTED=1`, not `STRATA_VERIFY_STEPPED` / `STRATA_VERIFY_PIPE` (neither name appears in this source, as R209 recorded). `verify.cpp:493-498` forces `segmented_` when the supported variable is set. `cut()` ends and starts graph captures at each pre/post boundary (`verify.cpp:1265-1283`). In `run`, segmented execution synchronizes `cs_` before host reads `seq` (`verify.cpp:1612-1628`), then the CPU pool publishes flags and the next segment is launched (`verify.cpp:1633-1659`). Unlike R199's description, wait-flag kernels remain compiled in the XE configuration, but segmented capture places the relevant pre/post work in separate launched segments: the host answers/publishes before it launches the subsequent graph segment. That is serialized host/device ownership; it does not establish concurrent polling safety if segmentation is disabled. Do not claim the default visibility probe is safe on B570 without runtime evidence.
+
+Candidate command fragment for review, subject to owner-supplied compatible model/expert/PLe artifacts and numeric context settings:
+
+```sh
+STRATA_VERIFY_SEGMENTED=1 STRATA_PREFILL_CPU_GATE=0 \
+  ./strata --serve --native /path/to/model-shard-1.gguf \
+    --ple-gguf /path/to/model-ple.gguf --spec 4 --short-read 0 \
+    --prefill 8192 --prefill-experts 16 --no-prefill-borrow \
+    --pipeline-windows 0 --suffix-draft 0 \
+    --prompt-cache 0 --conversation-cache-mib 0
+```
+
+This is only a source-supported configuration proposal, not a tested command. Add a numeric `--max-context` appropriate to the full tokenized prompt plus requested generation. The exact target is 32768-or-more fresh prompt tokens in multiple 8192 chunks, with B570 reported `atomic_host_usm=0`, 10 GiB target, native IQ3_S, int8 KV, no MTP, suffix-draft 0, and a single queue/source LLVM 7.1.1. The repository `build/free` manifest instead reports Clang 22.1.0 for its parity components, so do not conflate that compile artifact with the main inference runtime/toolchain. None of this source review certifies memory fit, output quality, speed, or runtime success.
+
+## Prior evidence and artifact boundary
+
+Read registry v153 before review. R199 is preserved unchanged at `/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-xe0142-fast-batched-prefill-ownership-contract-round199-v1.txt`; R209 is likewise left unchanged. This R211 report supersedes their claims about the actual `build/free` macro-selected wait-kernel behavior. No project source, build, test, model, fixture, device, process, Git/worktree state, or other research artifact was changed. Only this report was written.

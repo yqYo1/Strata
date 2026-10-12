@@ -1,0 +1,23 @@
+# Pristine Xe 0.1.42 build metadata correction (R212)
+
+Date: 2026-10-12. Scope: correction to the build and compiler conclusions in R211 only. The R211 report remains unchanged.
+
+## Closed build receipt
+
+The specifically named `B/latest-updates-pristine-builds-and-host-regression-root-v1/record.json` is not present in the searched state/worktree file lists. The closed receipt matching this pristine Xe build is `/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-pristine-xe-free-build-root-v1/record.json` (phase `xe-free`, complete and passed, inactive, revision `da3d426079019daa6e01388d03b0d94ae67070b7`, source tree the pristine tree). Its allowlisted binary fields identify `build/free/strata`, 20,688,840 bytes, SHA-256 `6e985615949171bc9938dd8a22c7fc405495481c05d7990496a14c2de48849b1`.
+
+The same receipt's compile evidence records all 116 Ninja steps, ending with `[116/116] Linking CXX executable strata`; the command list includes `cmake --build ... --target strata`. It therefore proves a full inference executable build. R211's statement that BUILD.json's `no inference executable` scope means this build has no inference executable was unsupported and is withdrawn. This is not evidence that the binary was run; no execution was performed for this correction.
+
+## What BUILD.json and Clang 22.1.0 mean
+
+The configured `build/free/BUILD.json` contains the scope string “device, host memory, transfers, elementwise parity; no inference executable.” `cmake/BUILD.json.in` shows that exact wording is a fixed literal in the template. CMake still defines `strata_prefill`, links it to `strata_engine`, defines executable target `strata` from `src/program/generate.cpp`, and links the executable against engine, prefill and spec (`CMakeLists.txt:599-614`). The stale generic scope literal does not override the target graph or the completed build receipt.
+
+The receipt's configure transcript reports CMake compiler identification `Clang 22.1.0`; its command uses the bundled patched Intel LLVM toolchain under `.tools/intel-llvm-v711/install/bin/clang++`. These facts are compatible: the qualified compiler distribution is source LLVM 7.1.1 / Intel DPC++ at commit `504366f4b82ff00bbac7b0c956635eed8bc599d8` plus 17 patches, while its underlying Clang identification is 22.1.0. R211's phrasing that the Clang 22.1.0 manifest makes this “a different toolchain” from source LLVM 7.1.1 was incorrect. The CMake compiler ID/version alone should not be used to reclassify the compiler distribution or release qualification.
+
+## Findings retained from R211
+
+This correction does not change the source-level macro finding. In the exact `compile_commands.json` for `verify.cpp` and `prefill.cpp`, compilation uses `-DSTRATA_BACKEND="xe" -fsycl`, and there is no `-DSTRATA_ENABLE_SYCL`. The configured CMake option is `STRATA_ENABLE_XE=ON`; it is distinct from the absent source macro. Thus the `STRATA_ENABLE_SYCL` conditional branches are not selected for those compiled XE translation units. `STRATA_SYCL_PREFILL_SAME_QUEUE` does not force these queues together. `Prefill::init` receives its compute stream and creates a separate copy stream; Xe's runtime constructs in-order compute and transfer queues and creates new in-order streams. The wrapper maps synchronization and events to SYCL queue finish, waits and barrier dependencies. Some intermediate prefill copy/event return values remain unchecked, as R211 noted.
+
+Likewise, the source analysis of `STRATA_VERIFY_SEGMENTED=1` remains: graph segments are synchronized before host-side sequence reads, CPU planning/publication precedes launch of the next segment, and non-SYCL-guarded wait kernels remain in this compile. This is a serialized ownership path; it does not establish concurrent host/device polling safety when segmentation is off.
+
+No source, build, binary, Git/worktree state, or prior report was changed. This report is the only new artifact. No binary execution, tests, builds, model/runtime/GPU work, or cleanup was performed.

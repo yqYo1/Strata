@@ -1,0 +1,76 @@
+{
+  "source_revision": "0691bcdf5af63a85b3b25650f367d3276db64035",
+  "source_tree": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-xe-v0143-nonfinite-20261012",
+  "source_report": "bench/results/2026-10-12-upstream-v0143-functional-import-host-qualification/results.json",
+  "official_revision": "7695859aa13afb248bdb4d36f9b2e95707db079d",
+  "official_version": "v0.1.43",
+  "xe_revision": "da3d426079019daa6e01388d03b0d94ae67070b7",
+  "xe_version": "xe0.1.42",
+  "remote_heads_verified_utc": "2026-10-11T23:04:26Z",
+  "release_cpu": {
+    "free": {
+      "passed": 19,
+      "skipped": 1,
+      "total": 20
+    },
+    "contrib-llvm": {
+      "passed": 19,
+      "skipped": 1,
+      "total": 20
+    }
+  },
+  "sanitizer_cpu": {
+    "free": {
+      "passed": 19,
+      "skipped": 1,
+      "total": 20,
+      "scope": "Affected host CTest only; no model/device sanitizer execution."
+    },
+    "contrib-llvm": {
+      "passed": 19,
+      "skipped": 1,
+      "total": 20,
+      "scope": "Affected host CTest only; no model/device sanitizer execution."
+    }
+  },
+  "actual_gpu": {
+    "free": {
+      "integer_words_exact": 16384,
+      "nonfinite_direct_and_captured_cases_passed": 324,
+      "graph_supported": true,
+      "device_selftest": true,
+      "bf16_gemv_parity": true,
+      "kv_q8_parity": true,
+      "kv_q4_parity": true,
+      "prefill_dense_gemm_parity": true,
+      "fresh_kernel_faults": false
+    },
+    "contrib-llvm": {
+      "integer_words_exact": 16384,
+      "nonfinite_direct_and_captured_cases_passed": 324,
+      "graph_supported": true,
+      "device_selftest": true,
+      "bf16_gemv_parity": true,
+      "kv_q8_parity": true,
+      "kv_q4_parity": true,
+      "prefill_dense_gemm_parity": true,
+      "fresh_kernel_faults": false
+    }
+  },
+  "corrections": {
+    "R206": "R207 checks Stager and PLE beyond batched kernels; usual unpatched official multi-chunk host polling is not admitted.",
+    "R209_R211": "Actual Xe build has backend xe and no STRATA_ENABLE_SYCL; two distinct in-order queues. Same-queue flag is not implemented. R212 proves the actual full link despite stale no-executable wording in BUILD.json.",
+    "R214": "Base version metadata is retained for selected imports; actual source and compilation receipt v4 prove current C++ source. The report initially used the wrong worktree destination and Main moved its new file byte-identically; movement manifest is archived.",
+    "R213": "API transport does not implement native bias. Native upstream feature is CUDA/HIP only, outside requested scope; official SYCL also rejects it. New SYCL port remains optional and unadopted.",
+    "R216": "Pristine Xe 8K selects stream_all and default issuer. Disable STRATA_PREFILL_ISSUER for unpatched model evaluation to avoid the known conditional host publication race. Prefill workspace remains owned through decode."
+  },
+  "performance_measured": false,
+  "full262144_runtime_qualified": false,
+  "native_logit_bias_adopted": false,
+  "next": [
+    "Main review and CPU qualification of bounded pristine model controller after its FINAL.",
+    "Unpatched Xe startup then 32768+16 with actual inline issuer, and separate clean repeated performance samples.",
+    "Unpatched official runtime-matched integer health then safe stepped verifier-window 32768+16; this control is not claimed as optimal batched prefill.",
+    "Independent parameter selection and prefill/decode decisions, integration neutral guard comparison, actual full 262144 runtime boundary."
+  ]
+}

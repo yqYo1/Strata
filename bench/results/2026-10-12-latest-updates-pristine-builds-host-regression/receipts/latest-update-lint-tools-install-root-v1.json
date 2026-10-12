@@ -1,0 +1,1089 @@
+{
+  "derivative": true,
+  "original_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-lint-tools-install-root-v1/record.json",
+  "original_sha256": "4b7eb552d3d53bdd1ee5307f27543b17c474d25ee9c83bf683186bcb776d2d5a",
+  "original_bytes": 30387,
+  "original_result_passed": false,
+  "receipt": {
+    "active": false,
+    "complete": true,
+    "passed": false,
+    "commands": [
+      {
+        "label": "download-distro-tools",
+        "argv": [
+          "/usr/bin/apt-get",
+          "download",
+          "shellcheck=0.9.0-1",
+          "markdownlint=0.13.0-4",
+          "ruby-kramdown=2.4.0-2",
+          "ruby-kramdown-parser-gfm=1.1.0-3",
+          "ruby-mixlib-cli=2.1.6-1",
+          "ruby-mixlib-config=3.0.6-1",
+          "ruby-mixlib-shellout=3.2.5-2",
+          "ruby-chef-utils=16.12.3-2",
+          "ruby-tomlrb=1.3.0-2"
+        ],
+        "environment": {
+          "PATH": "/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8"
+        },
+        "started_utc": "2026-10-11T22:59:52.807231+00:00",
+        "wall_seconds": 180,
+        "errors": [],
+        "observed_owned_identity_count": 1,
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 108356.928664078,
+        "pid": 3121826,
+        "spawn_return_monotonic": 108356.930111073,
+        "direct_identity": {
+          "pid": 3121826,
+          "state": "R",
+          "ppid": 3121779,
+          "pgid": 3121826,
+          "sid": 3121826,
+          "start_ticks": 10835692,
+          "rss_bytes": 282624
+        },
+        "peak_live_owned_identities": 1,
+        "peak_session_rss_bytes": 90624000,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 0,
+        "finished_utc": "2026-10-11T22:59:53.446452+00:00",
+        "elapsed_seconds": 0.6390440130053321,
+        "logs": {
+          "download-distro-tools.stdout": {
+            "bytes": 975,
+            "sha256": {
+              "sha256": "52207ad2017cf7864b3bb3e633da6b96e85c300bc696a1926de34cfcbbf1196e"
+            }
+          },
+          "download-distro-tools.stderr": {
+            "bytes": 0,
+            "sha256": {
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          }
+        }
+      },
+      {
+        "label": "extract-distro-0",
+        "argv": [
+          "/usr/bin/dpkg-deb",
+          "-x",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-lint-tools-install-root-v1/markdownlint_0.13.0-4_all.deb",
+          "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro"
+        ],
+        "environment": {
+          "PATH": "/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8"
+        },
+        "started_utc": "2026-10-11T22:59:53.447613+00:00",
+        "wall_seconds": 180,
+        "errors": [],
+        "observed_owned_identity_count": 1,
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 108357.56908269,
+        "pid": 3121856,
+        "spawn_return_monotonic": 108357.571456422,
+        "direct_identity": {
+          "pid": 3121856,
+          "state": "D",
+          "ppid": 3121779,
+          "pgid": 3121856,
+          "sid": 3121856,
+          "start_ticks": 10835756,
+          "rss_bytes": 131072
+        },
+        "peak_live_owned_identities": 1,
+        "peak_session_rss_bytes": 0,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 0,
+        "finished_utc": "2026-10-11T22:59:53.552880+00:00",
+        "elapsed_seconds": 0.10506308499316219,
+        "logs": {
+          "extract-distro-0.stdout": {
+            "bytes": 0,
+            "sha256": {
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          },
+          "extract-distro-0.stderr": {
+            "bytes": 0,
+            "sha256": {
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          }
+        }
+      },
+      {
+        "label": "extract-distro-1",
+        "argv": [
+          "/usr/bin/dpkg-deb",
+          "-x",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-lint-tools-install-root-v1/ruby-chef-utils_16.12.3-2_all.deb",
+          "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro"
+        ],
+        "environment": {
+          "PATH": "/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8"
+        },
+        "started_utc": "2026-10-11T22:59:53.553686+00:00",
+        "wall_seconds": 180,
+        "errors": [],
+        "observed_owned_identity_count": 1,
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 108357.67517305,
+        "pid": 3121891,
+        "spawn_return_monotonic": 108357.676653128,
+        "direct_identity": {
+          "pid": 3121891,
+          "state": "R",
+          "ppid": 3121779,
+          "pgid": 3121891,
+          "sid": 3121891,
+          "start_ticks": 10835767,
+          "rss_bytes": 290816
+        },
+        "peak_live_owned_identities": 1,
+        "peak_session_rss_bytes": 0,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 0,
+        "finished_utc": "2026-10-11T22:59:53.658666+00:00",
+        "elapsed_seconds": 0.10475155799940694,
+        "logs": {
+          "extract-distro-1.stdout": {
+            "bytes": 0,
+            "sha256": {
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          },
+          "extract-distro-1.stderr": {
+            "bytes": 0,
+            "sha256": {
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          }
+        }
+      },
+      {
+        "label": "extract-distro-2",
+        "argv": [
+          "/usr/bin/dpkg-deb",
+          "-x",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-lint-tools-install-root-v1/ruby-kramdown-parser-gfm_1.1.0-3_all.deb",
+          "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro"
+        ],
+        "environment": {
+          "PATH": "/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8"
+        },
+        "started_utc": "2026-10-11T22:59:53.659545+00:00",
+        "wall_seconds": 180,
+        "errors": [],
+        "observed_owned_identity_count": 1,
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 108357.781089162,
+        "pid": 3121897,
+        "spawn_return_monotonic": 108357.7827017,
+        "direct_identity": {
+          "pid": 3121897,
+          "state": "R",
+          "ppid": 3121779,
+          "pgid": 3121897,
+          "sid": 3121897,
+          "start_ticks": 10835778,
+          "rss_bytes": 290816
+        },
+        "peak_live_owned_identities": 1,
+        "peak_session_rss_bytes": 0,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 0,
+        "finished_utc": "2026-10-11T22:59:53.768791+00:00",
+        "elapsed_seconds": 0.10899095400236547,
+        "logs": {
+          "extract-distro-2.stdout": {
+            "bytes": 0,
+            "sha256": {
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          },
+          "extract-distro-2.stderr": {
+            "bytes": 0,
+            "sha256": {
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          }
+        }
+      },
+      {
+        "label": "extract-distro-3",
+        "argv": [
+          "/usr/bin/dpkg-deb",
+          "-x",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-lint-tools-install-root-v1/ruby-kramdown_2.4.0-2_all.deb",
+          "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro"
+        ],
+        "environment": {
+          "PATH": "/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8"
+        },
+        "started_utc": "2026-10-11T22:59:53.769908+00:00",
+        "wall_seconds": 180,
+        "errors": [],
+        "observed_owned_identity_count": 1,
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 108357.891493288,
+        "pid": 3121916,
+        "spawn_return_monotonic": 108357.893072993,
+        "direct_identity": {
+          "pid": 3121916,
+          "state": "R",
+          "ppid": 3121779,
+          "pgid": 3121916,
+          "sid": 3121916,
+          "start_ticks": 10835789,
+          "rss_bytes": 286720
+        },
+        "peak_live_owned_identities": 1,
+        "peak_session_rss_bytes": 0,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 0,
+        "finished_utc": "2026-10-11T22:59:53.883089+00:00",
+        "elapsed_seconds": 0.11289096999098547,
+        "logs": {
+          "extract-distro-3.stdout": {
+            "bytes": 0,
+            "sha256": {
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          },
+          "extract-distro-3.stderr": {
+            "bytes": 0,
+            "sha256": {
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          }
+        }
+      },
+      {
+        "label": "extract-distro-4",
+        "argv": [
+          "/usr/bin/dpkg-deb",
+          "-x",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-lint-tools-install-root-v1/ruby-mixlib-cli_2.1.6-1_all.deb",
+          "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro"
+        ],
+        "environment": {
+          "PATH": "/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8"
+        },
+        "started_utc": "2026-10-11T22:59:53.884279+00:00",
+        "wall_seconds": 180,
+        "errors": [],
+        "observed_owned_identity_count": 1,
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 108358.005931412,
+        "pid": 3121953,
+        "spawn_return_monotonic": 108358.007471283,
+        "direct_identity": {
+          "pid": 3121953,
+          "state": "R",
+          "ppid": 3121779,
+          "pgid": 3121953,
+          "sid": 3121953,
+          "start_ticks": 10835800,
+          "rss_bytes": 331776
+        },
+        "peak_live_owned_identities": 1,
+        "peak_session_rss_bytes": 0,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 0,
+        "finished_utc": "2026-10-11T22:59:54.012363+00:00",
+        "elapsed_seconds": 0.12773131500580348,
+        "logs": {
+          "extract-distro-4.stdout": {
+            "bytes": 0,
+            "sha256": {
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          },
+          "extract-distro-4.stderr": {
+            "bytes": 0,
+            "sha256": {
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          }
+        }
+      },
+      {
+        "label": "extract-distro-5",
+        "argv": [
+          "/usr/bin/dpkg-deb",
+          "-x",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-lint-tools-install-root-v1/ruby-mixlib-config_3.0.6-1_all.deb",
+          "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro"
+        ],
+        "environment": {
+          "PATH": "/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8"
+        },
+        "started_utc": "2026-10-11T22:59:54.013962+00:00",
+        "wall_seconds": 180,
+        "errors": [],
+        "observed_owned_identity_count": 1,
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 108358.135760118,
+        "pid": 3121977,
+        "spawn_return_monotonic": 108358.137550691,
+        "direct_identity": {
+          "pid": 3121977,
+          "state": "R",
+          "ppid": 3121779,
+          "pgid": 3121977,
+          "sid": 3121977,
+          "start_ticks": 10835813,
+          "rss_bytes": 327680
+        },
+        "peak_live_owned_identities": 1,
+        "peak_session_rss_bytes": 0,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 0,
+        "finished_utc": "2026-10-11T22:59:54.148125+00:00",
+        "elapsed_seconds": 0.13367786699382123,
+        "logs": {
+          "extract-distro-5.stdout": {
+            "bytes": 0,
+            "sha256": {
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          },
+          "extract-distro-5.stderr": {
+            "bytes": 0,
+            "sha256": {
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          }
+        }
+      },
+      {
+        "label": "extract-distro-6",
+        "argv": [
+          "/usr/bin/dpkg-deb",
+          "-x",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-lint-tools-install-root-v1/ruby-mixlib-shellout_3.2.5-2_all.deb",
+          "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro"
+        ],
+        "environment": {
+          "PATH": "/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8"
+        },
+        "started_utc": "2026-10-11T22:59:54.149401+00:00",
+        "wall_seconds": 180,
+        "errors": [],
+        "observed_owned_identity_count": 1,
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 108358.271072142,
+        "pid": 3122006,
+        "spawn_return_monotonic": 108358.272709346,
+        "direct_identity": {
+          "pid": 3122006,
+          "state": "R",
+          "ppid": 3121779,
+          "pgid": 3122006,
+          "sid": 3122006,
+          "start_ticks": 10835827,
+          "rss_bytes": 290816
+        },
+        "peak_live_owned_identities": 1,
+        "peak_session_rss_bytes": 0,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 0,
+        "finished_utc": "2026-10-11T22:59:54.297903+00:00",
+        "elapsed_seconds": 0.14811877798638307,
+        "logs": {
+          "extract-distro-6.stdout": {
+            "bytes": 0,
+            "sha256": {
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          },
+          "extract-distro-6.stderr": {
+            "bytes": 0,
+            "sha256": {
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          }
+        }
+      },
+      {
+        "label": "extract-distro-7",
+        "argv": [
+          "/usr/bin/dpkg-deb",
+          "-x",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-lint-tools-install-root-v1/ruby-tomlrb_1.3.0-2_all.deb",
+          "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro"
+        ],
+        "environment": {
+          "PATH": "/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8"
+        },
+        "started_utc": "2026-10-11T22:59:54.299438+00:00",
+        "wall_seconds": 180,
+        "errors": [],
+        "observed_owned_identity_count": 1,
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 108358.421222748,
+        "pid": 3122013,
+        "spawn_return_monotonic": 108358.423317594,
+        "direct_identity": {
+          "pid": 3122013,
+          "state": "R",
+          "ppid": 3121779,
+          "pgid": 3122013,
+          "sid": 3122013,
+          "start_ticks": 10835842,
+          "rss_bytes": 282624
+        },
+        "peak_live_owned_identities": 1,
+        "peak_session_rss_bytes": 0,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 0,
+        "finished_utc": "2026-10-11T22:59:54.414164+00:00",
+        "elapsed_seconds": 0.11422968200349715,
+        "logs": {
+          "extract-distro-7.stdout": {
+            "bytes": 0,
+            "sha256": {
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          },
+          "extract-distro-7.stderr": {
+            "bytes": 0,
+            "sha256": {
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          }
+        }
+      },
+      {
+        "label": "extract-distro-8",
+        "argv": [
+          "/usr/bin/dpkg-deb",
+          "-x",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-lint-tools-install-root-v1/shellcheck_0.9.0-1_amd64.deb",
+          "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro"
+        ],
+        "environment": {
+          "PATH": "/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8"
+        },
+        "started_utc": "2026-10-11T22:59:54.418259+00:00",
+        "wall_seconds": 180,
+        "errors": [],
+        "observed_owned_identity_count": 4,
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 108358.540009374,
+        "pid": 3122020,
+        "spawn_return_monotonic": 108358.541518687,
+        "direct_identity": {
+          "pid": 3122020,
+          "state": "R",
+          "ppid": 3121779,
+          "pgid": 3122020,
+          "sid": 3122020,
+          "start_ticks": 10835854,
+          "rss_bytes": 290816
+        },
+        "peak_live_owned_identities": 4,
+        "peak_session_rss_bytes": 14147584,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 0,
+        "finished_utc": "2026-10-11T22:59:54.561109+00:00",
+        "elapsed_seconds": 0.14238463700166903,
+        "logs": {
+          "extract-distro-8.stdout": {
+            "bytes": 0,
+            "sha256": {
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          },
+          "extract-distro-8.stderr": {
+            "bytes": 0,
+            "sha256": {
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          }
+        }
+      },
+      {
+        "label": "download-lychee",
+        "argv": [
+          "/usr/bin/curl",
+          "--fail",
+          "--location",
+          "--connect-timeout",
+          "15",
+          "--max-time",
+          "120",
+          "--max-filesize",
+          "67108864",
+          "--output",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-lint-tools-install-root-v1/lychee.tar.gz",
+          "https://github.com/lycheeverse/lychee/releases/download/lychee-v0.24.2/lychee-x86_64-unknown-linux-gnu.tar.gz"
+        ],
+        "environment": {
+          "PATH": "/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8"
+        },
+        "started_utc": "2026-10-11T22:59:54.562646+00:00",
+        "wall_seconds": 180,
+        "errors": [],
+        "observed_owned_identity_count": 1,
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 108358.684402474,
+        "pid": 3122033,
+        "spawn_return_monotonic": 108358.685916145,
+        "direct_identity": {
+          "pid": 3122033,
+          "state": "R",
+          "ppid": 3121779,
+          "pgid": 3122033,
+          "sid": 3122033,
+          "start_ticks": 10835868,
+          "rss_bytes": 462848
+        },
+        "peak_live_owned_identities": 1,
+        "peak_session_rss_bytes": 11403264,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 0,
+        "finished_utc": "2026-10-11T22:59:55.047670+00:00",
+        "elapsed_seconds": 0.4845365710061742,
+        "logs": {
+          "download-lychee.stdout": {
+            "bytes": 0,
+            "sha256": {
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          },
+          "download-lychee.stderr": {
+            "bytes": 397,
+            "sha256": {
+              "sha256": "da4b8c0ba21186b17b3e63c59d9966947d006dec5b26f23e5d70b057ba269e66"
+            }
+          }
+        }
+      },
+      {
+        "label": "list-lychee-archive",
+        "argv": [
+          "/usr/bin/tar",
+          "-tzf",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-lint-tools-install-root-v1/lychee.tar.gz"
+        ],
+        "environment": {
+          "PATH": "/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8"
+        },
+        "started_utc": "2026-10-11T22:59:55.053207+00:00",
+        "wall_seconds": 180,
+        "errors": [],
+        "observed_owned_identity_count": 2,
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 108359.175081896,
+        "pid": 3122068,
+        "spawn_return_monotonic": 108359.176685256,
+        "direct_identity": {
+          "pid": 3122068,
+          "state": "R",
+          "ppid": 3121779,
+          "pgid": 3122068,
+          "sid": 3122068,
+          "start_ticks": 10835917,
+          "rss_bytes": 319488
+        },
+        "peak_live_owned_identities": 2,
+        "peak_session_rss_bytes": 4354048,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 0,
+        "finished_utc": "2026-10-11T22:59:55.259031+00:00",
+        "elapsed_seconds": 0.20523519700509496,
+        "logs": {
+          "list-lychee-archive.stdout": {
+            "bytes": 607,
+            "sha256": {
+              "sha256": "dce241785241bf8003327c445224a7d12fc4a5805445dc767f8da702dfe43d1a"
+            }
+          },
+          "list-lychee-archive.stderr": {
+            "bytes": 0,
+            "sha256": {
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          }
+        }
+      }
+    ],
+    "source_modified": false,
+    "gpu_executed": false,
+    "controller_sha256": {
+      "sha256": "0611227746473c2dd6bbada0b195ed3fd99d82dec606b0466c81429991917bf7"
+    },
+    "packages": {
+      "shellcheck": [
+        "0.9.0-1",
+        {
+          "sha256": "eadf78f4dfcb1a271f47a9be5e38d124dffe9d4fea74956fab34e8c3e322a854"
+        }
+      ],
+      "markdownlint": [
+        "0.13.0-4",
+        {
+          "sha256": "721ea46bb2d2ebd8d853fc8f7c06af8bca82a65e869fc7f04dcc9ea5f183d801"
+        }
+      ],
+      "ruby-kramdown": [
+        "2.4.0-2",
+        {
+          "sha256": "b5976a6cb571f0cab4f4f8fd02fd0ef94d83b8bbbb72fabf391cb61a92d1e38e"
+        }
+      ],
+      "ruby-kramdown-parser-gfm": [
+        "1.1.0-3",
+        {
+          "sha256": "290c245f16b29c98f7a674b104c714129bd3b1f4dc0ce4bd1281deb78bfafa19"
+        }
+      ],
+      "ruby-mixlib-cli": [
+        "2.1.6-1",
+        {
+          "sha256": "971ed57a524b24b1e444386d772c2630f15a487a2b4c21cd90e4b320402983bd"
+        }
+      ],
+      "ruby-mixlib-config": [
+        "3.0.6-1",
+        {
+          "sha256": "e04cfd71c461b321608fd8d4e12af113f46772088e8c7787d1765baa2adbe557"
+        }
+      ],
+      "ruby-mixlib-shellout": [
+        "3.2.5-2",
+        {
+          "sha256": "05f8dea40984d5dbe1aedc638f0a92811f95aabc7885ba4541295d29ab7f2112"
+        }
+      ],
+      "ruby-chef-utils": [
+        "16.12.3-2",
+        {
+          "sha256": "ca4db9a151b874036f12f8fdf2c756268bfa728a72fe8b5a6974a4fc06cbf357"
+        }
+      ],
+      "ruby-tomlrb": [
+        "1.3.0-2",
+        {
+          "sha256": "37f0d5479184fbfeaa791164efd14f71ae8ac80859fc774677c87c9629a5032b"
+        }
+      ]
+    },
+    "evidence": {
+      "download-distro-tools": {
+        "stdout_derivative": {
+          "original_bytes": 975,
+          "original_sha256": "52207ad2017cf7864b3bb3e633da6b96e85c300bc696a1926de34cfcbbf1196e",
+          "individual_test_lines": [],
+          "protocol_results": [],
+          "diagnostic_lines": [],
+          "diagnostic_line_count": 0,
+          "scope": "Actual individual test/protocol results and diagnostic evidence; repeated successful API and journal entries omitted."
+        },
+        "stderr_derivative": {
+          "original_bytes": 0,
+          "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "individual_test_lines": [],
+          "protocol_results": [],
+          "diagnostic_lines": [],
+          "diagnostic_line_count": 0,
+          "scope": "Actual individual test/protocol results and diagnostic evidence; repeated successful API and journal entries omitted."
+        }
+      },
+      "extract-distro-0": {
+        "stdout_derivative": {
+          "original_bytes": 0,
+          "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "individual_test_lines": [],
+          "protocol_results": [],
+          "diagnostic_lines": [],
+          "diagnostic_line_count": 0,
+          "scope": "Actual individual test/protocol results and diagnostic evidence; repeated successful API and journal entries omitted."
+        },
+        "stderr_derivative": {
+          "original_bytes": 0,
+          "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "individual_test_lines": [],
+          "protocol_results": [],
+          "diagnostic_lines": [],
+          "diagnostic_line_count": 0,
+          "scope": "Actual individual test/protocol results and diagnostic evidence; repeated successful API and journal entries omitted."
+        }
+      },
+      "extract-distro-1": {
+        "stdout_derivative": {
+          "original_bytes": 0,
+          "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "individual_test_lines": [],
+          "protocol_results": [],
+          "diagnostic_lines": [],
+          "diagnostic_line_count": 0,
+          "scope": "Actual individual test/protocol results and diagnostic evidence; repeated successful API and journal entries omitted."
+        },
+        "stderr_derivative": {
+          "original_bytes": 0,
+          "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "individual_test_lines": [],
+          "protocol_results": [],
+          "diagnostic_lines": [],
+          "diagnostic_line_count": 0,
+          "scope": "Actual individual test/protocol results and diagnostic evidence; repeated successful API and journal entries omitted."
+        }
+      },
+      "extract-distro-2": {
+        "stdout_derivative": {
+          "original_bytes": 0,
+          "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "individual_test_lines": [],
+          "protocol_results": [],
+          "diagnostic_lines": [],
+          "diagnostic_line_count": 0,
+          "scope": "Actual individual test/protocol results and diagnostic evidence; repeated successful API and journal entries omitted."
+        },
+        "stderr_derivative": {
+          "original_bytes": 0,
+          "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "individual_test_lines": [],
+          "protocol_results": [],
+          "diagnostic_lines": [],
+          "diagnostic_line_count": 0,
+          "scope": "Actual individual test/protocol results and diagnostic evidence; repeated successful API and journal entries omitted."
+        }
+      },
+      "extract-distro-3": {
+        "stdout_derivative": {
+          "original_bytes": 0,
+          "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "individual_test_lines": [],
+          "protocol_results": [],
+          "diagnostic_lines": [],
+          "diagnostic_line_count": 0,
+          "scope": "Actual individual test/protocol results and diagnostic evidence; repeated successful API and journal entries omitted."
+        },
+        "stderr_derivative": {
+          "original_bytes": 0,
+          "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "individual_test_lines": [],
+          "protocol_results": [],
+          "diagnostic_lines": [],
+          "diagnostic_line_count": 0,
+          "scope": "Actual individual test/protocol results and diagnostic evidence; repeated successful API and journal entries omitted."
+        }
+      },
+      "extract-distro-4": {
+        "stdout_derivative": {
+          "original_bytes": 0,
+          "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "individual_test_lines": [],
+          "protocol_results": [],
+          "diagnostic_lines": [],
+          "diagnostic_line_count": 0,
+          "scope": "Actual individual test/protocol results and diagnostic evidence; repeated successful API and journal entries omitted."
+        },
+        "stderr_derivative": {
+          "original_bytes": 0,
+          "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "individual_test_lines": [],
+          "protocol_results": [],
+          "diagnostic_lines": [],
+          "diagnostic_line_count": 0,
+          "scope": "Actual individual test/protocol results and diagnostic evidence; repeated successful API and journal entries omitted."
+        }
+      },
+      "extract-distro-5": {
+        "stdout_derivative": {
+          "original_bytes": 0,
+          "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "individual_test_lines": [],
+          "protocol_results": [],
+          "diagnostic_lines": [],
+          "diagnostic_line_count": 0,
+          "scope": "Actual individual test/protocol results and diagnostic evidence; repeated successful API and journal entries omitted."
+        },
+        "stderr_derivative": {
+          "original_bytes": 0,
+          "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "individual_test_lines": [],
+          "protocol_results": [],
+          "diagnostic_lines": [],
+          "diagnostic_line_count": 0,
+          "scope": "Actual individual test/protocol results and diagnostic evidence; repeated successful API and journal entries omitted."
+        }
+      },
+      "extract-distro-6": {
+        "stdout_derivative": {
+          "original_bytes": 0,
+          "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "individual_test_lines": [],
+          "protocol_results": [],
+          "diagnostic_lines": [],
+          "diagnostic_line_count": 0,
+          "scope": "Actual individual test/protocol results and diagnostic evidence; repeated successful API and journal entries omitted."
+        },
+        "stderr_derivative": {
+          "original_bytes": 0,
+          "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "individual_test_lines": [],
+          "protocol_results": [],
+          "diagnostic_lines": [],
+          "diagnostic_line_count": 0,
+          "scope": "Actual individual test/protocol results and diagnostic evidence; repeated successful API and journal entries omitted."
+        }
+      },
+      "extract-distro-7": {
+        "stdout_derivative": {
+          "original_bytes": 0,
+          "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "individual_test_lines": [],
+          "protocol_results": [],
+          "diagnostic_lines": [],
+          "diagnostic_line_count": 0,
+          "scope": "Actual individual test/protocol results and diagnostic evidence; repeated successful API and journal entries omitted."
+        },
+        "stderr_derivative": {
+          "original_bytes": 0,
+          "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "individual_test_lines": [],
+          "protocol_results": [],
+          "diagnostic_lines": [],
+          "diagnostic_line_count": 0,
+          "scope": "Actual individual test/protocol results and diagnostic evidence; repeated successful API and journal entries omitted."
+        }
+      },
+      "extract-distro-8": {
+        "stdout_derivative": {
+          "original_bytes": 0,
+          "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "individual_test_lines": [],
+          "protocol_results": [],
+          "diagnostic_lines": [],
+          "diagnostic_line_count": 0,
+          "scope": "Actual individual test/protocol results and diagnostic evidence; repeated successful API and journal entries omitted."
+        },
+        "stderr_derivative": {
+          "original_bytes": 0,
+          "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "individual_test_lines": [],
+          "protocol_results": [],
+          "diagnostic_lines": [],
+          "diagnostic_line_count": 0,
+          "scope": "Actual individual test/protocol results and diagnostic evidence; repeated successful API and journal entries omitted."
+        }
+      },
+      "download-lychee": {
+        "stdout_derivative": {
+          "original_bytes": 0,
+          "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "individual_test_lines": [],
+          "protocol_results": [],
+          "diagnostic_lines": [],
+          "diagnostic_line_count": 0,
+          "scope": "Actual individual test/protocol results and diagnostic evidence; repeated successful API and journal entries omitted."
+        },
+        "stderr_derivative": {
+          "original_bytes": 397,
+          "original_sha256": "a18cefc0047a18a49ae3d46011a108ef783eef89288bdbcd087f756229d374b6",
+          "individual_test_lines": [],
+          "protocol_results": [],
+          "diagnostic_lines": [],
+          "diagnostic_line_count": 0,
+          "scope": "Actual individual test/protocol results and diagnostic evidence; repeated successful API and journal entries omitted."
+        }
+      },
+      "list-lychee-archive": {
+        "stdout_derivative": {
+          "original_bytes": 607,
+          "original_sha256": "dce241785241bf8003327c445224a7d12fc4a5805445dc767f8da702dfe43d1a",
+          "individual_test_lines": [],
+          "protocol_results": [],
+          "diagnostic_lines": [],
+          "diagnostic_line_count": 0,
+          "scope": "Actual individual test/protocol results and diagnostic evidence; repeated successful API and journal entries omitted."
+        },
+        "stderr_derivative": {
+          "original_bytes": 0,
+          "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "individual_test_lines": [],
+          "protocol_results": [],
+          "diagnostic_lines": [],
+          "diagnostic_line_count": 0,
+          "scope": "Actual individual test/protocol results and diagnostic evidence; repeated successful API and journal entries omitted."
+        }
+      }
+    },
+    "downloads": [
+      {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-lint-tools-install-root-v1/markdownlint_0.13.0-4_all.deb",
+        "sha256": {
+          "sha256": "721ea46bb2d2ebd8d853fc8f7c06af8bca82a65e869fc7f04dcc9ea5f183d801"
+        },
+        "bytes": 22870
+      },
+      {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-lint-tools-install-root-v1/ruby-chef-utils_16.12.3-2_all.deb",
+        "sha256": {
+          "sha256": "ca4db9a151b874036f12f8fdf2c756268bfa728a72fe8b5a6974a4fc06cbf357"
+        },
+        "bytes": 16542
+      },
+      {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-lint-tools-install-root-v1/ruby-kramdown-parser-gfm_1.1.0-3_all.deb",
+        "sha256": {
+          "sha256": "290c245f16b29c98f7a674b104c714129bd3b1f4dc0ce4bd1281deb78bfafa19"
+        },
+        "bytes": 6600
+      },
+      {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-lint-tools-install-root-v1/ruby-kramdown_2.4.0-2_all.deb",
+        "sha256": {
+          "sha256": "b5976a6cb571f0cab4f4f8fd02fd0ef94d83b8bbbb72fabf391cb61a92d1e38e"
+        },
+        "bytes": 233744
+      },
+      {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-lint-tools-install-root-v1/ruby-mixlib-cli_2.1.6-1_all.deb",
+        "sha256": {
+          "sha256": "971ed57a524b24b1e444386d772c2630f15a487a2b4c21cd90e4b320402983bd"
+        },
+        "bytes": 12416
+      },
+      {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-lint-tools-install-root-v1/ruby-mixlib-config_3.0.6-1_all.deb",
+        "sha256": {
+          "sha256": "e04cfd71c461b321608fd8d4e12af113f46772088e8c7787d1765baa2adbe557"
+        },
+        "bytes": 12884
+      },
+      {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-lint-tools-install-root-v1/ruby-mixlib-shellout_3.2.5-2_all.deb",
+        "sha256": {
+          "sha256": "05f8dea40984d5dbe1aedc638f0a92811f95aabc7885ba4541295d29ab7f2112"
+        },
+        "bytes": 23468
+      },
+      {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-lint-tools-install-root-v1/ruby-tomlrb_1.3.0-2_all.deb",
+        "sha256": {
+          "sha256": "37f0d5479184fbfeaa791164efd14f71ae8ac80859fc774677c87c9629a5032b"
+        },
+        "bytes": 8428
+      },
+      {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-lint-tools-install-root-v1/shellcheck_0.9.0-1_amd64.deb",
+        "sha256": {
+          "sha256": "eadf78f4dfcb1a271f47a9be5e38d124dffe9d4fea74956fab34e8c3e322a854"
+        },
+        "bytes": 2845342
+      }
+    ],
+    "lychee_download": {
+      "url": "https://github.com/lycheeverse/lychee/releases/download/lychee-v0.24.2/lychee-x86_64-unknown-linux-gnu.tar.gz",
+      "sha256": {
+        "sha256": "1f4e0ef7f6554a6ed33dd7ac144fb2e1bbed98598e7af973042fc5cd43951c9a"
+      },
+      "bytes": 7626970
+    },
+    "error": "RuntimeError('explicit archive member')",
+    "finished_utc": "2026-10-11T22:59:55.260464+00:00"
+  }
+}

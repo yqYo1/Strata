@@ -1,0 +1,66 @@
+# Round 205 — current WN precision and T8192 allocation reconciliation
+
+Date: 2026-10-12 (Asia/Tokyo). Read-only inspection of the current `sync-xe-v0143-nonfinite-20261012` source and the v153 report registry. No source edits, imports, code execution, tests, compilers/builds, runtime/GPU/model/process query, Git commands, scratch files, or old-report edits were performed. All allocation values below are hand-derived source-request payload arithmetic, not allocator measurements, resident-memory observations, or throughput measurements.
+
+## Correction to R204 and hardware name
+
+R204 cited its source review from the older CUDA report snapshot `docs-sycl-storage-retention-20261009`; that is not the current WN source. This reconciliation inspects `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-xe-v0143-nonfinite-20261012/{src,include}`. The R204 literature findings remain separate and valid as paper evidence, but its local dtype/allocation statements must be read as the older snapshot; use the source facts below for current WN.
+
+“RTX B570” in earlier notes was a product-name error. The 10-GB target is **Intel Arc B570**, an Intel Xe2 card, not an NVIDIA RTX GPU. Intel lists 10 GB GDDR6 and 380 GB/s bandwidth on its product page: [Intel Arc B570 specifications](https://www.intel.com/content/www/us/en/products/sku/241676/intel-arc-b570-graphics/specifications.html). The bandwidth figure is a vendor specification, not measured Strata throughput. This report has no B570 runtime or physical-free-VRAM measurement.
+
+## Source geometry and accounting rules
+
+Current Xe source declares N=2,560, HC=4, D=10,240, LR=320, K=10, C=10,240, ZV=6,144, HV=48; the model geometry has SSM state size 128, 48 value heads, convolution width 10,240, 36 GDN layers and 12 QSA layers. QSA has two KV heads, head dim 256, index block 4 and top-k width 2,048, so the persistent prefill selection cap is 2,051 cells. Main prefill allocates one reusable workspace region of `max(GDN scratch, QSA scratch, MoE scratch)`, because the attention and MoE halves run sequentially. The region is reused across layers and is not a sum of those three sets.
+
+`Alloc::take<T>` charges each take `round_up(payload + 256, 256)`; `Prefill::bytes_needed` follows the source take sequence and then adds 8 MiB alignment slack. My table gives unrounded payload sums for clarity, so the source-request total is slightly higher. `bytes_needed` also includes the external stage/ring, 150 MiB of group FP16 expert dequant buffers in the fallback case, PLE embedding storage, token/step arrays and other workspace. Source path: `src/prefill/prefill.cpp`, especially `gdn_set_bytes`, `qsa_set_bytes`, `moe_set_bytes`, `carve`, and `Prefill::bytes_needed`; persistent state comes from `src/core/session.cpp` and `include/strata/plan/plan.hpp`.
+
+## Exact persistent GDN and saved-state sizes
+
+For one GDN layer, persistent recurrence is `(128,48,128)` FP32 = 3,145,728 B. Conv history is `(3,10,240)` FP32 = 122,880 B. The total is 3,268,608 B/layer. All 36 layers therefore request **117,669,888 B (112.2 MiB) per full-model sequence**, independent of whether the context is 8K, 64K or 262K. This is fixed session state, not an evictable expert cache and not part of the chunk-sized prefill workspace.
+
+If only the recurrence matrix changes to FP16 while convolution history stays FP32, the source-size saving is 56,623,104 B (54 MiB) per sequence. If both recurrent and convolution state are halved, the saving is 58,834,944 B (56.1 MiB). No such change exists in the inspected source: `GdnBuffers::state` and `conv_state` are `float*`; prefill and verifier pass the session's `float*` recurrent state to the recurrence path. The kernel loads and stores state elements in global memory (`src/kernels/xe/native_gdn.cpp`), so FP16 storage could reduce per-step state bytes in principle, but source byte savings are not an observed bandwidth or latency gain.
+
+The verifier uses the session's same `ss.gdn_state` pointer. Its device arena has window-sized per-layer temporary `qkv_L`, `h_L`, `gate_L`, and `beta_L` arrays, plus QSA/attention, expert-part, logits and PLE scratch. It does **not** carve a second full GDN recurrent-state array. It does allocate small tail/history snapshots (`tail_snap_`, `hist_snap_`) for indexer/PLE rollback, not a copy of the 112.2-MiB GDN state. Verifier scratch scales with its configured `max_t`, not Prefill's T=8192; no verifier maximum was supplied here, so its total is not represented as an 8192-row request.
+
+A saved conversation checkpoint copies the GDN bytes into host-side checkpoint storage: one full-layer checkpoint therefore adds another **117,669,888 B of host memory**, not GPU memory. Each retained checkpoint can add another such copy. Disk save similarly serializes running state. A session save or verification snapshot must not be counted as a duplicate full GDN allocation on the GPU. Conversely, an independently live second sequence has its own persistent device state.
+
+## T=8192 source-request payload ledger
+
+These values are at the supplied target prefill chunk. MoE counts assume the pure FP16 fallback because that is the path with `Xs`, `GU`, and `Hh`; the build/model's actual MMQ selection is not inferred. The compact option is an explicit conditional path and is only admitted for pure fallback on the required ordered queue. Source mode and chunk settings must be recorded in any actual receipt.
+
+| Buffer set at T=8192 | Representation / payload | Requested payload | Lifetime and implication |
+|---|---:|---:|---|
+| GDN recurrent + conv state (whole model) | FP32 persistent, 36 layers | 117,669,888 B = 112.2 MiB | One sequence, lives across chunks and decode. Half only the recurrent matrix: save 54 MiB. |
+| Prefill GDN scratch | mixed float arrays plus `y_h` FP16 | 1,180,696,576 B = 1,126.8 MiB | In the shared workspace region; chunk-sized, reused per layer. Not persistent GDN state. |
+| Prefill QSA scratch, 64K context | float/FP16 row arrays + selection | about 1,070,644,000 B = 1,021.4 MiB | Same shared workspace region. Includes 16 MiB of fixed `sel_scores` for `max_blocks=16,386` and about 24.95 MiB attention scratch. |
+| Prefill QSA scratch, 262K context | as above | about 1,120,977,000 B = 1,069.5 MiB | Same workspace; the 64-MiB fixed scores array grows with context. It still does not sum with GDN/MoE sets. |
+| MoE router logits / route metadata | logits FP32 `T*512`, weights FP32, ids/slot/src int32 | 18,087,936 B = 17.25 MiB | Router logits are only 512 experts/token, not full vocabulary logits. Routing decisions are precision-sensitive; halve only with a separate experiment. |
+| MoE `Xs` | FP16 `T*K*N` fallback, route-sized | 419,430,400 B = 400 MiB | Fallback activation image. In compact mode it becomes `T*N` = 40 MiB. |
+| MoE `GU` | FP32 `T*K*1280` | 419,430,400 B = 400 MiB | Largest candidate precision store apart from Dm; hypothetical FP16 would save 200 MiB, but changes the SwiGLU input and is unqualified. Compact mode changes row cap to T, so it becomes 40 MiB independent of dtype. |
+| MoE `Hh` | FP16 `T*K*640` | 104,857,600 B = 100 MiB | Already FP16 in current fallback, consumed by down GEMM. Compact mode reduces it to `T*640` = 10 MiB. Compact ON/OFF is not an FP32-vs-FP16 Hh quality test. |
+| MoE `Dm` | FP32 `T*K*N` | 838,860,800 B = 800 MiB | Down-projection outputs used by final router-weighted combine. Hypothetical FP16 storage saves 400 MiB but inserts rounding before combine; FP32 accumulation afterward would not undo it. |
+| Shared-expert scratch | gate/up FP32, hidden FP16, shared FP32 | 136,347,648 B = 130.03125 MiB | Same MoE workspace; distinct from the routed-expert Hh bridge. |
+| Whole MoE scratch set, pure fallback/no compact | sum above | 1,937,014,784 B = 1,847.3 MiB = 1.804 GiB | Dominates the shared region if compact mode is off. The 800-MiB Dm and 40-MiB GU remain after a compact row-cap change. |
+| Whole MoE scratch set, pure fallback/compact | Xs/GU/Hh T-row instead of T*K, other arrays unchanged | 1,087,668,224 B = 1,037.3 MiB = 1.013 GiB | Reduces the region payload by 849,346,560 B = 810 MiB. The shared region then is set by GDN at 1,126.8 MiB, assuming the shown QSA/GDN geometries. |
+| Prefill base row arrays | includes `emb`, R, GR, mixed rows; excludes region | 1,190,395,904 B = 1,135.4 MiB | Separate T-sized arrays, not part of the shared region. FP16 `mixed_bf`/`mixed_h` already exist alongside FP32 mixed rows. |
+| Separate Prefill `ple_emb` | FP32 `T*N` | 83,886,080 B = 80 MiB | Separate chunk-sized allocation with later PLE use. |
+| GEMM scratch | `32<<20` uint16 elements | 67,108,864 B = 64 MiB | Fixed take; bytes are twice the element count. |
+| Expert grouped-dequant buffers | 16 experts x (GU + D) FP16 | 157,286,400 B = 150 MiB | Fallback-only; two large outer allocations, distinct from the shared MoE `GU`/`Hh` arrays. |
+
+The base row arrays + PLE embedding + GEMM scratch + expert group buffers + one shared region already total about **3.20 GiB** in fallback/no-compact and **2.50 GiB** in fallback/compact, before step arrays, guards, stage/ring slots, other owners, runtime allocations and any other process. Those are requested workspace payload subtotals, not an admission guarantee or a measured VRAM delta. Actual `Prefill::bytes_needed` further depends on `ring_slots(T)`, `MAXBLOB`, expert group size, active MMQ/fallback branch and session context. If MMQ is active, fallback `Xs/Hh` and group dequant storage are different/absent, MMQ has its own Xq/H/Hq buffers, and compact mode cannot be presumed effective.
+
+## Context and 10-GB fit relevance
+
+Persistent GDN state is context-independent. QSA KV and indexer storage are separate and context-dependent: at 64K with ordinary FP16 K/V, the 12 QSA layers' K/V payload alone is about 1.50 GiB (24,576 B per token); indexer pooled-key payload adds about 96 MiB, before page/allocation metadata. INT8, Q4, streaming and elastic modes change which bytes are on the GPU versus pinned host memory. These cache bytes must not be mixed into the transient prefill region or counted from a nominal full-context logical extent without reading the effective QSA state mode.
+
+The largest directly source-supported *capacity* reduction among the named work buffers is compact MoE row-bounded scratch: 810 MiB from the shared set at T=8192, if its guards and fallback route apply. A separate FP16 `Dm` storage experiment has a 400-MiB theoretical workspace saving and may halve the write/read payload for those rows; it is an arithmetic/quality intervention and is unimplemented. Halving `GU` would save 200 MiB in the non-compact fallback shape. By comparison, halving only persistent recurrence saves 54 MiB per sequence; its value is session-count capacity and potentially repeated decode memory traffic, not a reliable fix for a several-hundred-MiB Prefill allocation gap. Hh is already FP16. Router logits are just 16 MiB and also control expert choice.
+
+This ordering says nothing about which buffer is the measured bottleneck or whether any candidate crosses B570's fit boundary. The 10-GB label is physical capacity, not usable budget; actual owners include weights/cache, expert staging/cache, QSA state, Prefill/Verifier arenas, runtime overhead, page rounding and competing display allocations. Need an actual B570 allocation/owner ledger to establish free bytes, the largest allocation, or a successful T8192/64K request. No bandwidth estimate is made from Intel's theoretical 380 GB/s, and no transfer/quality gain is claimed from requested capacity.
+
+## Quality evidence boundary
+
+R204's DAMP paper result supports considering FP16 *recurrent-state storage* as a test arm on a related Qwen GDN hybrid; it does not validate this WN source's GDN recurrence, its model pack or 262,144 cells. At most, current source inspection says a state-size change would affect persistent `ss.gdn_state`; it leaves the much larger chunk-sized MoE Dm/GU and attention workspace separate. A 64K allocation/context record is not a quality benchmark, and it does not prove full 262,144-cell use or quality. Retain FP32 state until a correct-format counterfactual is implemented and tested on this exact model; do not frame that conservative default as a published universal requirement.
+
+## Provenance
+
+Read `report-registry-v153.json` at `bench/results/2026-10-12-latest-updates-pristine-builds-host-regression/` first. Reconciled R189 `research-full-context-kv-host-vram-owner-reconciliation-round189-v1.txt` for the distinction between logical QSA cache bytes, host backing, and VRAM; R196 `research-v0143-memory-min-targeted-reclaim-reconciliation-round196-v1.txt` for the current WN source path lineage; and R204's report to correct its stale source snapshot. No conflicting requested-bytes figure or prior successful quality result was reused as a measurement.
