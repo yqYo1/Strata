@@ -8620,6 +8620,9 @@ int main(int argc, char** argv) {
             pp_from = read_from;
             pp_reached = read_from;
             pp_t0 = r0;
+            // Prompt-only grouped CPU histogram: excludes decode, calibration, batched and pipelined work.
+            strata::core::CpuJobHistogramScope cpu_jobs(drive.d, g.n_layers, n, read_from,
+                o.batch <= 0 && n_stages == 1 && !pipe && !use_mtp && drive.d.pool != nullptr);
             pp_next_check = reread_to > 0 || !req_ckpt ? INT64_MAX : resume + o.prompt_cache_every;   // ckpt=0: none
             pp_tail_saved = reread_to > 0 || !req_ckpt;   // ckpt=0 (#861): no tail checkpoint either
             {
@@ -8766,6 +8769,7 @@ int main(int argc, char** argv) {
             auto read_windows = [&](int64_t a, int64_t b, std::string& e) -> bool {
                 // (STRATA_LOGPOS reads every window's logits: the serial loop)
                 if (pipe && pl_pw >= 1 && std::getenv("STRATA_LOGPOS") == nullptr) return read_windows_pl(a, b, e);
+                strata::core::CpuJobHistogramScope::Binding cpu_jobs_binding(cpu_jobs);
                 // every token is committed and the picks are discarded: no head sampling (see set_head_sampling)
                 struct NoHeadSampling {
                     strata::core::Verifier& v;
@@ -8916,6 +8920,7 @@ int main(int argc, char** argv) {
             // the request ends with `YIELDED <slot> <tokens>` + DONE cancel, and the server sends it again later: it
             // continues from the slot with the same chunks (upstream #656's cooperative preemption, a slot as the park)
             auto read_part = [&](int64_t a0, int64_t b0, std::string& e) -> bool {
+                cpu_jobs.note_batched();
                 if (o.batch <= 0) return sp.run(ids.data() + a0, b0 - a0, a0, e);
                 const int64_t C = std::max<int64_t>(sp.chunk(), 1);
                 for (int64_t q = a0; q < b0;) {
@@ -9167,6 +9172,7 @@ int main(int argc, char** argv) {
                     sr_cost.said = lim;
                 }
             }
+            cpu_jobs.finish(cancelled ? "cancelled_or_nonfinite" : "prompt_complete");
             tr("prompt done (slots refilled)");
             if (il_parts > 0)
                 std::fprintf(stderr, "strata batch: the prompt was read in %lld parts, the slots decoding %.0f ms between "

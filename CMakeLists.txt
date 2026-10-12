@@ -826,7 +826,7 @@ else()
 endif()
 set_property(SOURCE src/kernels/cpu/q2_avx2.cpp APPEND PROPERTY COMPILE_DEFINITIONS ${_strata_avxvnni})
 find_package(Threads REQUIRED)
-target_link_libraries(strata_kernels_cpu PUBLIC Threads::Threads)
+target_link_libraries(strata_kernels_cpu PUBLIC Threads::Threads PRIVATE strata_warnings)
 
 # ---- plan v0.3 P6: the i-quant models' CPU experts (IQ2_XS / IQ3_XXS files) ----
 #
@@ -886,6 +886,29 @@ if(STRATA_NATIVE_EXPERTS)
     add_executable(iq_avx2_parity src/kernels/cpu/iq_avx2_parity.cpp)
     target_link_libraries(iq_avx2_parity PRIVATE strata_kernels_cpu)
     add_test(NAME iq_avx2_parity COMMAND iq_avx2_parity)
+    add_executable(iq3s_paired_gu_test tests/core/iq3s_paired_gu_test.cpp)
+    target_include_directories(iq3s_paired_gu_test PRIVATE third_party/main/ggml)
+    target_link_libraries(iq3s_paired_gu_test PRIVATE strata_kernels_cpu strata_warnings)
+    add_test(NAME iq3s_paired_gu_test COMMAND iq3s_paired_gu_test)
+    set_tests_properties(iq3s_paired_gu_test PROPERTIES SKIP_RETURN_CODE 77 TIMEOUT 120)
+    # Actual grouped CPU dispatcher/pool, without strata_engine/core/SYCL runtime linkage.
+    # Main applies the histogram source packet first. Unreachable remote/cache paths trap.
+    if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+      add_executable(cpu_job_histogram_test tests/core/cpu_job_histogram_test.cpp
+                     tests/core/cpu_job_histogram_no_gpu.cpp src/core/expert_source.cpp)
+      target_link_libraries(cpu_job_histogram_test PRIVATE strata_kernels_cpu strata_warnings)
+      target_compile_options(cpu_job_histogram_test PRIVATE -ffunction-sections -fdata-sections)
+      target_link_options(cpu_job_histogram_test PRIVATE -Wl,--gc-sections)
+      # GNU ld otherwise roots all ASan global metadata through its start/stop symbols.
+      # Precise section GC keeps every sanitizer check on the retained actual CPU path.
+      if(STRATA_SANITIZE)
+        target_link_options(cpu_job_histogram_test PRIVATE -Wl,-z,start-stop-gc)
+      endif()
+      add_test(NAME cpu_job_histogram_off COMMAND cpu_job_histogram_test --off)
+      add_test(NAME cpu_job_histogram_on COMMAND cpu_job_histogram_test --on)
+      set_tests_properties(cpu_job_histogram_off cpu_job_histogram_on PROPERTIES
+                           LABELS "cpu_tests" TIMEOUT 120 SKIP_RETURN_CODE 77 RUN_SERIAL TRUE)
+    endif()
     # the AVX-2 Q8_K activation quantizer against ggml's, byte for byte (upstream 5208b320; --bench: its time)
     add_executable(q8k_quant_parity src/kernels/cpu/q8k_quant_parity.cpp)
     target_link_libraries(q8k_quant_parity PRIVATE strata_kernels_cpu)

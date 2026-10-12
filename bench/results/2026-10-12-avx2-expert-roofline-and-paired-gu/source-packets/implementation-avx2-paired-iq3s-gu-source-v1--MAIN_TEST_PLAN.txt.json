@@ -1,0 +1,10 @@
+{
+  "original": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/implementation-avx2-paired-iq3s-gu-source-v1/MAIN_TEST_PLAN.txt",
+    "sha256": "d2d120011b16624d06c71fb79b11704181a5bd50ba636f9292138162bc6be08e",
+    "bytes": 1090
+  },
+  "content": "Main only, serialized: review exact before hashes/hunks and independent perprojection ordering; apply into fresh worktree. Build free+contrib-llvm release and host ASan/UBSan; run new CPU fixture and existing iq_avx2/native_expert parity. Invoke fresh process with unset/0/1/01 guard; force existing STRATA_NO_AVXVNNI=1 and scalar/gather settings for production selection, also exercise VNNI fallback on capable CPU. Confirm selected route using assembly/debugger/source review rather than treating matching output as selection evidence. Add geometry/null/unknown variant negative cases if required by review. Inspect scalar/gather candidate assembly for activation-load sharing, register pressure/spills and code size; no fast-math. Only after parity qualify paired interleaved GU timing and complete serial decode with same pool/affinity/cache, independent samples/fault gates. NT8 baseline regression and defaultOFF behavior required. No GPU needed for fixture; Main verifies CPU-only link closure. Report failures individually; no automatic retries or speed claims before measurements.\n",
+  "original_status_preserved": true,
+  "current_main_status": "CPU-qualified; defaultOFF; GPU/model unverified"
+}

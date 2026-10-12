@@ -28,6 +28,7 @@
 #include <limits>
 #include <map>
 #include <memory>
+#include <new>
 #include <mutex>
 #include <thread>
 #include <utility>
@@ -1400,6 +1401,120 @@ bool FileExpertSource::pcie_layer(int64_t layer) const {
 
 // ================================ THE ADAPTER ================================
 
+namespace {
+bool cpu_job_histogram_requested() {
+    static const bool requested = [] {
+        const char* value = std::getenv("STRATA_PREFILL_CPU_JOB_HISTOGRAM");
+        return value != nullptr && std::strcmp(value, "1") == 0;
+    }();
+    return requested;
+}
+}
+
+// A fixed64layer model envelope and one immutable GU/Down pair per layer. Request-local only.
+class CpuJobHistogram {
+public:
+    struct Row {
+        int gu = -1, down = -1;
+        uint64_t jobs = 0, rows = 0, nt[8]{};
+    };
+    std::mutex mutex;
+    Row row[64];
+    int64_t layers = 0;
+    uint64_t serial_parts = 0, batched_parts = 0;
+    bool active = true, invalid = false, overflow = false;
+    void add(uint64_t& value, uint64_t increment) {
+        if (increment > UINT64_MAX - value) { value = UINT64_MAX; overflow = true; }
+        else value += increment;
+    }
+    void record(int64_t layer, const strata::kernels::cpu::NativeFmt& fmt,
+                const strata::kernels::cpu::ExpertJobMulti* jobs, int count) {
+        std::lock_guard<std::mutex> lock(mutex);
+        if (!active) return;
+        if (layer < 0 || layer >= layers || count < 0 || count > 128) { invalid = true; return; }
+        Row& r = row[layer];
+        if (r.gu != fmt.gu_type || r.down != fmt.d_type) { invalid = true; return; }
+        for (int i = 0; i < count; ++i) {
+            const int nt = jobs[i].nt;
+            if (nt < 1 || nt > 8) { invalid = true; continue; }
+            add(r.jobs, 1); add(r.rows, (uint64_t) nt); add(r.nt[nt - 1], 1);
+        }
+    }
+};
+
+CpuJobHistogramScope::CpuJobHistogramScope(ExpertDispatch& d, int64_t layers, int64_t prompt,
+                                          int64_t from, bool eligible)
+    : dispatch_(d), prompt_(prompt), from_(from), requested_(cpu_job_histogram_requested()) {
+    if (!requested_ || !eligible) return;
+    const auto& layout = strata::kernels::cpu::expert_layout();
+    if (!layout.native || layers < 1 || layers > 64 || (size_t) layers != layout.fmt.size()) return;
+    // Allocation is observer-only; failure must not change an inference decision.
+    try {
+        state_ = std::make_shared<CpuJobHistogram>();
+        state_->layers = layers;
+        for (int64_t layer = 0; layer < layers; ++layer) {
+            state_->row[layer].gu = layout.fmt[(size_t) layer].gu_type;
+            state_->row[layer].down = layout.fmt[(size_t) layer].d_type;
+        }
+    } catch (const std::bad_alloc&) { state_.reset(); }
+}
+
+CpuJobHistogramScope::Binding::Binding(CpuJobHistogramScope& scope) : scope_(scope) {
+    if (!scope.state_ || scope.finished_) return;
+    // Refuse observer overlap without overwriting another binding or changing model behavior.
+    std::shared_ptr<CpuJobHistogram> expected;
+    attached_ = std::atomic_compare_exchange_strong(&scope.dispatch_.cpu_job_histogram, &expected, scope.state_);
+    std::lock_guard<std::mutex> lock(scope.state_->mutex);
+    if (attached_) scope.state_->add(scope.state_->serial_parts, 1);
+    else scope.state_->invalid = true;
+}
+CpuJobHistogramScope::Binding::~Binding() {
+    if (!attached_) return;
+    auto expected = scope_.state_;
+    std::atomic_compare_exchange_strong(&scope_.dispatch_.cpu_job_histogram, &expected,
+                                       std::shared_ptr<CpuJobHistogram>{});
+}
+void CpuJobHistogramScope::note_batched() {
+    if (!state_ || finished_) return;
+    std::lock_guard<std::mutex> lock(state_->mutex);
+    state_->add(state_->batched_parts, 1);
+}
+CpuJobHistogramScope::~CpuJobHistogramScope() { finish("error_or_early_exit"); }
+void CpuJobHistogramScope::finish(const char* status) {
+    if (finished_) return;
+    finished_ = true;
+    if (!requested_) return;
+    if (!state_) {
+        std::fprintf(stderr, "strata cpu jobs: scope=prompt status=%.32s eligible=0 prompt=%lld from=%lld\n",
+                     status ? status : "unknown", (long long) prompt_, (long long) from_);
+        return;
+    }
+    auto expected = state_;
+    std::atomic_compare_exchange_strong(&dispatch_.cpu_job_histogram, &expected,
+                                       std::shared_ptr<CpuJobHistogram>{});
+    // Stop updates under the same mutex as writers; retained shared ownership protects late callbacks.
+    std::lock_guard<std::mutex> lock(state_->mutex);
+    state_->active = false;
+    std::fprintf(stderr, "strata cpu jobs: scope=prompt status=%.32s eligible=1 prompt=%lld from=%lld "
+                         "serial_parts=%llu batched_parts=%llu invalid=%d overflow=%d\n", status ? status : "unknown",
+                 (long long) prompt_, (long long) from_, (unsigned long long) state_->serial_parts,
+                 (unsigned long long) state_->batched_parts, state_->invalid ? 1 : 0, state_->overflow ? 1 : 0);
+    // Pure batched8192: explicitly excluded, no invented NT8192 rows or CPU expert counts.
+    if (state_->serial_parts == 0) {
+        std::fprintf(stderr, "strata cpu jobs: coverage=no_serial_windows cpu_histogram_work=0\n");
+        return;
+    }
+    for (int64_t layer = 0; layer < state_->layers; ++layer) {
+        const auto& r = state_->row[layer];
+        std::fprintf(stderr, "strata cpu jobs: layer=%lld gu=%d down=%d jobs=%llu rows=%llu "
+                             "nt1=%llu nt2=%llu nt3=%llu nt4=%llu nt5=%llu nt6=%llu nt7=%llu nt8=%llu\n",
+                     (long long) layer, r.gu, r.down, (unsigned long long) r.jobs, (unsigned long long) r.rows,
+                     (unsigned long long) r.nt[0], (unsigned long long) r.nt[1], (unsigned long long) r.nt[2],
+                     (unsigned long long) r.nt[3], (unsigned long long) r.nt[4], (unsigned long long) r.nt[5],
+                     (unsigned long long) r.nt[6], (unsigned long long) r.nt[7]);
+    }
+}
+
 void expert_pool_dispatch(void* user, const float* x_f, const int32_t* ids, const float* weights, int64_t n_embd,
                           int64_t k, float* out) {
     (void) weights;   // clause 2: `moe_combine` applies it on the device.  Not an oversight.
@@ -1866,7 +1981,13 @@ void expert_pool_dispatch_multi(ExpertDispatch& d, const float* x_f, const int32
     const auto c3 = std::chrono::steady_clock::now();
     pt("run", njobs);
     if (njobs > 0) {
-        if (native) d.pool->run_split_multi_native(lay.fmt[(size_t) d.layers], d.jobs_multi.data(), njobs);
+        if (native) {
+            if (cpu_job_histogram_requested()) {
+                const auto observer = std::atomic_load(&d.cpu_job_histogram);
+                if (observer) observer->record(d.layers, lay.fmt[(size_t) d.layers], d.jobs_multi.data(), njobs);
+            }
+            d.pool->run_split_multi_native(lay.fmt[(size_t) d.layers], d.jobs_multi.data(), njobs);
+        }
         else d.pool->run_split_multi(d.jobs_multi.data(), njobs);
     }
     if (d.remote_count > 0) {

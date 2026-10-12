@@ -35,6 +35,10 @@ int iq256_variants() noexcept;
 /// iq256_gu_rows / iq256_rows in a given variant (tests and benches; only bits of iq256_variants()).
 void iq256_gu_rows_v(int variant, int ggml_type, const uint8_t* blob, size_t gu_row, size_t up_off, int n,
                      const void* const* act, int nt, float* const* ff, int r0, int r1);
+/// Experimental H2560/FF640 IQ3_S NT1, plain scalar/gather AVX2. False leaves outputs untouched.
+/// Requires cpu_avx2_ok(), live naturally aligned Q8_K objects and disjoint weights/acts/output.
+bool iq256_gu_rows_paired_v(int variant, int ggml_type, const uint8_t* blob, size_t gu_row, size_t up_off, int n,
+                            const void* const* act, int nt, float* const* ff, int r0, int r1);
 void iq256_rows_v(int variant, int ggml_type, const uint8_t* w, size_t row_bytes, int n, const void* const* act,
                   int nt, float* const* out, int r0, int r1);
 

@@ -31,6 +31,48 @@ STRATA_ROWS_FN inline __m256i dot4u(__m256i u8, __m256i s8) {
 #endif
 }
 
+// Experimental NT1 pairing: independent weight decode and accumulator order.
+template <int TY> STRATA_ROWS_FN
+void gu_rows_paired_one(const uint8_t* blob, size_t gu_row, size_t up_off,
+                        const void* activation, float* ff, int r0, int r1) {
+    const auto* y = static_cast<const block_q8_K*>(activation);
+    const int pf = prefetch_distance();
+    for (int r = r0; r < r1; ++r) {
+        __m256 gf = _mm256_setzero_ps(), uf = _mm256_setzero_ps();
+        for (int i = 0; i < 10; ++i) {
+            const uint8_t* gb = blob + (size_t) r * gu_row + (size_t) i * Fmt32<TY>::bytes;
+            const uint8_t* ub = blob + up_off + (size_t) r * gu_row + (size_t) i * Fmt32<TY>::bytes;
+            rows_ahead(gb, pf);
+            rows_ahead(ub, pf);
+            __m256i gi = _mm256_setzero_si256(), ui = _mm256_setzero_si256();
+            for (int j = 0; j < 4; ++j) {
+                for (int half = 0; half < 2; ++half) {
+                    const int off = 64 * j + 32 * half;
+                    const __m256i yv = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(y[i].qs + off));
+                    {
+                        __m256i g, sgn, sc;
+                        Fmt32<TY>::decode(gb, j, half, g, sgn, sc);
+                        const __m256i ys = _mm256_sign_epi8(yv, sgn);
+                        gi = madd_add(gi, _mm256_maddubs_epi16(g, ys), sc);
+                    }
+                    {
+                        __m256i g, sgn, sc;
+                        Fmt32<TY>::decode(ub, j, half, g, sgn, sc);
+                        const __m256i ys = _mm256_sign_epi8(yv, sgn);
+                        ui = madd_add(ui, _mm256_maddubs_epi16(g, ys), sc);
+                    }
+                }
+            }
+            const float gd = h2f(u16(gb)) * Fmt32<TY>::K;
+            const float ud = h2f(u16(ub)) * Fmt32<TY>::K;
+            gf = _mm256_fmadd_ps(_mm256_set1_ps(gd * y[i].d), _mm256_cvtepi32_ps(gi), gf);
+            uf = _mm256_fmadd_ps(_mm256_set1_ps(ud * y[i].d), _mm256_cvtepi32_ps(ui), uf);
+        }
+        const float g = hsum8(gf), u = hsum8(uf);
+        ff[r] = (g / (1.f + std::exp(-g))) * u;
+    }
+}
+
 template <int TY, int NT> STRATA_ROWS_FN
 inline void row_dot(const uint8_t* row, int nblocks, const block_q8_K* const* y, float* res) {
     const int pf = prefetch_distance();

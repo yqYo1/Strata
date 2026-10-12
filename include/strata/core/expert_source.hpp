@@ -42,6 +42,7 @@
 
 namespace strata::kernels::cpu {
 struct ExpertLayout;
+struct NativeFmt;
 }
 
 namespace strata::core {
@@ -210,9 +211,12 @@ struct GpuPlanSink {
 };
 
 struct PcieSplitTimes;
+class CpuJobHistogram;
 
 /// The adapter's own state.  One per session, reused every layer so the token path allocates nothing (P2.T10).
 struct ExpertDispatch {
+    // Runtime access is atomic; startup copies occur only while empty; a prompt-scope binding owns the observer, never job buffers.
+    std::shared_ptr<CpuJobHistogram> cpu_job_histogram;
     strata::kernels::cpu::ExpertPool* pool = nullptr;
     ExpertSource* src = nullptr;
     RemoteExperts* remote[3] = {}; ///< optional CUDA1..3 tiers for otherwise CPU-served rows
@@ -357,6 +361,32 @@ struct ExpertDispatch {
     const char* fail = nullptr;
     int64_t fail_layer = -1;
     int64_t fail_expert = -1;
+};
+
+// Opt-in serial prompt observer. No dispatch/control result depends on these counters.
+class CpuJobHistogramScope {
+public:
+    class Binding {
+    public:
+        explicit Binding(CpuJobHistogramScope& scope);
+        ~Binding();
+        Binding(const Binding&) = delete;
+        Binding& operator=(const Binding&) = delete;
+    private:
+        CpuJobHistogramScope& scope_;
+        bool attached_ = false;
+    };
+    CpuJobHistogramScope(ExpertDispatch& dispatch, int64_t layers, int64_t prompt, int64_t from, bool eligible);
+    ~CpuJobHistogramScope();
+    CpuJobHistogramScope(const CpuJobHistogramScope&) = delete;
+    CpuJobHistogramScope& operator=(const CpuJobHistogramScope&) = delete;
+    void note_batched();
+    void finish(const char* status);
+private:
+    ExpertDispatch& dispatch_;
+    std::shared_ptr<CpuJobHistogram> state_;
+    int64_t prompt_, from_;
+    bool requested_ = false, finished_ = false;
 };
 
 /// `strata::core::PoolFn`, exactly.  Silent on failure BY SIGNATURE - see `ExpertDispatch::fail`.

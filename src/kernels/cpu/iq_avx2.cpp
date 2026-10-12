@@ -215,8 +215,8 @@ template <> struct Fmt32<16> {   // IQ2_XXS: d, qs[32] u16
 };
 
 template <> struct Fmt32<17> {   // IQ2_XS: d, qs[32] u16 (9-bit grid index + 7-bit sign index), scales[8]
-    static constexpr int bytes = 74;
-    static constexpr float K = 0.125f;
+    [[maybe_unused]] static constexpr int bytes = 74;
+    [[maybe_unused]] static constexpr float K = 0.125f;
     static inline void decode(const uint8_t* b, int j, int half, __m256i& g, __m256i& sgn, __m256i& sc) {
         uint16_t v[8];
         std::memcpy(v, b + 2 + 16 * j, 16);
@@ -474,6 +474,18 @@ int iq256_variant() noexcept { return iq256_variant_for(21); }
 
 int iq256_variants() noexcept { return kIq256Gather | (vnni_on() ? kIq256Vnni : 0); }
 
+bool iq256_gu_rows_paired_v(int variant, int type, const uint8_t* blob, size_t gu_row, size_t up_off, int n,
+                            const void* const* act, int nt, float* const* ff, int r0, int r1) {
+    // Exact geometry bounds offsets; callers retain disjoint live buffers through completion.
+    if (type != 21 || nt != 1 || n != 2560 || gu_row != 1100 || up_off != 640 * gu_row ||
+        r0 < 0 || r1 < r0 || r1 > 640 || (variant != 0 && variant != kIq256Gather) ||
+        !blob || !act || !ff || !act[0] || !ff[0]) return false;
+    if (variant == kIq256Gather)
+        plain::gu_rows_paired_one<121>(blob, gu_row, up_off, act[0], ff[0], r0, r1);
+    else plain::gu_rows_paired_one<21>(blob, gu_row, up_off, act[0], ff[0], r0, r1);
+    return true;
+}
+
 void iq256_gu_rows_v(int variant, int type, const uint8_t* blob, size_t gu_row, size_t up_off, int n,
                      const void* const* act, int nt, float* const* ff, int r0, int r1) {
     const bool g = (variant & kIq256Gather) != 0;
@@ -504,7 +516,13 @@ void iq256_rows_v(int variant, int type, const uint8_t* w, size_t row_bytes, int
 
 void iq256_gu_rows(int type, const uint8_t* blob, size_t gu_row, size_t up_off, int n, const void* const* act, int nt,
                    float* const* ff, int r0, int r1) {
-    iq256_gu_rows_v(iq256_variant_for(type), type, blob, gu_row, up_off, n, act, nt, ff, r0, r1);
+    static const bool paired = [] {
+        const char* value = std::getenv("STRATA_IQ256_PAIRED_GU");
+        return value && std::strcmp(value, "1") == 0;
+    }();
+    const int variant = iq256_variant_for(type);
+    if (paired && iq256_gu_rows_paired_v(variant, type, blob, gu_row, up_off, n, act, nt, ff, r0, r1)) return;
+    iq256_gu_rows_v(variant, type, blob, gu_row, up_off, n, act, nt, ff, r0, r1);
 }
 
 void iq256_rows(int type, const uint8_t* w, size_t row_bytes, int n, const void* const* act, int nt, float* const* out,

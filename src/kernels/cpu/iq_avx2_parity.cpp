@@ -391,7 +391,8 @@ std::vector<int> ints(const std::string& s) {
     return v;
 }
 
-int bench(const std::vector<std::string>& pairs, const std::vector<int>& nts, int mb, int reps, bool dispatch_only) {
+int bench(const std::vector<std::string>& pairs, const std::vector<int>& nts, int mb, int reps,
+          bool dispatch_only, bool raw_samples) {
     for (const std::string& pair : pairs) {
         const size_t slash = pair.find('/');
         const int gt = slash == std::string::npos ? -1 : type_of(pair.substr(0, slash));
@@ -481,6 +482,14 @@ int bench(const std::vector<std::string>& pairs, const std::vector<int>& nts, in
                     tg[m].push_back(sg / (double) E);
                     td[m].push_back(sd / (double) E);
                 }
+            if (raw_samples) {
+                for (size_t m = 0; m < ms.size(); ++m)
+                    for (size_t rep = 0; rep < tg[m].size(); ++rep)
+                        std::printf("SAMPLE pair=%s H=%lld FF=%lld nt=%d method=%s rep=%zu experts=%zu "
+                                    "expert_bytes=%zu gu_ms=%.9f down_ms=%.9f total_ms=%.9f\n",
+                                    pair.c_str(), (long long) kH, (long long) kFF, nt, ms[m].name.c_str(), rep, E,
+                                    f.bytes, tg[m][rep], td[m][rep], tg[m][rep] + td[m][rep]);
+            }
             std::printf("  %d token%s ms per expert, median of %d (min): gate/up, down, total\n", nt, nt == 1 ? "" : "s",
                         reps);
             for (size_t m = 0; m < ms.size(); ++m) {
@@ -500,7 +509,7 @@ int bench(const std::vector<std::string>& pairs, const std::vector<int>& nts, in
 
 int main(int argc, char** argv) {
     setvbuf(stdout, nullptr, _IONBF, 0);
-    bool do_bench = false, dispatch_only = !kVariants;
+    bool do_bench = false, dispatch_only = !kVariants, raw_samples = false;
     int pin = -1, mb = 256, reps = 5;
     std::vector<int> nts = {1, 2, 3, 4};
     std::vector<std::string> pairs = {"iq3_s/iq4_nl", "iq3_xxs/iq4_nl", "iq2_s/q2_0", "iq2_xxs/q2_0"};
@@ -509,6 +518,7 @@ int main(int argc, char** argv) {
         const bool more = i + 1 < argc;
         if (a == "--bench") do_bench = true;
         else if (a == "--dispatch") dispatch_only = true;
+        else if (a == "--raw-samples") raw_samples = true;
         else if (a == "--cpu" && more) pin = (int) std::strtol(argv[++i], nullptr, 10);
         else if (a == "--mb" && more) mb = (int) std::strtol(argv[++i], nullptr, 10);
         else if (a == "--reps" && more) reps = std::max(1, (int) std::strtol(argv[++i], nullptr, 10));
@@ -524,7 +534,7 @@ int main(int argc, char** argv) {
             }
         } else {
             std::fprintf(stderr, "usage: iq_avx2_parity [--cpu N] | --bench [--cpu N] [--nt 1,2,3,4] [--mb 256] "
-                                 "[--reps 5] [--pairs iq3_s/iq4_nl,...] [--dispatch]\n");
+                                 "[--reps 5] [--pairs iq3_s/iq4_nl,...] [--dispatch] [--raw-samples]\n");
             return 2;
         }
     }
@@ -543,7 +553,7 @@ int main(int argc, char** argv) {
     std::printf("  variants this CPU runs: %s; this thread's: %s\n",
                 variant_name(cpu::iq256_variants()).c_str(), variant_name(cpu::iq256_variant()).c_str());
 #endif
-    if (do_bench) return bench(pairs, nts, mb, reps, dispatch_only);
+    if (do_bench) return bench(pairs, nts, mb, reps, dispatch_only, raw_samples);
     int failures = 0;
     for (int type : {16, 17, 22, 18, 21, 23}) failures += check_gate_up(type);
     for (int type : {20, 42}) failures += check_down(type);
