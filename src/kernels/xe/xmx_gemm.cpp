@@ -10,6 +10,7 @@
 // from its rows, as fast as the VNNI-packed layout the XMX engines take natively (143-153 TFLOP/s against 142-147 for
 // the wide products), while the dequantizers write row-major twice as fast as packed (bench/results/2026-10-02-xmx-gemm).
 #include "strata/kernels/xmx_gemm.hpp"
+#include "strata/kernels/grouped_gemm_diagnostic.hpp"
 #include "strata/core/runtime.hpp"
 #include "strata/core/per_device.hpp"
 #include "dp4a_gemm.hpp"
@@ -225,9 +226,8 @@ bool device_has_xmx(const sycl::device& d, mx::matrix_type in) {
 // Whether the device builds the kernels' large register file (grf_size<256>): XMX devices that list the matrix
 // combinations may still lack the mode, and a kernel that asks for it then fails to build at its first launch.  One
 // kernel is built here, once, before any is launched.
-bool large_grf_ok(const sycl::device& d) {
+bool large_grf_ok(const sycl::device& d, const sycl::context& ctx) {
     try {
-        const auto ctx = core::Runtime::get().compute().get_context();
         (void) sycl::get_kernel_bundle<sycl::bundle_state::executable>(
             ctx, {d}, {sycl::get_kernel_id<GemmKernel<sycl::half, 128, 256, 3>>()});
         return true;
@@ -242,18 +242,19 @@ bool large_grf_ok(const sycl::device& d) {
 struct XmxUse {
     bool f16, bf16;
 };
-bool use_xmx(XmxType t) {
+bool use_xmx(XmxType t, sycl::queue& q) {
     static core::PerDevice<XmxUse> per_device;
-    auto& q = core::Runtime::get().compute();
     const XmxUse& u = per_device.get(q.get_device(), [&q] {
         const sycl::device dev = q.get_device();
         const bool grf = (device_has_xmx(dev, mx::matrix_type::fp16) || device_has_xmx(dev, mx::matrix_type::bf16))
-                         && large_grf_ok(dev);
+                         && large_grf_ok(dev, q.get_context());
         // (the path the products take is reported once, from the prompt path's Gemm::path: oneMath may run them)
         return XmxUse{grf && device_has_xmx(dev, mx::matrix_type::fp16), grf && device_has_xmx(dev, mx::matrix_type::bf16)};
     });
     return t == XmxType::f16 ? u.f16 : u.bf16;
 }
+
+bool use_xmx(XmxType t) { return use_xmx(t, core::Runtime::get().compute()); }
 
 void finish(void* stream, const sycl::event& e, const char* what) {
     if (!stream) core::Runtime::get().wait(e, what);
@@ -313,30 +314,96 @@ void xmx_gemm(XmxType t, const uint16_t* X, const uint16_t* W, float* Y, int64_t
     finish(stream, e, "xmx_gemm");
 }
 
-void xmx_gemm_grouped(const uint16_t* X, const uint16_t* W, int64_t w_stride, float* Y, const int32_t* bounds, int G,
-                      int64_t max_rows, int64_t N, int64_t K, void* stream) {
-    if (G <= 0 || max_rows <= 0) return;
-    if (!xmx_gemm_ok(X, W, Y, N, K, N) || (w_stride * 2) % 64 != 0)
-        throw core::DeviceError("xmx_gemm_grouped: shape " + std::to_string(N) + " x " + std::to_string(K));
-    // 128-row work-group tiles: the best of 32, 64 and 128 for 16 experts of 20-420 rows (56 and 55 TFLOP/s for the
-    // gate/up and down shapes against oneMKL's 45 and 44, one call per expert)
-    if (auto& q = core::Runtime::get().stream(stream); xe::mma_usable(q, false) &&
-                                                        (xe::mma_forced() || !use_xmx(XmxType::f16))) {
-        finish(stream, xe::mma_gemm_grouped(q, X, W, w_stride, Y, bounds, G, max_rows, N, K), "xmx_gemm_grouped");
-        return;
-    }
-    if (!use_xmx(XmxType::f16)) {
-        finish(stream, xe::dp4a_gemm_grouped(core::Runtime::get().stream(stream), X, W, w_stride, Y, bounds, G,
-                                             max_rows, N, K), "xmx_gemm_grouped");
-        return;
-    }
+namespace {
+GroupedGemmSubmission submit_grouped(sycl::queue& q, const uint16_t* X, const uint16_t* W, int64_t w_stride,
+                                     float* Y, const int32_t* bounds, int G, int64_t max_rows,
+                                     int64_t N, int64_t K, bool diagnostic) {
+    if (G <= 0 || max_rows <= 0 || !bounds || w_stride <= 0 || w_stride % 32 != 0 ||
+        !xmx_gemm_ok(X, W, Y, N, K, N))
+        throw core::DeviceError("grouped GEMM: invalid arguments");
+    const bool xmx = use_xmx(XmxType::f16, q);
+    if (xe::mma_usable(q, false) && (xe::mma_forced() || !xmx))
+        return {xe::mma_gemm_grouped(q, X, W, w_stride, Y, bounds, G, max_rows, N, K),
+                "joint_matrix", max_rows, N, K, G, 0, 0, 0};
+    if (!xmx)
+        return {xe::dp4a_gemm_grouped(q, X, W, w_stride, Y, bounds, G, max_rows, N, K),
+                "DP4a", max_rows, N, K, G, 0, 0, 0};
     constexpr int WM = 128, WN = 256, PD = 3, NSG = (WM / MS) * (WN / NS);
+    if (diagnostic) {
+        // This is the exact functor submitted below, not the non-grouped GRF probe.
+        const auto bundle = sycl::get_kernel_bundle<sycl::bundle_state::executable>(
+            q.get_context(), {q.get_device()}, {sycl::get_kernel_id<GroupedKernel<WM, WN, PD>>()});
+        if (!bundle.has_kernel(sycl::get_kernel_id<GroupedKernel<WM, WN, PD>>(), q.get_device()))
+            throw core::DeviceError("grouped XMX diagnostic unavailable: exact executable absent");
+    }
     const int64_t tiles_m = (max_rows + WM - 1) / WM, nN = (N + WN - 1) / WN;
-    const sycl::event e = core::Runtime::get().stream(stream).parallel_for(
+    const sycl::event event = q.parallel_for(
         sycl::nd_range<1>((size_t) (G * tiles_m * nN * NSG * 16), (size_t) NSG * 16),
         GroupedKernel<WM, WN, PD>{reinterpret_cast<const sycl::half*>(X), reinterpret_cast<const sycl::half*>(W), Y,
                                   bounds, w_stride, tiles_m, nN, N, K});
-    finish(stream, e, "xmx_gemm_grouped");
+    return {event, "XMX", max_rows, N, K, G, WM, WN, PD};
+}
+}  // namespace
+
+void xmx_gemm_grouped(const uint16_t* X, const uint16_t* W, int64_t w_stride, float* Y, const int32_t* bounds, int G,
+                      int64_t max_rows, int64_t N, int64_t K, void* stream) {
+    if (G <= 0 || max_rows <= 0) return;
+    auto& q = core::Runtime::get().stream(stream);
+    const auto submitted = submit_grouped(q, X, W, w_stride, Y, bounds, G, max_rows, N, K, false);
+    finish(stream, submitted.event, "xmx_gemm_grouped");
+}
+
+GroupedBoundsValidation validate_grouped_device_bounds(sycl::queue& q, const int32_t* bounds,
+    int32_t* scratch, size_t scratch_count, int64_t rows, int64_t max_rows, const std::atomic<bool>& async_error) {
+    auto& runtime = core::Runtime::get();
+    if (q.get_device() != runtime.device() || q.get_context() != runtime.context() ||
+        !q.has_property<sycl::property::queue::in_order>() ||
+        !q.has_property<sycl::property::queue::enable_profiling>() ||
+        !q.get_device().has(sycl::aspect::queue_profiling))
+        throw core::DeviceError("grouped bounds: queue identity/profiling mismatch");
+    if (!bounds || !scratch || scratch_count != 17 || max_rows < 1 || max_rows > 512 ||
+        rows < 1 || rows > 16 * max_rows || async_error.load())
+        throw core::DeviceError("grouped bounds: invalid validation arguments");
+    if (sycl::get_pointer_type(bounds, q.get_context()) != sycl::usm::alloc::device ||
+        sycl::get_pointer_device(bounds, q.get_context()) != q.get_device())
+        throw core::DeviceError("grouped bounds: device USM identity mismatch");
+    // Scratch is owned by caller across catch/drain. Never allocate a temporary destination here.
+    auto copied = q.memcpy(scratch, bounds, 17 * sizeof(int32_t));
+    copied.wait_and_throw();
+    q.wait_and_throw();
+    if (async_error.load() || copied.get_info<sycl::info::event::command_execution_status>() !=
+        sycl::info::event_command_status::complete)
+        throw core::DeviceError("grouped bounds: D2H completion failure");
+    if (scratch[0] != 0 || scratch[16] != rows)
+        throw core::DeviceError("grouped bounds: origin/actual row extent mismatch");
+    for (int g = 0; g < 16; ++g)
+        if (scratch[g] < 0 || scratch[g + 1] < scratch[g] || scratch[g + 1] > rows ||
+            static_cast<int64_t>(scratch[g + 1]) - scratch[g] > max_rows)
+            throw core::DeviceError("grouped bounds: invalid actual device contents");
+    return GroupedBoundsValidation(bounds, &q, rows, max_rows);
+}
+
+GroupedGemmSubmission grouped_gemm_diagnostic(sycl::queue& q, const uint16_t* X, const uint16_t* W,
+    int64_t w_stride, float* Y, const GroupedBoundsValidation& bounds, int G,
+    int64_t max_rows, int64_t N, int64_t K) {
+    auto& runtime = core::Runtime::get();
+    if (q.get_device() != runtime.device() || q.get_context() != runtime.context() ||
+        !q.has_property<sycl::property::queue::in_order>() ||
+        !q.has_property<sycl::property::queue::enable_profiling>() ||
+        !q.get_device().has(sycl::aspect::queue_profiling) || bounds.queue() != &q)
+        throw core::DeviceError("grouped diagnostic: queue identity/profiling mismatch");
+    if (G != 16 || max_rows < 1 || max_rows > 512 || bounds.max_rows() != max_rows ||
+        !((N == 1280 && K == 2560) || (N == 2560 && K == 640)) || w_stride != N * K)
+        throw core::DeviceError("grouped diagnostic: unsupported geometry");
+    if (!X || !W || !Y) throw core::DeviceError("grouped diagnostic: null pointer");
+    for (const void* pointer : {static_cast<const void*>(X), static_cast<const void*>(W), static_cast<const void*>(Y)}) {
+        if (sycl::get_pointer_type(pointer, q.get_context()) != sycl::usm::alloc::device ||
+            sycl::get_pointer_device(pointer, q.get_context()) != q.get_device())
+            throw core::DeviceError("grouped diagnostic: device operand identity mismatch");
+    }
+    if (xe::mma_forced() && !xe::mma_usable(q, false))
+        throw core::DeviceError("grouped diagnostic unavailable: requested MMA unsupported");
+    return submit_grouped(q, X, W, w_stride, Y, bounds.device_bounds(), G, max_rows, N, K, true);
 }
 
 namespace {

@@ -1,0 +1,53 @@
+{
+  "research_completed": 786,
+  "prior": {
+    "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-native-grouped-event-20261012/bench/results/2026-10-12-decode-criticalpath-native-dequant-batch/report-registry-v163.json",
+    "sha256": "8dfcee12a9eede963c083c4c4d8e824594bc36e641d01fd1e097778e9573eb1e",
+    "bytes": 3287
+  },
+  "new_reports": [
+    {
+      "original": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-gdn-time-tiled-scratch-for16k-prefill-round275-v1.txt",
+        "sha256": "aafac774b3b09af8aaf403a9d174956086419fe416c104fdb9610078d917683f",
+        "bytes": 11329
+      },
+      "archive": "research/research-gdn-time-tiled-scratch-for16k-prefill-round275-v1.json",
+      "archive_sha256": "eeb62461b7c5cd1f84bc28374f614c5d0071558e9deef13770526cdf03c0ac70"
+    },
+    {
+      "original": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-l0v2-expert-copy2d-cohort-runtime-contract-round276-v1.txt",
+        "sha256": "9351c526741a2e5d8ba20054596a43b4b34d960399774011fe42212b48927c6b",
+        "bytes": 10075
+      },
+      "archive": "research/research-l0v2-expert-copy2d-cohort-runtime-contract-round276-v1.json",
+      "archive_sha256": "dc136a0e082d7cc12e58f48e86047aa41310ebb9238628146f48ff9e9209472f"
+    },
+    {
+      "original": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-upstream-v0143-import-completeness-round277-v1.txt",
+        "sha256": "ebdca636c63fd378f15b9460cf422730236056eca29a7b64dbb1f361e50d5c76",
+        "bytes": 7429
+      },
+      "archive": "research/research-upstream-v0143-import-completeness-round277-v1.json",
+      "archive_sha256": "98112075de569f880c44ac4cacd530df0ad115d50d6f7d35d165b39084baf3ce"
+    },
+    {
+      "original": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-pristine-upstream-tuning-gap-round278-v1.txt",
+        "sha256": "0acf2ed6e63724d189fe11fceb0ddf59882c43d08e173e074831c6b1db32a7c8",
+        "bytes": 10994
+      },
+      "archive": "research/research-pristine-upstream-tuning-gap-round278-v1.json",
+      "archive_sha256": "78dc6fb21fa21a6b734df459434b8610e9761df8e68649ec6a0da9b316cd797f"
+    }
+  ],
+  "corrections": [
+    "R275 current GDN scratch is32960 FP32 plus6144 FP16 elements/token =156416 bytes, correcting earlier43200-float estimate. No16K fit inferred: shared scratch is max(GDN,QSA,MoE), plus other planes and allocation caps.",
+    "R275 sequential gdn_conv calls can carry the last3 raw inputs through existing updated history. A new conv tile API is not categorically required; <=64 and >64 use distinct dispatch branches and numerical parity is still unverified.",
+    "R276 deployed LLVM is source-built7.1.1/Clang22/libSYCL9, not oneAPI2025.1.1. Copy2D source inspection does not qualify a cohort or physical engine/overlap.",
+    "R277 audits the explicitly claimed v160 imports; it does not close previously known queue keepalive/READY test gaps or prove every upstream optional feature is integrated.",
+    "R278 fixed expert-cache128 per-layer produces144 slots, so dropping per-layer with the same numeric128 cannot be assumed to hold actual byte budget fixed. Any placement-only screen must equalize actual allocation/slot count and retain output differences."
+  ]
+}
