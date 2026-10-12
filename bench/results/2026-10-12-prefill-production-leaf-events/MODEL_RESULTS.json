@@ -1,0 +1,248 @@
+{
+  "actual_input_tokens": 32768,
+  "actual_generated_tokens": 16,
+  "configured_context": 262144,
+  "source_commit": "b198eedc5afa0c6d67c2d5cfb820b7dd6be1ee2e",
+  "binary": {
+    "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-prefill-leaf-service-events-20261012/build/free/strata",
+    "sha256": "09caae67eb1260db6449e0efebd173e0c501b4ff7750b4094b8e01deb8a6727e",
+    "bytes": 20535016
+  },
+  "service_summary": {
+    "status": "complete",
+    "captured": "129820",
+    "cap": "200000",
+    "overflow": "0",
+    "pending": "0",
+    "invalid_timestamp": "0",
+    "query_errors": "0",
+    "checked_boundary": "1",
+    "excluded_graph": "0",
+    "bookkeeping_failed": "0",
+    "query_aggregate_host_ns": "4001688382",
+    "scope": "selected_leaf_commands",
+    "sums_may_overlap": "1",
+    "gaps_not_idle": "1"
+  },
+  "category_count": 3774,
+  "aggregate_categories": [
+    {
+      "kind": "grouped_gemm",
+      "backend": "XMX",
+      "src": "none",
+      "dst": "none",
+      "N": "1280",
+      "K": "2560",
+      "count": 5944,
+      "valid": 5944,
+      "bytes": 0,
+      "host_submit_ns": 681387316,
+      "service_sum_ns": 3345296795
+    },
+    {
+      "kind": "grouped_gemm",
+      "backend": "XMX",
+      "src": "none",
+      "dst": "none",
+      "N": "2560",
+      "K": "640",
+      "count": 5944,
+      "valid": 5944,
+      "bytes": 0,
+      "host_submit_ns": 627582200,
+      "service_sum_ns": 1661898475
+    },
+    {
+      "kind": "iq_dequant_down",
+      "backend": "none",
+      "src": "none",
+      "dst": "none",
+      "N": "2560",
+      "K": "640",
+      "count": 10096,
+      "valid": 10096,
+      "bytes": 0,
+      "host_submit_ns": 1094266924,
+      "service_sum_ns": 1961391445
+    },
+    {
+      "kind": "iq_dequant_gu",
+      "backend": "none",
+      "src": "none",
+      "dst": "none",
+      "N": "1280",
+      "K": "2560",
+      "count": 10096,
+      "valid": 10096,
+      "bytes": 0,
+      "host_submit_ns": 1096268673,
+      "service_sum_ns": 2545442054
+    },
+    {
+      "kind": "memcpy",
+      "backend": "none",
+      "src": "host_usm",
+      "dst": "device_usm",
+      "N": "0",
+      "K": "0",
+      "count": 97732,
+      "valid": 97732,
+      "bytes": 200326113280,
+      "host_submit_ns": 11091629113,
+      "service_sum_ns": 69650619268
+    },
+    {
+      "kind": "memcpy",
+      "backend": "none",
+      "src": "unknown_pageable_or_unregistered",
+      "dst": "device_usm",
+      "N": "0",
+      "K": "0",
+      "count": 8,
+      "valid": 8,
+      "bytes": 655340,
+      "host_submit_ns": 683408,
+      "service_sum_ns": 1272813
+    }
+  ],
+  "validation": {
+    "prompt_tokens": 32768,
+    "source_bound_prefill_chunks": 4,
+    "observed_prefill_chunks": 4,
+    "generated_tokens": 16,
+    "finish": "length",
+    "output_ids": [
+      40,
+      3172,
+      22903,
+      411,
+      42903,
+      4560,
+      1970,
+      57710,
+      11,
+      20434,
+      383,
+      55404,
+      21851,
+      11,
+      5438,
+      7465
+    ],
+    "token_logprob_sha256": {
+      "sha256": "f8aca127a7f45238d7567368ee8ad5c26c4a3488fc0cc6b83a4d19d50a6cbd6f"
+    },
+    "token_logprob_lines": [
+      "T 40",
+      "LP -1.135211 40:-1.135211 27775:-1.370415 2:-1.849927 1919:-2.009123 8160:-3.272421",
+      "T 3172",
+      "LP -0.186236 3172:-0.186236 2908:-2.693063 599:-3.112771 21250:-4.432027 1144:-4.448022",
+      "T 22903",
+      "LP -0.761333 22903:-0.761333 3286:-1.094156 3300:-2.879036 2649:-2.963627 6573:-3.072281",
+      "T 411",
+      "LP -0.551508 411:-0.551508 279:-0.955986 1439:-3.412922 1754:-5.625523 42903:-7.077470",
+      "T 42903",
+      "LP -0.199073 42903:-0.199073 6150:-2.872839 1970:-2.953954 3349:-3.161249 7072:-4.982864",
+      "T 4560",
+      "LP -0.674031 4560:-0.674031 47953:-0.713708 14246:-9.364666 1970:-10.214754 4422:-10.318958",
+      "T 1970",
+      "LP -0.014466 1970:-0.014466 57710:-5.811146 579:-5.948620 17120:-6.577958 2450:-6.887715",
+      "T 57710",
+      "LP -1.044693 57710:-1.044693 364:-1.570326 3051:-2.017101 303:-2.242668 15060:-2.577804",
+      "T 11",
+      "LP -0.184628 11:-0.184628 13:-2.545338 364:-3.045670 3808:-3.230494 310:-6.572812",
+      "T 20434",
+      "LP -0.986379 20434:-0.986379 3221:-1.419763 36586:-1.438444 23812:-2.180048 17661:-3.465295",
+      "T 383",
+      "LP -0.000018 383:-0.000018 279:-12.275645 3808:-12.332951 310:-13.411619 55404:-13.668928",
+      "T 55404",
+      "LP -0.212977 55404:-0.212977 279:-1.968817 9640:-3.290979 75336:-5.208792 4499:-6.172264",
+      "T 21851",
+      "LP -0.238815 21851:-0.238815 11:-1.599434 4562:-4.590610 49406:-10.200849 9584:-10.636429",
+      "T 11",
+      "LP -0.000303 11:-0.000303 5438:-8.823316 318:-9.020391 321:-11.472942 13:-12.333581",
+      "T 5438",
+      "LP -0.009857 5438:-0.009857 70577:-5.381849 55968:-5.673979 75336:-7.529659 6741:-7.886480",
+      "T 7465",
+      "LP -0.000379 7465:-0.000379 26228:-8.083456 16501:-10.229065 14:-11.464479 2600:-12.210967"
+    ],
+    "engine_prefill_ms": 105936.4,
+    "engine_decode_ms": 2555.9,
+    "pp_samples": [
+      [
+        "PP",
+        "8192",
+        "32768",
+        "25194",
+        "325.2"
+      ],
+      [
+        "PP",
+        "16384",
+        "32768",
+        "48738",
+        "336.2"
+      ],
+      [
+        "PP",
+        "24576",
+        "32768",
+        "74032",
+        "332.0"
+      ],
+      [
+        "PP",
+        "32767",
+        "32768",
+        "101811",
+        "321.8"
+      ]
+    ],
+    "individual_read_part_samples": [
+      {
+        "tokens": 32767,
+        "route": "batched",
+        "ms": 105925.2
+      }
+    ],
+    "actual_route": "batched8192",
+    "source_bound_route": "batched8192",
+    "inferred_from_source": false,
+    "route_evidence_scope": "observed debug trace",
+    "scope": "Exact16 reported tokens/LP5 only; no full-logit, quality, RESTORE or optimal-speed claim"
+  },
+  "host_wall_samples": {
+    "prefill_to_REUSED_seconds": 105.97876007799641,
+    "decode_REUSED_to_DONE_seconds": 2.574939083016943,
+    "ttft_seconds": 106.46950525199645,
+    "full_GEN_seconds": 108.55369916101336,
+    "scope": "Observed protocol wall boundaries, includes pipe/scheduling/tracing overhead; engine DONE timings retained separately"
+  },
+  "normal_close": {
+    "quit_requested": true,
+    "quit_reason": "completed GEN16",
+    "quit_send_outcome": "sent",
+    "quit_exit_outcome": "exit observed",
+    "normal": true,
+    "forced": false,
+    "exit_code": 0,
+    "owner_error": null
+  },
+  "kernel_gate_passed": true,
+  "performance_sample_eligible": false,
+  "scope": "One validation/tracing/profiling-enabled diagnostic. Selected leaf command spans may overlap and profiling changes queue behavior; no physical bandwidth or normal-speed claim.",
+  "decision": "Prioritize transfer submission count, copy command path and larger chunks before grouped GEMM tile tuning; qualify quiet instrumentation overhead and uncovered GDN/QSA/dense service next.",
+  "full_context_262144_runtime_qualified": false,
+  "restore_qualified": false,
+  "displayed_engine": "xe0.1.40.2.2",
+  "version_label_limit": "Existing engine label remainsxe0.1.40.2.2; source identity is the Git revision/binary hash and curated upstream/Xe imports, not an unmodified release.",
+  "unmodified_references": {
+    "official_main": "7695859aa13afb248bdb4d36f9b2e95707db079d",
+    "xe_main": "da3d426079019daa6e01388d03b0d94ae67070b7",
+    "fresh_recheck": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prefill-leaf-service-remote-recheck-v1.json",
+      "sha256": "93dc4cb416b723b0ea5012566235acefada4a0eb48bcef9fad98ca3b5fbf4047",
+      "bytes": 1057
+    }
+  }
+}
