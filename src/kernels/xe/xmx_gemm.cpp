@@ -349,7 +349,14 @@ void xmx_gemm_grouped(const uint16_t* X, const uint16_t* W, int64_t w_stride, fl
                       int64_t max_rows, int64_t N, int64_t K, void* stream) {
     if (G <= 0 || max_rows <= 0) return;
     auto& q = core::Runtime::get().stream(stream);
+    const auto before = core::service_now();
     const auto submitted = submit_grouped(q, X, W, w_stride, Y, bounds, G, max_rows, N, K, false);
+    const auto after = core::service_now();
+    core::ServiceMeta meta;
+    meta.kind = "grouped_gemm"; meta.backend = submitted.backend;
+    meta.groups = G; meta.rows = max_rows; meta.n = N; meta.k = K;
+    meta.tile_m = submitted.tile_m; meta.tile_n = submitted.tile_n; meta.pipeline = submitted.pipeline;
+    core::record_service_event(q, submitted.event, meta, before, after);
     finish(stream, submitted.event, "xmx_gemm_grouped");
 }
 

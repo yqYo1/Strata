@@ -445,6 +445,8 @@ if(STRATA_ENABLE_XE)
     # Manually owned synthetic event diagnostic; deliberately not registered with CTest.
     add_executable(native_grouped_gemm_event_bench tools/native_grouped_gemm_event_bench.cpp)
     target_link_libraries(native_grouped_gemm_event_bench PRIVATE strata_kernels)
+    add_executable(prefill_service_event_test tools/prefill_service_event_test.cpp)
+    target_link_libraries(prefill_service_event_test PRIVATE strata_kernels)
     add_executable(nonfinite_gpu_test tools/test_nonfinite_gpu.cpp)
     target_link_libraries(nonfinite_gpu_test PRIVATE strata_kernels)
     add_test(NAME nonfinite_gpu_test COMMAND nonfinite_gpu_test)

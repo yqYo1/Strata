@@ -1733,6 +1733,7 @@ bool iq_dequant_gu_group_f16(int t, const IqDequantGroup& group, int64_t n_ff, i
     const IqDequantGroup g = group;   // addresses copied by value, never an array read from host memory on device
     const int64_t per_row = n_embd / 256, nsb = n_ff * per_row;
     auto* y = reinterpret_cast<sycl::half*>(dst);
+    const auto before = core::service_now();
     const auto e = q.parallel_for(
         sycl::nd_range<3>({(size_t) g.n, 2, global}, {1, 1, 256}), [=](sycl::nd_item<3> it) {
             const int expert = g.first + (int) it.get_group(0);
@@ -1744,6 +1745,11 @@ bool iq_dequant_gu_group_f16(int t, const IqDequantGroup& group, int64_t n_ff, i
                         ToGlobal<sycl::half>{y + (size_t) expert * stride + ((2 * r + parity) * per_row + c) * QK_K},
                         (int) (it.get_local_id(2) % 32));
         });
+    const auto after = core::service_now();
+    core::ServiceMeta meta;
+    meta.kind = "iq_dequant_gu"; meta.type = t; meta.groups = group.n; meta.first = group.first;
+    meta.n = 2 * n_ff; meta.k = n_embd;
+    core::record_service_event(q, e, meta, before, after);
     sync_if_needed(stream, e, "iq_dequant_gu_group_f16");
     return true;
 }
@@ -1760,6 +1766,7 @@ bool iq_dequant_down_group_f16(int t, const IqDequantGroup& group, int64_t n_ff,
     const IqDequantGroup g = group;
     const int64_t nsb = (int64_t) (values / QK_K);
     auto* y = reinterpret_cast<sycl::half*>(dst);
+    const auto before = core::service_now();
     const auto e = q.parallel_for(
         sycl::nd_range<2>({(size_t) g.n, global}, {1, 256}), [=](sycl::nd_item<2> it) {
             const int expert = g.first + (int) it.get_group(0);
@@ -1769,6 +1776,11 @@ bool iq_dequant_down_group_f16(int t, const IqDequantGroup& group, int64_t n_ff,
                         ToGlobal<sycl::half>{y + (size_t) expert * stride + i * QK_K},
                         (int) (it.get_local_id(1) % 32));
         });
+    const auto after = core::service_now();
+    core::ServiceMeta meta;
+    meta.kind = "iq_dequant_down"; meta.type = t; meta.groups = group.n; meta.first = group.first;
+    meta.n = n_embd; meta.k = n_ff;
+    core::record_service_event(q, e, meta, before, after);
     sync_if_needed(stream, e, "iq_dequant_down_group_f16");
     return true;
 }

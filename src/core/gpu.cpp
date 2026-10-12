@@ -229,23 +229,41 @@ bool is_host_usm(const void* p) {
 
 bool copy(void* dst, const void* src, size_t bytes) {
     if (bytes == 0) return true;
-    try { rt().wait(rt().compute().memcpy(dst, src, bytes), "synchronous copy"); return true; }
+    try {
+        auto& queue = rt().compute();
+        const auto before = core::service_now();
+        const auto event = queue.memcpy(dst, src, bytes);
+        const auto after = core::service_now();
+        core::record_service_copy(queue, event, dst, src, bytes, before, after);
+        rt().wait(event, "synchronous copy");
+        return true;
+    }
     catch (const std::exception& e) { return fail("copy", e); }
 }
 
 bool copy_async(void* dst, const void* src, size_t bytes, Stream s) {
     if (bytes == 0) return true;
-    try { q(s).memcpy(dst, src, bytes); return true; }
+    try {
+        auto& queue = q(s);
+        const auto before = core::service_now();
+        const auto event = queue.memcpy(dst, src, bytes);
+        const auto after = core::service_now();
+        core::record_service_copy(queue, event, dst, src, bytes, before, after);
+        return true;
+    }
     catch (const std::exception& e) { return fail("copy_async", e); }
 }
 
 bool copy_async_after(void* dst, const void* src, size_t bytes, Stream s, const Event* after, Event* done) {
     try {
         auto& queue = q(s);
+        const auto before = core::service_now();
         const sycl::event e = queue.submit([&](sycl::handler& h) {
             if (after != nullptr && after->ev) h.depends_on(*after->ev);
             if (bytes > 0) h.memcpy(dst, src, bytes);
         });
+        const auto submitted_at = core::service_now();
+        core::record_service_copy(queue, e, dst, src, bytes, before, submitted_at);
         if (done != nullptr) done->ev = e;
         return true;
     } catch (const std::exception& e) { return fail("copy_async_after", e); }

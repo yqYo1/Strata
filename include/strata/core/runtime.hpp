@@ -3,6 +3,7 @@
 #pragma once
 
 #include "strata/core/device.hpp"
+#include "strata/core/service_events.hpp"
 #include <sycl/sycl.hpp>
 #include <atomic>
 #include <chrono>
@@ -32,6 +33,7 @@ public:
     static Runtime* owner(const void* pointer);
     /// The runtime one of whose queues `stream` is, or null.
     static Runtime* owner_of_stream(const void* stream);
+    ServiceEvents& service_events() { return service_events_; }
     int ordinal() const { return ordinal_; }
     ~Runtime();
     sycl::queue& compute() { return compute_; }
@@ -76,6 +78,7 @@ private:
     bool owns(const sycl::queue* queue);
     void watch();
     bool measure_marks();
+    ServiceEvents service_events_;
     int ordinal_;
     std::mutex error_mutex_;
     std::exception_ptr error_;
@@ -94,4 +97,8 @@ private:
     bool marks_by_barrier_ = false;
 };
 
+void record_service_event(sycl::queue& q, const sycl::event& event, ServiceMeta meta,
+                          ServiceClock::time_point before, ServiceClock::time_point after) noexcept;
+void record_service_copy(sycl::queue& q, const sycl::event& event, const void* dst, const void* src,
+                         uint64_t bytes, ServiceClock::time_point before, ServiceClock::time_point after) noexcept;
 }  // namespace strata::core

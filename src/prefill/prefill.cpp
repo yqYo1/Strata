@@ -1232,6 +1232,7 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
     if (n == 0) return true;
     if (tokens == nullptr) { err = "prefill: missing input tokens"; return false; }
     const core::OnDevice on_device(m.device);
+    core::ServiceScope service_scope(core::Runtime::get().service_events());
     const core::ModelGeometry& g = *m.g;
     const auto t_start = Clock::now();
     const int64_t LB = stage_lb_, LE = stage_le_;
@@ -3036,6 +3037,7 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
         return false;
     }
     stats_.ms_total += ms_since(t_start);
+    service_scope.complete();  // Existing checked terminal compute sync succeeded; no diagnostic wait.
     if (pt.on) {
         pt.fold();
         double total = 0.0;

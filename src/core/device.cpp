@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 #include "strata/core/on_device.hpp"
 #include "strata/core/runtime.hpp"
+#include "strata/core/gpu.hpp"
 
 
 #include <algorithm>
@@ -182,9 +183,53 @@ sycl::async_handler Runtime::handler() {
     };
 }
 
+namespace {
+sycl::property_list runtime_queue_properties(const sycl::device& device) {
+    if (!service_events_requested()) return {sycl::property::queue::in_order{}};
+    if (!device.has(sycl::aspect::queue_profiling))
+        throw DeviceError("STRATA_PREFILL_SERVICE_EVENTS=1 requires queue profiling");
+    return {sycl::property::queue::in_order{}, sycl::property::queue::enable_profiling{}};
+}
+const char* allocation_kind(const void* pointer, const sycl::context& context) {
+    switch (sycl::get_pointer_type(pointer, context)) {
+        case sycl::usm::alloc::device: return "device_usm";
+        case sycl::usm::alloc::host: return "host_usm";
+        case sycl::usm::alloc::shared: return "shared_usm";
+        default: return "unknown_pageable_or_unregistered";
+    }
+}
+}  // namespace
+
+void record_service_event(sycl::queue& q, const sycl::event& event, ServiceMeta meta,
+                          ServiceClock::time_point before, ServiceClock::time_point after) noexcept {
+    if (!service_events_requested()) return;
+    Runtime* owner = nullptr;
+    try {
+        owner = Runtime::owner_of_stream(&q);
+        if (owner && owner->service_events().active()) {
+            if (gpu::is_capturing(&q)) owner->service_events().exclude_graph();
+            else owner->service_events().record(event, meta, before, after);
+        }
+    } catch (...) { if (owner) owner->service_events().failure(); }
+}
+void record_service_copy(sycl::queue& q, const sycl::event& event, const void* dst, const void* src,
+                         uint64_t bytes, ServiceClock::time_point before, ServiceClock::time_point after) noexcept {
+    if (!service_events_requested() || bytes == 0) return;
+    Runtime* owner = nullptr;
+    try {
+        owner = Runtime::owner_of_stream(&q);
+        if (!owner || !owner->service_events().active()) return;
+        if (gpu::is_capturing(&q)) { owner->service_events().exclude_graph(); return; }
+        ServiceMeta meta;
+        meta.kind = "memcpy"; meta.bytes = bytes;
+        meta.src = allocation_kind(src, q.get_context()); meta.dst = allocation_kind(dst, q.get_context());
+        owner->service_events().record(event, meta, before, after);
+    } catch (...) { if (owner) owner->service_events().failure(); }
+}
+
 Runtime::Runtime(int ordinal, const sycl::device& device) : ordinal_(ordinal), device_(device), context_(device_),
-    compute_(context_, device_, handler(), sycl::property::queue::in_order{}),
-    transfer_(context_, device_, handler(), sycl::property::queue::in_order{}), watchdog_([this] { watch(); }) {
+    compute_(context_, device_, handler(), runtime_queue_properties(device_)),
+    transfer_(context_, device_, handler(), runtime_queue_properties(device_)), watchdog_([this] { watch(); }) {
     marks_by_barrier_ = measure_marks();
 }
 
@@ -222,7 +267,7 @@ bool Runtime::measure_marks() {
 
 sycl::queue* Runtime::create_stream() {
     std::lock_guard<std::mutex> lock(streams_mutex_);
-    return &streams_.emplace_back(context_, device_, handler(), sycl::property::queue::in_order{});
+    return &streams_.emplace_back(context_, device_, handler(), runtime_queue_properties(device_));
 }
 
 void Runtime::destroy_stream(sycl::queue* stream) {
@@ -308,7 +353,11 @@ void Runtime::check_async() {
 sycl::event Runtime::copy_async(void* dst, const void* src, uint64_t bytes,
                                const std::vector<sycl::event>& dependencies) {
     check_async();
-    return transfer_.memcpy(dst, src, bytes, dependencies);
+    const auto before = service_now();
+    const auto event = transfer_.memcpy(dst, src, bytes, dependencies);
+    const auto after = service_now();
+    record_service_copy(transfer_, event, dst, src, bytes, before, after);
+    return event;
 }
 
 sycl::event Runtime::compute_after(const std::vector<sycl::event>& dependencies) {

@@ -1,0 +1,2194 @@
+{
+  "active": false,
+  "complete": true,
+  "passed": true,
+  "commands": [
+    {
+      "label": "kernel-before",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "--no-pager",
+        "-o",
+        "json",
+        "-b"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-12T09:52:00.518660+00:00",
+      "wall_seconds": 30,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1487380,
+          "start_ticks": 14748464,
+          "sid": 1487380,
+          "pgid": 1487380
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 147484.640295255,
+      "pid": 1487380,
+      "spawn_return_monotonic": 147484.642338731,
+      "direct_identity": {
+        "pid": 1487380,
+        "state": "R",
+        "ppid": 1487352,
+        "pgid": 1487380,
+        "sid": 1487380,
+        "start_ticks": 14748464,
+        "rss_bytes": 450560
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 23080960,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-12T09:52:01.403905+00:00",
+      "elapsed_seconds": 0.8848861290025525,
+      "logs": {
+        "kernel-before.stdout": {
+          "bytes": 5190133,
+          "sha256": "10909437c6367eea71af7cc3bebf56839a7dbcae28676244d76dc4a1eeb5bb29"
+        },
+        "kernel-before.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "kernel-cursor",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "-n",
+        "0",
+        "--show-cursor",
+        "--no-pager"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-12T09:52:01.484318+00:00",
+      "wall_seconds": 30,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1487419,
+          "start_ticks": 14748560,
+          "sid": 1487419,
+          "pgid": 1487419
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 147485.606422557,
+      "pid": 1487419,
+      "spawn_return_monotonic": 147485.609531443,
+      "direct_identity": {
+        "pid": 1487419,
+        "state": "R",
+        "ppid": 1487352,
+        "pgid": 1487419,
+        "sid": 1487419,
+        "start_ticks": 14748560,
+        "rss_bytes": 466944
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-12T09:52:01.604470+00:00",
+      "elapsed_seconds": 0.1193585750006605,
+      "logs": {
+        "kernel-cursor.stdout": {
+          "bytes": 156,
+          "sha256": "1ce477976a1d4901d8fe11c06629e0f45bc8085ac74e2df19917b090723d7e83"
+        },
+        "kernel-cursor.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "device-selected",
+      "argv": [
+        "/usr/bin/xpu-smi",
+        "discovery",
+        "-d",
+        "0",
+        "-j"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-12T09:52:01.606224+00:00",
+      "wall_seconds": 30,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1487422,
+          "start_ticks": 14748572,
+          "sid": 1487422,
+          "pgid": 1487422
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 147485.728452323,
+      "pid": 1487422,
+      "spawn_return_monotonic": 147485.732149109,
+      "direct_identity": {
+        "pid": 1487422,
+        "state": "R",
+        "ppid": 1487352,
+        "pgid": 1487422,
+        "sid": 1487422,
+        "start_ticks": 14748572,
+        "rss_bytes": 561152
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 9408512,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-12T09:52:01.817947+00:00",
+      "elapsed_seconds": 0.2107802999962587,
+      "logs": {
+        "device-selected.stdout": {
+          "bytes": 1594,
+          "sha256": "3bf1ea570595a99f7d6906c0fabb2639bb16d1a116898e91af7458ee5156e217"
+        },
+        "device-selected.stderr": {
+          "bytes": 124,
+          "sha256": "51125791d9d3ed81590f28c494ab149120cdb0755d20068e7ee8539689d8408e"
+        }
+      }
+    },
+    {
+      "label": "device-usage",
+      "argv": [
+        "/usr/bin/xpu-smi",
+        "stats",
+        "-d",
+        "0",
+        "-j"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-12T09:52:01.819680+00:00",
+      "wall_seconds": 30,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1487455,
+          "start_ticks": 14748594,
+          "sid": 1487455,
+          "pgid": 1487455
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 147485.94163719,
+      "pid": 1487455,
+      "spawn_return_monotonic": 147485.944907702,
+      "direct_identity": {
+        "pid": 1487455,
+        "state": "R",
+        "ppid": 1487352,
+        "pgid": 1487455,
+        "sid": 1487455,
+        "start_ticks": 14748594,
+        "rss_bytes": 479232
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 47968256,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-12T09:52:02.194209+00:00",
+      "elapsed_seconds": 0.373849561001407,
+      "logs": {
+        "device-usage.stdout": {
+          "bytes": 1473,
+          "sha256": "a73b4fb17ef0d51c6298e4429b695f08e20e7adcaaf6c38ce30b7b99d5356bdf"
+        },
+        "device-usage.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "service-fixture",
+      "argv": [
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-prefill-leaf-service-events-20261012/build/free/prefill_service_event_test"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib",
+        "XDG_RUNTIME_DIR": "/run/user/1000",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0.12.0",
+        "CUDA_MODULE_LOADING": "EAGER",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "ZEL_ENABLE_LOADER_LOGGING": "0",
+        "ZEL_LOADER_LOG_CONSOLE": "0",
+        "ZEL_LOADER_LOGGING_LEVEL": "warning",
+        "ZE_ENABLE_VALIDATION_LAYER": "0",
+        "ZE_ENABLE_PARAMETER_VALIDATION": "0",
+        "UR_LOG_LOADER": "level:error;output:stderr",
+        "UR_LOG_LEVEL_ZERO": "level:error;output:stderr",
+        "STRATA_GPU_PCI": "0000:05:00.0",
+        "STRATA_EVENT_MARK": "barrier",
+        "STRATA_VERIFY_SEGMENTED": "1",
+        "STRATA_VERIFY_DEVICE_PLAN": "0",
+        "STRATA_PREFILL_ISSUER": "0",
+        "STRATA_PREFILL_RING": "8",
+        "STRATA_ARENA_HOST_USM": "1",
+        "STRATA_PREFILL_FIRST": "0",
+        "STRATA_PREFILL_CPU_SHARE": "0",
+        "STRATA_PREFILL_CPU_GATE": "0",
+        "STRATA_PREFILL_FUSED": "0",
+        "STRATA_PREFILL_NATIVE_DEQUANT_BATCH": "0",
+        "STRATA_PREFILL_COMPACT_MOE_SCRATCH": "1",
+        "STRATA_PRELOAD_KERNELS": "0",
+        "STRATA_MTP_PREFILL_SYNC": "1",
+        "STRATA_NAN_GUARD": "1",
+        "STRATA_PREFILL_SERVICE_EVENTS": "01"
+      },
+      "started_utc": "2026-10-12T09:52:02.196631+00:00",
+      "wall_seconds": 180,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1487489,
+          "start_ticks": 14748631,
+          "sid": 1487489,
+          "pgid": 1487489
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 147486.318645793,
+      "pid": 1487489,
+      "spawn_return_monotonic": 147486.321976319,
+      "direct_identity": {
+        "pid": 1487489,
+        "state": "R",
+        "ppid": 1487352,
+        "pgid": 1487489,
+        "sid": 1487489,
+        "start_ticks": 14748631,
+        "rss_bytes": 290816
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 51724288,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-12T09:52:02.402069+00:00",
+      "elapsed_seconds": 0.20471618499141186,
+      "logs": {
+        "service-fixture.stdout": {
+          "bytes": 147,
+          "sha256": "8a1ed77935f8eaa8a85ec5f43cd1a48564678064fb86b3fc3fe7a45dd7d4a04b"
+        },
+        "service-fixture.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "kernel-after",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "--no-pager",
+        "-o",
+        "json",
+        "--after-cursor",
+        "s=9944479cfd1a45c28a589619cb8f2881;i=c10a137;b=cfda0b6a7c134fe2bdf58f9202770840;m=2254a0a460;t=65da1a41a7c0e;x=a4b2c81f86474b75"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-12T09:52:03.741903+00:00",
+      "wall_seconds": 30,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1487584,
+          "start_ticks": 14748786,
+          "sid": 1487584,
+          "pgid": 1487584
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 147487.864881063,
+      "pid": 1487584,
+      "spawn_return_monotonic": 147487.868170661,
+      "direct_identity": {
+        "pid": 1487584,
+        "state": "R",
+        "ppid": 1487352,
+        "pgid": 1487584,
+        "sid": 1487584,
+        "start_ticks": 14748786,
+        "rss_bytes": 483328
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-12T09:52:03.868104+00:00",
+      "elapsed_seconds": 0.12451374199008569,
+      "logs": {
+        "kernel-after.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "kernel-after.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "kernel-final",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "--no-pager",
+        "-o",
+        "json",
+        "--after-cursor",
+        "s=9944479cfd1a45c28a589619cb8f2881;i=c10a137;b=cfda0b6a7c134fe2bdf58f9202770840;m=2254a0a460;t=65da1a41a7c0e;x=a4b2c81f86474b75"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-12T09:52:03.871632+00:00",
+      "wall_seconds": 30,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1487589,
+          "start_ticks": 14748799,
+          "sid": 1487589,
+          "pgid": 1487589
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 147487.994013731,
+      "pid": 1487589,
+      "spawn_return_monotonic": 147487.997081711,
+      "direct_identity": {
+        "pid": 1487589,
+        "state": "R",
+        "ppid": 1487352,
+        "pgid": 1487589,
+        "sid": 1487589,
+        "start_ticks": 14748799,
+        "rss_bytes": 593920
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-12T09:52:04.004824+00:00",
+      "elapsed_seconds": 0.13209967798320577,
+      "logs": {
+        "kernel-final.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "kernel-final.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "source": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prefill-leaf-service-fixture-v1.py",
+    "sha256": "d55e2913459c1fbabdd00e5d4afa6c7d357bdd21d1530a5ec061f1dacbd44790",
+    "bytes": 10609
+  },
+  "source_pins": {
+    "CMakeLists.txt": "f41ea29137100ece91a16f4c79cd578d480266281655c90a999fb897f6901c2f",
+    "include/strata/core/service_events.hpp": "562910807f38a9284f3e564df055406f854035b5de21f4e70f64e1ae2c41deaa",
+    "include/strata/core/runtime.hpp": "cd6df9e08eea91081e36289fc41e58e80af9d203f4965b9bc10672e56b82a106",
+    "src/core/device.cpp": "02f4622cb0553142ca6cb0eea29b27013e793a0688dbc461af7e17bd0a0b7f98",
+    "src/core/gpu.cpp": "7d74990c114b7dcdccf903f95469ffaadf3934ea55310ceece83e510da68a10b",
+    "src/kernels/xe/xmx_gemm.cpp": "2bc577c479b4a08c35543257e5407b08d19eaf2d9863ecb583602e140cb3dd15",
+    "src/kernels/xe/iq_kernels.cpp": "c1f00c8133c76a1e5611d0c444d7149734bbb08d873eea16f82b0fc5c376940c",
+    "src/prefill/prefill.cpp": "ececd50d16cb9f41b20a5890a461ca2dad33873693ac9a6d5d0ec499bbaa9183",
+    "tools/prefill_service_event_test.cpp": "2f9a56f52ad6e6528e13e97cc2d3cc3f9fb90c52e5944d43d25f67f1d74ffdfe"
+  },
+  "build_receipt": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prefill-leaf-service-build-root-v2/record.json",
+    "sha256": "06a09e710e9dae50ac7840344c3e2d5389085120a23d235149c4822c0a327647",
+    "bytes": 87793
+  },
+  "lint_receipt": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prefill-leaf-service-lints-root-v2/record.json",
+    "sha256": "8e39b682513ca375ac8da33b0310317bfd4e9c0efaed2c657fb23acd09b864f6",
+    "bytes": 106450
+  },
+  "startup_health": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-main-integrated-v6-provider-health-xe-timed1-on-root-v2/record.json",
+    "sha256": "6b9d096b4e613d24d2f1f993cca37f7c32565cb9ff4ab5f0afda7fd5dda8026e",
+    "bytes": 5456636
+  },
+  "binary": {
+    "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-prefill-leaf-service-events-20261012/build/free/prefill_service_event_test",
+    "sha256": "029c73e25e22268df47de5258a0258aef006793435b0eea0054828a535b0d105",
+    "bytes": 1450312
+  },
+  "environment": {
+    "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+    "HOME": "/home/yayoi",
+    "LANG": "C.UTF-8",
+    "LC_ALL": "C.UTF-8",
+    "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib",
+    "XDG_RUNTIME_DIR": "/run/user/1000",
+    "NEOReadDebugKeys": "1",
+    "EnableDirectSubmission": "0",
+    "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+    "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0.12.0",
+    "CUDA_MODULE_LOADING": "EAGER",
+    "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+    "SYCL_CACHE_PERSISTENT": "0",
+    "ZEL_ENABLE_LOADER_LOGGING": "0",
+    "ZEL_LOADER_LOG_CONSOLE": "0",
+    "ZEL_LOADER_LOGGING_LEVEL": "warning",
+    "ZE_ENABLE_VALIDATION_LAYER": "0",
+    "ZE_ENABLE_PARAMETER_VALIDATION": "0",
+    "UR_LOG_LOADER": "level:error;output:stderr",
+    "UR_LOG_LEVEL_ZERO": "level:error;output:stderr",
+    "STRATA_GPU_PCI": "0000:05:00.0",
+    "STRATA_EVENT_MARK": "barrier",
+    "STRATA_VERIFY_SEGMENTED": "1",
+    "STRATA_VERIFY_DEVICE_PLAN": "0",
+    "STRATA_PREFILL_ISSUER": "0",
+    "STRATA_PREFILL_RING": "8",
+    "STRATA_ARENA_HOST_USM": "1",
+    "STRATA_PREFILL_FIRST": "0",
+    "STRATA_PREFILL_CPU_SHARE": "0",
+    "STRATA_PREFILL_CPU_GATE": "0",
+    "STRATA_PREFILL_FUSED": "0",
+    "STRATA_PREFILL_NATIVE_DEQUANT_BATCH": "0",
+    "STRATA_PREFILL_COMPACT_MOE_SCRATCH": "1",
+    "STRATA_PRELOAD_KERNELS": "0",
+    "STRATA_MTP_PREFILL_SYNC": "1",
+    "STRATA_NAN_GUARD": "1",
+    "STRATA_PREFILL_SERVICE_EVENTS": "01"
+  },
+  "boot_id": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+  "pci_bdf": "0000:05:00.0",
+  "scope": "Actual Runtime queues, five pinned USM copy commands and production grouped GEMM; properties/correctness/event capture, no model speed/quality qualification.",
+  "raw_text_budget_bytes": 67108864,
+  "whole_wall_seconds": 300,
+  "gpu_executed": true,
+  "reset_executed": false,
+  "retry_count": 0,
+  "evidence": {
+    "kernel-before": {
+      "stdout_sha256": "10909437c6367eea71af7cc3bebf56839a7dbcae28676244d76dc4a1eeb5bb29",
+      "stdout_bytes": 5190133,
+      "stderr": ""
+    },
+    "kernel-cursor": {
+      "stdout_sha256": "1ce477976a1d4901d8fe11c06629e0f45bc8085ac74e2df19917b090723d7e83",
+      "stdout_bytes": 156,
+      "stderr": ""
+    },
+    "device-selected": {
+      "stdout_sha256": "3bf1ea570595a99f7d6906c0fabb2639bb16d1a116898e91af7458ee5156e217",
+      "stdout_bytes": 1594,
+      "stderr": "[Error] DMI reader failed for 0000:05:00.0: Cannot access DMI tables. Ensure you have proper permissions and sysfs support.\n",
+      "full_stderr_sha256": "51125791d9d3ed81590f28c494ab149120cdb0755d20068e7ee8539689d8408e",
+      "full_stderr_bytes": 124
+    },
+    "device-usage": {
+      "stdout_sha256": "a73b4fb17ef0d51c6298e4429b695f08e20e7adcaaf6c38ce30b7b99d5356bdf",
+      "stdout_bytes": 1473,
+      "stderr": ""
+    },
+    "service-fixture": {
+      "stdout_sha256": "8a1ed77935f8eaa8a85ec5f43cd1a48564678064fb86b3fc3fe7a45dd7d4a04b",
+      "stdout_bytes": 147,
+      "stderr": ""
+    },
+    "kernel-after": {
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 0,
+      "stderr": ""
+    },
+    "kernel-final": {
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 0,
+      "stderr": ""
+    }
+  },
+  "kernel-before": {
+    "relevant_entries": [
+      {
+        "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+        "SYSLOG_FACILITY": "0",
+        "_KERNEL_DEVICE": "+pci:0000:05:00.0",
+        "PRIORITY": "6",
+        "_RUNTIME_SCOPE": "system",
+        "_UDEV_SYSNAME": "0000:05:00.0",
+        "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+        "_TRANSPORT": "kernel",
+        "__SEQNUM": "201702833",
+        "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05bdb1;b=cfda0b6a7c134fe2bdf58f9202770840;m=587981;t=65d7f4fd2512f;x=7c1a84f3f8d2f016",
+        "_HOSTNAME": "jitakusaba01",
+        "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+        "SYSLOG_IDENTIFIER": "kernel",
+        "__MONOTONIC_TIMESTAMP": "5798273",
+        "_SOURCE_MONOTONIC_TIMESTAMP": "509698",
+        "MESSAGE": "pci 0000:05:00.0: [8086:e20c] type 00 class 0x030000 PCIe Endpoint",
+        "__REALTIME_TIMESTAMP": "1791651241677103",
+        "_KERNEL_SUBSYSTEM": "pci"
+      },
+      {
+        "SYSLOG_IDENTIFIER": "kernel",
+        "_HOSTNAME": "jitakusaba01",
+        "MESSAGE": "pci 0000:05:00.0: BAR 0 [mem 0xf9000000-0xf9ffffff 64bit]",
+        "__REALTIME_TIMESTAMP": "1791651241677216",
+        "_RUNTIME_SCOPE": "system",
+        "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+        "_SOURCE_MONOTONIC_TIMESTAMP": "509790",
+        "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05bdb2;b=cfda0b6a7c134fe2bdf58f9202770840;m=5879f2;t=65d7f4fd251a0;x=78fd926568951c11",
+        "_UDEV_SYSNAME": "0000:05:00.0",
+        "_KERNEL_SUBSYSTEM": "pci",
+        "__SEQNUM": "201702834",
+        "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+        "_TRANSPORT": "kernel",
+        "PRIORITY": "6",
+        "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+        "SYSLOG_FACILITY": "0",
+        "_KERNEL_DEVICE": "+pci:0000:05:00.0",
+        "__MONOTONIC_TIMESTAMP": "5798386"
+      },
+      {
+        "_KERNEL_SUBSYSTEM": "pci",
+        "_TRANSPORT": "kernel",
+        "MESSAGE": "pci 0000:05:00.0: BAR 2 [mem 0x7800000000-0x7bffffffff 64bit pref]",
+        "__REALTIME_TIMESTAMP": "1791651241677342",
+        "SYSLOG_FACILITY": "0",
+        "_UDEV_SYSNAME": "0000:05:00.0",
+        "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+        "_RUNTIME_SCOPE": "system",
+        "_HOSTNAME": "jitakusaba01",
+        "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+        "PRIORITY": "6",
+        "__MONOTONIC_TIMESTAMP": "5798512",
+        "__SEQNUM": "201702835",
+        "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05bdb3;b=cfda0b6a7c134fe2bdf58f9202770840;m=587a70;t=65d7f4fd2521e;x=31f2142324888cc5",
+        "_KERNEL_DEVICE": "+pci:0000:05:00.0",
+        "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+        "SYSLOG_IDENTIFIER": "kernel",
+        "_SOURCE_MONOTONIC_TIMESTAMP": "509799"
+      },
+      {
+        "MESSAGE": "pci 0000:05:00.0: ROM [mem 0xfa000000-0xfa1fffff pref]",
+        "__REALTIME_TIMESTAMP": "1791651241677462",
+        "_TRANSPORT": "kernel",
+        "SYSLOG_IDENTIFIER": "kernel",
+        "_KERNEL_SUBSYSTEM": "pci",
+        "_UDEV_SYSNAME": "0000:05:00.0",
+        "SYSLOG_FACILITY": "0",
+        "_SOURCE_MONOTONIC_TIMESTAMP": "509811",
+        "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+        "_HOSTNAME": "jitakusaba01",
+        "__MONOTONIC_TIMESTAMP": "5798631",
+        "__SEQNUM": "201702836",
+        "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+        "_RUNTIME_SCOPE": "system",
+        "PRIORITY": "6",
+        "_KERNEL_DEVICE": "+pci:0000:05:00.0",
+        "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05bdb4;b=cfda0b6a7c134fe2bdf58f9202770840;m=587ae7;t=65d7f4fd25296;x=e5bb3cee546e2627",
+        "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881"
+      },
+      {
+        "_KERNEL_DEVICE": "+pci:0000:05:00.0",
+        "_HOSTNAME": "jitakusaba01",
+        "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+        "_SOURCE_MONOTONIC_TIMESTAMP": "509828",
+        "_KERNEL_SUBSYSTEM": "pci",
+        "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+        "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+        "SYSLOG_IDENTIFIER": "kernel",
+        "__SEQNUM": "201702837",
+        "_RUNTIME_SCOPE": "system",
+        "_TRANSPORT": "kernel",
+        "SYSLOG_FACILITY": "0",
+        "_UDEV_SYSNAME": "0000:05:00.0",
+        "MESSAGE": "pci 0000:05:00.0: enabling Extended Tags",
+        "__MONOTONIC_TIMESTAMP": "5798749",
+        "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05bdb5;b=cfda0b6a7c134fe2bdf58f9202770840;m=587b5d;t=65d7f4fd2530c;x=2f47af963d11852d",
+        "__REALTIME_TIMESTAMP": "1791651241677580",
+        "PRIORITY": "6"
+      },
+      {
+        "_HOSTNAME": "jitakusaba01",
+        "MESSAGE": "pci 0000:05:00.0: PME# supported from D0 D3hot",
+        "_RUNTIME_SCOPE": "system",
+        "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+        "_KERNEL_SUBSYSTEM": "pci",
+        "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+        "__REALTIME_TIMESTAMP": "1791651241677692",
+        "__MONOTONIC_TIMESTAMP": "5798862",
+        "PRIORITY": "6",
+        "_KERNEL_DEVICE": "+pci:0000:05:00.0",
+        "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05bdb6;b=cfda0b6a7c134fe2bdf58f9202770840;m=587bce;t=65d7f4fd2537c;x=c2b1adf7ecead5bd",
+        "__SEQNUM": "201702838",
+        "_TRANSPORT": "kernel",
+        "SYSLOG_IDENTIFIER": "kernel",
+        "_UDEV_SYSNAME": "0000:05:00.0",
+        "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+        "_SOURCE_MONOTONIC_TIMESTAMP": "510006",
+        "SYSLOG_FACILITY": "0"
+      },
+      {
+        "MESSAGE": "pci 0000:05:00.0: vgaarb: setting as boot VGA device",
+        "SYSLOG_IDENTIFIER": "kernel",
+        "_HOSTNAME": "jitakusaba01",
+        "_TRANSPORT": "kernel",
+        "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+        "SYSLOG_FACILITY": "0",
+        "_KERNEL_SUBSYSTEM": "pci",
+        "__SEQNUM": "201702986",
+        "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+        "_KERNEL_DEVICE": "+pci:0000:05:00.0",
+        "_UDEV_SYSNAME": "0000:05:00.0",
+        "_SOURCE_MONOTONIC_TIMESTAMP": "536946",
+        "PRIORITY": "6",
+        "__MONOTONIC_TIMESTAMP": "5812450",
+        "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+        "__REALTIME_TIMESTAMP": "1791651241691280",
+        "_RUNTIME_SCOPE": "system",
+        "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05be4a;b=cfda0b6a7c134fe2bdf58f9202770840;m=58b0e2;t=65d7f4fd28890;x=31ffc3dde247aa9f"
+      },
+      {
+        "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+        "_TRANSPORT": "kernel",
+        "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+        "_UDEV_SYSNAME": "0000:05:00.0",
+        "__MONOTONIC_TIMESTAMP": "5812564",
+        "SYSLOG_FACILITY": "0",
+        "_KERNEL_DEVICE": "+pci:0000:05:00.0",
+        "MESSAGE": "pci 0000:05:00.0: vgaarb: bridge control possible",
+        "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+        "__SEQNUM": "201702987",
+        "__REALTIME_TIMESTAMP": "1791651241691394",
+        "_HOSTNAME": "jitakusaba01",
+        "PRIORITY": "6",
+        "_KERNEL_SUBSYSTEM": "pci",
+        "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05be4b;b=cfda0b6a7c134fe2bdf58f9202770840;m=58b154;t=65d7f4fd28902;x=e3360aadb88b95de",
+        "SYSLOG_IDENTIFIER": "kernel",
+        "_RUNTIME_SCOPE": "system",
+        "_SOURCE_MONOTONIC_TIMESTAMP": "536946"
+      },
+      {
+        "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+        "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05be4c;b=cfda0b6a7c134fe2bdf58f9202770840;m=58b1c4;t=65d7f4fd28972;x=951d82c45275fe28",
+        "__SEQNUM": "201702988",
+        "_TRANSPORT": "kernel",
+        "PRIORITY": "6",
+        "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+        "_RUNTIME_SCOPE": "system",
+        "_HOSTNAME": "jitakusaba01",
+        "_KERNEL_SUBSYSTEM": "pci",
+        "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+        "__REALTIME_TIMESTAMP": "1791651241691506",
+        "_UDEV_SYSNAME": "0000:05:00.0",
+        "SYSLOG_IDENTIFIER": "kernel",
+        "SYSLOG_FACILITY": "0",
+        "__MONOTONIC_TIMESTAMP": "5812676",
+        "_SOURCE_MONOTONIC_TIMESTAMP": "536946",
+        "MESSAGE": "pci 0000:05:00.0: vgaarb: VGA device added: decodes=io+mem,owns=none,locks=none",
+        "_KERNEL_DEVICE": "+pci:0000:05:00.0"
+      },
+      {
+        "__MONOTONIC_TIMESTAMP": "11741793",
+        "__REALTIME_TIMESTAMP": "1791651247620623",
+        "SYSLOG_FACILITY": "0",
+        "SYSLOG_IDENTIFIER": "kernel",
+        "_HOSTNAME": "jitakusaba01",
+        "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05c13c;b=cfda0b6a7c134fe2bdf58f9202770840;m=b32a61;t=65d7f502d020f;x=fc5ae5d52da41c28",
+        "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+        "_SOURCE_MONOTONIC_TIMESTAMP": "6646965",
+        "_TRANSPORT": "kernel",
+        "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+        "_RUNTIME_SCOPE": "system",
+        "MESSAGE": "xe 0000:05:00.0: [drm] Found battlemage (device ID e20c) discrete display version 14.01 stepping B0",
+        "PRIORITY": "6",
+        "_KERNEL_SUBSYSTEM": "pci",
+        "_KERNEL_DEVICE": "+pci:0000:05:00.0",
+        "__SEQNUM": "201703740",
+        "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+        "_UDEV_SYSNAME": "0000:05:00.0"
+      },
+      {
+        "__REALTIME_TIMESTAMP": "1791651247620867",
+        "_HOSTNAME": "jitakusaba01",
+        "SYSLOG_IDENTIFIER": "kernel",
+        "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05c13e;b=cfda0b6a7c134fe2bdf58f9202770840;m=b32b55;t=65d7f502d0303;x=ab6fadc792afc0fa",
+        "_RUNTIME_SCOPE": "system",
+        "_SOURCE_MONOTONIC_TIMESTAMP": "6648323",
+        "_KERNEL_DEVICE": "+pci:0000:05:00.0",
+        "_TRANSPORT": "kernel",
+        "MESSAGE": "xe 0000:05:00.0: [drm] VISIBLE VRAM: 0x0000007800000000, 0x0000000400000000",
+        "__MONOTONIC_TIMESTAMP": "11742037",
+        "_UDEV_SYSNAME": "0000:05:00.0",
+        "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+        "SYSLOG_FACILITY": "0",
+        "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+        "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+        "__SEQNUM": "201703742",
+        "_KERNEL_SUBSYSTEM": "pci",
+        "PRIORITY": "6"
+      },
+      {
+        "PRIORITY": "6",
+        "__MONOTONIC_TIMESTAMP": "11742164",
+        "_KERNEL_SUBSYSTEM": "pci",
+        "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+        "_KERNEL_DEVICE": "+pci:0000:05:00.0",
+        "_HOSTNAME": "jitakusaba01",
+        "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+        "__SEQNUM": "201703743",
+        "MESSAGE": "xe 0000:05:00.0: [drm] VRAM[0]: Actual physical size 0x0000000280000000, usable size exclude stolen 0x000000027bc00000, CPU accessible size 0x000000027bc00000",
+        "__REALTIME_TIMESTAMP": "1791651247620994",
+        "_TRANSPORT": "kernel",
+        "_RUNTIME_SCOPE": "system",
+        "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+        "SYSLOG_IDENTIFIER": "kernel",
+        "SYSLOG_FACILITY": "0",
+        "_UDEV_SYSNAME": "0000:05:00.0",
+        "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05c13f;b=cfda0b6a7c134fe2bdf58f9202770840;m=b32bd4;t=65d7f502d0382;x=936bdf604e58f93f",
+        "_SOURCE_MONOTONIC_TIMESTAMP": "6648355"
+      },
+      {
+        "__REALTIME_TIMESTAMP": "1791651247621125",
+        "PRIORITY": "6",
+        "SYSLOG_FACILITY": "0",
+        "_KERNEL_SUBSYSTEM": "pci",
+        "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+        "MESSAGE": "xe 0000:05:00.0: [drm] VRAM[0]: DPA range: [0x0000000000000000-280000000], io range: [0x0000007800000000-7a7bc00000]",
+        "_KERNEL_DEVICE": "+pci:0000:05:00.0",
+        "_RUNTIME_SCOPE": "system",
+        "_HOSTNAME": "jitakusaba01",
+        "_SOURCE_MONOTONIC_TIMESTAMP": "6648359",
+        "__MONOTONIC_TIMESTAMP": "11742295",
+        "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05c140;b=cfda0b6a7c134fe2bdf58f9202770840;m=b32c57;t=65d7f502d0405;x=985fc31a7d7c7aa6",
+        "SYSLOG_IDENTIFIER": "kernel",
+        "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+        "__SEQNUM": "201703744",
+        "_TRANSPORT": "kernel",
+        "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+        "_UDEV_SYSNAME": "0000:05:00.0"
+      },
+      {
+        "_RUNTIME_SCOPE": "system",
+        "PRIORITY": "6",
+        "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+        "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05c141;b=cfda0b6a7c134fe2bdf58f9202770840;m=b32cd6;t=65d7f502d0484;x=55c93c874aafb2ec",
+        "MESSAGE": "xe 0000:05:00.0: [drm] VRAM[0]: Actual physical size 0x0000000280000000, usable size exclude stolen 0x000000027bc00000, CPU accessible size 0x000000027bc00000",
+        "SYSLOG_FACILITY": "0",
+        "__SEQNUM": "201703745",
+        "_HOSTNAME": "jitakusaba01",
+        "_TRANSPORT": "kernel",
+        "_SOURCE_MONOTONIC_TIMESTAMP": "6648363",
+        "_KERNEL_SUBSYSTEM": "pci",
+        "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+        "SYSLOG_IDENTIFIER": "kernel",
+        "__MONOTONIC_TIMESTAMP": "11742422",
+        "_KERNEL_DEVICE": "+pci:0000:05:00.0",
+        "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+        "__REALTIME_TIMESTAMP": "1791651247621252",
+        "_UDEV_SYSNAME": "0000:05:00.0"
+      },
+      {
+        "PRIORITY": "6",
+        "__REALTIME_TIMESTAMP": "1791651247621374",
+        "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05c142;b=cfda0b6a7c134fe2bdf58f9202770840;m=b32d50;t=65d7f502d04fe;x=f3113fd504ffacae",
+        "_UDEV_SYSNAME": "0000:05:00.0",
+        "_SOURCE_MONOTONIC_TIMESTAMP": "6648366",
+        "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+        "_HOSTNAME": "jitakusaba01",
+        "_KERNEL_DEVICE": "+pci:0000:05:00.0",
+        "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+        "SYSLOG_IDENTIFIER": "kernel",
+        "SYSLOG_FACILITY": "0",
+        "__MONOTONIC_TIMESTAMP": "11742544",
+        "MESSAGE": "xe 0000:05:00.0: [drm] VRAM[0]: DPA range: [0x0000000000000000-280000000], io range: [0x0000007800000000-7a7bc00000]",
+        "__SEQNUM": "201703746",
+        "_RUNTIME_SCOPE": "system",
+        "_TRANSPORT": "kernel",
+        "_KERNEL_SUBSYSTEM": "pci",
+        "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d"
+      },
+      {
+        "SYSLOG_FACILITY": "0",
+        "_KERNEL_SUBSYSTEM": "pci",
+        "MESSAGE": "xe 0000:05:00.0: vgaarb: VGA decodes changed: olddecodes=io+mem,decodes=none:owns=none",
+        "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+        "_UDEV_SYSNAME": "0000:05:00.0",
+        "_HOSTNAME": "jitakusaba01",
+        "__MONOTONIC_TIMESTAMP": "11742994",
+        "SYSLOG_IDENTIFIER": "kernel",
+        "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05c150;b=cfda0b6a7c134fe2bdf58f9202770840;m=b32f12;t=65d7f502d06c0;x=48eacbfe8e88740c",
+        "PRIORITY": "6",
+        "_SOURCE_MONOTONIC_TIMESTAMP": "6666884",
+        "_RUNTIME_SCOPE": "system",
+        "__SEQNUM": "201703760",
+        "__REALTIME_TIMESTAMP": "1791651247621824",
+        "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+        "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+        "_TRANSPORT": "kernel",
+        "_KERNEL_DEVICE": "+pci:0000:05:00.0"
+      },
+      {
+        "_TRANSPORT": "kernel",
+        "_RUNTIME_SCOPE": "system",
+        "_HOSTNAME": "jitakusaba01",
+        "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05c152;b=cfda0b6a7c134fe2bdf58f9202770840;m=b32fa5;t=65d7f502d0753;x=5a7e55e55fe69c54",
+        "__SEQNUM": "201703762",
+        "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+        "_UDEV_SYSNAME": "0000:05:00.0",
+        "SYSLOG_IDENTIFIER": "kernel",
+        "_KERNEL_SUBSYSTEM": "pci",
+        "_KERNEL_DEVICE": "+pci:0000:05:00.0",
+        "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+        "MESSAGE": "xe 0000:05:00.0: [drm] Finished loading DMC firmware i915/bmg_dmc.bin (v2.6)",
+        "__REALTIME_TIMESTAMP": "1791651247621971",
+        "_SOURCE_MONOTONIC_TIMESTAMP": "6678792",
+        "PRIORITY": "6",
+        "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+        "__MONOTONIC_TIMESTAMP": "11743141",
+        "SYSLOG_FACILITY": "0"
+      },
+      {
+        "MESSAGE": "xe 0000:05:00.0: [drm] Tile0: GT0: Using GuC firmware from xe/bmg_guc_70.bin version 70.44.1",
+        "_KERNEL_DEVICE": "+pci:0000:05:00.0",
+        "_RUNTIME_SCOPE": "system",
+        "_KERNEL_SUBSYSTEM": "pci",
+        "_SOURCE_MONOTONIC_TIMESTAMP": "6682882",
+        "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+        "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+        "__REALTIME_TIMESTAMP": "1791651247622104",
+        "_UDEV_SYSNAME": "0000:05:00.0",
+        "__MONOTONIC_TIMESTAMP": "11743274",
+        "_TRANSPORT": "kernel",
+        "SYSLOG_FACILITY": "0",
+        "PRIORITY": "6",
+        "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05c153;b=cfda0b6a7c134fe2bdf58f9202770840;m=b3302a;t=65d7f502d07d8;x=af6ef120d151395e",
+        "__SEQNUM": "201703763",
+        "_HOSTNAME": "jitakusaba01",
+        "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+        "SYSLOG_IDENTIFIER": "kernel"
+      },
+      {
+        "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+        "_SOURCE_MONOTONIC_TIMESTAMP": "6682890",
+        "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+        "PRIORITY": "5",
+        "_TRANSPORT": "kernel",
+        "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05c154;b=cfda0b6a7c134fe2bdf58f9202770840;m=b330a7;t=65d7f502d0855;x=f75cb690776b1f56",
+        "MESSAGE": "xe 0000:05:00.0: [drm] GuC firmware (70.54.0) is recommended, but only (70.44.1) was found in xe/bmg_guc_70.bin",
+        "_RUNTIME_SCOPE": "system",
+        "_KERNEL_DEVICE": "+pci:0000:05:00.0",
+        "SYSLOG_FACILITY": "0",
+        "__MONOTONIC_TIMESTAMP": "11743399",
+        "__SEQNUM": "201703764",
+        "__REALTIME_TIMESTAMP": "1791651247622229",
+        "_UDEV_SYSNAME": "0000:05:00.0",
+        "SYSLOG_IDENTIFIER": "kernel",
+        "_KERNEL_SUBSYSTEM": "pci",
+        "_HOSTNAME": "jitakusaba01",
+        "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881"
+      },
+      {
+        "_KERNEL_DEVICE": "+pci:0000:05:00.0",
+        "_SOURCE_MONOTONIC_TIMESTAMP": "6682895",
+        "__SEQNUM": "201703765",
+        "__MONOTONIC_TIMESTAMP": "11743521",
+        "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+        "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05c155;b=cfda0b6a7c134fe2bdf58f9202770840;m=b33121;t=65d7f502d08cf;x=726158ce4dea2abd",
+        "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+        "PRIORITY": "6",
+        "MESSAGE": "xe 0000:05:00.0: [drm] Consider updating your linux-firmware pkg or downloading from https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git",
+        "_KERNEL_SUBSYSTEM": "pci",
+        "_HOSTNAME": "jitakusaba01",
+        "_TRANSPORT": "kernel",
+        "_RUNTIME_SCOPE": "system",
+        "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+        "_UDEV_SYSNAME": "0000:05:00.0",
+        "__REALTIME_TIMESTAMP": "1791651247622351",
+        "SYSLOG_FACILITY": "0",
+        "SYSLOG_IDENTIFIER": "kernel"
+      },
+      {
+        "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+        "__REALTIME_TIMESTAMP": "1791651247622512",
+        "_KERNEL_DEVICE": "+pci:0000:05:00.0",
+        "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+        "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+        "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05c159;b=cfda0b6a7c134fe2bdf58f9202770840;m=b331c1;t=65d7f502d0970;x=83f5104f7895d1ba",
+        "SYSLOG_IDENTIFIER": "kernel",
+        "_SOURCE_MONOTONIC_TIMESTAMP": "7005447",
+        "_RUNTIME_SCOPE": "system",
+        "_UDEV_SYSNAME": "0000:05:00.0",
+        "SYSLOG_FACILITY": "0",
+        "_KERNEL_SUBSYSTEM": "pci",
+        "_TRANSPORT": "kernel",
+        "PRIORITY": "6",
+        "MESSAGE": "xe 0000:05:00.0: [drm] Tile0: GT0: ccs1 fused off",
+        "__SEQNUM": "201703769",
+        "_HOSTNAME": "jitakusaba01",
+        "__MONOTONIC_TIMESTAMP": "11743681"
+      },
+      {
+        "SYSLOG_FACILITY": "0",
+        "_SOURCE_MONOTONIC_TIMESTAMP": "7005451",
+        "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05c15a;b=cfda0b6a7c134fe2bdf58f9202770840;m=b3323d;t=65d7f502d09ec;x=ad6f4ef78c4b03b8",
+        "PRIORITY": "6",
+        "__REALTIME_TIMESTAMP": "1791651247622636",
+        "__MONOTONIC_TIMESTAMP": "11743805",
+        "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+        "__SEQNUM": "201703770",
+        "MESSAGE": "xe 0000:05:00.0: [drm] Tile0: GT0: ccs2 fused off",
+        "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+        "_RUNTIME_SCOPE": "system",
+        "_UDEV_SYSNAME": "0000:05:00.0",
+        "_TRANSPORT": "kernel",
+        "_KERNEL_SUBSYSTEM": "pci",
+        "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+        "SYSLOG_IDENTIFIER": "kernel",
+        "_KERNEL_DEVICE": "+pci:0000:05:00.0",
+        "_HOSTNAME": "jitakusaba01"
+      },
+      {
+        "SYSLOG_IDENTIFIER": "kernel",
+        "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+        "_RUNTIME_SCOPE": "system",
+        "_KERNEL_DEVICE": "+pci:0000:05:00.0",
+        "_SOURCE_MONOTONIC_TIMESTAMP": "7005453",
+        "__SEQNUM": "201703771",
+        "_UDEV_SYSNAME": "0000:05:00.0",
+        "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05c15b;b=cfda0b6a7c134fe2bdf58f9202770840;m=b332b8;t=65d7f502d0a66;x=dd4b5c4c4cd7c965",
+        "MESSAGE": "xe 0000:05:00.0: [drm] Tile0: GT0: ccs3 fused off",
+        "PRIORITY": "6",
+        "_HOSTNAME": "jitakusaba01",
+        "SYSLOG_FACILITY": "0",
+        "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+        "__REALTIME_TIMESTAMP": "1791651247622758",
+        "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+        "_TRANSPORT": "kernel",
+        "__MONOTONIC_TIMESTAMP": "11743928",
+        "_KERNEL_SUBSYSTEM": "pci"
+      },
+      {
+        "_UDEV_SYSNAME": "0000:05:00.0",
+        "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+        "SYSLOG_FACILITY": "0",
+        "_SOURCE_MONOTONIC_TIMESTAMP": "7034652",
+        "PRIORITY": "6",
+        "_KERNEL_SUBSYSTEM": "pci",
+        "__SEQNUM": "201703772",
+        "_KERNEL_DEVICE": "+pci:0000:05:00.0",
+        "__MONOTONIC_TIMESTAMP": "11744060",
+        "__REALTIME_TIMESTAMP": "1791651247622890",
+        "_TRANSPORT": "kernel",
+        "SYSLOG_IDENTIFIER": "kernel",
+        "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+        "MESSAGE": "xe 0000:05:00.0: [drm] Tile0: GT1: Using GuC firmware from xe/bmg_guc_70.bin version 70.44.1",
+        "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05c15c;b=cfda0b6a7c134fe2bdf58f9202770840;m=b3333c;t=65d7f502d0aea;x=b154b86dfc451cdf",
+        "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+        "_HOSTNAME": "jitakusaba01",
+        "_RUNTIME_SCOPE": "system"
+      },
+      {
+        "__MONOTONIC_TIMESTAMP": "11744184",
+        "_HOSTNAME": "jitakusaba01",
+        "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05c15d;b=cfda0b6a7c134fe2bdf58f9202770840;m=b333b8;t=65d7f502d0b66;x=b22631490f22207a",
+        "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+        "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+        "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+        "_KERNEL_DEVICE": "+pci:0000:05:00.0",
+        "_TRANSPORT": "kernel",
+        "SYSLOG_FACILITY": "0",
+        "__SEQNUM": "201703773",
+        "PRIORITY": "5",
+        "_KERNEL_SUBSYSTEM": "pci",
+        "SYSLOG_IDENTIFIER": "kernel",
+        "MESSAGE": "xe 0000:05:00.0: [drm] GuC firmware (70.54.0) is recommended, but only (70.44.1) was found in xe/bmg_guc_70.bin",
+        "_RUNTIME_SCOPE": "system",
+        "_SOURCE_MONOTONIC_TIMESTAMP": "7034657",
+        "__REALTIME_TIMESTAMP": "1791651247623014",
+        "_UDEV_SYSNAME": "0000:05:00.0"
+      },
+      {
+        "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+        "_HOSTNAME": "jitakusaba01",
+        "_TRANSPORT": "kernel",
+        "SYSLOG_FACILITY": "0",
+        "_KERNEL_DEVICE": "+pci:0000:05:00.0",
+        "__SEQNUM": "201703774",
+        "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05c15e;b=cfda0b6a7c134fe2bdf58f9202770840;m=b33431;t=65d7f502d0bdf;x=9745e7cc78f96496",
+        "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+        "_KERNEL_SUBSYSTEM": "pci",
+        "_SOURCE_MONOTONIC_TIMESTAMP": "7034660",
+        "__MONOTONIC_TIMESTAMP": "11744305",
+        "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+        "_RUNTIME_SCOPE": "system",
+        "_UDEV_SYSNAME": "0000:05:00.0",
+        "__REALTIME_TIMESTAMP": "1791651247623135",
+        "PRIORITY": "6",
+        "MESSAGE": "xe 0000:05:00.0: [drm] Consider updating your linux-firmware pkg or downloading from https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git",
+        "SYSLOG_IDENTIFIER": "kernel"
+      },
+      {
+        "_RUNTIME_SCOPE": "system",
+        "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+        "_TRANSPORT": "kernel",
+        "SYSLOG_FACILITY": "0",
+        "_UDEV_SYSNAME": "0000:05:00.0",
+        "SYSLOG_IDENTIFIER": "kernel",
+        "_KERNEL_DEVICE": "+pci:0000:05:00.0",
+        "__SEQNUM": "201703775",
+        "_HOSTNAME": "jitakusaba01",
+        "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05c15f;b=cfda0b6a7c134fe2bdf58f9202770840;m=b334a9;t=65d7f502d0c58;x=a943ee1cf8aae331",
+        "PRIORITY": "6",
+        "_KERNEL_SUBSYSTEM": "pci",
+        "MESSAGE": "xe 0000:05:00.0: [drm] Tile0: GT1: Using HuC firmware from xe/bmg_huc.bin version 8.2.10",
+        "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+        "__MONOTONIC_TIMESTAMP": "11744425",
+        "_SOURCE_MONOTONIC_TIMESTAMP": "7038077",
+        "__REALTIME_TIMESTAMP": "1791651247623256",
+        "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d"
+      },
+      {
+        "_HOSTNAME": "jitakusaba01",
+        "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+        "MESSAGE": "xe 0000:05:00.0: [drm] Tile0: GT1: vcs1 fused off",
+        "PRIORITY": "6",
+        "_KERNEL_DEVICE": "+pci:0000:05:00.0",
+        "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05c160;b=cfda0b6a7c134fe2bdf58f9202770840;m=b33522;t=65d7f502d0cd0;x=e3d34a1cd4c0edf2",
+        "_KERNEL_SUBSYSTEM": "pci",
+        "__SEQNUM": "201703776",
+        "__MONOTONIC_TIMESTAMP": "11744546",
+        "SYSLOG_IDENTIFIER": "kernel",
+        "_SOURCE_MONOTONIC_TIMESTAMP": "7050584",
+        "SYSLOG_FACILITY": "0",
+        "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+        "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+        "__REALTIME_TIMESTAMP": "1791651247623376",
+        "_RUNTIME_SCOPE": "system",
+        "_UDEV_SYSNAME": "0000:05:00.0",
+        "_TRANSPORT": "kernel"
+      },
+      {
+        "MESSAGE": "xe 0000:05:00.0: [drm] Tile0: GT1: vcs3 fused off",
+        "_KERNEL_SUBSYSTEM": "pci",
+        "__MONOTONIC_TIMESTAMP": "11744666",
+        "__SEQNUM": "201703777",
+        "_SOURCE_MONOTONIC_TIMESTAMP": "7050588",
+        "_UDEV_SYSNAME": "0000:05:00.0",
+        "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05c161;b=cfda0b6a7c134fe2bdf58f9202770840;m=b3359a;t=65d7f502d0d48;x=37e08f7464173a6e",
+        "SYSLOG_IDENTIFIER": "kernel",
+        "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+        "_TRANSPORT": "kernel",
+        "_RUNTIME_SCOPE": "system",
+        "_HOSTNAME": "jitakusaba01",
+        "__REALTIME_TIMESTAMP": "1791651247623496",
+        "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+        "SYSLOG_FACILITY": "0",
+        "_KERNEL_DEVICE": "+pci:0000:05:00.0",
+        "PRIORITY": "6",
+        "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840"
+      },
+      {
+        "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05c162;b=cfda0b6a7c134fe2bdf58f9202770840;m=b3361b;t=65d7f502d0dc9;x=33677b8d7b8dd7a1",
+        "_TRANSPORT": "kernel",
+        "__REALTIME_TIMESTAMP": "1791651247623625",
+        "SYSLOG_IDENTIFIER": "kernel",
+        "PRIORITY": "6",
+        "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+        "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+        "_RUNTIME_SCOPE": "system",
+        "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+        "SYSLOG_FACILITY": "0",
+        "__MONOTONIC_TIMESTAMP": "11744795",
+        "_HOSTNAME": "jitakusaba01",
+        "__SEQNUM": "201703778",
+        "_SOURCE_MONOTONIC_TIMESTAMP": "7050590",
+        "_KERNEL_SUBSYSTEM": "pci",
+        "MESSAGE": "xe 0000:05:00.0: [drm] Tile0: GT1: vcs4 fused off",
+        "_UDEV_SYSNAME": "0000:05:00.0",
+        "_KERNEL_DEVICE": "+pci:0000:05:00.0"
+      },
+      {
+        "_TRANSPORT": "kernel",
+        "_UDEV_SYSNAME": "0000:05:00.0",
+        "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+        "_HOSTNAME": "jitakusaba01",
+        "_RUNTIME_SCOPE": "system",
+        "_KERNEL_SUBSYSTEM": "pci",
+        "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+        "__REALTIME_TIMESTAMP": "1791651247623750",
+        "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05c163;b=cfda0b6a7c134fe2bdf58f9202770840;m=b33698;t=65d7f502d0e46;x=4306ff6906f299a9",
+        "SYSLOG_IDENTIFIER": "kernel",
+        "__SEQNUM": "201703779",
+        "_KERNEL_DEVICE": "+pci:0000:05:00.0",
+        "SYSLOG_FACILITY": "0",
+        "PRIORITY": "6",
+        "__MONOTONIC_TIMESTAMP": "11744920",
+        "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+        "_SOURCE_MONOTONIC_TIMESTAMP": "7050592",
+        "MESSAGE": "xe 0000:05:00.0: [drm] Tile0: GT1: vcs5 fused off"
+      },
+      {
+        "PRIORITY": "6",
+        "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+        "__REALTIME_TIMESTAMP": "1791651247623928",
+        "_UDEV_SYSNAME": "0000:05:00.0",
+        "__SEQNUM": "201703780",
+        "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+        "_KERNEL_SUBSYSTEM": "pci",
+        "_KERNEL_DEVICE": "+pci:0000:05:00.0",
+        "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05c164;b=cfda0b6a7c134fe2bdf58f9202770840;m=b3374a;t=65d7f502d0ef8;x=bb4ee9291ba0d753",
+        "SYSLOG_FACILITY": "0",
+        "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+        "__MONOTONIC_TIMESTAMP": "11745098",
+        "_TRANSPORT": "kernel",
+        "_HOSTNAME": "jitakusaba01",
+        "_SOURCE_MONOTONIC_TIMESTAMP": "7050594",
+        "_RUNTIME_SCOPE": "system",
+        "SYSLOG_IDENTIFIER": "kernel",
+        "MESSAGE": "xe 0000:05:00.0: [drm] Tile0: GT1: vcs6 fused off"
+      },
+      {
+        "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+        "__MONOTONIC_TIMESTAMP": "11745271",
+        "__SEQNUM": "201703781",
+        "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05c165;b=cfda0b6a7c134fe2bdf58f9202770840;m=b337f7;t=65d7f502d0fa5;x=273458bb84f44f6d",
+        "_RUNTIME_SCOPE": "system",
+        "_HOSTNAME": "jitakusaba01",
+        "PRIORITY": "6",
+        "_KERNEL_DEVICE": "+pci:0000:05:00.0",
+        "__REALTIME_TIMESTAMP": "1791651247624101",
+        "_UDEV_SYSNAME": "0000:05:00.0",
+        "_SOURCE_MONOTONIC_TIMESTAMP": "7050596",
+        "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+        "_TRANSPORT": "kernel",
+        "_KERNEL_SUBSYSTEM": "pci",
+        "SYSLOG_FACILITY": "0",
+        "MESSAGE": "xe 0000:05:00.0: [drm] Tile0: GT1: vcs7 fused off",
+        "SYSLOG_IDENTIFIER": "kernel",
+        "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d"
+      },
+      {
+        "_UDEV_SYSNAME": "0000:05:00.0",
+        "__REALTIME_TIMESTAMP": "1791651247624258",
+        "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+        "SYSLOG_IDENTIFIER": "kernel",
+        "_SOURCE_MONOTONIC_TIMESTAMP": "7050598",
+        "PRIORITY": "6",
+        "_RUNTIME_SCOPE": "system",
+        "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+        "_KERNEL_SUBSYSTEM": "pci",
+        "_HOSTNAME": "jitakusaba01",
+        "_KERNEL_DEVICE": "+pci:0000:05:00.0",
+        "SYSLOG_FACILITY": "0",
+        "_TRANSPORT": "kernel",
+        "__SEQNUM": "201703782",
+        "__MONOTONIC_TIMESTAMP": "11745428",
+        "MESSAGE": "xe 0000:05:00.0: [drm] Tile0: GT1: vecs2 fused off",
+        "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05c166;b=cfda0b6a7c134fe2bdf58f9202770840;m=b33894;t=65d7f502d1042;x=7e2fd6879be0fbbf",
+        "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d"
+      },
+      {
+        "_HOSTNAME": "jitakusaba01",
+        "PRIORITY": "6",
+        "MESSAGE": "xe 0000:05:00.0: [drm] Tile0: GT1: vecs3 fused off",
+        "__MONOTONIC_TIMESTAMP": "11745582",
+        "_UDEV_SYSNAME": "0000:05:00.0",
+        "_RUNTIME_SCOPE": "system",
+        "__SEQNUM": "201703783",
+        "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05c167;b=cfda0b6a7c134fe2bdf58f9202770840;m=b3392e;t=65d7f502d10dc;x=8d763f65833f618c",
+        "_KERNEL_SUBSYSTEM": "pci",
+        "SYSLOG_FACILITY": "0",
+        "_SOURCE_MONOTONIC_TIMESTAMP": "7050601",
+        "__REALTIME_TIMESTAMP": "1791651247624412",
+        "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+        "_KERNEL_DEVICE": "+pci:0000:05:00.0",
+        "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+        "_TRANSPORT": "kernel",
+        "SYSLOG_IDENTIFIER": "kernel",
+        "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d"
+      },
+      {
+        "PRIORITY": "6",
+        "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+        "SYSLOG_IDENTIFIER": "kernel",
+        "_RUNTIME_SCOPE": "system",
+        "__REALTIME_TIMESTAMP": "1791651247624567",
+        "_UDEV_SYSNAME": "0000:05:00.0",
+        "MESSAGE": "xe 0000:05:00.0: [drm] Registered 4 planes with drm panic",
+        "_SOURCE_MONOTONIC_TIMESTAMP": "7084145",
+        "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05c168;b=cfda0b6a7c134fe2bdf58f9202770840;m=b339c9;t=65d7f502d1177;x=60e931004771dc25",
+        "_TRANSPORT": "kernel",
+        "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+        "__SEQNUM": "201703784",
+        "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+        "SYSLOG_FACILITY": "0",
+        "__MONOTONIC_TIMESTAMP": "11745737",
+        "_HOSTNAME": "jitakusaba01",
+        "_KERNEL_SUBSYSTEM": "pci",
+        "_KERNEL_DEVICE": "+pci:0000:05:00.0"
+      },
+      {
+        "_RUNTIME_SCOPE": "system",
+        "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+        "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+        "PRIORITY": "6",
+        "__REALTIME_TIMESTAMP": "1791651247624721",
+        "__SEQNUM": "201703785",
+        "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05c169;b=cfda0b6a7c134fe2bdf58f9202770840;m=b33a63;t=65d7f502d1211;x=7ee99da9e97df239",
+        "SYSLOG_FACILITY": "0",
+        "MESSAGE": "[drm] Initialized xe 1.1.0 for 0000:05:00.0 on minor 1",
+        "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+        "_SOURCE_MONOTONIC_TIMESTAMP": "7084148",
+        "SYSLOG_IDENTIFIER": "kernel",
+        "_HOSTNAME": "jitakusaba01",
+        "__MONOTONIC_TIMESTAMP": "11745891",
+        "_TRANSPORT": "kernel"
+      },
+      {
+        "_KERNEL_SUBSYSTEM": "pci",
+        "_TRANSPORT": "kernel",
+        "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+        "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05c16a;b=cfda0b6a7c134fe2bdf58f9202770840;m=b33a71;t=65d7f502d121f;x=27ff674f45d8968a",
+        "__SEQNUM": "201703786",
+        "MESSAGE": "xe 0000:05:00.0: [drm] Cannot find any crtc or sizes",
+        "__REALTIME_TIMESTAMP": "1791651247624735",
+        "SYSLOG_IDENTIFIER": "kernel",
+        "PRIORITY": "6",
+        "__MONOTONIC_TIMESTAMP": "11745905",
+        "_KERNEL_DEVICE": "+pci:0000:05:00.0",
+        "_UDEV_SYSNAME": "0000:05:00.0",
+        "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+        "_HOSTNAME": "jitakusaba01",
+        "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+        "_RUNTIME_SCOPE": "system",
+        "_SOURCE_MONOTONIC_TIMESTAMP": "7112460",
+        "SYSLOG_FACILITY": "0"
+      },
+      {
+        "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+        "_UDEV_SYSNAME": "0000:05:00.0",
+        "MESSAGE": "xe 0000:05:00.0: [drm] Using mailbox commands for power limits",
+        "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05c16b;b=cfda0b6a7c134fe2bdf58f9202770840;m=b33b0f;t=65d7f502d12bd;x=ffa3b08e448e8159",
+        "_KERNEL_SUBSYSTEM": "pci",
+        "_KERNEL_DEVICE": "+pci:0000:05:00.0",
+        "_HOSTNAME": "jitakusaba01",
+        "__REALTIME_TIMESTAMP": "1791651247624893",
+        "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+        "SYSLOG_FACILITY": "0",
+        "SYSLOG_IDENTIFIER": "kernel",
+        "_TRANSPORT": "kernel",
+        "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+        "_RUNTIME_SCOPE": "system",
+        "__SEQNUM": "201703787",
+        "__MONOTONIC_TIMESTAMP": "11746063",
+        "PRIORITY": "6",
+        "_SOURCE_MONOTONIC_TIMESTAMP": "7121355"
+      },
+      {
+        "_SOURCE_MONOTONIC_TIMESTAMP": "7122040",
+        "SYSLOG_FACILITY": "0",
+        "PRIORITY": "6",
+        "SYSLOG_IDENTIFIER": "kernel",
+        "_TRANSPORT": "kernel",
+        "_KERNEL_DEVICE": "+pci:0000:05:00.0",
+        "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+        "__SEQNUM": "201703788",
+        "_KERNEL_SUBSYSTEM": "pci",
+        "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+        "MESSAGE": "xe 0000:05:00.0: [drm] PL2 is supported on channel 0",
+        "_RUNTIME_SCOPE": "system",
+        "__REALTIME_TIMESTAMP": "1791651247625056",
+        "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+        "__MONOTONIC_TIMESTAMP": "11746226",
+        "_UDEV_SYSNAME": "0000:05:00.0",
+        "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05c16c;b=cfda0b6a7c134fe2bdf58f9202770840;m=b33bb2;t=65d7f502d1360;x=566fabbe61eb7e9c",
+        "_HOSTNAME": "jitakusaba01"
+      },
+      {
+        "__REALTIME_TIMESTAMP": "1791651247625227",
+        "_HOSTNAME": "jitakusaba01",
+        "__SEQNUM": "201703789",
+        "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05c16d;b=cfda0b6a7c134fe2bdf58f9202770840;m=b33c5d;t=65d7f502d140b;x=ce78a67b71a7c3d8",
+        "SYSLOG_IDENTIFIER": "kernel",
+        "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+        "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+        "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+        "_TRANSPORT": "kernel",
+        "PRIORITY": "5",
+        "MESSAGE": "Creating 4 MTD partitions on \"xe.nvm.1280\":",
+        "_RUNTIME_SCOPE": "system",
+        "__MONOTONIC_TIMESTAMP": "11746397",
+        "_SOURCE_MONOTONIC_TIMESTAMP": "7144427",
+        "SYSLOG_FACILITY": "0"
+      },
+      {
+        "_TRANSPORT": "kernel",
+        "__MONOTONIC_TIMESTAMP": "11746412",
+        "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+        "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+        "_HOSTNAME": "jitakusaba01",
+        "__SEQNUM": "201703790",
+        "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05c16e;b=cfda0b6a7c134fe2bdf58f9202770840;m=b33c6c;t=65d7f502d141a;x=ff1a729ea6c33026",
+        "__REALTIME_TIMESTAMP": "1791651247625242",
+        "MESSAGE": "0x000000000000-0x000000001000 : \"xe.nvm.1280.DESCRIPTOR\"",
+        "_SOURCE_MONOTONIC_TIMESTAMP": "7144432",
+        "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+        "SYSLOG_IDENTIFIER": "kernel",
+        "SYSLOG_FACILITY": "0",
+        "_RUNTIME_SCOPE": "system",
+        "PRIORITY": "5"
+      },
+      {
+        "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+        "PRIORITY": "5",
+        "SYSLOG_IDENTIFIER": "kernel",
+        "__REALTIME_TIMESTAMP": "1791651247625255",
+        "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+        "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+        "SYSLOG_FACILITY": "0",
+        "_HOSTNAME": "jitakusaba01",
+        "__SEQNUM": "201703791",
+        "_RUNTIME_SCOPE": "system",
+        "MESSAGE": "0x000000001000-0x00000054e000 : \"xe.nvm.1280.GSC\"",
+        "_SOURCE_MONOTONIC_TIMESTAMP": "7148806",
+        "__MONOTONIC_TIMESTAMP": "11746425",
+        "_TRANSPORT": "kernel",
+        "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05c16f;b=cfda0b6a7c134fe2bdf58f9202770840;m=b33c79;t=65d7f502d1427;x=27db961b865cc56e"
+      },
+      {
+        "_HOSTNAME": "jitakusaba01",
+        "SYSLOG_FACILITY": "0",
+        "_RUNTIME_SCOPE": "system",
+        "__REALTIME_TIMESTAMP": "1791651247625267",
+        "_TRANSPORT": "kernel",
+        "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05c170;b=cfda0b6a7c134fe2bdf58f9202770840;m=b33c85;t=65d7f502d1433;x=26c473bf0876f405",
+        "_SOURCE_MONOTONIC_TIMESTAMP": "7153277",
+        "__SEQNUM": "201703792",
+        "__MONOTONIC_TIMESTAMP": "11746437",
+        "SYSLOG_IDENTIFIER": "kernel",
+        "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+        "MESSAGE": "0x00000054e000-0x00000074e000 : \"xe.nvm.1280.OptionROM\"",
+        "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+        "PRIORITY": "5",
+        "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d"
+      },
+      {
+        "__MONOTONIC_TIMESTAMP": "11746450",
+        "SYSLOG_IDENTIFIER": "kernel",
+        "PRIORITY": "5",
+        "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+        "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+        "_RUNTIME_SCOPE": "system",
+        "__SEQNUM": "201703793",
+        "_TRANSPORT": "kernel",
+        "_SOURCE_MONOTONIC_TIMESTAMP": "7157570",
+        "MESSAGE": "0x00000074e000-0x00000075e000 : \"xe.nvm.1280.DAM\"",
+        "__REALTIME_TIMESTAMP": "1791651247625280",
+        "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05c171;b=cfda0b6a7c134fe2bdf58f9202770840;m=b33c92;t=65d7f502d1440;x=ccb0993455e3cd73",
+        "SYSLOG_FACILITY": "0",
+        "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+        "_HOSTNAME": "jitakusaba01"
+      },
+      {
+        "_KERNEL_SUBSYSTEM": "pci",
+        "MESSAGE": "xe 0000:05:00.0: [drm] Cannot find any crtc or sizes",
+        "SYSLOG_IDENTIFIER": "kernel",
+        "_TRANSPORT": "kernel",
+        "__REALTIME_TIMESTAMP": "1791651247625291",
+        "__MONOTONIC_TIMESTAMP": "11746461",
+        "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+        "_RUNTIME_SCOPE": "system",
+        "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05c172;b=cfda0b6a7c134fe2bdf58f9202770840;m=b33c9d;t=65d7f502d144b;x=364c75c285b265ca",
+        "_UDEV_SYSNAME": "0000:05:00.0",
+        "_KERNEL_DEVICE": "+pci:0000:05:00.0",
+        "__SEQNUM": "201703794",
+        "PRIORITY": "6",
+        "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+        "_HOSTNAME": "jitakusaba01",
+        "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+        "_SOURCE_MONOTONIC_TIMESTAMP": "7172391",
+        "SYSLOG_FACILITY": "0"
+      },
+      {
+        "_RUNTIME_SCOPE": "system",
+        "MESSAGE": "snd_hda_intel 0000:06:00.0: bound 0000:05:00.0 (ops intel_audio_component_bind_ops [xe])",
+        "_TRANSPORT": "kernel",
+        "__SEQNUM": "201703795",
+        "__MONOTONIC_TIMESTAMP": "11746620",
+        "_SOURCE_MONOTONIC_TIMESTAMP": "7172398",
+        "_UDEV_SYSNAME": "0000:06:00.0",
+        "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+        "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05c173;b=cfda0b6a7c134fe2bdf58f9202770840;m=b33d3c;t=65d7f502d14ea;x=ab32eb9a59eba0de",
+        "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+        "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+        "PRIORITY": "6",
+        "_HOSTNAME": "jitakusaba01",
+        "SYSLOG_IDENTIFIER": "kernel",
+        "_KERNEL_SUBSYSTEM": "pci",
+        "_KERNEL_DEVICE": "+pci:0000:06:00.0",
+        "__REALTIME_TIMESTAMP": "1791651247625450",
+        "SYSLOG_FACILITY": "0"
+      },
+      {
+        "_KERNEL_SUBSYSTEM": "pci",
+        "__MONOTONIC_TIMESTAMP": "11746934",
+        "_TRANSPORT": "kernel",
+        "_SOURCE_MONOTONIC_TIMESTAMP": "7201037",
+        "SYSLOG_FACILITY": "0",
+        "_HOSTNAME": "jitakusaba01",
+        "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+        "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+        "__SEQNUM": "201703797",
+        "MESSAGE": "xe 0000:05:00.0: [drm] Cannot find any crtc or sizes",
+        "__REALTIME_TIMESTAMP": "1791651247625764",
+        "_RUNTIME_SCOPE": "system",
+        "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05c175;b=cfda0b6a7c134fe2bdf58f9202770840;m=b33e76;t=65d7f502d1624;x=991479de21018db6",
+        "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+        "SYSLOG_IDENTIFIER": "kernel",
+        "PRIORITY": "6",
+        "_UDEV_SYSNAME": "0000:05:00.0",
+        "_KERNEL_DEVICE": "+pci:0000:05:00.0"
+      },
+      {
+        "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+        "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+        "_TRANSPORT": "kernel",
+        "_HOSTNAME": "jitakusaba01",
+        "__REALTIME_TIMESTAMP": "1791651247625982",
+        "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05c17a;b=cfda0b6a7c134fe2bdf58f9202770840;m=b33f4f;t=65d7f502d16fe;x=e7f9564e31b7f7bb",
+        "_KERNEL_DEVICE": "+mei:xe.mei-gscfi.1280-e2c2afa2-3817-4d19-9d95-",
+        "_KERNEL_SUBSYSTEM": "mei",
+        "PRIORITY": "6",
+        "__MONOTONIC_TIMESTAMP": "11747151",
+        "_SOURCE_MONOTONIC_TIMESTAMP": "7236717",
+        "SYSLOG_IDENTIFIER": "kernel",
+        "__SEQNUM": "201703802",
+        "SYSLOG_FACILITY": "0",
+        "MESSAGE": "mei_lb xe.mei-gscfi.1280-e2c2afa2-3817-4d19-9d95-06b16b588a5d: bound 0000:05:00.0 (ops xe_late_bind_component_ops [xe])",
+        "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+        "_RUNTIME_SCOPE": "system"
+      }
+    ],
+    "fault_entries": [],
+    "dump_present": false,
+    "filter": "page fault|fault response|timestamp stuck|wedg|engine reset|gt reset|guc.*(?:timeout|timed out|failed)|device.*lost|Timed out wait for G2H|Check job timeout|Timedout job|Schedule disable failed|trying reset|\\breset (?:queued|started|done)\\b"
+  },
+  "kernel_cursor_before": "s=9944479cfd1a45c28a589619cb8f2881;i=c10a137;b=cfda0b6a7c134fe2bdf58f9202770840;m=2254a0a460;t=65da1a41a7c0e;x=a4b2c81f86474b75",
+  "device_discovery": {
+    "core_clock_rate": "2750 MHz",
+    "device_id": 0,
+    "device_name": "Intel(R) Arc(TM) B570 Graphics",
+    "device_state": "normal",
+    "device_stepping": "A0",
+    "device_type": "Discrete GPU",
+    "driver_version": "17013219",
+    "drm_device": "/dev/dri/card1",
+    "gfx_data_firmware_name": "GFX_DATA",
+    "gfx_data_firmware_version": "",
+    "gfx_firmware_name": "GFX",
+    "gfx_firmware_status": "normal",
+    "gfx_firmware_version": "",
+    "kernel_version": "7.0.0-38-generic",
+    "max_command_queue_priority": "0",
+    "max_hardware_contexts": "65536",
+    "max_mem_alloc_size_byte": "10132807680",
+    "memory_bus_width": "4294967295",
+    "memory_ecc_state": "disabled",
+    "memory_free_size_byte": "10096943104",
+    "memory_physical_size": "10172.00 MiB",
+    "memory_physical_size_byte": 10666115072,
+    "number_of_eus": 144,
+    "number_of_eus_per_sub_slice": "8",
+    "number_of_media_engines": "0",
+    "number_of_media_enh_engines": "0",
+    "number_of_memory_channels": "4294967295",
+    "number_of_slices": "5",
+    "number_of_sub_slices_per_slice": "4",
+    "number_of_threads_per_eu": "8",
+    "number_of_tiles": 1,
+    "oam_socket_id": "N/A",
+    "pci_bdf_address": "0000:05:00.0",
+    "pci_device_id": "0xe20c",
+    "pci_slot": "",
+    "pci_vendor_id": "0x8086",
+    "pcie_generation": "N/A",
+    "pcie_max_bandwidth": "N/A",
+    "pcie_max_link_width": "N/A",
+    "physical_eu_simd_width": "16",
+    "serial_number": "unknown",
+    "sku_type": "Production ES",
+    "uuid": "00000000-0000-0005-0000-0000e20c8086",
+    "vendor_name": "Intel(R) Corporation"
+  },
+  "device_used_mib_before": 34.203125,
+  "live_mapping_captures": [
+    {
+      "pid": 1487489,
+      "start_ticks": 14748631,
+      "monotonic": 147486.355605471,
+      "map_bytes": 17783,
+      "map_rows": 146,
+      "files": {
+        "/usr/local/lib/libigc.so.2.41.5+1788943183": {
+          "canonical_path": "/usr/local/lib/libigc.so.2.41.5+1788943183",
+          "stat": {
+            "device": 42,
+            "inode": 224,
+            "bytes": 104543000,
+            "mtime_ns": 1788943430000000000,
+            "ctime_ns": 1791307717935651029
+          },
+          "mapped_rows": [
+            "714bb16f0000-714bb2750000 r--p 00000000 00:2a 224 /usr/local/lib/libigc.so.2.41.5+1788943183",
+            "714bb2750000-714bb6117000 r-xp 0105f000 00:2a 224 /usr/local/lib/libigc.so.2.41.5+1788943183",
+            "714bb6117000-714bb6377000 r--p 04a25000 00:2a 224 /usr/local/lib/libigc.so.2.41.5+1788943183",
+            "714bb6377000-714bb7aa6000 rw-p 04c84000 00:2a 224 /usr/local/lib/libigc.so.2.41.5+1788943183"
+          ]
+        },
+        "/usr/local/lib/libopencl-clang2.so.22.1": {
+          "canonical_path": "/usr/local/lib/libopencl-clang2.so.22.1",
+          "stat": {
+            "device": 42,
+            "inode": 522,
+            "bytes": 158062480,
+            "mtime_ns": 1788943440000000000,
+            "ctime_ns": 1791307718873659858
+          },
+          "mapped_rows": [
+            "714bb7d30000-714bb81c8000 r--p 00000000 00:2a 522 /usr/local/lib/libopencl-clang2.so.22.1",
+            "714bb81c8000-714bbcf12000 r-xp 00498000 00:2a 522 /usr/local/lib/libopencl-clang2.so.22.1",
+            "714bbcf12000-714bbdf25000 r--p 051e2000 00:2a 522 /usr/local/lib/libopencl-clang2.so.22.1",
+            "714bbdf25000-714bbe166000 r--p 061f5000 00:2a 522 /usr/local/lib/libopencl-clang2.so.22.1",
+            "714bbe166000-714bc13ed000 rw-p 06436000 00:2a 522 /usr/local/lib/libopencl-clang2.so.22.1"
+          ]
+        },
+        "/usr/local/lib/libigdfcl.so.2.41.5+1788943183": {
+          "canonical_path": "/usr/local/lib/libigdfcl.so.2.41.5+1788943183",
+          "stat": {
+            "device": 42,
+            "inode": 520,
+            "bytes": 2554016,
+            "mtime_ns": 1788943430000000000,
+            "ctime_ns": 1791307718778658963
+          },
+          "mapped_rows": [
+            "714bc1474000-714bc151e000 r--p 00000000 00:2a 520 /usr/local/lib/libigdfcl.so.2.41.5+1788943183",
+            "714bc151e000-714bc1699000 r-xp 000a9000 00:2a 520 /usr/local/lib/libigdfcl.so.2.41.5+1788943183",
+            "714bc1699000-714bc16a6000 r--p 00223000 00:2a 520 /usr/local/lib/libigdfcl.so.2.41.5+1788943183",
+            "714bc16a6000-714bc16e6000 rw-p 0022f000 00:2a 520 /usr/local/lib/libigdfcl.so.2.41.5+1788943183"
+          ]
+        },
+        "/usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1.32.0": {
+          "canonical_path": "/usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1.32.0",
+          "stat": {
+            "device": 29,
+            "inode": 7539068,
+            "bytes": 846520,
+            "mtime_ns": 1784135376000000000,
+            "ctime_ns": 1791309459403446260
+          },
+          "mapped_rows": [
+            "714bc1805000-714bc180d000 r--p 00000000 00:1d 7539068 /usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1.32.0",
+            "714bc180d000-714bc18bf000 r-xp 00008000 00:1d 7539068 /usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1.32.0",
+            "714bc18bf000-714bc18d3000 r--p 000ba000 00:1d 7539068 /usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1.32.0",
+            "714bc18d3000-714bc18d4000 r--p 000cd000 00:1d 7539068 /usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1.32.0",
+            "714bc18d4000-714bc18d5000 rw-p 000ce000 00:1d 7539068 /usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1.32.0"
+          ]
+        },
+        "/usr/lib/x86_64-linux-gnu/libigdgmm.so.12.10.0": {
+          "canonical_path": "/usr/lib/x86_64-linux-gnu/libigdgmm.so.12.10.0",
+          "stat": {
+            "device": 29,
+            "inode": 7537116,
+            "bytes": 878992,
+            "mtime_ns": 1787232879000000000,
+            "ctime_ns": 1791309458139434661
+          },
+          "mapped_rows": [
+            "714bc18d5000-714bc18dd000 r--p 00000000 00:1d 7537116 /usr/lib/x86_64-linux-gnu/libigdgmm.so.12.10.0",
+            "714bc18dd000-714bc19a1000 r-xp 00008000 00:1d 7537116 /usr/lib/x86_64-linux-gnu/libigdgmm.so.12.10.0",
+            "714bc19a1000-714bc19a9000 r--p 000cc000 00:1d 7537116 /usr/lib/x86_64-linux-gnu/libigdgmm.so.12.10.0",
+            "714bc19a9000-714bc19ab000 r--p 000d4000 00:1d 7537116 /usr/lib/x86_64-linux-gnu/libigdgmm.so.12.10.0",
+            "714bc19ab000-714bc19ac000 rw-p 000d6000 00:1d 7537116 /usr/lib/x86_64-linux-gnu/libigdgmm.so.12.10.0"
+          ]
+        },
+        "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395": {
+          "canonical_path": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395",
+          "stat": {
+            "device": 29,
+            "inode": 7539850,
+            "bytes": 61889928,
+            "mtime_ns": 1789403878000000000,
+            "ctime_ns": 1791309459671448719
+          },
+          "mapped_rows": [
+            "714bc19ac000-714bc250b000 r-xp 00000000 00:1d 7539850 /usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395",
+            "714bc250b000-714bc254d000 r--p 00b5e000 00:1d 7539850 /usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395",
+            "714bc254d000-714bc54b3000 rw-p 00ba0000 00:1d 7539850 /usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395"
+          ]
+        },
+        "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0": {
+          "canonical_path": "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0",
+          "stat": {
+            "device": 29,
+            "inode": 7539712,
+            "bytes": 777528,
+            "mtime_ns": 1784135376000000000,
+            "ctime_ns": 1791309459402446251
+          },
+          "mapped_rows": [
+            "714bc5597000-714bc55af000 r--p 00000000 00:1d 7539712 /usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0",
+            "714bc55af000-714bc5635000 r-xp 00018000 00:1d 7539712 /usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0",
+            "714bc5635000-714bc5654000 r--p 0009e000 00:1d 7539712 /usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0",
+            "714bc5654000-714bc5655000 r--p 000bc000 00:1d 7539712 /usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0",
+            "714bc5655000-714bc5656000 rw-p 000bd000 00:1d 7539712 /usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0"
+          ]
+        },
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libumf.so.1.1.0": {
+          "canonical_path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libumf.so.1.1.0",
+          "stat": {
+            "device": 40,
+            "inode": 7460428,
+            "bytes": 306904,
+            "mtime_ns": 1791665018000000000,
+            "ctime_ns": 1791665396357010684
+          },
+          "mapped_rows": [
+            "714bc571f000-714bc5737000 r--p 00000000 00:28 7460428 /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libumf.so.1.1.0",
+            "714bc5737000-714bc575b000 r-xp 00017000 00:28 7460428 /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libumf.so.1.1.0",
+            "714bc575b000-714bc575e000 r--p 0003a000 00:28 7460428 /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libumf.so.1.1.0",
+            "714bc575e000-714bc5760000 rw-p 0003c000 00:28 7460428 /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libumf.so.1.1.0"
+          ]
+        },
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0.12.0": {
+          "canonical_path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0.12.0",
+          "stat": {
+            "device": 40,
+            "inode": 7454856,
+            "bytes": 2388520,
+            "mtime_ns": 1791665072000000000,
+            "ctime_ns": 1791665072678321482
+          },
+          "mapped_rows": [
+            "714bc576e000-714bc57c6000 r--p 00000000 00:28 7454856 /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0.12.0",
+            "714bc57c6000-714bc5951000 r-xp 00057000 00:28 7454856 /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0.12.0",
+            "714bc5951000-714bc5954000 r--p 001e1000 00:28 7454856 /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0.12.0",
+            "714bc5954000-714bc5955000 rw-p 001e3000 00:28 7454856 /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0.12.0"
+          ]
+        },
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0": {
+          "canonical_path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+          "stat": {
+            "device": 40,
+            "inode": 7458158,
+            "bytes": 19267664,
+            "mtime_ns": 1791665177000000000,
+            "ctime_ns": 1791665396607012751
+          },
+          "mapped_rows": [
+            "714bc5978000-714bc5ce3000 r--p 00000000 00:28 7458158 /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "714bc5ce3000-714bc68ce000 r-xp 0036a000 00:28 7458158 /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "714bc68ce000-714bc68f4000 r--p 00f54000 00:28 7458158 /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "714bc68f4000-714bc68f7000 rw-p 00f79000 00:28 7458158 /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0"
+          ]
+        },
+        "/usr/lib/x86_64-linux-gnu/libc.so.6": {
+          "canonical_path": "/usr/lib/x86_64-linux-gnu/libc.so.6",
+          "stat": {
+            "device": 29,
+            "inode": 4897558,
+            "bytes": 2129424,
+            "mtime_ns": 1788444912000000000,
+            "ctime_ns": 1790581622389680056
+          },
+          "mapped_rows": [
+            "714bc6911000-714bc6939000 r--p 00000000 00:1d 4897558 /usr/lib/x86_64-linux-gnu/libc.so.6",
+            "714bc6939000-714bc6ac2000 r-xp 00028000 00:1d 4897558 /usr/lib/x86_64-linux-gnu/libc.so.6",
+            "714bc6ac2000-714bc6b11000 r--p 001b1000 00:1d 4897558 /usr/lib/x86_64-linux-gnu/libc.so.6",
+            "714bc6b11000-714bc6b15000 r--p 001ff000 00:1d 4897558 /usr/lib/x86_64-linux-gnu/libc.so.6",
+            "714bc6b15000-714bc6b17000 rw-p 00203000 00:1d 4897558 /usr/lib/x86_64-linux-gnu/libc.so.6"
+          ]
+        },
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libsycl.so.9.0.0-0": {
+          "canonical_path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libsycl.so.9.0.0-0",
+          "stat": {
+            "device": 40,
+            "inode": 7459622,
+            "bytes": 5314304,
+            "mtime_ns": 1791665386000000000,
+            "ctime_ns": 1791665395828006308
+          },
+          "mapped_rows": [
+            "714bc6b24000-714bc6c25000 r--p 00000000 00:28 7459622 /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libsycl.so.9.0.0-0",
+            "714bc6c25000-714bc6f2b000 r-xp 00100000 00:28 7459622 /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libsycl.so.9.0.0-0",
+            "714bc6f2b000-714bc6f2f000 r--p 00405000 00:28 7459622 /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libsycl.so.9.0.0-0",
+            "714bc6f2f000-714bc6f32000 rw-p 00408000 00:28 7459622 /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libsycl.so.9.0.0-0"
+          ]
+        },
+        "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1": {
+          "canonical_path": "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1",
+          "stat": {
+            "device": 29,
+            "inode": 180160,
+            "bytes": 183024,
+            "mtime_ns": 1766093810000000000,
+            "ctime_ns": 1771362888312865885
+          },
+          "mapped_rows": [
+            "714bc6f34000-714bc6f38000 r--p 00000000 00:1d 180160 /usr/lib/x86_64-linux-gnu/libgcc_s.so.1",
+            "714bc6f38000-714bc6f5c000 r-xp 00004000 00:1d 180160 /usr/lib/x86_64-linux-gnu/libgcc_s.so.1",
+            "714bc6f5c000-714bc6f60000 r--p 00028000 00:1d 180160 /usr/lib/x86_64-linux-gnu/libgcc_s.so.1",
+            "714bc6f60000-714bc6f61000 r--p 0002b000 00:1d 180160 /usr/lib/x86_64-linux-gnu/libgcc_s.so.1",
+            "714bc6f61000-714bc6f62000 rw-p 0002c000 00:1d 180160 /usr/lib/x86_64-linux-gnu/libgcc_s.so.1"
+          ]
+        },
+        "/usr/lib/x86_64-linux-gnu/libm.so.6": {
+          "canonical_path": "/usr/lib/x86_64-linux-gnu/libm.so.6",
+          "stat": {
+            "device": 29,
+            "inode": 4898954,
+            "bytes": 952616,
+            "mtime_ns": 1788444912000000000,
+            "ctime_ns": 1790581622391680069
+          },
+          "mapped_rows": [
+            "714bc6f62000-714bc6f72000 r--p 00000000 00:1d 4898954 /usr/lib/x86_64-linux-gnu/libm.so.6",
+            "714bc6f72000-714bc6ff1000 r-xp 00010000 00:1d 4898954 /usr/lib/x86_64-linux-gnu/libm.so.6",
+            "714bc6ff1000-714bc7049000 r--p 0008f000 00:1d 4898954 /usr/lib/x86_64-linux-gnu/libm.so.6",
+            "714bc7049000-714bc704a000 r--p 000e7000 00:1d 4898954 /usr/lib/x86_64-linux-gnu/libm.so.6",
+            "714bc704a000-714bc704b000 rw-p 000e8000 00:1d 4898954 /usr/lib/x86_64-linux-gnu/libm.so.6"
+          ]
+        },
+        "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33": {
+          "canonical_path": "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33",
+          "stat": {
+            "device": 29,
+            "inode": 180746,
+            "bytes": 2592224,
+            "mtime_ns": 1766093810000000000,
+            "ctime_ns": 1771362886738858137
+          },
+          "mapped_rows": [
+            "714bc704b000-714bc70e8000 r--p 00000000 00:1d 180746 /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33",
+            "714bc70e8000-714bc7230000 r-xp 0009d000 00:1d 180746 /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33",
+            "714bc7230000-714bc72b7000 r--p 001e5000 00:1d 180746 /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33",
+            "714bc72b7000-714bc72c2000 r--p 0026b000 00:1d 180746 /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33",
+            "714bc72c2000-714bc72c5000 rw-p 00276000 00:1d 180746 /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33"
+          ]
+        },
+        "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2": {
+          "canonical_path": "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+          "stat": {
+            "device": 29,
+            "inode": 4897554,
+            "bytes": 236616,
+            "mtime_ns": 1788444912000000000,
+            "ctime_ns": 1790581622387680043
+          },
+          "mapped_rows": [
+            "714bc72f0000-714bc72f1000 r--p 00000000 00:1d 4897554 /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+            "714bc72f1000-714bc731c000 r-xp 00001000 00:1d 4897554 /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+            "714bc731c000-714bc7326000 r--p 0002c000 00:1d 4897554 /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+            "714bc7326000-714bc7328000 r--p 00036000 00:1d 4897554 /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+            "714bc7328000-714bc732a000 rw-p 00038000 00:1d 4897554 /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2"
+          ]
+        }
+      }
+    }
+  ],
+  "cell": {
+    "status": "PASS",
+    "profiling": "0",
+    "queues": "3",
+    "copies": "5",
+    "grouped": "1",
+    "outputs": "1280",
+    "canaries": "16",
+    "overlap_rejected": "0",
+    "reset_scope": "1",
+    "zero_copy_excluded": "1"
+  },
+  "service_summaries": [],
+  "service_categories": [],
+  "actual_mapped_libraries": {
+    "/usr/local/lib/libigc.so.2.41.5+1788943183": {
+      "canonical_path": "/usr/local/lib/libigc.so.2.41.5+1788943183",
+      "stat": {
+        "device": 42,
+        "inode": 224,
+        "bytes": 104543000,
+        "mtime_ns": 1788943430000000000,
+        "ctime_ns": 1791307717935651029
+      },
+      "mapped_rows": [
+        "714bb16f0000-714bb2750000 r--p 00000000 00:2a 224 /usr/local/lib/libigc.so.2.41.5+1788943183",
+        "714bb2750000-714bb6117000 r-xp 0105f000 00:2a 224 /usr/local/lib/libigc.so.2.41.5+1788943183",
+        "714bb6117000-714bb6377000 r--p 04a25000 00:2a 224 /usr/local/lib/libigc.so.2.41.5+1788943183",
+        "714bb6377000-714bb7aa6000 rw-p 04c84000 00:2a 224 /usr/local/lib/libigc.so.2.41.5+1788943183"
+      ],
+      "sha256": "40badd8f1ee80ac844a8947f5e91e5654fbcd851caefe343b0e5ec4ce4d1b123"
+    },
+    "/usr/local/lib/libopencl-clang2.so.22.1": {
+      "canonical_path": "/usr/local/lib/libopencl-clang2.so.22.1",
+      "stat": {
+        "device": 42,
+        "inode": 522,
+        "bytes": 158062480,
+        "mtime_ns": 1788943440000000000,
+        "ctime_ns": 1791307718873659858
+      },
+      "mapped_rows": [
+        "714bb7d30000-714bb81c8000 r--p 00000000 00:2a 522 /usr/local/lib/libopencl-clang2.so.22.1",
+        "714bb81c8000-714bbcf12000 r-xp 00498000 00:2a 522 /usr/local/lib/libopencl-clang2.so.22.1",
+        "714bbcf12000-714bbdf25000 r--p 051e2000 00:2a 522 /usr/local/lib/libopencl-clang2.so.22.1",
+        "714bbdf25000-714bbe166000 r--p 061f5000 00:2a 522 /usr/local/lib/libopencl-clang2.so.22.1",
+        "714bbe166000-714bc13ed000 rw-p 06436000 00:2a 522 /usr/local/lib/libopencl-clang2.so.22.1"
+      ],
+      "sha256": "02ba9fb0f16b7f02c012095c46f8053c4bc20f9b5bde3028eedff6dcfed94bfe"
+    },
+    "/usr/local/lib/libigdfcl.so.2.41.5+1788943183": {
+      "canonical_path": "/usr/local/lib/libigdfcl.so.2.41.5+1788943183",
+      "stat": {
+        "device": 42,
+        "inode": 520,
+        "bytes": 2554016,
+        "mtime_ns": 1788943430000000000,
+        "ctime_ns": 1791307718778658963
+      },
+      "mapped_rows": [
+        "714bc1474000-714bc151e000 r--p 00000000 00:2a 520 /usr/local/lib/libigdfcl.so.2.41.5+1788943183",
+        "714bc151e000-714bc1699000 r-xp 000a9000 00:2a 520 /usr/local/lib/libigdfcl.so.2.41.5+1788943183",
+        "714bc1699000-714bc16a6000 r--p 00223000 00:2a 520 /usr/local/lib/libigdfcl.so.2.41.5+1788943183",
+        "714bc16a6000-714bc16e6000 rw-p 0022f000 00:2a 520 /usr/local/lib/libigdfcl.so.2.41.5+1788943183"
+      ],
+      "sha256": "ece8bcd533a44cc1684c1f24eeeca3302e4d19307a806fad5f1b83171f9fc1c3"
+    },
+    "/usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1.32.0": {
+      "canonical_path": "/usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1.32.0",
+      "stat": {
+        "device": 29,
+        "inode": 7539068,
+        "bytes": 846520,
+        "mtime_ns": 1784135376000000000,
+        "ctime_ns": 1791309459403446260
+      },
+      "mapped_rows": [
+        "714bc1805000-714bc180d000 r--p 00000000 00:1d 7539068 /usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1.32.0",
+        "714bc180d000-714bc18bf000 r-xp 00008000 00:1d 7539068 /usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1.32.0",
+        "714bc18bf000-714bc18d3000 r--p 000ba000 00:1d 7539068 /usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1.32.0",
+        "714bc18d3000-714bc18d4000 r--p 000cd000 00:1d 7539068 /usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1.32.0",
+        "714bc18d4000-714bc18d5000 rw-p 000ce000 00:1d 7539068 /usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1.32.0"
+      ],
+      "sha256": "db1856f379706d51b6ded84ce028d4aa48740ef63793f60e8a1e027c6db6ffb5"
+    },
+    "/usr/lib/x86_64-linux-gnu/libigdgmm.so.12.10.0": {
+      "canonical_path": "/usr/lib/x86_64-linux-gnu/libigdgmm.so.12.10.0",
+      "stat": {
+        "device": 29,
+        "inode": 7537116,
+        "bytes": 878992,
+        "mtime_ns": 1787232879000000000,
+        "ctime_ns": 1791309458139434661
+      },
+      "mapped_rows": [
+        "714bc18d5000-714bc18dd000 r--p 00000000 00:1d 7537116 /usr/lib/x86_64-linux-gnu/libigdgmm.so.12.10.0",
+        "714bc18dd000-714bc19a1000 r-xp 00008000 00:1d 7537116 /usr/lib/x86_64-linux-gnu/libigdgmm.so.12.10.0",
+        "714bc19a1000-714bc19a9000 r--p 000cc000 00:1d 7537116 /usr/lib/x86_64-linux-gnu/libigdgmm.so.12.10.0",
+        "714bc19a9000-714bc19ab000 r--p 000d4000 00:1d 7537116 /usr/lib/x86_64-linux-gnu/libigdgmm.so.12.10.0",
+        "714bc19ab000-714bc19ac000 rw-p 000d6000 00:1d 7537116 /usr/lib/x86_64-linux-gnu/libigdgmm.so.12.10.0"
+      ],
+      "sha256": "a7904f18d8d59c7128dec4d6f22ae2b2e8a51f91f6946ac4e68b1ec6e0a7a6f3"
+    },
+    "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395": {
+      "canonical_path": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395",
+      "stat": {
+        "device": 29,
+        "inode": 7539850,
+        "bytes": 61889928,
+        "mtime_ns": 1789403878000000000,
+        "ctime_ns": 1791309459671448719
+      },
+      "mapped_rows": [
+        "714bc19ac000-714bc250b000 r-xp 00000000 00:1d 7539850 /usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395",
+        "714bc250b000-714bc254d000 r--p 00b5e000 00:1d 7539850 /usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395",
+        "714bc254d000-714bc54b3000 rw-p 00ba0000 00:1d 7539850 /usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395"
+      ],
+      "sha256": "dfa844e5afd8e8f74bf5ce9da3ea2837706d9116bc8efeaed90efba5acaf7b1c"
+    },
+    "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0": {
+      "canonical_path": "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0",
+      "stat": {
+        "device": 29,
+        "inode": 7539712,
+        "bytes": 777528,
+        "mtime_ns": 1784135376000000000,
+        "ctime_ns": 1791309459402446251
+      },
+      "mapped_rows": [
+        "714bc5597000-714bc55af000 r--p 00000000 00:1d 7539712 /usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0",
+        "714bc55af000-714bc5635000 r-xp 00018000 00:1d 7539712 /usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0",
+        "714bc5635000-714bc5654000 r--p 0009e000 00:1d 7539712 /usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0",
+        "714bc5654000-714bc5655000 r--p 000bc000 00:1d 7539712 /usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0",
+        "714bc5655000-714bc5656000 rw-p 000bd000 00:1d 7539712 /usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0"
+      ],
+      "sha256": "b764efda507f173560fa6055d433dd5c76140180b4a7c532e1cea813cde67363"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libumf.so.1.1.0": {
+      "canonical_path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libumf.so.1.1.0",
+      "stat": {
+        "device": 40,
+        "inode": 7460428,
+        "bytes": 306904,
+        "mtime_ns": 1791665018000000000,
+        "ctime_ns": 1791665396357010684
+      },
+      "mapped_rows": [
+        "714bc571f000-714bc5737000 r--p 00000000 00:28 7460428 /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libumf.so.1.1.0",
+        "714bc5737000-714bc575b000 r-xp 00017000 00:28 7460428 /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libumf.so.1.1.0",
+        "714bc575b000-714bc575e000 r--p 0003a000 00:28 7460428 /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libumf.so.1.1.0",
+        "714bc575e000-714bc5760000 rw-p 0003c000 00:28 7460428 /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libumf.so.1.1.0"
+      ],
+      "sha256": "ebe65269abd5869010ab256375e8663f7a8f8b5453e0be0c78f615eb71581ab9"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0.12.0": {
+      "canonical_path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0.12.0",
+      "stat": {
+        "device": 40,
+        "inode": 7454856,
+        "bytes": 2388520,
+        "mtime_ns": 1791665072000000000,
+        "ctime_ns": 1791665072678321482
+      },
+      "mapped_rows": [
+        "714bc576e000-714bc57c6000 r--p 00000000 00:28 7454856 /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0.12.0",
+        "714bc57c6000-714bc5951000 r-xp 00057000 00:28 7454856 /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0.12.0",
+        "714bc5951000-714bc5954000 r--p 001e1000 00:28 7454856 /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0.12.0",
+        "714bc5954000-714bc5955000 rw-p 001e3000 00:28 7454856 /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0.12.0"
+      ],
+      "sha256": "05bcafc4a0d45d33f957f16ffb4ba4776da675e79ade1121b93b94b8549335d8"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0": {
+      "canonical_path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+      "stat": {
+        "device": 40,
+        "inode": 7458158,
+        "bytes": 19267664,
+        "mtime_ns": 1791665177000000000,
+        "ctime_ns": 1791665396607012751
+      },
+      "mapped_rows": [
+        "714bc5978000-714bc5ce3000 r--p 00000000 00:28 7458158 /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+        "714bc5ce3000-714bc68ce000 r-xp 0036a000 00:28 7458158 /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+        "714bc68ce000-714bc68f4000 r--p 00f54000 00:28 7458158 /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+        "714bc68f4000-714bc68f7000 rw-p 00f79000 00:28 7458158 /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0"
+      ],
+      "sha256": "bb6e1311850e4b1a924e42acae80c2b3610934625a4985aaa67967abe31356fc"
+    },
+    "/usr/lib/x86_64-linux-gnu/libc.so.6": {
+      "canonical_path": "/usr/lib/x86_64-linux-gnu/libc.so.6",
+      "stat": {
+        "device": 29,
+        "inode": 4897558,
+        "bytes": 2129424,
+        "mtime_ns": 1788444912000000000,
+        "ctime_ns": 1790581622389680056
+      },
+      "mapped_rows": [
+        "714bc6911000-714bc6939000 r--p 00000000 00:1d 4897558 /usr/lib/x86_64-linux-gnu/libc.so.6",
+        "714bc6939000-714bc6ac2000 r-xp 00028000 00:1d 4897558 /usr/lib/x86_64-linux-gnu/libc.so.6",
+        "714bc6ac2000-714bc6b11000 r--p 001b1000 00:1d 4897558 /usr/lib/x86_64-linux-gnu/libc.so.6",
+        "714bc6b11000-714bc6b15000 r--p 001ff000 00:1d 4897558 /usr/lib/x86_64-linux-gnu/libc.so.6",
+        "714bc6b15000-714bc6b17000 rw-p 00203000 00:1d 4897558 /usr/lib/x86_64-linux-gnu/libc.so.6"
+      ],
+      "sha256": "3a15d66867d83762c7f2f1e37359cb8f6c5743edb369c65285cb0b1c4f7498bf"
+    },
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libsycl.so.9.0.0-0": {
+      "canonical_path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libsycl.so.9.0.0-0",
+      "stat": {
+        "device": 40,
+        "inode": 7459622,
+        "bytes": 5314304,
+        "mtime_ns": 1791665386000000000,
+        "ctime_ns": 1791665395828006308
+      },
+      "mapped_rows": [
+        "714bc6b24000-714bc6c25000 r--p 00000000 00:28 7459622 /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libsycl.so.9.0.0-0",
+        "714bc6c25000-714bc6f2b000 r-xp 00100000 00:28 7459622 /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libsycl.so.9.0.0-0",
+        "714bc6f2b000-714bc6f2f000 r--p 00405000 00:28 7459622 /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libsycl.so.9.0.0-0",
+        "714bc6f2f000-714bc6f32000 rw-p 00408000 00:28 7459622 /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libsycl.so.9.0.0-0"
+      ],
+      "sha256": "74243bafb2766fd1a038cf80fd62632b4aad9ecfdc0d3ce8711e4515a93d7008"
+    },
+    "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1": {
+      "canonical_path": "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1",
+      "stat": {
+        "device": 29,
+        "inode": 180160,
+        "bytes": 183024,
+        "mtime_ns": 1766093810000000000,
+        "ctime_ns": 1771362888312865885
+      },
+      "mapped_rows": [
+        "714bc6f34000-714bc6f38000 r--p 00000000 00:1d 180160 /usr/lib/x86_64-linux-gnu/libgcc_s.so.1",
+        "714bc6f38000-714bc6f5c000 r-xp 00004000 00:1d 180160 /usr/lib/x86_64-linux-gnu/libgcc_s.so.1",
+        "714bc6f5c000-714bc6f60000 r--p 00028000 00:1d 180160 /usr/lib/x86_64-linux-gnu/libgcc_s.so.1",
+        "714bc6f60000-714bc6f61000 r--p 0002b000 00:1d 180160 /usr/lib/x86_64-linux-gnu/libgcc_s.so.1",
+        "714bc6f61000-714bc6f62000 rw-p 0002c000 00:1d 180160 /usr/lib/x86_64-linux-gnu/libgcc_s.so.1"
+      ],
+      "sha256": "d93224d2b0dab4247598be683adca02f5cf00586f99c187579cd7e92058fb7cb"
+    },
+    "/usr/lib/x86_64-linux-gnu/libm.so.6": {
+      "canonical_path": "/usr/lib/x86_64-linux-gnu/libm.so.6",
+      "stat": {
+        "device": 29,
+        "inode": 4898954,
+        "bytes": 952616,
+        "mtime_ns": 1788444912000000000,
+        "ctime_ns": 1790581622391680069
+      },
+      "mapped_rows": [
+        "714bc6f62000-714bc6f72000 r--p 00000000 00:1d 4898954 /usr/lib/x86_64-linux-gnu/libm.so.6",
+        "714bc6f72000-714bc6ff1000 r-xp 00010000 00:1d 4898954 /usr/lib/x86_64-linux-gnu/libm.so.6",
+        "714bc6ff1000-714bc7049000 r--p 0008f000 00:1d 4898954 /usr/lib/x86_64-linux-gnu/libm.so.6",
+        "714bc7049000-714bc704a000 r--p 000e7000 00:1d 4898954 /usr/lib/x86_64-linux-gnu/libm.so.6",
+        "714bc704a000-714bc704b000 rw-p 000e8000 00:1d 4898954 /usr/lib/x86_64-linux-gnu/libm.so.6"
+      ],
+      "sha256": "fce00b6f25f459cf4ae0b7fae4257909a1a8a86f9149e7c029a5d617baf1ccd0"
+    },
+    "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33": {
+      "canonical_path": "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33",
+      "stat": {
+        "device": 29,
+        "inode": 180746,
+        "bytes": 2592224,
+        "mtime_ns": 1766093810000000000,
+        "ctime_ns": 1771362886738858137
+      },
+      "mapped_rows": [
+        "714bc704b000-714bc70e8000 r--p 00000000 00:1d 180746 /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33",
+        "714bc70e8000-714bc7230000 r-xp 0009d000 00:1d 180746 /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33",
+        "714bc7230000-714bc72b7000 r--p 001e5000 00:1d 180746 /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33",
+        "714bc72b7000-714bc72c2000 r--p 0026b000 00:1d 180746 /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33",
+        "714bc72c2000-714bc72c5000 rw-p 00276000 00:1d 180746 /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33"
+      ],
+      "sha256": "1fd75fe70354a416d75aef22bcae68c47bd25d20e2d0568c30b1a9838cf62f11"
+    },
+    "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2": {
+      "canonical_path": "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+      "stat": {
+        "device": 29,
+        "inode": 4897554,
+        "bytes": 236616,
+        "mtime_ns": 1788444912000000000,
+        "ctime_ns": 1790581622387680043
+      },
+      "mapped_rows": [
+        "714bc72f0000-714bc72f1000 r--p 00000000 00:1d 4897554 /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+        "714bc72f1000-714bc731c000 r-xp 00001000 00:1d 4897554 /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+        "714bc731c000-714bc7326000 r--p 0002c000 00:1d 4897554 /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+        "714bc7326000-714bc7328000 r--p 00036000 00:1d 4897554 /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+        "714bc7328000-714bc732a000 rw-p 00038000 00:1d 4897554 /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2"
+      ],
+      "sha256": "c20a2dc8917c755f02b94049356320fe1f62ac7d9f8994731f807d9df39302da"
+    }
+  },
+  "mapping_scope": "Live same PID/start ticks mappings and device/inode matches; contents hashed and stable path stats rechecked after normal process exit.",
+  "kernel-after": {
+    "relevant_entries": [],
+    "fault_entries": [],
+    "dump_present": false,
+    "filter": "page fault|fault response|timestamp stuck|wedg|engine reset|gt reset|guc.*(?:timeout|timed out|failed)|device.*lost|Timed out wait for G2H|Check job timeout|Timedout job|Schedule disable failed|trying reset|\\breset (?:queued|started|done)\\b"
+  },
+  "kernel_gate_passed": true,
+  "kernel-final": {
+    "relevant_entries": [],
+    "fault_entries": [],
+    "dump_present": false,
+    "filter": "page fault|fault response|timestamp stuck|wedg|engine reset|gt reset|guc.*(?:timeout|timed out|failed)|device.*lost|Timed out wait for G2H|Check job timeout|Timedout job|Schedule disable failed|trying reset|\\breset (?:queued|started|done)\\b"
+  },
+  "boot_unchanged": true,
+  "finished_utc": "2026-10-12T09:52:04.009101+00:00"
+}
