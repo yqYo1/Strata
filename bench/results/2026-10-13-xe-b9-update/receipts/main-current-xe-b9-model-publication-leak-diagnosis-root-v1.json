@@ -1,0 +1,82 @@
+{
+  "active": false,
+  "complete": true,
+  "passed": true,
+  "commands": [
+    {
+      "label": "model-metadata",
+      "argv": [
+        "gitleaks",
+        "detect",
+        "--no-git",
+        "--redact",
+        "--source",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-latest-updates-20261012/bench/results/2026-10-13-xe-b9-update/receipts/main-current-xe-b9-pristine-model-root-v1-xe-model.json",
+        "--report-format",
+        "json",
+        "--report-path",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-current-xe-b9-model-publication-leak-diagnosis-root-v1/findings.json"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-12T16:57:19.204964+00:00",
+      "wall_seconds": 30,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 3135986,
+          "start_ticks": 17300332,
+          "sid": 3135986,
+          "pgid": 3135986
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 173003.326513531,
+      "pid": 3135986,
+      "spawn_return_monotonic": 173003.328492642,
+      "direct_identity": {
+        "pid": 3135986,
+        "state": "R",
+        "ppid": 3135950,
+        "pgid": 3135986,
+        "sid": 3135986,
+        "start_ticks": 17300332,
+        "rss_bytes": 1015808
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 51773440,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 1,
+      "finished_utc": "2026-10-12T16:57:19.802083+00:00",
+      "elapsed_seconds": 0.5968406170140952,
+      "logs": {
+        "model-metadata.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "model-metadata.stderr": {
+          "bytes": 197,
+          "sha256": "a0d04557349564fadb6861f5ea9be06edbde7844207611f40494c0ddd5464e0e"
+        }
+      }
+    }
+  ],
+  "gpu_executed": false,
+  "findings": [
+    {
+      "rule": "generic-api-key",
+      "line": 2909,
+      "field": "token_logprob_sha256"
+    }
+  ],
+  "original_receipt_sha256": "03aa1a6d510423d68116fd13bc9f5fbc20f57a679e887e9c30bab8807e9348e8"
+}

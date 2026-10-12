@@ -1,0 +1,70 @@
+{
+  "source_revision": "b9f00e9db7fd56decdd9930ee84049d980b904e4",
+  "engine_label": "xe0.1.43",
+  "source_patch_applied": false,
+  "free_model_runtime_passed": true,
+  "all_runtime_fault_gates_passed": true,
+  "performance_eligible": false,
+  "controlled_diagnostic_samples": 1,
+  "sample": {
+    "prompt_tokens": 32768,
+    "generated_tokens": 16,
+    "prefill_ms": 97544.6,
+    "decode_ms": 2214.8,
+    "prefill_tps": 335.9283855795195,
+    "decode_tps": 7.224128589488893
+  },
+  "actual_info": {
+    "logit_bias": "1",
+    "context": "262144",
+    "kv": "int8",
+    "kv_resident": "32768",
+    "expert_slots": "144",
+    "expert_cache_mib": "281",
+    "spec": "4",
+    "mtp_max": "0",
+    "lookup": "0",
+    "vram_free_mib": "1218",
+    "cvec": "0",
+    "arena_mib": "47962",
+    "pool_workers": "5",
+    "pcie_frac": "0.00",
+    "spec_min_p": "0.00",
+    "conversation_cache_mib": "0",
+    "conversation_cache_slots": "4",
+    "conversation_cache_min_free_mib": "2560",
+    "conversation_cache_min_tokens": "0",
+    "tail_role_token": "-1",
+    "vram_elastic": "0",
+    "batch_slots": "0",
+    "batch_groups": "1",
+    "slot_cache": "0",
+    "engine": "xe0.1.43"
+  },
+  "actual_route": "batched8192",
+  "normal_quit": true,
+  "reported_token_LP5_equivalence": false,
+  "matching_initial_tokens": 8,
+  "whole_model_quality_qualified": false,
+  "full_context_runtime_qualified": false,
+  "restore_qualified": false,
+  "inference_port_adopted": false,
+  "decision": "Official server ports retained. New Xe inference not promoted: this is one validation-enabled diagnostic with changed token/LP5 output, not matched repeated timing or quality qualification.",
+  "new_receipt": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-current-xe-b9-pristine-model-root-v1/xe-model/record.json",
+    "sha256": "f7c5559c14c5eb484714d4f1399c7ac91dfe6d65bbd237f83bc12c28fbe8f83f",
+    "bytes": 123542
+  },
+  "historical_receipt": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-pristine-configured-model-root-v1/xe-model/record.json",
+    "sha256": "b5dc2138b3f998f0ebe6a7768500c1e46e3ff92aec909e3707db1747cc2fc12a",
+    "bytes": 123350
+  },
+  "followups": [
+    "Trace numerical differences before any new inference port.",
+    "Use at least32768 input for matched repeated model timing;64K after its independent admission.",
+    "Keep prefill/decode adoption independent; use multiple decode samples before comparing.",
+    "Official setup-default and parameter-optimized comparisons remain separate TODOs.",
+    "Free and contrib-llvm host tests pass; contrib-llvm whole-model GPU inference unverified."
+  ]
+}

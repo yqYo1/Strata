@@ -1,0 +1,23 @@
+{
+  "research_completed": 827,
+  "prior": {
+    "path": "report-registry-v174.json",
+    "sha256": "0f14de435be099d4764c381ed2734c37bfe85ea29e51d28ad0e0b818d62345b3"
+  },
+  "new_reports": [
+    {
+      "path": "research/research-xe-b9-decode-port-candidates-round309-v1.txt.json",
+      "sha256": "93ae7e4a153ba2f1ffac42153cee4a16afbac9c7913ef88ca01dea75a8364fb5"
+    },
+    {
+      "path": "research/research-xe-b9-prefill-port-candidates-round310-v1.txt.json",
+      "sha256": "b13bdbee1cc0719c057da27e5aafb78ab001a84fa1ce56a0037a41968d280632"
+    }
+  ],
+  "main_only_test_execution": true,
+  "main_adjustments": [
+    "R309 fused hit/combine candidate requires multi-token decode; excluded from current T1 diagnostic.",
+    "R310 mean-row tile selector remains conditional and unimplemented; histogram/critical-path evidence needed.",
+    "R310 proposed8K model timing conflicts with user minimum32K. Kernel-only8K fixtures are allowed; all model comparisons require>=32768 input."
+  ]
+}

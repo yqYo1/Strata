@@ -1,40 +1,61 @@
 <!-- SPDX-FileCopyrightText: 2026 yayoi -->
 <!-- SPDX-License-Identifier: LGPL-3.0-or-later -->
 
-# XeStrata update observed during finalization
+# Pristine XeStrata update and official server integration
 
-XeStrata advanced from da3d426 to b9f00e9 while Main finalized the official
-v0.1.43 server imports. The new tree calls itself xe0.1.43 and integrates official
-`7695859`. It changes 148 files, including SYCL kernels, memory, models and benchmark
-setup. It is fetched into an independent ghq worktree with no tracked source
-patch. The official selective server ports are already committed at 17879c7.
+XeStrata advanced from da3d426 to b9f00e9 during finalization. Its engine identifies
+as xe0.1.43 and integrates official v0.1.43 at `7695859`. The independent ghq
+worktree is unchanged in tracked source. Necessary official server imports are
+integrated at 17879c7: reasoning reserve/loop detection, held-tool SSE keepalive,
+safe activity observation, opt-in replicas, resource admission and child-only
+Linux CPU affinity. The selected engine inference implementation is preserved.
+Server regression: 611 pass and 11 existing skips; setup: 47 pass.
 
-Both free and contrib-llvm inference executables build with the qualified source
-LLVM provider. Each mode runs nine selected host CTests: eight pass and the
-existing AVX-512-only expert_multi_test skips on this Ryzen 5600X. IQ3/other native
-AVX2 parity, Q8_K quantization, Q2 bit-plane and pool partition tests pass.
-The retargeted diagnostic controller passes malformed protocol, owner/QUIT,
-pending-admission and pending-process CPU fixtures. No GPU/model operation has
-run for this new revision at this preflight boundary.
+Both new Xe free and contrib-llvm executables build with source LLVM7.1.1.
+Each runs nine selected host CTests: eight pass and the AVX-512-only test skips
+on Ryzen5600X. The new diagnostic controller's parser, pending rejection,
+owned-process and normalQUIT CPU fixtures pass. The first artifact lints failed
+on Markdown/hash formatting and duplicate escaped patch licensing; their failed
+statuses are preserved. Typed hashes and compact duplicate-patch metadata fix
+those renderings; no lint rule or runtime assertion was suppressed.
 
-R306 identifies non-atomic mapped-word polling in unrestricted one-shot session
-execution. Main and R308 follow the actual ordinary serve route: forced segmented
-verification waits for compute completion before CPU reads and for copies before
-the next launch. The one-shot loop is below the serve return. Resident graphs,
-the new interop copy engine, prompt issuer and CPU prompt sharing are disabled;
-MTP, batches and pipelines are excluded. This is a bounded source admission,
-not a whole-engine portable safety or runtime performance claim.
+The new free executable passes same-provider integer GPU health and a 44.38s
+startup. One source-controlled32768-input/16-output diagnostic completes with
+prefill97544.6ms (335.928t/s), decode2214.8ms (7.224t/s), normalQUIT, empty owned
+sessions, unchanged boot, no new driver fault/dump and no runtime error. Actual
+settings: batched8192 prompt,144 expert slots/281MiB, pool5, PCIe fraction0,
+int8 KV,32768 resident cells, physical262144 context, noMTP or batch.
+Level Zero validation and tracing are enabled; this is not an optimal-speed run.
+See exact individual DONE/PP/LP5, device/provider/library/source/fixture pins,
+actualINFO, commands/environment, normal closure and fault evidence in receipts.
 
-The next controlled diagnostic keeps the prior 32768-input/16-output recipe,
-8192 prompt chunks, cache128, workers5 and PCIe fraction0. Requested settings and
-actual READY/INFO/PP values will be recorded separately. Level Zero validation
-and progress logging remain enabled. The setup-default recipe and a parameter
-search are separate work: neither this diagnostic nor the old official serial
-windows8 samples establish a tuned comparison. Full physical262144 input,
-RESTORE, full-vocabulary parity and task quality remain open.
+The same token input is SHA-identical to the previous da3d426 diagnostic. The
+first eight generated token IDs match, then the ninth differs; reported LP5
+also differs. Completion/finite-output/fault checks pass, but numerical equivalence
+and model-quality preservation are not established. The historical da sample
+(217.612prefill,10.411decode t/s) is retained as a single diagnostic reference,
+not a ranking against this run or the curated engine. No new Xe inference port
+is adopted from these numbers. Matched settings, repeated decode samples and
+numerical/quality checks are needed before choosing either stage's implementation.
 
-The original reports, source-only proposal, Main derivative, exact source and
-ELF/compiler/library pins, commands, environment and individual CPU outcomes
-are preserved here. Fresh same-provider GPU health, kernel/dump checks and normal
-QUIT are required before and after any model attempt. No reset or service change
-is authorized by this diagnostic.
+R306's non-atomic control polling applies to unrestricted one-shot session
+execution. Main and R308 trace the selected ordinary serve return and forced
+segmented verifier: compute completion precedes CPU reads, and copy completion
+precedes next-segment launch. Resident graphs and the new interop copy stream
+are explicitly disabled; noMTP, batches or pipelines enter the route. This
+bounded source/runtime result does not qualify every engine path. R309's new
+fusion requires multi-token windows. R310's mean-row MMQ selector is a future
+conditional candidate, requiring route/histogram/parity evidence. Every model
+comparison remains at least32768 input;8K refers only to kernel fixtures/chunks.
+
+The first new health wrapper failed on the stats JSON key before any integer
+probe/model launch: stats reports device_index and pci_bdf, not device_id. The
+new wrapper checks both actual index and BDF; the original failure remains a
+failure. This was not a GPU hang. No reset, unbind or service mutation occurred.
+
+Original unpatched official v0.1.43 32K results and curated inference timings
+remain historical. The official setup-default/parameter-optimized TODO, full
+physical262144-input verification, RESTORE and whole-model quality remain open.
+Only free whole-model GPU execution is qualified here; contrib-llvm was built
+and host-tested. Compact evidence is committed; redundant closed logs and the
+successful full license inventory are retired with a path/hash/reason manifest.
