@@ -107,6 +107,10 @@ Do not reformat code with clang-format or a similar tool: the code is formatted 
 
 ## Developer tools
 
+For this workspace's performance comparisons, use upstream's unchanged `bench.sh` as
+[docs/MEASUREMENT_WORKFLOW.md](docs/MEASUREMENT_WORKFLOW.md) describes. Keep custom
+kernel/transfer fixtures for diagnostics; compare model speeds with the same upstream client.
+
 Install the lint tools, Intel SDE and the GPU profilers as [docs/DEVTOOLS.md](docs/DEVTOOLS.md) describes, and keep that file current when a tool or its installation changes.
 Tools the distribution does not package go into `.lint/` (lints) or `.tools/` (anything else built from source), which git ignores; nothing in the build or the tests may depend on either.
 

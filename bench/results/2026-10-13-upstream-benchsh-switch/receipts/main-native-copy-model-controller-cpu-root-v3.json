@@ -1,0 +1,92 @@
+{
+  "active": false,
+  "passed": false,
+  "complete": false,
+  "main_reviewed": true,
+  "gpu_executed": false,
+  "model_executed": false,
+  "packet_pins": {
+    "controller.py.txt": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-copy-model-controller-main-v3/controller.py.txt",
+      "sha256": "6756e6b66ec6e0e7513645956efacb08adba780683bed5fb871e8e825d16f129"
+    },
+    "cpu-fixtures.py.txt": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-copy-model-controller-main-v3/cpu-fixtures.py.txt",
+      "sha256": "24919501ce2ede4b06ddfbc11798f5172a7a26546d586a19ecda8b731a5fce5d"
+    },
+    "mapping.py.txt": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-copy-model-controller-main-v3/mapping.py.txt",
+      "sha256": "fbcf528ca27de0daee9bb3619d38438b941c8b79c52170429ffe39df53aa2984"
+    },
+    "validation-fragment.txt": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-copy-model-controller-main-v3/validation-fragment.txt",
+      "sha256": "13820cabaf055c2fbcb97fe65b1854eb727c2d436b137e858ffa5012792e106f"
+    },
+    "diagnostics-fragment.txt": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-copy-model-controller-main-v3/diagnostics-fragment.txt",
+      "sha256": "319d0bb0d6496bf2c9f21f157aac89bc513cd534cf1ca7008f504cb3c872df7e"
+    }
+  },
+  "commands": [
+    {
+      "label": "main-v3-controller-cpu-fixtures",
+      "argv": [
+        "/usr/bin/python3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-copy-model-controller-main-v3/cpu-fixtures.py.txt"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-12T20:39:02.362352+00:00",
+      "wall_seconds": 60,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 3985123,
+          "start_ticks": 18630648,
+          "sid": 3985123,
+          "pgid": 3985123
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 186306.483778818,
+      "pid": 3985123,
+      "spawn_return_monotonic": 186306.485361581,
+      "direct_identity": {
+        "pid": 3985123,
+        "state": "R",
+        "ppid": 3985086,
+        "pgid": 3985123,
+        "sid": 3985123,
+        "start_ticks": 18630648,
+        "rss_bytes": 589824
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 11251712,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 1,
+      "finished_utc": "2026-10-12T20:39:02.601641+00:00",
+      "elapsed_seconds": 0.23912005400052294,
+      "logs": {
+        "main-v3-controller-cpu-fixtures.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "main-v3-controller-cpu-fixtures.stderr": {
+          "bytes": 856,
+          "sha256": "3eef32dffca95431a97ac682a533770826697a062d4e55ca6f384c77b5b0b60d"
+        }
+      }
+    }
+  ],
+  "production_admitted": false,
+  "stdout": "",
+  "stderr": ".........F.\n======================================================================\nFAIL: test_ring_lock_and_all_fresh_kernel_faults (__main__.Fixtures.test_ring_lock_and_all_fresh_kernel_faults)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-copy-model-controller-main-v3/cpu-fixtures.py.txt\", line 254, in test_ring_lock_and_all_fresh_kernel_faults\n    self.assertEqual(m.ROOT, m.B / 'main-native-copy-model-root-v2')\nAssertionError: Posix[40 chars]cl/post-reboot-tuning-20261007/main-native-copy-model-root-v3') != Posix[40 chars]cl/post-reboot-tuning-20261007/main-native-copy-model-root-v2')\n\n----------------------------------------------------------------------\nRan 11 tests in 0.012s\n\nFAILED (failures=1)\n",
+  "error": "AssertionError()"
+}

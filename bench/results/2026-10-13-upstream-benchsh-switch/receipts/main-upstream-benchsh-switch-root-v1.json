@@ -1,0 +1,179 @@
+{
+  "active": false,
+  "passed": false,
+  "complete": false,
+  "main_reviewed": true,
+  "commands": [
+    {
+      "label": "upstream-head",
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-12T20:47:16.904756+00:00",
+      "wall_seconds": 60,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 4016632,
+          "start_ticks": 18680102,
+          "sid": 4016632,
+          "pgid": 4016632
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 186801.026371649,
+      "pid": 4016632,
+      "spawn_return_monotonic": 186801.028743537,
+      "direct_identity": {
+        "pid": 4016632,
+        "state": "R",
+        "ppid": 4016559,
+        "pgid": 4016632,
+        "sid": 4016632,
+        "start_ticks": 18680102,
+        "rss_bytes": 462848
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-12T20:47:17.028239+00:00",
+      "elapsed_seconds": 0.12316644500242546,
+      "logs": {
+        "upstream-head.stdout": {
+          "bytes": 41,
+          "sha256": "c91d655ea24b97413905525815ada45a0d860f5cc82770d0dcfb593348b17a42"
+        },
+        "upstream-head.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "pristine-status",
+      "argv": [
+        "git",
+        "status",
+        "--porcelain",
+        "--untracked-files=all"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-12T20:47:17.029026+00:00",
+      "wall_seconds": 60,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 4016642,
+          "start_ticks": 18680115,
+          "sid": 4016642,
+          "pgid": 4016642
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 186801.150514596,
+      "pid": 4016642,
+      "spawn_return_monotonic": 186801.152263886,
+      "direct_identity": {
+        "pid": 4016642,
+        "state": "R",
+        "ppid": 4016559,
+        "pgid": 4016642,
+        "sid": 4016642,
+        "start_ticks": 18680115,
+        "rss_bytes": 323584
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-12T20:47:17.143362+00:00",
+      "elapsed_seconds": 0.11412442999426275,
+      "logs": {
+        "pristine-status.stdout": {
+          "bytes": 9,
+          "sha256": "59e2f510ae7006df51872d1f5ef6e9e76776a9df6fa9b5aa773716ca54261adc"
+        },
+        "pristine-status.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "evidence": {
+    "upstream-head": {
+      "stdout": "7695859aa13afb248bdb4d36f9b2e95707db079d\n",
+      "stderr": ""
+    },
+    "pristine-status": {
+      "stdout": "?? .venv\n",
+      "stderr": ""
+    }
+  },
+  "gpu_executed": false,
+  "model_executed": false,
+  "benchmark_method": "pristine upstream bench.sh",
+  "upstream_revision": "7695859aa13afb248bdb4d36f9b2e95707db079d",
+  "script_pins": {
+    "bench.sh": {
+      "sha256": "7091b38069a62ec315043d720a3e2f98cc82216a3ba4fe72790764fea49db963"
+    },
+    "tools/strata_bench.py": {
+      "sha256": "818bbba34a288023545843a96d56c679079beed55821cc85eaa343f156202f3b"
+    },
+    "tools/ab_engine.py": {
+      "sha256": "694b563dc7d422a61be05523c75d6bfd473530dee257b71ac65517886f918f77"
+    },
+    "tools/serve_load.py": {
+      "sha256": "bf97e79f14835cf2260cbd5150d59e910047f7d05fe900bd955f53f2a6f4e75b"
+    }
+  },
+  "interpreter": {
+    "path": "/home/yayoi/ghq/github.com/Niko1221/Strata/.worktree/bench-upstream-v0143-pristine-20261012/.venv/bin/python",
+    "sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f"
+  },
+  "server_config": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-upstream-benchsh-switch-root-v1/server-config-quiet.json",
+    "sha256": "3a5ff711ac0e9e478055e9562e03bcce3e6bd6097301430144ccf5d8faec28d7"
+  },
+  "binary": {
+    "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-native-copy-queue-qualified-20261013/build/free/strata",
+    "sha256": "b54579b536962c7db7652503e0dcb50282ddbc667f290b90f101419b44778554"
+  },
+  "planned_benchmark_argv": [
+    "/bin/sh",
+    "/home/yayoi/ghq/github.com/Niko1221/Strata/.worktree/bench-upstream-v0143-pristine-20261012/bench.sh",
+    "--url",
+    "http://127.0.0.1:18095",
+    "--long",
+    "--runs",
+    "3",
+    "--out",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-benchsh-campaign-root-v1"
+  ],
+  "superseded_custom_controller": true,
+  "comparison_policy": "Only actual long-prompt rows for main ranking; phase metrics/repeats and every failure retained; no text equality quality gate",
+  "error": "AssertionError()"
+}
