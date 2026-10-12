@@ -1,0 +1,86 @@
+{
+  "main_reviewed": true,
+  "benchmark_method": "Unmodified upstream bench.sh --long --runs 3",
+  "upstream_revision": "7695859aa13afb248bdb4d36f9b2e95707db079d",
+  "source_revision": "410904c99d273435b5302fa8976cc667d17957f2",
+  "binary_sha256": {
+    "sha256": "b54579b536962c7db7652503e0dcb50282ddbc667f290b90f101419b44778554"
+  },
+  "mode": "debug",
+  "performance_eligible": false,
+  "result_assessment": {
+    "actual_prompt_tokens": [
+      32049,
+      32049,
+      32049
+    ],
+    "samples": [
+      {
+        "prompt_tokens": 32049,
+        "generated_tokens": 24,
+        "read_tokens": 32049,
+        "reused_tokens": 0,
+        "prompt_tps": 403.9,
+        "prompt_tps_source": "engine",
+        "decode_tps": 9.1,
+        "decode_tps_source": "engine",
+        "prompt_ms": 79348.7,
+        "decode_ms": 2641.0
+      },
+      {
+        "prompt_tokens": 32049,
+        "generated_tokens": 24,
+        "read_tokens": 32049,
+        "reused_tokens": 0,
+        "prompt_tps": 400.5,
+        "prompt_tps_source": "engine",
+        "decode_tps": 8.7,
+        "decode_tps_source": "engine",
+        "prompt_ms": 80021.2,
+        "decode_ms": 2749.2
+      },
+      {
+        "prompt_tokens": 32049,
+        "generated_tokens": 24,
+        "read_tokens": 32049,
+        "reused_tokens": 0,
+        "prompt_tps": 399.3,
+        "prompt_tps_source": "engine",
+        "decode_tps": 8.8,
+        "decode_tps_source": "engine",
+        "prompt_ms": 80262.7,
+        "decode_ms": 2732.1
+      }
+    ],
+    "available_engine_metrics_complete": true,
+    "at_least32768": [
+      false,
+      false,
+      false
+    ],
+    "long_row": "32K",
+    "short_and_agent_scope": "auxiliary; not32K evidence",
+    "quality_evaluated": false,
+    "performance_calculated_by": "pristine upstream bench.sh only"
+  },
+  "normal_quit": {
+    "pid": 4185301,
+    "sid": 4173693,
+    "method": "original StrataEngine.close",
+    "quit_write_completed": true,
+    "quit_flush_completed": true,
+    "fallback_signals": [],
+    "complete": true,
+    "engine_exit_code": 0,
+    "normal_quit": true
+  },
+  "source_and_input_identities_unchanged": true,
+  "no_fresh_gpu_faults": true,
+  "cpu_tests_passed": 5,
+  "quiet_model_executed": false,
+  "native_copy_model_executed": false,
+  "quality_evaluated": false,
+  "full_physical262144_input_qualified": false,
+  "source_audit_note": "R343 incorrectly described registry v181 as including supervisor v2; actual v181 contains v1 only. Original report preserved.",
+  "next_step": "Use this same pristine client for separate quiet server arms; keep actual input counts and 24-token decode scope. Native COPY and phase-cache adoption remain open."
+}
