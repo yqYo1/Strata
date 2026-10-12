@@ -1,0 +1,94 @@
+{
+  "original": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-main-integrated-admission-root-v4/record.json",
+    "sha256": "0ef54bc341aea2f0e20edb759ad737ed3ad7622df942f8cfbd0c5a3cee00113f",
+    "bytes": 2890
+  },
+  "derivative": true,
+  "original_status_preserved": true,
+  "original_passed": true,
+  "receipt": {
+    "active": false,
+    "passed": true,
+    "complete": true,
+    "commands": [
+      {
+        "label": "actual-integrated-admission",
+        "argv": [
+          "/usr/bin/python3",
+          "-B",
+          "-c",
+          "from pathlib import Path;from common import admit,load;from policy import HERE;import sys;q=load(Path(sys.argv[1]));admit(q,'xe',load(HERE/'production-source-pins.json'));print('PASS actual new integrated admission; no owner import/model launch')",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-main-integrated-admission-root-v4/qualification.json"
+        ],
+        "environment": {
+          "PATH": "/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8"
+        },
+        "started_utc": "2026-10-12T02:45:52.196211+00:00",
+        "wall_seconds": 60,
+        "errors": [],
+        "owners": [
+          {
+            "pid": 4042411,
+            "start_ticks": 12191631,
+            "sid": 4042411,
+            "pgid": 4042411
+          }
+        ],
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 121916.317632564,
+        "pid": 4042411,
+        "spawn_return_monotonic": 121916.321320768,
+        "direct_identity": {
+          "pid": 4042411,
+          "state": "R",
+          "ppid": 4042367,
+          "pgid": 4042411,
+          "sid": 4042411,
+          "start_ticks": 12191631,
+          "rss_bytes": 458752
+        },
+        "peak_live_owned_identities": 1,
+        "peak_session_rss_bytes": 18821120,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 0,
+        "finished_utc": "2026-10-12T02:45:54.533400+00:00",
+        "elapsed_seconds": 2.337028260997613,
+        "logs": {
+          "actual-integrated-admission.stdout": {
+            "bytes": 67,
+            "sha256": "dae633f75a286fe35b086dd75288a1dc247fabb3a8b6049b89496d3885354785"
+          },
+          "actual-integrated-admission.stderr": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      }
+    ],
+    "main_reviewed": true,
+    "gpu_executed": false,
+    "model_executed": false,
+    "controller": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-main-integrated-admission-v4.py",
+      "sha256": "22218effed6f7fcbd3cd03601465d22632a31e1124efba8699c51a1a51ed78f3"
+    },
+    "evidence": {
+      "stdout": "PASS actual new integrated admission; no owner import/model launch\n",
+      "stderr": ""
+    },
+    "qualification": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-main-integrated-admission-root-v4/qualification.json",
+      "sha256": "b142776e0656f1c767e7076607917ec8c771e6c13190e75ac7b2d07ddd643219"
+    },
+    "finished_utc": "2026-10-12T02:45:54.533988+00:00"
+  }
+}
