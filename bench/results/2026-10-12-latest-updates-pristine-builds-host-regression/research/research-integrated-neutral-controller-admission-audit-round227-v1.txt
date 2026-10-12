@@ -1,0 +1,55 @@
+SPDX-FileCopyrightText: 2026 MistVVK and the XeStrata contributors
+SPDX-License-Identifier: LGPL-3.0-or-later
+
+R227 independent read-only admission audit
+Packet: /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-integrated-neutral-controller-source-v1
+Status: source review only; no import, AST, fixture, test, build, Git, process, GPU, runtime or cleanup activity. No qualification or run result is asserted. Main remains sole admission and runtime owner.
+
+Decision
+
+The packet has useful explicit safety gates and preserves failures correctly, but it is not admissible for launch yet. The packet itself marks SourceOnlyUnverified. Both fresh qualification inputs remain pending, so run_root admission should stop before importing the external owner or starting an engine. Main must complete all named new-source/build/provider/model/tool/health and review receipts, rather than inherit the original v4 qualification. No controller execution was performed to verify this rejection behavior.
+
+Concrete admission blockers
+
+1. Fresh health and qualification are unresolved. `fresh-health.pending.json` has no accepted fresh Main-reviewed same-boot health receipt; `qualification.pending.json` has unresolved values. The contract explicitly requires new source pins, exact build/source/runtime/provider receipts, model identity, tools, stderr device review, independently supplied held-out prompt, review booleans and fresh health before every run. Existing old receipts are reference evidence only.
+2. Build closure needs a new exact proof. The source audit reports one difference from the original build closure, `serve/test_session_save_retry.py`. This appears test-only, but that does not establish compiled-source exclusion or bind target revision `0691bcdf5af63a85b3b25650f367d3276db64035` to the pinned Xe ELF. Require a new build/source receipt that records the exact closure, resolves this path, and binds the binary and provider/runtime identities; do not silently carry over the old v4 binary receipt.
+3. Campaign inputs still require Main review. The independent held-out input must be supplied and hashed, and campaign/clean-timing environment review booleans must be completed. The source contract makes clear that no held-out prompt may be guessed or copied from the campaign prompt.
+
+Safety/provenance findings
+
+The implementation design is substantially fail-closed: explicit child environment allowlist; child cmdline/environment checks; source/package hash pins; external owner hash immediately before import; forbidden credential receipt rejected before read; source guards at preflight, READY, DONE and final; model stat identity checks; same-boot health hash/phase checks; owned pidfd closure; flock serialization; fixed 11 fresh roots; failed prefix blocks retries; only normal QUIT/reap is success; and first body failure is preserved as `primary_model_failure`. Source says incomplete/failed roots block later roots and are not converted into PASS. Actual enforcement has not been exercised here.
+
+Runtime controls are bounded on paper: each root/model run has a 1800 s total admitted controller/engine budget, startup <=300 s, utility wall limits 30 s, QUIT send <=5 s and close <=30 s; engine RSS 88 GiB, utility RSS 4 GiB, logs capped at 64 MiB/file, 96 MiB/root and 64 MiB aggregate. CPU limits (3600/3601 s) are looser than the absolute 1800 s wall cap, so wall is the effective bound. Main still needs its documented outer controller overhead budget. GPU execution itself has no independent interruptible kernel deadline documented: the engine/root wall deadline is the practical bound and must be tested for enforcement, not treated as a separate GPU watchdog.
+
+Debug, clean and guard environments are deliberately distinct. Debug enables ZE/parameter validation and logging/tracing. Timed and held-out clean arms set validation to zero, logging off, and remove `STRATA_TRACE` entirely because presence enables tracing. Guard-on/off pairs differ only in `STRATA_NAN_GUARD`; source confirms that option is read in `src/core/verify.cpp` (`Verifier::nan_guard_on`, around line 2260). Safety controls otherwise remain fixed. Fresh health must match the exact arm environment. Debug route checks trace four 8192-token chunks; clean route checks cannot use traces because tracing is disabled.
+
+Evidence limits and interpretation
+
+The 11-root design uses fresh 32768-token prompts and 16-token greedy decoding: startup guard, debug off/on, three timed off/on pairs, and independent held-out off/on. Each ON arm binds the OFF receipt and identical input hash; pair equality checks exact generated tokens and LP5 fingerprint. It retains per-run host and engine timing samples. This is appropriate for a narrowly scoped guard/performance comparison if all admission gates pass.
+
+Important limitation: clean timed/held-out protocol validation requires no trace, so it cannot empirically establish the runtime read route. The controller's `actual_route` output is source-coded; progress and PP lines do not independently prove the route. Debug traces do observe the route. Therefore describe the clean route as source-bound/inferred from fixed source and environment, or add a separately reviewed non-instrumenting route receipt before claiming clean-arm route observation.
+
+The quality/correctness evidence is limited to 16 generated tokens and LP5 fingerprint equality. It does not establish full-logit parity, full-output quality, perplexity, 262K context behavior, restore/session behavior, or an optimal route. Do not broaden claims beyond the measurements.
+
+Reviewed packet identity (SHA-256)
+
+policy.py 236768efd8e0b8163d1715562210428a49a810cd7b376964c908c2f0e432c335
+run_root.py e9dea04ccd54f8a2a3da10280fadc4d4f9819c1b7dafef07baaaedcf1d18848b
+common.py ae430060ed72cb31ab659063c8de17d9d378a777a39aec046d36cb865fded44a
+protocol.py 84d3ab97b46ae654a3e71919bf420a63a951e71126acd7646812813a608c4fa5
+mapping.py fbcf528ca27de0daee9bb3619d38438b941c8b79c52170429ffe39df53aa2984
+controller_cpu_fixtures.py c7a49ccac7792cf359afde49d0e6a40ee3615e634f20e53995dbdd1ffda3df1f
+mock_model.py 933fff6b6caf3a75b3edce157e90ac9302ab46ec3ee7a712014af7bf9d0c762e
+changes.patch f87f4b560646b57cbd116cf24f7abc718b1fcda48f762ad3ac1b385000b300c0
+SOURCE_CONTRACT.txt c873299618666c9648b0e69d9e0dfa0132afe20ae3d6df25584a4cd37bb939ec
+build/source subset audit eafe9bf286dd86443fbe0bd0c36a391f419cd5d5c6e89433fe34759ecd0dd8c3
+option source audit b309394a3c2703606a61abdbf16200043d3dab71d21aef0f38e2ffd297e1c194
+production source pins f6a1678590224a317f894c4f5c47c75762af2c539a626a1aff7767106627b8f6
+manifest bdb702d60656bd8f394e87c7293b746ec34ab47620811784c534299652c4b97d
+qualification.pending.json afac155dcea8013c5287dc8c4c88211e5920aae3de591144e57078d3498dafe9
+fresh-health.pending.json 806490e306519a13ed1a7a9f0874bf0928b0ad63e69996a8aaaea0c2fd949998
+external direct_owner.py expected SHA-256 a29d8257eecc77c4ad9ae6671d092b56f4c09a35c4247c125fed3a8c8bc1f95f
+
+Review scope and source basis
+
+Read SOURCE_CONTRACT.txt, MAIN_REVIEW_TODOS.txt, implementation report, policy.py, common.py, run_root.py, protocol.py, mapping.py, controller_cpu_fixtures.py, mock_model.py, changes.patch, build/source audit, option source audit, production-source-pins.json and pending qualification/health records. Package digests above identify those inspected inputs. The check of the source guard option was read-only (`rg` in the selected worktree); no code or report generation executed within the Strata workspace.

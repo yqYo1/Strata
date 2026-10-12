@@ -1,0 +1,285 @@
+{
+  "derivative": true,
+  "original": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-main-admission-prepare-root-v3/record.json",
+    "sha256": "700b993eefc2904b8e5df243a78775ae73cf08de173471f712fbb35267f18af3",
+    "bytes": 7807
+  },
+  "original_result_passed": true,
+  "receipt": {
+    "active": false,
+    "passed": true,
+    "complete": true,
+    "commands": [
+      {
+        "label": "mapping-fixtures",
+        "argv": [
+          "/usr/bin/python3",
+          "-B",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-main-mapping-cpu-fixtures-v2.py",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-main-admission-prepare-root-v3/mapping-fixtures"
+        ],
+        "environment": {
+          "PATH": "/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8"
+        },
+        "started_utc": "2026-10-12T00:44:17.797166+00:00",
+        "wall_seconds": 120,
+        "errors": [],
+        "observed_owned_identity_count": 1,
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 114621.918649976,
+        "pid": 3567946,
+        "spawn_return_monotonic": 114621.920188291,
+        "direct_identity": {
+          "pid": 3567946,
+          "state": "R",
+          "ppid": 3567776,
+          "pgid": 3567946,
+          "sid": 3567946,
+          "start_ticks": 11462191,
+          "rss_bytes": 458752
+        },
+        "peak_live_owned_identities": 1,
+        "peak_session_rss_bytes": 13656064,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 0,
+        "finished_utc": "2026-10-12T00:44:18.208804+00:00",
+        "elapsed_seconds": 0.4114065559988376,
+        "logs": {
+          "mapping-fixtures.stdout": {
+            "bytes": 357,
+            "sha256": {
+              "sha256": "801e42d6867d60b41cf12f8587fcdd346055731f6f0703564e36473ae5b453bd"
+            }
+          },
+          "mapping-fixtures.stderr": {
+            "bytes": 0,
+            "sha256": {
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          }
+        }
+      },
+      {
+        "label": "resolve",
+        "argv": [
+          "/usr/bin/python3",
+          "-B",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-pristine-admission-resolver-main-v4.py",
+          "--manifest",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-main-admission-prepare-root-v3/input-manifest.json",
+          "--output",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-main-admission-prepare-root-v3/resolved"
+        ],
+        "environment": {
+          "PATH": "/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8"
+        },
+        "started_utc": "2026-10-12T00:44:18.443014+00:00",
+        "wall_seconds": 120,
+        "errors": [],
+        "observed_owned_identity_count": 1,
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 114622.564465666,
+        "pid": 3568047,
+        "spawn_return_monotonic": 114622.566800911,
+        "direct_identity": {
+          "pid": 3568047,
+          "state": "R",
+          "ppid": 3567776,
+          "pgid": 3568047,
+          "sid": 3568047,
+          "start_ticks": 11462256,
+          "rss_bytes": 454656
+        },
+        "peak_live_owned_identities": 1,
+        "peak_session_rss_bytes": 13471744,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 0,
+        "finished_utc": "2026-10-12T00:44:18.663687+00:00",
+        "elapsed_seconds": 0.22047511699202005,
+        "logs": {
+          "resolve.stdout": {
+            "bytes": 0,
+            "sha256": {
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          },
+          "resolve.stderr": {
+            "bytes": 0,
+            "sha256": {
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          }
+        }
+      },
+      {
+        "label": "actual-official-admission",
+        "argv": [
+          "/usr/bin/python3",
+          "-B",
+          "-c",
+          "from pathlib import Path;from common import admit,load;from policy import HERE; q=load(Path(__import__('sys').argv[1]));prod=load(HERE/'production-source-pins.json');[admit(q,e,prod) for e in ('official',)];print('PASS actual resolved independent official admission; no owner import or engine launch')",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-main-admission-prepare-root-v3/resolved/qualification.json"
+        ],
+        "environment": {
+          "PATH": "/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8"
+        },
+        "started_utc": "2026-10-12T00:44:18.664461+00:00",
+        "wall_seconds": 120,
+        "errors": [],
+        "observed_owned_identity_count": 1,
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 114622.785937188,
+        "pid": 3568055,
+        "spawn_return_monotonic": 114622.788353947,
+        "direct_identity": {
+          "pid": 3568055,
+          "state": "R",
+          "ppid": 3567776,
+          "pgid": 3568055,
+          "sid": 3568055,
+          "start_ticks": 11462278,
+          "rss_bytes": 458752
+        },
+        "peak_live_owned_identities": 1,
+        "peak_session_rss_bytes": 14909440,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 0,
+        "finished_utc": "2026-10-12T00:44:23.114995+00:00",
+        "elapsed_seconds": 4.450323711003875,
+        "logs": {
+          "actual-official-admission.stdout": {
+            "bytes": 86,
+            "sha256": {
+              "sha256": "d4308f57fc744fbfa41924961e804c381d4cf74cbdef1423909aa466b7c0df0a"
+            }
+          },
+          "actual-official-admission.stderr": {
+            "bytes": 0,
+            "sha256": {
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          }
+        }
+      }
+    ],
+    "main_reviewed": true,
+    "gpu_executed": false,
+    "model_launch_attempted": false,
+    "controller_sha256": {
+      "sha256": "1d33732e5da7643a9b2f24b623c3ac4188fe8297f1a65fff3131e3e4c0ddde82"
+    },
+    "whole_wall_seconds": 360,
+    "evidence": {
+      "mapping-fixtures": {
+        "stdout_derivative": {
+          "original_bytes": 357,
+          "original_sha256": "801e42d6867d60b41cf12f8587fcdd346055731f6f0703564e36473ae5b453bd",
+          "individual_test_lines": [],
+          "protocol_results": [],
+          "diagnostic_lines": [],
+          "diagnostic_line_count": 0,
+          "scope": "Actual individual test/protocol results and diagnostic evidence; repeated successful API and journal entries omitted."
+        },
+        "stderr_derivative": {
+          "original_bytes": 0,
+          "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "individual_test_lines": [],
+          "protocol_results": [],
+          "diagnostic_lines": [],
+          "diagnostic_line_count": 0,
+          "scope": "Actual individual test/protocol results and diagnostic evidence; repeated successful API and journal entries omitted."
+        }
+      },
+      "resolve": {
+        "stdout_derivative": {
+          "original_bytes": 0,
+          "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "individual_test_lines": [],
+          "protocol_results": [],
+          "diagnostic_lines": [],
+          "diagnostic_line_count": 0,
+          "scope": "Actual individual test/protocol results and diagnostic evidence; repeated successful API and journal entries omitted."
+        },
+        "stderr_derivative": {
+          "original_bytes": 0,
+          "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "individual_test_lines": [],
+          "protocol_results": [],
+          "diagnostic_lines": [],
+          "diagnostic_line_count": 0,
+          "scope": "Actual individual test/protocol results and diagnostic evidence; repeated successful API and journal entries omitted."
+        }
+      },
+      "actual-official-admission": {
+        "stdout_derivative": {
+          "original_bytes": 86,
+          "original_sha256": "d4308f57fc744fbfa41924961e804c381d4cf74cbdef1423909aa466b7c0df0a",
+          "individual_test_lines": [],
+          "protocol_results": [
+            "PASS actual resolved independent official admission; no owner import or engine launch"
+          ],
+          "diagnostic_lines": [],
+          "diagnostic_line_count": 0,
+          "scope": "Actual individual test/protocol results and diagnostic evidence; repeated successful API and journal entries omitted."
+        },
+        "stderr_derivative": {
+          "original_bytes": 0,
+          "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "individual_test_lines": [],
+          "protocol_results": [],
+          "diagnostic_lines": [],
+          "diagnostic_line_count": 0,
+          "scope": "Actual individual test/protocol results and diagnostic evidence; repeated successful API and journal entries omitted."
+        }
+      }
+    },
+    "mapping_fixtures": {
+      "passed": true,
+      "gpu_executed": false,
+      "optional_build_id_absence_passed": true,
+      "exact_gnu_build_id_passed": true,
+      "malformed_elf_cases": [
+        "bad-magic",
+        "truncated",
+        "bad-ph-stride",
+        "too-many-ph",
+        "ph-outside-file"
+      ],
+      "aggregate_budget_rejection_passed": true,
+      "scope": "CPU synthetic map-selection fixtures; no claim of actual pristine process mapping."
+    },
+    "qualification": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-main-admission-prepare-root-v3/resolved/qualification.json",
+      "sha256": {
+        "sha256": "6a7ac61496bc125e3ab0bc5e8b4d91064c19d80a4fd460d114da0cb61c7786ca"
+      }
+    },
+    "finished_utc": "2026-10-12T00:44:23.116195+00:00"
+  },
+  "scope": "Original statuses retained; successful full traces summarized."
+}

@@ -1,0 +1,365 @@
+{
+  "derivative": true,
+  "original": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-main-controller-cpu-root-v6/record.json",
+    "sha256": "c93a5c6837230526e07183444d82dee40867358e9162e53ff7a71a357c12354d",
+    "bytes": 16647
+  },
+  "original_result_passed": true,
+  "receipt": {
+    "passed": true,
+    "complete": true,
+    "active": false,
+    "commands": [
+      {
+        "label": "parser-owned-mock-pending",
+        "argv": [
+          "/usr/bin/python3",
+          "-B",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-pristine-official-controller-source-v1/controller_cpu_fixtures.py",
+          "--owned-mock-output",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-main-controller-cpu-root-v6/mock",
+          "--invalid-pending-output",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-main-controller-cpu-root-v6/invalid-pending"
+        ],
+        "environment": {
+          "PATH": "/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "XDG_RUNTIME_DIR": "/run/user/1000",
+          "DBUS_SESSION_BUS_ADDRESS": "unix:path=/run/user/1000/bus"
+        },
+        "started_utc": "2026-10-12T00:44:16.989758+00:00",
+        "wall_seconds": 45,
+        "errors": [],
+        "observed_owned_identity_count": 1,
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 114621.111343552,
+        "pid": 3567828,
+        "spawn_return_monotonic": 114621.113032792,
+        "direct_identity": {
+          "pid": 3567828,
+          "state": "R",
+          "ppid": 3567826,
+          "pgid": 3567828,
+          "sid": 3567828,
+          "start_ticks": 11462111,
+          "rss_bytes": 573440
+        },
+        "peak_live_owned_identities": 1,
+        "peak_session_rss_bytes": 22953984,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 0,
+        "finished_utc": "2026-10-12T00:44:17.622050+00:00",
+        "elapsed_seconds": 0.6319672440004069,
+        "logs": {
+          "parser-owned-mock-pending.stdout": {
+            "bytes": 5197,
+            "sha256": {
+              "sha256": "e18ffe868ace3707e50e577043c17d2d6752910aaf44c3028947ed94db108a6b"
+            }
+          },
+          "parser-owned-mock-pending.stderr": {
+            "bytes": 0,
+            "sha256": {
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          }
+        }
+      },
+      {
+        "label": "inactive-embedding-read-only",
+        "argv": [
+          "/usr/bin/systemctl",
+          "--user",
+          "show",
+          "llama-server-qwen3embed.service",
+          "-p",
+          "ActiveState"
+        ],
+        "environment": {
+          "PATH": "/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "XDG_RUNTIME_DIR": "/run/user/1000",
+          "DBUS_SESSION_BUS_ADDRESS": "unix:path=/run/user/1000/bus"
+        },
+        "started_utc": "2026-10-12T00:44:17.622949+00:00",
+        "wall_seconds": 45,
+        "errors": [],
+        "observed_owned_identity_count": 1,
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 114621.744612506,
+        "pid": 3567938,
+        "spawn_return_monotonic": 114621.746319709,
+        "direct_identity": {
+          "pid": 3567938,
+          "state": "R",
+          "ppid": 3567826,
+          "pgid": 3567938,
+          "sid": 3567938,
+          "start_ticks": 11462174,
+          "rss_bytes": 348160
+        },
+        "peak_live_owned_identities": 1,
+        "peak_session_rss_bytes": 0,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 0,
+        "finished_utc": "2026-10-12T00:44:17.734970+00:00",
+        "elapsed_seconds": 0.11163574599777348,
+        "logs": {
+          "inactive-embedding-read-only.stdout": {
+            "bytes": 21,
+            "sha256": {
+              "sha256": "9bf2451134cf07027a1e5d0b7b71598867aaf8ba6db4f4afb1f9f3611eda0c68"
+            }
+          },
+          "inactive-embedding-read-only.stderr": {
+            "bytes": 0,
+            "sha256": {
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          }
+        }
+      }
+    ],
+    "main_reviewed": true,
+    "gpu_executed": false,
+    "model_launch_attempted": false,
+    "controller_source_pins": {
+      "common.py": {
+        "sha256": "9cf139b9c79236e8f576f17934f08822d2e29656dcbae6593f6d7fe25fe0dc8f"
+      },
+      "controller_cpu_fixtures.py": {
+        "sha256": "2694854b14395659dc313dc806e16cd58f049c9665a3a977c28d8f04cfd13e46"
+      },
+      "mapping.py": {
+        "sha256": "fbcf528ca27de0daee9bb3619d38438b941c8b79c52170429ffe39df53aa2984"
+      },
+      "mock_model.py": {
+        "sha256": "933fff6b6caf3a75b3edce157e90ac9302ab46ec3ee7a712014af7bf9d0c762e"
+      },
+      "policy.py": {
+        "sha256": "3c37cf2fb0dc2397bdd3785c6da34fba8e9f4861ad05e4c971d4bcf92a58a420"
+      },
+      "protocol.py": {
+        "sha256": "90f1d5b2b58735bc492606721b9cde0fe0bd549c00e32ff8572d6389c69aa0ed"
+      },
+      "run_root.py": {
+        "sha256": "a38ee6014c951c3c3b1f19cc41e9b534c57391718b8e5f147aa6e61c04e8dd83"
+      }
+    },
+    "controller_sha256": {
+      "sha256": "04cd86bed9d3c9b4fdf5aced13fe02926fdfdcf7b4ae1e6da661714e7ca6effc"
+    },
+    "whole_wall_seconds": 120,
+    "evidence": {
+      "parser-owned-mock-pending": {
+        "stdout_derivative": {
+          "original_bytes": 5197,
+          "original_sha256": "e18ffe868ace3707e50e577043c17d2d6752910aaf44c3028947ed94db108a6b",
+          "individual_test_lines": [],
+          "protocol_results": [],
+          "diagnostic_lines": [],
+          "diagnostic_line_count": 0,
+          "scope": "Actual individual test/protocol results and diagnostic evidence; repeated successful API and journal entries omitted."
+        },
+        "stderr_derivative": {
+          "original_bytes": 0,
+          "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "individual_test_lines": [],
+          "protocol_results": [],
+          "diagnostic_lines": [],
+          "diagnostic_line_count": 0,
+          "scope": "Actual individual test/protocol results and diagnostic evidence; repeated successful API and journal entries omitted."
+        }
+      },
+      "inactive-embedding-read-only": {
+        "stdout_derivative": {
+          "original_bytes": 21,
+          "original_sha256": "9bf2451134cf07027a1e5d0b7b71598867aaf8ba6db4f4afb1f9f3611eda0c68",
+          "individual_test_lines": [],
+          "protocol_results": [],
+          "diagnostic_lines": [],
+          "diagnostic_line_count": 0,
+          "scope": "Actual individual test/protocol results and diagnostic evidence; repeated successful API and journal entries omitted."
+        },
+        "stderr_derivative": {
+          "original_bytes": 0,
+          "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "individual_test_lines": [],
+          "protocol_results": [],
+          "diagnostic_lines": [],
+          "diagnostic_line_count": 0,
+          "scope": "Actual individual test/protocol results and diagnostic evidence; repeated successful API and journal entries omitted."
+        }
+      }
+    },
+    "fixture_result": {
+      "parser_malformed_fixtures_passed": true,
+      "invalid_admission_prelaunch_passed": true,
+      "pure_pending_rejection_passed": true,
+      "positive_routes": 2,
+      "negative_protocol_cases": 23,
+      "owned_mock_quit_passed": true,
+      "commands": [
+        {
+          "label": "mock",
+          "argv": [
+            "/usr/bin/python3",
+            "-B",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-pristine-official-controller-source-v1/mock_model.py"
+          ],
+          "environment": {
+            "PATH": "/usr/bin:/bin",
+            "LANG": "C.UTF-8",
+            "LC_ALL": "C.UTF-8"
+          },
+          "started_utc": "2026-10-12T00:44:17.097914+00:00",
+          "wall_seconds": 20,
+          "errors": [],
+          "observed_owned_identity_count": 1,
+          "cleanup": [],
+          "observation_complete": true,
+          "direct_child_reaped": true,
+          "session_empty": true,
+          "session_anchored": true,
+          "spawn_begin_monotonic": 114621.21921935,
+          "pid": 3567848,
+          "spawn_return_monotonic": 114621.221294146,
+          "direct_identity": {
+            "pid": 3567848,
+            "state": "R",
+            "ppid": 3567828,
+            "pgid": 3567848,
+            "sid": 3567848,
+            "start_ticks": 11462121,
+            "rss_bytes": 458752
+          },
+          "peak_live_owned_identities": 1,
+          "peak_session_rss_bytes": 7933952,
+          "survivors": [],
+          "ownership_status": "observed",
+          "exit_code": 0,
+          "finished_utc": "2026-10-12T00:44:17.239945+00:00",
+          "elapsed_seconds": 0.1419903299974976,
+          "logs": {
+            "mock.stdout": {
+              "bytes": 1086,
+              "sha256": {
+                "sha256": "b84d45389ae2f0e1be4e00adbeca67deeef84accafc21f9819f67186420aaee1"
+              }
+            },
+            "mock.stderr": {
+              "bytes": 0,
+              "sha256": {
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              }
+            }
+          }
+        }
+      ],
+      "model_close": {
+        "quit_requested": true,
+        "quit_reason": "mock finished",
+        "quit_send_outcome": "sent",
+        "quit_exit_outcome": "exit observed"
+      },
+      "invalid_pending_process_passed": true,
+      "invalid_pending_commands": [
+        {
+          "label": "invalid-pending",
+          "argv": [
+            "/usr/bin/python3",
+            "-B",
+            "-c",
+            "import importlib.util, pathlib, runpy, sys\noriginal = importlib.util.spec_from_file_location\nowner_path = pathlib.Path(sys.argv[1]).resolve()\ndef trap(name, location, *args, **kwargs):\n    if pathlib.Path(location).resolve() == owner_path:\n        raise AssertionError('OWNER_IMPORT_ATTEMPTED')\n    return original(name, location, *args, **kwargs)\nimportlib.util.spec_from_file_location = trap\nsys.argv = sys.argv[2:]\nrunpy.run_path(sys.argv[0], run_name='__main__')\n",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-llvm-v711-source-v5/direct_owner.py",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-pristine-official-controller-source-v1/run_root.py",
+            "--engine",
+            "official",
+            "--phase",
+            "startup",
+            "--qualification",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-pristine-official-controller-source-v1/qualification.pending.json",
+            "--qualification-sha256",
+            {
+              "sha256": "c75751e66b8b2eb79d27d943bf9d4551275bfcaa3e58a67742bea32c2e1983b5"
+            },
+            "--fresh-health",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-pristine-official-controller-source-v1/fresh-health.pending.json",
+            "--fresh-health-sha256",
+            {
+              "sha256": "806490e306519a13ed1a7a9f0874bf0928b0ad63e69996a8aaaea0c2fd949998"
+            }
+          ],
+          "environment": {
+            "PATH": "/usr/bin:/bin",
+            "LANG": "C.UTF-8",
+            "LC_ALL": "C.UTF-8"
+          },
+          "started_utc": "2026-10-12T00:44:17.241536+00:00",
+          "wall_seconds": 20,
+          "errors": [],
+          "observed_owned_identity_count": 1,
+          "cleanup": [],
+          "observation_complete": true,
+          "direct_child_reaped": true,
+          "session_empty": true,
+          "session_anchored": true,
+          "spawn_begin_monotonic": 114621.362830491,
+          "pid": 3567865,
+          "spawn_return_monotonic": 114621.365108348,
+          "direct_identity": {
+            "pid": 3567865,
+            "state": "R",
+            "ppid": 3567828,
+            "pgid": 3567865,
+            "sid": 3567865,
+            "start_ticks": 11462136,
+            "rss_bytes": 458752
+          },
+          "peak_live_owned_identities": 1,
+          "peak_session_rss_bytes": 9883648,
+          "survivors": [],
+          "ownership_status": "observed",
+          "exit_code": 1,
+          "finished_utc": "2026-10-12T00:44:17.516554+00:00",
+          "elapsed_seconds": 0.27498376500443555,
+          "logs": {
+            "invalid-pending.stdout": {
+              "bytes": 0,
+              "sha256": {
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              }
+            },
+            "invalid-pending.stderr": {
+              "bytes": 1545,
+              "sha256": {
+                "sha256": "74a3fc20b24c651bae23a29039899d0ff852ea6037402f40ca3b14b3bae8d8b7"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "parser_malformed_fixtures_passed": true,
+    "owned_mock_quit_passed": true,
+    "invalid_admission_prelaunch_passed": true,
+    "invalid_pending_process_passed": true,
+    "finished_utc": "2026-10-12T00:44:17.736217+00:00"
+  },
+  "scope": "Original statuses retained; successful full traces summarized."
+}

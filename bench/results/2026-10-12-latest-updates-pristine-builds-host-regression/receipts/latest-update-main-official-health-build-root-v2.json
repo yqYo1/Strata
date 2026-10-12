@@ -1,0 +1,210 @@
+{
+  "derivative": true,
+  "original": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-main-official-health-build-root-v2/record.json",
+    "sha256": "15beeaa5a7db453cbd42420f6175c950148840109e22d9844c8402f9be97b085",
+    "bytes": 5913
+  },
+  "original_result_passed": true,
+  "receipt": {
+    "active": false,
+    "complete": true,
+    "passed": true,
+    "commands": [
+      {
+        "label": "compiler-version",
+        "argv": [
+          "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+          "--version"
+        ],
+        "environment": {
+          "PATH": "/opt/intel/oneapi/compiler/2026.1/bin:/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+          "PYTHONDONTWRITEBYTECODE": "1"
+        },
+        "started_utc": "2026-10-12T00:09:26.166597+00:00",
+        "wall_seconds": 180,
+        "errors": [],
+        "observed_owned_identity_count": 1,
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 112530.288052907,
+        "pid": 3423516,
+        "spawn_return_monotonic": 112530.289780673,
+        "direct_identity": {
+          "pid": 3423516,
+          "state": "R",
+          "ppid": 3423459,
+          "pgid": 3423516,
+          "sid": 3423516,
+          "start_ticks": 11253028,
+          "rss_bytes": 331776
+        },
+        "peak_live_owned_identities": 1,
+        "peak_session_rss_bytes": 0,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 0,
+        "finished_utc": "2026-10-12T00:09:26.282727+00:00",
+        "elapsed_seconds": 0.11593683599494398,
+        "logs": {
+          "compiler-version.stdout": {
+            "bytes": 257,
+            "sha256": {
+              "sha256": "119a0a4ee0badbc5231f46aa701b7ad3f97cc23f478eecb25ab2f77a66c92bac"
+            }
+          },
+          "compiler-version.stderr": {
+            "bytes": 0,
+            "sha256": {
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          }
+        }
+      },
+      {
+        "label": "compile",
+        "argv": [
+          "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+          "-std=c++20",
+          "-fsycl",
+          "-O2",
+          "-Wall",
+          "-Wextra",
+          "-Werror",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-source-llvm-small-health-v3/health.cpp",
+          "-lze_loader",
+          "-o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-main-official-health-build-root-v2/health"
+        ],
+        "environment": {
+          "PATH": "/opt/intel/oneapi/compiler/2026.1/bin:/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+          "PYTHONDONTWRITEBYTECODE": "1"
+        },
+        "started_utc": "2026-10-12T00:09:26.283541+00:00",
+        "wall_seconds": 180,
+        "errors": [],
+        "observed_owned_identity_count": 4,
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 112530.404980721,
+        "pid": 3423537,
+        "spawn_return_monotonic": 112530.40696496,
+        "direct_identity": {
+          "pid": 3423537,
+          "state": "R",
+          "ppid": 3423459,
+          "pgid": 3423537,
+          "sid": 3423537,
+          "start_ticks": 11253040,
+          "rss_bytes": 331776
+        },
+        "peak_live_owned_identities": 3,
+        "peak_session_rss_bytes": 301207552,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 0,
+        "finished_utc": "2026-10-12T00:09:30.808481+00:00",
+        "elapsed_seconds": 4.524765659996774,
+        "logs": {
+          "compile.stdout": {
+            "bytes": 0,
+            "sha256": {
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          },
+          "compile.stderr": {
+            "bytes": 0,
+            "sha256": {
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          }
+        }
+      }
+    ],
+    "controller_sha256": {
+      "sha256": "9e75d877eb4da9fcea3fa4e136ee23dab6a67b06e07b97c9c718a40f7deb6ad0"
+    },
+    "main_reviewed": true,
+    "source": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-source-llvm-small-health-v3/health.cpp",
+      "sha256": {
+        "sha256": "399487d9d62837c75d52ffe3c9c39b1d3eba69853ec5d06e5a20907a31c06ec2"
+      }
+    },
+    "compiler_provider": "installed-icpx-2026.1",
+    "original_reviewed_source_receipt_sha256": {
+      "sha256": "567f53d808ee1e2f0ecf6387d31d18049400af201f4ad4a642c814dccf85199e"
+    },
+    "pristine_build_receipt_sha256": {
+      "sha256": "8153aa654afbdd40d810b53e90de9a7a6bae55d4ad5dd3ddef78a51431119931"
+    },
+    "gpu_executed": false,
+    "model_executed": false,
+    "performance_measured": false,
+    "evidence": {
+      "compiler-version": {
+        "stdout_derivative": {
+          "original_bytes": 257,
+          "original_sha256": "119a0a4ee0badbc5231f46aa701b7ad3f97cc23f478eecb25ab2f77a66c92bac",
+          "individual_test_lines": [],
+          "protocol_results": [],
+          "diagnostic_lines": [],
+          "diagnostic_line_count": 0,
+          "scope": "Actual individual test/protocol results and diagnostic evidence; repeated successful API and journal entries omitted."
+        },
+        "stderr_derivative": {
+          "original_bytes": 0,
+          "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "individual_test_lines": [],
+          "protocol_results": [],
+          "diagnostic_lines": [],
+          "diagnostic_line_count": 0,
+          "scope": "Actual individual test/protocol results and diagnostic evidence; repeated successful API and journal entries omitted."
+        }
+      },
+      "compile": {
+        "stdout_derivative": {
+          "original_bytes": 0,
+          "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "individual_test_lines": [],
+          "protocol_results": [],
+          "diagnostic_lines": [],
+          "diagnostic_line_count": 0,
+          "scope": "Actual individual test/protocol results and diagnostic evidence; repeated successful API and journal entries omitted."
+        },
+        "stderr_derivative": {
+          "original_bytes": 0,
+          "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "individual_test_lines": [],
+          "protocol_results": [],
+          "diagnostic_lines": [],
+          "diagnostic_line_count": 0,
+          "scope": "Actual individual test/protocol results and diagnostic evidence; repeated successful API and journal entries omitted."
+        }
+      }
+    },
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-main-official-health-build-root-v2/health",
+      "bytes": 129552,
+      "sha256": {
+        "sha256": "5f1d5abf8609653a7bee47069a860693cf96016475806fd15c61cf541abee977"
+      }
+    },
+    "finished_utc": "2026-10-12T00:09:30.809366+00:00"
+  },
+  "scope": "Original statuses retained; successful full traces summarized."
+}

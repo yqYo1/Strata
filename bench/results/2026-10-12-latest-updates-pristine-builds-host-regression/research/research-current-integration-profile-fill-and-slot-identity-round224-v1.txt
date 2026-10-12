@@ -1,0 +1,44 @@
+# R224 — adopted integration profile fill and slot identity
+
+Date: 2026-10-12 Asia/Tokyo. Read-only source audit of the adopted integration snapshot `0691bcdf5af63a85b3b25650f367d3276db64035`, compared with pristine Xe v0.1.42 and official SYCL v0.1.43. The integration path is `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-xe-v0143-nonfinite-20261012`; references are `/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/bench-xestrata-xe0142-pristine-20261012` and `/home/yayoi/ghq/github.com/Niko1221/Strata/.worktree/bench-upstream-v0143-pristine-20261012/sycl`. No source changes, tests, build, import/AST, Git, process, GPU, cleanup, profile payload, or runtime trace was used. This is not a correctness or performance result.
+
+## Finding
+
+The currently adopted integration has the v0.1.43 per-layer continue repair: a saturated layer is skipped while later ranked pairs are scanned until `prefilled == want`; global mode still breaks on the first refusal. Its actual loop is `src/program/generate.cpp:4466-4501`. The old R222 finding that this specific integration accepts duplicate profile pairs is stale: the currently selected `src/core/expert_cache.cpp` rejects duplicate `(layer, expert)` pairs in `read_expert_profile`. R222's pristine Xe/official conclusions on duplicate acceptance remain accurate. The duplicate rejection is material: it prevents repeated fill calls from reusing one claimed slot and incrementing the startup `prefilled` counter while another distinct pair/capacity slot remains unfilled.
+
+## Source identity
+
+| Tree and file | SHA-256 |
+|---|---|
+| adopted integration `src/program/generate.cpp` | `f9e6a45a4f7494cbc48c0b0e944b30d493f0ee97219fb2535a001f3a5913db05` |
+| adopted integration `src/core/expert_cache.cpp` | `83a8857e0f4be6efece62b49de7ca184d9213f702f2037a6d5eaf502987d9c07` |
+| adopted integration `src/core/expert_source.cpp` | `7915f5ceb462a5c14655bbe585408f72ef9abd581b95ed14f08d9533d20f2edc` |
+| adopted integration `include/strata/core/expert_cache.hpp` | `ddadb5eb76c2edfff12052a9de02d2b08bc4d264b88b54ecf9a9d1d8cc60fe69` |
+| pristine Xe `src/program/generate.cpp` | `11ef3ab19817c2deddd5c68bb78192542dde3e79a971a8af01f3239fce6398aa` |
+| pristine Xe `src/core/expert_cache.cpp` | `7f8b00350794b4985c9bf34a9bb88b37a36384fac0a072aa437bfc8d758bc10a` |
+| pristine Xe `src/core/expert_source.cpp` | `d7499a5a5f4225a88b6d0b3eb6474289a615d7f7e993749a4a4eff36b6456253` |
+| official v0.1.43 `sycl/src/program/generate.cpp` | `8112c1808dc317e89d9635ad1b6e46b080fc16e67a0b2f63923d5231f355fa07` |
+| official v0.1.43 `sycl/src/core/expert_cache.cpp` | `48959dd9ae6c96b96f58c0f30878823accd1ecc1bdbcea0e6d908f267a13f6fa` |
+| official v0.1.43 `sycl/src/core/expert_source.cpp` | `8c59920c0317a35be12c2562593b997f20be5221561528a698bfbbd78c67b541` |
+
+The selected integration header and pristine Xe header have the same SHA-256. Official's cache header resides at its checkout top-level `include/strata/core/expert_cache.hpp`, not `sycl/include` (SHA-256 `ff3cd4357e397ff944bc8c814e769975ecd243b3445b050234cbb62d9260bd54`).
+
+## Profile admission and slot mapping
+
+All three readers use the `STRP` version-1 profile header with model layer/expert geometry, declared slot/ranked counts, then bounded `(uint16 layer, uint16 expert)` pairs. They reject incompatible version/geometry, too many pairs, truncation and out-of-range IDs. They do not require end-of-file immediately after the declared list. Current integration additionally tracks a `seen[layer*n_expert+expert]` bitmap and rejects any duplicate before the cache fill can begin (`src/core/expert_cache.cpp`, `read_expert_profile`; error identifies pair index and pair). Pristine Xe and official v0.1.43 accept duplicates.
+
+The cache maps each `(layer, expert)` to one `residency_` slot. `admit` returns the existing slot for an already-resident pair; a new per-layer pair receives `layer_next[layer]++` within that layer's contiguous range; a full layer returns `kNotResident`. Global mode assigns `next_free_` in order. Slot identity is therefore established by the residency table and allocation path, not by profile rank after admission. For per-layer mode, rank order decides which distinct experts enter each layer, while physical slot IDs are grouped by layer. The current integration and pristine Xe use the same `q=slots/n_layers` range rule with remainder in the last layer; no cross-layer or global alias was found in the inspected `admit`/`slot_of` mapping.
+
+At startup the integration chooses `want=min(profile.size(), xcache.slots())`; with per-layer admission it scans the entire profile (`scan=profile.size()`) and continues on a layer-quota refusal, stopping after `want` successful fills. With global admission, `scan=want` and first refusal breaks. This agrees in substance with official v0.1.43's per-layer scan/continue repair and differs from pristine Xe v0.1.42, whose loop breaks on first `kNotResident` and can leave later layers' ranges empty. No implication about current profile distribution follows without reading the actual profile payload.
+
+Duplicate handling changes counters and fill behavior. In pristine Xe/official, a repeated pair can return the same slot, cause another copy into it, increment successful-fill accounting, and consume one unit of `prefilled`; thus that loop may stop before filling `want` distinct experts. In per-layer mode the repeated pair does not advance layer capacity. This is bounded underfill, not an alias to a different pair, because the repeated copy names the same pair and slot. Current integration refuses the malformed/redundant ranking up front. Consequently, for the current integration's accepted profile, each successful `prefilled` count corresponds to a distinct admitted pair, assuming source reads and slot fills succeed.
+
+## Implications for repeated 32K and full 262144 use
+
+The profile scan/cache allocation occurs during startup, once for the process; it is not repeated per request. Per-layer fill policy does not itself vary with prompt length. No-eviction cache residency and the slot map persist across requests. A later request may use a previously unprofiled pair as a cache miss and potentially admit/fill it if that layer still has capacity; a repeated 32K request therefore does not replay the profile scan, but its routed expert set and cold-miss behavior need runtime evidence.
+
+For full 262144 context, these source facts alone establish neither memory admission nor correctness. The profile reader permits a partial ranking; cache capacity is bounded by actual allocated slots, and `want` is capped to that capacity. A full-length prompt can create different QSA/session memory and routing demand, but does not change the profile loop's slot identity. Verify startup effective slot count, profile accepted length, per-layer residency map, fill success/readback, request route and all memory admission using the exact model and runtime before making a safety or performance claim. `verify_slot` readback of one selected fill is not proof that every filled slot's bytes were compared or that the full prompt is correct.
+
+## Corrections and bounds
+
+This report supersedes only R222's statements that the selected integration reader allows duplicate pairs and its related caveat for current integration fill counts. Preserve R222's comparison of pristine Xe's break with official v0.1.43/integration continue behavior, and its distinction among capacity, distinct residency, and successful fill calls. No earlier report was edited. The committed registry v154 and prior reports R303-R306/R222 were consulted for scope and historical context; prior run receipts are not treated as evidence for this current source snapshot. Main's active pristine Xe 32K run is unaffected. No recommendation to intervene or change the active run is made.

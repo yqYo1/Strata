@@ -1,0 +1,1885 @@
+{
+  "derivative": true,
+  "original": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-main-provider-health-official-startup-root-v4/record.json",
+    "sha256": "736f9ce354e4d23974f255f17d9e22445ca1be22a680ac9b5ca0d6fdba59c808",
+    "bytes": 4720056
+  },
+  "original_result_passed": true,
+  "receipt": {
+    "active": false,
+    "complete": true,
+    "passed": true,
+    "commands": [
+      {
+        "label": "kernel-before",
+        "argv": [
+          "/usr/bin/journalctl",
+          "-k",
+          "--no-pager",
+          "-o",
+          "json",
+          "-b"
+        ],
+        "environment": {
+          "PATH": "/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8"
+        },
+        "started_utc": "2026-10-12T00:45:14.647969+00:00",
+        "wall_seconds": 30,
+        "errors": [],
+        "observed_owned_identity_count": 1,
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 114678.769471094,
+        "pid": 3572025,
+        "spawn_return_monotonic": 114678.771065215,
+        "direct_identity": {
+          "pid": 3572025,
+          "state": "R",
+          "ppid": 3571991,
+          "pgid": 3572025,
+          "sid": 3572025,
+          "start_ticks": 11467876,
+          "rss_bytes": 438272
+        },
+        "peak_live_owned_identities": 1,
+        "peak_session_rss_bytes": 23236608,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 0,
+        "finished_utc": "2026-10-12T00:45:15.359700+00:00",
+        "elapsed_seconds": 0.7114925100031542,
+        "logs": {
+          "kernel-before.stdout": {
+            "bytes": 4275208,
+            "sha256": {
+              "sha256": "bdd1fdaf1038f0a9a96de1dae3360c03251c5411610a7580e4c67e45651aa912"
+            }
+          },
+          "kernel-before.stderr": {
+            "bytes": 0,
+            "sha256": {
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          }
+        }
+      },
+      {
+        "label": "kernel-cursor",
+        "argv": [
+          "/usr/bin/journalctl",
+          "-k",
+          "-n",
+          "0",
+          "--show-cursor",
+          "--no-pager"
+        ],
+        "environment": {
+          "PATH": "/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8"
+        },
+        "started_utc": "2026-10-12T00:45:15.445599+00:00",
+        "wall_seconds": 30,
+        "errors": [],
+        "observed_owned_identity_count": 1,
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 114679.5811594,
+        "pid": 3572093,
+        "spawn_return_monotonic": 114679.583634499,
+        "direct_identity": {
+          "pid": 3572093,
+          "state": "R",
+          "ppid": 3571991,
+          "pgid": 3572093,
+          "sid": 3572093,
+          "start_ticks": 11467958,
+          "rss_bytes": 475136
+        },
+        "peak_live_owned_identities": 1,
+        "peak_session_rss_bytes": 0,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 0,
+        "finished_utc": "2026-10-12T00:45:15.630052+00:00",
+        "elapsed_seconds": 0.1701757269911468,
+        "logs": {
+          "kernel-cursor.stdout": {
+            "bytes": 156,
+            "sha256": {
+              "sha256": "beac15bfbe9aec43c5e797bfcbde2b9007a078d551533f7392f04efcfa3e039b"
+            }
+          },
+          "kernel-cursor.stderr": {
+            "bytes": 0,
+            "sha256": {
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          }
+        }
+      },
+      {
+        "label": "device-list",
+        "argv": [
+          "/usr/bin/xpu-smi",
+          "discovery",
+          "-j"
+        ],
+        "environment": {
+          "PATH": "/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8"
+        },
+        "started_utc": "2026-10-12T00:45:15.662147+00:00",
+        "wall_seconds": 30,
+        "errors": [],
+        "observed_owned_identity_count": 1,
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 114679.799646301,
+        "pid": 3572103,
+        "spawn_return_monotonic": 114679.802061427,
+        "direct_identity": {
+          "pid": 3572103,
+          "state": "R",
+          "ppid": 3571991,
+          "pgid": 3572103,
+          "sid": 3572103,
+          "start_ticks": 11467980,
+          "rss_bytes": 471040
+        },
+        "peak_live_owned_identities": 1,
+        "peak_session_rss_bytes": 9744384,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 0,
+        "finished_utc": "2026-10-12T00:45:15.862034+00:00",
+        "elapsed_seconds": 0.18366483598947525,
+        "logs": {
+          "device-list.stdout": {
+            "bytes": 509,
+            "sha256": {
+              "sha256": "dc2c24fe141a549eafb5ce722dbc01b06a1d906769f324b79f9e3c1a2d1b1174"
+            }
+          },
+          "device-list.stderr": {
+            "bytes": 0,
+            "sha256": {
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          }
+        }
+      },
+      {
+        "label": "device-selected",
+        "argv": [
+          "/usr/bin/xpu-smi",
+          "discovery",
+          "-d",
+          "0",
+          "-j"
+        ],
+        "environment": {
+          "PATH": "/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8"
+        },
+        "started_utc": "2026-10-12T00:45:15.891451+00:00",
+        "wall_seconds": 30,
+        "errors": [],
+        "observed_owned_identity_count": 1,
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 114680.026249128,
+        "pid": 3572118,
+        "spawn_return_monotonic": 114680.028745648,
+        "direct_identity": {
+          "pid": 3572118,
+          "state": "R",
+          "ppid": 3571991,
+          "pgid": 3572118,
+          "sid": 3572118,
+          "start_ticks": 11468002,
+          "rss_bytes": 479232
+        },
+        "peak_live_owned_identities": 1,
+        "peak_session_rss_bytes": 52748288,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 0,
+        "finished_utc": "2026-10-12T00:45:16.046894+00:00",
+        "elapsed_seconds": 0.14192059301421978,
+        "logs": {
+          "device-selected.stdout": {
+            "bytes": 1594,
+            "sha256": {
+              "sha256": "3bf1ea570595a99f7d6906c0fabb2639bb16d1a116898e91af7458ee5156e217"
+            }
+          },
+          "device-selected.stderr": {
+            "bytes": 124,
+            "sha256": {
+              "sha256": "51125791d9d3ed81590f28c494ab149120cdb0755d20068e7ee8539689d8408e"
+            }
+          }
+        }
+      },
+      {
+        "label": "device-usage",
+        "argv": [
+          "/usr/bin/xpu-smi",
+          "stats",
+          "-d",
+          "0",
+          "-j"
+        ],
+        "environment": {
+          "PATH": "/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8"
+        },
+        "started_utc": "2026-10-12T00:45:16.075499+00:00",
+        "wall_seconds": 30,
+        "errors": [],
+        "observed_owned_identity_count": 1,
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 114680.211756253,
+        "pid": 3572132,
+        "spawn_return_monotonic": 114680.214197367,
+        "direct_identity": {
+          "pid": 3572132,
+          "state": "R",
+          "ppid": 3571991,
+          "pgid": 3572132,
+          "sid": 3572132,
+          "start_ticks": 11468021,
+          "rss_bytes": 540672
+        },
+        "peak_live_owned_identities": 1,
+        "peak_session_rss_bytes": 4206592,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 0,
+        "finished_utc": "2026-10-12T00:45:16.542314+00:00",
+        "elapsed_seconds": 0.451831548998598,
+        "logs": {
+          "device-usage.stdout": {
+            "bytes": 1472,
+            "sha256": {
+              "sha256": "8d271335a7d5d5aa8c0f40a8c4bbc1719ef8780add10b8d407e52df2298561ab"
+            }
+          },
+          "device-usage.stderr": {
+            "bytes": 0,
+            "sha256": {
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          }
+        }
+      },
+      {
+        "label": "integer-health",
+        "argv": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-main-official-health-build-root-v2/health",
+          "0000:05:00.0"
+        ],
+        "environment": {
+          "PATH": "/opt/intel/oneapi/compiler/2026.1/bin:/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/umf/1.1/lib:/opt/intel/oneapi/compiler/2026.1/opt/compiler/lib",
+          "XDG_RUNTIME_DIR": "/run/user/1000",
+          "CUDA_MODULE_LOADING": "EAGER",
+          "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+          "SYCL_CACHE_PERSISTENT": "0",
+          "STRATA_TRACE": "1",
+          "ZEL_ENABLE_LOADER_LOGGING": "1",
+          "ZEL_LOADER_LOG_CONSOLE": "1",
+          "ZEL_LOADER_LOGGING_LEVEL": "debug",
+          "ZE_ENABLE_VALIDATION_LAYER": "1",
+          "ZE_ENABLE_PARAMETER_VALIDATION": "1",
+          "UR_LOG_LOADER": "level:debug;flush:debug;output:stderr",
+          "UR_LOG_LEVEL_ZERO": "level:debug;flush:debug;output:stderr",
+          "NEOReadDebugKeys": "1",
+          "EnableDirectSubmission": "0",
+          "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+          "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.1/lib/libur_adapter_level_zero_v2.so.0.12.0",
+          "ZEL_LOADER_LOGGING_ENABLE_SUCCESS_PRINT": "1",
+          "STRATA_VERIFY_STEPPED": "1",
+          "STRATA_VERIFY_PIPE": "0",
+          "STRATA_VERIFY_NO_HOST": "0",
+          "STRATA_VERIFY_DEVICE_PLAN": "1"
+        },
+        "started_utc": "2026-10-12T00:45:16.587543+00:00",
+        "wall_seconds": 30,
+        "errors": [],
+        "observed_owned_identity_count": 1,
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 114680.724147231,
+        "pid": 3572184,
+        "spawn_return_monotonic": 114680.726399069,
+        "direct_identity": {
+          "pid": 3572184,
+          "state": "R",
+          "ppid": 3571991,
+          "pgid": 3572184,
+          "sid": 3572184,
+          "start_ticks": 11468072,
+          "rss_bytes": 425984
+        },
+        "peak_live_owned_identities": 1,
+        "peak_session_rss_bytes": 56176640,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 0,
+        "finished_utc": "2026-10-12T00:45:16.797486+00:00",
+        "elapsed_seconds": 0.19463917400571518,
+        "logs": {
+          "integer-health.stdout": {
+            "bytes": 2413,
+            "sha256": {
+              "sha256": "a87e2a2ce740f61715f01b5af3e5c2a184ff3d7fa97e2c277580b43de2080e05"
+            }
+          },
+          "integer-health.stderr": {
+            "bytes": 5109,
+            "sha256": {
+              "sha256": "0eb0fda6b3805a8829633411fc2136bc973a3a31dde8db026ad717c5616eb910"
+            }
+          }
+        }
+      },
+      {
+        "label": "kernel-after",
+        "argv": [
+          "/usr/bin/journalctl",
+          "-k",
+          "--no-pager",
+          "-o",
+          "json",
+          "--after-cursor",
+          "s=9944479cfd1a45c28a589619cb8f2881;i=c0e3b6d;b=cfda0b6a7c134fe2bdf58f9202770840;m=1ab057fc8a;t=65d99ffd1d439;x=62ede40cce59c2ff"
+        ],
+        "environment": {
+          "PATH": "/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8"
+        },
+        "started_utc": "2026-10-12T00:45:17.205796+00:00",
+        "wall_seconds": 30,
+        "errors": [],
+        "observed_owned_identity_count": 1,
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 114681.343267421,
+        "pid": 3572212,
+        "spawn_return_monotonic": 114681.345631421,
+        "direct_identity": {
+          "pid": 3572212,
+          "state": "R",
+          "ppid": 3571991,
+          "pgid": 3572212,
+          "sid": 3572212,
+          "start_ticks": 11468134,
+          "rss_bytes": 483328
+        },
+        "peak_live_owned_identities": 1,
+        "peak_session_rss_bytes": 0,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 0,
+        "finished_utc": "2026-10-12T00:45:17.388918+00:00",
+        "elapsed_seconds": 0.16715117399871815,
+        "logs": {
+          "kernel-after.stdout": {
+            "bytes": 0,
+            "sha256": {
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          },
+          "kernel-after.stderr": {
+            "bytes": 0,
+            "sha256": {
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          }
+        }
+      },
+      {
+        "label": "kernel-final",
+        "argv": [
+          "/usr/bin/journalctl",
+          "-k",
+          "--no-pager",
+          "-o",
+          "json",
+          "--after-cursor",
+          "s=9944479cfd1a45c28a589619cb8f2881;i=c0e3b6d;b=cfda0b6a7c134fe2bdf58f9202770840;m=1ab057fc8a;t=65d99ffd1d439;x=62ede40cce59c2ff"
+        ],
+        "environment": {
+          "PATH": "/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8"
+        },
+        "started_utc": "2026-10-12T00:45:17.435352+00:00",
+        "wall_seconds": 30,
+        "errors": [],
+        "observed_owned_identity_count": 1,
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 114681.571122797,
+        "pid": 3572222,
+        "spawn_return_monotonic": 114681.573346282,
+        "direct_identity": {
+          "pid": 3572222,
+          "state": "R",
+          "ppid": 3571991,
+          "pgid": 3572222,
+          "sid": 3572222,
+          "start_ticks": 11468157,
+          "rss_bytes": 462848
+        },
+        "peak_live_owned_identities": 1,
+        "peak_session_rss_bytes": 0,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 0,
+        "finished_utc": "2026-10-12T00:45:17.590373+00:00",
+        "elapsed_seconds": 0.14052875399647746,
+        "logs": {
+          "kernel-final.stdout": {
+            "bytes": 0,
+            "sha256": {
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          },
+          "kernel-final.stderr": {
+            "bytes": 0,
+            "sha256": {
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          }
+        }
+      }
+    ],
+    "boot_id": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "engine": "official",
+    "phase": "startup",
+    "main_reviewed": true,
+    "controller_sha256": {
+      "sha256": "889766c12c05b85df9abe838351470ca1ad67e7f82f26ab89a4ce7d0b0c2ad52"
+    },
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-main-official-health-build-root-v2/health",
+      "bytes": 129552,
+      "sha256": {
+        "sha256": "5f1d5abf8609653a7bee47069a860693cf96016475806fd15c61cf541abee977"
+      }
+    },
+    "environment": {
+      "PATH": "/opt/intel/oneapi/compiler/2026.1/bin:/usr/bin:/bin",
+      "HOME": "/home/yayoi",
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.1/lib:/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/umf/1.1/lib:/opt/intel/oneapi/compiler/2026.1/opt/compiler/lib",
+      "XDG_RUNTIME_DIR": "/run/user/1000",
+      "CUDA_MODULE_LOADING": "EAGER",
+      "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+      "SYCL_CACHE_PERSISTENT": "0",
+      "STRATA_TRACE": "1",
+      "ZEL_ENABLE_LOADER_LOGGING": "1",
+      "ZEL_LOADER_LOG_CONSOLE": "1",
+      "ZEL_LOADER_LOGGING_LEVEL": "debug",
+      "ZE_ENABLE_VALIDATION_LAYER": "1",
+      "ZE_ENABLE_PARAMETER_VALIDATION": "1",
+      "UR_LOG_LOADER": "level:debug;flush:debug;output:stderr",
+      "UR_LOG_LEVEL_ZERO": "level:debug;flush:debug;output:stderr",
+      "NEOReadDebugKeys": "1",
+      "EnableDirectSubmission": "0",
+      "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+      "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.1/lib/libur_adapter_level_zero_v2.so.0.12.0",
+      "ZEL_LOADER_LOGGING_ENABLE_SUCCESS_PRINT": "1",
+      "STRATA_VERIFY_STEPPED": "1",
+      "STRATA_VERIFY_PIPE": "0",
+      "STRATA_VERIFY_NO_HOST": "0",
+      "STRATA_VERIFY_DEVICE_PLAN": "1"
+    },
+    "binary_build_receipt_sha256": {
+      "sha256": "15beeaa5a7db453cbd42420f6175c950148840109e22d9844c8402f9be97b085"
+    },
+    "reset_executed": false,
+    "retry_count": 0,
+    "model_executed": false,
+    "gpu_executed": true,
+    "pci_bdf": "0000:05:00.0",
+    "raw_log_budget_bytes": 67108864,
+    "total_wall_seconds": 180,
+    "evidence": {
+      "kernel-before": {
+        "stdout_derivative": {
+          "original_bytes": 4275208,
+          "original_sha256": "bdd1fdaf1038f0a9a96de1dae3360c03251c5411610a7580e4c67e45651aa912",
+          "individual_test_lines": [],
+          "protocol_results": [],
+          "diagnostic_lines": [
+            "{\"__CURSOR\":\"s=9944479cfd1a45c28a589619cb8f2881;i=c05c8f1;b=cfda0b6a7c134fe2bdf58f9202770840;m=39a8fe8;t=65d7f53146796;x=a785754cd7003788\",\"__SEQNUM_ID\":\"9944479cfd1a45c28a589619cb8f2881\",\"_RUNTIME_SCOPE\":\"system\",\"_TRANSPORT\":\"kernel\",\"PRIORITY\":\"4\",\"MESSAGE\":\"NOHZ tick-stop error: local softirq work is pending, handler #200!!!\",\"__SEQNUM\":\"201705713\",\"_MACHINE_ID\":\"483b0a40e3274d529541e9a13dc5a67d\",\"__REALTIME_TIMESTAMP\":\"1791651296339862\",\"SYSLOG_IDENTIFIER\":\"kernel\",\"_BOOT_ID\":\"cfda0b6a7c134fe2bdf58f9202770840\",\"SYSLOG_FACILITY\":\"0\",\"__MONOTONIC_TIMESTAMP\":\"60461032\",\"_SOURCE_MONOTONIC_TIMESTAMP\":\"60443095\",\"_HOSTNAME\":\"jitakusaba01\"}",
+            "{\"PRIORITY\":\"4\",\"__REALTIME_TIMESTAMP\":\"1791651301078895\",\"_RUNTIME_SCOPE\":\"system\",\"_MACHINE_ID\":\"483b0a40e3274d529541e9a13dc5a67d\",\"SYSLOG_FACILITY\":\"0\",\"__SEQNUM\":\"201706035\",\"MESSAGE\":\"NOHZ tick-stop error: local softirq work is pending, handler #200!!!\",\"_TRANSPORT\":\"kernel\",\"SYSLOG_IDENTIFIER\":\"kernel\",\"__MONOTONIC_TIMESTAMP\":\"65200065\",\"_SOURCE_MONOTONIC_TIMESTAMP\":\"65176236\",\"_HOSTNAME\":\"jitakusaba01\",\"__SEQNUM_ID\":\"9944479cfd1a45c28a589619cb8f2881\",\"_BOOT_ID\":\"cfda0b6a7c134fe2bdf58f9202770840\",\"__CURSOR\":\"s=9944479cfd1a45c28a589619cb8f2881;i=c05ca33;b=cfda0b6a7c134fe2bdf58f9202770840;m=3e2dfc1;t=65d7f535cb76f;x=2184b74f292ae430\"}",
+            "{\"__SEQNUM_ID\":\"9944479cfd1a45c28a589619cb8f2881\",\"SYSLOG_FACILITY\":\"0\",\"PRIORITY\":\"4\",\"_HOSTNAME\":\"jitakusaba01\",\"__REALTIME_TIMESTAMP\":\"1791651304714853\",\"__CURSOR\":\"s=9944479cfd1a45c28a589619cb8f2881;i=c05cad2;b=cfda0b6a7c134fe2bdf58f9202770840;m=41a5ab7;t=65d7f53943265;x=1475505668b625fa\",\"__MONOTONIC_TIMESTAMP\":\"68836023\",\"_TRANSPORT\":\"kernel\",\"_SOURCE_MONOTONIC_TIMESTAMP\":\"68808783\",\"SYSLOG_IDENTIFIER\":\"kernel\",\"_RUNTIME_SCOPE\":\"system\",\"MESSAGE\":\"NOHZ tick-stop error: local softirq work is pending, handler #80!!!\",\"_MACHINE_ID\":\"483b0a40e3274d529541e9a13dc5a67d\",\"__SEQNUM\":\"201706194\",\"_BOOT_ID\":\"cfda0b6a7c134fe2bdf58f9202770840\"}",
+            "{\"__SEQNUM\":\"201706253\",\"SYSLOG_IDENTIFIER\":\"kernel\",\"_SOURCE_MONOTONIC_TIMESTAMP\":\"70360549\",\"PRIORITY\":\"4\",\"_RUNTIME_SCOPE\":\"system\",\"MESSAGE\":\"NOHZ tick-stop error: local softirq work is pending, handler #200!!!\",\"_MACHINE_ID\":\"483b0a40e3274d529541e9a13dc5a67d\",\"__CURSOR\":\"s=9944479cfd1a45c28a589619cb8f2881;i=c05cb0d;b=cfda0b6a7c134fe2bdf58f9202770840;m=4320d15;t=65d7f53abe4c3;x=daf0d370430d2b32\",\"__MONOTONIC_TIMESTAMP\":\"70389013\",\"SYSLOG_FACILITY\":\"0\",\"_HOSTNAME\":\"jitakusaba01\",\"_TRANSPORT\":\"kernel\",\"__SEQNUM_ID\":\"9944479cfd1a45c28a589619cb8f2881\",\"__REALTIME_TIMESTAMP\":\"1791651306267843\",\"_BOOT_ID\":\"cfda0b6a7c134fe2bdf58f9202770840\"}",
+            "{\"SYSLOG_FACILITY\":\"0\",\"__CURSOR\":\"s=9944479cfd1a45c28a589619cb8f2881;i=c05cb14;b=cfda0b6a7c134fe2bdf58f9202770840;m=4340cd3;t=65d7f53ade481;x=e3be7efb207af81c\",\"_RUNTIME_SCOPE\":\"system\",\"SYSLOG_IDENTIFIER\":\"kernel\",\"MESSAGE\":\"NOHZ tick-stop error: local softirq work is pending, handler #10!!!\",\"_MACHINE_ID\":\"483b0a40e3274d529541e9a13dc5a67d\",\"_SOURCE_MONOTONIC_TIMESTAMP\":\"70491816\",\"_BOOT_ID\":\"cfda0b6a7c134fe2bdf58f9202770840\",\"__SEQNUM_ID\":\"9944479cfd1a45c28a589619cb8f2881\",\"PRIORITY\":\"4\",\"__REALTIME_TIMESTAMP\":\"1791651306398849\",\"__SEQNUM\":\"201706260\",\"_TRANSPORT\":\"kernel\",\"_HOSTNAME\":\"jitakusaba01\",\"__MONOTONIC_TIMESTAMP\":\"70520019\"}",
+            "{\"__SEQNUM_ID\":\"9944479cfd1a45c28a589619cb8f2881\",\"_SOURCE_MONOTONIC_TIMESTAMP\":\"70935111\",\"SYSLOG_FACILITY\":\"0\",\"_RUNTIME_SCOPE\":\"system\",\"__SEQNUM\":\"201706306\",\"_BOOT_ID\":\"cfda0b6a7c134fe2bdf58f9202770840\",\"_HOSTNAME\":\"jitakusaba01\",\"_MACHINE_ID\":\"483b0a40e3274d529541e9a13dc5a67d\",\"__REALTIME_TIMESTAMP\":\"1791651306844750\",\"_TRANSPORT\":\"kernel\",\"PRIORITY\":\"4\",\"__CURSOR\":\"s=9944479cfd1a45c28a589619cb8f2881;i=c05cb42;b=cfda0b6a7c134fe2bdf58f9202770840;m=43adaa0;t=65d7f53b4b24e;x=46160e6b84183dfa\",\"SYSLOG_IDENTIFIER\":\"kernel\",\"__MONOTONIC_TIMESTAMP\":\"70965920\",\"MESSAGE\":\"NOHZ tick-stop error: local softirq work is pending, handler #200!!!\"}",
+            "{\"__CURSOR\":\"s=9944479cfd1a45c28a589619cb8f2881;i=c05cb43;b=cfda0b6a7c134fe2bdf58f9202770840;m=43adab9;t=65d7f53b4b268;x=196bc15e822cf1cc\",\"__SEQNUM\":\"201706307\",\"__SEQNUM_ID\":\"9944479cfd1a45c28a589619cb8f2881\",\"_HOSTNAME\":\"jitakusaba01\",\"__REALTIME_TIMESTAMP\":\"1791651306844776\",\"_MACHINE_ID\":\"483b0a40e3274d529541e9a13dc5a67d\",\"SYSLOG_FACILITY\":\"0\",\"MESSAGE\":\"NOHZ tick-stop error: local softirq work is pending, handler #200!!!\",\"__MONOTONIC_TIMESTAMP\":\"70965945\",\"_TRANSPORT\":\"kernel\",\"_SOURCE_MONOTONIC_TIMESTAMP\":\"70935168\",\"_RUNTIME_SCOPE\":\"system\",\"SYSLOG_IDENTIFIER\":\"kernel\",\"PRIORITY\":\"4\",\"_BOOT_ID\":\"cfda0b6a7c134fe2bdf58f9202770840\"}",
+            "{\"SYSLOG_FACILITY\":\"0\",\"_TRANSPORT\":\"kernel\",\"PRIORITY\":\"4\",\"__SEQNUM\":\"201706308\",\"_MACHINE_ID\":\"483b0a40e3274d529541e9a13dc5a67d\",\"_BOOT_ID\":\"cfda0b6a7c134fe2bdf58f9202770840\",\"_RUNTIME_SCOPE\":\"system\",\"SYSLOG_IDENTIFIER\":\"kernel\",\"_HOSTNAME\":\"jitakusaba01\",\"__REALTIME_TIMESTAMP\":\"1791651306844784\",\"__MONOTONIC_TIMESTAMP\":\"70965954\",\"_SOURCE_MONOTONIC_TIMESTAMP\":\"70935265\",\"__SEQNUM_ID\":\"9944479cfd1a45c28a589619cb8f2881\",\"__CURSOR\":\"s=9944479cfd1a45c28a589619cb8f2881;i=c05cb44;b=cfda0b6a7c134fe2bdf58f9202770840;m=43adac2;t=65d7f53b4b270;x=8d2bd0ed72e9ea62\",\"MESSAGE\":\"NOHZ tick-stop error: local softirq work is pending, handler #200!!!\"}",
+            "{\"_SOURCE_MONOTONIC_TIMESTAMP\":\"70935341\",\"SYSLOG_FACILITY\":\"0\",\"SYSLOG_IDENTIFIER\":\"kernel\",\"__SEQNUM_ID\":\"9944479cfd1a45c28a589619cb8f2881\",\"_HOSTNAME\":\"jitakusaba01\",\"PRIORITY\":\"4\",\"__SEQNUM\":\"201706309\",\"MESSAGE\":\"NOHZ tick-stop error: local softirq work is pending, handler #200!!!\",\"_BOOT_ID\":\"cfda0b6a7c134fe2bdf58f9202770840\",\"__REALTIME_TIMESTAMP\":\"1791651306844792\",\"_RUNTIME_SCOPE\":\"system\",\"_MACHINE_ID\":\"483b0a40e3274d529541e9a13dc5a67d\",\"_TRANSPORT\":\"kernel\",\"__MONOTONIC_TIMESTAMP\":\"70965962\",\"__CURSOR\":\"s=9944479cfd1a45c28a589619cb8f2881;i=c05cb45;b=cfda0b6a7c134fe2bdf58f9202770840;m=43adaca;t=65d7f53b4b278;x=7640846814b29af4\"}",
+            "{\"__SEQNUM\":\"201706583\",\"__SEQNUM_ID\":\"9944479cfd1a45c28a589619cb8f2881\",\"__MONOTONIC_TIMESTAMP\":\"72124477\",\"MESSAGE\":\"NOHZ tick-stop error: local softirq work is pending, handler #200!!!\",\"SYSLOG_FACILITY\":\"0\",\"_BOOT_ID\":\"cfda0b6a7c134fe2bdf58f9202770840\",\"__CURSOR\":\"s=9944479cfd1a45c28a589619cb8f2881;i=c05cc57;b=cfda0b6a7c134fe2bdf58f9202770840;m=44c883d;t=65d7f53c65feb;x=9dbbd8c140db2663\",\"PRIORITY\":\"4\",\"_HOSTNAME\":\"jitakusaba01\",\"_SOURCE_MONOTONIC_TIMESTAMP\":\"72094323\",\"_MACHINE_ID\":\"483b0a40e3274d529541e9a13dc5a67d\",\"_TRANSPORT\":\"kernel\",\"SYSLOG_IDENTIFIER\":\"kernel\",\"_RUNTIME_SCOPE\":\"system\",\"__REALTIME_TIMESTAMP\":\"1791651308003307\"}"
+          ],
+          "diagnostic_line_count": 10,
+          "scope": "Actual individual test/protocol results and diagnostic evidence; repeated successful API and journal entries omitted."
+        },
+        "stderr_derivative": {
+          "original_bytes": 0,
+          "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "individual_test_lines": [],
+          "protocol_results": [],
+          "diagnostic_lines": [],
+          "diagnostic_line_count": 0,
+          "scope": "Actual individual test/protocol results and diagnostic evidence; repeated successful API and journal entries omitted."
+        }
+      },
+      "kernel-cursor": {
+        "stdout_derivative": {
+          "original_bytes": 156,
+          "original_sha256": "beac15bfbe9aec43c5e797bfcbde2b9007a078d551533f7392f04efcfa3e039b",
+          "individual_test_lines": [],
+          "protocol_results": [],
+          "diagnostic_lines": [],
+          "diagnostic_line_count": 0,
+          "scope": "Actual individual test/protocol results and diagnostic evidence; repeated successful API and journal entries omitted."
+        },
+        "stderr_derivative": {
+          "original_bytes": 0,
+          "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "individual_test_lines": [],
+          "protocol_results": [],
+          "diagnostic_lines": [],
+          "diagnostic_line_count": 0,
+          "scope": "Actual individual test/protocol results and diagnostic evidence; repeated successful API and journal entries omitted."
+        }
+      },
+      "device-list": {
+        "stdout_derivative": {
+          "original_bytes": 509,
+          "original_sha256": "dc2c24fe141a549eafb5ce722dbc01b06a1d906769f324b79f9e3c1a2d1b1174",
+          "individual_test_lines": [],
+          "protocol_results": [],
+          "diagnostic_lines": [],
+          "diagnostic_line_count": 0,
+          "scope": "Actual individual test/protocol results and diagnostic evidence; repeated successful API and journal entries omitted."
+        },
+        "stderr_derivative": {
+          "original_bytes": 0,
+          "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "individual_test_lines": [],
+          "protocol_results": [],
+          "diagnostic_lines": [],
+          "diagnostic_line_count": 0,
+          "scope": "Actual individual test/protocol results and diagnostic evidence; repeated successful API and journal entries omitted."
+        }
+      },
+      "device-selected": {
+        "stdout_derivative": {
+          "original_bytes": 1594,
+          "original_sha256": "3bf1ea570595a99f7d6906c0fabb2639bb16d1a116898e91af7458ee5156e217",
+          "individual_test_lines": [],
+          "protocol_results": [],
+          "diagnostic_lines": [],
+          "diagnostic_line_count": 0,
+          "scope": "Actual individual test/protocol results and diagnostic evidence; repeated successful API and journal entries omitted."
+        },
+        "stderr_derivative": {
+          "original_bytes": 124,
+          "original_sha256": "51125791d9d3ed81590f28c494ab149120cdb0755d20068e7ee8539689d8408e",
+          "individual_test_lines": [],
+          "protocol_results": [],
+          "diagnostic_lines": [],
+          "diagnostic_line_count": 0,
+          "scope": "Actual individual test/protocol results and diagnostic evidence; repeated successful API and journal entries omitted."
+        }
+      },
+      "device-usage": {
+        "stdout_derivative": {
+          "original_bytes": 1472,
+          "original_sha256": "8d271335a7d5d5aa8c0f40a8c4bbc1719ef8780add10b8d407e52df2298561ab",
+          "individual_test_lines": [],
+          "protocol_results": [],
+          "diagnostic_lines": [],
+          "diagnostic_line_count": 0,
+          "scope": "Actual individual test/protocol results and diagnostic evidence; repeated successful API and journal entries omitted."
+        },
+        "stderr_derivative": {
+          "original_bytes": 0,
+          "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "individual_test_lines": [],
+          "protocol_results": [],
+          "diagnostic_lines": [],
+          "diagnostic_line_count": 0,
+          "scope": "Actual individual test/protocol results and diagnostic evidence; repeated successful API and journal entries omitted."
+        }
+      },
+      "integer-health": {
+        "stdout_derivative": {
+          "original_bytes": 2413,
+          "original_sha256": "a87e2a2ce740f61715f01b5af3e5c2a184ff3d7fa97e2c277580b43de2080e05",
+          "individual_test_lines": [],
+          "protocol_results": [
+            "STATUS 0000:05:00.0 0",
+            "QUEUE 0000:05:00.0",
+            "H2D 65536 complete",
+            "KERNEL 16384 complete",
+            "D2H 65536 complete",
+            "PASS 0000:05:00.0: 1 round, 16384 exact words"
+          ],
+          "diagnostic_lines": [],
+          "diagnostic_line_count": 0,
+          "scope": "Actual individual test/protocol results and diagnostic evidence; repeated successful API and journal entries omitted."
+        },
+        "stderr_derivative": {
+          "original_bytes": 5109,
+          "original_sha256": "0eb0fda6b3805a8829633411fc2136bc973a3a31dde8db026ad717c5616eb910",
+          "individual_test_lines": [],
+          "protocol_results": [],
+          "diagnostic_lines": [],
+          "diagnostic_line_count": 0,
+          "scope": "Actual individual test/protocol results and diagnostic evidence; repeated successful API and journal entries omitted."
+        }
+      },
+      "kernel-after": {
+        "stdout_derivative": {
+          "original_bytes": 0,
+          "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "individual_test_lines": [],
+          "protocol_results": [],
+          "diagnostic_lines": [],
+          "diagnostic_line_count": 0,
+          "scope": "Actual individual test/protocol results and diagnostic evidence; repeated successful API and journal entries omitted."
+        },
+        "stderr_derivative": {
+          "original_bytes": 0,
+          "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "individual_test_lines": [],
+          "protocol_results": [],
+          "diagnostic_lines": [],
+          "diagnostic_line_count": 0,
+          "scope": "Actual individual test/protocol results and diagnostic evidence; repeated successful API and journal entries omitted."
+        }
+      },
+      "kernel-final": {
+        "stdout_derivative": {
+          "original_bytes": 0,
+          "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "individual_test_lines": [],
+          "protocol_results": [],
+          "diagnostic_lines": [],
+          "diagnostic_line_count": 0,
+          "scope": "Actual individual test/protocol results and diagnostic evidence; repeated successful API and journal entries omitted."
+        },
+        "stderr_derivative": {
+          "original_bytes": 0,
+          "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "individual_test_lines": [],
+          "protocol_results": [],
+          "diagnostic_lines": [],
+          "diagnostic_line_count": 0,
+          "scope": "Actual individual test/protocol results and diagnostic evidence; repeated successful API and journal entries omitted."
+        }
+      }
+    },
+    "kernel-before": {
+      "relevant_entries": [
+        {
+          "__MONOTONIC_TIMESTAMP": "5798273",
+          "__SEQNUM": "201702833",
+          "MESSAGE": "pci 0000:05:00.0: [8086:e20c] type 00 class 0x030000 PCIe Endpoint",
+          "_TRANSPORT": "kernel",
+          "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+          "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+          "_SOURCE_MONOTONIC_TIMESTAMP": "509698",
+          "PRIORITY": "6",
+          "_UDEV_SYSNAME": "0000:05:00.0",
+          "__REALTIME_TIMESTAMP": "1791651241677103",
+          "_RUNTIME_SCOPE": "system",
+          "_HOSTNAME": "jitakusaba01",
+          "_KERNEL_DEVICE": "+pci:0000:05:00.0",
+          "SYSLOG_IDENTIFIER": "kernel",
+          "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05bdb1;b=cfda0b6a7c134fe2bdf58f9202770840;m=587981;t=65d7f4fd2512f;x=7c1a84f3f8d2f016",
+          "SYSLOG_FACILITY": "0",
+          "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+          "_KERNEL_SUBSYSTEM": "pci"
+        },
+        {
+          "__SEQNUM": "201702834",
+          "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+          "PRIORITY": "6",
+          "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+          "_TRANSPORT": "kernel",
+          "_SOURCE_MONOTONIC_TIMESTAMP": "509790",
+          "MESSAGE": "pci 0000:05:00.0: BAR 0 [mem 0xf9000000-0xf9ffffff 64bit]",
+          "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05bdb2;b=cfda0b6a7c134fe2bdf58f9202770840;m=5879f2;t=65d7f4fd251a0;x=78fd926568951c11",
+          "_KERNEL_SUBSYSTEM": "pci",
+          "__MONOTONIC_TIMESTAMP": "5798386",
+          "SYSLOG_FACILITY": "0",
+          "SYSLOG_IDENTIFIER": "kernel",
+          "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+          "__REALTIME_TIMESTAMP": "1791651241677216",
+          "_KERNEL_DEVICE": "+pci:0000:05:00.0",
+          "_UDEV_SYSNAME": "0000:05:00.0",
+          "_HOSTNAME": "jitakusaba01",
+          "_RUNTIME_SCOPE": "system"
+        },
+        {
+          "_HOSTNAME": "jitakusaba01",
+          "_SOURCE_MONOTONIC_TIMESTAMP": "509799",
+          "__MONOTONIC_TIMESTAMP": "5798512",
+          "SYSLOG_IDENTIFIER": "kernel",
+          "__REALTIME_TIMESTAMP": "1791651241677342",
+          "_UDEV_SYSNAME": "0000:05:00.0",
+          "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05bdb3;b=cfda0b6a7c134fe2bdf58f9202770840;m=587a70;t=65d7f4fd2521e;x=31f2142324888cc5",
+          "_RUNTIME_SCOPE": "system",
+          "SYSLOG_FACILITY": "0",
+          "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+          "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+          "_TRANSPORT": "kernel",
+          "_KERNEL_DEVICE": "+pci:0000:05:00.0",
+          "MESSAGE": "pci 0000:05:00.0: BAR 2 [mem 0x7800000000-0x7bffffffff 64bit pref]",
+          "PRIORITY": "6",
+          "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+          "_KERNEL_SUBSYSTEM": "pci",
+          "__SEQNUM": "201702835"
+        },
+        {
+          "MESSAGE": "pci 0000:05:00.0: ROM [mem 0xfa000000-0xfa1fffff pref]",
+          "_SOURCE_MONOTONIC_TIMESTAMP": "509811",
+          "__MONOTONIC_TIMESTAMP": "5798631",
+          "_TRANSPORT": "kernel",
+          "SYSLOG_FACILITY": "0",
+          "SYSLOG_IDENTIFIER": "kernel",
+          "_KERNEL_SUBSYSTEM": "pci",
+          "__REALTIME_TIMESTAMP": "1791651241677462",
+          "PRIORITY": "6",
+          "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+          "_UDEV_SYSNAME": "0000:05:00.0",
+          "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+          "__SEQNUM": "201702836",
+          "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+          "_HOSTNAME": "jitakusaba01",
+          "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05bdb4;b=cfda0b6a7c134fe2bdf58f9202770840;m=587ae7;t=65d7f4fd25296;x=e5bb3cee546e2627",
+          "_RUNTIME_SCOPE": "system",
+          "_KERNEL_DEVICE": "+pci:0000:05:00.0"
+        },
+        {
+          "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+          "PRIORITY": "6",
+          "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+          "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+          "_KERNEL_SUBSYSTEM": "pci",
+          "_UDEV_SYSNAME": "0000:05:00.0",
+          "_KERNEL_DEVICE": "+pci:0000:05:00.0",
+          "__SEQNUM": "201702837",
+          "_RUNTIME_SCOPE": "system",
+          "_SOURCE_MONOTONIC_TIMESTAMP": "509828",
+          "SYSLOG_FACILITY": "0",
+          "MESSAGE": "pci 0000:05:00.0: enabling Extended Tags",
+          "_HOSTNAME": "jitakusaba01",
+          "__MONOTONIC_TIMESTAMP": "5798749",
+          "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05bdb5;b=cfda0b6a7c134fe2bdf58f9202770840;m=587b5d;t=65d7f4fd2530c;x=2f47af963d11852d",
+          "__REALTIME_TIMESTAMP": "1791651241677580",
+          "_TRANSPORT": "kernel",
+          "SYSLOG_IDENTIFIER": "kernel"
+        },
+        {
+          "_TRANSPORT": "kernel",
+          "__REALTIME_TIMESTAMP": "1791651241677692",
+          "SYSLOG_FACILITY": "0",
+          "MESSAGE": "pci 0000:05:00.0: PME# supported from D0 D3hot",
+          "_KERNEL_SUBSYSTEM": "pci",
+          "__SEQNUM": "201702838",
+          "SYSLOG_IDENTIFIER": "kernel",
+          "_SOURCE_MONOTONIC_TIMESTAMP": "510006",
+          "__MONOTONIC_TIMESTAMP": "5798862",
+          "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+          "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05bdb6;b=cfda0b6a7c134fe2bdf58f9202770840;m=587bce;t=65d7f4fd2537c;x=c2b1adf7ecead5bd",
+          "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+          "_RUNTIME_SCOPE": "system",
+          "_UDEV_SYSNAME": "0000:05:00.0",
+          "_KERNEL_DEVICE": "+pci:0000:05:00.0",
+          "_HOSTNAME": "jitakusaba01",
+          "PRIORITY": "6",
+          "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d"
+        },
+        {
+          "_HOSTNAME": "jitakusaba01",
+          "SYSLOG_FACILITY": "0",
+          "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+          "PRIORITY": "6",
+          "_TRANSPORT": "kernel",
+          "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+          "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+          "_KERNEL_SUBSYSTEM": "pci",
+          "_SOURCE_MONOTONIC_TIMESTAMP": "536946",
+          "MESSAGE": "pci 0000:05:00.0: vgaarb: setting as boot VGA device",
+          "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05be4a;b=cfda0b6a7c134fe2bdf58f9202770840;m=58b0e2;t=65d7f4fd28890;x=31ffc3dde247aa9f",
+          "_RUNTIME_SCOPE": "system",
+          "__MONOTONIC_TIMESTAMP": "5812450",
+          "__SEQNUM": "201702986",
+          "_KERNEL_DEVICE": "+pci:0000:05:00.0",
+          "SYSLOG_IDENTIFIER": "kernel",
+          "_UDEV_SYSNAME": "0000:05:00.0",
+          "__REALTIME_TIMESTAMP": "1791651241691280"
+        },
+        {
+          "_UDEV_SYSNAME": "0000:05:00.0",
+          "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05be4b;b=cfda0b6a7c134fe2bdf58f9202770840;m=58b154;t=65d7f4fd28902;x=e3360aadb88b95de",
+          "_SOURCE_MONOTONIC_TIMESTAMP": "536946",
+          "_KERNEL_DEVICE": "+pci:0000:05:00.0",
+          "_RUNTIME_SCOPE": "system",
+          "SYSLOG_FACILITY": "0",
+          "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+          "__REALTIME_TIMESTAMP": "1791651241691394",
+          "__MONOTONIC_TIMESTAMP": "5812564",
+          "_KERNEL_SUBSYSTEM": "pci",
+          "_HOSTNAME": "jitakusaba01",
+          "MESSAGE": "pci 0000:05:00.0: vgaarb: bridge control possible",
+          "SYSLOG_IDENTIFIER": "kernel",
+          "PRIORITY": "6",
+          "_TRANSPORT": "kernel",
+          "__SEQNUM": "201702987",
+          "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+          "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d"
+        },
+        {
+          "__MONOTONIC_TIMESTAMP": "5812676",
+          "_HOSTNAME": "jitakusaba01",
+          "_TRANSPORT": "kernel",
+          "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+          "_KERNEL_SUBSYSTEM": "pci",
+          "__REALTIME_TIMESTAMP": "1791651241691506",
+          "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+          "SYSLOG_IDENTIFIER": "kernel",
+          "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+          "_SOURCE_MONOTONIC_TIMESTAMP": "536946",
+          "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05be4c;b=cfda0b6a7c134fe2bdf58f9202770840;m=58b1c4;t=65d7f4fd28972;x=951d82c45275fe28",
+          "_KERNEL_DEVICE": "+pci:0000:05:00.0",
+          "_RUNTIME_SCOPE": "system",
+          "SYSLOG_FACILITY": "0",
+          "MESSAGE": "pci 0000:05:00.0: vgaarb: VGA device added: decodes=io+mem,owns=none,locks=none",
+          "__SEQNUM": "201702988",
+          "_UDEV_SYSNAME": "0000:05:00.0",
+          "PRIORITY": "6"
+        },
+        {
+          "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+          "__REALTIME_TIMESTAMP": "1791651247620623",
+          "SYSLOG_FACILITY": "0",
+          "SYSLOG_IDENTIFIER": "kernel",
+          "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+          "_KERNEL_SUBSYSTEM": "pci",
+          "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+          "_UDEV_SYSNAME": "0000:05:00.0",
+          "MESSAGE": "xe 0000:05:00.0: [drm] Found battlemage (device ID e20c) discrete display version 14.01 stepping B0",
+          "_SOURCE_MONOTONIC_TIMESTAMP": "6646965",
+          "_RUNTIME_SCOPE": "system",
+          "__SEQNUM": "201703740",
+          "_TRANSPORT": "kernel",
+          "_KERNEL_DEVICE": "+pci:0000:05:00.0",
+          "PRIORITY": "6",
+          "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05c13c;b=cfda0b6a7c134fe2bdf58f9202770840;m=b32a61;t=65d7f502d020f;x=fc5ae5d52da41c28",
+          "__MONOTONIC_TIMESTAMP": "11741793",
+          "_HOSTNAME": "jitakusaba01"
+        },
+        {
+          "_KERNEL_DEVICE": "+pci:0000:05:00.0",
+          "_HOSTNAME": "jitakusaba01",
+          "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+          "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+          "MESSAGE": "xe 0000:05:00.0: [drm] VISIBLE VRAM: 0x0000007800000000, 0x0000000400000000",
+          "_TRANSPORT": "kernel",
+          "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05c13e;b=cfda0b6a7c134fe2bdf58f9202770840;m=b32b55;t=65d7f502d0303;x=ab6fadc792afc0fa",
+          "_UDEV_SYSNAME": "0000:05:00.0",
+          "__SEQNUM": "201703742",
+          "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+          "__MONOTONIC_TIMESTAMP": "11742037",
+          "SYSLOG_IDENTIFIER": "kernel",
+          "_RUNTIME_SCOPE": "system",
+          "__REALTIME_TIMESTAMP": "1791651247620867",
+          "PRIORITY": "6",
+          "_SOURCE_MONOTONIC_TIMESTAMP": "6648323",
+          "_KERNEL_SUBSYSTEM": "pci",
+          "SYSLOG_FACILITY": "0"
+        },
+        {
+          "_HOSTNAME": "jitakusaba01",
+          "__MONOTONIC_TIMESTAMP": "11742164",
+          "_KERNEL_DEVICE": "+pci:0000:05:00.0",
+          "_SOURCE_MONOTONIC_TIMESTAMP": "6648355",
+          "PRIORITY": "6",
+          "_KERNEL_SUBSYSTEM": "pci",
+          "SYSLOG_IDENTIFIER": "kernel",
+          "SYSLOG_FACILITY": "0",
+          "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05c13f;b=cfda0b6a7c134fe2bdf58f9202770840;m=b32bd4;t=65d7f502d0382;x=936bdf604e58f93f",
+          "__REALTIME_TIMESTAMP": "1791651247620994",
+          "_RUNTIME_SCOPE": "system",
+          "MESSAGE": "xe 0000:05:00.0: [drm] VRAM[0]: Actual physical size 0x0000000280000000, usable size exclude stolen 0x000000027bc00000, CPU accessible size 0x000000027bc00000",
+          "_TRANSPORT": "kernel",
+          "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+          "__SEQNUM": "201703743",
+          "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+          "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+          "_UDEV_SYSNAME": "0000:05:00.0"
+        },
+        {
+          "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+          "_TRANSPORT": "kernel",
+          "_UDEV_SYSNAME": "0000:05:00.0",
+          "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+          "MESSAGE": "xe 0000:05:00.0: [drm] VRAM[0]: DPA range: [0x0000000000000000-280000000], io range: [0x0000007800000000-7a7bc00000]",
+          "__MONOTONIC_TIMESTAMP": "11742295",
+          "_HOSTNAME": "jitakusaba01",
+          "__SEQNUM": "201703744",
+          "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05c140;b=cfda0b6a7c134fe2bdf58f9202770840;m=b32c57;t=65d7f502d0405;x=985fc31a7d7c7aa6",
+          "_KERNEL_SUBSYSTEM": "pci",
+          "_RUNTIME_SCOPE": "system",
+          "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+          "_KERNEL_DEVICE": "+pci:0000:05:00.0",
+          "SYSLOG_IDENTIFIER": "kernel",
+          "SYSLOG_FACILITY": "0",
+          "__REALTIME_TIMESTAMP": "1791651247621125",
+          "_SOURCE_MONOTONIC_TIMESTAMP": "6648359",
+          "PRIORITY": "6"
+        },
+        {
+          "_KERNEL_SUBSYSTEM": "pci",
+          "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+          "_KERNEL_DEVICE": "+pci:0000:05:00.0",
+          "PRIORITY": "6",
+          "SYSLOG_FACILITY": "0",
+          "__REALTIME_TIMESTAMP": "1791651247621252",
+          "_UDEV_SYSNAME": "0000:05:00.0",
+          "__MONOTONIC_TIMESTAMP": "11742422",
+          "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05c141;b=cfda0b6a7c134fe2bdf58f9202770840;m=b32cd6;t=65d7f502d0484;x=55c93c874aafb2ec",
+          "_HOSTNAME": "jitakusaba01",
+          "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+          "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+          "_TRANSPORT": "kernel",
+          "MESSAGE": "xe 0000:05:00.0: [drm] VRAM[0]: Actual physical size 0x0000000280000000, usable size exclude stolen 0x000000027bc00000, CPU accessible size 0x000000027bc00000",
+          "__SEQNUM": "201703745",
+          "_RUNTIME_SCOPE": "system",
+          "SYSLOG_IDENTIFIER": "kernel",
+          "_SOURCE_MONOTONIC_TIMESTAMP": "6648363"
+        },
+        {
+          "_KERNEL_SUBSYSTEM": "pci",
+          "MESSAGE": "xe 0000:05:00.0: [drm] VRAM[0]: DPA range: [0x0000000000000000-280000000], io range: [0x0000007800000000-7a7bc00000]",
+          "_RUNTIME_SCOPE": "system",
+          "_SOURCE_MONOTONIC_TIMESTAMP": "6648366",
+          "SYSLOG_IDENTIFIER": "kernel",
+          "__MONOTONIC_TIMESTAMP": "11742544",
+          "_UDEV_SYSNAME": "0000:05:00.0",
+          "PRIORITY": "6",
+          "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+          "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05c142;b=cfda0b6a7c134fe2bdf58f9202770840;m=b32d50;t=65d7f502d04fe;x=f3113fd504ffacae",
+          "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+          "_TRANSPORT": "kernel",
+          "__SEQNUM": "201703746",
+          "_KERNEL_DEVICE": "+pci:0000:05:00.0",
+          "_HOSTNAME": "jitakusaba01",
+          "__REALTIME_TIMESTAMP": "1791651247621374",
+          "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+          "SYSLOG_FACILITY": "0"
+        },
+        {
+          "_KERNEL_DEVICE": "+pci:0000:05:00.0",
+          "MESSAGE": "xe 0000:05:00.0: vgaarb: VGA decodes changed: olddecodes=io+mem,decodes=none:owns=none",
+          "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+          "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05c150;b=cfda0b6a7c134fe2bdf58f9202770840;m=b32f12;t=65d7f502d06c0;x=48eacbfe8e88740c",
+          "SYSLOG_IDENTIFIER": "kernel",
+          "_RUNTIME_SCOPE": "system",
+          "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+          "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+          "SYSLOG_FACILITY": "0",
+          "PRIORITY": "6",
+          "_HOSTNAME": "jitakusaba01",
+          "__REALTIME_TIMESTAMP": "1791651247621824",
+          "_KERNEL_SUBSYSTEM": "pci",
+          "__SEQNUM": "201703760",
+          "_TRANSPORT": "kernel",
+          "_SOURCE_MONOTONIC_TIMESTAMP": "6666884",
+          "_UDEV_SYSNAME": "0000:05:00.0",
+          "__MONOTONIC_TIMESTAMP": "11742994"
+        },
+        {
+          "SYSLOG_IDENTIFIER": "kernel",
+          "_KERNEL_DEVICE": "+pci:0000:05:00.0",
+          "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+          "_HOSTNAME": "jitakusaba01",
+          "_TRANSPORT": "kernel",
+          "_KERNEL_SUBSYSTEM": "pci",
+          "__SEQNUM": "201703762",
+          "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+          "MESSAGE": "xe 0000:05:00.0: [drm] Finished loading DMC firmware i915/bmg_dmc.bin (v2.6)",
+          "__REALTIME_TIMESTAMP": "1791651247621971",
+          "_SOURCE_MONOTONIC_TIMESTAMP": "6678792",
+          "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+          "_RUNTIME_SCOPE": "system",
+          "PRIORITY": "6",
+          "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05c152;b=cfda0b6a7c134fe2bdf58f9202770840;m=b32fa5;t=65d7f502d0753;x=5a7e55e55fe69c54",
+          "_UDEV_SYSNAME": "0000:05:00.0",
+          "__MONOTONIC_TIMESTAMP": "11743141",
+          "SYSLOG_FACILITY": "0"
+        },
+        {
+          "_UDEV_SYSNAME": "0000:05:00.0",
+          "__MONOTONIC_TIMESTAMP": "11743274",
+          "_KERNEL_SUBSYSTEM": "pci",
+          "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+          "SYSLOG_IDENTIFIER": "kernel",
+          "__SEQNUM": "201703763",
+          "MESSAGE": "xe 0000:05:00.0: [drm] Tile0: GT0: Using GuC firmware from xe/bmg_guc_70.bin version 70.44.1",
+          "_RUNTIME_SCOPE": "system",
+          "_TRANSPORT": "kernel",
+          "_SOURCE_MONOTONIC_TIMESTAMP": "6682882",
+          "_KERNEL_DEVICE": "+pci:0000:05:00.0",
+          "PRIORITY": "6",
+          "SYSLOG_FACILITY": "0",
+          "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+          "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05c153;b=cfda0b6a7c134fe2bdf58f9202770840;m=b3302a;t=65d7f502d07d8;x=af6ef120d151395e",
+          "__REALTIME_TIMESTAMP": "1791651247622104",
+          "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+          "_HOSTNAME": "jitakusaba01"
+        },
+        {
+          "_RUNTIME_SCOPE": "system",
+          "PRIORITY": "5",
+          "_KERNEL_SUBSYSTEM": "pci",
+          "MESSAGE": "xe 0000:05:00.0: [drm] GuC firmware (70.54.0) is recommended, but only (70.44.1) was found in xe/bmg_guc_70.bin",
+          "__SEQNUM": "201703764",
+          "SYSLOG_FACILITY": "0",
+          "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05c154;b=cfda0b6a7c134fe2bdf58f9202770840;m=b330a7;t=65d7f502d0855;x=f75cb690776b1f56",
+          "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+          "_HOSTNAME": "jitakusaba01",
+          "_TRANSPORT": "kernel",
+          "SYSLOG_IDENTIFIER": "kernel",
+          "_UDEV_SYSNAME": "0000:05:00.0",
+          "__REALTIME_TIMESTAMP": "1791651247622229",
+          "_SOURCE_MONOTONIC_TIMESTAMP": "6682890",
+          "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+          "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+          "_KERNEL_DEVICE": "+pci:0000:05:00.0",
+          "__MONOTONIC_TIMESTAMP": "11743399"
+        },
+        {
+          "_KERNEL_SUBSYSTEM": "pci",
+          "_KERNEL_DEVICE": "+pci:0000:05:00.0",
+          "_HOSTNAME": "jitakusaba01",
+          "_SOURCE_MONOTONIC_TIMESTAMP": "6682895",
+          "__MONOTONIC_TIMESTAMP": "11743521",
+          "_RUNTIME_SCOPE": "system",
+          "SYSLOG_IDENTIFIER": "kernel",
+          "PRIORITY": "6",
+          "MESSAGE": "xe 0000:05:00.0: [drm] Consider updating your linux-firmware pkg or downloading from https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git",
+          "_UDEV_SYSNAME": "0000:05:00.0",
+          "__REALTIME_TIMESTAMP": "1791651247622351",
+          "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+          "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+          "_TRANSPORT": "kernel",
+          "__SEQNUM": "201703765",
+          "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+          "SYSLOG_FACILITY": "0",
+          "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05c155;b=cfda0b6a7c134fe2bdf58f9202770840;m=b33121;t=65d7f502d08cf;x=726158ce4dea2abd"
+        },
+        {
+          "__SEQNUM": "201703769",
+          "SYSLOG_FACILITY": "0",
+          "_RUNTIME_SCOPE": "system",
+          "_TRANSPORT": "kernel",
+          "PRIORITY": "6",
+          "_UDEV_SYSNAME": "0000:05:00.0",
+          "_KERNEL_SUBSYSTEM": "pci",
+          "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+          "_SOURCE_MONOTONIC_TIMESTAMP": "7005447",
+          "MESSAGE": "xe 0000:05:00.0: [drm] Tile0: GT0: ccs1 fused off",
+          "SYSLOG_IDENTIFIER": "kernel",
+          "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+          "_HOSTNAME": "jitakusaba01",
+          "__REALTIME_TIMESTAMP": "1791651247622512",
+          "__MONOTONIC_TIMESTAMP": "11743681",
+          "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+          "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05c159;b=cfda0b6a7c134fe2bdf58f9202770840;m=b331c1;t=65d7f502d0970;x=83f5104f7895d1ba",
+          "_KERNEL_DEVICE": "+pci:0000:05:00.0"
+        },
+        {
+          "__MONOTONIC_TIMESTAMP": "11743805",
+          "__SEQNUM": "201703770",
+          "_SOURCE_MONOTONIC_TIMESTAMP": "7005451",
+          "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05c15a;b=cfda0b6a7c134fe2bdf58f9202770840;m=b3323d;t=65d7f502d09ec;x=ad6f4ef78c4b03b8",
+          "_HOSTNAME": "jitakusaba01",
+          "_TRANSPORT": "kernel",
+          "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+          "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+          "_RUNTIME_SCOPE": "system",
+          "__REALTIME_TIMESTAMP": "1791651247622636",
+          "PRIORITY": "6",
+          "MESSAGE": "xe 0000:05:00.0: [drm] Tile0: GT0: ccs2 fused off",
+          "SYSLOG_IDENTIFIER": "kernel",
+          "_UDEV_SYSNAME": "0000:05:00.0",
+          "SYSLOG_FACILITY": "0",
+          "_KERNEL_SUBSYSTEM": "pci",
+          "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+          "_KERNEL_DEVICE": "+pci:0000:05:00.0"
+        },
+        {
+          "__SEQNUM": "201703771",
+          "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+          "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05c15b;b=cfda0b6a7c134fe2bdf58f9202770840;m=b332b8;t=65d7f502d0a66;x=dd4b5c4c4cd7c965",
+          "_SOURCE_MONOTONIC_TIMESTAMP": "7005453",
+          "SYSLOG_FACILITY": "0",
+          "SYSLOG_IDENTIFIER": "kernel",
+          "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+          "_RUNTIME_SCOPE": "system",
+          "MESSAGE": "xe 0000:05:00.0: [drm] Tile0: GT0: ccs3 fused off",
+          "__REALTIME_TIMESTAMP": "1791651247622758",
+          "_HOSTNAME": "jitakusaba01",
+          "_KERNEL_SUBSYSTEM": "pci",
+          "_TRANSPORT": "kernel",
+          "__MONOTONIC_TIMESTAMP": "11743928",
+          "_KERNEL_DEVICE": "+pci:0000:05:00.0",
+          "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+          "_UDEV_SYSNAME": "0000:05:00.0",
+          "PRIORITY": "6"
+        },
+        {
+          "PRIORITY": "6",
+          "SYSLOG_IDENTIFIER": "kernel",
+          "_HOSTNAME": "jitakusaba01",
+          "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+          "_SOURCE_MONOTONIC_TIMESTAMP": "7034652",
+          "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05c15c;b=cfda0b6a7c134fe2bdf58f9202770840;m=b3333c;t=65d7f502d0aea;x=b154b86dfc451cdf",
+          "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+          "_KERNEL_DEVICE": "+pci:0000:05:00.0",
+          "SYSLOG_FACILITY": "0",
+          "_TRANSPORT": "kernel",
+          "MESSAGE": "xe 0000:05:00.0: [drm] Tile0: GT1: Using GuC firmware from xe/bmg_guc_70.bin version 70.44.1",
+          "_UDEV_SYSNAME": "0000:05:00.0",
+          "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+          "__REALTIME_TIMESTAMP": "1791651247622890",
+          "__MONOTONIC_TIMESTAMP": "11744060",
+          "_KERNEL_SUBSYSTEM": "pci",
+          "_RUNTIME_SCOPE": "system",
+          "__SEQNUM": "201703772"
+        },
+        {
+          "_UDEV_SYSNAME": "0000:05:00.0",
+          "__REALTIME_TIMESTAMP": "1791651247623014",
+          "_HOSTNAME": "jitakusaba01",
+          "_SOURCE_MONOTONIC_TIMESTAMP": "7034657",
+          "PRIORITY": "5",
+          "_TRANSPORT": "kernel",
+          "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+          "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05c15d;b=cfda0b6a7c134fe2bdf58f9202770840;m=b333b8;t=65d7f502d0b66;x=b22631490f22207a",
+          "SYSLOG_IDENTIFIER": "kernel",
+          "_KERNEL_SUBSYSTEM": "pci",
+          "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+          "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+          "__SEQNUM": "201703773",
+          "_KERNEL_DEVICE": "+pci:0000:05:00.0",
+          "__MONOTONIC_TIMESTAMP": "11744184",
+          "SYSLOG_FACILITY": "0",
+          "_RUNTIME_SCOPE": "system",
+          "MESSAGE": "xe 0000:05:00.0: [drm] GuC firmware (70.54.0) is recommended, but only (70.44.1) was found in xe/bmg_guc_70.bin"
+        },
+        {
+          "_SOURCE_MONOTONIC_TIMESTAMP": "7034660",
+          "SYSLOG_FACILITY": "0",
+          "_KERNEL_SUBSYSTEM": "pci",
+          "__REALTIME_TIMESTAMP": "1791651247623135",
+          "__SEQNUM": "201703774",
+          "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+          "_RUNTIME_SCOPE": "system",
+          "_HOSTNAME": "jitakusaba01",
+          "SYSLOG_IDENTIFIER": "kernel",
+          "PRIORITY": "6",
+          "_TRANSPORT": "kernel",
+          "MESSAGE": "xe 0000:05:00.0: [drm] Consider updating your linux-firmware pkg or downloading from https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git",
+          "__MONOTONIC_TIMESTAMP": "11744305",
+          "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+          "_KERNEL_DEVICE": "+pci:0000:05:00.0",
+          "_UDEV_SYSNAME": "0000:05:00.0",
+          "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+          "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05c15e;b=cfda0b6a7c134fe2bdf58f9202770840;m=b33431;t=65d7f502d0bdf;x=9745e7cc78f96496"
+        },
+        {
+          "__MONOTONIC_TIMESTAMP": "11744425",
+          "_RUNTIME_SCOPE": "system",
+          "__SEQNUM": "201703775",
+          "PRIORITY": "6",
+          "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+          "MESSAGE": "xe 0000:05:00.0: [drm] Tile0: GT1: Using HuC firmware from xe/bmg_huc.bin version 8.2.10",
+          "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05c15f;b=cfda0b6a7c134fe2bdf58f9202770840;m=b334a9;t=65d7f502d0c58;x=a943ee1cf8aae331",
+          "_UDEV_SYSNAME": "0000:05:00.0",
+          "_KERNEL_DEVICE": "+pci:0000:05:00.0",
+          "_KERNEL_SUBSYSTEM": "pci",
+          "_SOURCE_MONOTONIC_TIMESTAMP": "7038077",
+          "SYSLOG_FACILITY": "0",
+          "_HOSTNAME": "jitakusaba01",
+          "SYSLOG_IDENTIFIER": "kernel",
+          "_TRANSPORT": "kernel",
+          "__REALTIME_TIMESTAMP": "1791651247623256",
+          "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+          "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881"
+        },
+        {
+          "__REALTIME_TIMESTAMP": "1791651247623376",
+          "PRIORITY": "6",
+          "_TRANSPORT": "kernel",
+          "_HOSTNAME": "jitakusaba01",
+          "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+          "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05c160;b=cfda0b6a7c134fe2bdf58f9202770840;m=b33522;t=65d7f502d0cd0;x=e3d34a1cd4c0edf2",
+          "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+          "MESSAGE": "xe 0000:05:00.0: [drm] Tile0: GT1: vcs1 fused off",
+          "SYSLOG_FACILITY": "0",
+          "__MONOTONIC_TIMESTAMP": "11744546",
+          "SYSLOG_IDENTIFIER": "kernel",
+          "_SOURCE_MONOTONIC_TIMESTAMP": "7050584",
+          "_KERNEL_DEVICE": "+pci:0000:05:00.0",
+          "__SEQNUM": "201703776",
+          "_RUNTIME_SCOPE": "system",
+          "_UDEV_SYSNAME": "0000:05:00.0",
+          "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+          "_KERNEL_SUBSYSTEM": "pci"
+        },
+        {
+          "_TRANSPORT": "kernel",
+          "_RUNTIME_SCOPE": "system",
+          "MESSAGE": "xe 0000:05:00.0: [drm] Tile0: GT1: vcs3 fused off",
+          "PRIORITY": "6",
+          "SYSLOG_IDENTIFIER": "kernel",
+          "_KERNEL_DEVICE": "+pci:0000:05:00.0",
+          "__MONOTONIC_TIMESTAMP": "11744666",
+          "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+          "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05c161;b=cfda0b6a7c134fe2bdf58f9202770840;m=b3359a;t=65d7f502d0d48;x=37e08f7464173a6e",
+          "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+          "_SOURCE_MONOTONIC_TIMESTAMP": "7050588",
+          "_UDEV_SYSNAME": "0000:05:00.0",
+          "SYSLOG_FACILITY": "0",
+          "_HOSTNAME": "jitakusaba01",
+          "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+          "__SEQNUM": "201703777",
+          "__REALTIME_TIMESTAMP": "1791651247623496",
+          "_KERNEL_SUBSYSTEM": "pci"
+        },
+        {
+          "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+          "SYSLOG_IDENTIFIER": "kernel",
+          "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+          "_HOSTNAME": "jitakusaba01",
+          "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05c162;b=cfda0b6a7c134fe2bdf58f9202770840;m=b3361b;t=65d7f502d0dc9;x=33677b8d7b8dd7a1",
+          "__SEQNUM": "201703778",
+          "_UDEV_SYSNAME": "0000:05:00.0",
+          "_SOURCE_MONOTONIC_TIMESTAMP": "7050590",
+          "_TRANSPORT": "kernel",
+          "SYSLOG_FACILITY": "0",
+          "__REALTIME_TIMESTAMP": "1791651247623625",
+          "_KERNEL_DEVICE": "+pci:0000:05:00.0",
+          "MESSAGE": "xe 0000:05:00.0: [drm] Tile0: GT1: vcs4 fused off",
+          "_KERNEL_SUBSYSTEM": "pci",
+          "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+          "PRIORITY": "6",
+          "_RUNTIME_SCOPE": "system",
+          "__MONOTONIC_TIMESTAMP": "11744795"
+        },
+        {
+          "SYSLOG_IDENTIFIER": "kernel",
+          "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+          "_KERNEL_SUBSYSTEM": "pci",
+          "_HOSTNAME": "jitakusaba01",
+          "PRIORITY": "6",
+          "__REALTIME_TIMESTAMP": "1791651247623750",
+          "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+          "_SOURCE_MONOTONIC_TIMESTAMP": "7050592",
+          "__MONOTONIC_TIMESTAMP": "11744920",
+          "_KERNEL_DEVICE": "+pci:0000:05:00.0",
+          "_UDEV_SYSNAME": "0000:05:00.0",
+          "_RUNTIME_SCOPE": "system",
+          "_TRANSPORT": "kernel",
+          "MESSAGE": "xe 0000:05:00.0: [drm] Tile0: GT1: vcs5 fused off",
+          "__SEQNUM": "201703779",
+          "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+          "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05c163;b=cfda0b6a7c134fe2bdf58f9202770840;m=b33698;t=65d7f502d0e46;x=4306ff6906f299a9",
+          "SYSLOG_FACILITY": "0"
+        },
+        {
+          "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05c164;b=cfda0b6a7c134fe2bdf58f9202770840;m=b3374a;t=65d7f502d0ef8;x=bb4ee9291ba0d753",
+          "__MONOTONIC_TIMESTAMP": "11745098",
+          "_HOSTNAME": "jitakusaba01",
+          "SYSLOG_IDENTIFIER": "kernel",
+          "__SEQNUM": "201703780",
+          "_RUNTIME_SCOPE": "system",
+          "_UDEV_SYSNAME": "0000:05:00.0",
+          "PRIORITY": "6",
+          "MESSAGE": "xe 0000:05:00.0: [drm] Tile0: GT1: vcs6 fused off",
+          "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+          "__REALTIME_TIMESTAMP": "1791651247623928",
+          "SYSLOG_FACILITY": "0",
+          "_TRANSPORT": "kernel",
+          "_KERNEL_SUBSYSTEM": "pci",
+          "_SOURCE_MONOTONIC_TIMESTAMP": "7050594",
+          "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+          "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+          "_KERNEL_DEVICE": "+pci:0000:05:00.0"
+        },
+        {
+          "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+          "SYSLOG_FACILITY": "0",
+          "_KERNEL_DEVICE": "+pci:0000:05:00.0",
+          "_TRANSPORT": "kernel",
+          "__REALTIME_TIMESTAMP": "1791651247624101",
+          "PRIORITY": "6",
+          "_SOURCE_MONOTONIC_TIMESTAMP": "7050596",
+          "MESSAGE": "xe 0000:05:00.0: [drm] Tile0: GT1: vcs7 fused off",
+          "_RUNTIME_SCOPE": "system",
+          "SYSLOG_IDENTIFIER": "kernel",
+          "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05c165;b=cfda0b6a7c134fe2bdf58f9202770840;m=b337f7;t=65d7f502d0fa5;x=273458bb84f44f6d",
+          "__MONOTONIC_TIMESTAMP": "11745271",
+          "__SEQNUM": "201703781",
+          "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+          "_HOSTNAME": "jitakusaba01",
+          "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+          "_UDEV_SYSNAME": "0000:05:00.0",
+          "_KERNEL_SUBSYSTEM": "pci"
+        },
+        {
+          "_RUNTIME_SCOPE": "system",
+          "__REALTIME_TIMESTAMP": "1791651247624258",
+          "__SEQNUM": "201703782",
+          "_SOURCE_MONOTONIC_TIMESTAMP": "7050598",
+          "SYSLOG_FACILITY": "0",
+          "PRIORITY": "6",
+          "_TRANSPORT": "kernel",
+          "_KERNEL_DEVICE": "+pci:0000:05:00.0",
+          "__MONOTONIC_TIMESTAMP": "11745428",
+          "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+          "_UDEV_SYSNAME": "0000:05:00.0",
+          "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+          "SYSLOG_IDENTIFIER": "kernel",
+          "_HOSTNAME": "jitakusaba01",
+          "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+          "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05c166;b=cfda0b6a7c134fe2bdf58f9202770840;m=b33894;t=65d7f502d1042;x=7e2fd6879be0fbbf",
+          "_KERNEL_SUBSYSTEM": "pci",
+          "MESSAGE": "xe 0000:05:00.0: [drm] Tile0: GT1: vecs2 fused off"
+        },
+        {
+          "__REALTIME_TIMESTAMP": "1791651247624412",
+          "__MONOTONIC_TIMESTAMP": "11745582",
+          "MESSAGE": "xe 0000:05:00.0: [drm] Tile0: GT1: vecs3 fused off",
+          "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+          "_UDEV_SYSNAME": "0000:05:00.0",
+          "_KERNEL_DEVICE": "+pci:0000:05:00.0",
+          "SYSLOG_IDENTIFIER": "kernel",
+          "_TRANSPORT": "kernel",
+          "_HOSTNAME": "jitakusaba01",
+          "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05c167;b=cfda0b6a7c134fe2bdf58f9202770840;m=b3392e;t=65d7f502d10dc;x=8d763f65833f618c",
+          "_RUNTIME_SCOPE": "system",
+          "__SEQNUM": "201703783",
+          "_KERNEL_SUBSYSTEM": "pci",
+          "SYSLOG_FACILITY": "0",
+          "_SOURCE_MONOTONIC_TIMESTAMP": "7050601",
+          "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+          "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+          "PRIORITY": "6"
+        },
+        {
+          "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+          "SYSLOG_FACILITY": "0",
+          "_TRANSPORT": "kernel",
+          "__SEQNUM": "201703784",
+          "_KERNEL_SUBSYSTEM": "pci",
+          "_RUNTIME_SCOPE": "system",
+          "__MONOTONIC_TIMESTAMP": "11745737",
+          "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+          "SYSLOG_IDENTIFIER": "kernel",
+          "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+          "_HOSTNAME": "jitakusaba01",
+          "_SOURCE_MONOTONIC_TIMESTAMP": "7084145",
+          "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05c168;b=cfda0b6a7c134fe2bdf58f9202770840;m=b339c9;t=65d7f502d1177;x=60e931004771dc25",
+          "PRIORITY": "6",
+          "MESSAGE": "xe 0000:05:00.0: [drm] Registered 4 planes with drm panic",
+          "_KERNEL_DEVICE": "+pci:0000:05:00.0",
+          "__REALTIME_TIMESTAMP": "1791651247624567",
+          "_UDEV_SYSNAME": "0000:05:00.0"
+        },
+        {
+          "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+          "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+          "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05c169;b=cfda0b6a7c134fe2bdf58f9202770840;m=b33a63;t=65d7f502d1211;x=7ee99da9e97df239",
+          "_SOURCE_MONOTONIC_TIMESTAMP": "7084148",
+          "__SEQNUM": "201703785",
+          "__REALTIME_TIMESTAMP": "1791651247624721",
+          "PRIORITY": "6",
+          "MESSAGE": "[drm] Initialized xe 1.1.0 for 0000:05:00.0 on minor 1",
+          "_TRANSPORT": "kernel",
+          "__MONOTONIC_TIMESTAMP": "11745891",
+          "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+          "SYSLOG_FACILITY": "0",
+          "_HOSTNAME": "jitakusaba01",
+          "_RUNTIME_SCOPE": "system",
+          "SYSLOG_IDENTIFIER": "kernel"
+        },
+        {
+          "_UDEV_SYSNAME": "0000:05:00.0",
+          "MESSAGE": "xe 0000:05:00.0: [drm] Cannot find any crtc or sizes",
+          "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+          "_HOSTNAME": "jitakusaba01",
+          "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+          "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+          "PRIORITY": "6",
+          "_KERNEL_DEVICE": "+pci:0000:05:00.0",
+          "_TRANSPORT": "kernel",
+          "__SEQNUM": "201703786",
+          "_KERNEL_SUBSYSTEM": "pci",
+          "SYSLOG_IDENTIFIER": "kernel",
+          "__MONOTONIC_TIMESTAMP": "11745905",
+          "_RUNTIME_SCOPE": "system",
+          "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05c16a;b=cfda0b6a7c134fe2bdf58f9202770840;m=b33a71;t=65d7f502d121f;x=27ff674f45d8968a",
+          "__REALTIME_TIMESTAMP": "1791651247624735",
+          "SYSLOG_FACILITY": "0",
+          "_SOURCE_MONOTONIC_TIMESTAMP": "7112460"
+        },
+        {
+          "PRIORITY": "6",
+          "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+          "__SEQNUM": "201703787",
+          "__MONOTONIC_TIMESTAMP": "11746063",
+          "__REALTIME_TIMESTAMP": "1791651247624893",
+          "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+          "_KERNEL_DEVICE": "+pci:0000:05:00.0",
+          "_UDEV_SYSNAME": "0000:05:00.0",
+          "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+          "SYSLOG_FACILITY": "0",
+          "_KERNEL_SUBSYSTEM": "pci",
+          "_SOURCE_MONOTONIC_TIMESTAMP": "7121355",
+          "SYSLOG_IDENTIFIER": "kernel",
+          "_HOSTNAME": "jitakusaba01",
+          "_RUNTIME_SCOPE": "system",
+          "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05c16b;b=cfda0b6a7c134fe2bdf58f9202770840;m=b33b0f;t=65d7f502d12bd;x=ffa3b08e448e8159",
+          "MESSAGE": "xe 0000:05:00.0: [drm] Using mailbox commands for power limits",
+          "_TRANSPORT": "kernel"
+        },
+        {
+          "SYSLOG_IDENTIFIER": "kernel",
+          "_UDEV_SYSNAME": "0000:05:00.0",
+          "__MONOTONIC_TIMESTAMP": "11746226",
+          "MESSAGE": "xe 0000:05:00.0: [drm] PL2 is supported on channel 0",
+          "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+          "_TRANSPORT": "kernel",
+          "_RUNTIME_SCOPE": "system",
+          "_KERNEL_DEVICE": "+pci:0000:05:00.0",
+          "_KERNEL_SUBSYSTEM": "pci",
+          "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+          "__REALTIME_TIMESTAMP": "1791651247625056",
+          "SYSLOG_FACILITY": "0",
+          "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05c16c;b=cfda0b6a7c134fe2bdf58f9202770840;m=b33bb2;t=65d7f502d1360;x=566fabbe61eb7e9c",
+          "_HOSTNAME": "jitakusaba01",
+          "__SEQNUM": "201703788",
+          "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+          "_SOURCE_MONOTONIC_TIMESTAMP": "7122040",
+          "PRIORITY": "6"
+        },
+        {
+          "PRIORITY": "5",
+          "__MONOTONIC_TIMESTAMP": "11746397",
+          "_SOURCE_MONOTONIC_TIMESTAMP": "7144427",
+          "SYSLOG_IDENTIFIER": "kernel",
+          "__SEQNUM": "201703789",
+          "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+          "_RUNTIME_SCOPE": "system",
+          "__REALTIME_TIMESTAMP": "1791651247625227",
+          "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+          "_TRANSPORT": "kernel",
+          "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05c16d;b=cfda0b6a7c134fe2bdf58f9202770840;m=b33c5d;t=65d7f502d140b;x=ce78a67b71a7c3d8",
+          "MESSAGE": "Creating 4 MTD partitions on \"xe.nvm.1280\":",
+          "SYSLOG_FACILITY": "0",
+          "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+          "_HOSTNAME": "jitakusaba01"
+        },
+        {
+          "SYSLOG_IDENTIFIER": "kernel",
+          "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+          "__MONOTONIC_TIMESTAMP": "11746412",
+          "_SOURCE_MONOTONIC_TIMESTAMP": "7144432",
+          "__SEQNUM": "201703790",
+          "SYSLOG_FACILITY": "0",
+          "_TRANSPORT": "kernel",
+          "_RUNTIME_SCOPE": "system",
+          "PRIORITY": "5",
+          "MESSAGE": "0x000000000000-0x000000001000 : \"xe.nvm.1280.DESCRIPTOR\"",
+          "__REALTIME_TIMESTAMP": "1791651247625242",
+          "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05c16e;b=cfda0b6a7c134fe2bdf58f9202770840;m=b33c6c;t=65d7f502d141a;x=ff1a729ea6c33026",
+          "_HOSTNAME": "jitakusaba01",
+          "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+          "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d"
+        },
+        {
+          "_HOSTNAME": "jitakusaba01",
+          "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+          "_SOURCE_MONOTONIC_TIMESTAMP": "7148806",
+          "SYSLOG_FACILITY": "0",
+          "MESSAGE": "0x000000001000-0x00000054e000 : \"xe.nvm.1280.GSC\"",
+          "_TRANSPORT": "kernel",
+          "SYSLOG_IDENTIFIER": "kernel",
+          "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+          "PRIORITY": "5",
+          "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+          "__REALTIME_TIMESTAMP": "1791651247625255",
+          "_RUNTIME_SCOPE": "system",
+          "__MONOTONIC_TIMESTAMP": "11746425",
+          "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05c16f;b=cfda0b6a7c134fe2bdf58f9202770840;m=b33c79;t=65d7f502d1427;x=27db961b865cc56e",
+          "__SEQNUM": "201703791"
+        },
+        {
+          "PRIORITY": "5",
+          "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05c170;b=cfda0b6a7c134fe2bdf58f9202770840;m=b33c85;t=65d7f502d1433;x=26c473bf0876f405",
+          "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+          "__MONOTONIC_TIMESTAMP": "11746437",
+          "SYSLOG_FACILITY": "0",
+          "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+          "__REALTIME_TIMESTAMP": "1791651247625267",
+          "SYSLOG_IDENTIFIER": "kernel",
+          "__SEQNUM": "201703792",
+          "_RUNTIME_SCOPE": "system",
+          "_HOSTNAME": "jitakusaba01",
+          "_SOURCE_MONOTONIC_TIMESTAMP": "7153277",
+          "_TRANSPORT": "kernel",
+          "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+          "MESSAGE": "0x00000054e000-0x00000074e000 : \"xe.nvm.1280.OptionROM\""
+        },
+        {
+          "SYSLOG_IDENTIFIER": "kernel",
+          "PRIORITY": "5",
+          "__SEQNUM": "201703793",
+          "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+          "__MONOTONIC_TIMESTAMP": "11746450",
+          "_TRANSPORT": "kernel",
+          "_SOURCE_MONOTONIC_TIMESTAMP": "7157570",
+          "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+          "SYSLOG_FACILITY": "0",
+          "MESSAGE": "0x00000074e000-0x00000075e000 : \"xe.nvm.1280.DAM\"",
+          "__REALTIME_TIMESTAMP": "1791651247625280",
+          "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05c171;b=cfda0b6a7c134fe2bdf58f9202770840;m=b33c92;t=65d7f502d1440;x=ccb0993455e3cd73",
+          "_HOSTNAME": "jitakusaba01",
+          "_RUNTIME_SCOPE": "system",
+          "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d"
+        },
+        {
+          "MESSAGE": "xe 0000:05:00.0: [drm] Cannot find any crtc or sizes",
+          "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+          "SYSLOG_FACILITY": "0",
+          "_TRANSPORT": "kernel",
+          "_SOURCE_MONOTONIC_TIMESTAMP": "7172391",
+          "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+          "PRIORITY": "6",
+          "__SEQNUM": "201703794",
+          "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05c172;b=cfda0b6a7c134fe2bdf58f9202770840;m=b33c9d;t=65d7f502d144b;x=364c75c285b265ca",
+          "__REALTIME_TIMESTAMP": "1791651247625291",
+          "_RUNTIME_SCOPE": "system",
+          "_KERNEL_SUBSYSTEM": "pci",
+          "_KERNEL_DEVICE": "+pci:0000:05:00.0",
+          "_UDEV_SYSNAME": "0000:05:00.0",
+          "_HOSTNAME": "jitakusaba01",
+          "__MONOTONIC_TIMESTAMP": "11746461",
+          "SYSLOG_IDENTIFIER": "kernel",
+          "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840"
+        },
+        {
+          "_TRANSPORT": "kernel",
+          "_RUNTIME_SCOPE": "system",
+          "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+          "_HOSTNAME": "jitakusaba01",
+          "_KERNEL_SUBSYSTEM": "pci",
+          "__REALTIME_TIMESTAMP": "1791651247625450",
+          "__SEQNUM": "201703795",
+          "__MONOTONIC_TIMESTAMP": "11746620",
+          "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05c173;b=cfda0b6a7c134fe2bdf58f9202770840;m=b33d3c;t=65d7f502d14ea;x=ab32eb9a59eba0de",
+          "MESSAGE": "snd_hda_intel 0000:06:00.0: bound 0000:05:00.0 (ops intel_audio_component_bind_ops [xe])",
+          "SYSLOG_FACILITY": "0",
+          "PRIORITY": "6",
+          "_UDEV_SYSNAME": "0000:06:00.0",
+          "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+          "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+          "SYSLOG_IDENTIFIER": "kernel",
+          "_KERNEL_DEVICE": "+pci:0000:06:00.0",
+          "_SOURCE_MONOTONIC_TIMESTAMP": "7172398"
+        },
+        {
+          "__SEQNUM": "201703797",
+          "__MONOTONIC_TIMESTAMP": "11746934",
+          "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+          "__REALTIME_TIMESTAMP": "1791651247625764",
+          "_KERNEL_SUBSYSTEM": "pci",
+          "SYSLOG_FACILITY": "0",
+          "_SOURCE_MONOTONIC_TIMESTAMP": "7201037",
+          "_RUNTIME_SCOPE": "system",
+          "_UDEV_SYSNAME": "0000:05:00.0",
+          "SYSLOG_IDENTIFIER": "kernel",
+          "_TRANSPORT": "kernel",
+          "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+          "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+          "PRIORITY": "6",
+          "_KERNEL_DEVICE": "+pci:0000:05:00.0",
+          "_HOSTNAME": "jitakusaba01",
+          "MESSAGE": "xe 0000:05:00.0: [drm] Cannot find any crtc or sizes",
+          "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05c175;b=cfda0b6a7c134fe2bdf58f9202770840;m=b33e76;t=65d7f502d1624;x=991479de21018db6"
+        },
+        {
+          "__SEQNUM_ID": "9944479cfd1a45c28a589619cb8f2881",
+          "MESSAGE": "mei_lb xe.mei-gscfi.1280-e2c2afa2-3817-4d19-9d95-06b16b588a5d: bound 0000:05:00.0 (ops xe_late_bind_component_ops [xe])",
+          "_KERNEL_DEVICE": "+mei:xe.mei-gscfi.1280-e2c2afa2-3817-4d19-9d95-",
+          "_MACHINE_ID": "483b0a40e3274d529541e9a13dc5a67d",
+          "__SEQNUM": "201703802",
+          "_KERNEL_SUBSYSTEM": "mei",
+          "PRIORITY": "6",
+          "SYSLOG_IDENTIFIER": "kernel",
+          "__MONOTONIC_TIMESTAMP": "11747151",
+          "__REALTIME_TIMESTAMP": "1791651247625982",
+          "__CURSOR": "s=9944479cfd1a45c28a589619cb8f2881;i=c05c17a;b=cfda0b6a7c134fe2bdf58f9202770840;m=b33f4f;t=65d7f502d16fe;x=e7f9564e31b7f7bb",
+          "_BOOT_ID": "cfda0b6a7c134fe2bdf58f9202770840",
+          "_RUNTIME_SCOPE": "system",
+          "_SOURCE_MONOTONIC_TIMESTAMP": "7236717",
+          "_HOSTNAME": "jitakusaba01",
+          "_TRANSPORT": "kernel",
+          "SYSLOG_FACILITY": "0"
+        }
+      ],
+      "fault_entries": [],
+      "dump_present": false,
+      "filter": "page fault|fault response|timestamp stuck|wedg|engine reset|gt reset|guc.*(?:timeout|timed out|failed)|device.*lost|Timed out wait for G2H|Check job timeout|Timedout job|Schedule disable failed|trying reset|\\breset (?:queued|started|done)\\b"
+    },
+    "kernel_cursor_before": "s=9944479cfd1a45c28a589619cb8f2881;i=c0e3b6d;b=cfda0b6a7c134fe2bdf58f9202770840;m=1ab057fc8a;t=65d99ffd1d439;x=62ede40cce59c2ff",
+    "level_zero_gpu_count": 1,
+    "selected_device_index": 0,
+    "device_discovery": {
+      "core_clock_rate": "2750 MHz",
+      "device_id": 0,
+      "device_name": "Intel(R) Arc(TM) B570 Graphics",
+      "device_state": "normal",
+      "device_stepping": "A0",
+      "device_type": "Discrete GPU",
+      "driver_version": "17013219",
+      "drm_device": "/dev/dri/card1",
+      "gfx_data_firmware_name": "GFX_DATA",
+      "gfx_data_firmware_version": "",
+      "gfx_firmware_name": "GFX",
+      "gfx_firmware_status": "normal",
+      "gfx_firmware_version": "",
+      "kernel_version": "7.0.0-38-generic",
+      "max_command_queue_priority": "0",
+      "max_hardware_contexts": "65536",
+      "max_mem_alloc_size_byte": "10132807680",
+      "memory_bus_width": "4294967295",
+      "memory_ecc_state": "disabled",
+      "memory_free_size_byte": "10096943104",
+      "memory_physical_size": "10172.00 MiB",
+      "memory_physical_size_byte": 10666115072,
+      "number_of_eus": 144,
+      "number_of_eus_per_sub_slice": "8",
+      "number_of_media_engines": "0",
+      "number_of_media_enh_engines": "0",
+      "number_of_memory_channels": "4294967295",
+      "number_of_slices": "5",
+      "number_of_sub_slices_per_slice": "4",
+      "number_of_threads_per_eu": "8",
+      "number_of_tiles": 1,
+      "oam_socket_id": "N/A",
+      "pci_bdf_address": "0000:05:00.0",
+      "pci_device_id": "0xe20c",
+      "pci_slot": "",
+      "pci_vendor_id": "0x8086",
+      "pcie_generation": "N/A",
+      "pcie_max_bandwidth": "N/A",
+      "pcie_max_link_width": "N/A",
+      "physical_eu_simd_width": "16",
+      "serial_number": "unknown",
+      "sku_type": "Production ES",
+      "uuid": "00000000-0000-0005-0000-0000e20c8086",
+      "vendor_name": "Intel(R) Corporation"
+    },
+    "device_state": "normal",
+    "device_used_mib": 34.203125,
+    "device_usage": {
+      "device_index": 0,
+      "pci_bdf": "0000:05:00.0",
+      "device_type": "discrete",
+      "timestamps": {
+        "start": "2026-10-12T00:45:16.205Z",
+        "end": "2026-10-12T00:45:16.409Z",
+        "elapsed_seconds": 0.204426496
+      },
+      "power": {
+        "gpu_power_w": {
+          "tile_0": {
+            "avg": 29.62795367382597,
+            "min": 28.99464538089456,
+            "max": 30.261261966757377,
+            "current": 30.261261966757377
+          }
+        },
+        "energy_consumed_j": 6.004638
+      },
+      "frequency": {
+        "gpu_frequency_mhz": {
+          "tile_0": {
+            "avg": 1200.0,
+            "min": 1200.0,
+            "max": 1200.0,
+            "current": 1200.0
+          }
+        },
+        "media_frequency_mhz": {
+          "tile_0": {
+            "avg": 1200.0,
+            "min": 1200.0,
+            "max": 1200.0,
+            "current": 1200.0
+          }
+        }
+      },
+      "memory": {
+        "used_mib": {
+          "tile_0": {
+            "avg": 34.203125,
+            "min": 34.203125,
+            "max": 34.203125,
+            "current": 34.203125
+          }
+        },
+        "util_percent": {
+          "tile_0": {
+            "avg": 0.3362477880456154,
+            "min": 0.3362477880456154,
+            "max": 0.3362477880456154,
+            "current": 0.3362477880456154
+          }
+        }
+      }
+    },
+    "health_protocol": [
+      "STATUS 0000:05:00.0 0",
+      "QUEUE 0000:05:00.0",
+      "H2D 65536 complete",
+      "KERNEL 16384 complete",
+      "D2H 65536 complete",
+      "PASS 0000:05:00.0: 1 round, 16384 exact words"
+    ],
+    "mapped_libraries": {
+      "/opt/intel/oneapi/compiler/2026.1/lib/libsycl.so.9.0.0": {
+        "path": "/opt/intel/oneapi/compiler/2026.1/lib/libsycl.so.9.0.0",
+        "sha256": {
+          "sha256": "d769a71f2c71530e59a5ba22831ec5a82edcde718076d2663772255498c8e053"
+        }
+      },
+      "/opt/intel/oneapi/compiler/2026.1/lib/libur_adapter_level_zero_v2.so.0.12.0": {
+        "path": "/opt/intel/oneapi/compiler/2026.1/lib/libur_adapter_level_zero_v2.so.0.12.0",
+        "sha256": {
+          "sha256": "bfdc0f26bf88bd0bccd66fc25302a4b22559f8fe30e499be18529be3ed610e60"
+        }
+      },
+      "/opt/intel/oneapi/compiler/2026.1/lib/libur_loader.so.0.12.0": {
+        "path": "/opt/intel/oneapi/compiler/2026.1/lib/libur_loader.so.0.12.0",
+        "sha256": {
+          "sha256": "5338c03524f6d3fdd7d6067e5a3f84315e36e11fe1f526d5bbd02d0c88f82a32"
+        }
+      },
+      "/opt/intel/oneapi/umf/1.1/lib/libumf.so.1.1.0": {
+        "path": "/opt/intel/oneapi/umf/1.1/lib/libumf.so.1.1.0",
+        "sha256": {
+          "sha256": "c74cfea0360d09b5072a8227efbc830db36bd57669ca22d190d0fb31fe8e3425"
+        }
+      },
+      "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395": {
+        "path": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395",
+        "sha256": {
+          "sha256": "dfa844e5afd8e8f74bf5ce9da3ea2837706d9116bc8efeaed90efba5acaf7b1c"
+        }
+      },
+      "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0": {
+        "path": "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0",
+        "sha256": {
+          "sha256": "b764efda507f173560fa6055d433dd5c76140180b4a7c532e1cea813cde67363"
+        }
+      },
+      "/usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1.32.0": {
+        "path": "/usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1.32.0",
+        "sha256": {
+          "sha256": "db1856f379706d51b6ded84ce028d4aa48740ef63793f60e8a1e027c6db6ffb5"
+        }
+      },
+      "/usr/lib/x86_64-linux-gnu/libze_validation_layer.so.1.32.0": {
+        "path": "/usr/lib/x86_64-linux-gnu/libze_validation_layer.so.1.32.0",
+        "sha256": {
+          "sha256": "5b5ead80d98959d0f0a27a8981bb911c354720d39a4aa2125dc18266ad67d970"
+        }
+      }
+    },
+    "kernel-after": {
+      "relevant_entries": [],
+      "fault_entries": [],
+      "dump_present": false,
+      "filter": "page fault|fault response|timestamp stuck|wedg|engine reset|gt reset|guc.*(?:timeout|timed out|failed)|device.*lost|Timed out wait for G2H|Check job timeout|Timedout job|Schedule disable failed|trying reset|\\breset (?:queued|started|done)\\b"
+    },
+    "kernel_gate_passed": true,
+    "kernel-final": {
+      "relevant_entries": [],
+      "fault_entries": [],
+      "dump_present": false,
+      "filter": "page fault|fault response|timestamp stuck|wedg|engine reset|gt reset|guc.*(?:timeout|timed out|failed)|device.*lost|Timed out wait for G2H|Check job timeout|Timedout job|Schedule disable failed|trying reset|\\breset (?:queued|started|done)\\b"
+    },
+    "boot_unchanged": true,
+    "finished_utc": "2026-10-12T00:45:17.635598+00:00"
+  },
+  "scope": "Original statuses retained; successful full traces summarized."
+}

@@ -1,0 +1,200 @@
+{
+  "derivative": true,
+  "original": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-main-admission-prepare-root-v1/record.json",
+    "sha256": "6d7df14cfeb2863bad8d6a25998681b75cb50aae53f945c5a04614fc3e59c3d8",
+    "bytes": 6016
+  },
+  "original_result_passed": false,
+  "receipt": {
+    "active": false,
+    "passed": false,
+    "complete": false,
+    "commands": [
+      {
+        "label": "mapping-fixtures",
+        "argv": [
+          "/usr/bin/python3",
+          "-B",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-main-mapping-cpu-fixtures-v2.py",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-main-admission-prepare-root-v1/mapping-fixtures"
+        ],
+        "environment": {
+          "PATH": "/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8"
+        },
+        "started_utc": "2026-10-12T00:39:12.706940+00:00",
+        "wall_seconds": 120,
+        "errors": [],
+        "observed_owned_identity_count": 1,
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 114316.828521304,
+        "pid": 3545636,
+        "spawn_return_monotonic": 114316.830229047,
+        "direct_identity": {
+          "pid": 3545636,
+          "state": "R",
+          "ppid": 3545604,
+          "pgid": 3545636,
+          "sid": 3545636,
+          "start_ticks": 11431682,
+          "rss_bytes": 454656
+        },
+        "peak_live_owned_identities": 1,
+        "peak_session_rss_bytes": 13938688,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 0,
+        "finished_utc": "2026-10-12T00:39:13.117302+00:00",
+        "elapsed_seconds": 0.410054357998888,
+        "logs": {
+          "mapping-fixtures.stdout": {
+            "bytes": 357,
+            "sha256": {
+              "sha256": "801e42d6867d60b41cf12f8587fcdd346055731f6f0703564e36473ae5b453bd"
+            }
+          },
+          "mapping-fixtures.stderr": {
+            "bytes": 0,
+            "sha256": {
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          }
+        }
+      },
+      {
+        "label": "resolve",
+        "argv": [
+          "/usr/bin/python3",
+          "-B",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-pristine-admission-resolver-main-v2.py",
+          "--manifest",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-main-admission-prepare-root-v1/input-manifest.json",
+          "--output",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-main-admission-prepare-root-v1/resolved"
+        ],
+        "environment": {
+          "PATH": "/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8"
+        },
+        "started_utc": "2026-10-12T00:39:13.344195+00:00",
+        "wall_seconds": 120,
+        "errors": [],
+        "observed_owned_identity_count": 1,
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 114317.465639638,
+        "pid": 3545661,
+        "spawn_return_monotonic": 114317.467929458,
+        "direct_identity": {
+          "pid": 3545661,
+          "state": "R",
+          "ppid": 3545604,
+          "pgid": 3545661,
+          "sid": 3545661,
+          "start_ticks": 11431746,
+          "rss_bytes": 458752
+        },
+        "peak_live_owned_identities": 1,
+        "peak_session_rss_bytes": 10153984,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 1,
+        "finished_utc": "2026-10-12T00:39:13.583623+00:00",
+        "elapsed_seconds": 0.23923817000468262,
+        "logs": {
+          "resolve.stdout": {
+            "bytes": 0,
+            "sha256": {
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          },
+          "resolve.stderr": {
+            "bytes": 709,
+            "sha256": {
+              "sha256": "1ffbb85474c5087bd88f3d598a0b15667e0bf4aad912106be58dc0f52d2107e9"
+            }
+          }
+        }
+      }
+    ],
+    "main_reviewed": true,
+    "gpu_executed": false,
+    "model_launch_attempted": false,
+    "controller_sha256": {
+      "sha256": "f200f73321e7c87d603ede9128fac20415f39f2e1bcf7b83ed166f5f6aeb536a"
+    },
+    "whole_wall_seconds": 360,
+    "evidence": {
+      "mapping-fixtures": {
+        "stdout_derivative": {
+          "original_bytes": 357,
+          "original_sha256": "801e42d6867d60b41cf12f8587fcdd346055731f6f0703564e36473ae5b453bd",
+          "individual_test_lines": [],
+          "protocol_results": [],
+          "diagnostic_lines": [],
+          "diagnostic_line_count": 0,
+          "scope": "Actual individual test/protocol results and diagnostic evidence; repeated successful API and journal entries omitted."
+        },
+        "stderr_derivative": {
+          "original_bytes": 0,
+          "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "individual_test_lines": [],
+          "protocol_results": [],
+          "diagnostic_lines": [],
+          "diagnostic_line_count": 0,
+          "scope": "Actual individual test/protocol results and diagnostic evidence; repeated successful API and journal entries omitted."
+        }
+      },
+      "resolve": {
+        "stdout_derivative": {
+          "original_bytes": 0,
+          "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "individual_test_lines": [],
+          "protocol_results": [],
+          "diagnostic_lines": [],
+          "diagnostic_line_count": 0,
+          "scope": "Actual individual test/protocol results and diagnostic evidence; repeated successful API and journal entries omitted."
+        },
+        "stderr_derivative": {
+          "original_bytes": 709,
+          "original_sha256": "1ffbb85474c5087bd88f3d598a0b15667e0bf4aad912106be58dc0f52d2107e9",
+          "individual_test_lines": [],
+          "protocol_results": [],
+          "diagnostic_lines": [],
+          "diagnostic_line_count": 0,
+          "scope": "Actual individual test/protocol results and diagnostic evidence; repeated successful API and journal entries omitted."
+        }
+      }
+    },
+    "mapping_fixtures": {
+      "passed": true,
+      "gpu_executed": false,
+      "optional_build_id_absence_passed": true,
+      "exact_gnu_build_id_passed": true,
+      "malformed_elf_cases": [
+        "bad-magic",
+        "truncated",
+        "bad-ph-stride",
+        "too-many-ph",
+        "ph-outside-file"
+      ],
+      "aggregate_budget_rejection_passed": true,
+      "scope": "CPU synthetic map-selection fixtures; no claim of actual pristine process mapping."
+    },
+    "error": "RuntimeError('resolve')",
+    "finished_utc": "2026-10-12T00:39:13.584404+00:00"
+  },
+  "scope": "Original statuses retained; successful full traces summarized."
+}

@@ -1,0 +1,43 @@
+# R217 — official v0.1.43 selected native IQ3_S GGUF and PLE compatibility
+
+Date: 2026-10-12 (Asia/Tokyo). SourceOnly; no GGUF/model payload was opened, hashed, imported, AST-processed, built, tested, or run. No GPU, process, Git, or cleanup operation.
+
+## Conclusion
+
+No source-level blocker was found for the selected model's native expert type pairs or packed PLE weights on the official v0.1.43 SYCL path. Its default grouped expert dispatch contains every listed gate/up and down type, and its preflight checks dimensions and then validates each native_experts.txt tensor against the referenced GGUF metadata before expert data is loaded. The PLE pack representation is also handled: key/value are BF16-in-f32 engine forms, conv1d is F16, and norms are F32. The native preset selects the corresponding runtime GDN/QSA/PLE/head pathways.
+
+One route limitation matters: the official SYCL target links moe_fused_stub.cpp, whose native fused prefill entry points report not-built/unsupported. A caller cannot enable that fused prompt route through STRATA_PF_FUSED_NATIVE. This does not remove the standard native-pack prefill/dequant path or the verifier path, but any expectation of native fused IQ prefill performance is unqualified. No quality or runtime pass is claimed.
+
+The remaining compatibility check is data-specific: the exact native head, embedding, projection tensor types and original GGUF/shard metadata are not fully represented by the compact pack index. Startup loaders check those types/shapes against the supplied GGUF, but this source-only round did not open the original GGUF shards and cannot claim those checks pass on their contents.
+
+## Model metadata reviewed
+
+The compact layout report and pack metadata identify the Qwen3.8 Flash-Next IQ3_S pack, 1,079 index tensors, 48 expert layers, 512 experts/layer, and 50,292,326,400 logical expert-arena bytes. Across layers the expert type pairs are:
+
+| Gate/up GGML type | Down GGML type | Layers |
+|---|---:|---:|
+| 18 (IQ3_XXS) | 20 (IQ4_NL) | 14 |
+| 18 (IQ3_XXS) | 42 (Q2_0) | 3 |
+| 21 (IQ3_S) | 20 (IQ4_NL) | 9 |
+| 21 (IQ3_S) | 42 (Q2_0) | 1 |
+| 22 (IQ2_S) | 20 (IQ4_NL) | 15 |
+| 22 (IQ2_S) | 42 (Q2_0) | 5 |
+| 23 (IQ4_XS) | 20 (IQ4_NL) | 1 |
+
+These are metadata from xe-prefill-native-transfer-layout-v1.json and the R204 selected-model report, not measured transfers. The index.txt columns code_bits/group_elems are pack encoding fields; they must not be mistaken for GGML type IDs. The inspected PLE entries are kind 4 BF16 for ple_key and ple_value, kind 5 F16 for ple_conv1d, and kind 2 F32 for the three norm vectors.
+
+## Compatibility path
+
+- Native preset resolution in sycl/src/program/generate.cpp:2285-2322 expands --native into all adjacent model shards, locates the shard containing per_layer_token_embd.weight when --ple-gguf is omitted, and enables the native BF16, GDN, router, QSA, QSA indexer, RoPE, PLE-postops, and PLE-key flags. The native-pack admission check at 2682-2700 requires --native, spec >= 2, and a positive prefill chunk for a multi-token prompt; it loads the native embedding and fixes its canonical geometry.
+- Expert coverage is compiled by default, not gated on STRATA_Q6K_EXPERTS: sycl/src/kernels/cuda/iq_kernels.dp.cpp:773-777 lists 18/21/22/23 in GU and 20/42 in down formats. Fmt descriptors and native_expert_supported at 734-751, 2788-2800, and 4467-4478 calculate the layout and enforce block-size divisibility. The decode/grouped launches instantiate those types using STRATA_GU_FMTS and STRATA_D_FMTS at 5132-5134 and 5231-5235. The startup check in sycl/src/program/generate.cpp:2498-2514 rejects unsupported per-layer layouts before allocating the engine.
+- When experts are supplied from the model GGUF, src/core/expert_source.cpp:4161-4228 checks each layer/role name, GGML type ID, shape, byte extent, and absolute GGUF offset against native_experts.txt. This is a concrete startup guard for shard/layout mismatch; it is not evidence that the actual original GGUF passed.
+- Native dense/head type support is also bounded in source. native_mmvq_supported and native_mmvq dispatch include 18, 21, 22, 23, 20, and 42 (sycl/src/kernels/cuda/native_mmvq.dp.cpp:3651-3701). NativeEmbed checks token_embd.weight type and canonical shape before upload (sycl/src/core/native_head.cpp:168-190); NativeHead checks output.weight similarly and checks its payload bounds (32-72). The pack index's code_bits does not prove the source GGUF type, so these are admission checks still requiring actual shard metadata.
+- PLE uses both pack and source-GGUF components. The preset selects the source shard containing the per-layer embedding table; generate.cpp opens that table and requires the six blk.1.ple_* pack tensors (2975-3055). It uses the BF16 key/value directly from pack data, and only requires native key codes when the key WeightRef is quantized (3060-3080). The index shows an unquantized BF16 key (code_bits=0 with index kind 4), so that native-quantized-key subpath is not selected for this pack. The conv1d path requires F16 storage and exact two-byte extent (3080-3097), which matches index kind 5; value uses BF16 and the norms use F32. NativeDense::keep_unquantized_ple_key preserves such an unquantized PLE key when native dense loading builds its skip set (sycl/src/core/native_dense.cpp:128-140; generate.cpp:2708-2718).
+- Runtime selection for recurrent and attention paths is explicit. layer.cpp:255-365 uses native GDN preprocessing, gate, recurrence and output-normalization kernels when native_gdn is enabled, while BF16 projections use the BF16 projection helper. QSA requires the indexer key/query weights to be Bf16InF32 (layer.cpp:1190-1207), and native QSA indexer/norm/gate/RoPE functions are selected from the preset flags (layer.cpp:1250-1268, 1308-1355). The build's kernel source set maps CUDA-named sources to SYCL .dp.cpp and includes native_mmvq, native_gdn, native_qsa, native_qsa_indexer, native_rope, native_ple_postops and native_flash_attn (sycl/CMakeLists.txt:205-237). This is implementation presence and source dispatch, not device-JIT or numerical validation.
+- The native pack's prefix path should not be described as the optional fused native expert prefill. CMake instead includes moe_fused_stub.cpp for the SYCL build (sycl/CMakeLists.txt:225-229), and the stub returns false for built/available/enabled/requested/native_supported (sycl/src/prefill/moe_fused_stub.cpp:1-33). The alternate STRATA_PF_XMX=2 grouped prompt route has an explicit exact-format gate for GU 18/21/22/23 and down 20/42 (sycl/src/prefill/prefill.cpp:3940-3954); whether it is selected depends on runtime conditions and was not established here. Standard fallback remains in prefill.cpp. Do not label fused-only paths as available because their declarations or headers exist.
+
+## New gap / scope boundary
+
+The only newly relevant route gap is that native fused IQ expert prompt execution is not built in the official SYCL target; its enable environment variable cannot make the stub report support. The source does provide standard prefill and grouped verifier alternatives, but their actual runtime selection, GGUF metadata checks, device JIT, and performance still need the owned runtime receipt. The task's explicit no-model-data restriction leaves the original GGUF tensor-type/shard match unresolved here; loader checks are the mechanism that resolves it at startup.
+
+No prior preload failure, QSA/PF detail from XeStrata, quality evidence, or runtime result is carried over as a qualification.

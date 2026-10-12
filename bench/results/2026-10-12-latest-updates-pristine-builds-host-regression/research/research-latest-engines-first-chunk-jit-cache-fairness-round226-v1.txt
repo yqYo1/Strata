@@ -1,0 +1,53 @@
+# R226 — first-chunk compilation and cache fairness for latest engines
+
+Date: 2026-10-12 Asia/Tokyo. Read-only source/runtime-documentation audit for pristine XeStrata v0.1.42, adopted Xe integration `0691bcdf5af63a85b3b25650f367d3276db64035`, and official SYCL v0.1.43 where useful. No build, tests, imports/AST, Git, process/service, model/GPU, cache mutation/cleanup, or benchmark was performed. Main's active official v0.1.43 32K run was left alone.
+
+## Decision
+
+The source contains substantial pre-first-prompt kernel preparation: an asynchronous pass requests executable SYCL bundles for every registered kernel ID on the selected device; oneMath GEMM preparation is called and settled; and speculative verification setup executes several device-side tuner/calibration paths before reporting `session is up`. This makes the first prompt a poor proxy for “all compilation happens on the first chunk.” It does not prove that the first prompt has no lazy compilation. No source path measures a decomposition of first-chunk elapsed time into compilation, cache loading, memory paging, clock state, or model computation. Treat any such attribution as unmeasured until instrumentation separates it.
+
+The supplied pristine Xe diagnostic is a normal-QUIT/no-fault 32,768+16 run, but it used instrumentation and `SYCL_CACHE_PERSISTENT=0`; the reported cumulative prefill times were 61,698, 95,088, 124,768, and 150,548 ms, with engine prefill 150,580.2 ms and decode 1,536.8 ms. The successive cumulative increments are 61,698, 33,390, 29,680, and 25,780 ms. These samples show a slower first recorded chunk in that run; they do not identify JIT as the cause and do not make a winning claim. Persistent cache off only excludes disk-cache reuse; Intel documents the per-context in-memory cache separately, enabled by default.
+
+## Source identity
+
+| Source file | SHA-256 |
+|---|---|
+| Xe v0.1.42 `src/program/generate.cpp` | `11ef3ab19817c2deddd5c68bb78192542dde3e79a971a8af01f3239fce6398aa` |
+| Xe v0.1.42 `src/core/device.cpp` | `2c089ad5e93432226ac3fffddf073c01238a11bff7e564401cf5422d84f74128` |
+| Xe v0.1.42 `src/core/verify.cpp` | `49dd7893246ae4587efb3e0fb13584c7d4281533d3720faf3fc3a96802bbd60b` |
+| Xe v0.1.42 `src/kernels/xe/verify_kernels.cpp` | `2d1f74c54386b610daab7dc401cb50b6382bbf6eadc90dbcea8aabd29acb7631` |
+| Xe v0.1.42 `src/kernels/xe/bf16_gemv.cpp` | `da93e91677eb9430dab4b0bd0dfeecd619673225719c448ed0f27d9ebabc290a` |
+| adopted integration `src/program/generate.cpp` | `f9e6a45a4f7494cbc48c0b0e944b30d493f0ee97219fb2535a001f3a5913db05` |
+| adopted integration `src/core/device.cpp` | `3e7523a2947af7c82d41fc9a7653f4f9aad0fa3cbb062999de19553659e0ec27` |
+| adopted integration `src/core/verify.cpp` | `efc5c8d37c1b6b18efa1a203c4ed8f0a4bc3c8c1098dbf0e87f8ab11cd845cad` |
+| adopted integration `src/kernels/xe/verify_kernels.cpp` | `5ed83f06c5677fcc435bd8f3705aaff5674a3efca83e87c583b287d756738efd` |
+| adopted integration `src/kernels/xe/bf16_gemv.cpp` | `0e242552991383991a4af175ce34ea03e2b1d00f7ea0ac96ceab4e34a3ec67b4` |
+| official v0.1.43 `sycl/src/program/generate.cpp` | `8112c1808dc317e89d9635ad1b6e46b080fc16e67a0b2f63923d5231f355fa07` |
+| official v0.1.43 `sycl/src/core/verify.cpp` | `fa054779c47fd22abea9d9d71d55ab01af1df7d745f87e52e8ff3538a732d11e` |
+
+## What source prepares before prompt timing
+
+Xe v0.1.42 and adopted integration call `Runtime::preload_kernels()` alongside model loading (`generate.cpp`, Xe about line 2847; integration about 2924). The runtime launches a background thread over `sycl::get_kernel_ids()`, requesting `get_kernel_bundle<executable>(context, {device}, {id})` for each ID. It counts exceptions as “not for this GPU”; with `STRATA_TRACE` it reports built/skipped totals on completion. This is compile-ahead work for the registered, device-compatible SYCL kernel IDs. The request is asynchronous. In `generate.cpp`, explicit `wait_preload()` sites are tied to PCIe split and pre-prompt memory-rate measurements; a supplied `--pcie-frac` path bypasses that calibration. Thus source alone does not prove the preload thread has finished before first prompt in every configuration. No elapsed-time counter isolates its work.
+
+The source separately prepares oneMath prefill GEMM and settles it before prompt execution (Xe `generate.cpp` near 2860; integration near 2937). This is library preparation, not proof every eventual matrix shape/module has been instantiated. The first real prompt still exercises shapes and branches that generic preloading or a library prepare call might not cover.
+
+When `--spec` is active, `Verifier::tune_device` is called during startup before the `session is up` message, and the verifier's init path also calls it before recording the first graph. It invokes `gdn_step_tune`, `fetch_blobs_tune`, and BF16 multi-row GEMV tuning for selected dimensions. These are real GPU work, not a no-op JIT warm-up: the source creates scratch, builds command graphs, launches candidate forms over window sizes, waits, and stores selection choices. The BF16 tuner tries both forms for T=2..8 per shape; GDN trials three forms per verify window when not forced; the fetch tuner tries work-group counts. This can trigger compilation before the prompt, warm device clocks, and consume startup time. It is not an end-to-end prefill warm-up and does not cover every prefill kernel/configuration.
+
+The SYCL cache key includes device image, specialization-constant values, device identity/version/driver, and build options. A different specialization value or compile option may therefore require a different compiled entry even if an image ID was previously requested. External library code may also have its own loading/caching behavior. This prevents a source-only claim that “all possible kernels/shapes are compiled” from the all-ID loop.
+
+## Cache semantics and fair comparisons
+
+Intel's oneAPI DPC++ documentation distinguishes the per-context in-memory program/kernel cache from the persistent on-disk device-code cache. `SYCL_CACHE_PERSISTENT=0` disables persistent caching; it does not disable the in-memory cache (`SYCL_CACHE_IN_MEM`, default `1`). Persistent caching is default off unless enabled/configured. `SYCL_CACHE_DIR` selects its root; the docs say a persistent cache hit is qualified by image, specialization values, device and build-options keys, with device identity including driver version. Sources:
+
+- Intel LLVM, “A brief overview of kernel and program caching mechanism”: https://intel.github.io/llvm/design/KernelProgramCache.html
+- Intel LLVM, “Environment Variables” (including `SYCL_CACHE_TRACE`): https://intel.github.io/llvm/EnvironmentVariables.html
+
+For a defensible cold-process comparison, keep engine/model/request settings, instrumentation, driver/compiler, and cache policy fixed; record whether persistent cache is disabled or use a separate empty `SYCL_CACHE_DIR` per engine/binary; use a fresh process for each sample; and report startup preparation separately from request prefill. Persistent-off gives a fresh process no on-disk compiled image reuse, while still permitting compilation and in-memory reuse during that process. Do not call it “no JIT.” For a warm-compiled comparison, first populate the same engine's persistent cache with the exact binary, device/driver, build options and route, then start fresh measured processes with that cache enabled. Do not compare Xe's empty/off state with official's populated/on state. Cache tracing is useful in a separate diagnostic run; keep it out of timed runs unless the same instrumentation overhead is intentionally measured on both sides.
+
+In addition, an explicit same-process warm-up can prime in-memory entries, but it must execute the same relevant prompt/verifier kernel route and then reset session/model state before timing. That measures a warm-process condition, not a cold process. Report both as separate estimands. The current instrumentation-enabled diagnostic must not be mixed with uninstrumented samples unless both engines use equivalent instrumentation.
+
+`STRATA_GDN_STEP`, `STRATA_FETCH_GROUPS`, and `STRATA_MMVF_ROWS` are algorithm/dispatch controls, not cache switches. The first two can bypass particular tuning selection when forced; `STRATA_MMVF_ROWS` forces dispatch choice but the BF16 tuning function still runs its measurements. Changing them changes selected forms or startup work, so they should be held equal across comparisons and recorded. No safe source knob was found that simply disables lazy JIT while preserving every route. `STRATA_TRACE` reports preload counts but is diagnostic instrumentation, not a wait barrier.
+
+## Prior-report scope
+
+R217 selected native-pack/PLE compatibility; R218 established controller post-READY gates; R219 selected independent prefill/decode settings; R220 ranked hypotheses for the pristine Xe slot-84 check; R221 reviewed native arena/cache-copy admission; R222 compared profile-fill break/continue; R223 addressed 262,144-context boundaries; R224 corrected the selected integration's duplicate-profile statement; R225 selected a safe official-parameter campaign. Registry v154 was reviewed. None of those reports provides a measured first-chunk JIT decomposition. This report does not repeat the profile-fill repair or raw host-USM hazard finding.
