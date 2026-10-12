@@ -1,0 +1,3069 @@
+{
+  "original": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-integrated-neutral-model-root-v6/xe-timed2-off/record.json",
+    "sha256": "65dfc814593462d39ed7d04a4fa0ebec6d08cb3591dc20c887532659feacaf73",
+    "bytes": 123688
+  },
+  "derivative": true,
+  "original_status_preserved": true,
+  "original_passed": true,
+  "receipt": {
+    "active": false,
+    "passed": true,
+    "complete": true,
+    "commands": [
+      {
+        "label": "embedding-state",
+        "argv": [
+          "/usr/bin/systemctl",
+          "--user",
+          "show",
+          "llama-server-qwen3embed.service",
+          "-p",
+          "ActiveState"
+        ],
+        "environment": {
+          "PATH": "/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "XDG_RUNTIME_DIR": "/run/user/1000",
+          "DBUS_SESSION_BUS_ADDRESS": "unix:path=/run/user/1000/bus"
+        },
+        "started_utc": "2026-10-12T03:01:22.672202+00:00",
+        "wall_seconds": 30,
+        "errors": [],
+        "owners": [
+          {
+            "pid": 4101063,
+            "start_ticks": 12284679,
+            "sid": 4101063,
+            "pgid": 4101063
+          }
+        ],
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 122846.794236238,
+        "pid": 4101063,
+        "spawn_return_monotonic": 122846.797504994,
+        "direct_identity": {
+          "pid": 4101063,
+          "state": "R",
+          "ppid": 4100540,
+          "pgid": 4101063,
+          "sid": 4101063,
+          "start_ticks": 12284679,
+          "rss_bytes": 430080
+        },
+        "peak_live_owned_identities": 1,
+        "peak_session_rss_bytes": 0,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 0,
+        "finished_utc": "2026-10-12T03:01:22.802772+00:00",
+        "elapsed_seconds": 0.12987755100766663,
+        "logs": {
+          "embedding-state.stdout": {
+            "bytes": 21,
+            "sha256": "9bf2451134cf07027a1e5d0b7b71598867aaf8ba6db4f4afb1f9f3611eda0c68"
+          },
+          "embedding-state.stderr": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      {
+        "label": "kernel-cursor",
+        "argv": [
+          "/usr/bin/journalctl",
+          "-k",
+          "-n",
+          "0",
+          "--show-cursor",
+          "--no-pager"
+        ],
+        "environment": {
+          "PATH": "/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "XDG_RUNTIME_DIR": "/run/user/1000",
+          "DBUS_SESSION_BUS_ADDRESS": "unix:path=/run/user/1000/bus"
+        },
+        "started_utc": "2026-10-12T03:01:22.803740+00:00",
+        "wall_seconds": 30,
+        "errors": [],
+        "owners": [
+          {
+            "pid": 4101066,
+            "start_ticks": 12284692,
+            "sid": 4101066,
+            "pgid": 4101066
+          }
+        ],
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 122846.925550925,
+        "pid": 4101066,
+        "spawn_return_monotonic": 122846.929124115,
+        "direct_identity": {
+          "pid": 4101066,
+          "state": "R",
+          "ppid": 4100540,
+          "pgid": 4101066,
+          "sid": 4101066,
+          "start_ticks": 12284692,
+          "rss_bytes": 479232
+        },
+        "peak_live_owned_identities": 1,
+        "peak_session_rss_bytes": 0,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 0,
+        "finished_utc": "2026-10-12T03:01:22.945098+00:00",
+        "elapsed_seconds": 0.14082828401296865,
+        "logs": {
+          "kernel-cursor.stdout": {
+            "bytes": 156,
+            "sha256": "a75105ac303ab1c6c18cad7e18bd8f71ee690734df310d9a8dd8c683e0627d12"
+          },
+          "kernel-cursor.stderr": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      {
+        "label": "kernel-before-health",
+        "argv": [
+          "/usr/bin/journalctl",
+          "-k",
+          "--after-cursor",
+          "s=9944479cfd1a45c28a589619cb8f2881;i=c0ed356;b=cfda0b6a7c134fe2bdf58f9202770840;m=1c96da5880;t=65d9be654302e;x=20b2fb7c56f53308",
+          "--no-pager",
+          "-o",
+          "json"
+        ],
+        "environment": {
+          "PATH": "/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "XDG_RUNTIME_DIR": "/run/user/1000",
+          "DBUS_SESSION_BUS_ADDRESS": "unix:path=/run/user/1000/bus"
+        },
+        "started_utc": "2026-10-12T03:01:22.945917+00:00",
+        "wall_seconds": 30,
+        "errors": [],
+        "owners": [
+          {
+            "pid": 4101079,
+            "start_ticks": 12284706,
+            "sid": 4101079,
+            "pgid": 4101079
+          }
+        ],
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 122847.067633963,
+        "pid": 4101079,
+        "spawn_return_monotonic": 122847.070864476,
+        "direct_identity": {
+          "pid": 4101079,
+          "state": "R",
+          "ppid": 4100540,
+          "pgid": 4101079,
+          "sid": 4101079,
+          "start_ticks": 12284706,
+          "rss_bytes": 581632
+        },
+        "peak_live_owned_identities": 1,
+        "peak_session_rss_bytes": 0,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 0,
+        "finished_utc": "2026-10-12T03:01:23.066523+00:00",
+        "elapsed_seconds": 0.12016161299834494,
+        "logs": {
+          "kernel-before-health.stdout": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "kernel-before-health.stderr": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      {
+        "label": "health-before",
+        "argv": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-source-llvm-small-health-root-v3/health",
+          "0000:05:00.0"
+        ],
+        "environment": {
+          "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib",
+          "XDG_RUNTIME_DIR": "/run/user/1000",
+          "NEOReadDebugKeys": "1",
+          "EnableDirectSubmission": "0",
+          "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+          "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0.12.0",
+          "CUDA_MODULE_LOADING": "EAGER",
+          "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+          "SYCL_CACHE_PERSISTENT": "0",
+          "ZEL_ENABLE_LOADER_LOGGING": "0",
+          "ZEL_LOADER_LOG_CONSOLE": "0",
+          "ZEL_LOADER_LOGGING_LEVEL": "warning",
+          "ZE_ENABLE_VALIDATION_LAYER": "0",
+          "ZE_ENABLE_PARAMETER_VALIDATION": "0",
+          "UR_LOG_LOADER": "level:error;output:stderr",
+          "UR_LOG_LEVEL_ZERO": "level:error;output:stderr",
+          "STRATA_GPU_PCI": "0000:05:00.0",
+          "STRATA_EVENT_MARK": "barrier",
+          "STRATA_VERIFY_SEGMENTED": "1",
+          "STRATA_VERIFY_DEVICE_PLAN": "0",
+          "STRATA_PREFILL_ISSUER": "0",
+          "STRATA_PREFILL_RING": "8",
+          "STRATA_ARENA_HOST_USM": "1",
+          "STRATA_PREFILL_FIRST": "0",
+          "STRATA_PREFILL_CPU_SHARE": "0",
+          "STRATA_PREFILL_CPU_GATE": "0",
+          "STRATA_PREFILL_FUSED": "0",
+          "STRATA_PREFILL_NATIVE_DEQUANT_BATCH": "0",
+          "STRATA_PREFILL_COMPACT_MOE_SCRATCH": "1",
+          "STRATA_PRELOAD_KERNELS": "0",
+          "STRATA_MTP_PREFILL_SYNC": "1",
+          "STRATA_NAN_GUARD": "0"
+        },
+        "started_utc": "2026-10-12T03:01:23.094295+00:00",
+        "wall_seconds": 30,
+        "errors": [],
+        "owners": [
+          {
+            "pid": 4101104,
+            "start_ticks": 12284721,
+            "sid": 4101104,
+            "pgid": 4101104
+          }
+        ],
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 122847.216209917,
+        "pid": 4101104,
+        "spawn_return_monotonic": 122847.219192464,
+        "direct_identity": {
+          "pid": 4101104,
+          "state": "R",
+          "ppid": 4100540,
+          "pgid": 4101104,
+          "sid": 4101104,
+          "start_ticks": 12284721,
+          "rss_bytes": 425984
+        },
+        "peak_live_owned_identities": 1,
+        "peak_session_rss_bytes": 51093504,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 0,
+        "finished_utc": "2026-10-12T03:01:23.260063+00:00",
+        "elapsed_seconds": 0.16512146400054917,
+        "logs": {
+          "health-before.stdout": {
+            "bytes": 3504,
+            "sha256": "e49003bad2d5e32fd79c9669b6348bd7bd0c95eb652cf2fc15dcd44fbf48b72b"
+          },
+          "health-before.stderr": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      {
+        "label": "kernel-after-prehealth",
+        "argv": [
+          "/usr/bin/journalctl",
+          "-k",
+          "--after-cursor",
+          "s=9944479cfd1a45c28a589619cb8f2881;i=c0ed356;b=cfda0b6a7c134fe2bdf58f9202770840;m=1c96da5880;t=65d9be654302e;x=20b2fb7c56f53308",
+          "--no-pager",
+          "-o",
+          "json"
+        ],
+        "environment": {
+          "PATH": "/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "XDG_RUNTIME_DIR": "/run/user/1000",
+          "DBUS_SESSION_BUS_ADDRESS": "unix:path=/run/user/1000/bus"
+        },
+        "started_utc": "2026-10-12T03:01:23.667291+00:00",
+        "wall_seconds": 30,
+        "errors": [],
+        "owners": [
+          {
+            "pid": 4101129,
+            "start_ticks": 12284779,
+            "sid": 4101129,
+            "pgid": 4101129
+          }
+        ],
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 122847.789222349,
+        "pid": 4101129,
+        "spawn_return_monotonic": 122847.792832578,
+        "direct_identity": {
+          "pid": 4101129,
+          "state": "R",
+          "ppid": 4100540,
+          "pgid": 4101129,
+          "sid": 4101129,
+          "start_ticks": 12284779,
+          "rss_bytes": 471040
+        },
+        "peak_live_owned_identities": 1,
+        "peak_session_rss_bytes": 0,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 0,
+        "finished_utc": "2026-10-12T03:01:23.785136+00:00",
+        "elapsed_seconds": 0.11721780999505427,
+        "logs": {
+          "kernel-after-prehealth.stdout": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "kernel-after-prehealth.stderr": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      {
+        "label": "engine",
+        "argv": [
+          "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-xe-v0143-nonfinite-20261012/build/free/strata",
+          "--pack",
+          "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+          "--native",
+          "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+          "--serve",
+          "--max-context",
+          "262144",
+          "--kv",
+          "int8",
+          "--kv-resident",
+          "32768",
+          "--no-kv-grow",
+          "--expert-cache",
+          "128",
+          "--expert-profile",
+          "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-prefill-service-events-20261010/data/expert-profile.bin",
+          "--expert-cache-per-layer",
+          "--pool-workers",
+          "5",
+          "--pcie-frac",
+          "0",
+          "--adapt-swaps",
+          "0",
+          "--conversation-cache-mib",
+          "0",
+          "--prompt-cache",
+          "0",
+          "--turn-token",
+          "-1",
+          "--suffix-draft",
+          "0",
+          "--greedy",
+          "--no-spec-split",
+          "--short-read",
+          "0",
+          "--spec",
+          "4",
+          "--prefill",
+          "8192",
+          "--prefill-experts",
+          "16",
+          "--no-prefill-borrow"
+        ],
+        "environment": {
+          "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib",
+          "XDG_RUNTIME_DIR": "/run/user/1000",
+          "NEOReadDebugKeys": "1",
+          "EnableDirectSubmission": "0",
+          "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+          "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0.12.0",
+          "CUDA_MODULE_LOADING": "EAGER",
+          "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+          "SYCL_CACHE_PERSISTENT": "0",
+          "ZEL_ENABLE_LOADER_LOGGING": "0",
+          "ZEL_LOADER_LOG_CONSOLE": "0",
+          "ZEL_LOADER_LOGGING_LEVEL": "warning",
+          "ZE_ENABLE_VALIDATION_LAYER": "0",
+          "ZE_ENABLE_PARAMETER_VALIDATION": "0",
+          "UR_LOG_LOADER": "level:error;output:stderr",
+          "UR_LOG_LEVEL_ZERO": "level:error;output:stderr",
+          "STRATA_GPU_PCI": "0000:05:00.0",
+          "STRATA_EVENT_MARK": "barrier",
+          "STRATA_VERIFY_SEGMENTED": "1",
+          "STRATA_VERIFY_DEVICE_PLAN": "0",
+          "STRATA_PREFILL_ISSUER": "0",
+          "STRATA_PREFILL_RING": "8",
+          "STRATA_ARENA_HOST_USM": "1",
+          "STRATA_PREFILL_FIRST": "0",
+          "STRATA_PREFILL_CPU_SHARE": "0",
+          "STRATA_PREFILL_CPU_GATE": "0",
+          "STRATA_PREFILL_FUSED": "0",
+          "STRATA_PREFILL_NATIVE_DEQUANT_BATCH": "0",
+          "STRATA_PREFILL_COMPACT_MOE_SCRATCH": "1",
+          "STRATA_PRELOAD_KERNELS": "0",
+          "STRATA_MTP_PREFILL_SYNC": "1",
+          "STRATA_NAN_GUARD": "0"
+        },
+        "started_utc": "2026-10-12T03:01:23.787469+00:00",
+        "wall_seconds": 1796.3056910669984,
+        "errors": [],
+        "owners": [
+          {
+            "pid": 4101133,
+            "start_ticks": 12284791,
+            "sid": 4101133,
+            "pgid": 4101133
+          }
+        ],
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 122847.90938238,
+        "pid": 4101133,
+        "spawn_return_monotonic": 122847.912536961,
+        "direct_identity": {
+          "pid": 4101133,
+          "state": "R",
+          "ppid": 4100540,
+          "pgid": 4101133,
+          "sid": 4101133,
+          "start_ticks": 12284791,
+          "rss_bytes": 356352
+        },
+        "peak_live_owned_identities": 1,
+        "peak_session_rss_bytes": 1483677696,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 0,
+        "finished_utc": "2026-10-12T03:03:45.017190+00:00",
+        "elapsed_seconds": 141.2290895979968,
+        "logs": {
+          "engine.stdout": {
+            "bytes": 2103,
+            "sha256": "f0dc99858d74fa9dd1baaf7ba8ddaae7506dbe5f689d2151680fa37208f72e9c"
+          },
+          "engine.stderr": {
+            "bytes": 4044,
+            "sha256": "3f4e65d561a10d504d0cb367df24098c8cfcef89c7bce82e4297c04267090d1d"
+          }
+        }
+      },
+      {
+        "label": "kernel-after-engine",
+        "argv": [
+          "/usr/bin/journalctl",
+          "-k",
+          "--after-cursor",
+          "s=9944479cfd1a45c28a589619cb8f2881;i=c0ed356;b=cfda0b6a7c134fe2bdf58f9202770840;m=1c96da5880;t=65d9be654302e;x=20b2fb7c56f53308",
+          "--no-pager",
+          "-o",
+          "json"
+        ],
+        "environment": {
+          "PATH": "/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "XDG_RUNTIME_DIR": "/run/user/1000",
+          "DBUS_SESSION_BUS_ADDRESS": "unix:path=/run/user/1000/bus"
+        },
+        "started_utc": "2026-10-12T03:03:45.065384+00:00",
+        "wall_seconds": 30,
+        "errors": [],
+        "owners": [
+          {
+            "pid": 4108499,
+            "start_ticks": 12298918,
+            "sid": 4108499,
+            "pgid": 4108499
+          }
+        ],
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 122989.18808761,
+        "pid": 4108499,
+        "spawn_return_monotonic": 122989.19168809,
+        "direct_identity": {
+          "pid": 4108499,
+          "state": "R",
+          "ppid": 4100540,
+          "pgid": 4108499,
+          "sid": 4108499,
+          "start_ticks": 12298918,
+          "rss_bytes": 483328
+        },
+        "peak_live_owned_identities": 1,
+        "peak_session_rss_bytes": 0,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 0,
+        "finished_utc": "2026-10-12T03:03:45.183543+00:00",
+        "elapsed_seconds": 0.11677319400769193,
+        "logs": {
+          "kernel-after-engine.stdout": {
+            "bytes": 2217,
+            "sha256": "de59f1bf6b6e153c21ae36741524446726a38855e623da15c4476112abeca4d6"
+          },
+          "kernel-after-engine.stderr": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      {
+        "label": "health-after",
+        "argv": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-source-llvm-small-health-root-v3/health",
+          "0000:05:00.0"
+        ],
+        "environment": {
+          "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib",
+          "XDG_RUNTIME_DIR": "/run/user/1000",
+          "NEOReadDebugKeys": "1",
+          "EnableDirectSubmission": "0",
+          "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+          "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0.12.0",
+          "CUDA_MODULE_LOADING": "EAGER",
+          "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+          "SYCL_CACHE_PERSISTENT": "0",
+          "ZEL_ENABLE_LOADER_LOGGING": "0",
+          "ZEL_LOADER_LOG_CONSOLE": "0",
+          "ZEL_LOADER_LOGGING_LEVEL": "warning",
+          "ZE_ENABLE_VALIDATION_LAYER": "0",
+          "ZE_ENABLE_PARAMETER_VALIDATION": "0",
+          "UR_LOG_LOADER": "level:error;output:stderr",
+          "UR_LOG_LEVEL_ZERO": "level:error;output:stderr",
+          "STRATA_GPU_PCI": "0000:05:00.0",
+          "STRATA_EVENT_MARK": "barrier",
+          "STRATA_VERIFY_SEGMENTED": "1",
+          "STRATA_VERIFY_DEVICE_PLAN": "0",
+          "STRATA_PREFILL_ISSUER": "0",
+          "STRATA_PREFILL_RING": "8",
+          "STRATA_ARENA_HOST_USM": "1",
+          "STRATA_PREFILL_FIRST": "0",
+          "STRATA_PREFILL_CPU_SHARE": "0",
+          "STRATA_PREFILL_CPU_GATE": "0",
+          "STRATA_PREFILL_FUSED": "0",
+          "STRATA_PREFILL_NATIVE_DEQUANT_BATCH": "0",
+          "STRATA_PREFILL_COMPACT_MOE_SCRATCH": "1",
+          "STRATA_PRELOAD_KERNELS": "0",
+          "STRATA_MTP_PREFILL_SYNC": "1",
+          "STRATA_NAN_GUARD": "0"
+        },
+        "started_utc": "2026-10-12T03:03:45.187275+00:00",
+        "wall_seconds": 30,
+        "errors": [],
+        "owners": [
+          {
+            "pid": 4108502,
+            "start_ticks": 12298931,
+            "sid": 4108502,
+            "pgid": 4108502
+          }
+        ],
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 122989.310552743,
+        "pid": 4108502,
+        "spawn_return_monotonic": 122989.314107297,
+        "direct_identity": {
+          "pid": 4108502,
+          "state": "R",
+          "ppid": 4100540,
+          "pgid": 4108502,
+          "sid": 4108502,
+          "start_ticks": 12298931,
+          "rss_bytes": 413696
+        },
+        "peak_live_owned_identities": 1,
+        "peak_session_rss_bytes": 8372224,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 0,
+        "finished_utc": "2026-10-12T03:03:45.411391+00:00",
+        "elapsed_seconds": 0.222121419996256,
+        "logs": {
+          "health-after.stdout": {
+            "bytes": 3504,
+            "sha256": "e49003bad2d5e32fd79c9669b6348bd7bd0c95eb652cf2fc15dcd44fbf48b72b"
+          },
+          "health-after.stderr": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      {
+        "label": "kernel-after-posthealth",
+        "argv": [
+          "/usr/bin/journalctl",
+          "-k",
+          "--after-cursor",
+          "s=9944479cfd1a45c28a589619cb8f2881;i=c0ed356;b=cfda0b6a7c134fe2bdf58f9202770840;m=1c96da5880;t=65d9be654302e;x=20b2fb7c56f53308",
+          "--no-pager",
+          "-o",
+          "json"
+        ],
+        "environment": {
+          "PATH": "/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "XDG_RUNTIME_DIR": "/run/user/1000",
+          "DBUS_SESSION_BUS_ADDRESS": "unix:path=/run/user/1000/bus"
+        },
+        "started_utc": "2026-10-12T03:03:45.752049+00:00",
+        "wall_seconds": 30,
+        "errors": [],
+        "owners": [
+          {
+            "pid": 4108553,
+            "start_ticks": 12298987,
+            "sid": 4108553,
+            "pgid": 4108553
+          }
+        ],
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 122989.875163577,
+        "pid": 4108553,
+        "spawn_return_monotonic": 122989.878351397,
+        "direct_identity": {
+          "pid": 4108553,
+          "state": "R",
+          "ppid": 4100540,
+          "pgid": 4108553,
+          "sid": 4108553,
+          "start_ticks": 12298987,
+          "rss_bytes": 479232
+        },
+        "peak_live_owned_identities": 1,
+        "peak_session_rss_bytes": 0,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 0,
+        "finished_utc": "2026-10-12T03:03:45.873687+00:00",
+        "elapsed_seconds": 0.1198057199944742,
+        "logs": {
+          "kernel-after-posthealth.stdout": {
+            "bytes": 2217,
+            "sha256": "ca7a68d3c447d7ec4a429310e80ca05ef5ea833ccb34b9b74d09cc115c4dc29b"
+          },
+          "kernel-after-posthealth.stderr": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      {
+        "label": "kernel-final",
+        "argv": [
+          "/usr/bin/journalctl",
+          "-k",
+          "--after-cursor",
+          "s=9944479cfd1a45c28a589619cb8f2881;i=c0ed356;b=cfda0b6a7c134fe2bdf58f9202770840;m=1c96da5880;t=65d9be654302e;x=20b2fb7c56f53308",
+          "--no-pager",
+          "-o",
+          "json"
+        ],
+        "environment": {
+          "PATH": "/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "XDG_RUNTIME_DIR": "/run/user/1000",
+          "DBUS_SESSION_BUS_ADDRESS": "unix:path=/run/user/1000/bus"
+        },
+        "started_utc": "2026-10-12T03:03:48.386332+00:00",
+        "wall_seconds": 30,
+        "errors": [],
+        "owners": [
+          {
+            "pid": 4108755,
+            "start_ticks": 12299251,
+            "sid": 4108755,
+            "pgid": 4108755
+          }
+        ],
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 122992.509936986,
+        "pid": 4108755,
+        "spawn_return_monotonic": 122992.513468405,
+        "direct_identity": {
+          "pid": 4108755,
+          "state": "R",
+          "ppid": 4100540,
+          "pgid": 4108755,
+          "sid": 4108755,
+          "start_ticks": 12299251,
+          "rss_bytes": 643072
+        },
+        "peak_live_owned_identities": 1,
+        "peak_session_rss_bytes": 0,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 0,
+        "finished_utc": "2026-10-12T03:03:48.511545+00:00",
+        "elapsed_seconds": 0.12289781699655578,
+        "logs": {
+          "kernel-final.stdout": {
+            "bytes": 2217,
+            "sha256": "901169639fde3dc2c264db6b4a8a38380e45e09c2130f07148fad593b753a8f8"
+          },
+          "kernel-final.stderr": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      }
+    ],
+    "guard_commands": [
+      {
+        "label": "head-preflight",
+        "argv": [
+          "/usr/bin/git",
+          "rev-parse",
+          "HEAD"
+        ],
+        "environment": {
+          "PATH": "/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "XDG_RUNTIME_DIR": "/run/user/1000",
+          "DBUS_SESSION_BUS_ADDRESS": "unix:path=/run/user/1000/bus"
+        },
+        "started_utc": "2026-10-12T03:01:22.263279+00:00",
+        "wall_seconds": 30,
+        "errors": [],
+        "owners": [
+          {
+            "pid": 4101026,
+            "start_ticks": 12284638,
+            "sid": 4101026,
+            "pgid": 4101026
+          }
+        ],
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 122846.385073786,
+        "pid": 4101026,
+        "spawn_return_monotonic": 122846.388394409,
+        "direct_identity": {
+          "pid": 4101026,
+          "state": "R",
+          "ppid": 4100540,
+          "pgid": 4101026,
+          "sid": 4101026,
+          "start_ticks": 12284638,
+          "rss_bytes": 442368
+        },
+        "peak_live_owned_identities": 1,
+        "peak_session_rss_bytes": 0,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 0,
+        "finished_utc": "2026-10-12T03:01:22.395805+00:00",
+        "elapsed_seconds": 0.13204881000274327,
+        "logs": {
+          "head-preflight.stdout": {
+            "bytes": 41,
+            "sha256": "d3fb4fb319c18ebda6c87faa78a23018b58845fdad446ad177227cf83e0afbb7"
+          },
+          "head-preflight.stderr": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      {
+        "label": "status-preflight",
+        "argv": [
+          "/usr/bin/git",
+          "status",
+          "--porcelain",
+          "--untracked-files=all"
+        ],
+        "environment": {
+          "PATH": "/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "XDG_RUNTIME_DIR": "/run/user/1000",
+          "DBUS_SESSION_BUS_ADDRESS": "unix:path=/run/user/1000/bus"
+        },
+        "started_utc": "2026-10-12T03:01:22.396529+00:00",
+        "wall_seconds": 30,
+        "errors": [],
+        "owners": [
+          {
+            "pid": 4101031,
+            "start_ticks": 12284651,
+            "sid": 4101031,
+            "pgid": 4101031
+          }
+        ],
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 122846.518127859,
+        "pid": 4101031,
+        "spawn_return_monotonic": 122846.52137294,
+        "direct_identity": {
+          "pid": 4101031,
+          "state": "R",
+          "ppid": 4100540,
+          "pgid": 4101031,
+          "sid": 4101031,
+          "start_ticks": 12284651,
+          "rss_bytes": 458752
+        },
+        "peak_live_owned_identities": 1,
+        "peak_session_rss_bytes": 0,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 0,
+        "finished_utc": "2026-10-12T03:01:22.532234+00:00",
+        "elapsed_seconds": 0.13538189700921066,
+        "logs": {
+          "status-preflight.stdout": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "status-preflight.stderr": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      {
+        "label": "diff-preflight",
+        "argv": [
+          "/usr/bin/git",
+          "diff",
+          "HEAD"
+        ],
+        "environment": {
+          "PATH": "/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "XDG_RUNTIME_DIR": "/run/user/1000",
+          "DBUS_SESSION_BUS_ADDRESS": "unix:path=/run/user/1000/bus"
+        },
+        "started_utc": "2026-10-12T03:01:22.533190+00:00",
+        "wall_seconds": 30,
+        "errors": [],
+        "owners": [
+          {
+            "pid": 4101054,
+            "start_ticks": 12284665,
+            "sid": 4101054,
+            "pgid": 4101054
+          }
+        ],
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 122846.655013928,
+        "pid": 4101054,
+        "spawn_return_monotonic": 122846.658846827,
+        "direct_identity": {
+          "pid": 4101054,
+          "state": "R",
+          "ppid": 4100540,
+          "pgid": 4101054,
+          "sid": 4101054,
+          "start_ticks": 12284665,
+          "rss_bytes": 446464
+        },
+        "peak_live_owned_identities": 1,
+        "peak_session_rss_bytes": 0,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 0,
+        "finished_utc": "2026-10-12T03:01:22.669550+00:00",
+        "elapsed_seconds": 0.13584359698870685,
+        "logs": {
+          "diff-preflight.stdout": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "diff-preflight.stderr": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      {
+        "label": "head-ready",
+        "argv": [
+          "/usr/bin/git",
+          "rev-parse",
+          "HEAD"
+        ],
+        "environment": {
+          "PATH": "/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "XDG_RUNTIME_DIR": "/run/user/1000",
+          "DBUS_SESSION_BUS_ADDRESS": "unix:path=/run/user/1000/bus"
+        },
+        "started_utc": "2026-10-12T03:02:06.839724+00:00",
+        "wall_seconds": 30,
+        "errors": [],
+        "owners": [
+          {
+            "pid": 4102959,
+            "start_ticks": 12289096,
+            "sid": 4102959,
+            "pgid": 4102959
+          }
+        ],
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 122890.962117007,
+        "pid": 4102959,
+        "spawn_return_monotonic": 122890.96546835,
+        "direct_identity": {
+          "pid": 4102959,
+          "state": "R",
+          "ppid": 4100540,
+          "pgid": 4102959,
+          "sid": 4102959,
+          "start_ticks": 12289096,
+          "rss_bytes": 454656
+        },
+        "peak_live_owned_identities": 1,
+        "peak_session_rss_bytes": 0,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 0,
+        "finished_utc": "2026-10-12T03:02:06.975863+00:00",
+        "elapsed_seconds": 0.13502221999806352,
+        "logs": {
+          "head-ready.stdout": {
+            "bytes": 41,
+            "sha256": "d3fb4fb319c18ebda6c87faa78a23018b58845fdad446ad177227cf83e0afbb7"
+          },
+          "head-ready.stderr": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      {
+        "label": "status-ready",
+        "argv": [
+          "/usr/bin/git",
+          "status",
+          "--porcelain",
+          "--untracked-files=all"
+        ],
+        "environment": {
+          "PATH": "/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "XDG_RUNTIME_DIR": "/run/user/1000",
+          "DBUS_SESSION_BUS_ADDRESS": "unix:path=/run/user/1000/bus"
+        },
+        "started_utc": "2026-10-12T03:02:06.977090+00:00",
+        "wall_seconds": 30,
+        "errors": [],
+        "owners": [
+          {
+            "pid": 4102978,
+            "start_ticks": 12289110,
+            "sid": 4102978,
+            "pgid": 4102978
+          }
+        ],
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 122891.099357148,
+        "pid": 4102978,
+        "spawn_return_monotonic": 122891.102640672,
+        "direct_identity": {
+          "pid": 4102978,
+          "state": "R",
+          "ppid": 4100540,
+          "pgid": 4102978,
+          "sid": 4102978,
+          "start_ticks": 12289110,
+          "rss_bytes": 446464
+        },
+        "peak_live_owned_identities": 1,
+        "peak_session_rss_bytes": 0,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 0,
+        "finished_utc": "2026-10-12T03:02:07.114261+00:00",
+        "elapsed_seconds": 0.13617140999122057,
+        "logs": {
+          "status-ready.stdout": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "status-ready.stderr": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      {
+        "label": "diff-ready",
+        "argv": [
+          "/usr/bin/git",
+          "diff",
+          "HEAD"
+        ],
+        "environment": {
+          "PATH": "/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "XDG_RUNTIME_DIR": "/run/user/1000",
+          "DBUS_SESSION_BUS_ADDRESS": "unix:path=/run/user/1000/bus"
+        },
+        "started_utc": "2026-10-12T03:02:07.115535+00:00",
+        "wall_seconds": 30,
+        "errors": [],
+        "owners": [
+          {
+            "pid": 4102986,
+            "start_ticks": 12289123,
+            "sid": 4102986,
+            "pgid": 4102986
+          }
+        ],
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 122891.238015096,
+        "pid": 4102986,
+        "spawn_return_monotonic": 122891.242111306,
+        "direct_identity": {
+          "pid": 4102986,
+          "state": "R",
+          "ppid": 4100540,
+          "pgid": 4102986,
+          "sid": 4102986,
+          "start_ticks": 12289123,
+          "rss_bytes": 454656
+        },
+        "peak_live_owned_identities": 1,
+        "peak_session_rss_bytes": 0,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 0,
+        "finished_utc": "2026-10-12T03:02:07.235100+00:00",
+        "elapsed_seconds": 0.11839842700283043,
+        "logs": {
+          "diff-ready.stdout": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "diff-ready.stderr": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      {
+        "label": "head-done",
+        "argv": [
+          "/usr/bin/git",
+          "rev-parse",
+          "HEAD"
+        ],
+        "environment": {
+          "PATH": "/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "XDG_RUNTIME_DIR": "/run/user/1000",
+          "DBUS_SESSION_BUS_ADDRESS": "unix:path=/run/user/1000/bus"
+        },
+        "started_utc": "2026-10-12T03:03:43.428424+00:00",
+        "wall_seconds": 30,
+        "errors": [],
+        "owners": [
+          {
+            "pid": 4108385,
+            "start_ticks": 12298755,
+            "sid": 4108385,
+            "pgid": 4108385
+          }
+        ],
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 122987.551194215,
+        "pid": 4108385,
+        "spawn_return_monotonic": 122987.554842244,
+        "direct_identity": {
+          "pid": 4108385,
+          "state": "R",
+          "ppid": 4100540,
+          "pgid": 4108385,
+          "sid": 4108385,
+          "start_ticks": 12298755,
+          "rss_bytes": 458752
+        },
+        "peak_live_owned_identities": 1,
+        "peak_session_rss_bytes": 0,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 0,
+        "finished_utc": "2026-10-12T03:03:43.557643+00:00",
+        "elapsed_seconds": 0.12772499899438117,
+        "logs": {
+          "head-done.stdout": {
+            "bytes": 41,
+            "sha256": "d3fb4fb319c18ebda6c87faa78a23018b58845fdad446ad177227cf83e0afbb7"
+          },
+          "head-done.stderr": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      {
+        "label": "status-done",
+        "argv": [
+          "/usr/bin/git",
+          "status",
+          "--porcelain",
+          "--untracked-files=all"
+        ],
+        "environment": {
+          "PATH": "/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "XDG_RUNTIME_DIR": "/run/user/1000",
+          "DBUS_SESSION_BUS_ADDRESS": "unix:path=/run/user/1000/bus"
+        },
+        "started_utc": "2026-10-12T03:03:43.559781+00:00",
+        "wall_seconds": 30,
+        "errors": [],
+        "owners": [
+          {
+            "pid": 4108395,
+            "start_ticks": 12298768,
+            "sid": 4108395,
+            "pgid": 4108395
+          }
+        ],
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 122987.682686498,
+        "pid": 4108395,
+        "spawn_return_monotonic": 122987.686436801,
+        "direct_identity": {
+          "pid": 4108395,
+          "state": "R",
+          "ppid": 4100540,
+          "pgid": 4108395,
+          "sid": 4108395,
+          "start_ticks": 12298768,
+          "rss_bytes": 458752
+        },
+        "peak_live_owned_identities": 1,
+        "peak_session_rss_bytes": 0,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 0,
+        "finished_utc": "2026-10-12T03:03:43.714881+00:00",
+        "elapsed_seconds": 0.15347935899626464,
+        "logs": {
+          "status-done.stdout": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "status-done.stderr": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      {
+        "label": "diff-done",
+        "argv": [
+          "/usr/bin/git",
+          "diff",
+          "HEAD"
+        ],
+        "environment": {
+          "PATH": "/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "XDG_RUNTIME_DIR": "/run/user/1000",
+          "DBUS_SESSION_BUS_ADDRESS": "unix:path=/run/user/1000/bus"
+        },
+        "started_utc": "2026-10-12T03:03:43.717950+00:00",
+        "wall_seconds": 30,
+        "errors": [],
+        "owners": [
+          {
+            "pid": 4108404,
+            "start_ticks": 12298784,
+            "sid": 4108404,
+            "pgid": 4108404
+          }
+        ],
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 122987.841540688,
+        "pid": 4108404,
+        "spawn_return_monotonic": 122987.845916923,
+        "direct_identity": {
+          "pid": 4108404,
+          "state": "R",
+          "ppid": 4100540,
+          "pgid": 4108404,
+          "sid": 4108404,
+          "start_ticks": 12298784,
+          "rss_bytes": 393216
+        },
+        "peak_live_owned_identities": 1,
+        "peak_session_rss_bytes": 0,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 0,
+        "finished_utc": "2026-10-12T03:03:43.884458+00:00",
+        "elapsed_seconds": 0.16424180399917532,
+        "logs": {
+          "diff-done.stdout": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "diff-done.stderr": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      {
+        "label": "head-final",
+        "argv": [
+          "/usr/bin/git",
+          "rev-parse",
+          "HEAD"
+        ],
+        "environment": {
+          "PATH": "/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "XDG_RUNTIME_DIR": "/run/user/1000",
+          "DBUS_SESSION_BUS_ADDRESS": "unix:path=/run/user/1000/bus"
+        },
+        "started_utc": "2026-10-12T03:03:48.006841+00:00",
+        "wall_seconds": 30,
+        "errors": [],
+        "owners": [
+          {
+            "pid": 4108648,
+            "start_ticks": 12299213,
+            "sid": 4108648,
+            "pgid": 4108648
+          }
+        ],
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 122992.130194348,
+        "pid": 4108648,
+        "spawn_return_monotonic": 122992.13312382,
+        "direct_identity": {
+          "pid": 4108648,
+          "state": "R",
+          "ppid": 4100540,
+          "pgid": 4108648,
+          "sid": 4108648,
+          "start_ticks": 12299213,
+          "rss_bytes": 393216
+        },
+        "peak_live_owned_identities": 1,
+        "peak_session_rss_bytes": 0,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 0,
+        "finished_utc": "2026-10-12T03:03:48.129364+00:00",
+        "elapsed_seconds": 0.12045037500502076,
+        "logs": {
+          "head-final.stdout": {
+            "bytes": 41,
+            "sha256": "d3fb4fb319c18ebda6c87faa78a23018b58845fdad446ad177227cf83e0afbb7"
+          },
+          "head-final.stderr": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      {
+        "label": "status-final",
+        "argv": [
+          "/usr/bin/git",
+          "status",
+          "--porcelain",
+          "--untracked-files=all"
+        ],
+        "environment": {
+          "PATH": "/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "XDG_RUNTIME_DIR": "/run/user/1000",
+          "DBUS_SESSION_BUS_ADDRESS": "unix:path=/run/user/1000/bus"
+        },
+        "started_utc": "2026-10-12T03:03:48.131575+00:00",
+        "wall_seconds": 30,
+        "errors": [],
+        "owners": [
+          {
+            "pid": 4108680,
+            "start_ticks": 12299225,
+            "sid": 4108680,
+            "pgid": 4108680
+          }
+        ],
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 122992.254918364,
+        "pid": 4108680,
+        "spawn_return_monotonic": 122992.258629733,
+        "direct_identity": {
+          "pid": 4108680,
+          "state": "R",
+          "ppid": 4100540,
+          "pgid": 4108680,
+          "sid": 4108680,
+          "start_ticks": 12299225,
+          "rss_bytes": 319488
+        },
+        "peak_live_owned_identities": 1,
+        "peak_session_rss_bytes": 0,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 0,
+        "finished_utc": "2026-10-12T03:03:48.256245+00:00",
+        "elapsed_seconds": 0.12262074300087988,
+        "logs": {
+          "status-final.stdout": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "status-final.stderr": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      {
+        "label": "diff-final",
+        "argv": [
+          "/usr/bin/git",
+          "diff",
+          "HEAD"
+        ],
+        "environment": {
+          "PATH": "/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "XDG_RUNTIME_DIR": "/run/user/1000",
+          "DBUS_SESSION_BUS_ADDRESS": "unix:path=/run/user/1000/bus"
+        },
+        "started_utc": "2026-10-12T03:03:48.258315+00:00",
+        "wall_seconds": 30,
+        "errors": [],
+        "owners": [
+          {
+            "pid": 4108715,
+            "start_ticks": 12299238,
+            "sid": 4108715,
+            "pgid": 4108715
+          }
+        ],
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 122992.381111514,
+        "pid": 4108715,
+        "spawn_return_monotonic": 122992.384301569,
+        "direct_identity": {
+          "pid": 4108715,
+          "state": "R",
+          "ppid": 4100540,
+          "pgid": 4108715,
+          "sid": 4108715,
+          "start_ticks": 12299238,
+          "rss_bytes": 774144
+        },
+        "peak_live_owned_identities": 1,
+        "peak_session_rss_bytes": 0,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 0,
+        "finished_utc": "2026-10-12T03:03:48.379949+00:00",
+        "elapsed_seconds": 0.12010265799472108,
+        "logs": {
+          "diff-final.stdout": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "diff-final.stderr": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      }
+    ],
+    "boot_id": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "started_utc": "2026-10-12T03:01:20.089605+00:00",
+    "engine": "xe",
+    "phase": "timed2-off",
+    "binary": {
+      "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-xe-v0143-nonfinite-20261012/build/free/strata",
+      "sha256": "ed65b895b7373669d1e93e4adf9082fa2cddf109266e0255fc6a5b72ede5f27a"
+    },
+    "qualification_sha256": "b142776e0656f1c767e7076607917ec8c771e6c13190e75ac7b2d07ddd643219",
+    "qualification_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-main-integrated-admission-root-v4/qualification.json",
+    "fresh_health_sha256": "d645e0aa6c5c56ceb6cd6a3419c12bdd51fc72dddd82bcbbb28492b909ca927c",
+    "fresh_health_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-main-integrated-v6-provider-health-xe-timed2-off-root-v1/model-admission-health.json",
+    "production_source_manifest_sha256": "f6a1678590224a317f894c4f5c47c75762af2c539a626a1aff7767106627b8f6",
+    "controller_source_pins": {
+      "protocol.py": "80a51a22f487d70b6739f38615d511c2e125488c19757e58fd518521a270c1a7",
+      "controller_cpu_fixtures.py": "4eb6e18ef41528724dce8b133124b4db169e909ab9fec27df62a29d50a1a8740",
+      "mock_model.py": "eaaf35828350537872e2729b63ca326e5fde8763b78a4970c5e7a1d9f4c9ac0b",
+      "mapping.py": "fbcf528ca27de0daee9bb3619d38438b941c8b79c52170429ffe39df53aa2984",
+      "common.py": "30474dde56306074439b3c9331c00d6c04e521e04357d37d36e18d83ac846212",
+      "run_root.py": "9bb66fdd53d27919593398184ac4317eabc25a140e43ce305162b61de2a3b36d",
+      "policy.py": "db9e309997ce6750263344d7fcb152d8bec9ad4778fe2c6ad128cf374217c04d"
+    },
+    "argv": [
+      "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-xe-v0143-nonfinite-20261012/build/free/strata",
+      "--pack",
+      "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+      "--native",
+      "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+      "--serve",
+      "--max-context",
+      "262144",
+      "--kv",
+      "int8",
+      "--kv-resident",
+      "32768",
+      "--no-kv-grow",
+      "--expert-cache",
+      "128",
+      "--expert-profile",
+      "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-prefill-service-events-20261010/data/expert-profile.bin",
+      "--expert-cache-per-layer",
+      "--pool-workers",
+      "5",
+      "--pcie-frac",
+      "0",
+      "--adapt-swaps",
+      "0",
+      "--conversation-cache-mib",
+      "0",
+      "--prompt-cache",
+      "0",
+      "--turn-token",
+      "-1",
+      "--suffix-draft",
+      "0",
+      "--greedy",
+      "--no-spec-split",
+      "--short-read",
+      "0",
+      "--spec",
+      "4",
+      "--prefill",
+      "8192",
+      "--prefill-experts",
+      "16",
+      "--no-prefill-borrow"
+    ],
+    "environment": {
+      "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+      "HOME": "/home/yayoi",
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib",
+      "XDG_RUNTIME_DIR": "/run/user/1000",
+      "NEOReadDebugKeys": "1",
+      "EnableDirectSubmission": "0",
+      "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+      "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0.12.0",
+      "CUDA_MODULE_LOADING": "EAGER",
+      "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+      "SYCL_CACHE_PERSISTENT": "0",
+      "ZEL_ENABLE_LOADER_LOGGING": "0",
+      "ZEL_LOADER_LOG_CONSOLE": "0",
+      "ZEL_LOADER_LOGGING_LEVEL": "warning",
+      "ZE_ENABLE_VALIDATION_LAYER": "0",
+      "ZE_ENABLE_PARAMETER_VALIDATION": "0",
+      "UR_LOG_LOADER": "level:error;output:stderr",
+      "UR_LOG_LEVEL_ZERO": "level:error;output:stderr",
+      "STRATA_GPU_PCI": "0000:05:00.0",
+      "STRATA_EVENT_MARK": "barrier",
+      "STRATA_VERIFY_SEGMENTED": "1",
+      "STRATA_VERIFY_DEVICE_PLAN": "0",
+      "STRATA_PREFILL_ISSUER": "0",
+      "STRATA_PREFILL_RING": "8",
+      "STRATA_ARENA_HOST_USM": "1",
+      "STRATA_PREFILL_FIRST": "0",
+      "STRATA_PREFILL_CPU_SHARE": "0",
+      "STRATA_PREFILL_CPU_GATE": "0",
+      "STRATA_PREFILL_FUSED": "0",
+      "STRATA_PREFILL_NATIVE_DEQUANT_BATCH": "0",
+      "STRATA_PREFILL_COMPACT_MOE_SCRATCH": "1",
+      "STRATA_PRELOAD_KERNELS": "0",
+      "STRATA_MTP_PREFILL_SYNC": "1",
+      "STRATA_NAN_GUARD": "0"
+    },
+    "model_inputs": [
+      {
+        "path": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+        "sha256": "4c1eb2ceb4915e1192f4f386021897bde56a97f40a0bb78bb86465e0f7d2aca3",
+        "stat": {
+          "device": 40,
+          "inode": 2640848,
+          "bytes": 54817524224,
+          "mtime_ns": 1791009083688077826,
+          "ctime_ns": 1791009083692077878
+        }
+      },
+      {
+        "path": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00002-of-00002.gguf",
+        "sha256": "316b46f3a2dbd68c900f43136ab9449f9dcc3725dfd8c794847c204bc161e113",
+        "stat": {
+          "device": 40,
+          "inode": 2623800,
+          "bytes": 28800138432,
+          "mtime_ns": 1790924461554234294,
+          "ctime_ns": 1791008604221189761
+        }
+      },
+      {
+        "path": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/conversions.json",
+        "sha256": "51df3cd6ffd0d38c2da8e2d3a95a604b4a96c20b06fc639a9bf477282a42b86a",
+        "stat": {
+          "device": 40,
+          "inode": 2654126,
+          "bytes": 306,
+          "mtime_ns": 1791009279665519972,
+          "ctime_ns": 1791009279665519972
+        }
+      },
+      {
+        "path": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/dense.bin",
+        "sha256": "d2af3d8331e5c7a1985d1d589747230f9d56719a6d33c7cddc9ee6b81cde6b13",
+        "stat": {
+          "device": 40,
+          "inode": 2652886,
+          "bytes": 1538035200,
+          "mtime_ns": 1791009279664519959,
+          "ctime_ns": 1791009279665519972
+        }
+      },
+      {
+        "path": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/index.txt",
+        "sha256": "b2a014878c3b61d6a6f915e194055a5e68ede34f9465dd1cb13249d902f008ac",
+        "stat": {
+          "device": 40,
+          "inode": 2654124,
+          "bytes": 93685,
+          "mtime_ns": 1791009279665519972,
+          "ctime_ns": 1791009279665519972
+        }
+      },
+      {
+        "path": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/native_experts.txt",
+        "sha256": "d9ac2dfa3ee63c55c9c6a6db26f72da0cec0ee41733f007e5cbbbba71617aa5d",
+        "stat": {
+          "device": 40,
+          "inode": 2653896,
+          "bytes": 3304,
+          "mtime_ns": 1791009280472529749,
+          "ctime_ns": 1791009280472529749
+        }
+      },
+      {
+        "path": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/chat_template.jinja",
+        "sha256": "12827f24b742ea4e80cdc12dbcf9622227056b9f797252a3149263d4f9aaadce",
+        "stat": {
+          "device": 40,
+          "inode": 2653772,
+          "bytes": 9993,
+          "mtime_ns": 1791009280442529386,
+          "ctime_ns": 1791009280442529386
+        }
+      },
+      {
+        "path": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/merges.txt",
+        "sha256": "4ba698529766c7a2f5052083ea10cdf2485577f5237a332ee291054eb11e3332",
+        "stat": {
+          "device": 40,
+          "inode": 2785432,
+          "bytes": 3353258,
+          "mtime_ns": 1791009280259527169,
+          "ctime_ns": 1791009280259527169
+        }
+      },
+      {
+        "path": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/token_type.json",
+        "sha256": "5088c8c298fc06af8382ddb3b76c888703ac2634e82263b97eedcc2ad202738b",
+        "stat": {
+          "device": 40,
+          "inode": 2785434,
+          "bytes": 744960,
+          "mtime_ns": 1791009280269527290,
+          "ctime_ns": 1791009280269527290
+        }
+      },
+      {
+        "path": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/tokenizer.json",
+        "sha256": "c0bd435efbc6c3b28964b47999afe16c4ad268c7c7c4e8cb3af410796a6f30bf",
+        "stat": {
+          "device": 40,
+          "inode": 2785438,
+          "bytes": 541,
+          "mtime_ns": 1791009280269527290,
+          "ctime_ns": 1791009280269527290
+        }
+      },
+      {
+        "path": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/vocab.json",
+        "sha256": "4ba64f0332abcfb0b600b7df1537d1e836e68009d5fb7cdb77339738dc6365c4",
+        "stat": {
+          "device": 40,
+          "inode": 2785430,
+          "bytes": 5737005,
+          "mtime_ns": 1791009280185526273,
+          "ctime_ns": 1791009280185526273
+        }
+      },
+      {
+        "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-prefill-service-events-20261010/data/expert-profile.bin",
+        "sha256": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf",
+        "stat": {
+          "device": 40,
+          "inode": 6309870,
+          "bytes": 196632,
+          "mtime_ns": 1791619395327004971,
+          "ctime_ns": 1791619395327004971
+        }
+      }
+    ],
+    "startup": [
+      "INFO context=262144 kv=int8 kv_resident=32768 expert_slots=144 expert_cache_mib=281 spec=4 mtp_max=0 lookup=0 vram_free_mib=1764 cvec=0 arena_mib=47962 pool_workers=5 pcie_frac=0.00 spec_min_p=0.00 conversation_cache_mib=0 conversation_cache_slots=4 conversation_cache_min_free_mib=2560 tail_role_token=-1 vram_elastic=0 batch_slots=0 slot_cache=0 engine=xe0.1.40.2.2",
+      "READY 262144 stop"
+    ],
+    "request_protocol": [
+      "RESUME 0",
+      "PP 8192 32768 23472 349.0",
+      "PP 16384 32768 46266 354.1",
+      "PP 24576 32768 68373 359.4",
+      "PP 32767 32768 90559 361.8",
+      "REUSED 0",
+      "T 40",
+      "LP -1.135211 40:-1.135211 27775:-1.370415 2:-1.849927 1919:-2.009123 8160:-3.272421",
+      "T 3172",
+      "LP -0.186236 3172:-0.186236 2908:-2.693063 599:-3.112771 21250:-4.432027 1144:-4.448022",
+      "T 22903",
+      "LP -0.761333 22903:-0.761333 3286:-1.094156 3300:-2.879036 2649:-2.963627 6573:-3.072281",
+      "T 411",
+      "LP -0.551508 411:-0.551508 279:-0.955986 1439:-3.412922 1754:-5.625523 42903:-7.077470",
+      "T 42903",
+      "LP -0.199073 42903:-0.199073 6150:-2.872839 1970:-2.953954 3349:-3.161249 7072:-4.982864",
+      "T 4560",
+      "LP -0.674031 4560:-0.674031 47953:-0.713708 14246:-9.364666 1970:-10.214754 4422:-10.318958",
+      "T 1970",
+      "LP -0.014466 1970:-0.014466 57710:-5.811146 579:-5.948620 17120:-6.577958 2450:-6.887715",
+      "T 57710",
+      "LP -1.044693 57710:-1.044693 364:-1.570326 3051:-2.017101 303:-2.242668 15060:-2.577804",
+      "T 11",
+      "LP -0.184628 11:-0.184628 13:-2.545338 364:-3.045670 3808:-3.230494 310:-6.572812",
+      "T 20434",
+      "LP -0.986379 20434:-0.986379 3221:-1.419763 36586:-1.438444 23812:-2.180048 17661:-3.465295",
+      "T 383",
+      "LP -0.000018 383:-0.000018 279:-12.275645 3808:-12.332951 310:-13.411619 55404:-13.668928",
+      "T 55404",
+      "LP -0.212977 55404:-0.212977 279:-1.968817 9640:-3.290979 75336:-5.208792 4499:-6.172264",
+      "T 21851",
+      "LP -0.238815 21851:-0.238815 11:-1.599434 4562:-4.590610 49406:-10.200849 9584:-10.636429",
+      "T 11",
+      "LP -0.000303 11:-0.000303 5438:-8.823316 318:-9.020391 321:-11.472942 13:-12.333581",
+      "T 5438",
+      "LP -0.009857 5438:-0.009857 70577:-5.381849 55968:-5.673979 75336:-7.529659 6741:-7.886480",
+      "T 7465",
+      "LP -0.000379 7465:-0.000379 26228:-8.083456 16501:-10.229065 14:-11.464479 2600:-12.210967",
+      "DONE 16 32768 90559.2 1768.2 length 0 0 0 424 7680 0 0 0.0 32768 0"
+    ],
+    "protocol_events": [
+      {
+        "line": "RESUME 0",
+        "monotonic": 122891.406628145
+      },
+      {
+        "line": "PP 8192 32768 23472 349.0",
+        "monotonic": 122914.870914761
+      },
+      {
+        "line": "PP 16384 32768 46266 354.1",
+        "monotonic": 122937.690491888
+      },
+      {
+        "line": "PP 24576 32768 68373 359.4",
+        "monotonic": 122959.772146536
+      },
+      {
+        "line": "PP 32767 32768 90559 361.8",
+        "monotonic": 122981.957842973
+      },
+      {
+        "line": "REUSED 0",
+        "monotonic": 122981.959401286
+      },
+      {
+        "line": "T 40",
+        "monotonic": 122982.222792185
+      },
+      {
+        "line": "LP -1.135211 40:-1.135211 27775:-1.370415 2:-1.849927 1919:-2.009123 8160:-3.272421",
+        "monotonic": 122982.225557718
+      },
+      {
+        "line": "T 3172",
+        "monotonic": 122982.304623434
+      },
+      {
+        "line": "LP -0.186236 3172:-0.186236 2908:-2.693063 599:-3.112771 21250:-4.432027 1144:-4.448022",
+        "monotonic": 122982.307276364
+      },
+      {
+        "line": "T 22903",
+        "monotonic": 122982.391814655
+      },
+      {
+        "line": "LP -0.761333 22903:-0.761333 3286:-1.094156 3300:-2.879036 2649:-2.963627 6573:-3.072281",
+        "monotonic": 122982.393679187
+      },
+      {
+        "line": "T 411",
+        "monotonic": 122982.478836737
+      },
+      {
+        "line": "LP -0.551508 411:-0.551508 279:-0.955986 1439:-3.412922 1754:-5.625523 42903:-7.077470",
+        "monotonic": 122982.481211543
+      },
+      {
+        "line": "T 42903",
+        "monotonic": 122982.568460834
+      },
+      {
+        "line": "LP -0.199073 42903:-0.199073 6150:-2.872839 1970:-2.953954 3349:-3.161249 7072:-4.982864",
+        "monotonic": 122982.570698189
+      },
+      {
+        "line": "T 4560",
+        "monotonic": 122982.70205838
+      },
+      {
+        "line": "LP -0.674031 4560:-0.674031 47953:-0.713708 14246:-9.364666 1970:-10.214754 4422:-10.318958",
+        "monotonic": 122982.702086743
+      },
+      {
+        "line": "T 1970",
+        "monotonic": 122982.801791117
+      },
+      {
+        "line": "LP -0.014466 1970:-0.014466 57710:-5.811146 579:-5.948620 17120:-6.577958 2450:-6.887715",
+        "monotonic": 122982.803875364
+      },
+      {
+        "line": "T 57710",
+        "monotonic": 122982.915969447
+      },
+      {
+        "line": "LP -1.044693 57710:-1.044693 364:-1.570326 3051:-2.017101 303:-2.242668 15060:-2.577804",
+        "monotonic": 122982.918143604
+      },
+      {
+        "line": "T 11",
+        "monotonic": 122983.045638243
+      },
+      {
+        "line": "LP -0.184628 11:-0.184628 13:-2.545338 364:-3.045670 3808:-3.230494 310:-6.572812",
+        "monotonic": 122983.048212115
+      },
+      {
+        "line": "T 20434",
+        "monotonic": 122983.173521988
+      },
+      {
+        "line": "LP -0.986379 20434:-0.986379 3221:-1.419763 36586:-1.438444 23812:-2.180048 17661:-3.465295",
+        "monotonic": 122983.175939754
+      },
+      {
+        "line": "T 383",
+        "monotonic": 122983.269679091
+      },
+      {
+        "line": "LP -0.000018 383:-0.000018 279:-12.275645 3808:-12.332951 310:-13.411619 55404:-13.668928",
+        "monotonic": 122983.272254936
+      },
+      {
+        "line": "T 55404",
+        "monotonic": 122983.359559942
+      },
+      {
+        "line": "LP -0.212977 55404:-0.212977 279:-1.968817 9640:-3.290979 75336:-5.208792 4499:-6.172264",
+        "monotonic": 122983.361753244
+      },
+      {
+        "line": "T 21851",
+        "monotonic": 122983.451341091
+      },
+      {
+        "line": "LP -0.238815 21851:-0.238815 11:-1.599434 4562:-4.590610 49406:-10.200849 9584:-10.636429",
+        "monotonic": 122983.453248404
+      },
+      {
+        "line": "T 11",
+        "monotonic": 122983.540772213
+      },
+      {
+        "line": "LP -0.000303 11:-0.000303 5438:-8.823316 318:-9.020391 321:-11.472942 13:-12.333581",
+        "monotonic": 122983.542679505
+      },
+      {
+        "line": "T 5438",
+        "monotonic": 122983.633826997
+      },
+      {
+        "line": "LP -0.009857 5438:-0.009857 70577:-5.381849 55968:-5.673979 75336:-7.529659 6741:-7.886480",
+        "monotonic": 122983.635700516
+      },
+      {
+        "line": "T 7465",
+        "monotonic": 122983.724260832
+      },
+      {
+        "line": "LP -0.000379 7465:-0.000379 26228:-8.083456 16501:-10.229065 14:-11.464479 2600:-12.210967",
+        "monotonic": 122983.726039652
+      },
+      {
+        "line": "DONE 16 32768 90559.2 1768.2 length 0 0 0 424 7680 0 0 0.0 32768 0",
+        "monotonic": 122983.726268935
+      }
+    ],
+    "ready_seen": true,
+    "gen_send_attempted": true,
+    "request_done_seen": true,
+    "model_normal_close": true,
+    "mapping_snapshots": {
+      "ready": {
+        "pid": 4101133,
+        "start_ticks": 12284791,
+        "files": {
+          "/usr/local/lib/libigc.so.2.41.5+1788943183": {
+            "path": "/usr/local/lib/libigc.so.2.41.5+1788943183",
+            "canonical_path": "/usr/local/lib/libigc.so.2.41.5+1788943183",
+            "sha256": "40badd8f1ee80ac844a8947f5e91e5654fbcd851caefe343b0e5ec4ce4d1b123",
+            "stat": {
+              "device": 42,
+              "inode": 224,
+              "bytes": 104543000,
+              "mtime_ns": 1788943430000000000,
+              "ctime_ns": 1791307717935651029
+            },
+            "elf_build_id": "c3703ba4e94f826e60a5560b0287e32807adacaa",
+            "mapping_rows": 4,
+            "mapped_rows": [
+              "7020d64d1000-7020d7531000 r--p 00000000 00:2a 224 /usr/local/lib/libigc.so.2.41.5+1788943183",
+              "7020d7531000-7020daef8000 r-xp 0105f000 00:2a 224 /usr/local/lib/libigc.so.2.41.5+1788943183",
+              "7020daef8000-7020db158000 r--p 04a25000 00:2a 224 /usr/local/lib/libigc.so.2.41.5+1788943183",
+              "7020db158000-7020dc887000 rw-p 04c84000 00:2a 224 /usr/local/lib/libigc.so.2.41.5+1788943183"
+            ],
+            "original_runtime": false
+          },
+          "/usr/local/lib/libopencl-clang2.so.22.1": {
+            "path": "/usr/local/lib/libopencl-clang2.so.22.1",
+            "canonical_path": "/usr/local/lib/libopencl-clang2.so.22.1",
+            "sha256": "02ba9fb0f16b7f02c012095c46f8053c4bc20f9b5bde3028eedff6dcfed94bfe",
+            "stat": {
+              "device": 42,
+              "inode": 522,
+              "bytes": 158062480,
+              "mtime_ns": 1788943440000000000,
+              "ctime_ns": 1791307718873659858
+            },
+            "elf_build_id": "ee1dde81de91140e3a91d8be4fb5c2da25e17a4e",
+            "mapping_rows": 5,
+            "mapped_rows": [
+              "7020dcb11000-7020dcfa9000 r--p 00000000 00:2a 522 /usr/local/lib/libopencl-clang2.so.22.1",
+              "7020dcfa9000-7020e1cf3000 r-xp 00498000 00:2a 522 /usr/local/lib/libopencl-clang2.so.22.1",
+              "7020e1cf3000-7020e2d06000 r--p 051e2000 00:2a 522 /usr/local/lib/libopencl-clang2.so.22.1",
+              "7020e2d06000-7020e2f47000 r--p 061f5000 00:2a 522 /usr/local/lib/libopencl-clang2.so.22.1",
+              "7020e2f47000-7020e61ce000 rw-p 06436000 00:2a 522 /usr/local/lib/libopencl-clang2.so.22.1"
+            ],
+            "original_runtime": false
+          },
+          "/usr/local/lib/libigdfcl.so.2.41.5+1788943183": {
+            "path": "/usr/local/lib/libigdfcl.so.2.41.5+1788943183",
+            "canonical_path": "/usr/local/lib/libigdfcl.so.2.41.5+1788943183",
+            "sha256": "ece8bcd533a44cc1684c1f24eeeca3302e4d19307a806fad5f1b83171f9fc1c3",
+            "stat": {
+              "device": 42,
+              "inode": 520,
+              "bytes": 2554016,
+              "mtime_ns": 1788943430000000000,
+              "ctime_ns": 1791307718778658963
+            },
+            "elf_build_id": "1aee46cd4fcc0acb2751c3d570da39475a94d1e8",
+            "mapping_rows": 4,
+            "mapped_rows": [
+              "7020e6255000-7020e62ff000 r--p 00000000 00:2a 520 /usr/local/lib/libigdfcl.so.2.41.5+1788943183",
+              "7020e62ff000-7020e647a000 r-xp 000a9000 00:2a 520 /usr/local/lib/libigdfcl.so.2.41.5+1788943183",
+              "7020e647a000-7020e6487000 r--p 00223000 00:2a 520 /usr/local/lib/libigdfcl.so.2.41.5+1788943183",
+              "7020e6487000-7020e64c7000 rw-p 0022f000 00:2a 520 /usr/local/lib/libigdfcl.so.2.41.5+1788943183"
+            ],
+            "original_runtime": false
+          },
+          "/usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1.32.0": {
+            "path": "/usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1.32.0",
+            "canonical_path": "/usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1.32.0",
+            "sha256": "db1856f379706d51b6ded84ce028d4aa48740ef63793f60e8a1e027c6db6ffb5",
+            "stat": {
+              "device": 29,
+              "inode": 7539068,
+              "bytes": 846520,
+              "mtime_ns": 1784135376000000000,
+              "ctime_ns": 1791309459403446260
+            },
+            "elf_build_id": "f991ad5966c00d5ad227b41cd2df1f92a7d3bc06",
+            "mapping_rows": 5,
+            "mapped_rows": [
+              "7020e65e6000-7020e65ee000 r--p 00000000 00:1d 7539068 /usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1.32.0",
+              "7020e65ee000-7020e66a0000 r-xp 00008000 00:1d 7539068 /usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1.32.0",
+              "7020e66a0000-7020e66b4000 r--p 000ba000 00:1d 7539068 /usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1.32.0",
+              "7020e66b4000-7020e66b5000 r--p 000cd000 00:1d 7539068 /usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1.32.0",
+              "7020e66b5000-7020e66b6000 rw-p 000ce000 00:1d 7539068 /usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1.32.0"
+            ],
+            "original_runtime": true
+          },
+          "/usr/lib/x86_64-linux-gnu/libigdgmm.so.12.10.0": {
+            "path": "/usr/lib/x86_64-linux-gnu/libigdgmm.so.12.10.0",
+            "canonical_path": "/usr/lib/x86_64-linux-gnu/libigdgmm.so.12.10.0",
+            "sha256": "a7904f18d8d59c7128dec4d6f22ae2b2e8a51f91f6946ac4e68b1ec6e0a7a6f3",
+            "stat": {
+              "device": 29,
+              "inode": 7537116,
+              "bytes": 878992,
+              "mtime_ns": 1787232879000000000,
+              "ctime_ns": 1791309458139434661
+            },
+            "elf_build_id": "67c8ad0dfe3933047e6a264f0e118b4dcb9c1631",
+            "mapping_rows": 5,
+            "mapped_rows": [
+              "7020e66b6000-7020e66be000 r--p 00000000 00:1d 7537116 /usr/lib/x86_64-linux-gnu/libigdgmm.so.12.10.0",
+              "7020e66be000-7020e6782000 r-xp 00008000 00:1d 7537116 /usr/lib/x86_64-linux-gnu/libigdgmm.so.12.10.0",
+              "7020e6782000-7020e678a000 r--p 000cc000 00:1d 7537116 /usr/lib/x86_64-linux-gnu/libigdgmm.so.12.10.0",
+              "7020e678a000-7020e678c000 r--p 000d4000 00:1d 7537116 /usr/lib/x86_64-linux-gnu/libigdgmm.so.12.10.0",
+              "7020e678c000-7020e678d000 rw-p 000d6000 00:1d 7537116 /usr/lib/x86_64-linux-gnu/libigdgmm.so.12.10.0"
+            ],
+            "original_runtime": false
+          },
+          "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395": {
+            "path": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395",
+            "canonical_path": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395",
+            "sha256": "dfa844e5afd8e8f74bf5ce9da3ea2837706d9116bc8efeaed90efba5acaf7b1c",
+            "stat": {
+              "device": 29,
+              "inode": 7539850,
+              "bytes": 61889928,
+              "mtime_ns": 1789403878000000000,
+              "ctime_ns": 1791309459671448719
+            },
+            "elf_build_id": "a150ba51180689c9ab166533b5d6503441b9e1c1",
+            "mapping_rows": 3,
+            "mapped_rows": [
+              "7020e678d000-7020e72ec000 r-xp 00000000 00:1d 7539850 /usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395",
+              "7020e72ec000-7020e732e000 r--p 00b5e000 00:1d 7539850 /usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395",
+              "7020e732e000-7020ea294000 rw-p 00ba0000 00:1d 7539850 /usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395"
+            ],
+            "original_runtime": true
+          },
+          "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0": {
+            "path": "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0",
+            "canonical_path": "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0",
+            "sha256": "b764efda507f173560fa6055d433dd5c76140180b4a7c532e1cea813cde67363",
+            "stat": {
+              "device": 29,
+              "inode": 7539712,
+              "bytes": 777528,
+              "mtime_ns": 1784135376000000000,
+              "ctime_ns": 1791309459402446251
+            },
+            "elf_build_id": "dbe27fdaad2549f8e69938012efc1fc18665d8c7",
+            "mapping_rows": 5,
+            "mapped_rows": [
+              "7020ea378000-7020ea390000 r--p 00000000 00:1d 7539712 /usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0",
+              "7020ea390000-7020ea416000 r-xp 00018000 00:1d 7539712 /usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0",
+              "7020ea416000-7020ea435000 r--p 0009e000 00:1d 7539712 /usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0",
+              "7020ea435000-7020ea436000 r--p 000bc000 00:1d 7539712 /usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0",
+              "7020ea436000-7020ea437000 rw-p 000bd000 00:1d 7539712 /usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0"
+            ],
+            "original_runtime": true
+          },
+          "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libumf.so.1.1.0": {
+            "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libumf.so.1.1.0",
+            "canonical_path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libumf.so.1.1.0",
+            "sha256": "ebe65269abd5869010ab256375e8663f7a8f8b5453e0be0c78f615eb71581ab9",
+            "stat": {
+              "device": 40,
+              "inode": 7460428,
+              "bytes": 306904,
+              "mtime_ns": 1791665018000000000,
+              "ctime_ns": 1791665396357010684
+            },
+            "elf_build_id": "61e785e41cd4f891",
+            "mapping_rows": 4,
+            "mapped_rows": [
+              "7020ea500000-7020ea518000 r--p 00000000 00:28 7460428 /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libumf.so.1.1.0",
+              "7020ea518000-7020ea53c000 r-xp 00017000 00:28 7460428 /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libumf.so.1.1.0",
+              "7020ea53c000-7020ea53f000 r--p 0003a000 00:28 7460428 /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libumf.so.1.1.0",
+              "7020ea53f000-7020ea541000 rw-p 0003c000 00:28 7460428 /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libumf.so.1.1.0"
+            ],
+            "original_runtime": true
+          },
+          "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0.12.0": {
+            "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0.12.0",
+            "canonical_path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0.12.0",
+            "sha256": "05bcafc4a0d45d33f957f16ffb4ba4776da675e79ade1121b93b94b8549335d8",
+            "stat": {
+              "device": 40,
+              "inode": 7454856,
+              "bytes": 2388520,
+              "mtime_ns": 1791665072000000000,
+              "ctime_ns": 1791665072678321482
+            },
+            "elf_build_id": "defd0816e4bd348f",
+            "mapping_rows": 4,
+            "mapped_rows": [
+              "7020ea54f000-7020ea5a7000 r--p 00000000 00:28 7454856 /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0.12.0",
+              "7020ea5a7000-7020ea732000 r-xp 00057000 00:28 7454856 /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0.12.0",
+              "7020ea732000-7020ea735000 r--p 001e1000 00:28 7454856 /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0.12.0",
+              "7020ea735000-7020ea736000 rw-p 001e3000 00:28 7454856 /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0.12.0"
+            ],
+            "original_runtime": true
+          },
+          "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0": {
+            "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "canonical_path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "sha256": "bb6e1311850e4b1a924e42acae80c2b3610934625a4985aaa67967abe31356fc",
+            "stat": {
+              "device": 40,
+              "inode": 7458158,
+              "bytes": 19267664,
+              "mtime_ns": 1791665177000000000,
+              "ctime_ns": 1791665396607012751
+            },
+            "elf_build_id": "32491d9ddfdcd2d3",
+            "mapping_rows": 4,
+            "mapped_rows": [
+              "7020ea765000-7020eaad0000 r--p 00000000 00:28 7458158 /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+              "7020eaad0000-7020eb6bb000 r-xp 0036a000 00:28 7458158 /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+              "7020eb6bb000-7020eb6e1000 r--p 00f54000 00:28 7458158 /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+              "7020eb6e1000-7020eb6e4000 rw-p 00f79000 00:28 7458158 /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0"
+            ],
+            "original_runtime": true
+          },
+          "/usr/lib/x86_64-linux-gnu/libc.so.6": {
+            "path": "/usr/lib/x86_64-linux-gnu/libc.so.6",
+            "canonical_path": "/usr/lib/x86_64-linux-gnu/libc.so.6",
+            "sha256": "3a15d66867d83762c7f2f1e37359cb8f6c5743edb369c65285cb0b1c4f7498bf",
+            "stat": {
+              "device": 29,
+              "inode": 4897558,
+              "bytes": 2129424,
+              "mtime_ns": 1788444912000000000,
+              "ctime_ns": 1790581622389680056
+            },
+            "elf_build_id": "a4a7992a8e66555c8141ab2a08a8465ff6e0ea65",
+            "mapping_rows": 5,
+            "mapped_rows": [
+              "7020eb6fe000-7020eb726000 r--p 00000000 00:1d 4897558 /usr/lib/x86_64-linux-gnu/libc.so.6",
+              "7020eb726000-7020eb8af000 r-xp 00028000 00:1d 4897558 /usr/lib/x86_64-linux-gnu/libc.so.6",
+              "7020eb8af000-7020eb8fe000 r--p 001b1000 00:1d 4897558 /usr/lib/x86_64-linux-gnu/libc.so.6",
+              "7020eb8fe000-7020eb902000 r--p 001ff000 00:1d 4897558 /usr/lib/x86_64-linux-gnu/libc.so.6",
+              "7020eb902000-7020eb904000 rw-p 00203000 00:1d 4897558 /usr/lib/x86_64-linux-gnu/libc.so.6"
+            ],
+            "original_runtime": false
+          },
+          "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libsycl.so.9.0.0-0": {
+            "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libsycl.so.9.0.0-0",
+            "canonical_path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libsycl.so.9.0.0-0",
+            "sha256": "74243bafb2766fd1a038cf80fd62632b4aad9ecfdc0d3ce8711e4515a93d7008",
+            "stat": {
+              "device": 40,
+              "inode": 7459622,
+              "bytes": 5314304,
+              "mtime_ns": 1791665386000000000,
+              "ctime_ns": 1791665395828006308
+            },
+            "elf_build_id": "210ad9d565fd2c96",
+            "mapping_rows": 4,
+            "mapped_rows": [
+              "7020eb911000-7020eba12000 r--p 00000000 00:28 7459622 /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libsycl.so.9.0.0-0",
+              "7020eba12000-7020ebd18000 r-xp 00100000 00:28 7459622 /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libsycl.so.9.0.0-0",
+              "7020ebd18000-7020ebd1c000 r--p 00405000 00:28 7459622 /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libsycl.so.9.0.0-0",
+              "7020ebd1c000-7020ebd1f000 rw-p 00408000 00:28 7459622 /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libsycl.so.9.0.0-0"
+            ],
+            "original_runtime": true
+          },
+          "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1": {
+            "path": "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1",
+            "canonical_path": "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1",
+            "sha256": "d93224d2b0dab4247598be683adca02f5cf00586f99c187579cd7e92058fb7cb",
+            "stat": {
+              "device": 29,
+              "inode": 180160,
+              "bytes": 183024,
+              "mtime_ns": 1766093810000000000,
+              "ctime_ns": 1771362888312865885
+            },
+            "elf_build_id": "58736497cba1173fec6ad05c75e996dacefd1def",
+            "mapping_rows": 5,
+            "mapped_rows": [
+              "7020ebd21000-7020ebd25000 r--p 00000000 00:1d 180160 /usr/lib/x86_64-linux-gnu/libgcc_s.so.1",
+              "7020ebd25000-7020ebd49000 r-xp 00004000 00:1d 180160 /usr/lib/x86_64-linux-gnu/libgcc_s.so.1",
+              "7020ebd49000-7020ebd4d000 r--p 00028000 00:1d 180160 /usr/lib/x86_64-linux-gnu/libgcc_s.so.1",
+              "7020ebd4d000-7020ebd4e000 r--p 0002b000 00:1d 180160 /usr/lib/x86_64-linux-gnu/libgcc_s.so.1",
+              "7020ebd4e000-7020ebd4f000 rw-p 0002c000 00:1d 180160 /usr/lib/x86_64-linux-gnu/libgcc_s.so.1"
+            ],
+            "original_runtime": false
+          },
+          "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33": {
+            "path": "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33",
+            "canonical_path": "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33",
+            "sha256": "1fd75fe70354a416d75aef22bcae68c47bd25d20e2d0568c30b1a9838cf62f11",
+            "stat": {
+              "device": 29,
+              "inode": 180746,
+              "bytes": 2592224,
+              "mtime_ns": 1766093810000000000,
+              "ctime_ns": 1771362886738858137
+            },
+            "elf_build_id": "753c6c8608b61d4e67be8f0c890e03e0aa046b8b",
+            "mapping_rows": 5,
+            "mapped_rows": [
+              "7020ebd4f000-7020ebdec000 r--p 00000000 00:1d 180746 /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33",
+              "7020ebdec000-7020ebf34000 r-xp 0009d000 00:1d 180746 /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33",
+              "7020ebf34000-7020ebfbb000 r--p 001e5000 00:1d 180746 /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33",
+              "7020ebfbb000-7020ebfc6000 r--p 0026b000 00:1d 180746 /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33",
+              "7020ebfc6000-7020ebfc9000 rw-p 00276000 00:1d 180746 /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33"
+            ],
+            "original_runtime": false
+          },
+          "/usr/lib/x86_64-linux-gnu/libm.so.6": {
+            "path": "/usr/lib/x86_64-linux-gnu/libm.so.6",
+            "canonical_path": "/usr/lib/x86_64-linux-gnu/libm.so.6",
+            "sha256": "fce00b6f25f459cf4ae0b7fae4257909a1a8a86f9149e7c029a5d617baf1ccd0",
+            "stat": {
+              "device": 29,
+              "inode": 4898954,
+              "bytes": 952616,
+              "mtime_ns": 1788444912000000000,
+              "ctime_ns": 1790581622391680069
+            },
+            "elf_build_id": "d53fcbff9f855463606b25cfbe2a2e10856ea3a7",
+            "mapping_rows": 5,
+            "mapped_rows": [
+              "7020ebfcd000-7020ebfdd000 r--p 00000000 00:1d 4898954 /usr/lib/x86_64-linux-gnu/libm.so.6",
+              "7020ebfdd000-7020ec05c000 r-xp 00010000 00:1d 4898954 /usr/lib/x86_64-linux-gnu/libm.so.6",
+              "7020ec05c000-7020ec0b4000 r--p 0008f000 00:1d 4898954 /usr/lib/x86_64-linux-gnu/libm.so.6",
+              "7020ec0b4000-7020ec0b5000 r--p 000e7000 00:1d 4898954 /usr/lib/x86_64-linux-gnu/libm.so.6",
+              "7020ec0b5000-7020ec0b6000 rw-p 000e8000 00:1d 4898954 /usr/lib/x86_64-linux-gnu/libm.so.6"
+            ],
+            "original_runtime": false
+          },
+          "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2": {
+            "path": "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+            "canonical_path": "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+            "sha256": "c20a2dc8917c755f02b94049356320fe1f62ac7d9f8994731f807d9df39302da",
+            "stat": {
+              "device": 29,
+              "inode": 4897554,
+              "bytes": 236616,
+              "mtime_ns": 1788444912000000000,
+              "ctime_ns": 1790581622387680043
+            },
+            "elf_build_id": "0d77dbd4379bf0b5af3e05be7fb6af1e4cea7c96",
+            "mapping_rows": 5,
+            "mapped_rows": [
+              "7020ec0dd000-7020ec0de000 r--p 00000000 00:1d 4897554 /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+              "7020ec0de000-7020ec109000 r-xp 00001000 00:1d 4897554 /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+              "7020ec109000-7020ec113000 r--p 0002c000 00:1d 4897554 /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+              "7020ec113000-7020ec115000 r--p 00036000 00:1d 4897554 /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+              "7020ec115000-7020ec117000 rw-p 00038000 00:1d 4897554 /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2"
+            ],
+            "original_runtime": false
+          }
+        },
+        "complete": true,
+        "failed_stage": null,
+        "failed_path": null,
+        "map_bytes": 51354,
+        "map_rows": 549,
+        "selected_rows_stable": true,
+        "final_map_bytes": 51354,
+        "final_map_rows": 549
+      },
+      "done": {
+        "pid": 4101133,
+        "start_ticks": 12284791,
+        "files": {
+          "/usr/local/lib/libigc.so.2.41.5+1788943183": {
+            "path": "/usr/local/lib/libigc.so.2.41.5+1788943183",
+            "canonical_path": "/usr/local/lib/libigc.so.2.41.5+1788943183",
+            "sha256": "40badd8f1ee80ac844a8947f5e91e5654fbcd851caefe343b0e5ec4ce4d1b123",
+            "stat": {
+              "device": 42,
+              "inode": 224,
+              "bytes": 104543000,
+              "mtime_ns": 1788943430000000000,
+              "ctime_ns": 1791307717935651029
+            },
+            "elf_build_id": "c3703ba4e94f826e60a5560b0287e32807adacaa",
+            "mapping_rows": 4,
+            "mapped_rows": [
+              "7020d64d1000-7020d7531000 r--p 00000000 00:2a 224 /usr/local/lib/libigc.so.2.41.5+1788943183",
+              "7020d7531000-7020daef8000 r-xp 0105f000 00:2a 224 /usr/local/lib/libigc.so.2.41.5+1788943183",
+              "7020daef8000-7020db158000 r--p 04a25000 00:2a 224 /usr/local/lib/libigc.so.2.41.5+1788943183",
+              "7020db158000-7020dc887000 rw-p 04c84000 00:2a 224 /usr/local/lib/libigc.so.2.41.5+1788943183"
+            ],
+            "original_runtime": false
+          },
+          "/usr/local/lib/libopencl-clang2.so.22.1": {
+            "path": "/usr/local/lib/libopencl-clang2.so.22.1",
+            "canonical_path": "/usr/local/lib/libopencl-clang2.so.22.1",
+            "sha256": "02ba9fb0f16b7f02c012095c46f8053c4bc20f9b5bde3028eedff6dcfed94bfe",
+            "stat": {
+              "device": 42,
+              "inode": 522,
+              "bytes": 158062480,
+              "mtime_ns": 1788943440000000000,
+              "ctime_ns": 1791307718873659858
+            },
+            "elf_build_id": "ee1dde81de91140e3a91d8be4fb5c2da25e17a4e",
+            "mapping_rows": 5,
+            "mapped_rows": [
+              "7020dcb11000-7020dcfa9000 r--p 00000000 00:2a 522 /usr/local/lib/libopencl-clang2.so.22.1",
+              "7020dcfa9000-7020e1cf3000 r-xp 00498000 00:2a 522 /usr/local/lib/libopencl-clang2.so.22.1",
+              "7020e1cf3000-7020e2d06000 r--p 051e2000 00:2a 522 /usr/local/lib/libopencl-clang2.so.22.1",
+              "7020e2d06000-7020e2f47000 r--p 061f5000 00:2a 522 /usr/local/lib/libopencl-clang2.so.22.1",
+              "7020e2f47000-7020e61ce000 rw-p 06436000 00:2a 522 /usr/local/lib/libopencl-clang2.so.22.1"
+            ],
+            "original_runtime": false
+          },
+          "/usr/local/lib/libigdfcl.so.2.41.5+1788943183": {
+            "path": "/usr/local/lib/libigdfcl.so.2.41.5+1788943183",
+            "canonical_path": "/usr/local/lib/libigdfcl.so.2.41.5+1788943183",
+            "sha256": "ece8bcd533a44cc1684c1f24eeeca3302e4d19307a806fad5f1b83171f9fc1c3",
+            "stat": {
+              "device": 42,
+              "inode": 520,
+              "bytes": 2554016,
+              "mtime_ns": 1788943430000000000,
+              "ctime_ns": 1791307718778658963
+            },
+            "elf_build_id": "1aee46cd4fcc0acb2751c3d570da39475a94d1e8",
+            "mapping_rows": 4,
+            "mapped_rows": [
+              "7020e6255000-7020e62ff000 r--p 00000000 00:2a 520 /usr/local/lib/libigdfcl.so.2.41.5+1788943183",
+              "7020e62ff000-7020e647a000 r-xp 000a9000 00:2a 520 /usr/local/lib/libigdfcl.so.2.41.5+1788943183",
+              "7020e647a000-7020e6487000 r--p 00223000 00:2a 520 /usr/local/lib/libigdfcl.so.2.41.5+1788943183",
+              "7020e6487000-7020e64c7000 rw-p 0022f000 00:2a 520 /usr/local/lib/libigdfcl.so.2.41.5+1788943183"
+            ],
+            "original_runtime": false
+          },
+          "/usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1.32.0": {
+            "path": "/usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1.32.0",
+            "canonical_path": "/usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1.32.0",
+            "sha256": "db1856f379706d51b6ded84ce028d4aa48740ef63793f60e8a1e027c6db6ffb5",
+            "stat": {
+              "device": 29,
+              "inode": 7539068,
+              "bytes": 846520,
+              "mtime_ns": 1784135376000000000,
+              "ctime_ns": 1791309459403446260
+            },
+            "elf_build_id": "f991ad5966c00d5ad227b41cd2df1f92a7d3bc06",
+            "mapping_rows": 5,
+            "mapped_rows": [
+              "7020e65e6000-7020e65ee000 r--p 00000000 00:1d 7539068 /usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1.32.0",
+              "7020e65ee000-7020e66a0000 r-xp 00008000 00:1d 7539068 /usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1.32.0",
+              "7020e66a0000-7020e66b4000 r--p 000ba000 00:1d 7539068 /usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1.32.0",
+              "7020e66b4000-7020e66b5000 r--p 000cd000 00:1d 7539068 /usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1.32.0",
+              "7020e66b5000-7020e66b6000 rw-p 000ce000 00:1d 7539068 /usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1.32.0"
+            ],
+            "original_runtime": true
+          },
+          "/usr/lib/x86_64-linux-gnu/libigdgmm.so.12.10.0": {
+            "path": "/usr/lib/x86_64-linux-gnu/libigdgmm.so.12.10.0",
+            "canonical_path": "/usr/lib/x86_64-linux-gnu/libigdgmm.so.12.10.0",
+            "sha256": "a7904f18d8d59c7128dec4d6f22ae2b2e8a51f91f6946ac4e68b1ec6e0a7a6f3",
+            "stat": {
+              "device": 29,
+              "inode": 7537116,
+              "bytes": 878992,
+              "mtime_ns": 1787232879000000000,
+              "ctime_ns": 1791309458139434661
+            },
+            "elf_build_id": "67c8ad0dfe3933047e6a264f0e118b4dcb9c1631",
+            "mapping_rows": 5,
+            "mapped_rows": [
+              "7020e66b6000-7020e66be000 r--p 00000000 00:1d 7537116 /usr/lib/x86_64-linux-gnu/libigdgmm.so.12.10.0",
+              "7020e66be000-7020e6782000 r-xp 00008000 00:1d 7537116 /usr/lib/x86_64-linux-gnu/libigdgmm.so.12.10.0",
+              "7020e6782000-7020e678a000 r--p 000cc000 00:1d 7537116 /usr/lib/x86_64-linux-gnu/libigdgmm.so.12.10.0",
+              "7020e678a000-7020e678c000 r--p 000d4000 00:1d 7537116 /usr/lib/x86_64-linux-gnu/libigdgmm.so.12.10.0",
+              "7020e678c000-7020e678d000 rw-p 000d6000 00:1d 7537116 /usr/lib/x86_64-linux-gnu/libigdgmm.so.12.10.0"
+            ],
+            "original_runtime": false
+          },
+          "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395": {
+            "path": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395",
+            "canonical_path": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395",
+            "sha256": "dfa844e5afd8e8f74bf5ce9da3ea2837706d9116bc8efeaed90efba5acaf7b1c",
+            "stat": {
+              "device": 29,
+              "inode": 7539850,
+              "bytes": 61889928,
+              "mtime_ns": 1789403878000000000,
+              "ctime_ns": 1791309459671448719
+            },
+            "elf_build_id": "a150ba51180689c9ab166533b5d6503441b9e1c1",
+            "mapping_rows": 3,
+            "mapped_rows": [
+              "7020e678d000-7020e72ec000 r-xp 00000000 00:1d 7539850 /usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395",
+              "7020e72ec000-7020e732e000 r--p 00b5e000 00:1d 7539850 /usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395",
+              "7020e732e000-7020ea294000 rw-p 00ba0000 00:1d 7539850 /usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395"
+            ],
+            "original_runtime": true
+          },
+          "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0": {
+            "path": "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0",
+            "canonical_path": "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0",
+            "sha256": "b764efda507f173560fa6055d433dd5c76140180b4a7c532e1cea813cde67363",
+            "stat": {
+              "device": 29,
+              "inode": 7539712,
+              "bytes": 777528,
+              "mtime_ns": 1784135376000000000,
+              "ctime_ns": 1791309459402446251
+            },
+            "elf_build_id": "dbe27fdaad2549f8e69938012efc1fc18665d8c7",
+            "mapping_rows": 5,
+            "mapped_rows": [
+              "7020ea378000-7020ea390000 r--p 00000000 00:1d 7539712 /usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0",
+              "7020ea390000-7020ea416000 r-xp 00018000 00:1d 7539712 /usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0",
+              "7020ea416000-7020ea435000 r--p 0009e000 00:1d 7539712 /usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0",
+              "7020ea435000-7020ea436000 r--p 000bc000 00:1d 7539712 /usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0",
+              "7020ea436000-7020ea437000 rw-p 000bd000 00:1d 7539712 /usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0"
+            ],
+            "original_runtime": true
+          },
+          "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libumf.so.1.1.0": {
+            "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libumf.so.1.1.0",
+            "canonical_path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libumf.so.1.1.0",
+            "sha256": "ebe65269abd5869010ab256375e8663f7a8f8b5453e0be0c78f615eb71581ab9",
+            "stat": {
+              "device": 40,
+              "inode": 7460428,
+              "bytes": 306904,
+              "mtime_ns": 1791665018000000000,
+              "ctime_ns": 1791665396357010684
+            },
+            "elf_build_id": "61e785e41cd4f891",
+            "mapping_rows": 4,
+            "mapped_rows": [
+              "7020ea500000-7020ea518000 r--p 00000000 00:28 7460428 /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libumf.so.1.1.0",
+              "7020ea518000-7020ea53c000 r-xp 00017000 00:28 7460428 /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libumf.so.1.1.0",
+              "7020ea53c000-7020ea53f000 r--p 0003a000 00:28 7460428 /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libumf.so.1.1.0",
+              "7020ea53f000-7020ea541000 rw-p 0003c000 00:28 7460428 /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libumf.so.1.1.0"
+            ],
+            "original_runtime": true
+          },
+          "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0.12.0": {
+            "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0.12.0",
+            "canonical_path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0.12.0",
+            "sha256": "05bcafc4a0d45d33f957f16ffb4ba4776da675e79ade1121b93b94b8549335d8",
+            "stat": {
+              "device": 40,
+              "inode": 7454856,
+              "bytes": 2388520,
+              "mtime_ns": 1791665072000000000,
+              "ctime_ns": 1791665072678321482
+            },
+            "elf_build_id": "defd0816e4bd348f",
+            "mapping_rows": 4,
+            "mapped_rows": [
+              "7020ea54f000-7020ea5a7000 r--p 00000000 00:28 7454856 /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0.12.0",
+              "7020ea5a7000-7020ea732000 r-xp 00057000 00:28 7454856 /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0.12.0",
+              "7020ea732000-7020ea735000 r--p 001e1000 00:28 7454856 /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0.12.0",
+              "7020ea735000-7020ea736000 rw-p 001e3000 00:28 7454856 /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0.12.0"
+            ],
+            "original_runtime": true
+          },
+          "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0": {
+            "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "canonical_path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "sha256": "bb6e1311850e4b1a924e42acae80c2b3610934625a4985aaa67967abe31356fc",
+            "stat": {
+              "device": 40,
+              "inode": 7458158,
+              "bytes": 19267664,
+              "mtime_ns": 1791665177000000000,
+              "ctime_ns": 1791665396607012751
+            },
+            "elf_build_id": "32491d9ddfdcd2d3",
+            "mapping_rows": 4,
+            "mapped_rows": [
+              "7020ea765000-7020eaad0000 r--p 00000000 00:28 7458158 /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+              "7020eaad0000-7020eb6bb000 r-xp 0036a000 00:28 7458158 /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+              "7020eb6bb000-7020eb6e1000 r--p 00f54000 00:28 7458158 /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+              "7020eb6e1000-7020eb6e4000 rw-p 00f79000 00:28 7458158 /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0"
+            ],
+            "original_runtime": true
+          },
+          "/usr/lib/x86_64-linux-gnu/libc.so.6": {
+            "path": "/usr/lib/x86_64-linux-gnu/libc.so.6",
+            "canonical_path": "/usr/lib/x86_64-linux-gnu/libc.so.6",
+            "sha256": "3a15d66867d83762c7f2f1e37359cb8f6c5743edb369c65285cb0b1c4f7498bf",
+            "stat": {
+              "device": 29,
+              "inode": 4897558,
+              "bytes": 2129424,
+              "mtime_ns": 1788444912000000000,
+              "ctime_ns": 1790581622389680056
+            },
+            "elf_build_id": "a4a7992a8e66555c8141ab2a08a8465ff6e0ea65",
+            "mapping_rows": 5,
+            "mapped_rows": [
+              "7020eb6fe000-7020eb726000 r--p 00000000 00:1d 4897558 /usr/lib/x86_64-linux-gnu/libc.so.6",
+              "7020eb726000-7020eb8af000 r-xp 00028000 00:1d 4897558 /usr/lib/x86_64-linux-gnu/libc.so.6",
+              "7020eb8af000-7020eb8fe000 r--p 001b1000 00:1d 4897558 /usr/lib/x86_64-linux-gnu/libc.so.6",
+              "7020eb8fe000-7020eb902000 r--p 001ff000 00:1d 4897558 /usr/lib/x86_64-linux-gnu/libc.so.6",
+              "7020eb902000-7020eb904000 rw-p 00203000 00:1d 4897558 /usr/lib/x86_64-linux-gnu/libc.so.6"
+            ],
+            "original_runtime": false
+          },
+          "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libsycl.so.9.0.0-0": {
+            "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libsycl.so.9.0.0-0",
+            "canonical_path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libsycl.so.9.0.0-0",
+            "sha256": "74243bafb2766fd1a038cf80fd62632b4aad9ecfdc0d3ce8711e4515a93d7008",
+            "stat": {
+              "device": 40,
+              "inode": 7459622,
+              "bytes": 5314304,
+              "mtime_ns": 1791665386000000000,
+              "ctime_ns": 1791665395828006308
+            },
+            "elf_build_id": "210ad9d565fd2c96",
+            "mapping_rows": 4,
+            "mapped_rows": [
+              "7020eb911000-7020eba12000 r--p 00000000 00:28 7459622 /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libsycl.so.9.0.0-0",
+              "7020eba12000-7020ebd18000 r-xp 00100000 00:28 7459622 /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libsycl.so.9.0.0-0",
+              "7020ebd18000-7020ebd1c000 r--p 00405000 00:28 7459622 /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libsycl.so.9.0.0-0",
+              "7020ebd1c000-7020ebd1f000 rw-p 00408000 00:28 7459622 /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libsycl.so.9.0.0-0"
+            ],
+            "original_runtime": true
+          },
+          "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1": {
+            "path": "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1",
+            "canonical_path": "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1",
+            "sha256": "d93224d2b0dab4247598be683adca02f5cf00586f99c187579cd7e92058fb7cb",
+            "stat": {
+              "device": 29,
+              "inode": 180160,
+              "bytes": 183024,
+              "mtime_ns": 1766093810000000000,
+              "ctime_ns": 1771362888312865885
+            },
+            "elf_build_id": "58736497cba1173fec6ad05c75e996dacefd1def",
+            "mapping_rows": 5,
+            "mapped_rows": [
+              "7020ebd21000-7020ebd25000 r--p 00000000 00:1d 180160 /usr/lib/x86_64-linux-gnu/libgcc_s.so.1",
+              "7020ebd25000-7020ebd49000 r-xp 00004000 00:1d 180160 /usr/lib/x86_64-linux-gnu/libgcc_s.so.1",
+              "7020ebd49000-7020ebd4d000 r--p 00028000 00:1d 180160 /usr/lib/x86_64-linux-gnu/libgcc_s.so.1",
+              "7020ebd4d000-7020ebd4e000 r--p 0002b000 00:1d 180160 /usr/lib/x86_64-linux-gnu/libgcc_s.so.1",
+              "7020ebd4e000-7020ebd4f000 rw-p 0002c000 00:1d 180160 /usr/lib/x86_64-linux-gnu/libgcc_s.so.1"
+            ],
+            "original_runtime": false
+          },
+          "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33": {
+            "path": "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33",
+            "canonical_path": "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33",
+            "sha256": "1fd75fe70354a416d75aef22bcae68c47bd25d20e2d0568c30b1a9838cf62f11",
+            "stat": {
+              "device": 29,
+              "inode": 180746,
+              "bytes": 2592224,
+              "mtime_ns": 1766093810000000000,
+              "ctime_ns": 1771362886738858137
+            },
+            "elf_build_id": "753c6c8608b61d4e67be8f0c890e03e0aa046b8b",
+            "mapping_rows": 5,
+            "mapped_rows": [
+              "7020ebd4f000-7020ebdec000 r--p 00000000 00:1d 180746 /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33",
+              "7020ebdec000-7020ebf34000 r-xp 0009d000 00:1d 180746 /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33",
+              "7020ebf34000-7020ebfbb000 r--p 001e5000 00:1d 180746 /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33",
+              "7020ebfbb000-7020ebfc6000 r--p 0026b000 00:1d 180746 /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33",
+              "7020ebfc6000-7020ebfc9000 rw-p 00276000 00:1d 180746 /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33"
+            ],
+            "original_runtime": false
+          },
+          "/usr/lib/x86_64-linux-gnu/libm.so.6": {
+            "path": "/usr/lib/x86_64-linux-gnu/libm.so.6",
+            "canonical_path": "/usr/lib/x86_64-linux-gnu/libm.so.6",
+            "sha256": "fce00b6f25f459cf4ae0b7fae4257909a1a8a86f9149e7c029a5d617baf1ccd0",
+            "stat": {
+              "device": 29,
+              "inode": 4898954,
+              "bytes": 952616,
+              "mtime_ns": 1788444912000000000,
+              "ctime_ns": 1790581622391680069
+            },
+            "elf_build_id": "d53fcbff9f855463606b25cfbe2a2e10856ea3a7",
+            "mapping_rows": 5,
+            "mapped_rows": [
+              "7020ebfcd000-7020ebfdd000 r--p 00000000 00:1d 4898954 /usr/lib/x86_64-linux-gnu/libm.so.6",
+              "7020ebfdd000-7020ec05c000 r-xp 00010000 00:1d 4898954 /usr/lib/x86_64-linux-gnu/libm.so.6",
+              "7020ec05c000-7020ec0b4000 r--p 0008f000 00:1d 4898954 /usr/lib/x86_64-linux-gnu/libm.so.6",
+              "7020ec0b4000-7020ec0b5000 r--p 000e7000 00:1d 4898954 /usr/lib/x86_64-linux-gnu/libm.so.6",
+              "7020ec0b5000-7020ec0b6000 rw-p 000e8000 00:1d 4898954 /usr/lib/x86_64-linux-gnu/libm.so.6"
+            ],
+            "original_runtime": false
+          },
+          "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2": {
+            "path": "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+            "canonical_path": "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+            "sha256": "c20a2dc8917c755f02b94049356320fe1f62ac7d9f8994731f807d9df39302da",
+            "stat": {
+              "device": 29,
+              "inode": 4897554,
+              "bytes": 236616,
+              "mtime_ns": 1788444912000000000,
+              "ctime_ns": 1790581622387680043
+            },
+            "elf_build_id": "0d77dbd4379bf0b5af3e05be7fb6af1e4cea7c96",
+            "mapping_rows": 5,
+            "mapped_rows": [
+              "7020ec0dd000-7020ec0de000 r--p 00000000 00:1d 4897554 /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+              "7020ec0de000-7020ec109000 r-xp 00001000 00:1d 4897554 /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+              "7020ec109000-7020ec113000 r--p 0002c000 00:1d 4897554 /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+              "7020ec113000-7020ec115000 r--p 00036000 00:1d 4897554 /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+              "7020ec115000-7020ec117000 rw-p 00038000 00:1d 4897554 /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2"
+            ],
+            "original_runtime": false
+          }
+        },
+        "complete": true,
+        "failed_stage": null,
+        "failed_path": null,
+        "map_bytes": 71610,
+        "map_rows": 781,
+        "selected_rows_stable": true,
+        "final_map_bytes": 71610,
+        "final_map_rows": 781
+      }
+    },
+    "mapping_read_budget": {
+      "bytes": 725874160
+    },
+    "model_launch_attempted": true,
+    "performance_eligible": true,
+    "full_context_runtime_qualified": false,
+    "restore_qualified": false,
+    "validation_and_tracing_overhead": false,
+    "route_presumed_optimal": false,
+    "reset_executed": false,
+    "retry_count": 0,
+    "adopted": false,
+    "raw_text_budget_bytes": 67108864,
+    "total_file_budget_bytes": 100663296,
+    "session_rss_budget_bytes": 94489280512,
+    "model_wall_seconds": 1800,
+    "startup_wall_seconds": 300,
+    "prior_receipt_pins": {
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-integrated-neutral-model-root-v6/xe-startup/record.json": "f38357768bc9dcf56f3b5fbe3419d9225498a528f0298ab6b56c635eea286e68",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-integrated-neutral-model-root-v6/xe-debug-off/record.json": "740f247f79f48aecbaa78de58493eb3a0a44618c9e0acb6d8acd074b9b15b47e",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-integrated-neutral-model-root-v6/xe-debug-on/record.json": "0424e2bf93eac8f1c8a45bb37ce8801e740afe3c02a5c911462f57d3a9f022f5",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-integrated-neutral-model-root-v6/xe-timed1-off/record.json": "245a1bc9bcb90fa809f5caaf31e0321d0804f241a402481c627307c9d5caaee8",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-integrated-neutral-model-root-v6/xe-timed1-on/record.json": "de47b6a394d30504cf7ab687d409c080cbdcc8d7da21d8b3cde2058b8a7f1813",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-integrated-neutral-model-root-v6/xe-timed2-on/record.json": "d3266e298c34e028995030db431bbb5903d64c8615d441395d3dd8112fed9c01"
+    },
+    "cpu_affinity_count": 12,
+    "cpu_cap_recipe": "ceil(actual owned wall * affinity count)+60 cumulative CPU seconds",
+    "initial_host_memory": {
+      "MemTotal": 134986948608,
+      "MemAvailable": 99858579456
+    },
+    "cgroup_memory": [
+      {
+        "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/orca-daemon-834f7c66-5d2c-42ea-b7b5-92821d58e0cf.scope",
+        "maximum": "max",
+        "current": 12064456704
+      },
+      {
+        "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice",
+        "maximum": "max",
+        "current": 16300265472
+      },
+      {
+        "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service",
+        "maximum": "max",
+        "current": 29231951872
+      },
+      {
+        "path": "/sys/fs/cgroup/user.slice/user-1000.slice",
+        "maximum": "max",
+        "current": 29236916224
+      },
+      {
+        "path": "/sys/fs/cgroup/user.slice",
+        "maximum": "max",
+        "current": 29239099392
+      },
+      {
+        "path": "/sys/fs/cgroup",
+        "maximum": "root-no-controller-cap",
+        "physical_reserve_bytes": 99858579456
+      }
+    ],
+    "kernel_cursor_before": "s=9944479cfd1a45c28a589619cb8f2881;i=c0ed356;b=cfda0b6a7c134fe2bdf58f9202770840;m=1c96da5880;t=65d9be654302e;x=20b2fb7c56f53308",
+    "kernel-before-health": {
+      "cursor": "s=9944479cfd1a45c28a589619cb8f2881;i=c0ed356;b=cfda0b6a7c134fe2bdf58f9202770840;m=1c96da5880;t=65d9be654302e;x=20b2fb7c56f53308",
+      "relevant_entries": [],
+      "fault_entries": [],
+      "dump_present": false,
+      "filter": "page fault|fault response|timestamp stuck|wedg|engine reset|gt reset|guc.*(?:timeout|timed out|failed)|device.*lost|Timed out wait for G2H|Check job timeout|Timedout job|Schedule disable failed|trying reset|\\breset (?:queued|started|done)\\b"
+    },
+    "input": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-integrated-neutral-model-root-v6/xe-timed2-off/tokens.txt",
+      "sha256": "94cbdd7fdc6c9f32a08c0c4f8b50c1cc27a7ffc3f383d23c5c6ac24e8ec7f2c9",
+      "tokens": 32768,
+      "parent_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/clean64k-task-fixture-root-r3/coding-review-65536-tokens.txt",
+      "parent_sha256": "5284d8fa53d1ef28f6ba916a629faf901c890bc0c669bf986ee04ed72aa2c3ff",
+      "derivation": "first32719 IDs plus last49 IDs; no retokenization"
+    },
+    "health-before": {
+      "protocol": [
+        "STATUS 0000:05:00.0 0",
+        "QUEUE 0000:05:00.0",
+        "H2D 65536 complete",
+        "KERNEL 16384 complete",
+        "D2H 65536 complete",
+        "PASS 0000:05:00.0: 1 round, 16384 exact words"
+      ],
+      "self_maps": [
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libsycl.so.9.0.0-0",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libumf.so.1.1.0",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0.12.0",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+        "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395",
+        "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0",
+        "/usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1.32.0"
+      ],
+      "provider": "source-llvm-7.1.1"
+    },
+    "kernel-after-prehealth": {
+      "cursor": "s=9944479cfd1a45c28a589619cb8f2881;i=c0ed356;b=cfda0b6a7c134fe2bdf58f9202770840;m=1c96da5880;t=65d9be654302e;x=20b2fb7c56f53308",
+      "relevant_entries": [],
+      "fault_entries": [],
+      "dump_present": false,
+      "filter": "page fault|fault response|timestamp stuck|wedg|engine reset|gt reset|guc.*(?:timeout|timed out|failed)|device.*lost|Timed out wait for G2H|Check job timeout|Timedout job|Schedule disable failed|trying reset|\\breset (?:queued|started|done)\\b"
+    },
+    "owned_progress": [
+      {
+        "elapsed_seconds": 30.021150275992113,
+        "stderr_bytes": 1466
+      },
+      {
+        "elapsed_seconds": 60.0328878609871,
+        "stderr_bytes": 3599
+      },
+      {
+        "elapsed_seconds": 90.08793003699975,
+        "stderr_bytes": 3599
+      },
+      {
+        "elapsed_seconds": 120.09826257199165,
+        "stderr_bytes": 3599
+      }
+    ],
+    "ready_monotonic": 122886.279092004,
+    "ready_stderr_observed_bytes": 3599,
+    "ready_stderr_offset": 3599,
+    "startup_wall_seconds_observed": 38.369709623992094,
+    "effective_info": {
+      "context": "262144",
+      "kv": "int8",
+      "kv_resident": "32768",
+      "expert_slots": "144",
+      "expert_cache_mib": "281",
+      "spec": "4",
+      "mtp_max": "0",
+      "lookup": "0",
+      "vram_free_mib": "1764",
+      "cvec": "0",
+      "arena_mib": "47962",
+      "pool_workers": "5",
+      "pcie_frac": "0.00",
+      "spec_min_p": "0.00",
+      "conversation_cache_mib": "0",
+      "conversation_cache_slots": "4",
+      "conversation_cache_min_free_mib": "2560",
+      "tail_role_token": "-1",
+      "vram_elastic": "0",
+      "batch_slots": "0",
+      "slot_cache": "0",
+      "engine": "xe0.1.40.2.2"
+    },
+    "selected_device_stderr_lines": [
+      "strata generate: GPU Intel(R) Arc(TM) B570 Graphics, 160 compute units, 9.9 GiB, prompt matrix products on XeStrata's own kernels (XMX)"
+    ],
+    "startup_diagnostics": {
+      "relevant_messages": [],
+      "severe_messages": [],
+      "compile_messages": [],
+      "stage": "startup-reviewable-build-only",
+      "limitation": "Startup known build enums require Main review. Every post-READY error enum/fatal fails, even beside compile text. Successful compile progress alone is not an error."
+    },
+    "startup_protocol_diagnostics": {
+      "relevant_messages": [],
+      "severe_messages": [],
+      "compile_messages": [],
+      "stage": "startup-reviewable-build-only",
+      "limitation": "Startup known build enums require Main review. Every post-READY error enum/fatal fails, even beside compile text. Successful compile progress alone is not an error."
+    },
+    "post_ready_diagnostics": {
+      "relevant_messages": [],
+      "severe_messages": [],
+      "compile_messages": [],
+      "stage": "post-READY-strict",
+      "limitation": "Startup known build enums require Main review. Every post-READY error enum/fatal fails, even beside compile text. Successful compile progress alone is not an error."
+    },
+    "gen_send_monotonic": 122891.357879744,
+    "gen_sent_monotonic": 122891.397185092,
+    "prefill_end_monotonic": 122981.959401286,
+    "first_token_monotonic": 122982.222792185,
+    "done_monotonic": 122983.726268935,
+    "validation": {
+      "prompt_tokens": 32768,
+      "source_bound_prefill_chunks": 4,
+      "observed_prefill_chunks": null,
+      "generated_tokens": 16,
+      "finish": "length",
+      "output_ids": [
+        40,
+        3172,
+        22903,
+        411,
+        42903,
+        4560,
+        1970,
+        57710,
+        11,
+        20434,
+        383,
+        55404,
+        21851,
+        11,
+        5438,
+        7465
+      ],
+      "token_logprob_sha256": {
+        "sha256": "f8aca127a7f45238d7567368ee8ad5c26c4a3488fc0cc6b83a4d19d50a6cbd6f"
+      },
+      "token_logprob_lines": [
+        "T 40",
+        "LP -1.135211 40:-1.135211 27775:-1.370415 2:-1.849927 1919:-2.009123 8160:-3.272421",
+        "T 3172",
+        "LP -0.186236 3172:-0.186236 2908:-2.693063 599:-3.112771 21250:-4.432027 1144:-4.448022",
+        "T 22903",
+        "LP -0.761333 22903:-0.761333 3286:-1.094156 3300:-2.879036 2649:-2.963627 6573:-3.072281",
+        "T 411",
+        "LP -0.551508 411:-0.551508 279:-0.955986 1439:-3.412922 1754:-5.625523 42903:-7.077470",
+        "T 42903",
+        "LP -0.199073 42903:-0.199073 6150:-2.872839 1970:-2.953954 3349:-3.161249 7072:-4.982864",
+        "T 4560",
+        "LP -0.674031 4560:-0.674031 47953:-0.713708 14246:-9.364666 1970:-10.214754 4422:-10.318958",
+        "T 1970",
+        "LP -0.014466 1970:-0.014466 57710:-5.811146 579:-5.948620 17120:-6.577958 2450:-6.887715",
+        "T 57710",
+        "LP -1.044693 57710:-1.044693 364:-1.570326 3051:-2.017101 303:-2.242668 15060:-2.577804",
+        "T 11",
+        "LP -0.184628 11:-0.184628 13:-2.545338 364:-3.045670 3808:-3.230494 310:-6.572812",
+        "T 20434",
+        "LP -0.986379 20434:-0.986379 3221:-1.419763 36586:-1.438444 23812:-2.180048 17661:-3.465295",
+        "T 383",
+        "LP -0.000018 383:-0.000018 279:-12.275645 3808:-12.332951 310:-13.411619 55404:-13.668928",
+        "T 55404",
+        "LP -0.212977 55404:-0.212977 279:-1.968817 9640:-3.290979 75336:-5.208792 4499:-6.172264",
+        "T 21851",
+        "LP -0.238815 21851:-0.238815 11:-1.599434 4562:-4.590610 49406:-10.200849 9584:-10.636429",
+        "T 11",
+        "LP -0.000303 11:-0.000303 5438:-8.823316 318:-9.020391 321:-11.472942 13:-12.333581",
+        "T 5438",
+        "LP -0.009857 5438:-0.009857 70577:-5.381849 55968:-5.673979 75336:-7.529659 6741:-7.886480",
+        "T 7465",
+        "LP -0.000379 7465:-0.000379 26228:-8.083456 16501:-10.229065 14:-11.464479 2600:-12.210967"
+      ],
+      "engine_prefill_ms": 90559.2,
+      "engine_decode_ms": 1768.2,
+      "pp_samples": [
+        [
+          "PP",
+          "8192",
+          "32768",
+          "23472",
+          "349.0"
+        ],
+        [
+          "PP",
+          "16384",
+          "32768",
+          "46266",
+          "354.1"
+        ],
+        [
+          "PP",
+          "24576",
+          "32768",
+          "68373",
+          "359.4"
+        ],
+        [
+          "PP",
+          "32767",
+          "32768",
+          "90559",
+          "361.8"
+        ]
+      ],
+      "individual_read_part_samples": [],
+      "actual_route": null,
+      "source_bound_route": "batched8192",
+      "inferred_from_source": true,
+      "route_evidence_scope": "source-bound only; clean tracing absent",
+      "scope": "Exact16 reported tokens/LP5 only; no full-logit, quality, RESTORE or optimal-speed claim"
+    },
+    "host_wall_samples": {
+      "prefill_to_REUSED_seconds": 90.60152154200478,
+      "decode_REUSED_to_DONE_seconds": 1.7668676489993231,
+      "ttft_seconds": 90.86491244100034,
+      "full_GEN_seconds": 92.3683891910041,
+      "scope": "Observed protocol wall boundaries, includes pipe/scheduling/tracing overhead; engine DONE timings retained separately"
+    },
+    "model_close": {
+      "quit_requested": true,
+      "quit_reason": "completed GEN16",
+      "quit_send_outcome": "sent",
+      "quit_exit_outcome": "exit observed",
+      "normal": true,
+      "forced": false,
+      "exit_code": 0,
+      "owner_error": null
+    },
+    "final_diagnostics": {
+      "relevant_messages": [],
+      "severe_messages": [],
+      "compile_messages": [],
+      "stage": "post-READY-strict",
+      "limitation": "Startup known build enums require Main review. Every post-READY error enum/fatal fails, even beside compile text. Successful compile progress alone is not an error."
+    },
+    "protocol_diagnostics": {
+      "relevant_messages": [],
+      "severe_messages": [],
+      "compile_messages": [],
+      "stage": "post-READY-strict",
+      "limitation": "Startup known build enums require Main review. Every post-READY error enum/fatal fails, even beside compile text. Successful compile progress alone is not an error."
+    },
+    "kernel-after-engine": {
+      "cursor": "s=9944479cfd1a45c28a589619cb8f2881;i=c0ed356;b=cfda0b6a7c134fe2bdf58f9202770840;m=1c96da5880;t=65d9be654302e;x=20b2fb7c56f53308",
+      "relevant_entries": [],
+      "fault_entries": [],
+      "dump_present": false,
+      "filter": "page fault|fault response|timestamp stuck|wedg|engine reset|gt reset|guc.*(?:timeout|timed out|failed)|device.*lost|Timed out wait for G2H|Check job timeout|Timedout job|Schedule disable failed|trying reset|\\breset (?:queued|started|done)\\b"
+    },
+    "health-after": {
+      "protocol": [
+        "STATUS 0000:05:00.0 0",
+        "QUEUE 0000:05:00.0",
+        "H2D 65536 complete",
+        "KERNEL 16384 complete",
+        "D2H 65536 complete",
+        "PASS 0000:05:00.0: 1 round, 16384 exact words"
+      ],
+      "self_maps": [
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libsycl.so.9.0.0-0",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libumf.so.1.1.0",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0.12.0",
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+        "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395",
+        "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0",
+        "/usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1.32.0"
+      ],
+      "provider": "source-llvm-7.1.1"
+    },
+    "kernel-after-posthealth": {
+      "cursor": "s=9944479cfd1a45c28a589619cb8f2881;i=c0ed356;b=cfda0b6a7c134fe2bdf58f9202770840;m=1c96da5880;t=65d9be654302e;x=20b2fb7c56f53308",
+      "relevant_entries": [],
+      "fault_entries": [],
+      "dump_present": false,
+      "filter": "page fault|fault response|timestamp stuck|wedg|engine reset|gt reset|guc.*(?:timeout|timed out|failed)|device.*lost|Timed out wait for G2H|Check job timeout|Timedout job|Schedule disable failed|trying reset|\\breset (?:queued|started|done)\\b"
+    },
+    "pair_comparison": {
+      "prompt_tokens": 32768,
+      "previous_record": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-integrated-neutral-model-root-v6/xe-timed2-on/record.json",
+      "previous_sha256": "d3266e298c34e028995030db431bbb5903d64c8615d441395d3dd8112fed9c01",
+      "order": [
+        "timed2-on",
+        "timed2-off"
+      ],
+      "token_logprob_equal": true,
+      "scope": "16 generated tokens and reported LP5 only; no full-logit/full-quality claim",
+      "off_wall_samples": {
+        "prefill_to_REUSED_seconds": 90.60152154200478,
+        "decode_REUSED_to_DONE_seconds": 1.7668676489993231,
+        "ttft_seconds": 90.86491244100034,
+        "full_GEN_seconds": 92.3683891910041,
+        "scope": "Observed protocol wall boundaries, includes pipe/scheduling/tracing overhead; engine DONE timings retained separately"
+      },
+      "on_wall_samples": {
+        "prefill_to_REUSED_seconds": 89.48110564700619,
+        "decode_REUSED_to_DONE_seconds": 2.126157307997346,
+        "ttft_seconds": 89.86266759999853,
+        "full_GEN_seconds": 91.60726295500353,
+        "scope": "Observed protocol wall boundaries, includes pipe/scheduling/tracing overhead; engine DONE timings retained separately"
+      },
+      "off_engine_prefill_ms": 90559.2,
+      "on_engine_prefill_ms": 89440.8,
+      "off_engine_decode_ms": 1768.2,
+      "on_engine_decode_ms": 2127.8
+    },
+    "kernel-final": {
+      "cursor": "s=9944479cfd1a45c28a589619cb8f2881;i=c0ed356;b=cfda0b6a7c134fe2bdf58f9202770840;m=1c96da5880;t=65d9be654302e;x=20b2fb7c56f53308",
+      "relevant_entries": [],
+      "fault_entries": [],
+      "dump_present": false,
+      "filter": "page fault|fault response|timestamp stuck|wedg|engine reset|gt reset|guc.*(?:timeout|timed out|failed)|device.*lost|Timed out wait for G2H|Check job timeout|Timedout job|Schedule disable failed|trying reset|\\breset (?:queued|started|done)\\b"
+    },
+    "kernel_gate_passed": true,
+    "boot_unchanged": true,
+    "finished_utc": "2026-10-12T03:03:48.515890+00:00",
+    "performance_sample_eligible": true
+  }
+}

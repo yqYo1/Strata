@@ -1,0 +1,62 @@
+SPDX-FileCopyrightText: 2026 MistVVK and the XeStrata contributors
+SPDX-License-Identifier: LGPL-3.0-or-later
+
+R241 read-only source audit: integrated source6 clean-provider and phase-health contract
+
+Scope and method
+
+Read source6 `common.py`, `policy.py`, `run_root.py`, and `protocol.py`; Main's `latest-update-main-integrated-provider-health-v2.py`, `latest-update-main-integrated-phase-v2.py`, and `latest-update-main-integrated-admission-v4.py`; the v4 qualification and the explicitly approved `latest-update-main-integrated-provider-health-xe-timed1-off-root-v1/record.json` and its `integer-health.stdout`; R236 and report-registry-v156. This was a static/source and retained-receipt review. No source was executed/imported, and no runtime/GPU/process/model/query/build/test/profile/Git/cleanup action was performed. The prohibited tainted record was not opened.
+
+Disposition
+
+The clean branch is exact-map constrained: source6 accepts the clean 7-library health identity only for `timed*` and `heldout*` phases, verifies it is precisely the debug 8-library map with only the pinned validation-layer library removed, and checks that the health receipt's probe command and environment match the clean phase policy. The actual approved timed1-off receipt contains seven mapped libraries and its recorded integer-health argv/environment agree with the source-generated clean policy. I found no source path in this contract that accepts a different library set, path, or hash as an equivalent clean provider once the Main-reviewed qualification and its pinned clean receipt are held fixed.
+
+That conclusion is conditional on Main's reviewed qualification/receipts. Receipt booleans such as `main_reviewed` are asserted fields, not cryptographic signatures. Also, source6 trusts `mapped_libraries` in the pinned clean receipt; it verifies command identity and environment, but does not itself reparse the corresponding stdout artifact and derive the map again. Main's health-v2 source does derive the map from the probe output, hashes each unique path, and records the source and command evidence. This is a layered-provenance limitation, not an observed provider mismatch in the approved receipt.
+
+Findings: exact clean/debug split
+
+`common.admit` (source6 `common.py:116-132`) closes the pinned clean health receipt, checks same boot, Xe/timed1-off, the exact health binary, successful kernel gate, no reset/retry, fixed BDF and protocol, and equality between its observed map and `clean_health_libraries`. It then requires the debug map minus clean map to equal exactly `/usr/lib/x86_64-linux-gnu/libze_validation_layer.so.1.32.0`, and every remaining path/hash pin to match. It compares the receipt's full environment to `environment('xe', False, phase='timed1-off')` and requires a recorded command with exact `[health_binary, BDF]` argv and that environment. Later it pins all health-library files (`common.py:163-173`).
+
+The retained v4 qualification is `passed`/`main_reviewed`; its debug map contains eight paths and its clean map seven. The only removed entry is the validation layer above. The seven shared path/hash identities match exactly. The approved clean receipt has `engine=xe`, `phase=timed1-off`, boot ID `cfda0b6a-7c13-4fe2-bdf5-8f9202770840`, BDF `0000:05:00.0`, `kernel_gate_passed=true`, `reset_executed=false`, `retry_count=0`, and `finished_utc=2026-10-12T02:40:47.279473+00:00`; it records one Level Zero GPU, selected index 0, normal device state, and 34.203125 MiB used. Its health protocol is the six expected STATUS/QUEUE/H2D/KERNEL/D2H/PASS lines. The actual command record is the pinned health binary followed by the BDF, with `ZE_ENABLE_VALIDATION_LAYER=0`, `ZE_ENABLE_PARAMETER_VALIDATION=0`, `ZEL_ENABLE_LOADER_LOGGING=0`, `STRATA_TRACE` absent, and the expected LLVM provider `LD_LIBRARY_PATH` and forced adapter. The seven mapped paths/hashes are:
+
+- LLVM `libsycl.so.9.0.0-0`: `74243bafb2766fd1a038cf80fd62632b4aad9ecfdc0d3ce8711e4515a93d7008`
+- LLVM `libumf.so.1.1.0`: `ebe65269abd5869010ab256375e8663f7a8f8b5453e0be0c78f615eb71581ab9`
+- LLVM `libur_adapter_level_zero_v2.so.0.12.0`: `05bcafc4a0d45d33f957f16ffb4ba4776da675e79ade1121b93b94b8549335d8`
+- LLVM `libur_loader.so.0.12.0`: `bb6e1311850e4b1a924e42acae80c2b3610934625a4985aaa67967abe31356fc`
+- `/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395`: `dfa844e5afd8e8f74bf5ce9da3ea2837706d9116bc8efeaed90efba5acaf7b1c`
+- `/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0`: `b764efda507f173560fa6055d433dd5c76140180b4a7c532e1cea813cde67363`
+- `/usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1.32.0`: `db1856f379706d51b6ded84ce028d4aa48740ef63793f60e8a1e027c6db6ffb5`
+
+Source control of phase selection is unambiguous: `common.py:238-244` only substitutes `clean_health_libraries` when phase starts with `timed` or `heldout`; `policy.py:48-80` makes the same phases disable tracing, validation, parameter validation and verbose loader logs. Debug and startup retain the 8-library detailed environment. Thus a timed/heldout run cannot use the debug map by silently inheriting it: the fresh health receipt equality at `run_root.py:45-58` requires exact selected map and exact phase environment.
+
+Main health-v2 source at lines 24-31 obtains this phase environment from the pinned source6 policy. Lines 80-85 parse the native probe's six protocol lines, require library output lines, deduplicate emitted paths, require the SYCL library and forced adapter, hash each observed path, and store the resulting map. The recorded command's actual stdout is kept in the command evidence. The approved clean command stdout has the expected six success lines and lists precisely the seven mapped unique libraries above (the file repeats loader lines as expected for map events). This is observed retained evidence; the correspondence is generated by Main source and was not independently re-executed here.
+
+Fresh-health and Owner gate ordering
+
+`run_root.py:37-42` verifies the qualification/receipt hashes and calls `admit` plus `phase_health` before Owner import. Lines 43-61 then check the actual qualified Python interpreter and a closed fresh health receipt: current boot, exact engine, Main-reviewed marker, exact health binary and phase-selected library map, device/kernel/reset/retry constraints, expected protocol, exact health command argv/environment, low device-use cap, and age no greater than 120 seconds. At line 62 it hashes the Owner immediately before import (lines 63-66). It creates a run root only after acquiring the lock, checking an exact successful-prefix namespace, and (except startup) checking the predecessor and reviewed startup diagnostic/provider identity (lines 69-93). Therefore a stale/debug/mismatched clean health receipt fails before Owner import or model launch in the source order.
+
+Per-run source and provider identities are rechecked in `source_guard` (`run_root.py:139-165`), while actual pre/post health is run under the selected phase environment; the observed map must equal the selected pin set and each path's current SHA (`run_root.py:176-186`). The final record cannot pass without normal anchored child closure, clean fault gate and same boot (`run_root.py:424-444`). These gates support the source-level ordering claim; this audit did not observe a source6 model campaign result.
+
+After all five pairs, each second arm performs a token/log-probability comparison (`run_root.py:419-423`). The final heldout-on path additionally closes all 11 receipts and requires exactly five completed neutral comparisons before writing the compact summary (`run_root.py:445-466`). It deliberately leaves `main_reviewed=false` on that summary, so Main review is still a separate final barrier. No final all-pairs result was reviewed in this audit.
+
+Residual trust boundary
+
+The fresh-health admission checks its recorded command argv and environment and exact `mapped_libraries`, but does not recompute the map from `fresh['evidence']['integer-health']['stdout']` or cross-check that stdout against the command-log artifact hashes itself (`run_root.py:45-58`). The pinned Main health-v2 generator does perform this derivation (`latest-update-main-integrated-provider-health-v2.py:80-85`), and the retained approved clean receipt carries source/command evidence, so this gap did not produce a mismatch in the reviewed 7-library receipt. For a stronger local receipt contract, the source6 gate could parse the bounded health stdout evidence, require its exact protocol and emitted path set, and bind it to the command-log stdout digest before trusting `mapped_libraries`. Source6 also does not require `clean['main_reviewed'] is True` in `common.admit` itself (`common.py:117-132`), although the qualification and fresh per-run receipt are Main-reviewed and the actual q4 qualification path pins the clean receipt. These are trust-model hardening points, not evidence that the approved receipt is foreign or mismatched.
+
+The q4 admission script (`latest-update-main-integrated-admission-v4.py:72-115`) copies health binary/library identities from the reviewed runtime pin and derives `clean_health_libraries` directly from the clean receipt before writing the pinned qualification. It closes the receipt at lines 110-114. It does not add a separate independent signature to the receipt; source6 relies on the Main-reviewed/pinned qualification boundary described above.
+
+Source and artifact identities
+
+- source6 `common.py`: SHA-256 `30474dde56306074439b3c9331c00d6c04e521e04357d37d36e18d83ac846212`
+- source6 `policy.py`: `db9e309997ce6750263344d7fcb152d8bec9ad4778fe2c6ad128cf374217c04d`
+- source6 `run_root.py`: `9bb66fdd53d27919593398184ac4317eabc25a140e43ce305162b61de2a3b36d`
+- source6 `protocol.py`: `80a51a22f487d70b6739f38615d511c2e125488c19757e58fd518521a270c1a7`
+- Main health-v2: `c269711f1dc767a19541d195a412290e4d3e8001527b03c1cd7ed99a21ef7873`
+- Main phase-v2: `0c57dca9021a1f20dc3c72269bf404e0ac0563f5e84db65e98d4a7ad2481cdfe`
+- Main q4 admission: `22218effed6f7fcbd3cd03601465d22632a31e1124efba8699c51a1a51ed78f3`
+- v4 qualification: `b142776e0656f1c767e7076607917ec8c771e6c13190e75ac7b2d07ddd643219`
+- approved clean record: `9bf4972d065c82b6a51c4a90d53dd61a01aeb215e69ad2d7b77216c17373dd14`
+- report-registry-v156: `226dcda5e2855349383c0fbb334ea31f9de3cdead3f5ca57319ac461a1649721`
+- prior R236 report reviewed: `research-official-cache512-source-admission-audit-round236-v1.txt`, SHA-256 `e33aaf845f42041c133a95f34739e334c0e0c9669a09250865155e5d4d6a8e82`
+
+No tests or runtime validation were run; this report is a read-only source/receipt audit, not an execution or measurement claim.

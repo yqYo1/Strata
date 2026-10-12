@@ -1,0 +1,46 @@
+# R242 — integrated full-context runtime consumer gap
+
+Date: 2026-10-12 (Asia/Tokyo). Read-only source audit of the integrated XeStrata worktree at `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-xe-v0143-nonfinite-20261012` (requested immutable worktree `@0691bcdf`). No build, test, runtime/GPU/model query, profile, Git operation, cleanup, or source edit was performed. This report is source-derived, not a run result.
+
+## Result
+
+The current source has a dedicated full-context diagnostic, and it is materially stronger than a capacity-only test: it submits `Prefill::run(tokens,262144,0)`, routes each target chunk's residual through synchronized MTP prefill, enforces gapless coverage through the final row, synchronizes target/draft/device work, snapshots the full authoritative state, poisons/restores it through production snapshot code, and exits before normal inference. The CLI and runtime admission enforce exact extent and exclude normal generation (`src/program/generate.cpp:2474-2496,1243-1428,10301-10355`; `include/strata/program/full_context_probe.hpp:12-59`).
+
+It does **not** yet produce a sufficient independent runtime-consumer receipt for the proposition “262,144 cells were actually appended in every target QSA layer and normal drain completed.” The receipt is stderr text, not a durable structured artifact emitted by this path. It records intended exact input extent, target prefill token/chunk totals, MTP callback coverage, capacities, snapshot byte geometry, and post-restore byte checks. It does not instrument per-layer append dispatch/completion or record the final `FullProbeDrain` destructor's device-sync outcome as a post-drain PASS event: that destructor runs after `run_full_context_probe` prints PASS and the caller returns. There is explicit device/stream synchronization before snapshot and restore checks, so this is a receipt/evidence gap rather than proof of an undrained queue. No standalone runtime harness is present; `tools/test_full_context_probe.cpp` exercises helper extent/successor/coverage logic only, not Prefill, QSA append, snapshot restore, or queue completion.
+
+Smallest useful follow-up instrumentation: bounded per-layer append dispatch/completion counts (and first/last position) at the QSA append call sites in `src/prefill/prefill.cpp` around 1706–1720, tied to each completed chunk; then emit a machine-readable receipt only after an explicit final drain has succeeded. Keep current prefill stats and snapshot/restore byte verification, but label them separately. Do not add per-cell logs or duplicate full state. Existing FNV fingerprints and same-run snapshot comparisons are restore/corruption checks, not an independent numerical oracle or proof of nonzero/correct model output.
+
+## Geometry and capacity accounting
+
+The source default geometry is 48 layers, 12 QSA and 36 GDN, QSA 24 query heads / 2 KV heads / dimension 256 / index block 4 / index dimension 128; GDN state is 128 × 48 × 128 FP32 plus convolution `(10240 × (4−1))` FP32 per GDN layer (`include/strata/core/layout.hpp:30-63`; `src/prefill/prefill.cpp:1247-1249`). Values below are source-derived.
+
+- Four-cell INT8 QSA page: `page_size × n_kv_heads × (head_dim×2 K/V bytes + head_dim/KV_Q8_GROUP×4 scale bytes) = 4,224 B` (the Q8 group is 64; see `src/kernels/xe/kv_stream.cpp` and `include/strata/kernels/qsa.hpp`). 262,144 cells / 4 = 65,536 logical pages; page table is 256 KiB per layer.
+- Main resident limit 32,768 cells gives 8,192 physical pages/slots and 34,603,008 B (33 MiB) K/V pool per QSA layer. Resolver map is separate: `5 × 4 × slots + 16 × 4` = 163,904 B (about 160.1 KiB) per layer, in addition to the 256 KiB logical page table. The resolver map is not K/V capacity. Twelve main QSA layers therefore have 396 MiB of resident K/V slots and about 4.88 MiB of resolver map plus 3 MiB page tables, before other per-state allocations.
+- Main QSA streamed authoritative host mirror at full extent is `65,536 × 4,224 = 276,824,064 B` (264 MiB) per layer, 3.094 GiB for twelve layers, excluding per-allocation padding and all other process allocations. The probe snapshot adds a full host image of main KV state (plus checkpoint/metadata, pooled rows and the draft-ring image); exact total is computed at runtime by `conversation_snapshot_capture_bytes` and reported as `RAM snapshot=... required=... available=...`, then admitted against a 2.5 GiB minimum free floor (`generate.cpp:1279-1305`). The static source cannot substitute those runtime values.
+- GDN persistent state per layer: `((128×48×128)+(10240×3))×4 = 3,157,248 B`; ×36 = `113,660,928 B` (108.38 MiB). This is a persistent session state, separate from the QSA host mirrors and the temporary snapshot/checkpoint copies.
+- The target `Prefill::carve` arena and its chunk/T8192 intermediate buffers are device allocations, not host scratch. They are separate from persistent GDN state and streamed-QSA host mirrors (`src/prefill/prefill.cpp:469,775-802` and subsequent carve users). Per-layer QSA VRAM additionally includes indexer state, RoPE tables, attention scratch and pool/map/page-table terms from `qsa_state_bytes` (`src/core/layer.cpp:652-670`). With full-context tables, RoPE cos/sin alone are `262144×(64/2)×4×2 = 64 MiB` per non-sharing state; do not multiply this blindly by all layers because the allocation can share tables. Exact total VRAM peak is not statically closed here: loaded weights and expert residency/cache, prefill arena, 32K main pools, MTP ring pool (depends on `mtp_window`), allocator/runtime overhead and transient kernels all contribute. The source probe reports no measured free-VRAM or peak allocation. No source estimate here establishes fit on a GPU.
+
+The requested 80 GB model / 125.7 GiB system / context 262144 / INT8 resident 32768 / T8192 / group16 / spec4 tuple is an admission scenario, not a demonstrated fit. Model file size is not equal to loaded resident RAM; the report lacks a measured process/system high-water mark and the probe only samples available host bytes at admission points. Use runtime snapshot estimate and actual job/cgroup limit in any run receipt.
+
+## Exact boundary and end decode range
+
+Probe input and physical capacity are both exactly 262,144. Target input writes are intended for positions `[0,262144)`, with final consumed cell 262,143. MTP covers 262,143 real successor rows and one explicitly labelled terminal storage-probe row at position 262,143; no cell 262,144 is read/appended, and no output is generated (`full_context_probe.hpp:20-50`; `generate.cpp:1351-1357`). Thus this is not a successful decode at the next position: legal stored range ends at 262,143, exclusive next position is 262,144, and a subsequent decode input at 262,144 is out of capacity. `--max-new 0` is required by the mode. BGEN0 clamp-to-one and READY-context values do not prove this full-context fit and are not proposed here.
+
+## Prior evidence and delta
+
+Reviewed the prior R223 admission boundary record (`research-full262144-context-runtime-boundary-admission-latest-round223-v1.txt`), R356 source/restore review and R366 evidence/admission review in the retained research worktree, plus registry v156. R223 addressed a different source/admission boundary and is not evidence for this integrated source. R356/R366 already documented the full-span target prefill + MTP terminal probe + snapshot/poison/restore shape and the absence of a per-layer append counter; this audit confirms that structure in the current integrated source but narrows the remaining question to whether append completion and final normal drain are receipted in a durable, post-drain record. Their build/helper/CPU checks (where recorded) do not establish the physical full-context GPU/model run. Registry v156 has no new 262144 full-context execution result. No earlier source-only or host-only result is upgraded to an actual full-span run here.
+
+## Provenance and key source lines
+
+SHA-256 on audited files:
+
+```
+src/program/generate.cpp f9e6a45a4f7494cbc48c0b0e944b30d493f0ee97219fb2535a001f3a5913db05
+src/prefill/prefill.cpp 2922806c8b56b64e1bc20096d93c852a105ed225ff3bf9dcf113436c79964d9c
+src/core/layer.cpp fefc457de582573a8f1132c02139a61161d90fe50dcacda46c8c64cf0b581c97
+src/core/conversation_state.cpp 6f3da121efc291a9bef47fb7c081d35f1dcf06bb01ba40180b57d4fb55ac6958
+include/strata/program/full_context_probe.hpp c7463aee451e41d3b25c7dac12814b93aaa99443a7a78f851dd5cb6faf51f963
+include/strata/core/layout.hpp fdebc55612d559de4e516a5f2c33ebde6fb36e414adb45e42edbe200006e8b95
+```
+
+Key lines: parser/mode constraints `generate.cpp:2474-2496`; probe preconditions and RAM admission `1243-1310`; callback and target prefill/coverage/sync `1311-1350`; snapshot + restore/poison and PASS `1351-1428`; outer failure drain `1170-1178,10301-10355`; QSA page/resident/resolver sizing `layer.cpp:610-670`; host state sizing `layer.cpp:780-800`; GDN state/snapshot sizing `conversation_state.cpp:127-165,221-270`; helper coverage `full_context_probe.hpp:12-59`; target append path `prefill.cpp:1706-1720`.

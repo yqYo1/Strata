@@ -1,0 +1,97 @@
+# R244 — official cache-512 profile uniqueness and effective capacity
+
+Date: 2026-10-12 (Asia/Tokyo). Read-only recurring-source audit. Target official pristine v0.1.43 worktree: `/home/yayoi/ghq/github.com/Niko1221/Strata/.worktree/bench-upstream-v0143-pristine-20261012`; profile: `/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-prefill-service-events-20261010/data/expert-profile.bin`; controller packet: `/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-pristine-official-cache512-controller-source-v1`. No project scripts, tests, build, runtime, GPU, profiling or Git were run, and no worktree file was written. The profile values were extracted with a finite read-only byte parser; no project code was imported or executed. One histogram command used only the Python standard-library `collections.Counter`.
+
+## Finding
+
+The supplied official profile is not a repeated-pair profile. It is a 196,632-byte little-endian `STRP` v1 file with header `(version=1, layers=48, experts/layer=512, slots=24576, ranked_pairs=24576)`. Its ranked-pair segment contains 24,576 in-range pairs and 24,576 distinct `(layer,expert)` identities: exactly one ranking entry for every possible expert. This direct examination supersedes the generic duplicate-profile concern in earlier R224/R236 source-only reviews for this particular input file; it does not make the official reader validate uniqueness on other profiles.
+
+The packet's campaign keeps `--expert-cache-per-layer` and changes only the cache request from 128 to 512. Official v0.1.43 translates that value into a byte budget of `requested_slots × largest_expert_blob`, then computes a per-layer quota `q = floor(min(byte_budget, free_VRAM_after_reserve) / sum_48(rounded_layer_blob_bytes))`; it opens `q` blobs for each layer (up to 512 experts/layer) and sets actual slot count to `48×q` (`generate.cpp:4942-4965`). Thus a 512-slot-equivalent byte budget can yield 624 effective slots if actual free room allows `q=13`; 624 is the maximum in that case, not guaranteed by the argument. The packet correctly requires actual startup `INFO expert_slots` and explicitly says not to predict 624. Under a reduced free-memory cap, q and the effective set can be lower.
+
+The profile has 13 unique ranked experts in each layer, so all 624 entries in the per-layer top-13 set are distinct. The first three are simply the first three IDs of each row below, a 144-pair subset. Official fill scans the whole profile ranking, calls `admit`, and in per-layer mode skips an expert once that layer's assigned range is full; it fills the first `q` ranked experts for every layer, not the first `48q` global entries (`generate.cpp:5134-5190`). If actual `q=13`, the effective set is exactly the first 13 IDs listed per layer. If `q=3`, it is the first three. These are different from simply taking the first 512 pairs in the file.
+
+The profile already supplies the identity needed to describe the candidate sets, while runtime output must confirm which candidate size was actually admitted. The official fill calls `ExpertCache::admit` and copies each accepted pair's blob into its slot; it verifies the profile's first pair by one blocking readback. In this profile the first pair belongs to layer 28, so with per-layer admission its assigned slot is layer 28's first slot (for q=13, slot 364), not slot 0. The current diagnostic text `pre-filled N of N slots ... slot 0 verified` is therefore misleading: the call verifies `slot_of(profile[0])`, not necessarily physical slot 0. It proves the count filled and that the first-ranked pair's assigned blob round-tripped, not that every blob was individually read back. Optional `STRATA_VERIFY_COMPLEMENT` computes a checksum over every resident slot's bytes, but that checksum does not include layer/expert IDs (`generate.cpp:5191-5239`). The per-layer quota log reports the first layer's range size; `INFO expert_slots` is the authoritative aggregate actual slot count. Do not describe a count of slots as independent per-pair readback.
+
+## Profile entries by layer
+
+Each row lists the 13 expert IDs in profile order for that layer. “First 3” is the first three values of each row. All rows have 13 entries; across all 48 rows, the 624 `(layer,expert)` pairs are distinct.
+
+```
+layer  first 13 IDs (first 3 are the prefix)
+ 0     93 349 251 278 287 384  20  79 401 369 367 470 160
+ 1    130 483 320 324  48  60 293 375 407 157 243 475 173
+ 2     84 333 393 134 449 107 157  96  28 109 417 211 351
+ 3    120 474 507 496  49 503 403 444  64 249 379 274 269
+ 4    488 436 272 221 199 325 299 222   9 409 249  45 323
+ 5    355 422  94 112 132 492 293 286 322 311 187 204 154
+ 6     46 290  90 285 335 385 448 112 258 431 281 169 219
+ 7    359  40 304   2 341 333  44 142  38  35 291 423 101
+ 8    191 189 305  81  78 477 296  11 507 253 462 489 155
+ 9    420 130  82 301 154 157 103 168 395 508  41 141 432
+10    314  50 488 290  92 384 299 162 490  72 363 212 272
+11    111 322 381 153  78 473 343 319  59 255 220 234 242
+12    372 288 475 334 473 100 228  11   6  48 366 350 108
+13    234 346 373  43 241 348  27 117  80  17 380  10 246
+14     19 231 105 435 486 382 461  18 508 127 277  44 447
+15    346 226 476  65   6 222 166 245  39 209 358 508 392
+16    442 393 482 174 424 324 396 337 182 227 101  17 252
+17    117 379 234 273 410 284 411 422 223  93 174 394 228
+18    326  80  94 284 179 162  47 416 497  57 248 240 408
+19    469 129 255 443  99 498 286  47 225 502 339 333 130
+20     90 142 366 466  28  74 433  56  69 478 198 290 346
+21    442 288 459 130 206 391 252 340 370 283 458 378 337
+22    252 269   6 400 133 422 177 469 107 164 410 345 230
+23    105 498 238 316 387 393 121   4  78  73  82 480 435
+24    191 189 477 389 296 172 392 305 489 414 252  93 497
+25    130  82 420 301  42 395 157 103  83 154 111 168 508
+26    314  50 290  92 212  74 488  10  72 440 299 173 361
+27    381 111 322 319  78 242 153 162 220 232 150 343 255
+28    288  21 334 228 372  80   6 473 350 103 489 459 100
+29     43 346 117 490  27 380 180 271 373  80 398 234 347
+30    462 508 486  19 105 219 493 249 435 277 366 315 452
+31    476 237 226 391 346 231   6  83  66 166 209 392  58
+32    210 442 396 393 424 174 332 337  31 101 182 324 482
+33    117 379 234 411 273  14 287 394 223 500 202 409 422
+34     94  80  57 179 419 361 407 416  47 326 162 418 473
+35    129 443 469  14 339 286 502 445  10 382 113   1  99
+36     90  74 198 290 466 142 506 433  28 315 258 182 436
+37     33 288 275 337 442 391 459 206 370 378 384 282 130
+38    252   6 269 400 133 469 421 230 500 264 171 422 328
+39    105 387 316 238 115  73  78 470 393 121 498 257  60
+40    190 136  25 270 146 263 505 244 121  88 275 162 456
+41     94  36 302 170 259  46  67 414 484 434   2 431 444
+42     23 402  95 296 181 508 235  33 261 495  97 479  22
+43     85 255  49 207 299 106 178 185 509  15 370 284 164
+44     76 104 213  74 224 500 350 212 471  49 399 452 270
+45    168 220 104 126  25 193 200 401 141 232 289 425 381
+46    185 232 346 374  85  73 128 390  59 265 339 357 290
+47    242 398 112 333 323  29  89 317 357 125 175 142 458
+```
+
+For clarity: the “first 13 per layer = 624” arithmetic concerns independently taking 13 from each layer. The actual campaign uses per-layer admission, so if the real q is 13, those are indeed the 624 filled unique profiles. It does not mean 624 is the requested argument or a pre-run guarantee.
+
+## What the upcoming run can prove, and bottleneck counters
+
+For startup, preserve the actual stderr lines with `R4.2g PER-LAYER: each layer owns q slots`, `profile ... ranked pairs, built for 24576 slots`, `pre-filled N of N slots from the profile ... slot 0 verified`, plus stdout `INFO ... expert_slots=N ... expert_slots_primary=N ... vram_free_mib=...`. The quota line plus INFO establish actual quota and aggregate slots; the fill line establishes successful fill count and that the first-ranked pair's assigned slot round-tripped (despite the misleading “slot 0” wording). The current controller binds/records the INFO line but its protocol does not inspect the other stderr fill lines. If the upcoming report wants a direct runtime effective-count claim, archive these few lines in the actual run receipt. If all-slot byte verification is enabled with `STRATA_VERIFY_COMPLEMENT`, preserve its `expert cache checksum ... (N slots)` line too, while noting it hashes slot+blob size+contents, not pair identities.
+
+For the official model request, the packet sends one fresh `GEN 16` with no reuse and requires `RESUME 0`, `REUSED 0`, exactly one `DONE`, 32 token/LP5 outputs, and the full 32,767-token prompt. Official v0.1.43 uses serial `read_windows`, with one `PP 32767 32768 ...` boundary in this controller; retain `PP`, `DONE`, and source trace `strata trace: read 32767 tokens (windows) in ... ms`. `PP` gives elapsed prompt window and tok/s. `DONE` retains prompt/decode engine wall timings, cache hits/lookups, RAM/file blob reads and logical file MB, actual prompt tokens read, and offloaded routed entries. The controller also stores measured `prefill_to_REUSED`, `decode_REUSED_to_DONE`, TTFT, and whole-GEN host-wall boundaries. These are the shortest existing records for actual route cost and hit/miss outcome.
+
+Use them as separate evidence, not interchangeable counters. `DONE` file MB and expert blob counts are source-level logical reads; OS read bytes / major faults from the `file tier I/O this request` diagnostic are physical storage activity. `experts streamed` and `experts ... by DMA` are expert event counts, not DMA bytes or bus bandwidth. Prefill host phase timings, PP wall interval, and GEN wall time overlap or include different work; do not sum phase timings and label the result critical path. Existing breakdowns useful if present include one-shot prefill `experts streamed / by DMA / host ms / resident / CPU`, and `--stats` decode lines for CPU expert-pool time, pool wait/drain/re-park, R4 hits/lookups/admitted/refused, `DONE` offload counts and file-tier counters; the served route's protocol receipt is primary for the packet as written.
+
+## Comparison and limits
+
+Official v0.1.43 `read_expert_profile` reads the STRP header and ranked list, validates version, geometry, list length and pair range, but does not detect duplicate pairs (`src/core/expert_cache.cpp:72-139`). `ExpertCache::admit` returns an existing slot for a duplicate identity (`:638-655`); the official fill loop then fills that same slot again and increments `prefilled`, so a malicious/repeated profile could make a slot count exceed unique resident pairs. This file itself has no duplicates, so that failure mode does not reduce its candidate uniqueness.
+
+The integrated WN source `sync-xe-v0143-nonfinite-20261012` has added a `seen[layer×expert]` check to `read_expert_profile` and rejects a repeated pair before returning the ranking. Its behavior is stricter for arbitrary profile inputs; for this exact profile, both sources accept it and see the same 24,576 unique pairs. This is a source comparison only; no code was changed.
+
+The packet remains `SourceOnlyUnverified`, with pending property/startup/model receipts. The source files and profile analysis do not establish actual q, successful cache allocation, fill count, readback, request route, or measured speed. Latest report registry v156 includes earlier capacity and controller-source records but no completed result for this new cache-512 actual run. No claim is made that 624 slots will be admitted or that cache512 improves performance against a matched 128 run.
+
+## Provenance and source references
+
+Profile SHA-256: `8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf` (196,632 bytes).
+
+Official files: `src/core/expert_cache.cpp` SHA-256 `91eb2373d1893ff2e6fe88887a121f525549ad0d66184dee190e1ad8d07946d2`; `src/program/generate.cpp` SHA-256 `23c2b4d0aba33b9f891f52ad10ef988e11b29ffe079aae6cbae1888900c1c47d`; `tools/make_profile.py` SHA-256 `54864322d25f688144ce01217aed8a829a9c3dc1dad9610f2feb033d0e601027`.
+
+Integrated WN `src/core/expert_cache.cpp` SHA-256 `83a8857e0f4be6efece62b49de7ca184d9213f702f2037a6d5eaf502987d9c07`. Controller `SOURCE_CONTRACT.txt` SHA-256 `e581219c445ad38052cea0acae0f4d086c2445559b8e30b8a187b77367c67b1d`; `run_root.py` SHA-256 `050d5b05cbdd7a76b31ba285450af9a6a4e3b5b85d9bd1e3131c380fe0a9411b`. Registry v156 SHA-256 `8c5f839319eb2077cd8e8c343648ddaf41923fb7b472b9d9864513b9240d6096`.
+
+Key official references: profile reader `expert_cache.cpp:72-139`; duplicate-sensitive admission `:633-655`; native cache budget and per-layer q `generate.cpp:4942-4965`; profile slot opening and fill `:5134-5190`; single-pair readback and fill receipt `:5191-5201`; optional all-slot checksum `:5203-5239`; per-layer policy and INFO `:8975-9004`; official `PP` and `DONE` schema/controller validation `protocol.py:65-92,102-147`; cache512 argv `policy.py:69-90`; source contract says actual INFO must be retained and not to predict 624, `SOURCE_CONTRACT.txt:18,38-40`.
