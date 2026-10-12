@@ -40,13 +40,15 @@ The ones the distribution does not package, or packages too old, go into `.lint/
 
 ```sh
 python3 -m venv .lint/venv && .lint/venv/bin/pip install ruff reuse        # ruff 0.16, reuse 6.2
-npm install --prefix .lint stylelint stylelint-config-recommended         # stylelint 17
+npm install --prefix .lint eslint@8.57.1 stylelint@17 stylelint-config-recommended
+export PATH="$PWD/.lint/node_modules/.bin:$PATH"
 lychee_release=https://github.com/lycheeverse/lychee/releases/download/lychee-v0.24.2
 mkdir -p .lint/bin && curl -fsSL "$lychee_release/lychee-x86_64-unknown-linux-gnu.tar.gz" \
     | tar -xz --strip-components=1 -C .lint/bin lychee-x86_64-unknown-linux-gnu/lychee
 ```
 
 `tools/lint/run.sh` uses the distribution's `reuse` when there is one and `.lint/venv/bin/reuse` otherwise.
+ESLint uses the legacy configuration in `tools/lint/eslintrc.js` and `--no-eslintrc`, so use ESLint 8 when installing it with npm.
 
 ## intel/llvm from source
 
