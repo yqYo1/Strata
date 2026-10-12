@@ -1,0 +1,84 @@
+{
+  "research_completed": 766,
+  "prior_registry_path": "bench/results/2026-10-12-latest-updates-pristine-builds-host-regression/report-registry-v160.json",
+  "prior_registry_sha256": "b80094f93b1ccfe15612593730e2c70af59c4562e8f718d3c5d556779caf9121",
+  "new_reports": [
+    {
+      "original": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-closed-latest-update-log-consumer-retention-round259-v1.txt",
+        "sha256": "8131b05658e33e5d382b053be15f04f616ecea0e64598bba001943cb6ed4b3f4",
+        "bytes": 11046
+      },
+      "archive": "research/research-closed-latest-update-log-consumer-retention-round259-v1.txt.json",
+      "status": "completed",
+      "main_full_report_review": true,
+      "model": "gpt-6-luna",
+      "measured": false
+    },
+    {
+      "original": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-pristine-official-auto-worker-actual-sycl-safety-gates-round260-v1.txt",
+        "sha256": "cff7f089b660f1b9da72d3be0c247e586a157ffbbfa63e3d117e20af547fc620",
+        "bytes": 13950
+      },
+      "archive": "research/research-pristine-official-auto-worker-actual-sycl-safety-gates-round260-v1.txt.json",
+      "status": "completed",
+      "main_full_report_review": true,
+      "model": "gpt-6-luna",
+      "measured": false
+    },
+    {
+      "original": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-integrated32k-effective-dm-writer-route-evidence-round261-v1.txt",
+        "sha256": "6f6813e13e18aafbec2af1595ae3a5060fff7c4736d15a97a2f41b810b1b7cc3",
+        "bytes": 10247
+      },
+      "archive": "research/research-integrated32k-effective-dm-writer-route-evidence-round261-v1.txt.json",
+      "status": "completed",
+      "main_full_report_review": true,
+      "model": "gpt-6-luna",
+      "measured": false
+    },
+    {
+      "original": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-native-free-grouped-gemm-event-timing-contract-round262-v1.txt",
+        "sha256": "999b511e51d4c46a8c0fac015b63021ba1ac00957a23ae5fee97f8272b7642d9",
+        "bytes": 6645
+      },
+      "archive": "research/research-native-free-grouped-gemm-event-timing-contract-round262-v1.txt.json",
+      "status": "completed",
+      "main_full_report_review": true,
+      "model": "gpt-6-luna",
+      "measured": false
+    },
+    {
+      "original": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/implementation-prefill-cpu-job-histogram-fixture-source-v1.txt",
+        "sha256": "ec3bd967e5833e6e31ae2064193b0f0dd7209d2287e196fea57d3f31f0c9b2d8",
+        "bytes": 3237
+      },
+      "archive": "research/implementation-prefill-cpu-job-histogram-fixture-source-v1.txt.json",
+      "status": "SourceOnlyUnverified",
+      "main_full_report_review": true,
+      "model": "gpt-6.1-sol",
+      "measured": false,
+      "executed": false
+    }
+  ],
+  "main_sole_execution_owner": true,
+  "recurring_research_completed": [
+    "R259 closed raw-log consumers",
+    "R260 actual compiled official auto/worker safety gates",
+    "R261 effective integrated Dm writer route",
+    "R262 native free grouped GEMM event timing contract"
+  ],
+  "implementation_returned": "6.1-sol source-only actual CPU dispatch histogram fixture; unapplied/unexecuted; all tests/builds remain Main-owned",
+  "corrections": [
+    "R245 proposes expert-cache auto, not prefill auto. R260 keeps these distinct and audits actual compiled sycl source.",
+    "Pristine official cache screens are not best-tuned qualification. Native host/shared-atomic false excludes large batched PLE/Stager marker polls; source has no automatic safe-window fallback.",
+    "R259 raw-log consumer audit is static. Main separately verified closed/pushed source/result artifacts and exact file hashes under exclusive lock before cleanup.",
+    "R261 leaves grouped oneMKL routing conditional. R262 confirms this free build compiles STRATA_ONEMATH=0 and f16_groups returns false. Exact fallback GPU backend remains unmeasured.",
+    "R262 describes a future profiling-enabled queue/event contract. No production queue change, profiler run or kernel performance claim was made.",
+    "The first retention planner stopped before deletion because the license diagnostic had been bounded/terminated rather than a natural expected failure. Its failed/incomplete state is preserved; retry verifies physical ownership and quiescence only."
+  ]
+}

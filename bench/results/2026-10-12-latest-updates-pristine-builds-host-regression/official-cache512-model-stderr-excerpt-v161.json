@@ -1,0 +1,20 @@
+{
+  "original": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-pristine-official-cache512-model-root-v1/official-model/commands/engine.stderr",
+    "sha256": "f2be308b7b66bd10ab3db987647dc0da8fc980c4d435ba3597032f61c9f17bc0",
+    "bytes": 4578
+  },
+  "selected_lines": [
+    "strata generate: profile /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-prefill-service-events-20261010/data/expert-profile.bin: 24576 ranked pairs, built for 24576 slots",
+    "strata generate: KV streaming: 32768 of 262144 cells per QSA layer in VRAM, the K/V in 3.09 GiB of pinned RAM",
+    "strata generate: 5 pool workers on logical processors 1,2,3,4,5, the host thread on 0 (draining too) (--host-core first)",
+    "strata generate: per-layer slots use each layer's blob: 512 uniform slots (1.27 GiB) -> 624 slots, 13 per layer (1.19 GiB)",
+    "strata generate: pre-filled 624 of 624 slots from the profile in 0.5 s (2742 MB/s); slot 0 verified",
+    "strata generate: 5 expert-pool workers + the host thread",
+    "strata trace: read 32767 tokens (windows) in 1843711.1 ms",
+    "strata serve: prompt 32768 tokens = 0 reused + 32768 read in 1843718 ms (17.8 tok/s), 16 generated in 1887 ms (8.5 tok/s), drafts accepted 0 of 0, 0 checkpoints",
+    "strata serve: decode expert cache hit rate: 18.3% (1405 hits / 7680 lookups)",
+    "strata serve: KV streaming: 99.95% of 195692796 block reads hit VRAM, 396.3 MiB read from RAM"
+  ],
+  "scope": "Actual startup/quota/fill/workers and phase diagnostics; no bandwidth ceiling or quality proof"
+}
