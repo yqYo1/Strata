@@ -50,7 +50,7 @@ import uuid
 from http.client import HTTPException
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from typing import Iterator, Protocol
+from typing import Callable, Iterator, Protocol
 from urllib.parse import parse_qs, urlsplit
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -144,6 +144,7 @@ VISION_START = "<|vision_start|>"
 # #606: a reply that repeats one token this many times in a row is ended there ("length"): a model in a loop, or a
 # broken state that answers one token forever (an issue saw 36,689 tokens of "!"). The config's "repeat_stop_tokens"
 # sets it; 0 turns it off.
+ANSWER_RESERVE_MIN = 512      # reserve answer tokens when the thinking budget is capped
 REPEAT_STOP_TOKENS = 256
 # #123: what closes the thinking when it reaches reasoning_budget_tokens (the model's own end-of-thinking tag after it)
 # #1053 (opt-in "reasoning_close_retry": true): a reply that ends on its stop token still inside <think>, with no answer
@@ -160,12 +161,19 @@ LOOP_COVERAGE = 0.25             # the share of the last 2,000 words inside 12-w
 LOOP_HISTORY_WORDS = 30000       # how far back the passages are counted (bounds the cost of a look)
 
 
+LOOP_TAIL_CHARS = 2048
+LOOP_TAIL_PERIOD = 64
+
+
 def reasoning_repeat_coverage(text):
     """Coverage of recent words by 12-word passages seen at least three times.
 
     Only reasoning is supplied. The history (the last LOOP_HISTORY_WORDS words) detects repeated verification passes
     separated by long code drafts; the recent window excludes old repetitions.
     """
+    tail = text[-LOOP_TAIL_CHARS:].lower()
+    if len(tail) == LOOP_TAIL_CHARS and any(tail[p:] == tail[:-p] for p in range(1, LOOP_TAIL_PERIOD + 1)):
+        return 1.0
     words = re.findall(r"\w+|[^\w\s]", text.lower())[-LOOP_HISTORY_WORDS:]
     width, window = 12, 2000
     if len(words) < window:
@@ -208,6 +216,7 @@ RATE_MIN_SPAN_S = 0.25      # younger than this there is no rate yet: the mean s
 # server (the engine's main thread waits, untimed, for its next command): the engine is ended and the request fails;
 # the next request starts it again.  The config's "engine_silence_s" sets it (0: wait forever, as before).
 ENGINE_SILENCE_S = 300.0
+KEEPALIVE_S = 10.0          # held tool arguments must not leave a live stream silent
 QUEUE_BEAT_S = 10.0         # keep-alive while waiting for the single request turn (#1619)
 # Disk sessions: the longest allowance an engine may announce (`SWAIT <phase> <s>`) for one step that blocks in a
 # single call (a file flush, the host->device transfer); the engine's own bound is the same (session_phase_limit_s).
@@ -232,6 +241,17 @@ def _timeout_env(name: str, default: float) -> float | None:
     except ValueError:
         v = default
     return None if v <= 0 else v
+
+
+ENGINE_STALL_S = _timeout_env("STRATA_ENGINE_STALL_S", 90.0)
+STALL_CPU_EPS_S = 0.5
+STALL_IO_EPS_B = 1 << 20
+
+
+def engine_frozen(base: tuple[float, int, float], now: tuple[float, int, float]) -> bool:
+    """Only nondecreasing samples of the same process establish inactivity."""
+    return (base[2] == now[2] and 0 <= now[0] - base[0] <= STALL_CPU_EPS_S
+            and 0 <= now[1] - base[1] <= STALL_IO_EPS_B)
 
 
 VISION_READY_S = _timeout_env("STRATA_VISION_READY_S", 600.0)   # a first GPU start compiles its kernels (JIT)
@@ -616,6 +636,7 @@ class StrataEngine:
     (`temperature=F top_p=F top_k=N seed=N`, the engine's own spelling).  An absent temperature keeps the
     engine's default, which is greedy; `temperature=0` means the same thing, so it is not forwarded.
     """
+    gpu_busy: Callable[[], bool | None] | None = None   # unknown does not establish idle
     silence_s = ENGINE_SILENCE_S         # #481: main() sets the config's engine_silence_s (survives restart())
     silent_note: str | None = None       # #481: why the server ended a silent engine (death_note says it)
     last_err: str | None = None          # #997: an ERR that was its last stdout line (death_note says it)
@@ -1075,6 +1096,8 @@ class StrataEngine:
         true sends STOP once (the request is then read to its DONE)."""
         stopped = False
         beat = time.monotonic()
+        heard = beat
+        stall_state: dict = {}
         while True:
             try:
                 # A client can leave before the first PP/token.  Poll its Event as often as _take_control does;
@@ -1084,11 +1107,14 @@ class StrataEngine:
                 if cancel.is_set() and not stopped:
                     self._send("STOP")
                     stopped = True
+                if not stopped and (ENGINE_STALL_S or 0) > 0:
+                    self._stall_check(heard, stall_state, ENGINE_STALL_S)
                 if time.monotonic() - beat >= 10.0:
                     beat = time.monotonic()
                     yield None
                 continue
-            beat = time.monotonic()
+            beat = heard = time.monotonic()
+            stall_state.clear()
             if line is None:
                 raise EngineDied(f"the engine stopped unexpectedly (exit code {self.exit_code()})")
             if not line.startswith(("PP ", "INFO")):
@@ -1615,6 +1641,7 @@ class StrataEngine:
         allow = silence + min(len(ids), PP_CHUNK_MAX) / PP_FLOOR_TOK_S if silence > 0 else 0.0
         heard, read_to = time.monotonic(), 0
         beat = heard
+        stall_state: dict = {}
         try:
             while True:
                 wait = 10.0
@@ -1629,6 +1656,12 @@ class StrataEngine:
                 except queue.Empty:
                     if cancel.is_set():
                         return
+                    if (ENGINE_STALL_S or 0) > 0:
+                        try:
+                            self._stall_check(heard, stall_state, ENGINE_STALL_S)
+                        except EngineSilent:
+                            done = True
+                            raise
                     if allow > 0 and time.monotonic() - heard >= allow:
                         continue                          # enforce the expired deadline before another heartbeat
                     if time.monotonic() - beat >= 10.0:
@@ -1640,6 +1673,7 @@ class StrataEngine:
                     raise EngineDied(f"the engine stopped unexpectedly (exit code {self.exit_code()})")
                 heard = time.monotonic()                  # any line is output: T, PP, RESUME, INFO ...
                 beat = heard
+                stall_state.clear()
                 if line.startswith("T "):
                     allow = silence
                     if cancel.is_set():
@@ -1700,6 +1734,54 @@ class StrataEngine:
                         break
                     if not self.can_stop:
                         heard = time.monotonic()
+
+    def _activity(self) -> tuple[float, int, float] | None:
+        """Sample only this engine's live child; psutil is optional."""
+        proc = self.proc
+        try:
+            import psutil
+            if proc is None or proc.poll() is not None:
+                return None
+            pr = psutil.Process(proc.pid)
+            born = pr.create_time()
+            cpu, io = pr.cpu_times(), pr.io_counters()
+            sample = (cpu.user + cpu.system, io.read_bytes + io.write_bytes, born)
+            if (self.proc is not proc or proc is None or proc.poll() is not None
+                    or not all(math.isfinite(v) and v >= 0 for v in sample)):
+                return None
+            return sample
+        except Exception:  # noqa: BLE001 - unavailable activity cannot establish a frozen engine
+            return None
+
+    def _stall_check(self, heard: float, state: dict, stall_s: float) -> None:
+        """Early termination requires CPU, I/O and fresh GPU readings to establish inactivity."""
+        proc = self.proc
+        age = time.monotonic() - heard
+        if state.get("proc") is not proc:
+            state.clear()
+            state.update(proc=proc, base=None, next=age + stall_s)
+        try:
+            gpu_idle = self.gpu_busy is not None and self.gpu_busy() is False
+        except Exception:  # noqa: BLE001 - telemetry failure must not terminate an engine
+            gpu_idle = False
+        if not gpu_idle:
+            state["base"], state["next"] = None, age + stall_s
+            if age >= stall_s and not state.get("warned"):
+                state["warned"] = True
+                print(f"[strata] the engine has been silent for {age:.0f} s; GPU inactivity is not established, "
+                      "so early termination is disabled (engine_silence_s still applies).", flush=True)
+            return
+        if state["base"] is None:
+            state["base"], state["next"] = self._activity(), age + stall_s
+            return
+        if age < state["next"]:
+            return
+        now = self._activity()
+        if (now is not None and engine_frozen(state["base"], now)
+                and self.proc is proc and proc is not None and proc.poll() is None):
+            raise self._silent(f"the engine said nothing for {age:.0f} s with no CPU, I/O or GPU progress "
+                               "(STRATA_ENGINE_STALL_S sets this, 0 = off)")
+        state["base"], state["next"] = now, age + stall_s
 
     def _silent(self, what: str) -> EngineSilent:
         """#481: end an engine that lost step with the server (its main thread waits for a command the server never
@@ -2953,6 +3035,8 @@ class Service:
             self.telemetry = Telemetry(extra=lambda: {"tok_s": self._tok_s(), "tok_s_mean": self._tok_s_mean(),
                                                       "prefill_tok_s_mean": self._prefill_tok_s_mean()},
                                        gpu_pci=getattr(self, "gpu_pci", None))
+        if isinstance(self.engine, StrataEngine):
+            self.engine.gpu_busy = self.telemetry.gpu_activity
 
     def _tok_s(self):
         """tok/s over the last RATE_WINDOW_S seconds.  Returns 0.0 while nothing is generating.  With parallel requests:
@@ -3395,6 +3479,9 @@ class Service:
             sampling = {**defaults, **req_values}
         # #123: read after the merge, so a budget shared through POST /settings is seen like the other keys
         budget = self.reasoning_budget(sampling) if thinking else None
+        if budget and max_new > 0:
+            reserve = min(max(ANSWER_RESERVE_MIN, max_new // 4), max_new // 2)
+            budget = min(budget, max(1, max_new - reserve))
         parser = OutputParser(thinking=thinking, tools=tools, stream_tools=True, recover=self.tool_call_recovery)
         detok, n, finish = Detokenizer(self.tok), 0, "length"
         run_tok, run_len, repeated = None, 0, False     # #606: the current run of one repeated token
@@ -3486,7 +3573,7 @@ class Service:
                     with self.status_lock:
                         st.update(busy=True, phase="reading the prompt", prompt_tokens=len(ids),
                                   generated=0, started=time.time(), first_token=None, tool=None, tail="",
-                                  max_tokens=max_new, reasoning_recoveries=0)
+                                  max_tokens=max_new, thinking_budget=budget, reasoning_recoveries=0)
                         if par:
                             self.live_reqs[id(st)] = (st, rate)
                             self.status.update(st)
@@ -3507,9 +3594,11 @@ class Service:
                         nonfinite = False               # #879: the engine ended this pass on non-finite logits
                         opens = False                   # the thinking is over: write the forced call's opening
                         try:
+                            last_out = time.perf_counter()
                             for t in gen:
                                 if t is None:               # heartbeat while the engine is quiet
                                     last_print = self._progress(last_print, st=st)
+                                    last_out = time.perf_counter()
                                     yield "ping", None
                                     continue
                                 n += 1
@@ -3539,6 +3628,11 @@ class Service:
                                     if ev.kind in ("content", "tool_start", "tool_call"):
                                         answered = True
                                     yield "event", ev
+                                if evs:
+                                    last_out = time.perf_counter()
+                                elif time.perf_counter() - last_out >= KEEPALIVE_S:
+                                    last_out = time.perf_counter()
+                                    yield "ping", None
                                 if stops is not None and stops.hit is not None:
                                     finish = "stop"         # gen.close() below STOPs the engine, as for a stop token
                                     break
