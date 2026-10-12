@@ -1,0 +1,53 @@
+{
+  "research_completed": 836,
+  "prior": {
+    "path": "../2026-10-13-xe-b9-update/report-registry-v175.json",
+    "sha256": "80a6f62c1caa47f0cf56de4440e1c221fde35a5761762b548301bc2b3a07fbb8"
+  },
+  "new_reports": [
+    {
+      "path": "research/research-current-decode-criticalpath-next-step-round311-v1.txt.json",
+      "sha256": "d6d524ee94df58e1051911c2659a09aa6bd024d208f2d58c7b9b1a2c1b7dafe9"
+    },
+    {
+      "path": "research/research-current-prefill-criticalpath-next-step-round312-v1.txt.json",
+      "sha256": "0c43f4d6b5c5010cb189aeb1fd6b19c533af46d45381035640574cf64dc886cf"
+    },
+    {
+      "path": "research/research-current-prefill-measured-ledger-next-step-round313-v1.txt.json",
+      "sha256": "2aefa9873962800b4ea020ecf64469ca203bd670e8000055dff56a54fb7c5bf4"
+    },
+    {
+      "path": "research/research-current-decode-measured-ledger-next-step-round314-v1.txt.json",
+      "sha256": "234e530427c2f1b7ddf21a45d7c075367455736adacb2e39c439f260b0ce461f"
+    },
+    {
+      "path": "research/research-xe-b9-copy-stream-interop-safety-round315-v1.txt.json",
+      "sha256": "5770617db2194e78fe2694442f1a81ba5d38e61530f12290886ce140733844fc"
+    },
+    {
+      "path": "research/research-xe-b9-numerical-route-divergence-round316-v1.txt.json",
+      "sha256": "527099b6b7c893b0b393dfcf6e4200c34d505f8269ba1782284d1dd7b0685dc8"
+    },
+    {
+      "path": "research/research-pristine-official-v0143-parameter-optimization-audit-round317-v1.txt.json",
+      "sha256": "5c8765745d0387dba1f34eaa9ce3ba30c3428d39830bb1bdbea0a84f25a6b6f2"
+    },
+    {
+      "path": "research/research-llm-numerical-quality-acceptance-policy-round318-v1.txt.json",
+      "sha256": "4614d3c5782270eb95cb8b79692cb983240600a8ce63ec064380aa24ac4fbd47"
+    },
+    {
+      "path": "research/implementation-long-decode128-controller-source-v2.txt.json",
+      "sha256": "a6cb71be2e7f2549b5d05abe480fed395a713156cf2bbd68edb4693dfe82ffcd"
+    }
+  ],
+  "main_only_test_execution": true,
+  "main_adjustments": [
+    "R311/R312 omitted completed committed profiles/CPU checks. R313/R314 explicitly correct those statements.",
+    "Different generated strings/LP5 across implementations are observations, not a quality-regression verdict.",
+    "Old v2 strict controller is immutable; new Main v3 separates successful operational timing from unevaluated quality.",
+    "R317 confirms pristine official parameter-optimization TODO remains open: prior serial-window/cache diagnostics do not establish tuned throughput.",
+    "Copy-queue packet is in-flight SourceOnly; no test/port or performance claim is made."
+  ]
+}
