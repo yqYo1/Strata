@@ -3,6 +3,8 @@
 
 # Fixed-history capture receipt
 
+[日本語](FIXED_HISTORY_CAPTURE_RECEIPT.ja.md)
+
 `tools/fixed_history_capture_receipt.py sidecar.json` reads evidence from a completed
 standalone native-pack `--spec-follow --dump-logits` capture and prints receipt JSON
 accepted by `tools/fixed_history_logits.py`. It does not launch processes, operate
@@ -10,7 +12,9 @@ the GPU, read model tensors, or measure speed. Save the receipt beside the sidec
 so evidence pins retain their directory base. Point each comparison manifest arm's
 receipt pin at the result; common and capture/binary/source/runtime pins must match.
 
-No real production producer is registered yet. Even a consistent fixture returns
+No real production producer is registered for this standalone schema yet. The
+separate SERVE GEN1 schema registers Main's reviewed retained K row; that does
+not change the standalone rejection boundary below. Even a consistent standalone fixture returns
 `production_capture_qualified: false`. This is a deliberate rejection boundary:
 hand-entered `passed: true`, an owner source hash, and a command recipe do not
 prove execution authenticity. A separate reviewed change must audit and register
@@ -91,7 +95,7 @@ Close contains `schema: strata.capture-close.v1` and
  deadline_hit budget_hit`. Close_error is null and the last four flags are false;
 time follows command completion and bytes/hash match the actual capture.
 
-## Validation and remaining real producer work
+## Validation and remaining real standalone producer work
 
 Owner observation/reap/session-empty/session-anchor must be true, ownership observed,
 survivors/errors/cleanup empty arrays and exit integer 0. PID/start-ticks/session
@@ -127,3 +131,7 @@ the declared consumer, byte budget and retire_after period.
 Schema fixture command:
 `python3 -m unittest discover -s tools -p test_fixed_history_capture_receipt.py`.
 Fixture success does not establish GPU capture, production qualification or quality.
+
+Actual closed SERVE GEN1 rows use a separate reviewed one-row schema; see
+[SERVE first-row adapter](SERVE_FIRST_ROW_CAPTURE_RECEIPT.md) and
+[日本語](SERVE_FIRST_ROW_CAPTURE_RECEIPT.ja.md). Standalone semantics remain unchanged.

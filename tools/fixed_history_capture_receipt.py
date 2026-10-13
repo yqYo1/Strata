@@ -117,6 +117,9 @@ def adapt(sidecar_path):
     root = sidecar_path.parent
     initial_sidecar_sha = digest(sidecar_path)
     sidecar = bounded_json(sidecar_path)
+    if sidecar.get('schema') == 'strata.serve-first-row-sidecar.v1':
+        from serve_first_row_capture_receipt import adapt_serve
+        return adapt_serve(sidecar_path)
     fields(sidecar, 'schema producer evidence_kind common budget consumer retire_after owner_source '
            'owner_receipt command_index artifacts identities environment fault close', 'sidecar')
     require(sidecar['schema'] == 'strata.fixed-history-production-sidecar.v1', 'sidecar schema')

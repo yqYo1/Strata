@@ -159,6 +159,9 @@ def perplexity(nll):
 def compare(manifest_path):
     manifest_path = Path(manifest_path)
     manifest = load_json(manifest_path)
+    if manifest.get('schema') == 'strata.serve-first-row-comparison.v1':
+        from serve_first_row_capture_receipt import compare_serve
+        return compare_serve(manifest_path)
     common, paths, endian = validate(manifest_path.parent, manifest)
     rows = []
     with paths[0].open('rb') as left, paths[1].open('rb') as right:
