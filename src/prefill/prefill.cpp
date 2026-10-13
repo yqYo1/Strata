@@ -1125,7 +1125,9 @@ struct PfTimer {
         if (!on || used < 2) return;
         for (size_t i = 0; i + 1 < used; ++i) {
             float t = 0.0f;
-            if (strata::gpu::event_elapsed_ms(&t, ev[i], ev[i + 1])) ms[ph[i]] += t;
+            publication::require(strata::gpu::event_elapsed_ms(&t, ev[i], ev[i + 1]),
+                                 "prefill phase timer interval", strata::gpu::last_error);
+            ms[ph[i]] += t;
         }
         std::swap(ev[0], ev[used - 1]);
         std::swap(ph[0], ph[used - 1]);

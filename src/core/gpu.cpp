@@ -373,7 +373,11 @@ bool event_elapsed_ms(float* ms, const Event* from, const Event* to) {
     try {
         const auto a = from->ev->get_profiling_info<sycl::info::event_profiling::command_end>();
         const auto b = to->ev->get_profiling_info<sycl::info::event_profiling::command_end>();
-        *ms = (float) ((double) (int64_t) (b - a) / 1e6);
+        if (b < a) {
+            g_error = "event_elapsed_ms: end < start (start=" + std::to_string(a) + ", end=" + std::to_string(b) + ")";
+            return false;
+        }
+        *ms = (float) ((double) (b - a) / 1e6);
         return true;
     } catch (const std::exception& ex) { return fail("event_elapsed_ms", ex); }
 }
