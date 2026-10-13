@@ -164,6 +164,32 @@ void session_zero(SessionState& s, const ModelGeometry& g, const float* R_init, 
     s.ple_token = -1;
 }
 
+bool session_zero_checked(SessionState& s, const ModelGeometry& g, const float* R_init, void* stream) try {
+    strata::gpu::Stream cs = stream;
+    // the residual: `hc` copies of the one vector a caller hands in.  A real sequence's first token is the
+    // embedding broadcast to every stream, which is the reference's own initial condition.
+    if (R_init != nullptr) {
+        for (int64_t c = 0; c < g.hc; ++c)
+            if (!strata::gpu::copy_async(s.block.R + (size_t) c * g.n_embd, R_init, (size_t) g.n_embd * 4, cs)) return false;
+    } else {
+        if (!strata::gpu::memset_async(s.block.R, 0, (size_t) g.hc * g.n_embd * 4, cs)) return false;
+    }
+    // every owned GDN layer's recurrence and conv history
+    if (!strata::gpu::memset_async(s.gdn_state, 0, (size_t) s.gdn_alloc * gdn_state_floats(g) * 4, cs)) return false;
+    // and every owned QSA layer's cache and indexer
+    for (int64_t j = 0; j < s.qsa_alloc; ++j) if (!qsa_state_zero_checked(s.qsa_states[s.qsa_ord0 + j], g, stream)) return false;
+    // **AND THE PLE'S CONV HISTORY AND TOKEN WINDOW.**  A sequence that started with a warm history would
+    // convolve over rows belonging to a different sequence - the conv reads NG_HIST previous NORMALIZED rows,
+    // so a stale one is a real contribution and not a zero.  The token window resets to `NG_HIST`-many nulls
+    // for the same reason: `ngram_rows` treats a missing predecessor as the EOS cut, which is what a sequence
+    // boundary IS.
+    if (!strata::gpu::memset_async(s.ple_hist, 0, (size_t) ple_hist_bytes(), cs)) return false;
+    s.ple_prev[0] = -1;
+    s.ple_prev[1] = -1;
+    s.ple_token = -1;
+    return true;
+} catch (...) { return false; }
+
 /// Sets `s.gdn.state`/`conv_state` for `layer`, which is what makes one layer's GDN state its own.  Shared by
 /// the direct and captured paths so the two cannot disagree about which slice a layer owns.
 void gdn_point_at(const ModelGeometry& g, int64_t layer, SessionState& s) {

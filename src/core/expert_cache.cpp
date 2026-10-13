@@ -234,6 +234,18 @@ bool ExpertCache::phase_publish(std::string& err) {
         return phase_upload(table, count, e);
     }, err);
 }
+bool ExpertCache::phase_begin_prefill(const PhaseCacheOwner::Quiesce& proof, std::string& err) {
+    if (!phase_) { err = "phase cache owner missing"; return false; }
+    if (!phase_->begin_prefill(proof, [&](const int32_t* table, size_t count, std::string& e) {
+        return phase_upload(table, count, e);
+    }, err)) return false;
+    fills_ = 0;
+    return true;
+}
+bool ExpertCache::phase_finish_prefill(const PhaseCacheOwner::Quiesce& proof, std::string& err) {
+    if (!phase_) { err = "phase cache owner missing"; return false; }
+    return phase_->finish_prefill(proof, err);
+}
 bool ExpertCache::phase_invalidate_extras(std::string& err) {
     if (!phase_) { err = "phase cache owner missing"; return false; }
     if (!phase_->invalidate_extras([&](const int32_t* table, size_t count, std::string& e) {
