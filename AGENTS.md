@@ -35,6 +35,10 @@ are outside this work's scope.
 - Import Niko's non-inference functions as requested. Choose inference changes
   per component, including prefill and decode separately; retain the faster
   existing fork implementation. Evaluate reference-fork ideas under the same gates.
+- Trace the configured SYCL build's actual source resolver and entrypoint.
+  A feature in the upstream root CUDA generator does not establish that its
+  Arc engine implements it. Record existing Arc capabilities and the remaining
+  shared CLI/API port obligations separately; neither requires a CUDA/HIP engine import.
 
 Use the project-only [strata-upstream-sync skill](.agents/skills/strata-upstream-sync/SKILL.md).
 Its files live in `.claude/skills/strata-upstream-sync`, exposed by the relative

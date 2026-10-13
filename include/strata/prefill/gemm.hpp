@@ -51,7 +51,7 @@ private:
     int64_t scratch_elems_ = 0;
     void* workspace_ = nullptr;
     bool external_ = false;
-    void* hipblaslt_state_ = nullptr;
+    [[maybe_unused]] void* hipblaslt_state_ = nullptr;
 };
 
 

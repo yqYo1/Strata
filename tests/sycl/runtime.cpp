@@ -9,6 +9,8 @@ using namespace strata::sycl_backend;
 
 int main(int argc, char **argv) {
   try {
+    std::cout << std::unitbuf;
+    std::cerr << "runtime: create device/context/queues\n";
     auto runtime = std::make_shared<Runtime>();
     std::cout << runtime->device().get_info<sycl::info::device::name>() << '\n';
     if (argc == 2 && std::string_view(argv[1]) == "--large") {
@@ -40,6 +42,8 @@ int main(int argc, char **argv) {
     if (argc != 1)
       throw std::invalid_argument("usage: sycl_runtime_test [--large]");
     constexpr size_t count = 4097;
+    std::cerr << "runtime: allocate " << count * sizeof(int)
+              << " bytes each in host and device USM\n";
     Allocation host(runtime, count * sizeof(int), MemoryKind::Host);
     Allocation gpu(runtime, host.size(), MemoryKind::Device);
     auto *h = host.as<int>();
@@ -48,16 +52,22 @@ int main(int argc, char **argv) {
       for (size_t i = 0; i < count; ++i)
         h[i] = static_cast<int>(i) - iteration * 7;
       auto uploaded = runtime->copy(d, h, host.size());
+      if (iteration == 0)
+        std::cerr << "runtime: first upload submitted; submit dependent compute\n";
       auto computed = runtime->compute().submit([&](sycl::handler &handler) {
         handler.depends_on(uploaded);
         handler.parallel_for(sycl::range<1>(count), [=](sycl::id<1> i) {
           d[i] = 3 * d[i] + iteration;
         });
       });
+      if (iteration == 0)
+        std::cerr << "runtime: first compute submitted; wait dependent readback\n";
       runtime->wait(runtime->copy(h, d, host.size(), {computed}));
       for (size_t i = 0; i < count; ++i)
         if (h[i] != 3 * (static_cast<int>(i) - iteration * 7) + iteration)
           throw std::runtime_error("cross-queue handoff mismatch");
+      if ((iteration + 1) % 16 == 0)
+        std::cerr << "runtime: checked handoffs " << iteration + 1 << "/64\n";
     }
     bool rejected = false;
     try {
@@ -85,6 +95,7 @@ int main(int argc, char **argv) {
     auto completed = runtime->compute().single_task([] {});
     if (!runtime->wait_for(completed, std::chrono::seconds(5)))
       throw std::runtime_error("bounded completion wait timed out");
+    std::cerr << "runtime: normal handoff/bounds/move complete; test isolated async error state\n";
     auto failing = std::make_shared<Runtime>();
     failing->compute().submit([](sycl::handler &handler) {
       handler.host_task([] {
@@ -107,6 +118,7 @@ int main(int argc, char **argv) {
     }
     if (!rejected)
       throw std::runtime_error("asynchronous error not retained");
+    std::cerr << "runtime: async error reported and retained; retire owners\n";
     std::cout << "64 changing cross-queue handoffs, bounds, allocation limits "
                  "and ownership: PASS\n";
     std::cout

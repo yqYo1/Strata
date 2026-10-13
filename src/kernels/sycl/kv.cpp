@@ -209,9 +209,13 @@ void gather(Pools src, const int32_t *table, const int32_t *ids,
   } else
     validate_spans({{k, n * 2}, {v, n * 2}},
         {{table, 4}, {ids, size_t(capacity) * 4}, {src.k, 4}, {src.v, 4}});
-  if (step)
-    if (k == v) validate_spans({{k, n * 2}}, {{step, kStepCount * 4}});
-    else validate_spans({{k, n * 2}, {v, n * 2}}, {{step, kStepCount * 4}});
+  if (step) {
+    if (k == v) {
+      validate_spans({{k, n * 2}}, {{step, kStepCount * 4}});
+    } else {
+      validate_spans({{k, n * 2}, {v, n * 2}}, {{step, kStepCount * 4}});
+    }
+  }
   auto e =
       queue_for(stream).parallel_for(sycl::range<1>(n), [=](sycl::id<1> tid) {
         const size_t i = tid[0], d = i % s.head_dim,

@@ -42,6 +42,18 @@ namespace ex = sycl::ext::intel::experimental::esimd;
 using namespace sycl_backend;
 using U = e::simd<uint32_t, 16>;
 using F = e::simd<float, 16>;
+// GRF size describes the compiled kernel, not its launch. Attach it to the
+// kernel functor instead of the deprecated range/properties queue overload.
+template <typename Body> struct Grf128Kernel {
+  Body body;
+  void operator()(sycl::nd_item<2> item) const SYCL_ESIMD_KERNEL {
+    body(item);
+  }
+  constexpr auto get(sycl::ext::oneapi::experimental::properties_tag) const {
+    return sycl::ext::oneapi::experimental::properties{
+        sycl::ext::intel::experimental::grf_size<128>};
+  }
+};
 // Packed scratch matrices interleave sixteen rows at half-word granularity.
 // Every field load then spans consecutive rows instead of strided cache lines.
 template <bool Packed> U field(U base, uint32_t byte) SYCL_ESIMD_FUNCTION {
@@ -306,11 +318,7 @@ void launch_grid(NativeMmq p, void *stream, const std::array<int32_t, 17> &prefi
   const size_t padded = (row_tiles + 15) / 16 * 16;
   const size_t stride = size_t(p.cols / width<Type>) * bytes<Type>;
   const size_t xs = ((size_t(p.cols) + 511) / 512 * 512) / 32 * 36;
-  queue_for(stream).parallel_for(
-      sycl::nd_range<2>({tile_count, padded}, {1, 16}),
-      sycl::ext::oneapi::experimental::properties{
-          sycl::ext::intel::experimental::grf_size<128>},
-      [=](sycl::nd_item<2> it) SYCL_ESIMD_KERNEL {
+  auto kernel = [=](sycl::nd_item<2> it) SYCL_ESIMD_KERNEL {
         const size_t tile = it.get_global_id(0), row = it.get_global_id(1) * 16;
         if (row >= size_t(p.rows))
           return;
@@ -369,7 +377,10 @@ void launch_grid(NativeMmq p, void *stream, const std::array<int32_t, 17> &prefi
                   F(sum.template select<16, 1>(t * 16)), valid);
           }
         }
-      });
+      };
+  queue_for(stream).parallel_for(
+      sycl::nd_range<2>({tile_count, padded}, {1, 16}),
+      Grf128Kernel<decltype(kernel)>{kernel});
 }
 template <int Type, int Tile, bool Exact, bool Packed>
 void launch(NativeMmq p, void *stream) {

@@ -1,7 +1,27 @@
 include(CheckCXXCompilerFlag)
+include(CheckCXXSourceCompiles)
 check_cxx_compiler_flag("-fsycl" STRATA_COMPILER_HAS_FSYCL)
 if(NOT STRATA_COMPILER_HAS_FSYCL)
   message(FATAL_ERROR "SYCL requires a SYCL compiler; configure with -DCMAKE_CXX_COMPILER=icpx")
+endif()
+
+# Intel's packaged compiler and the open-source SYCL headers expose different
+# math APIs. Probe the selected compiler instead of inferring from its version.
+set(_strata_sycl_required_flags "${CMAKE_REQUIRED_FLAGS}")
+set(CMAKE_REQUIRED_FLAGS "${CMAKE_REQUIRED_FLAGS} -fsycl -fno-fast-math -ffp-contract=off")
+check_cxx_source_compiles("#include <sycl/sycl.hpp>
+#include <sycl/ext/intel/math.hpp>
+int main() {
+  sycl::queue q;
+  q.single_task([] { volatile float x = sycl::ext::intel::math::ha::exp(-1.0f); (void)x; });
+  return 0;
+}" STRATA_SYCL_HAS_INTEL_HA_EXP)
+set(CMAKE_REQUIRED_FLAGS "${_strata_sycl_required_flags}")
+unset(_strata_sycl_required_flags)
+set_property(SOURCE src/kernels/sycl/native_q2.cpp APPEND PROPERTY
+  COMPILE_DEFINITIONS "STRATA_SYCL_HAS_INTEL_HA_EXP=$<BOOL:${STRATA_SYCL_HAS_INTEL_HA_EXP}>")
+if(NOT STRATA_SYCL_HAS_INTEL_HA_EXP)
+  message(STATUS "Experimental Q2 CPU-order route: standard SYCL exp; Intel high-accuracy API unavailable")
 endif()
 
 add_library(strata_sycl_runtime STATIC src/sycl/runtime.cpp src/sycl/compat.cpp)

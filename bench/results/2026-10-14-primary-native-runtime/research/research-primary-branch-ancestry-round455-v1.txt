@@ -1,0 +1,57 @@
+# R455 — Primary branch ancestry, source trees, and default blockers
+
+Date: 2026-10-14 (Asia/Tokyo)
+Mode: read-only Git/object and prior-report audit. No fetch, checkout, build, test, benchmark, source/config/branch/worktree mutation, GPU or process action. The only write is this report. I did not inspect private environment files or B/prefill-gemm-only-contract-root-v1/record.json. The primary worktree already had user-owned uncommitted source/test/artifact changes at start; they were left untouched.
+
+## Scope and starting pins
+
+- P: `/home/yayoi/orca/workspaces/Strata/sycl`, `feature/sycl` HEAD `91c1a18b6563e97ca5d4e3e3fa9a4fcdf7d28133` (`Record primary audit boundary and retire closed diagnostic artifacts`), parent `06da66fe052934be4d1f66ca755458edc905bf7a`.
+- G main: `/home/yayoi/ghq/github.com/yqYo1/Strata`, `main` HEAD `beddab2fd6b61631d73b39b7484bc9a585ebe1de`.
+- Optional Xe-derived comparison: `feat/layer-major-bulk-upload-20261013` HEAD `28a7b9ae7ca5eba28eecd65f6453a7479c04fce8`.
+- Only these three worktrees/local branches were listed at inspection time. The primary worktree had pre-existing modified files `cmake/sycl_backend.cmake`, `src/core/pinned.cu`, `src/core/weights.cpp`, `src/kernels/sycl/native_q2.cpp`, `tests/sycl/compat.cpp`, `tests/sycl/runtime.cpp`, plus untracked `tests/core/weights_index_host.cpp` and `bench/results/2026-10-14-primary-native-runtime/`. No content from those dirty paths was read.
+- Product scope remains Niko1221/Strata as sole upstream, this PC's Arc B570/Ryzen 5600X/128 GB, no upstream contribution plan, CUDA/HIP out of inference scope, XeStrata optional reference only.
+
+## Prior evidence consulted; overlap avoided
+
+Read the three supplied Git reports: `bench/results/2026-10-14-primary-strata-source-audit/{README.ja.md,research-index.json,branches.json}`, `bench/results/2026-10-14-primary-experiment-retirement/README.ja.md`, and `bench/results/2026-10-14-niko-main-service-port/{README.ja.md,branch-state.json,research-index.json}`. Also consulted external R441, R442, R443, R447, R448, R449, R450, R451, R452, R453 and R454 from `/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009`. R441 already proves three CPU diagnostics are in comparison tree Z; R442 distinguishes ancestry from tree adoption; R447/R449 and the service-port report already enumerate main feature reconciliation; R448/R452/R454 cover inference selection/performance/compiler issues. This report does not repeat kernel evaluation or those results.
+
+## Ancestry is not the checked-out implementation
+
+The current graph deliberately makes historical commits reachable. In particular, archive merge `4526800257fe49c0db02a414f21b38dac2586e54` has seven parents: primary-era `f4c2b8dd...`, comparison HEAD `28a7b9ae...`, and archive commits `8e85169a...`, `1cd44298...`, `4bc14f2c...`, `c7d59d7b...`, `9e57d6e6...`. Its subject is “preserve reference experiments without inference adoption.” Its tree is `1b8087f8ca92e0c0e74245f58e51692f7a05e770`. The pre-archive primary tree at `4fa478f50f8da396e651e3ae862f8b1849d49b54` is `5a6ecb9aea834965c4efe6fae574c5354c07154b`; the archive merge's product-source diff against that tree has no changes under `src/`, `include/`, `cmake/`, `tests/`, `tools/`, `setup.py`, or `serve/`. The merge adds archive/policy/report material (30 paths, 5,096 lines in the limited diff), not the comparison engine source. The preservation report separately records the engine tree as unchanged.
+
+The current `main` commit is now an ancestor of `feature/sycl` (`git merge-base --is-ancestor` succeeds), so current `rev-list --left-right` counts are unsuitable for functional reconciliation. The ancestor relation was introduced through preservation history; it is not evidence that main's files won a merge. Likewise, `git log --all` shows old skill and Xe experiment commits because those histories were archived. Inspect the current tree or explicit source blobs for adoption, not reachability, version markers, or commit presence.
+
+## Wrong-base old skill branch provenance
+
+The retired `feat/strata-upstream-sync-skill-20261013` tip is `97f8b40ca99ec298c24d7ecc7b270e530d43194d` (`fix(skills): limit upstream sync discovery to this project`), with sole parent `8b48d17c99b70d32781f9f5b056602a598a37b1c` (`feat(skills): evaluate upstream components and preserve faster fork paths`). That parent is in the Xe comparison lineage; its tree is `d2512e42ba23422519c1df7684a0d38b8a85d957`. The skill tip tree is `fd297a4c1e0a364179f555728e64a652a28bef78`. Both commits carry the comparison checkout's `project(XeStrata ...)` source identity; the archived branches inventory explicitly labels this skill branch's version marker `project(XeStrata LANGUAGES CXX)`, and R442 directly found its source/policy tree was Xe-derived. Its source tree listing hash matches the Xe diagnostic family (`9c51da54...`), not primary. The octopus merge-base across primary `4fa478f5...`, old skill parent `8b48d17c...`, and main `beddab2f...` is `99f3dbd0b21d1401b3769e0c0d963913607f380b`, not the current primary tip. Therefore this was not a skill-only child of the primary branch: it inherited the Xe engine, and its resulting proposal was wrong-base for the personal primary workflow.
+
+The skill itself has since been relocated to primary at `91c1a18b...` under `.claude/skills/strata-upstream-sync/` with the project alias `.agents/skills`; the former branch's historical commits remain reachable through archive merge `45268002...`. No recovery or cherry-pick from that retired branch is needed.
+
+## Archive merges preserved reports/source; they did not adopt reference implementation
+
+The seven-parent merge's first parent is the primary-side archival base and its comparison/source archive parents are explicit. The saved branch payloads are distinct archive commits (examples `8e85169a...` for bounded decode route ledger, `1cd44298...` for decode service budget, `4bc14f2c...` for route-union census, `c7d59d7b...` for full-context probe, `9e57d6e6...` for first-row adapter); the preservation record is `bench/results/2026-10-14-primary-experiment-retirement/preservation.json`. The content was stored as recoverable source-only proposals and the report states that primary engine tree was equal before/after preservation. The fixed archive merge's limited product-source diff is empty, while its report/doc paths are added. Thus archive-parent ancestry and source recoverability establish provenance only; they do not establish that any of those Xe proposals were selected into primary.
+
+## Main/default reconciliation and concrete remaining blockers
+
+Earlier source audit `research-index.json` records the pre-preservation primary/main comparison at common ancestor `d988955e141190bc079b58ab3d3038da637ad070`, with 143 primary-only and 285 main-only commits; the ordinary merge preview conflicted in `CMakeLists.txt`, `include/strata/core/session.hpp`, `include/strata/kernels/iq_kernels.hpp`, `src/core/expert_cache.cpp`, `src/core/expert_source.cpp`, `src/core/verify.cpp`, and `src/program/generate.cpp`. Do not recompute those counts on the present graph, which contains archival ancestry.
+
+The service-port work at `51ad49e895c7dce75c0fb74b254255d504f22704` (primary parent `36cc848a...`) has adapted many Niko/main non-inference functions: Responses API/config/UI/metrics and stop/restart work, tokenizer handling, JSON schema conversion, setup/config/MCP/draft vocabulary/profile work, and Python-side dynamic VRAM API. The report records host/service and setup tests, but not native model/HTTP operation, install/update success, or full C++ support. These migrated files therefore close only their stated source/mock/host scopes.
+
+Explicit remaining main feature dependencies that block promotion of primary as fork default are recorded in `bench/results/2026-10-14-niko-main-service-port/README.ja.md` lines 32–46 and 106–108:
+
+- **Parallel requests:** Python feature is present; native C++ `BGEN/BGENI/BSTOP/BYIELD`, slot state, partial prefill, cancellation and image-input semantics are not reconciled.
+- **Dynamic VRAM:** Python API/config/UI are present; native segment/lease/resize, safe retirement of in-use buffers/events, failure capacity behavior and actual VRAM reporting remain.
+- **C++ CLI/build surface:** candidates still include batch groups, trim-stage, remote cache/automatic placement and elastic cache. Do not carry CUDA VMM semantics over without a native design. This list was scoped by R447/R449 plus `cli-option-inventory.json`; exact option existence alone is not semantics.
+- **Operational verification:** native install/update uses the existing binary; selected binary capability and hardware VRAM/image/model-format support are not established. A real native model HTTP/engine integration and bounded runtime/state validation remain.
+
+The Python-side migration did not make fork default safe while these C++ behavior gaps remain. A clean normal merge is also not the right promotion mechanism: the current primary has archival main ancestry, and the earlier true-tree preview had the above conflicts. The next default update needs deliberate function-level reconciliation, validation of native counterparts, then a fork PR that changes `main` to the reviewed primary tree while retaining selected required Niko features. No upstream latest check was performed in this round.
+
+## Does the Xe comparison branch still need to exist?
+
+Historical purposes are already served by preserved commits and reports. The report `primary-experiment-retirement/README.ja.md` names the remaining comparison branch's consumer as “first primary lease/diagnostic port and matched comparison,” and says to review retention after that port/comparison or candidate rejection. The service-port report repeats that exact consumer/review point. This is a concrete named consumer, but the evidence supplied to this round does not show a scheduled active task or a lease port completion record; the current primary dirty files concern SYCL build/runtime/Q2, not a cited lease port. The branch is therefore justified only as a short-lived source donor for that named first port and a reproducible endpoint for the already recorded matched comparison. It is not required for history (the source/report archive already preserves those) or for Niko synchronization.
+
+Smallest next action: check whether a primary lease/diagnostic port is actually still planned and whether `28a7b9ae...` remains its necessary source comparator. If the port is not an active, specifically owned next task, or has completed/rejected the candidate, retire the comparison branch/worktree and retain `28a7b9ae...` plus compact comparison evidence as history. If that port remains active, name the owner and review point in the retention record, then close it in one bounded source comparison. Do not retain a live branch on a vague “maybe useful” basis.
+
+## Verification limits
+
+This is a read-only object/tree audit, not a functional equivalence audit or test. It does not inspect dirty primary file contents, prove server/runtime behavior, measure performance, or determine whether the optional lease port is still an active task outside the committed records. No latest upstream state was fetched. Main's enumerated remaining work is carried from the existing detailed migration report rather than independently validating every API contract in this round.

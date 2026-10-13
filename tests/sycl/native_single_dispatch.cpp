@@ -3,6 +3,7 @@
 #include "strata/kernels/cpu/native_expert.hpp"
 #include "strata/kernels/iq_kernels.hpp"
 #include "strata/sycl/native_q2.hpp"
+#include <limits>
 #include <chrono>
 #include <cmath>
 #include <cstring>
@@ -101,6 +102,24 @@ void quantize_contract() {
     const int sum =
         int(int16_t(uint16_t(got[b * 34]) | (uint16_t(got[b * 34 + 1]) << 8)));
     require(sum == reference.sum[b], "native Q2 stored activation code sum");
+  }
+  // Invalid or tiny inputs must be marked before float-to-int conversion.
+  // Do not run these through the CPU oracle, whose valid range is narrower.
+  std::fill(values.begin(), values.end(), 0.f);
+  values[0] = std::numeric_limits<float>::min();
+  values[32] = std::numeric_limits<float>::infinity();
+  values[64] = std::numeric_limits<float>::quiet_NaN();
+  check(cudaMemcpy(input.p, values.data(), H * 4, cudaMemcpyHostToDevice));
+  strata::kernels::native_q2_quantize_cpu_order(input.p, blocks.p, scales.p, H,
+                                              stream);
+  check(cudaStreamSynchronize(stream));
+  check(cudaMemcpy(got.data(), blocks.p, got.size(), cudaMemcpyDeviceToHost));
+  check(cudaMemcpy(got_scales.data(), scales.p, got_scales.size() * 4,
+                   cudaMemcpyDeviceToHost));
+  for (int b = 0; b < 3; ++b) {
+    require(std::isnan(got_scales[b]), "native Q2 invalid-range scale marker");
+    for (int i = 0; i < 34; ++i)
+      require(got[b * 34 + i] == 0, "native Q2 invalid-range codes/sum");
   }
   check(cudaStreamDestroy(stream));
 }

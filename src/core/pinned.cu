@@ -252,7 +252,7 @@ uint64_t fnv1a64(const uint8_t* p, uint64_t n, uint64_t seed) {
 }
 
 namespace {
-bool clear_error() { (void) cudaGetLastError(); return true; }
+[[maybe_unused]] bool clear_error() { (void) cudaGetLastError(); return true; }
 }  // namespace
 
 int arena_pin_cap_gib() {
@@ -323,6 +323,9 @@ PinnedArena::PinnedArena(uint64_t bytes, const std::vector<uint64_t>& bounds,
 #ifdef STRATA_ENABLE_SYCL
     // Keep the large expert arena in ordinary RAM. Transfer staging is bounded
     // host USM owned by the cache; arbitrary mappings cannot be registered.
+    // These arguments limit registration on backends that support it.
+    (void) bounds;
+    (void) max_pinned_bytes;
     if (base) {
         note = "SYCL ordinary host arena; " + note;
         const char* env = std::getenv("STRATA_ARENA_LOCK");

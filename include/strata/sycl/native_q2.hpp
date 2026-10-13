@@ -10,8 +10,13 @@ namespace strata::kernels {
 // an int16 code-sum header and 32 int8 codes, plus separate FP32 scales. They
 // share Q8_0's stride but are not Q8_0 weights. They are produced by
 // native_q2_quantize_cpu_order. Scratch: native_expert_scratch_bytes(cap, 640).
-// Matches this build's AVX2 activation quantizer: maximum times the rounded
-// FP32 reciprocal of 127, reciprocal division, then half-away rounding.
+// Matches the AVX2 activation quantizer: rounded maximum/127, reciprocal
+// division, then half-away rounding. Do not replace the first division with
+// multiplication by a pre-rounded reciprocal.
+// Finite inputs with a representable reciprocal follow that contract. A block
+// with non-finite input or scale/inverse is marked by a NaN scale and zero codes
+// and sum, avoiding invalid float-to-int conversion. Callers must reject that
+// marker; it is not a valid quantized activation or CPU parity promise.
 void native_q2_quantize_cpu_order(const float *input, uint8_t *blocks,
                                   float *scales, int64_t n, void *stream);
 void native_q2_expert_cpu_order(const unsigned long long *pointers,

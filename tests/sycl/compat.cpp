@@ -22,6 +22,8 @@ int main(int argc, char** argv) {
                   : cudaStreamBeginCapture(stream, cudaStreamCaptureModeThreadLocal);
   };
   try {
+    std::cout << std::unitbuf;
+    std::cerr << "compat: create streams and USM owners\n";
     constexpr size_t n = 257, bytes = n * sizeof(int);
     cudaStream_t a{}, b{};
     CHECK(cudaStreamCreate(&a));
@@ -87,6 +89,7 @@ int main(int argc, char** argv) {
     CHECK(cudaEventSynchronize(done));
     CHECK(cudaEventElapsedTime(&ms, begin, done));
     require(std::isfinite(ms) && ms > 0, "default-stream profiling");
+    std::cerr << "compat: default stream copy/events complete; record graph\n";
     cudaStream_t recording{};
     CHECK(cudaStreamCreate(&recording));
     CHECK(begin_capture(recording));
@@ -120,6 +123,7 @@ int main(int argc, char** argv) {
     CHECK(cudaGraphInstantiate(&exec, graph, 0ull));
     CHECK(cudaGraphDestroy(graph));
     CHECK(cudaGraphUpload(exec, b));
+    std::cerr << "compat: graph uploaded; check changing host payloads\n";
     for (int iteration = 0; iteration < 12; ++iteration) {
       for (size_t i = 0; i < n; ++i)
         in[i] = int(i) + iteration * 1000;
@@ -134,6 +138,7 @@ int main(int argc, char** argv) {
     // A verifier segment publishes routed inputs, then the CPU writes a plan
     // and results before another segment may consume them. Exercise the same
     // external-event boundary with changing payloads and alternating queues.
+    std::cerr << "compat: first replay complete; record consumer graph\n";
     CHECK(begin_capture(recording));
     CHECK(cudaMemcpyAsync(device, out, bytes, cudaMemcpyHostToDevice, recording));
     recording->parallel_for(sycl::range<1>(n),
@@ -190,6 +195,7 @@ int main(int argc, char** argv) {
             "disabled graph completion rejects elapsed time");
     (void)cudaGetLastError();
     CHECK(cudaEventDestroy(graph_done));
+    std::cerr << "compat: cross-stream graph handoffs complete; retire graphs\n";
     CHECK(cudaGraphExecDestroy(consume));
     CHECK(cudaEventDestroy(
         captured)); // Executable retains only weak event references.
@@ -210,6 +216,7 @@ int main(int argc, char** argv) {
     require(callback == 42, "host callback");
     CHECK(cudaMemsetAsync(device, 0, bytes, b));
     CHECK(cudaMemcpyAsync(out, device, bytes, cudaMemcpyDeviceToHost, b));
+    std::cerr << "compat: final copy submitted; free drains registered streams\n";
     CHECK(cudaFree(device)); // Free must drain all registered streams.
     for (size_t i = 0; i < n; ++i)
       require(out[i] == 0, "free synchronization");

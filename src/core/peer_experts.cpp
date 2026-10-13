@@ -84,6 +84,14 @@ bool PeerExperts::open(int device, const std::vector<std::pair<int32_t, int32_t>
 #ifdef STRATA_ENABLE_SYCL
     // The SYCL host adapter has one selected device and no peer contexts.
     // Reject the tier before allocating buffers or attempting a device switch.
+    (void) device;
+    (void) ranked;
+    (void) primary;
+    (void) src;
+    (void) n_layers;
+    (void) n_expert;
+    (void) reserve_mib;
+    (void) max_slots;
     err = "peer experts: the SYCL engine currently supports one GPU; --peer-device is unavailable";
     return false;
 #else

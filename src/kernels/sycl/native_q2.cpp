@@ -85,11 +85,25 @@ void native_q2_quantize_cpu_order(const float *input, uint8_t *blocks,
     const float *row = input + b * 32;
     uint8_t *block = blocks + b * 34;
     float maximum = 0;
-    for (int i = 0; i < 32; ++i)
+    bool finite = true;
+    for (int i = 0; i < 32; ++i) {
+      finite &= sycl::isfinite(row[i]);
       maximum = sycl::fmax(maximum, sycl::fabs(row[i]));
-    const float scale = maximum * (1.f / 127.f);
+    }
+    // Match the CPU quantizer's rounded division. Multiplication by a rounded
+    // reciprocal can change the scale by one bit even without fast math.
+    const float scale = sycl::ext::intel::math::fdiv_rn(maximum, 127.f);
     const float inverse =
         scale > 0 ? sycl::ext::intel::math::fdiv_rn(1.f, scale) : 0;
+    // Even finite tiny inputs can overflow the reciprocal. Mark the block
+    // invalid before any non-finite float-to-int conversion; never invent
+    // apparently valid activation data for an unsupported input range.
+    if (!finite || !sycl::isfinite(scale) || !sycl::isfinite(inverse)) {
+      scales[b] = sycl::nan(0u);
+      for (int i = 0; i < 34; ++i)
+        block[i] = 0;
+      return;
+    }
     scales[b] = scale;
     int sum = 0;
     for (int i = 0; i < 32; ++i) {
@@ -133,8 +147,15 @@ void native_q2_expert_cpu_order(const unsigned long long *pointers,
   q.parallel_for(sycl::range<1>(pairs), [=](sycl::id<1> id) {
     const size_t i = id[0];
     const float g = gu[i];
+#if STRATA_SYCL_HAS_INTEL_HA_EXP
+    const float exponential = sycl::ext::intel::math::ha::exp(-g);
+#else
+    // Standard precision, not native/fast exp. This experimental Q2-only path
+    // needs separate code/scale/output parity; it is not HA bit-equivalence.
+    const float exponential = sycl::exp(-g);
+#endif
     gu[i] = sycl::ext::intel::math::fdiv_rn(
-                g, 1.f + sycl::ext::intel::math::ha::exp(-g)) *
+                g, 1.f + exponential) *
             gu[pairs + i];
   });
   native_q2_quantize_cpu_order(gu, hq, hs, pairs, &q);

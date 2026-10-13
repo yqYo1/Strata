@@ -1,0 +1,76 @@
+# R458 — Fork main's active SYCL source coverage vs primary feature/sycl
+
+Date: 2026-10-14 (Asia/Tokyo)
+Mode: read-only CMake/source audit. No source/branch/remote/fetch/commit/build/test/GPU/cleanup action. Main continued its separate v12 build/Q2 investigation; this report did not inspect build output or the moving Q2 files. Only this report was written. The prohibited private environment scan and `B/prefill-gemm-only-contract-root-v1/record.json` were not opened.
+
+## Scope and prior evidence
+
+- Fork main G: `/home/yayoi/ghq/github.com/yqYo1/Strata`, `main` `beddab2fd6b61631d73b39b7484bc9a585ebe1de`.
+- Primary P: `/home/yayoi/orca/workspaces/Strata/sycl`, `feature/sycl` `91c1a18b6563e97ca5d4e3e3fa9a4fcdf7d28133` plus dirty tree. Its currently recorded dirty files are covered in the primary-native-runtime report; this audit's relevant root CMake/generator/expert-cache files were not among them. R456 has separately documented current dirty Q2/runtime changes.
+- Sole upstream Niko1221/Strata; target Arc B570/Ryzen 5 5600X/128 GiB, no upstream contribution, CUDA/HIP inference out of scope, Xe optional reference.
+- Read first: `bench/results/2026-10-14-primary-native-runtime/{README.ja.md,research-index.json,research/research-primary-component-adoption-round456-v1.txt,research/research-primary-gpu-safe-build-round451-v1.txt,research/research-primary-bottleneck-port-round452-v1.txt}` and prior `bench/results/2026-10-14-niko-main-service-port/README.ja.md`, plus external R447 and R449. R456's source-path correction was retained. R447/R449's root-main inventory was useful for candidates but did not resolve which main source files the SYCL build actually compiles; this round answers that question.
+
+## Which files main's SYCL build compiles
+
+Main top-level `CMakeLists.txt:12-21` makes SYCL a separate opt-in backend. With `STRATA_ENABLE_SYCL=ON` (and CUDA/HIP off), it calls `add_subdirectory(sycl)` and returns before configuring the ordinary root backend. The option defaults OFF, so this conclusion applies to the explicit SYCL build path, not an unspecified default build.
+
+`sycl/CMakeLists.txt:55-74` defines `strata_resolve`: a migrated file in the `sycl/` subproject wins before the root `src/` version; for `.cu`, only the corresponding `.dp.cpp` migration is selected. At lines 156-175 it resolves the engine and executable this way. The following concrete files exist and are selected for the requested components:
+
+| Component in active `STRATA_ENABLE_SYCL=ON` build | Selected source |
+| --- | --- |
+| executable request parser / protocol | `sycl/src/program/generate.cpp` |
+| session | `sycl/src/core/session.cpp` |
+| cache / segment allocator | `sycl/src/core/expert_cache.cpp` |
+| expert source and host/device routing | `sycl/src/core/expert_source.cpp` |
+| layer/core counterparts | `sycl/src/core/layer.cpp`, `sycl/src/core/remote_experts.cpp`, `sycl/src/core/verify.cpp` and other listed overlays |
+| prefill | `sycl/src/prefill/prefill.cpp` plus migrated `sycl/src/prefill/gemm.dp.cpp` and `kernels.dp.cpp` |
+
+Thus root `src/program/generate.cpp` and root `src/core/{session,expert_cache,expert_source}.cpp` are not the main SYCL build's selected implementations. They are part of main's non-SYCL CUDA/HIP-era route. The top-level return and source resolver are direct evidence; source filenames/version labels alone would obscure this split.
+
+Primary uses a different layout: its root `cmake/sycl_backend.cmake` builds root `src/program/generate.cpp`, root `src/core/{session,expert_source,expert_cache}.cpp` and `src/prefill/prefill.cpp` with primary-native `src/prefill/sycl/*` kernels. Its backend is integrated in the root CMake; it does not use main's `sycl/src` overlay. Therefore compare active source trees, not main root `src/` alone.
+
+## Parallel request protocol: not implemented in main's SYCL engine source
+
+Main root `src/program/generate.cpp` contains `BGEN`, `BGENI`, `BSTOP`, and `BYIELD` request handling. However, `sycl/src/program/generate.cpp` does not contain those commands, the `--batch` or `--batch-groups` options, or batch slot state/dispatch. Its request loop accepts `GEN`/`GENI` (around lines 6307-6310); its option parser falls through to `unknown argument` (line 1602). The main Python `serve/server.py` has parallel scheduling code and can send `--batch`, `BGEN`, `BGENI`, `BSTOP`, and `BYIELD`; those Python strings do not supply an engine implementation. Source inspection therefore indicates the current `STRATA_ENABLE_SYCL=ON` engine cannot serve this main batch protocol as implemented. No server was launched, so this is a source-level incompatibility finding, not a runtime failure report.
+
+This changes the default-branch reconciliation conclusion: multi-slot BGEN/BSTOP/BYIELD should not be described as a feature that the Arc-targeted main SYCL engine currently provides and primary would newly lose. Main's ordinary root engine has it, but that is not the compiled SYCL route. Parallel service options and user-visible capability/error behavior still deserve a function-level audit; do not port CUDA engine slot/state machinery to SYCL solely because it exists in root `generate.cpp`. Main's own Arc SYCL path has no such port.
+
+## Dynamic VRAM resize: present in main's SYCL path, absent in primary path
+
+The result differs for `--vram-elastic` / the `VRAM [reserve_mib]` engine command:
+
+- `sycl/src/program/generate.cpp` parses `--vram-elastic` and `--vram-segment-mib` (around line 1470), configures the segmented cache when allowed (3497-3510), and handles `VRAM` in the `--serve` input loop (6289 onward; command implementation 6139-6289). The source gates it to serve mode, one GPU/no helper caches and segment size at least 64 MiB; the cache resize happens between requests. The code carries a stale help/error string saying “NVIDIA,” which conflicts with the actual selected SYCL implementation.
+- `sycl/src/core/expert_cache.cpp` implements the route with `sycl::ext::oneapi::experimental::physical_mem`, `reserve_virtual_mem`, device `ext_oneapi_virtual_mem` capability checking, segment map/unmap, `shrink`, and `grow` (roughly lines 250-410). The CUDA-driver VMM block above it is under `#if 0` and explicitly marked CUDA-only, but this does **not** disable the following SYCL-native virtual-memory implementation. Source has an explicit `Arc B570` granularity note at lines 304-307.
+- Main's active SYCL CMake build selects both files, so this is not only a CUDA-root feature. The source requires the selected device/runtime to expose the SYCL virtual-memory extension; source presence does not prove that the current packaged compiler/driver supports the path or that a live resize passes.
+- Primary root `src/program/generate.cpp` and root `src/core/expert_cache.cpp` do not expose the `--vram-elastic`/`VRAM` resize protocol or segmented cache counterpart (searched at primary `91c1a18...`; relevant files were not dirty at task start). Its current cache/runtime and Python API do not constitute native resize behavior.
+
+This is a real source-level Arc capability in main's SYCL tree that primary does not currently preserve. It is an appropriate selective native-SYCL reconciliation item if the stated obligation is to retain Niko/main non-inference behavior on this PC. The adaptation donor is main's `sycl/src` behavior and SYCL virtual-memory contract, not CUDA VMM or the ordinary root engine. Do not describe the capability as operational on B570 until the selected toolchain/device path is qualified; do not infer it from Python endpoint tests alone.
+
+## How to interpret the Niko non-inference obligation
+
+Three scopes need separate status:
+
+1. Portable Python/API/setup/UI behavior already migrated in the prior service-port boundary must still be reconciled against main by function and tests. This report does not repeat that review or mark the broad non-inference audit complete.
+2. Engine features in Niko/main's actual Intel build must be checked against main's active `sycl/src` sources. Dynamic VRAM resize is a concrete remaining source delta. Its small adapter can be reviewed without importing the engine.
+3. Features present only in the non-SYCL root CUDA/HIP engine are not automatically Arc-default blockers. Batch slots are an example: main's root CUDA engine has them, but main's active SYCL engine lacks the protocol. Other root-only functions (multi-GPU remote placement, peer caches, layer splits, trim-stage options and CUDA VMM-specific paths) require the same selected-source check and target relevance check; on this single Arc target, do not treat CUDA/HIP inference implementations as mandatory imports.
+
+This narrows (rather than cancels) the project instruction to import requested Niko non-inference functions. “All Niko non-inference functions” is not a reason to transplant unrelated CUDA/HIP inference engines or their state machinery. Preserve portable API contracts, adapt genuinely supported main-SYCL functions with native semantics, and explicitly disposition main-root-only options that the selected Arc engine itself cannot use. Determining which main-only changes are Niko upstream vs personal fork additions still requires provenance against the pinned upstream, which this pass did not fetch or check.
+
+## Default promotion implication and smallest next work
+
+- Do not retain “CUDA/HIP batch engine/parallel slot implementation” as an Arc-targeted promotion blocker based on R447/R449's ordinary-root source listing. Main's selected SYCL engine has no matching capability to preserve. Keep the Python parallel surface's behavior/capability alignment as a separate API audit item; no engine behavior is claimed here.
+- Keep native dynamic VRAM resize as a real reconciliation candidate, because it exists in main's selected SYCL source set. The shortest next action is a read-only focused port contract comparing main `sycl/src/core/expert_cache.cpp` + `sycl/src/program/generate.cpp` with primary's `expert_cache`, expert-source ownership/leases, request loop and serve API. Identify the smallest interface and settings/response behavior to preserve, including fail-closed behavior for unsupported device aspect and in-use ownership. Only after that source review should one separately decide whether a B570 runtime qualification is in scope.
+- Do not let that single functional gap require porting the rest of Niko's CUDA root inference path. Continue the requested non-inference audit by matching each portable function to the chosen main SYCL route, not by merging main's root generator wholesale.
+
+## Verification boundary and identities
+
+Read-only source/CMake inspection only. No compile, test, model, API/runtime action, setup invocation, or performance measurement was done. The report establishes which source files CMake selects and what protocol/functions are present in those files; it does not establish end-to-end behavior. The main SYCL project itself calls the engine experimental and the extension is device/runtime-gated. The current primary has ongoing changes outside the source paths audited here; R456 remains the cited evidence for those.
+
+Main source identity: `beddab2fd6b61631d73b39b7484bc9a585ebe1de`. Relevant SHA-256 values at that tree:
+- `sycl/CMakeLists.txt`: `1500925f231c5bd61c5f771e1b8cb3d396c9e6cb14330dda6069dc14e08dfd03`
+- `sycl/src/program/generate.cpp`: `c0caaaa1bc3bbb5a1e9b539cb918a5e84bc010b4d904ae1304f23a46abc74687`
+- `sycl/src/core/expert_cache.cpp`: `992e7f7d96de0e17850164afafeaabfcde9f86cd647b8dfe503d9f8dae03bb8e7`
+- root `src/program/generate.cpp` (not selected when STRATA_ENABLE_SYCL): `c2181dc6319e5dfc530c8886efb5dae8bb331119182953d6ae8092baeec2e16a`
+- root `src/core/expert_cache.cpp` (not selected for that SYCL build): `9d2790e5d9a492b8155b397ba4bec5d2b7f11e275c82a3af88c7b7a41592e199`
+
+Primary source selection is from `cmake/sycl_backend.cmake` (`strata_engine`, `strata_prefill`, executable `strata`); its current source paths were not all rehashed in this report. The supplied R456 report contains exact hashes for selected dirty primary Q2/test files, which are unrelated to the batch/VRAM source-selection result.
