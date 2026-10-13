@@ -43,6 +43,7 @@
 #include "strata/prefill/publication.hpp"
 #include "strata/prefill/compact_moe.hpp"
 #include "strata/prefill/workspace_layout.hpp"
+#include "strata/prefill/layer_major.hpp"
 #include "strata/prefill/issuer_timing.hpp"
 #include <algorithm>
 #include <chrono>
@@ -408,6 +409,10 @@ struct Prefill::Impl {
     const core::ExpertCache* cache = nullptr;
     const int32_t* host_res = nullptr;
     int64_t T = 0, T_max = 0;
+    float* residual_gpu = nullptr;
+    const float* residual_host = nullptr;
+    layer_major::Layout residual_layout;
+    bool layer_major_active() const { return residual_layout.tokens != 0; }
     bool borrowed = false;
     bool compact_moe = false;   // experimental T-row FP16 fallback scratch; no MMQ layers
     strata::gpu::Stream cs = nullptr, copy = nullptr;
@@ -576,19 +581,19 @@ constexpr int64_t GEMM_SCRATCH = 32ll << 20;        // FP16 elements for the lar
 void validate_phase_capacity(const core::ModelGeometry& g, const core::SessionState& ss, int64_t chunk) {
     // Narrow bounds cover every T*stride, route index and launch extent in this
     // newly admitted fixed-capacity path; they are model geometry, not GPU IDs.
-    if (sizeof(size_t) < 8 || chunk != 12288 || g.n_embd != N || g.hc != HC || g.hc_lr != LR ||
+    if (sizeof(size_t) < 8 || (chunk != 12288 && chunk != 4096) || g.n_embd != N || g.hc != HC || g.hc_lr != LR ||
         g.n_layers != 48 || g.n_expert != 512 || g.n_ff != 640 || g.qsa_interval != 4 ||
         g.ssm_state_size != 128 || g.ssm_k_heads != 16 || g.ssm_v_heads != HV ||
         g.ssm_d_conv != 4 || g.ssm_conv_channels != C || g.ssm_value_dim != ZV ||
         g.n_head != 24 || g.n_head_kv != 2 || g.head_dim != 256 ||
         g.idx_q_heads != 4 || g.idx_key_dim != 128 || ss.k != K || ss.max_cells != 262144 ||
         !ss.qsa_states || ss.qsa_alloc != 12 || ss.qsa_ord0 != 0 || stage_own())
-        throw std::runtime_error("prefill: 12288 phase capacity requires bounded stock geometry and counted KV stage");
+        throw std::runtime_error("prefill: bounded phase capacity requires bounded stock geometry and counted KV stage");
     for (int64_t i = 0; i < ss.qsa_alloc; ++i) {
         const auto& q = ss.qsa_states[i];
         if (q.max_cells != 262144 || q.kv_mode != 1 || !q.kv_int8 || q.kv_q4 || q.kv_hybrid ||
             q.n_pages != 65536 || q.n_slots != 8192)
-            throw std::runtime_error("prefill: 12288 phase capacity requires full mode1/int8 KV and resident32768");
+            throw std::runtime_error("prefill: bounded phase capacity requires full mode1/int8 KV and resident32768");
     }
 }
 bool scratch_alias_enabled() {
@@ -703,7 +708,34 @@ bool Prefill::init(const core::WeightTable& wt, const core::ModelGeometry& g, co
                    void* stream, std::string& err, void* borrow, uint64_t borrow_bytes) {
     Impl& m = *impl_;
     m.wt = &wt; m.g = &g; m.ss = &ss; m.src = src; m.cache = cache; m.host_res = host_res;
-    if (chunk == 12288 && core::phase_cache_requested()) {
+    if (layer_major::requested()) {
+        if (!layer_major::frozen_prefix().valid || layer_major_reserve_ == 0 || borrow || next_ ||
+            stage_lb_ != 0 || (stage_le_ >= 0 && stage_le_ != g.n_layers) || !src || !cache ||
+            (cache->phase_mode() && (!core::phase_cache_requested() || !cache->phase_owner()->prefill_leased())) ||
+            (core::phase_cache_requested() && !cache->phase_mode()) || embd_rows || on_stage_chunk ||
+            !ss.qsa_states || !ss.gdn_state || ss.max_cells <= 0 || ss.max_cells > 262144 || ss.qsa_ord0 != 0 || ss.gdn_ord0 != 0 ||
+            g.qsa_interval <= 0 || g.n_layers % g.qsa_interval != 0 ||
+            ss.layer_lo != 0 || ss.layer_hi != g.n_layers ||
+            ss.qsa_alloc != g.n_layers / g.qsa_interval || ss.gdn_alloc + ss.qsa_alloc != g.n_layers ||
+            chunk <= 0 || g.n_expert <= 0 || g.n_expert > 512 || g.n_layers <= 0 || g.n_layers > 512 ||
+            std::getenv("STRATA_PREFILL_DUMP_R") || std::getenv("STRATA_PREFILL_DUMP_R_ALL") ||
+            std::getenv("STRATA_DBG_NAN") || std::getenv("STRATA_STATE_HASH_GDN")) {
+            err = "prefill layer-major prototype: require explicit bounded R_GPU/reserve, full single GPU, "
+                  "fresh resident/streamed KV, owned workspace, source/cache and no checkpoint/draft callbacks";
+            return false;
+        }
+        for (int64_t i = 0; i < ss.qsa_alloc; ++i)
+            if ((ss.qsa_states[i].kv_mode != 0 && ss.qsa_states[i].kv_mode != 1) ||
+                ss.qsa_states[i].kv_mode != ss.qsa_states[ss.qsa_primary()].kv_mode ||
+                ss.qsa_states[i].n_pages != ss.qsa_states[ss.qsa_primary()].n_pages ||
+                ss.qsa_states[i].max_cells != ss.max_cells) {
+                err = "prefill layer-major: unsupported/mixed KV staging geometry"; return false;
+            }
+        if (!core::Runtime::get().stream(stream).has_property<sycl::property::queue::in_order>()) {
+            err = "prefill layer-major: require in-order Runtime compute queue"; return false;
+        }
+    }
+    if ((chunk == 12288 || chunk == 4096) && core::phase_cache_requested()) {
         try { validate_phase_capacity(g, ss, chunk); }
         catch (const std::exception& exception) { err = exception.what(); return false; }
     }
@@ -932,7 +964,10 @@ bool Prefill::carve(size_t T, void* alloc) {
         // lends them - a write now would corrupt a resident expert)
         if (!m.mmq_ctx) m.mmq_ctx = std::make_unique<mmq::Context>();
     }
-    m.ring = ring_slots(T);
+    // Private layer-major cache holds every active-layer expert. Retain host
+    // Stager/events and MMQ gather buffers, but no normal device miss ring.
+    // run_impl checks actual full residency/slot capacity before processing.
+    m.ring = layer_major::device_ring_slots(ring_slots(T), layer_major::requested());
     if (o.base == nullptr && m.ring > 0) {
         // OWNED buffers: the ring in ONE allocation (upstream 4a9b9041).  384 separate 2.7 MiB allocations took
         // 1,556 MiB on an RTX 4070 (each rounded up to its 2 MiB pages), one of the same total 1,038.  A borrowed
@@ -1173,7 +1208,7 @@ uint64_t Prefill::bytes_needed(const core::ModelGeometry& g, const core::Session
         if (chunk <= 0) throw std::runtime_error("prefill: gated alias needs a positive chunk");
         workspace::take_bytes(workspace::product(static_cast<size_t>(chunk), D), sizeof(float));
     }
-    if (chunk == 12288 && core::phase_cache_requested()) validate_phase_capacity(g, ss, chunk);
+    if ((chunk == 12288 || chunk == 4096) && core::phase_cache_requested()) validate_phase_capacity(g, ss, chunk);
     const size_t T = (size_t) chunk;
     bool ok = true;
     Alloc o;
@@ -1212,7 +1247,7 @@ uint64_t Prefill::bytes_needed(const core::ModelGeometry& g, const core::Session
             o.take<uint8_t>(MMQ_RING * MMQ_SLOT(), ok);
         }
     }
-    for (int i = 0; i < ring_slots(T); ++i) o.take<uint8_t>((size_t) MAXBLOB(), ok);
+    for (int i = 0; i < layer_major::device_ring_slots(ring_slots(T), layer_major::requested()); ++i) o.take<uint8_t>((size_t) MAXBLOB(), ok);
     if (!scratch_alias_enabled()) f(T * N);
     f((size_t) strata::kernels::NG_HC_DIM);
     strata::kernels::KvHostPools stage;
@@ -1378,7 +1413,171 @@ struct PfTimer {
 };
 }  // namespace
 
-bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& err) try {
+bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& err) {
+    if (!impl_ || !impl_->ss || !impl_->g || impl_->T <= 0) { err = "prefill: not initialized"; return false; }
+    if (n == 0) return run_impl(tokens, n, pos0, err);
+    return layer_major::requested() ? run_layer_major(tokens, n, pos0, err) : run_impl(tokens, n, pos0, err);
+}
+
+bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, std::string& err) try {
+    err.clear();
+    Impl& m = *impl_;
+    const auto& g = *m.g;
+    const core::OnDevice on_device(m.device);
+    if (!tokens || stage_lb_ != 0 || stage_le_ != g.n_layers || next_ || hand_in_ || m.borrowed ||
+        !m.src || !m.cache ||
+        (m.cache->phase_mode() && (!core::phase_cache_requested() || !m.cache->phase_owner()->prefill_leased())) ||
+        (core::phase_cache_requested() && !m.cache->phase_mode()) ||
+        on_stage_chunk || embd_rows || m.layer_major_active() || !layer_major::frozen_prefix().valid ||
+        m.ss->ple_prev[0] != -1 || m.ss->ple_prev[1] != -1 || m.ss->layer_lo != 0 || m.ss->layer_hi != g.n_layers) {
+        err = "layer-major: require fresh full single-GPU request without checkpoint/draft state";
+        return false;
+    }
+    for (int64_t i = 0; i < m.ss->qsa_alloc; ++i)
+        if (m.ss->qsa_states[i].kv_mode != 0 && m.ss->qsa_states[i].kv_mode != 1) {
+            err = "layer-major: unsupported KV staging mode"; return false;
+        }
+    if (layer_major_full_context_probe_ &&
+        !layer_major::full_context_span(n, pos0, m.ss->max_cells, bool(on_chunk))) {
+        err = "layer-major full-context probe: exact physical span and completion callback required";
+        return false;
+    }
+    const auto plan = layer_major::plan(n, pos0, m.ss->max_cells, m.T, D,
+        layer_major::frozen_prefix().tokens, g.n_expert, g.n_layers, MAXBLOB(), layer_major_reserve_);
+    // Pre-existing workspace/model/head/session/ordinary expert cache are charged
+    // in these fresh samples. New bridge/cache + explicit reserve must also fit.
+    publication::cleanup_require(strata::gpu::stream_sync(m.cs), "layer-major admission compute drain", strata::gpu::last_error);
+    publication::cleanup_require(strata::gpu::stream_sync(m.copy), "layer-major admission copy drain", strata::gpu::last_error);
+    if (m.stager) m.stager->finish();
+    size_t free = 0, total = 0;
+    core::detail::HostMemory memory;
+    if (!strata::gpu::mem_info(&free, &total) || plan.gpu_need > uint64_t(free) ||
+        !core::detail::host_available_memory(memory) || plan.host_need > memory.available) {
+        err = "layer-major: fresh VRAM/RAM bridge + layer-cache + explicit reserve admission failed";
+        return false;
+    }
+    const auto& layout = strata::kernels::cpu::expert_layout();
+    for (int64_t layer = 0; layer < g.n_layers; ++layer)
+        if (layout.blob_bytes(layer) == 0 || layout.blob_bytes(layer) > uint64_t(MAXBLOB())) {
+            err = "layer-major: source layout blob extent exceeds slot"; return false;
+        }
+    std::fprintf(stderr, "strata layer-major: ADMITTED mode=fresh-resident-or-streamed tokens=%lld chunks=%llu requested_gpu_rows=%llu "
+        "gpu_rows=%llu host_rows=%llu gpu_residual_bytes=%llu host_residual_bytes=%llu layer_cache_bytes=%llu "
+        "reserve=%llu fresh_vram=%zu fresh_ram=%llu preexisting_workspace_head_state_charged=1\n",
+        (long long) n, (unsigned long long) plan.chunks,
+        (unsigned long long) layer_major::frozen_prefix().tokens, (unsigned long long) plan.gpu_tokens,
+        (unsigned long long) (plan.tokens - plan.gpu_tokens), (unsigned long long) plan.gpu_bytes,
+        (unsigned long long) plan.host_bytes, (unsigned long long) plan.cache_bytes,
+        (unsigned long long) layer_major_reserve_, free, (unsigned long long) memory.available);
+    // Declare every owner before the restore guard: its destructor drains before
+    // bridge, residency, staged source and layer-cache owners are destroyed.
+    core::ExpertCache layer_cache;
+    auto free_rows = [](float* pointer) { strata::gpu::free(pointer); };
+    std::unique_ptr<float, decltype(free_rows)> device_rows(nullptr, free_rows);
+    std::vector<float> rows;
+    std::vector<uint8_t> staged;
+    std::vector<int32_t> residency;
+    const auto started = Clock::now();
+    struct Restore {
+        Prefill& p; Impl& m;
+        int64_t lb, le; const core::ExpertCache* cache; const int32_t* residency;
+        decltype(on_chunk) chunk; decltype(on_stage_chunk) stage;
+        Clock::time_point started;
+        ~Restore() {
+            layer_major::retire([&] {
+                if (m.stager) m.stager->cancel();
+                const bool compute = strata::gpu::stream_sync(m.cs);
+                const bool copy = strata::gpu::stream_sync(m.copy);
+                if (m.stager) m.stager->finish();
+                return compute && copy;
+            }, [&] {
+                p.stage_lb_ = lb; p.stage_le_ = le;
+                p.on_chunk = std::move(chunk); p.on_stage_chunk = std::move(stage);
+                m.cache = cache; m.host_res = residency;
+                m.residual_gpu = nullptr; m.residual_host = nullptr;
+                m.residual_layout = {};
+                p.stats_.ms_total += ms_since(started);
+            }, [] {
+                publication::cleanup_require(false, "layer-major restore drain", strata::gpu::last_error);
+            });
+        }
+    } restore{*this, m, stage_lb_, stage_le_, m.cache, m.host_res, on_chunk, on_stage_chunk, started};
+    if (plan.host_bytes / sizeof(float) > rows.max_size() || uint64_t(MAXBLOB()) > staged.max_size() ||
+        layer_major::product(uint64_t(g.n_layers), uint64_t(g.n_expert)) > residency.max_size()) {
+        err = "layer-major: host owner vector extent exceeds max_size"; return false;
+    }
+    if (!layer_cache.open_sized(std::vector<int64_t>((size_t) g.n_expert, MAXBLOB()), 1, g.n_expert, err)) return false;
+    if (plan.gpu_bytes && !strata::gpu::alloc_device((void**) &m.residual_gpu, (size_t) plan.gpu_bytes)) {
+        err = "layer-major: requested GPU prefix allocation failed (no fallback)"; return false;
+    }
+    device_rows.reset(m.residual_gpu);
+    rows.resize((size_t) (plan.host_bytes / sizeof(float)));
+    staged.resize((size_t) MAXBLOB());
+    residency.assign((size_t) (g.n_layers * g.n_expert), -1);
+    m.residual_host = rows.data(); m.residual_layout = plan;
+    m.cache = &layer_cache; m.host_res = residency.data();
+    const int32_t prev[2] = {m.ss->ple_prev[0], m.ss->ple_prev[1]};
+    for (int64_t layer = 0; layer < g.n_layers; ++layer) {
+        if (should_stop && should_stop()) { err = "cancelled"; return false; }
+        publication::cleanup_require(strata::gpu::stream_sync(m.cs), "layer-major layer reuse drain", strata::gpu::last_error);
+        const size_t bytes = (size_t) layout.blob_bytes(layer);
+        uint64_t uploaded = 0;
+        core::progress_at("layer-major: uploading one expert layer", layer);
+        const auto load = Clock::now();
+        for (int32_t expert = 0; expert < g.n_expert; ++expert) {
+            if (should_stop && should_stop()) { err = "cancelled"; return false; }
+            const uint8_t* source = nullptr;
+            if (m.src->transient(layer, expert)) {
+                if (!m.src->copy_blob(layer, expert, staged.data())) { err = "layer-major: source copy_blob failed"; return false; }
+                source = staged.data();
+            } else source = m.src->blob(layer, expert);
+            void* destination = const_cast<uint8_t*>(layer_cache.device_slot(expert));
+            if (!source || !destination) { err = "layer-major: null source/slot"; return false; }
+            // blob is stable until the next blob call; synchronous checked copy
+            // completes before any source/staging buffer can be reused.
+            publication::cleanup_require(strata::gpu::copy(destination, source, bytes),
+                                         "layer-major expert copy", strata::gpu::last_error);
+            uploaded += bytes;
+            ++stats_.experts_streamed;
+            if (!m.src->transient(layer, expert) && m.src->pinned(layer, expert)) ++stats_.experts_dma;
+        }
+        stats_.ms_experts_host += ms_since(load);
+        std::fill(residency.begin(), residency.end(), -1);
+        for (int32_t expert = 0; expert < g.n_expert; ++expert)
+            residency[(size_t) (layer * g.n_expert + expert)] = expert;
+        stage_lb_ = layer; stage_le_ = layer + 1;
+        m.ss->ple_prev[0] = prev[0]; m.ss->ple_prev[1] = prev[1];
+        on_chunk = [&](const float* residual, int64_t count, int64_t position, std::string& error) {
+            if (layer_major::final_layer(layer + 1, g.n_layers))
+                return !restore.chunk || restore.chunk(residual, count, position, error); // output rows only, no checkpoint
+            bool gpu = false; uint64_t offset = 0;
+            if (position < pos0 || !layer_major::chunk_store(plan, uint64_t(position - pos0), uint64_t(count), gpu, offset)) {
+                error = "layer-major: residual download span crosses store boundary"; return false;
+            }
+            float* output = gpu ? device_rows.get() + offset : rows.data() + offset;
+            publication::cleanup_require(strata::gpu::copy(output, residual, (size_t) count * D * sizeof(float)),
+                                         "layer-major residual copy", strata::gpu::last_error);
+            return true;
+        };
+        core::progress_at("layer-major: computing all chunks for layer", layer);
+        if (!run_impl(tokens, n, pos0, err)) return false;
+        if (std::getenv("STRATA_TRACE")) {
+            std::fprintf(stderr, "strata layer-major: layer=%lld role=expert-layer-reuse slots=%lld "
+                "uploaded_bytes=%llu computed_chunks=%llu gpu_rows=%llu host_rows=%llu completion=checked\n",
+                (long long) layer, (long long) g.n_expert, (unsigned long long) uploaded,
+                (unsigned long long) plan.chunks, (unsigned long long) plan.gpu_tokens,
+                (unsigned long long) (plan.tokens - plan.gpu_tokens));
+            std::fflush(stderr);
+        }
+    }
+    return true;
+} catch (const std::exception& exception) {
+    err = std::string("layer-major: ") + exception.what(); return false;
+} catch (...) {
+    err = "layer-major: unknown source/allocation failure"; return false;
+}
+
+bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::string& err) try {
     err.clear();
     Impl& m = *impl_;
     core::SessionState& ss = *m.ss;
@@ -1448,13 +1647,27 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
         if (should_stop && should_stop()) { err = "cancelled"; return false; }
         if (std::getenv("STRATA_TRACE")) { std::fprintf(stderr, "strata trace: prompt chunk %lld of %lld\n", (long long) c0, (long long) n); std::fflush(stderr); }
         const int64_t T = std::min(m.T, n - c0), p0 = pos0 + c0;
+        if (m.layer_major_active() && (!m.cache || !m.host_res || m.ring != 0 || LE != LB + 1 ||
+            !layer_major::layer_ready(g.n_expert, m.cache->slots(),
+                uint64_t(strata::kernels::cpu::expert_layout().blob_bytes(LB)),
+                m.host_res + (size_t) LB * g.n_expert, m.cache->slot_offsets()))) {
+            err = "layer-major: active layer is not fully resident in actual private cache capacity"; return false;
+        }
         core::progress_at("reading the prompt (batched): preparing the chunk from token", p0);
-        ++stats_.chunks;
+        if (!m.layer_major_active() || LE == g.n_layers) ++stats_.chunks;
         pt.mark(kPfStart, cs);
         const auto tsetup = Clock::now();
         // ---- embeddings, broadcast to the four streams - or, in a later stage of a layer split, the rows the
         // previous stage handed on
-        if (hand_in_ != nullptr) {
+        if (m.layer_major_active() && LB > 0) {
+            bool gpu = false; uint64_t offset = 0;
+            if (!layer_major::chunk_store(m.residual_layout, uint64_t(c0), uint64_t(T), gpu, offset)) {
+                err = "layer-major residual upload span crosses store boundary"; return false;
+            }
+            const float* input = gpu ? m.residual_gpu + offset : m.residual_host + offset;
+            publication::require(strata::gpu::copy_async(m.R, input, (size_t) T * D * 4, m.cs),
+                                 "layer-major residual upload", strata::gpu::last_error);
+        } else if (hand_in_ != nullptr) {
             if (!strata::gpu::copy_async(m.R, hand_in_ + (size_t) c0 * D, (size_t) T * D * 4, m.cs)) {
                 err = "prefill: the layer split's hand-off upload failed";
                 return false;
@@ -1462,7 +1675,7 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
         }
         // C-4: the whole chunk's rows in one gather (the same per-element arithmetic as the per-token path, so the
         // same bits); a chunk with picture rows, or a token outside the table, takes the per-token path
-        bool batched = hand_in_ == nullptr && m.tok_dev != nullptr;
+        bool batched = hand_in_ == nullptr && !(m.layer_major_active() && LB > 0) && m.tok_dev != nullptr;
         const core::NativeEmbed* nemb = core::native_embed();
         const core::WeightRef* wemb = nemb ? nullptr : m.wt->find("token_embd.weight");
         if (batched && nemb == nullptr &&
@@ -1492,7 +1705,7 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
                                                       (uint64_t) (wemb->ne0 / wemb->group_elems), m.emb, m.cs);
             }
         }
-        for (int64_t t = 0; hand_in_ == nullptr && !batched && t < T; ++t) {
+        for (int64_t t = 0; hand_in_ == nullptr && !(m.layer_major_active() && LB > 0) && !batched && t < T; ++t) {
             const float* row = embd_rows ? embd_rows[p0 + t] : nullptr;
             if (row) {
                 if (!strata::gpu::copy_async(m.emb + t * N, row, (size_t) N * 4, m.cs)) {
@@ -1503,7 +1716,7 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
                 return false;
             }
         }
-        if (hand_in_ == nullptr) gr_broadcast(m.emb, m.R, T, m.cs);
+        if (hand_in_ == nullptr && !(m.layer_major_active() && LB > 0)) gr_broadcast(m.emb, m.R, T, m.cs);
         // ---- the PLE rows of the whole chunk, one batched SSD request on a thread (see ple_gather).  A later chunk's
         // were read ahead during the previous chunk; the first chunk's are read beside layer 0 - they are needed from
         // layer 1 on, and gathering them here first left the GPU idle for the whole read (upstream; RTX 4070, 997
@@ -3104,7 +3317,7 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
         if (transfer_counts)
             transfer_chunks.push_back({c0, p0, T, stream_all, threaded_issue, std::move(chunk_transfers),
                                        std::move(chunk_census)});
-        stats_.tokens += T;
+        if (!m.layer_major_active() || LE == g.n_layers) stats_.tokens += T;
         core::progress_at("reading the prompt (batched): finishing the chunk from token", p0);
         pt.mark(kPfStart, cs);
         if (next_ != nullptr) {
@@ -3199,7 +3412,7 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
         err = std::string("prefill: ") + strata::gpu::last_error();
         return false;
     }
-    stats_.ms_total += ms_since(t_start);
+    if (!m.layer_major_active()) stats_.ms_total += ms_since(t_start);
     service_scope.complete();  // Existing checked terminal compute sync succeeded; no diagnostic wait.
     if (pt.on) {
         pt.fold();

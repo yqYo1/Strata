@@ -51,6 +51,10 @@ public:
     PhaseCacheOwner& operator=(const PhaseCacheOwner&) = delete;
     bool reserve(const std::vector<int64_t>& layer_blobs, uint32_t experts,
                  uint64_t virtual_cap, std::string& error, uint32_t extras_per_layer = 2);
+    // Requires actual quiescence and retirement of retained readers.
+    bool begin_prefill(const Quiesce& retired_readers, const Publish&, std::string& error);
+    bool finish_prefill(const Quiesce&, std::string& error);
+    bool prefill_leased() const { return base_ && prefill_leased_ && !poisoned_ && !readers_ready_ && mapped_slots() == 0; }
     bool map_base(const Quiesce&, std::string& error);
     bool map_extras(const Quiesce&, std::string& error);
     bool fill_checked(uint32_t layer, uint32_t expert, uint32_t slot,
@@ -101,7 +105,7 @@ private:
     uint32_t layers_ = 0, experts_ = 0, extras_per_layer_ = 2;
     uint64_t reserved_ = 0, granularity_ = 0, maximum_ = 0;
     uint64_t recommended_ = 0, device_minimum_ = 0, context_minimum_ = 0;
-    bool poisoned_ = false, readers_ready_ = false;
+    bool poisoned_ = false, readers_ready_ = false, prefill_leased_ = false;
     std::vector<Extent> extents_; // baseline then one bounded-extra extent/layer
     std::vector<uint64_t> offsets_, strides_, blobs_;
     std::vector<int32_t> filled_, staged_, published_;

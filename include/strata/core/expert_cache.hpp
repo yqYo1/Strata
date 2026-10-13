@@ -107,9 +107,12 @@ public:
                     uint64_t virtual_cap, std::string& err);
     bool phase_fill(uint32_t layer, uint32_t expert, const void* immutable_blob, uint64_t bytes, std::string& err);
     bool phase_publish(std::string& err);
+    bool phase_begin_prefill(const PhaseCacheOwner::Quiesce&, std::string& err);
+    bool phase_finish_prefill(const PhaseCacheOwner::Quiesce&, std::string& err);
     bool phase_invalidate_extras(std::string& err);
     bool phase_close(const PhaseCacheOwner::Quiesce& retire_readers, std::string& err);
     PhaseCacheOwner* phase_owner() { return phase_.get(); }
+    const PhaseCacheOwner* phase_owner() const { return phase_.get(); }
     bool phase_mode() const { return phase_ != nullptr; }
     int32_t* phase_device_residency() const { return phase_d_res_; }
     int64_t slot_capacity() const { return phase_ ? phase_->capacity() : slots_; }
