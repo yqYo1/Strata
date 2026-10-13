@@ -1,11 +1,15 @@
 ---
 name: strata-upstream-sync
-description: Strata fork の本家・XeStrata更新を反復確認し、上流単体の性能評価、サーバー・CLI等の機能全件の移植、推論部品ごとの比較と選択的統合を行う。Strataの上流更新確認・評価・取り込み依頼で使う。
+description: このStrataプロジェクト専用。本家・XeStrata更新を反復確認し、上流単体の性能評価、サーバー・CLI等の機能全件の移植、推論部品ごとの比較と選択的統合を行う。Strataの上流更新確認・評価・取り込み依頼で使う。
 ---
 <!-- SPDX-FileCopyrightText: 2026 yayoi -->
 <!-- SPDX-License-Identifier: LGPL-3.0-or-later -->
 
 # Strata 上流更新の評価と取り込み
+
+このリポジトリに付属するプロジェクト専用スキル。`.agents/skills/strata-upstream-sync` で
+管理し、ユーザー共通の skills ディレクトリにはインストールしない。別プロジェクトには
+適用せず、Strata の関連 clone/worktree を使う場合もこのプロジェクトの更新作業として扱う。
 
 Strata の更新を一度で終わらせず、更新が来るたびに同じ比較基準で確認・評価・統合する。
 今回の到達点は、対象リビジョンの差分を網羅した機能対応表、上流単体の測定、
