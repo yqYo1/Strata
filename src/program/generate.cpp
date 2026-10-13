@@ -4072,8 +4072,8 @@ int main(int argc, char** argv) {
             std::fprintf(stderr, "strata generate: %s\n", err.c_str());
             return 1;
         }
-        // An explicit number truncates the ranked list ("what would 2,000 slots give" without rebuilding the
-        // file).  `--expert-cache 0` used to take the count the profile was built for; the profile now ranks
+        // An explicit number limits the cache budget without rebuilding the file. Keep the whole ranking for
+        // per-layer admission. `--expert-cache 0` used to take the count the profile was built for; the profile now ranks
         // every pair (issue #46: a card that holds more than the old 8,000 used to stop there), so it means auto.
         if (o.expert_cache == 0) o.expert_cache = -1;
         std::fprintf(stderr, "strata generate: profile %s: %zu ranked pairs, built for %lld slots\n",
@@ -4415,27 +4415,33 @@ int main(int argc, char** argv) {
         }
     }
     // ---- R4.2e: fill the tier from the profile.  This is the only place the plan is applied, and it runs
-    // ONCE: with `slots` pairs and `slots` slots the cache is full when this returns, so the decode-time
-    // admission finds no room and every non-profiled expert stays a CPU miss.  That is what makes the profile
-    // the policy rather than a hint.
+    // ONCE: global admission takes the hottest prefix; per-layer admission takes each layer's hottest pairs
+    // until its quota is full. A sparse profile can leave slots empty. No eviction changes the ranked policy.
     int64_t prefilled = 0;
     if (!profile.empty() && srcp != nullptr) {
         const int64_t want = std::min<int64_t>((int64_t) profile.size(), xcache.slots());
+        // A full layer is not a full cache: its next ranked pair may precede another layer's first pair.
+        const int64_t scan = xcache.per_layer_admission() && want > 0 ? (int64_t) profile.size() : want;
         // mapped reads: advise the next `fill_ahead` pairs so their reads overlap; STRATA_FILL_AHEAD=0 turns it off
         int64_t fill_ahead = 0;
         if (srcp == &src && !src.unbuffered()) {
             const char* v = std::getenv("STRATA_FILL_AHEAD");
-            fill_ahead = v == nullptr ? 256 : std::max<int64_t>(0, std::strtol(v, nullptr, 10));
-            if (fill_ahead > 0 && !src.advise_pairs(profile.data(), std::min<int64_t>(fill_ahead, want))) fill_ahead = 0;
+            fill_ahead = std::min<int64_t>(scan, v == nullptr ? 256 : std::max<int64_t>(0, std::strtol(v, nullptr, 10)));
+            if (fill_ahead > 0 && !src.advise_pairs(profile.data(), fill_ahead)) fill_ahead = 0;
             std::fprintf(stderr, "strata generate: the profile fill asks for %lld pairs ahead (STRATA_FILL_AHEAD)\n",
                          (long long) fill_ahead);
         }
         const auto fill_t0 = std::chrono::steady_clock::now();
         uint64_t fill_bytes = 0;
-        for (int64_t i = 0; i < want; ++i) {
-            if (fill_ahead > 0 && i + fill_ahead < want) (void) src.advise_pairs(profile.data() + i + fill_ahead, 1);
+        int64_t first_filled = -1;
+        int32_t first_slot = strata::core::kNotResident;
+        for (int64_t i = 0; i < scan && prefilled < want; ++i) {
+            if (fill_ahead > 0 && fill_ahead < scan - i) (void) src.advise_pairs(profile.data() + i + fill_ahead, 1);
             const int32_t slot = xcache.admit(profile[(size_t) i].first, profile[(size_t) i].second);
-            if (slot == strata::core::kNotResident) break;
+            if (slot == strata::core::kNotResident) {
+                if (xcache.per_layer_admission()) continue;
+                break;
+            }
             const uint8_t* b = blob_to_copy(srcp, profile[(size_t) i].first, profile[(size_t) i].second, fill_tmp);
             if (b == nullptr || !xcache.fill_slot_blocking(slot, b, err,
                     (int64_t) strata::kernels::cpu::expert_layout().blob_bytes(profile[(size_t) i].first))) {
@@ -4444,23 +4450,28 @@ int main(int argc, char** argv) {
                 return 1;
             }
             fill_bytes += strata::kernels::cpu::expert_layout().blob_bytes(profile[(size_t) i].first);
+            if (prefilled == 0) { first_filled = i; first_slot = slot; }
             ++prefilled;
         }
         const double fill_s = std::chrono::duration<double>(std::chrono::steady_clock::now() - fill_t0).count();
         // **AND ONE SLOT IS READ BACK AND COMPARED.**  A residency table that is right about indices and wrong
         // about bytes produces a plausible token, which is this project's most expensive failure mode; the
         // cache's own `verify_slot` is the check and it costs one 1.38 MB D2H at startup.
-        if (prefilled > 0 && !xcache.verify_slot(xcache.slot_of(profile[0].first, profile[0].second),
-                                blob_to_copy(srcp, profile[0].first, profile[0].second, fill_tmp), err,
-                                (int64_t) strata::kernels::cpu::expert_layout().blob_bytes(profile[0].first))) {
-            std::fprintf(stderr, "strata generate: %s\n", err.c_str());
-            return 1;
+        if (prefilled > 0) {
+            const auto& pr = profile[(size_t) first_filled];
+            const uint8_t* b = blob_to_copy(srcp, pr.first, pr.second, fill_tmp);
+            if (b == nullptr || !xcache.verify_slot(first_slot, b, err,
+                                  (int64_t) strata::kernels::cpu::expert_layout().blob_bytes(pr.first))) {
+                std::fprintf(stderr, "strata generate: the profile fill verification failed: %s\n", err.c_str());
+                return 1;
+            }
         }
         mem_mark("the profile fill");
-        std::fprintf(stderr, "strata generate: pre-filled %lld of %lld slots from the profile in %.1f s (%.0f MB/s); "
-                             "slot 0 verified\n",
-                     (long long) prefilled, (long long) want, fill_s,
+        std::fprintf(stderr, "strata generate: pre-filled %lld of %lld slots from the profile in %.1f s (%.0f MB/s)",
+                     (long long) prefilled, (long long) xcache.slots(), fill_s,
                      fill_s > 0 ? (double) fill_bytes / 1e6 / fill_s : 0.0);
+        if (prefilled > 0) std::fprintf(stderr, "; slot %d verified\n", first_slot);
+        else std::fprintf(stderr, "; no filled slot to verify\n");
     }
 
 

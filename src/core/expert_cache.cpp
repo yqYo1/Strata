@@ -61,6 +61,11 @@ bool read_expert_profile(const std::string& path, int64_t n_layers, int64_t n_ex
         err = "read_expert_profile: the header claims more ranked pairs than slots";
         return false;
     }
+    if ((uint64_t) n_ranked > (uint64_t) nl * ne) {
+        std::fclose(f);
+        err = "read_expert_profile: the ranking has more pairs than the model";
+        return false;
+    }
     ranked.assign(n_ranked, {0, 0});
     std::vector<uint16_t> raw((size_t) n_ranked * 2);
     if (n_ranked > 0 && std::fread(raw.data(), 2, (size_t) n_ranked * 2, f) != (size_t) n_ranked * 2) {
@@ -69,6 +74,8 @@ bool read_expert_profile(const std::string& path, int64_t n_layers, int64_t n_ex
         return false;
     }
     std::fclose(f);
+    // Native global slots are sized in rank order: repeated pairs would shift the admitted blobs off that order.
+    std::vector<uint8_t> seen((size_t) nl * ne, 0);
     for (uint32_t i = 0; i < n_ranked; ++i) {
         const int32_t l = (int32_t) raw[(size_t) i * 2], e = (int32_t) raw[(size_t) i * 2 + 1];
         if (l < 0 || l >= n_layers || e < 0 || e >= n_expert) {
@@ -78,6 +85,13 @@ bool read_expert_profile(const std::string& path, int64_t n_layers, int64_t n_ex
             err = buf;
             return false;
         }
+        const size_t at = (size_t) l * ne + (size_t) e;
+        if (seen[at]) {
+            err = "read_expert_profile: pair " + std::to_string(i) + " repeats (layer " +
+                  std::to_string(l) + ", expert " + std::to_string(e) + ")";
+            return false;
+        }
+        seen[at] = 1;
         ranked[(size_t) i] = {l, e};
     }
     slots = (int64_t) want;
