@@ -35,6 +35,17 @@ struct Coverage {
     bool full() const { return end == cells && real_next_rows == cells - 1 && probe_rows == 1; }
 };
 
+// Main-only completion has no successor rows or synthetic terminal token.
+struct MainCoverage {
+    int64_t end = 0, chunks = 0, last_begin = -1, last_count = 0;
+    bool complete(int64_t begin, int64_t count) {
+        if (begin != end || begin < 0 || count <= 0 || begin >= cells || count > cells - begin) return false;
+        last_begin = begin; last_count = count; end += count; ++chunks;
+        return true;
+    }
+    bool full() const { return end == cells; }
+};
+
 // Validates the whole range before indexing. The last residual has no semantic
 // successor: exactly that row receives the explicit, valid storage probe token.
 inline bool successors(const std::vector<int64_t>& tokens, int64_t begin, int64_t count,

@@ -376,6 +376,75 @@ ConversationRestore conversation_snapshot_restore(const SavedConversation& image
         !conversation_checkpoint_restore(image.live, ss, g, error)) return ConversationRestore::transfer_failed;
     return ConversationRestore::restored;
 }
+// Explicit main-only route. Keep the existing draft-bearing format unchanged.
+bool conversation_snapshot_capture_bytes(const ConversationView& view, const SessionState& ss,
+                                         const ModelGeometry& g, size_t& bytes, std::string& error) {
+    bytes = sizeof(SavedConversation);
+    if (!view_validate(view, ss, g, error)) return false;
+    ConversationStateSizes z;
+    if (!conversation_session_sizes(g, ss, z, error)) return false;
+    size_t ids = 0, images = 0, layers = 0, tails = 0, dead = 0, positions = 0;
+    const size_t qsa = owned_qsa(ss, g);
+    if (!product(ids, {view.ids.size(), sizeof(int32_t)}) ||
+        !product(images, {view.images.size(), sizeof(ConversationImageKey)}) ||
+        !product(layers, {qsa, sizeof(ConversationKv)}) ||
+        !product(tails, {qsa, z.tail}) || !product(dead, {qsa, z.dead}) ||
+        !product(positions, {qsa, z.block_pos})) return fail(error, "main-only metadata overflow");
+    for (size_t n : {ids, images, layers, tails, dead, positions, z.gdn, ss.ple_hist ? z.ple : 0})
+        if (!add(bytes, n)) return fail(error, "main-only snapshot overflow");
+    size_t directory = 0;
+    if (!product(directory, {view.checkpoints.size(), sizeof(ConversationCheckpoint)}) || !add(bytes, directory))
+        return fail(error, "main-only checkpoint directory overflow");
+    for (const auto& c : view.checkpoints)
+        if (!metadata_bytes(c, bytes)) return fail(error, "main-only checkpoint overflow");
+    for (size_t j = 0; j < qsa; ++j) {
+        const size_t n = conversation_kv_bytes(owned(ss, j), g, int64_t(view.ids.size()), true);
+        if (!n || !add(bytes, n)) return fail(error, "main-only K/V estimate invalid");
+    }
+    return true;
+}
+
+bool conversation_snapshot_save(SavedConversation& image, const ConversationView& view,
+                                const SessionState& ss, const ModelGeometry& g, std::string& error) {
+    size_t bytes = 0;
+    if (!conversation_snapshot_capture_bytes(view, ss, g, bytes, error) || !sync(error)) return false;
+    SavedConversation captured;
+    captured.geometry = geometry_key(g);
+    captured.layer_lo = ss.layer_lo; captured.layer_hi = ss.layer_hi;
+    captured.live.ids = view.ids; captured.live.imgs = view.images;
+    captured.cvec = view.cvec; captured.checkpoints = view.checkpoints;
+    captured.kv.resize(owned_qsa(ss, g));
+    if (!conversation_checkpoint_save(captured.live, ss, g, error)) return false;
+    for (size_t j = 0; j < captured.kv.size(); ++j)
+        if (!conversation_kv_save(captured.kv[j], owned(ss, j), g, int64_t(view.ids.size()), true, error)) return false;
+    image = std::move(captured);
+    return true;
+}
+
+bool conversation_snapshot_validate(const SavedConversation& image, const SessionState& ss,
+                                    const ModelGeometry& g, std::string& error) {
+    if (!image.live.stage_parts.empty() || image.geometry != geometry_key(g) ||
+        image.layer_lo != ss.layer_lo || image.layer_hi != ss.layer_hi)
+        return fail(error, "main-only snapshot geometry or ownership differs");
+    const ConversationView view{image.live.ids, image.live.imgs, image.checkpoints, image.cvec};
+    if (!view_validate(view, ss, g, error) || !conversation_checkpoint_validate(image.live, ss, g, error)) return false;
+    if (image.kv.size() != owned_qsa(ss, g)) return fail(error, "main-only K/V layer count differs");
+    for (size_t j = 0; j < image.kv.size(); ++j)
+        if (!conversation_kv_validate(image.kv[j], owned(ss, j), g, int64_t(view.ids.size()), true, error)) return false;
+    return true;
+}
+
+ConversationRestore conversation_snapshot_restore(const SavedConversation& image, SessionState& ss,
+                                                   const ModelGeometry& g, std::string& error) {
+    if (!conversation_snapshot_validate(image, ss, g, error)) return ConversationRestore::invalid;
+    if (!sync(error)) return ConversationRestore::transfer_failed;
+    for (size_t j = 0; j < image.kv.size(); ++j)
+        if (!conversation_kv_restore(image.kv[j], owned(ss, j), g, int64_t(image.live.ids.size()), true, error))
+            return ConversationRestore::transfer_failed;
+    if (!conversation_checkpoint_restore(image.live, ss, g, error)) return ConversationRestore::transfer_failed;
+    return ConversationRestore::restored;
+}
+
 // ---- a layer split: every GPU's session, each on its own device (conversation_snapshot.hpp)
 namespace {
 bool sync_on(int device, std::string& error) {

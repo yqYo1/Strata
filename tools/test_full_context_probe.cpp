@@ -23,6 +23,16 @@ int main() {
     check(uneven.complete(0, 262143) && !uneven.full());
     check(!uneven.complete(262143, 2) && uneven.end == 262143);
     check(uneven.complete(262143, 1) && uneven.full());
+    probe::MainCoverage main;
+    check(!main.complete(1, 1) && !main.complete(0, INT64_MAX));
+    check(main.complete(0, 262143) && !main.full());
+    check(!main.complete(262142, 1) && !main.complete(262143, 2));
+    check(main.complete(262143, 1) && main.full() && main.chunks == 2);
+    check(main.last_begin == 262143 && main.last_count == 1);
+    check(!main.complete(262144, 1));
+    probe::MainCoverage main_chunks;
+    for (int64_t begin = 0; begin < probe::cells; begin += 8192) check(main_chunks.complete(begin, 8192));
+    check(main_chunks.full() && main_chunks.chunks == 32 && main_chunks.last_begin == 253952);
     std::vector<int64_t> tokens(static_cast<size_t>(probe::cells));
     for (size_t i = 0; i < tokens.size(); ++i) tokens[i] = int64_t(i % 101);
     std::vector<int32_t> next;

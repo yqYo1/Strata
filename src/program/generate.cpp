@@ -210,6 +210,7 @@ struct Options {
     std::vector<int64_t> tokens;      // the prompt, PRE-TOKENIZED
     int64_t max_new = 16;
     int64_t max_context = 4096;
+    bool full_main_context_probe = false;
     bool full_context_probe = false;  // opt-in development diagnostic, no generated output
     int32_t full_context_terminal = 0;
     /// The context extension (rope scaling, rope_scaling.hpp; upstream #84): one process configuration, set once before
@@ -525,6 +526,7 @@ void usage() {
                  "  --pack DIR           the pack directory (default pack/full)\n"
                  "  --tokens LIST        the prompt as comma-separated token IDS (required)\n"
                  "  --tokens-file PATH   pretokenized prompt, commas or whitespace (alternative to --tokens)\n"
+                 "  --full-main-context-probe  development: main-only exact262144 prefill, --max-new 0; no terminal ID\n"
                  "  --full-context-probe ID  development: exactly 262144 cells, explicit terminal storage probe;\n"
                  "                       requires --max-context 262144 --max-new 0 --native --mtp --spec >=2,\n"
                  "                       fixed --prefill N and --no-prefill-borrow; restores in RAM then exits\n"
@@ -1430,6 +1432,203 @@ bool run_full_context_probe(const Options& o, strata::prefill::Prefill& prefill,
     return true;
 }
 
+bool run_full_main_context_probe(const Options& o, strata::prefill::Prefill& prefill, strata::core::SessionState& ss, const strata::core::ModelGeometry& g,
+                            void* main_cs, std::string& err) {
+    namespace probe = strata::program::full_context_probe;
+    using namespace strata::core;
+    const size_t main_layers = size_t(g.n_qsa_layers());
+    if (prefill.chunk() <= 0 || prefill.chunk() > probe::cells) { err = "probe: invalid physical prefill chunk"; return false; }
+    if (!probe::exact_extent(o.tokens.size(), ss.max_cells) || ss.layer_lo != 0 || ss.layer_hi != g.n_layers ||
+        ss.qsa_ord0 != 0 || ss.qsa_alloc != int64_t(main_layers) || !ss.qsa_states || ss.gdn_alloc != g.n_gdn_layers() || !ss.ple_hist || main_layers == 0) {
+        err = "probe requires an exact full main session"; return false;
+    }
+    std::vector<int32_t> ids(o.tokens.begin(), o.tokens.end());
+    const std::vector<ConversationImageKey> images;
+    const std::vector<ConversationCheckpoint> checkpoints;
+    const ConversationView view{ids, images, checkpoints, true};
+    SavedConversation image;
+    ConvCheckpoint running;
+    std::vector<QsaState*> states;
+    std::vector<uint64_t> before(main_layers);
+    probe::MainCoverage coverage;
+    FullProbeDrain drain;   // declared after every owned transfer/snapshot buffer
+    struct ResetCallback {
+        strata::prefill::Prefill& prefill;
+        ~ResetCallback() { prefill.on_chunk = {}; }
+    } reset_callback{prefill};
+    for (size_t layer = 0; layer < main_layers; ++layer) {
+        auto& st = ss.qsa_states[layer];
+        if (st.max_cells != probe::cells) { err = "probe: main K/V capacity differs from physical context"; return false; }
+        states.push_back(&st);
+    }
+    size_t snapshot_bytes = 0;
+    ConversationStateSizes sizes;
+    if (!conversation_snapshot_capture_bytes(view, ss, g, snapshot_bytes, err) ||
+        !conversation_session_sizes(g, ss, sizes, err)) return false;
+    // Reserve an extra checkpoint plus a second checkpoint's worth of transient
+    // vector capacity, metadata and the fixed copy workspace. Never use swap as admission.
+    uint64_t checkpoint_bytes = sizeof(ConvCheckpoint), required = snapshot_bytes;
+    if (!probe::add_bytes(checkpoint_bytes, ids.size(), sizeof(int32_t)) ||
+        !probe::add_bytes(checkpoint_bytes, sizes.gdn) ||
+        !probe::add_bytes(checkpoint_bytes, ss.ple_hist ? sizes.ple : 0) ||
+        !probe::add_bytes(checkpoint_bytes, sizes.tail, main_layers) ||
+        !probe::add_bytes(checkpoint_bytes, sizes.dead, main_layers) ||
+        !probe::add_bytes(checkpoint_bytes, sizes.block_pos, main_layers) ||
+        !probe::add_bytes(required, checkpoint_bytes, 2) || !probe::add_bytes(required, 1ull << 20)) {
+        err = "probe: snapshot RAM estimate overflow"; return false;
+    }
+    const uint64_t floor_mib = uint64_t(std::max<int64_t>(2560, o.conversation_cache_min_free_mib));
+    uint64_t floor = 0;
+    if (!probe::add_bytes(floor, floor_mib, 1ull << 20)) { err = "probe: RAM floor overflow"; return false; }
+    const auto available = available_host_bytes();
+    std::fprintf(stderr, "full-main-context-probe: RAM snapshot=%llu extra_checkpoint_budget=%llu required=%llu "
+                         "available=%llu known=%d floor=%llu consumer=in-process-restore\n",
+                 (unsigned long long) snapshot_bytes, (unsigned long long) (required - snapshot_bytes),
+                 (unsigned long long) required, (unsigned long long) available.value_or(0), int(available.has_value()),
+                 (unsigned long long) floor);
+    if (!conversation_memory_admit(available, required, floor)) { err = "probe: insufficient or unknown physical RAM"; return false; }
+    std::fprintf(stderr, "full-main-context-probe: begin capacity=262144 tokens=%zu pos0=0 chunk=%lld kv=%s resident=%lld token_i32_fnv1a=%016llx pack=%s native=%s mtp=disabled generated=0\n",
+                 ids.size(), (long long) prefill.chunk(), o.kv.c_str(), (long long) o.kv_resident,
+                 (unsigned long long) fnv1a(ids.data(), ids.size() * sizeof(int32_t)), o.pack.c_str(), o.native_preset.c_str());
+    prefill.on_chunk = [&](const float*, int64_t count, int64_t begin, std::string& error) {
+        if (!coverage.complete(begin, count)) { error = "main probe: chunk gap, overlap or extent error"; return false; }
+        std::fprintf(stderr, "full-main-context-probe: chunk=%lld begin=%lld count=%lld end=%lld\n",
+                     (long long) coverage.chunks, (long long) begin, (long long) count, (long long) coverage.end);
+        return true;
+    };
+    // This branch never calls kvg_ensure(n + output + 64) or reads tokens[n].
+    if (!prefill.run(o.tokens.data(), probe::cells, 0, err)) return false;
+    if (!strata::gpu::stream_sync(main_cs) || !strata::gpu::device_sync()) {
+        err = std::string("probe prefill completion: ") + strata::gpu::last_error(); return false;
+    }
+    const auto& stats = prefill.stats();
+    const int64_t expected_chunks = (probe::cells - 1) / prefill.chunk() + 1;
+    if (!coverage.full() || stats.tokens != probe::cells || stats.chunks != coverage.chunks ||
+        stats.chunks != expected_chunks) { err = "probe: incomplete main chunk coverage"; return false; }
+    // Publish only the running checkpoint's two-token history, at the actual
+    // exclusive extent; this does not put a terminal token into the generation path.
+    ss.ple_prev[0] = ids[ids.size() - 2]; ss.ple_prev[1] = ids.back();
+    std::fprintf(stderr, "full-main-context-probe: prefill_complete tokens=%lld chunks=%lld end=%lld final_pos=262143 "
+                         "last_begin=%lld last_count=%lld ms=%.1f\n",
+                 (long long) stats.tokens, (long long) stats.chunks, (long long) coverage.end,
+                 (long long) coverage.last_begin, (long long) coverage.last_count,
+                 stats.ms_total);
+    std::fprintf(stderr, "full-main-context-probe: experts streamed=%lld dma=%lld resident=%lld cpu=%lld host_ms=%.1f ple_ms=%.1f\n",
+                 (long long) stats.experts_streamed, (long long) stats.experts_dma, (long long) stats.experts_resident,
+                 (long long) stats.experts_cpu, stats.ms_experts_host, stats.ms_ple);
+    // Re-admit immediately before capture: expert/prefill initialization may have
+    // consumed RAM since the first estimate. The large image has this single consumer.
+    if (!conversation_memory_admit(available_host_bytes(), required, floor)) {
+        err = "probe: physical RAM no longer admits capture"; return false;
+    }
+    if (!conversation_snapshot_save(image, view, ss, g, err) ||
+        !conversation_snapshot_validate(image, ss, g, err)) return false;
+    std::fprintf(stderr, "full-main-context-probe: saved_logical_ids=%zu snapshot_geometry=", image.live.ids.size());
+    for (size_t field = 0; field < image.geometry.size(); ++field)
+        std::fprintf(stderr, "%s%lld", field ? "," : "", (long long) image.geometry[field]);
+    std::fprintf(stderr, " owned_layers=%lld:%lld final_page=%lld\n", (long long) ss.layer_lo,
+                 (long long) ss.layer_hi, (long long) (probe::cells / image.kv.front().page_size - 1));
+    for (size_t layer = 0; layer < states.size(); ++layer) {
+        const auto& st = *states[layer];
+        const auto& saved = image.kv[layer];
+        if (saved.cells != probe::cells || saved.page_size <= 0 || saved.cells / saved.page_size != st.n_pages) {
+            err = "probe: captured K/V extent is not the exact physical context"; return false;
+        }
+        if (!conversation_kv_verify(saved, st, g, probe::cells, true, before[layer], err)) return false;
+        std::fprintf(stderr, "full-main-context-probe: kv=%zu kind=%s capacity=%lld cells=%lld mode=%d format=%d "
+                             "pages=%lld slots=%lld host=%d pooled_rows=%lld bytes=%zu,%zu,%zu,%zu,%zu before_fnv1a=%016llx\n",
+                     layer, "main", (long long) st.max_cells, (long long) saved.cells,
+                     st.kv_mode, saved.format, (long long) st.n_pages, (long long) st.n_slots, int(st.host.present()),
+                     (long long) saved.pooled_rows, saved.k.size(), saved.v.size(), saved.k_scale.size(),
+                     saved.v_scale.size(), saved.pooled.size(), (unsigned long long) before[layer]);
+    }
+    // GDN recurrence + convolution history, PLE and indexer running floats.
+    // memcpy avoids alignment assumptions about byte-vector storage.
+    for (const auto* part : {&image.live.gdn, &image.live.ple, &image.live.tails, &image.live.dead}) {
+        if (part->empty() || part->size() % sizeof(float)) { err = "main probe: invalid float state extent"; return false; }
+        for (size_t at = 0; at < part->size(); at += sizeof(float)) {
+            float value;
+            std::memcpy(&value, part->data() + at, sizeof value);
+            if (!std::isfinite(value)) { err = "main probe: nonfinite running state"; return false; }
+        }
+    }
+    for (const auto& kv : image.kv) {
+        if (!kv.pooled.visit(0, kv.pooled.size(), [&](const uint8_t* data, size_t count, size_t) {
+            if (count % sizeof(float)) return false;
+            for (size_t at = 0; at < count; at += sizeof(float)) {
+                float value; std::memcpy(&value, data + at, sizeof value);
+                if (!std::isfinite(value)) return false;
+            }
+            return true;
+        })) { err = "main probe: nonfinite pooled index state"; return false; }
+        for (const auto* scales : {&kv.k_scale, &kv.v_scale})
+            if (!scales->visit(0, scales->size(), [&](const uint8_t* data, size_t count, size_t) {
+                if (count % sizeof(uint16_t)) return false;
+                for (size_t at = 0; at < count; at += sizeof(uint16_t)) {
+                    uint16_t value; std::memcpy(&value, data + at, sizeof value);
+                    if ((value & 0x7c00u) == 0x7c00u) return false;
+                }
+                return true;
+            })) { err = "main probe: nonfinite K/V scale"; return false; }
+    }
+    std::fprintf(stderr, "full-main-context-probe: finite_running_and_index_state=pass scale_guard=pass gdn_bytes=%zu ple_bytes=%zu tails_bytes=%zu dead_bytes=%zu block_pos_bytes=%zu\n",
+                 image.live.gdn.size(), image.live.ple.size(), image.live.tails.size(), image.live.dead.size(), image.live.block_pos.size());
+    const uint64_t running_before = full_probe_checkpoint_hash(image.live);
+    running = image.live;
+    for (auto* part : {&running.gdn, &running.ple, &running.tails, &running.dead, &running.block_pos})
+        for (auto& byte : *part) byte ^= 0xff;
+    if (!conversation_checkpoint_restore(running, ss, g, err)) return false;
+    if (!conversation_checkpoint_save(running, ss, g, err)) return false;
+    if (running.gdn == image.live.gdn || running.ple == image.live.ple || running.tails == image.live.tails ||
+        running.dead == image.live.dead || running.block_pos == image.live.block_pos) {
+        err = "main probe: running-state poison negative check failed"; return false;
+    }
+    for (size_t layer = 0; layer < states.size(); ++layer)
+        if (!full_probe_poison(image.kv[layer], *states[layer], err)) return false;
+    if (!strata::gpu::device_sync()) {
+        err = std::string("probe poison completion failed: ") + strata::gpu::last_error(); return false;
+    }
+    for (size_t layer = 0; layer < states.size(); ++layer) {
+        uint64_t hash = 0;
+        std::string poison_error;
+        if (conversation_kv_verify(image.kv[layer], *states[layer], g, probe::cells, true, hash, poison_error) ||
+            poison_error != "conversation snapshot: restored K/V bytes differ") {
+            err = "probe: poisoned K/V negative check failed: " + poison_error; return false;
+        }
+    }
+    const ConversationRestore restored = conversation_snapshot_restore(image, ss, g, err);
+    std::fprintf(stderr, "full-main-context-probe: restore_status=%s method=in-place-poison-restore\n",
+                 restored == ConversationRestore::restored ? "restored" :
+                 restored == ConversationRestore::invalid ? "invalid" : "transfer_failed");
+    if (restored != ConversationRestore::restored || !strata::gpu::device_sync()) {
+        if (err.empty()) err = std::string("probe restore completion failed: ") + strata::gpu::last_error();
+        return false;
+    }
+    for (size_t layer = 0; layer < states.size(); ++layer) {
+        uint64_t after = 0;
+        if (!conversation_kv_verify(image.kv[layer], *states[layer], g, probe::cells, true, after, err)) return false;
+        if (after != before[layer]) { err = "probe: restored K/V fingerprint differs"; return false; }
+        std::fprintf(stderr, "full-main-context-probe: kv=%zu after_fnv1a=%016llx authoritative_bytes_verified=all ring_verified=%d\n",
+                     layer, (unsigned long long) after, int(states[layer]->kv_mode == 2));
+    }
+    // Reuse the small checkpoint allocation; never recapture another full K/V image.
+    if (!conversation_checkpoint_save(running, ss, g, err)) return false;
+    if (running.gdn != image.live.gdn || running.ple != image.live.ple || running.tails != image.live.tails ||
+        running.dead != image.live.dead || running.block_pos != image.live.block_pos ||
+        ss.ple_prev[0] != ids[ids.size() - 2] || ss.ple_prev[1] != ids.back()) {
+        err = "probe: restored running checkpoint differs"; return false;
+    }
+    for (size_t layer = 0; layer < main_layers; ++layer)
+        if (states[layer]->kv_mode == 1) strata::kernels::kv_stream_reset(states[layer]->map, main_cs);
+    if (!strata::gpu::stream_sync(main_cs) || !strata::gpu::device_sync()) {
+        err = std::string("probe residency invalidation completion failed: ") + strata::gpu::last_error(); return false;
+    }
+    std::fprintf(stderr, "full-main-context-probe: PASS capacity=262144 final_pos=262143 running_before_fnv1a=%016llx "
+                         "running_after_fnv1a=%016llx main_residency=invalidated generated=0 inference_after_restore=0\n",
+                 (unsigned long long) running_before, (unsigned long long) full_probe_checkpoint_hash(running));
+    return true;
+}
+
 using ConvStateSizes = strata::core::ConversationStateSizes;
 
 ConvStateSizes conv_state_sizes(const strata::core::ModelGeometry& g) {
@@ -2139,7 +2338,7 @@ int main(int argc, char** argv) {
     bool raw_full_probe = false, raw_benchmark = false;
     for (int i = 1; i < argc; ++i) {
         const std::string flag = argv[i];
-        raw_full_probe = raw_full_probe || flag == "--full-context-probe";
+        raw_full_probe = raw_full_probe || (flag == "--full-context-probe" || flag == "--full-main-context-probe");
         raw_benchmark = raw_benchmark || flag == "--hw-bench" || flag == "--kernel-bench";
     }
     if (raw_full_probe && raw_benchmark) {
@@ -2184,6 +2383,10 @@ int main(int argc, char** argv) {
                 std::fprintf(stderr, "malformed token file: %s\n", error.c_str()); return 2;
             }
             have_tokens = true;
+        }
+        else if (a == "--full-main-context-probe") {
+            if (o.full_main_context_probe) { std::fprintf(stderr, "duplicate --full-main-context-probe\n"); return 2; }
+            o.full_main_context_probe = true;
         }
         else if (a == "--full-context-probe") {
             if (o.full_context_probe) { std::fprintf(stderr, "duplicate --full-context-probe\n"); return 2; }
@@ -2496,6 +2699,33 @@ int main(int argc, char** argv) {
             std::fprintf(stderr, "full-context-probe: cannot select synchronized MTP records\n"); return 2;
         }
     }
+    if (o.full_main_context_probe) {
+        namespace probe = strata::program::full_context_probe;
+        // Dumps controlled through the environment must not bypass the CLI gate.
+        for (const char* name : {"STRATA_PREFILL_DUMP_R_ALL", "STRATA_QSA_DUMP", "STRATA_IDX_FP16_CHECK"}) {
+            const char* value = std::getenv(name);
+            if (value && value[0] != '\0' && std::strcmp(value, "0") != 0) {
+                std::fprintf(stderr, "full-main-context-probe: incompatible debug environment %s\n", name); return 2;
+            }
+        }
+        bool remote = false;
+        for (int slots : o.expert_cache_remote) remote = remote || slots != 0;
+        if (!have_tokens || !probe_numbers_valid || !probe::exact_extent(o.tokens.size(), o.max_context) || o.max_new != 0 ||
+            o.native_preset.empty() || !o.mtp.empty() || o.spec != 0 || o.full_context_probe || o.prefill_chunk <= 0 || o.prefill_chunk > probe::cells || o.prefill_auto ||
+            !o.no_prefill_borrow || o.prefill_until != 0 || o.serve || o.batch != 0 || o.batch_groups != 1 ||
+            o.batch_mtp == 1 || o.batch_cpu_split[0] != 0 || o.batch_cpu_split[1] != 0 ||
+            !o.layer_split.empty() || !o.split_device.empty() || remote || o.pipeline_windows != 0 || o.vision ||
+            o.graph_only || o.gpu_only_full || o.gpu_stages || o.stage_timing || o.no_pool || o.no_capture ||
+            !o.spec_oracle.empty() || !o.spec_follow.empty() || o.spec_corrupt != 0 || !o.window_hashes.empty() ||
+            !o.dump_logits.empty() || !o.dump_residual.empty() || !o.dump_mixed.empty() || !o.dump_layers.empty() ||
+            !o.dump_halves.empty() || !o.dump_routing.empty() || !o.dump_final_r.empty() ||
+            !o.conversation_save.empty() || !o.expert_profile_save.empty() || o.adapt_async > 0 || o.kv_grow > 0 ||
+            o.vram_elastic || o.lookup_chain > 0 || o.mtp_max_t > 0 || o.no_ple || o.keep_canonical) {
+            std::fprintf(stderr, "full-main-context-probe: requires native/main-only full262144 input and physical capacity, "
+                                 "--max-new 0, fixed batched prefill without borrowing, no MTP/speculation, and one GPU; "
+                                 "serve/batch/benchmarks/dumps/ablations are incompatible\n"); return 2;
+        }
+    }
     // Layer split (multi-GPU): the later stages run layers [K_i, K_i+1) on their own GPUs (--split-device, default
     // the next discrete ones); "auto" chooses the K before anything is loaded (below).  The helper caches
     // (--expert-cache-remote) are not carried by the Xe engine at all (remote_experts.cpp).
@@ -2803,7 +3033,7 @@ int main(int argc, char** argv) {
         std::fprintf(stderr, "strata generate: --max-context must be below 2^31\n");
         return 2;
     }
-    if (!o.full_context_probe && (o.max_new <= 0 || o.max_context <= 0 || o.max_new > o.max_context ||
+    if (!o.full_context_probe && !o.full_main_context_probe && (o.max_new <= 0 || o.max_context <= 0 || o.max_new > o.max_context ||
         o.tokens.size() > (size_t) (o.max_context - o.max_new))) {
         std::fprintf(stderr, "strata generate: positive --max-new and --max-context must fit the prompt and generation\n");
         return 2;
@@ -2907,7 +3137,7 @@ int main(int argc, char** argv) {
         }
     }
     const bool native_pack = strata::kernels::cpu::expert_layout().native;
-    if (o.full_context_probe && !native_pack) {
+    if ((o.full_context_probe || o.full_main_context_probe) && !native_pack) {
         std::fprintf(stderr, "full-context-probe: requires a native model pack\n"); return 2;
     }
     if (o.expert_cache_remote[0] > 0) {
@@ -3506,7 +3736,7 @@ int main(int argc, char** argv) {
             return 2;
         }
     }
-    if (!o.full_context_probe &&
+    if (!o.full_context_probe && !o.full_main_context_probe &&
         !strata::core::context_bounds::admission(o.max_context, (int64_t) o.tokens.size(), o.max_new)) {
         std::fprintf(stderr, "strata generate: --max-context %lld cannot hold %zu prompt + %lld new tokens\n",
                      (long long) o.max_context, o.tokens.size(), (long long) o.max_new);
@@ -3525,7 +3755,7 @@ int main(int argc, char** argv) {
         // expert cache in 2 MiB physical segments ran its prompts 45% slower there (the K/V alone was as fast as
         // before); the RTX 4070 reports 2 MiB and was faster in every measure (DETAILS).
         const bool asked = want > 0 || (want < 0 && strata::core::vmm_large_pages());
-        const bool on = !o.full_context_probe && asked && !multi_gpu && o.kv_resident <= 0 && !o.expert_profile.empty() &&
+        const bool on = !o.full_context_probe && !o.full_main_context_probe && asked && !multi_gpu && o.kv_resident <= 0 && !o.expert_profile.empty() &&
                         !o.resident_cpu_experts && o.expert_cache != 0 && !remote && strata::core::vmm_available() &&
                         // the batch slots carve their own K/V and --vram-elastic's cache is not one VMM range
                         o.batch == 0 && !o.vram_elastic;
@@ -3968,9 +4198,9 @@ int main(int argc, char** argv) {
     const strata::core::WeightRef* wo = wt.find("output.weight");
     if (wo == nullptr) { std::fprintf(stderr, "strata generate: output.weight is missing\n"); return 1; }
     const int64_t n_vocab = wo->ne1;
-    if (o.full_context_probe) {
+    if (o.full_context_probe || o.full_main_context_probe) {
         namespace probe = strata::program::full_context_probe;
-        if (!probe::valid_token(o.full_context_terminal, n_vocab) ||
+        if ((o.full_context_probe && !probe::valid_token(o.full_context_terminal, n_vocab)) ||
             !std::all_of(o.tokens.begin(), o.tokens.end(), [&](int64_t id) { return probe::valid_token(id, n_vocab); })) {
             std::fprintf(stderr, "full-context-probe: every input and terminal probe ID must be in the vocabulary\n"); return 2;
         }
@@ -10304,7 +10534,7 @@ int main(int argc, char** argv) {
     std::vector<float> final_r_host(final_r ? (size_t) (g.hc * g.n_embd) : 0);
     std::vector<std::pair<int32_t, int32_t>> lent;     // (residency index, slot) lent to the prompt path
     std::optional<FullProbeDrain> diagnostic_drain;
-    if (o.full_context_probe) diagnostic_drain.emplace();   // also covers Prefill init / MTP bind failures
+    if (o.full_context_probe || o.full_main_context_probe) diagnostic_drain.emplace();   // also covers Prefill init / MTP bind failures
     if (o.prefill_chunk > 0 && n_prompt > 1) {
         void* borrow = nullptr;
         uint64_t borrow_bytes = 0;
@@ -10349,6 +10579,13 @@ int main(int argc, char** argv) {
                           host_res.empty() ? nullptr : host_res.data(), o.prefill_chunk, main_cs, err, borrow,
                           borrow_bytes)) {
             std::fprintf(stderr, "strata generate: %s\n", err.c_str());
+            return 1;
+        }
+        if (o.full_main_context_probe) {
+            try {
+                if (run_full_main_context_probe(o, prefill, ss, g, main_cs, err)) return 0;
+            } catch (const std::exception& exception) { err = exception.what(); }
+            std::fprintf(stderr, "full-main-context-probe: FAIL: %s\n", err.c_str());
             return 1;
         }
         if (!o.mtp.empty()) {
