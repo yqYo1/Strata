@@ -144,10 +144,11 @@ void resolve_launch(sycl::queue& queue, const KvStreamMap mm, const int32_t* ids
                     const int b = qi[i] / page_size;
                     if (i > 0 && qi[i - 1] / page_size == b) continue;   // ids are ascending: one lookup per block
                     ++lookups;
-                    const int sl = mm.page_table[b];
+                    // Different queries can select the same block from different work-items.
+                    const int sl = global_atomic<int32_t>(mm.page_table[b]).load();
                     if (sl >= 0) {
-                        mm.slot_stamp[sl] = epoch;
-                        mm.slot_ref[sl] = 1;
+                        global_atomic<int32_t>(mm.slot_stamp[sl]).store(epoch);
+                        global_atomic<int32_t>(mm.slot_ref[sl]).store(1);
                     } else if (sl == -1) {
                         int expected = -1;
                         if (global_atomic<int32_t>(mm.page_table[b]).compare_exchange_strong(expected, -2))
