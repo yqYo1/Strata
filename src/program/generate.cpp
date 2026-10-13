@@ -4110,7 +4110,7 @@ int main(int argc, char** argv) {
         return !value || std::strcmp(value, "0") == 0;
     };
     if (phase_cache && (!o.serve || multi_gpu || split_same || !stages.empty() || !o.mtp.empty() || o.batch != 0 ||
-        o.pipeline_windows != 1 || !o.no_prefill_borrow || o.prefill_auto || o.prefill_chunk != 8192 ||
+        o.pipeline_windows != 0 || !o.no_prefill_borrow || o.prefill_auto || o.prefill_chunk != 8192 ||
         o.no_pool || o.pcie_frac != 0.0 || o.adapt_swaps != 0 || o.vram_elastic || o.kv_grow != 0 ||
         o.max_context != 262144 || o.kv != "int8" || o.kv_resident != 32768 || o.prompt_cache != 0 ||
         o.conversation_cache_mib != 0 || !o.conversation_save.empty() || o.vision || o.resident_cpu_experts ||
@@ -4125,7 +4125,7 @@ int main(int argc, char** argv) {
         !phase_env_is("STRATA_PREFILL_FIRST", "0") || !phase_env_is("STRATA_PREFILL_ISSUER", "0") ||
         !phase_env_off("STRATA_PREFILL_CPU_SHARE") ||
         !phase_env_off("STRATA_PREFILL_CPU_GATE")))
-        phase_fatal("unsupported mode: require serve/singleGPU/noMTP/noBorrow/chunk8192/batch0/pipeline1/PCIe0/"
+        phase_fatal("unsupported mode: require serve/singleGPU/noMTP/noBorrow/chunk8192/batch0/pipeline0/PCIe0/"
                     "adapt0/nativeHostUSM/cache128-perlayer/int8KV32768/context262144/noGrow/noReuse/segmented1/"
                     "deviceplan0/residentgraph0/native-dequant-batch1");
     // Experimental +16 ranked experts/layer: bounded source-v3 comparison quota,
