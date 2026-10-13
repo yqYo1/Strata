@@ -9,6 +9,7 @@
 #include "strata/core/on_device.hpp"
 #include "strata/core/per_device.hpp"
 #include "strata/core/runtime.hpp"
+#include "strata/core/phase_serve_cycle.hpp"
 
 #include "strata/core/layout.hpp"
 #include "strata/kernels/cpu/expert.hpp"
@@ -202,10 +203,13 @@ struct Alloc {
     bool count_only = false;
     std::vector<void*>* owned = nullptr;
     template <typename T> T* take(size_t n, bool& ok) {
-        const uint64_t bytes = ((uint64_t) n * sizeof(T) + 256 + 255) & ~255ull;
+        constexpr uint64_t limit = std::numeric_limits<uint64_t>::max();
+        if (n > (limit - 511) / sizeof(T)) throw std::overflow_error("prefill: aligned take overflow");
+        const uint64_t bytes = (static_cast<uint64_t>(n) * sizeof(T) + 511) & ~255ull;
+        if (bytes > limit - used) throw std::overflow_error("prefill: allocation count overflow");
         if (count_only) { used += bytes; return nullptr; }
         if (base != nullptr) {
-            if (used + bytes > cap) { ok = false; failed_bytes = bytes; return nullptr; }
+            if (used > cap || bytes > cap - used) { ok = false; failed_bytes = bytes; return nullptr; }
             T* p = (T*) (base + used);
             used += bytes;
             return p;
@@ -568,10 +572,39 @@ constexpr int64_t GEMM_SCRATCH = 32ll << 20;        // FP16 elements for the lar
 // of the largest holds them all.  That is ~260 KB of the ~680 KB a prompt token cost - which is what lets a chunk
 // grow (every expert is streamed once per chunk, so a bigger chunk streams fewer bytes per token).  The sizes are
 // counted with the same `take` sequence `init` uses; a mismatch makes `init` fail with "do not fit", never overlap.
+// Frozen process-wide opt-in: sizing and every owned/borrowed carve see the same value.
+void validate_phase_capacity(const core::ModelGeometry& g, const core::SessionState& ss, int64_t chunk) {
+    // Narrow bounds cover every T*stride, route index and launch extent in this
+    // newly admitted fixed-capacity path; they are model geometry, not GPU IDs.
+    if (sizeof(size_t) < 8 || chunk != 12288 || g.n_embd != N || g.hc != HC || g.hc_lr != LR ||
+        g.n_layers != 48 || g.n_expert != 512 || g.n_ff != 640 || g.qsa_interval != 4 ||
+        g.ssm_state_size != 128 || g.ssm_k_heads != 16 || g.ssm_v_heads != HV ||
+        g.ssm_d_conv != 4 || g.ssm_conv_channels != C || g.ssm_value_dim != ZV ||
+        g.n_head != 24 || g.n_head_kv != 2 || g.head_dim != 256 ||
+        g.idx_q_heads != 4 || g.idx_key_dim != 128 || ss.k != K || ss.max_cells != 262144 ||
+        !ss.qsa_states || ss.qsa_alloc != 12 || ss.qsa_ord0 != 0 || stage_own())
+        throw std::runtime_error("prefill: 12288 phase capacity requires bounded stock geometry and counted KV stage");
+    for (int64_t i = 0; i < ss.qsa_alloc; ++i) {
+        const auto& q = ss.qsa_states[i];
+        if (q.max_cells != 262144 || q.kv_mode != 1 || !q.kv_int8 || q.kv_q4 || q.kv_hybrid ||
+            q.n_pages != 65536 || q.n_slots != 8192)
+            throw std::runtime_error("prefill: 12288 phase capacity requires full mode1/int8 KV and resident32768");
+    }
+}
+bool scratch_alias_enabled() {
+    static const bool on = [] {
+        const char* v = std::getenv("STRATA_PREFILL_SCRATCH_ALIAS");
+        return v != nullptr && v[0] == '1' && v[1] == '\0';
+    }();
+    return on;
+}
+static_assert(C >= ZV, "GDN y must fit in the retired qkv plane");
 uint64_t gdn_set_bytes(size_t T) {
     Alloc a; a.count_only = true; bool ok = true;
     a.take<float>(T * C, ok); a.take<float>(T * ZV, ok); a.take<float>(T * 2 * HV, ok); a.take<float>(T * HV, ok);
-    a.take<float>(T * HV, ok); a.take<float>(T * C, ok); a.take<float>(T * ZV, ok); a.take<uint16_t>(T * ZV, ok);
+    a.take<float>(T * HV, ok); a.take<float>(T * C, ok);
+    if (!scratch_alias_enabled()) a.take<float>(T * ZV, ok);
+    a.take<uint16_t>(T * ZV, ok);
     return a.used;
 }
 uint64_t qsa_set_bytes(size_t T, int64_t cap, int64_t max_blocks, int64_t sel_batch, int64_t attn_batch,
@@ -662,7 +695,16 @@ bool Prefill::init(const core::WeightTable& wt, const core::ModelGeometry& g, co
                    void* stream, std::string& err, void* borrow, uint64_t borrow_bytes) {
     Impl& m = *impl_;
     m.wt = &wt; m.g = &g; m.ss = &ss; m.src = src; m.cache = cache; m.host_res = host_res;
+    if (chunk == 12288 && core::phase_cache_requested()) {
+        try { validate_phase_capacity(g, ss, chunk); }
+        catch (const std::exception& exception) { err = exception.what(); return false; }
+    }
     m.T = chunk; m.cs = stream; m.stats = &stats_;
+    if (scratch_alias_enabled() &&
+        !core::Runtime::get().stream(stream).has_property<sycl::property::queue::in_order>()) {
+        err = "prefill: STRATA_PREFILL_SCRATCH_ALIAS requires an in-order compute queue";
+        return false;
+    }
     // Reject unsupported opt-ins before allocating anything: MMQ GU stays route-sized, and the existing NaN
     // diagnostic needs all GU rows at once. A compact run must use the ordered queue contract of Runtime.
     m.compact_moe = compact_moe_enabled();
@@ -785,7 +827,14 @@ bool Prefill::carve(size_t T, void* alloc) {
     m.xn16 = o.take<uint16_t>(T * D, ok); m.lo = o.take<float>(T * LR, ok); m.lo16 = o.take<uint16_t>(T * LR, ok);
     m.gated = o.take<float>(T * D, ok); m.inj = o.take<float>(T * HC, ok);
     m.mixed = o.take<float>(T * N, ok); m.mixed_bf = o.take<uint16_t>(T * N, ok);
-    m.mixed_h = o.take<uint16_t>(T * N, ok); m.bo = o.take<float>(T * N, ok);
+    m.mixed_h = o.take<uint16_t>(T * N, ok);
+    // emb's last reader is gr_broadcast on cs (or no embedding at all with hand_in).
+    // Layer 0's bo last reader is gr_write[_norm_rs/_cvec_norm_rs], before ple_land.
+    // Layer 1's batched/per-token PLE reads finish on cs before its first bo write.
+    // Stages starting later never read ple_emb; stages ending before layer 1 land
+    // it after their last bo read. Image rows, BF16x2 and MMQ do not alter these
+    // boundaries. Skip take entirely: owned must contain only the one allocation.
+    m.bo = scratch_alias_enabled() ? m.emb : o.take<float>(T * N, ok);
     if (bf16x2_hc()) { m.xn16_lo = o.take<uint16_t>(T * D, ok); m.lo16_lo = o.take<uint16_t>(T * LR, ok); }
     if (bf16x2()) m.mixed_bf_lo = o.take<uint16_t>(T * N, ok);
     m.steps_dev = o.take<int32_t>(T * strata::kernels::kStepCount, ok);
@@ -805,7 +854,8 @@ bool Prefill::carve(size_t T, void* alloc) {
         a.base = base; a.cap = region; a.owned = &m.owned;
         m.qkv = a.take<float>(T * C, ok); m.z = a.take<float>(T * ZV, ok); m.ab = a.take<float>(T * 2 * HV, ok);
         m.gate = a.take<float>(T * HV, ok); m.beta = a.take<float>(T * HV, ok); m.hbuf = a.take<float>(T * C, ok);
-        m.y = a.take<float>(T * ZV, ok); m.y_h = a.take<uint16_t>(T * ZV, ok);
+        m.y = scratch_alias_enabled() ? m.qkv : a.take<float>(T * ZV, ok);
+        m.y_h = a.take<uint16_t>(T * ZV, ok);
         Alloc b;
         b.base = base; b.cap = region; b.owned = &m.owned;
         m.Kc = b.take<float>(T * 512, ok); m.Vc = b.take<float>(T * 512, ok); m.Qf = b.take<float>(T * 12288, ok);
@@ -872,10 +922,22 @@ bool Prefill::carve(size_t T, void* alloc) {
             m.used_of[i] = i;
         }
     }
-    m.ple_emb = o.take<float>(T * N, ok);
+    m.ple_emb = scratch_alias_enabled() ? m.emb : o.take<float>(T * N, ok);
     m.ple_norm = o.take<float>((size_t) strata::kernels::NG_HC_DIM, ok);
     take_stage(o, ss, s, m.stage, ok);
     m.T = (int64_t) T;
+    if (ok && scratch_alias_enabled() && std::getenv("STRATA_TRACE")) {
+        const uint64_t gd = gdn_set_bytes(T);
+        const uint64_t qs = qsa_set_bytes(T, m.cap, m.max_blocks, m.sel_batch, m.attn_batch, s);
+        const uint64_t mo = moe_set_bytes(T, g.n_expert);
+        std::fprintf(stderr, "strata prefill scratch alias: T=%zu borrowed=%d requested=%llu "
+                     "gdn=%llu qsa=%llu moe=%llu region=%llu winner=%s "
+                     "emb=%p bo=%p ple_emb=%p qkv=%p y=%p\n", T, (int) m.borrowed,
+                     (unsigned long long) o.used, (unsigned long long) gd, (unsigned long long) qs,
+                     (unsigned long long) mo, (unsigned long long) m.region_bytes,
+                     gd == m.region_bytes ? "gdn" : qs == m.region_bytes ? "qsa" : "moe",
+                     (void*) m.emb, (void*) m.bo, (void*) m.ple_emb, (void*) m.qkv, (void*) m.y);
+    }
     return ok;
 }
 
@@ -1064,6 +1126,7 @@ double Prefill::pinned_share() { return g_pinned_share; }
 
 uint64_t Prefill::bytes_needed(const core::ModelGeometry& g, const core::SessionState& ss, int64_t chunk) {
     // the same allocation sequence as `init`, counted
+    if (chunk == 12288 && core::phase_cache_requested()) validate_phase_capacity(g, ss, chunk);
     const size_t T = (size_t) chunk;
     bool ok = true;
     Alloc o;
@@ -1071,7 +1134,8 @@ uint64_t Prefill::bytes_needed(const core::ModelGeometry& g, const core::Session
     o.take<uint16_t>((size_t) GEMM_SCRATCH, ok);
     auto f = [&](size_t n) { o.take<float>(n, ok); };
     f(T * N); f(T * D); f(T * HC); o.take<uint16_t>(T * D, ok); f(T * LR); o.take<uint16_t>(T * LR, ok);
-    f(T * D); f(T * HC); f(T * N); o.take<uint16_t>(T * N, ok); o.take<uint16_t>(T * N, ok); f(T * N);
+    f(T * D); f(T * HC); f(T * N); o.take<uint16_t>(T * N, ok); o.take<uint16_t>(T * N, ok);
+    if (!scratch_alias_enabled()) f(T * N);
     if (bf16x2_hc()) { o.take<uint16_t>(T * D, ok); o.take<uint16_t>(T * LR, ok); }
     if (bf16x2()) o.take<uint16_t>(T * N, ok);
     o.take<int32_t>(T * strata::kernels::kStepCount, ok);
@@ -1100,11 +1164,54 @@ uint64_t Prefill::bytes_needed(const core::ModelGeometry& g, const core::Session
         }
     }
     for (int i = 0; i < ring_slots(T); ++i) o.take<uint8_t>((size_t) MAXBLOB(), ok);
-    f(T * N);
+    if (!scratch_alias_enabled()) f(T * N);
     f((size_t) strata::kernels::NG_HC_DIM);
     strata::kernels::KvHostPools stage;
     take_stage(o, ss, s, stage, ok);
+    if (!ok || o.used > std::numeric_limits<uint64_t>::max() - (8u << 20))
+        throw std::overflow_error("prefill: workspace count overflow");
     return o.used + (8u << 20);   // alignment slack
+}
+
+PhaseCapacityEstimate Prefill::phase_capacity_estimate(const core::WeightTable& wt,
+        const core::ModelGeometry& g, const core::SessionState& ss, int64_t chunk) {
+    validate_phase_capacity(g, ss, chunk);
+    const size_t T = static_cast<size_t>(chunk);
+    const auto shapes = strata::kernels::qsa_real_shapes();
+    PhaseCapacityEstimate result;
+    result.workspace = bytes_needed(g, ss, chunk);
+    result.tokens = T * sizeof(int32_t);
+    result.identity = static_cast<uint64_t>(ss.qsa_states[ss.qsa_primary()].n_pages) * sizeof(int32_t);
+    Alloc stage; stage.count_only = true; bool ok = true;
+    strata::kernels::KvHostPools pools;
+    take_stage(stage, ss, shapes, pools, ok);
+    result.stage_in_workspace = stage.used;
+    result.gdn = gdn_set_bytes(T);
+    result.qsa = qsa_set_bytes(T, strata::kernels::qsa_selection_width(strata::kernels::kTopkMaxCells, shapes),
+                             262144 / shapes.idx_block + 2, 256, 32, shapes);
+    result.moe = moe_set_bytes(T, g.n_expert);
+    // Lane dispatch may fail at runtime: retain the chooser's full conditional
+    // peak unless explicit controls exclude the branch. Actual run T <= capacity.
+    const char* keyhead = std::getenv("STRATA_GDN_KEYHEAD");
+    if (!std::getenv("STRATA_GDN_REC_HEADS") && (!keyhead || std::strcmp(keyhead, "0") != 0))
+        result.chooser = T * HV * 128 * sizeof(float) + 128ull * HV * 128 * sizeof(float);
+    const char* bf16_tc = std::getenv("STRATA_BF16_TC");
+    if ((!bf16_tc || std::strcmp(bf16_tc, "0") != 0) && strata::kernels::f16_only_matrix_engines()) {
+        // Bound all BF16 image shapes, including unused tensors: requested bound,
+        // not proof of backend/provider physical peak. No model-specific head size.
+        for (const auto& entry : wt.all()) {
+            const auto& w = entry.second;
+            if (w.kind != core::WeightKind::Bf16InF32 || !w.data || w.ne1 <= 1) continue;
+            if (w.ne0 <= 0 || w.ne0 > 16777216 || w.ne1 > 16777216 ||
+                static_cast<uint64_t>(w.ne1) > std::numeric_limits<uint64_t>::max() / 2 / static_cast<uint64_t>(w.ne0))
+                throw std::runtime_error("prefill: unbounded lazy GEMM shape");
+            result.lazy_gemm = std::max(result.lazy_gemm, static_cast<uint64_t>(w.ne1) * static_cast<uint64_t>(w.ne0) * 2);
+        }
+        if (result.lazy_gemm > std::numeric_limits<uint64_t>::max() - (32ull << 20))
+            throw std::overflow_error("prefill: lazy GEMM peak overflow");
+        result.lazy_gemm += 32ull << 20; // Gemm's fixed kXSliceElems input-image cap
+    }
+    return result;
 }
 
 namespace {
@@ -1663,6 +1770,10 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
                     pt.mark(kPfGdnConv, cs);   // "gdn" is the projections in; the rest on their own lines
                     gdn_gates(m.ab, (const float*) wdt->data, (const float*) wsa->data, m.gate, m.beta, T, m.cs);
                     gdn_conv(conv, m.qkv, (const float*) wc->data, m.hbuf, T, EPS, m.cs);
+                    // Conv is qkv's last reader. The in-order cs completes it before
+                    // recurrence materializes FP32 y in qkv's T*C >= T*ZV span.
+                    // Keep raw y: the recurrence's output normalizer reads it to
+                    // produce y_h; neither its math nor its completion changes.
                     pt.mark(kPfGdnRec, cs);
                     gdn_recurrence(state, m.hbuf, m.gate, m.beta, m.z, (const float*) wnm->data, EPS, m.y, m.y_h, T, m.cs);
                     pt.mark(kPfGdnOut, cs);

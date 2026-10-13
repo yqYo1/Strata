@@ -1,0 +1,278 @@
+{
+  "main_reviewed": true,
+  "source_parent": "499f226a0f3b46aa1bdcd0314fd0f81558799f6f",
+  "source_pins": {
+    "docs/PHASE_DECODE_CACHE.ja.md": {
+      "sha256": "21eb5d54c3b95ffb6e1d04f0b742b90c9a1523a771fe8e10c08938e78f6de6fd"
+    },
+    "docs/PHASE_DECODE_CACHE.md": {
+      "sha256": "9c932766073d03c6e8b784a2cd2d081fb841af40c5396ffebe40b07a1ce9dec0"
+    },
+    "include/strata/core/head_upload_owner.hpp": {
+      "sha256": "92229d3ee69243868813ef9b256bf4b68d68113d3b09c2adfc08bc86d0a75315"
+    },
+    "include/strata/core/native_head.hpp": {
+      "sha256": "fae5c657629f10471d84d851bfc45a60b52f3da55506359bcc13e6924cd809dd"
+    },
+    "include/strata/core/phase_serve_cycle.hpp": {
+      "sha256": "90dfd8c5683c1c7685c26660ea4343fd2814fbd3516a8f270a817bfbb9e1ba08"
+    },
+    "include/strata/prefill/prefill.hpp": {
+      "sha256": "766f4b8c7b7426fc21bf1e811074990391462ab0defc60d24fd78174fb4c367c"
+    },
+    "src/core/native_head.cpp": {
+      "sha256": "c2e33955c61be6c5866400c4c28be13d48933810a7de1aec8f6a6707f93a6f20"
+    },
+    "src/core/verify.cpp": {
+      "sha256": "0db1e663c6dbe2e2a1d5d79a7f367bd4764ba037909dc9f65f5a3b3f15a2adce"
+    },
+    "src/prefill/prefill.cpp": {
+      "sha256": "58b59c09e38a65dee6c15227bb157de0da5ba1e5d34032c5a368bd3b009e85fe"
+    },
+    "src/program/generate.cpp": {
+      "sha256": "3c610bca5b82695ff90fd3d2cd0a961833f848f04e75e4be602713921315fefc"
+    },
+    "tests/core/phase_cache_owner_test.cpp": {
+      "sha256": "bee18f06d740f7039e02bfffed6290bb6fd8273c7997f81da6559d39d4b27138"
+    }
+  },
+  "free": {
+    "binary_sha256": {
+      "sha256": "c62a7c275c3fca10fd206f8c6435c07f54eea49cf93606b8c2b4203c79d4ac89"
+    },
+    "vmm_fixture_sha256": {
+      "sha256": "12fc8a3a260fd30aca89f1967e15e78f63227fd01241342198480430133881e1"
+    },
+    "host_fixture_sha256": {
+      "sha256": "4d3ffa23854bda5a1d4a0e71c8e860b22acb053a08ed1dfaa7a588e0de4733b2"
+    },
+    "compile_commands_sha256": {
+      "sha256": "9013fe9b11400e2716ca3851293a1f73e3be5f9f9f46d9385d8cac699a16e0a1"
+    },
+    "built": true,
+    "host_ctest_pass": true,
+    "gpu_vmm_executed": false
+  },
+  "contrib_llvm": {
+    "binary_sha256": {
+      "sha256": "3e460311721169319d09a967652dee6f3c954c25550071685b4beb958eb8cd11"
+    },
+    "vmm_fixture_sha256": {
+      "sha256": "12fc8a3a260fd30aca89f1967e15e78f63227fd01241342198480430133881e1"
+    },
+    "host_fixture_sha256": {
+      "sha256": "4d3ffa23854bda5a1d4a0e71c8e860b22acb053a08ed1dfaa7a588e0de4733b2"
+    },
+    "compile_commands_sha256": {
+      "sha256": "ba0cc0c7c605aa9337d46f738202541df771f6b511c27feafa0446a5e7b7d8e6"
+    },
+    "built": true,
+    "host_ctest_pass": true,
+    "gpu_vmm_executed": false
+  },
+  "phase_host": {
+    "binary_sha256": {
+      "sha256": "4d3ffa23854bda5a1d4a0e71c8e860b22acb053a08ed1dfaa7a588e0de4733b2"
+    },
+    "host_ctest_pass": true,
+    "sanitizer": null
+  },
+  "phase_host_asan": {
+    "binary_sha256": {
+      "sha256": "6170b3453a9bf34a069fbd7799dc25c0648991c84aea91c0a42ed34211f02934"
+    },
+    "host_ctest_pass": true,
+    "sanitizer": "address,undefined"
+  },
+  "raw_startup_cases": [
+    {
+      "mode": "free",
+      "case": "canonical-native",
+      "matched_error": "invalid --ple-io/--ple-row-cache/--ple-inflight/--ple-delay-us",
+      "expected_exit": 2,
+      "no_model_or_gpu_submission": true
+    },
+    {
+      "mode": "free",
+      "case": "explicit-head",
+      "matched_error": "invalid --ple-io/--ple-row-cache/--ple-inflight/--ple-delay-us",
+      "expected_exit": 2,
+      "no_model_or_gpu_submission": true
+    },
+    {
+      "mode": "free",
+      "case": "pipeline1",
+      "matched_error": "12288 requires explicit phase/head-lease/scratch-alias=1",
+      "expected_exit": 2,
+      "no_model_or_gpu_submission": true
+    },
+    {
+      "mode": "free",
+      "case": "auto",
+      "matched_error": "12288 requires explicit phase/head-lease/scratch-alias=1",
+      "expected_exit": 2,
+      "no_model_or_gpu_submission": true
+    },
+    {
+      "mode": "free",
+      "case": "mixed8192",
+      "matched_error": "12288 requires explicit phase/head-lease/scratch-alias=1",
+      "expected_exit": 2,
+      "no_model_or_gpu_submission": true
+    },
+    {
+      "mode": "free",
+      "case": "flag01",
+      "matched_error": "12288 requires explicit phase/head-lease/scratch-alias=1",
+      "expected_exit": 2,
+      "no_model_or_gpu_submission": true
+    },
+    {
+      "mode": "free",
+      "case": "phase0",
+      "matched_error": "12288 requires explicit phase/head-lease/scratch-alias=1",
+      "expected_exit": 2,
+      "no_model_or_gpu_submission": true
+    },
+    {
+      "mode": "free",
+      "case": "lease0",
+      "matched_error": "12288 requires explicit phase/head-lease/scratch-alias=1",
+      "expected_exit": 2,
+      "no_model_or_gpu_submission": true
+    },
+    {
+      "mode": "free",
+      "case": "alias0",
+      "matched_error": "12288 requires explicit phase/head-lease/scratch-alias=1",
+      "expected_exit": 2,
+      "no_model_or_gpu_submission": true
+    },
+    {
+      "mode": "free",
+      "case": "missing-head",
+      "matched_error": "12288 requires explicit phase/head-lease/scratch-alias=1",
+      "expected_exit": 2,
+      "no_model_or_gpu_submission": true
+    },
+    {
+      "mode": "free",
+      "case": "prefill-overflow",
+      "matched_error": "--prefill requires a nonnegative bounded integer or auto",
+      "expected_exit": 2,
+      "no_model_or_gpu_submission": true
+    },
+    {
+      "mode": "free",
+      "case": "reserve-overflow",
+      "matched_error": "--vram-reserve-mib requires a bounded nonnegative integer",
+      "expected_exit": 2,
+      "no_model_or_gpu_submission": true
+    },
+    {
+      "mode": "contrib-llvm",
+      "case": "canonical-native",
+      "matched_error": "invalid --ple-io/--ple-row-cache/--ple-inflight/--ple-delay-us",
+      "expected_exit": 2,
+      "no_model_or_gpu_submission": true
+    },
+    {
+      "mode": "contrib-llvm",
+      "case": "explicit-head",
+      "matched_error": "invalid --ple-io/--ple-row-cache/--ple-inflight/--ple-delay-us",
+      "expected_exit": 2,
+      "no_model_or_gpu_submission": true
+    },
+    {
+      "mode": "contrib-llvm",
+      "case": "pipeline1",
+      "matched_error": "12288 requires explicit phase/head-lease/scratch-alias=1",
+      "expected_exit": 2,
+      "no_model_or_gpu_submission": true
+    },
+    {
+      "mode": "contrib-llvm",
+      "case": "auto",
+      "matched_error": "12288 requires explicit phase/head-lease/scratch-alias=1",
+      "expected_exit": 2,
+      "no_model_or_gpu_submission": true
+    },
+    {
+      "mode": "contrib-llvm",
+      "case": "mixed8192",
+      "matched_error": "12288 requires explicit phase/head-lease/scratch-alias=1",
+      "expected_exit": 2,
+      "no_model_or_gpu_submission": true
+    },
+    {
+      "mode": "contrib-llvm",
+      "case": "flag01",
+      "matched_error": "12288 requires explicit phase/head-lease/scratch-alias=1",
+      "expected_exit": 2,
+      "no_model_or_gpu_submission": true
+    },
+    {
+      "mode": "contrib-llvm",
+      "case": "phase0",
+      "matched_error": "12288 requires explicit phase/head-lease/scratch-alias=1",
+      "expected_exit": 2,
+      "no_model_or_gpu_submission": true
+    },
+    {
+      "mode": "contrib-llvm",
+      "case": "lease0",
+      "matched_error": "12288 requires explicit phase/head-lease/scratch-alias=1",
+      "expected_exit": 2,
+      "no_model_or_gpu_submission": true
+    },
+    {
+      "mode": "contrib-llvm",
+      "case": "alias0",
+      "matched_error": "12288 requires explicit phase/head-lease/scratch-alias=1",
+      "expected_exit": 2,
+      "no_model_or_gpu_submission": true
+    },
+    {
+      "mode": "contrib-llvm",
+      "case": "missing-head",
+      "matched_error": "12288 requires explicit phase/head-lease/scratch-alias=1",
+      "expected_exit": 2,
+      "no_model_or_gpu_submission": true
+    },
+    {
+      "mode": "contrib-llvm",
+      "case": "prefill-overflow",
+      "matched_error": "--prefill requires a nonnegative bounded integer or auto",
+      "expected_exit": 2,
+      "no_model_or_gpu_submission": true
+    },
+    {
+      "mode": "contrib-llvm",
+      "case": "reserve-overflow",
+      "matched_error": "--vram-reserve-mib requires a bounded nonnegative integer",
+      "expected_exit": 2,
+      "no_model_or_gpu_submission": true
+    }
+  ],
+  "all_24_startup_cases_passed": true,
+  "server_phase_lifetime_pass": true,
+  "lints_qualified": true,
+  "novel_findings": [],
+  "gpu_executed": false,
+  "model_executed": false,
+  "quality_evaluated": false,
+  "full_physical262144_qualified": false,
+  "physical_fit_qualified": false,
+  "performance_samples": [],
+  "adopted": false,
+  "default_phase_cache": 0,
+  "benchmark_method": "Unchanged upstream bench.sh --long --runs 3; diagnostics never substitute speed samples",
+  "upstream_client_revision": "7695859aa13afb248bdb4d36f9b2e95707db079d",
+  "research_registry_count": 932,
+  "next_step": "Main serialized actual head/alias8K then12K lifecycle/admission diagnostics; production fixed-history and full256K quality gates before adoption; matched official repetitions for unresolved decode effect",
+  "retained_original_failures": [
+    "v2 empty catch lint finding, corrected and rechecked",
+    "v3 controller preflight rejected earlier expected exit2, stopped before any build/test"
+  ],
+  "unchanged_engine_binary_and_startup_proof_inherited_from_v2": true
+}

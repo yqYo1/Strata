@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2026 MistVVK and the XeStrata contributors
 // SPDX-License-Identifier: LGPL-3.0-or-later
 #include "strata/core/phase_cache_owner.hpp"
+#include "strata/core/head_upload_owner.hpp"
 #include "strata/core/phase_serve_cycle.hpp"
 #include <algorithm>
 #include <cstdio>
@@ -20,6 +21,157 @@ namespace {
 using Owner = strata::core::PhaseCacheOwner;
 using Backend = strata::core::PhaseCacheBackend;
 void check(bool value, const char* message) { if (!value) throw std::runtime_error(message); }
+void head_upload_known_fixture() {
+    using Head = strata::core::HeadUploadOwner;
+    for (int allocation_fault : {0, 1, 2, 3, 4}) {
+        Head owner;
+        auto source = std::make_shared<const Head::Payload>(16, uint8_t{0x37});
+        int allocations = 0, frees = 0, uploads = 0, conversions = 0;
+        auto allocate = [&](void** pointer, size_t bytes) {
+            ++allocations;
+            if (allocation_fault == allocations) return false;
+            if (allocation_fault == allocations + 2) throw std::bad_alloc();
+            *pointer = new uint8_t[bytes]; return true;
+        };
+        auto free = [&](void* pointer) { ++frees; delete[] static_cast<uint8_t*>(pointer); };
+        auto upload = [&](void* dst, const void* src, size_t bytes) {
+            ++uploads; std::memcpy(dst, src, bytes); return true;
+        };
+        auto convert = [&](void*) { ++conversions; return true; };
+        bool success = false;
+        try { success = owner.stage(source, source->data(), 16, 8, allocate, free, upload, convert); }
+        catch (const std::bad_alloc&) { check(allocation_fault >= 3, "unexpected head allocation throw"); }
+        if (allocation_fault) {
+            check(!success && !owner.uncertain() && !owner.weights() && !owner.scratch() && !owner.source(),
+                  "head no-submission allocation failure retained/poisoned owner");
+            check(uploads == 0 && conversions == 0 && frees == (allocation_fault == 2 || allocation_fault == 4),
+                  "head allocation failure unsafe cleanup/submission");
+            const int original_fault = allocation_fault;
+            allocation_fault = 0; // same owner can retry a known no-submission failure
+            success = owner.stage(source, source->data(), 16, 8, allocate, free, upload, convert);
+            allocation_fault = original_fault;
+        }
+        check(success && !owner.uncertain() && owner.weights() && owner.scratch() && !owner.source(),
+              "head successful staged ownership incomplete");
+        const int calls = allocations;
+        check(!owner.stage(source, source->data(), 16, 8, allocate, free, upload, convert) && allocations == calls,
+              "head live owner accepted duplicate upload");
+        check(owner.clear(free) && !owner.weights() && !owner.scratch(), "head known-complete cleanup failed");
+    }
+    // Same metadata/size but changed file-like bytes cannot replace a leased head.
+    std::vector<uint8_t> file_bytes(16);
+    for (size_t i = 0; i < file_bytes.size(); ++i) file_bytes[i] = static_cast<uint8_t>(i * 19 + 7);
+    const auto expected = file_bytes;
+    auto original = Head::snapshot(file_bytes.data(), file_bytes.size());
+    file_bytes.assign(16, 0x91);
+    Head owner;
+    auto allocate = [](void** pointer, size_t bytes) { *pointer = new uint8_t[bytes]; return true; };
+    auto free = [](void* pointer) { delete[] static_cast<uint8_t*>(pointer); };
+    auto upload = [](void* dst, const void* src, size_t bytes) { std::memcpy(dst, src, bytes); return true; };
+    for (int cycle = 0; cycle < 2; ++cycle) {
+        check(owner.stage(original, original->data(), 16, 8, allocate, free, upload,
+                          [](void*) { return true; }), "immutable head initial/reload upload failed");
+        check(std::memcmp(owner.weights(), expected.data(), expected.size()) == 0 && *original == expected,
+              "head reload used changed same-metadata source");
+        check(owner.clear(free), "immutable head release failed");
+    }
+}
+#ifdef __linux__
+void head_upload_destructor_fixture() {
+    const pid_t child = fork();
+    check(child >= 0, "fork head destructor fixture failed");
+    if (child == 0) {
+        std::set_terminate([] { _exit(77); });
+        {
+            strata::core::HeadUploadOwner owner;
+            auto source = std::make_shared<const strata::core::HeadUploadOwner::Payload>(16, uint8_t{0x37});
+            owner.stage(source, source->data(), 16, 8,
+                [](void** pointer, size_t bytes) { *pointer = new uint8_t[bytes]; return true; },
+                [](void*) { _exit(78); }, // freeing an unknown allocation is a failure
+                [](void*, const void*, size_t) { return false; },
+                [](void*) { return true; });
+        }
+        _exit(79); // an unknown owner must never complete destruction
+    }
+    int status = 0;
+    pid_t waited;
+    do { waited = waitpid(child, &status, 0); } while (waited < 0 && errno == EINTR);
+    check(waited == child && WIFEXITED(status) && WEXITSTATUS(status) == 77,
+          "head unknown destructor failed to terminate before cleanup");
+}
+
+void head_upload_unknown_fixture(int fault) {
+    using Head = strata::core::HeadUploadOwner;
+    // This fixture exits its child without destructors, matching retained owners.
+    auto* owner = new Head;
+    auto source = std::make_shared<const Head::Payload>(16, uint8_t{0x37});
+    std::weak_ptr<const Head::Payload> retained = source;
+    const void* source_address = source->data();
+    int allocations = 0, frees = 0, uploads = 0, conversions = 0;
+    auto allocate = [&](void** pointer, size_t bytes) {
+        ++allocations; *pointer = new uint8_t[bytes]; return true;
+    };
+    auto free = [&](void* pointer) { ++frees; delete[] static_cast<uint8_t*>(pointer); };
+    auto upload = [&](void*, const void*, size_t) {
+        ++uploads;
+        if (fault == 0) return false;
+        if (fault == 1) throw std::runtime_error("injected upload submission/wait");
+        return true;
+    };
+    auto convert = [&](void*) {
+        ++conversions;
+        if (fault == 2) return false;
+        if (fault == 3) throw std::runtime_error("injected conversion submission");
+        throw std::runtime_error("injected conversion completion");
+    };
+    bool success = false, threw = false;
+    try { success = owner->stage(source, source_address, 16, 8, allocate, free, upload, convert); }
+    catch (const std::runtime_error&) { threw = true; }
+    check(threw == (fault == 1 || fault >= 3), "head unknown-completion fault exception mismatch");
+    source.reset();
+    check(!success && owner->uncertain() && owner->weights() && owner->scratch() &&
+          owner->bytes() == 16 && owner->scratch_bytes() == 8 && owner->source() == source_address &&
+          !retained.expired() && frees == 0, "head unknown completion lost allocations/source");
+    const int calls = allocations;
+    check(!owner->clear(free) && frees == 0, "head unknown completion freed pending DMA");
+    auto retry_source = retained.lock();
+    check(!owner->stage(retry_source, source_address, 16, 8, allocate, free, upload, convert) &&
+          allocations == calls && uploads == 1 && conversions == (fault >= 2),
+          "head unknown completion retried callbacks");
+}
+void head_release_unknown_fixture(int fail_at, bool after_release) {
+    using Head = strata::core::HeadUploadOwner;
+    auto* owner = new Head;
+    auto source = std::make_shared<const Head::Payload>(16, uint8_t{0x37});
+    auto allocate = [](void** pointer, size_t bytes) { *pointer = new uint8_t[bytes]; return true; };
+    auto known_free = [](void* pointer) { delete[] static_cast<uint8_t*>(pointer); };
+    check(owner->stage(source, source->data(), 16, 8, allocate, known_free,
+                      [](void*, const void*, size_t) { return true; }, [](void*) { return true; }),
+          "head release setup failed");
+    void* const weights = owner->weights();
+    void* const scratch = owner->scratch();
+    int frees = 0;
+    auto release = [&](void* pointer) {
+        ++frees;
+        if (frees == fail_at) {
+            if (after_release) known_free(pointer);
+            throw std::runtime_error("injected uncertain release");
+        }
+        known_free(pointer);
+    };
+    bool threw = false;
+    try { owner->clear(release); }
+    catch (const std::runtime_error&) { threw = true; }
+    check(threw && owner->uncertain() && frees == fail_at && owner->weights() == weights &&
+          owner->scratch() == (fail_at == 1 ? scratch : nullptr),
+          "head release failure lost uncertain pointer or kept confirmed freed pointer");
+    check(!owner->clear(release) && frees == fail_at, "head uncertain release retried free");
+    check(!owner->stage(source, source->data(), 16, 8, allocate, release,
+                       [](void*, const void*, size_t) { return true; }, [](void*) { return true; }),
+          "head uncertain release accepted retry");
+}
+#endif
+
 class Mock final : public Backend {
 public:
     enum class Fault { None, Caps, Reserve, Physical, Attach, Detach, Write, Read, Release, Drain, Corrupt };
@@ -178,6 +330,17 @@ void isolated_unknown(const std::function<void()>& fixture) {
 }
 int main() {
     try {
+        head_upload_known_fixture();
+#ifdef __linux__
+        for (int fail_at : {1, 2})
+            for (bool after_release : {false, true})
+                isolated_unknown([=] { head_release_unknown_fixture(fail_at, after_release); });
+        for (int fault = 0; fault < 5; ++fault)
+            isolated_unknown([fault] { head_upload_unknown_fixture(fault); });
+        head_upload_destructor_fixture();
+#else
+        std::puts("SKIP head unknown-completion subprocess fixtures: Linux fork required");
+#endif
         std::string error;
         std::vector<uint8_t> bytes(1024);
         for (size_t i = 0; i < bytes.size(); ++i) bytes[i] = static_cast<uint8_t>(i * 19 + 7);
@@ -504,6 +667,70 @@ int main() {
             check(cycle.begin_gen(error) && cycle.successful_prompt(error) &&
                   !cycle.complete_gen(false, error) && !cycle.begin_gen(error),
                   "cancel/nonfinite decode allowed another GEN");
+        }
+        {
+            strata::core::PhaseServeCycle cycle;
+            int calls = 0;
+            cycle.release_head = [&](std::string&) { ++calls; return true; };
+            check(!cycle.begin_gen(error) && calls == 0 && cycle.failed(), "incomplete head lease admitted");
+        }
+        // Lifetime fixture: the head stays absent through prompt work and workspace reset.
+        // Callback failures poison the cycle; no reload or later transition may infer completion.
+        for (int fault = -1; fault < 7; ++fault) {
+            strata::core::PhaseServeCycle cycle;
+            bool head = true, workspace = false, drained = false, retired = false;
+            int attempt = 0;
+            auto pass = [&]() { return attempt++ != fault; };
+            cycle.quiesce = [&](std::string&) { if (!pass()) return false; drained = true; return true; };
+            cycle.retire_readers = [&](std::string&) { if (!pass() || !drained) return false; retired = true; return true; };
+            cycle.release_head = [&](std::string&) {
+                if (!pass() || !drained || !retired || !head || workspace) return false;
+                head = false; drained = retired = false; return true;
+            };
+            cycle.reinit_workspace = [&](std::string&) {
+                if (!pass() || head || workspace) return false;
+                workspace = true; return true;
+            };
+            cycle.retire_workspace = [&](std::string&) {
+                if (!pass() || head || !workspace || !drained) return false;
+                workspace = false; return true;
+            };
+            cycle.reload_head = [&](std::string&) {
+                if (!pass() || head || workspace || !drained) return false;
+                head = true; return true;
+            };
+            cycle.grow_fill_publish = [&](std::string&) { return head && !workspace; };
+            cycle.invalidate_detach = [](std::string&) { return true; };
+            const bool begun = cycle.begin_gen(error);
+            if (begun) check(!head && workspace, "head coexists with prompt workspace");
+            const bool done = begun && cycle.successful_prompt(error);
+            if (fault < 0) {
+                check(done && head && !workspace && cycle.complete_gen(true, error), "head lease first GEN");
+                check(cycle.begin_gen(error) && !head && workspace && cycle.successful_prompt(error) &&
+                      head && !workspace && cycle.complete_gen(true, error), "head lease subsequent GEN");
+            } else {
+                check(!done && cycle.failed(), "head lease fault accepted");
+                const int prior = attempt;
+                check(!cycle.begin_gen(error) && attempt == prior, "head lease uncertain completion retried");
+            }
+        }
+        {
+            using strata::core::phase_prefill_capacity_admitted;
+            check(phase_prefill_capacity_admitted(true, false, false, false, false, 8192), "default 8K denied");
+            check(phase_prefill_capacity_admitted(true, true, true, true, false, 12288), "explicit 12K denied");
+            check(!phase_prefill_capacity_admitted(false, true, true, true, false, 12288), "12K without phase admitted");
+            check(!phase_prefill_capacity_admitted(true, false, true, true, false, 12288), "12K without opt-in admitted");
+            check(!phase_prefill_capacity_admitted(true, true, true, true, false, 8192), "mixed 8K/12K capacity admitted");
+            check(!phase_prefill_capacity_admitted(true, true, true, true, true, 12288), "auto 12K admitted");
+            check(!phase_prefill_capacity_admitted(true, true, false, true, false, 12288), "12K without lease admitted");
+            check(!phase_prefill_capacity_admitted(true, true, true, false, false, 12288), "12K without alias admitted");
+            check(!phase_prefill_capacity_admitted(true, true, true, true, false,
+                  std::numeric_limits<int64_t>::max()), "overflow-sized capacity admitted");
+            uint64_t requested = std::numeric_limits<uint64_t>::max() - 3;
+            check(!strata::core::phase_requested_add(4, requested) &&
+                  requested == std::numeric_limits<uint64_t>::max() - 3, "peak overflow changed count");
+            check(strata::core::phase_requested_add(3, requested) &&
+                  requested == std::numeric_limits<uint64_t>::max(), "exact peak sum rejected");
         }
         std::puts("PASS actual phase owner CPU bookkeeping/fault contract");
         return 0;
