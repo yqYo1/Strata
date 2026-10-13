@@ -1,0 +1,695 @@
+{
+  "original_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-phase-gated-quality-publication-root-v1/record.json",
+  "sha256": "62fd70073589742e106e66d4f434f8027ff53e7803696f3db6198efece067759",
+  "record": {
+    "active": false,
+    "passed": false,
+    "complete": false,
+    "commands": [
+      {
+        "label": "head",
+        "argv": [
+          "git",
+          "rev-parse",
+          "HEAD"
+        ],
+        "environment": {
+          "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/venv/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/bin:/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "PYTHONDONTWRITEBYTECODE": "1",
+          "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+          "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+          "OMP_NUM_THREADS": "1",
+          "GIT_TERMINAL_PROMPT": "0",
+          "GIT_SSH_COMMAND": "ssh -oBatchMode=yes",
+          "RUBYLIB": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/lib/ruby/vendor_ruby:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/chef-utils-16.12.3/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/kramdown-2.4.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/kramdown-parser-gfm-1.1.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mdl-0.13.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-cli-2.1.6/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-config-3.0.6/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-shellout-3.2.5/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/tomlrb-1.3.0/lib",
+          "GEM_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all:/usr/share/rubygems-integration/all:/usr/lib/ruby/gems/3.2.0"
+        },
+        "started_utc": "2026-10-13T09:16:44.121132+00:00",
+        "wall_seconds": 300,
+        "errors": [],
+        "owners": [
+          {
+            "pid": 2658821,
+            "start_ticks": 23176824,
+            "sid": 2658821,
+            "pgid": 2658821
+          }
+        ],
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 231768.242668343,
+        "pid": 2658821,
+        "spawn_return_monotonic": 231768.244805146,
+        "direct_identity": {
+          "pid": 2658821,
+          "state": "R",
+          "ppid": 2658796,
+          "pgid": 2658821,
+          "sid": 2658821,
+          "start_ticks": 23176824,
+          "rss_bytes": 327680
+        },
+        "peak_live_owned_identities": 1,
+        "peak_session_rss_bytes": 0,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 0,
+        "finished_utc": "2026-10-13T09:16:44.276529+00:00",
+        "elapsed_seconds": 0.1551394839771092,
+        "logs": {
+          "head.stdout": {
+            "bytes": 41,
+            "sha256": "9c55507071f77cb8cba8a54ca56bff9596bba7f687b0ce308c5210707374af3e"
+          },
+          "head.stderr": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      {
+        "label": "local-identity",
+        "argv": [
+          "git",
+          "config",
+          "--local",
+          "--get-regexp",
+          "^user\\.(name|email)$"
+        ],
+        "environment": {
+          "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/venv/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/bin:/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "PYTHONDONTWRITEBYTECODE": "1",
+          "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+          "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+          "OMP_NUM_THREADS": "1",
+          "GIT_TERMINAL_PROMPT": "0",
+          "GIT_SSH_COMMAND": "ssh -oBatchMode=yes",
+          "RUBYLIB": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/lib/ruby/vendor_ruby:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/chef-utils-16.12.3/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/kramdown-2.4.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/kramdown-parser-gfm-1.1.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mdl-0.13.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-cli-2.1.6/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-config-3.0.6/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-shellout-3.2.5/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/tomlrb-1.3.0/lib",
+          "GEM_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all:/usr/share/rubygems-integration/all:/usr/lib/ruby/gems/3.2.0"
+        },
+        "started_utc": "2026-10-13T09:16:44.277299+00:00",
+        "wall_seconds": 300,
+        "errors": [],
+        "owners": [
+          {
+            "pid": 2658853,
+            "start_ticks": 23176839,
+            "sid": 2658853,
+            "pgid": 2658853
+          }
+        ],
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 231768.398785147,
+        "pid": 2658853,
+        "spawn_return_monotonic": 231768.400907062,
+        "direct_identity": {
+          "pid": 2658853,
+          "state": "R",
+          "ppid": 2658796,
+          "pgid": 2658853,
+          "sid": 2658853,
+          "start_ticks": 23176839,
+          "rss_bytes": 450560
+        },
+        "peak_live_owned_identities": 1,
+        "peak_session_rss_bytes": 0,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 1,
+        "finished_utc": "2026-10-13T09:16:44.413388+00:00",
+        "elapsed_seconds": 0.13587576200370677,
+        "logs": {
+          "local-identity.stdout": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "local-identity.stderr": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      {
+        "label": "author-identity",
+        "argv": [
+          "git",
+          "var",
+          "GIT_AUTHOR_IDENT"
+        ],
+        "environment": {
+          "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/venv/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/bin:/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "PYTHONDONTWRITEBYTECODE": "1",
+          "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+          "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+          "OMP_NUM_THREADS": "1",
+          "GIT_TERMINAL_PROMPT": "0",
+          "GIT_SSH_COMMAND": "ssh -oBatchMode=yes",
+          "RUBYLIB": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/lib/ruby/vendor_ruby:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/chef-utils-16.12.3/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/kramdown-2.4.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/kramdown-parser-gfm-1.1.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mdl-0.13.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-cli-2.1.6/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-config-3.0.6/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-shellout-3.2.5/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/tomlrb-1.3.0/lib",
+          "GEM_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all:/usr/share/rubygems-integration/all:/usr/lib/ruby/gems/3.2.0"
+        },
+        "started_utc": "2026-10-13T09:16:44.414134+00:00",
+        "wall_seconds": 300,
+        "errors": [],
+        "owners": [
+          {
+            "pid": 2658880,
+            "start_ticks": 23176853,
+            "sid": 2658880,
+            "pgid": 2658880
+          }
+        ],
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 231768.535741413,
+        "pid": 2658880,
+        "spawn_return_monotonic": 231768.538267901,
+        "direct_identity": {
+          "pid": 2658880,
+          "state": "R",
+          "ppid": 2658796,
+          "pgid": 2658880,
+          "sid": 2658880,
+          "start_ticks": 23176853,
+          "rss_bytes": 319488
+        },
+        "peak_live_owned_identities": 1,
+        "peak_session_rss_bytes": 0,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 0,
+        "finished_utc": "2026-10-13T09:16:44.545417+00:00",
+        "elapsed_seconds": 0.13098516399622895,
+        "logs": {
+          "author-identity.stdout": {
+            "bytes": 65,
+            "sha256": "c4e36d8f725c5c71c87446bb92e6a244b19d1ce1cac75fb6d8110425bf8d8878"
+          },
+          "author-identity.stderr": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      {
+        "label": "dirty",
+        "argv": [
+          "git",
+          "diff",
+          "--name-only"
+        ],
+        "environment": {
+          "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/venv/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/bin:/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "PYTHONDONTWRITEBYTECODE": "1",
+          "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+          "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+          "OMP_NUM_THREADS": "1",
+          "GIT_TERMINAL_PROMPT": "0",
+          "GIT_SSH_COMMAND": "ssh -oBatchMode=yes",
+          "RUBYLIB": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/lib/ruby/vendor_ruby:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/chef-utils-16.12.3/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/kramdown-2.4.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/kramdown-parser-gfm-1.1.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mdl-0.13.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-cli-2.1.6/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-config-3.0.6/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-shellout-3.2.5/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/tomlrb-1.3.0/lib",
+          "GEM_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all:/usr/share/rubygems-integration/all:/usr/lib/ruby/gems/3.2.0"
+        },
+        "started_utc": "2026-10-13T09:16:44.546874+00:00",
+        "wall_seconds": 300,
+        "errors": [],
+        "owners": [
+          {
+            "pid": 2658911,
+            "start_ticks": 23176866,
+            "sid": 2658911,
+            "pgid": 2658911
+          }
+        ],
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 231768.668550391,
+        "pid": 2658911,
+        "spawn_return_monotonic": 231768.671266686,
+        "direct_identity": {
+          "pid": 2658911,
+          "state": "R",
+          "ppid": 2658796,
+          "pgid": 2658911,
+          "sid": 2658911,
+          "start_ticks": 23176866,
+          "rss_bytes": 454656
+        },
+        "peak_live_owned_identities": 1,
+        "peak_session_rss_bytes": 0,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 0,
+        "finished_utc": "2026-10-13T09:16:44.689918+00:00",
+        "elapsed_seconds": 0.14267487401957624,
+        "logs": {
+          "dirty.stdout": {
+            "bytes": 120,
+            "sha256": "65b110f2c4902ae3907225e6bad32bad7d58298be9c83ea7d62b91d50a297c41"
+          },
+          "dirty.stderr": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      {
+        "label": "new",
+        "argv": [
+          "git",
+          "ls-files",
+          "--others",
+          "--exclude-standard"
+        ],
+        "environment": {
+          "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/venv/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/bin:/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "PYTHONDONTWRITEBYTECODE": "1",
+          "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+          "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+          "OMP_NUM_THREADS": "1",
+          "GIT_TERMINAL_PROMPT": "0",
+          "GIT_SSH_COMMAND": "ssh -oBatchMode=yes",
+          "RUBYLIB": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/lib/ruby/vendor_ruby:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/chef-utils-16.12.3/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/kramdown-2.4.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/kramdown-parser-gfm-1.1.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mdl-0.13.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-cli-2.1.6/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-config-3.0.6/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-shellout-3.2.5/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/tomlrb-1.3.0/lib",
+          "GEM_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all:/usr/share/rubygems-integration/all:/usr/lib/ruby/gems/3.2.0"
+        },
+        "started_utc": "2026-10-13T09:16:44.690928+00:00",
+        "wall_seconds": 300,
+        "errors": [],
+        "owners": [
+          {
+            "pid": 2658921,
+            "start_ticks": 23176881,
+            "sid": 2658921,
+            "pgid": 2658921
+          }
+        ],
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 231768.812649257,
+        "pid": 2658921,
+        "spawn_return_monotonic": 231768.814976218,
+        "direct_identity": {
+          "pid": 2658921,
+          "state": "R",
+          "ppid": 2658796,
+          "pgid": 2658921,
+          "sid": 2658921,
+          "start_ticks": 23176881,
+          "rss_bytes": 393216
+        },
+        "peak_live_owned_identities": 1,
+        "peak_session_rss_bytes": 0,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 0,
+        "finished_utc": "2026-10-13T09:16:44.836246+00:00",
+        "elapsed_seconds": 0.14486545897671022,
+        "logs": {
+          "new.stdout": {
+            "bytes": 48,
+            "sha256": "ff87976fc8c72cae8a93a8948f4d13281ae5d1dadabf1330054ff82183c093a6"
+          },
+          "new.stderr": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      {
+        "label": "report-lints",
+        "argv": [
+          "/bin/bash",
+          "tools/lint/run.sh",
+          "bench/results/2026-10-13-phase-gated-quality-capture/REPORT.ja.md",
+          "bench/results/2026-10-13-phase-gated-quality-capture/REPORT.md",
+          "bench/results/2026-10-13-phase-gated-quality-capture/controllers/main-phase-gated-quality-first-row-v1.py.json",
+          "bench/results/2026-10-13-phase-gated-quality-capture/controllers/main-phase-gated-quality-full-build-v1.py.json",
+          "bench/results/2026-10-13-phase-gated-quality-capture/controllers/main-phase-gated-quality-full-lints-v1.py.json",
+          "bench/results/2026-10-13-phase-gated-quality-capture/controllers/main-phase-gated-quality-publication-v1.py.json",
+          "bench/results/2026-10-13-phase-gated-quality-capture/receipts/main-phase-gated-quality-first-row-root-v1.json",
+          "bench/results/2026-10-13-phase-gated-quality-capture/receipts/main-phase-gated-quality-full-build-root-v1.json",
+          "bench/results/2026-10-13-phase-gated-quality-capture/receipts/main-phase-gated-quality-full-lints-root-v1.json",
+          "bench/results/2026-10-13-phase-gated-quality-capture/report-registry-v194.json",
+          "bench/results/2026-10-13-phase-gated-quality-capture/research/implementation-bounded-decode-route-ledger-v1.txt.json",
+          "bench/results/2026-10-13-phase-gated-quality-capture/research/implementation-bounded-decode-route-ledger-v2.txt.json",
+          "bench/results/2026-10-13-phase-gated-quality-capture/research/implementation-restore-layer-major-prefill-v1.txt.json",
+          "bench/results/2026-10-13-phase-gated-quality-capture/research/implementation-restore-layer-major-prefill-v2.txt.json",
+          "bench/results/2026-10-13-phase-gated-quality-capture/research/research-decode-hardware-roofline-round401-v1.txt.json",
+          "bench/results/2026-10-13-phase-gated-quality-capture/research/research-layer-major-compact-workspace-parity-round399-v1.txt.json",
+          "bench/results/2026-10-13-phase-gated-quality-capture/research/research-layer-major-current-lifetime-round396-v1.txt.json",
+          "bench/results/2026-10-13-phase-gated-quality-capture/research/research-layer-major-kv-capacity-round397-v1.txt.json",
+          "bench/results/2026-10-13-phase-gated-quality-capture/research/research-layer-major-streamed-existing-path-round398-v1.txt.json",
+          "bench/results/2026-10-13-phase-gated-quality-capture/research/research-layer-major-transfer-schedule-round400-v1.txt.json",
+          "bench/results/2026-10-13-phase-gated-quality-capture/retention-manifest.json",
+          "bench/results/2026-10-13-phase-gated-quality-capture/summary.json"
+        ],
+        "environment": {
+          "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/venv/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/bin:/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "PYTHONDONTWRITEBYTECODE": "1",
+          "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+          "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+          "OMP_NUM_THREADS": "1",
+          "GIT_TERMINAL_PROMPT": "0",
+          "GIT_SSH_COMMAND": "ssh -oBatchMode=yes",
+          "RUBYLIB": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/lib/ruby/vendor_ruby:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/chef-utils-16.12.3/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/kramdown-2.4.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/kramdown-parser-gfm-1.1.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mdl-0.13.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-cli-2.1.6/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-config-3.0.6/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-shellout-3.2.5/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/tomlrb-1.3.0/lib",
+          "GEM_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all:/usr/share/rubygems-integration/all:/usr/lib/ruby/gems/3.2.0"
+        },
+        "started_utc": "2026-10-13T09:16:44.901744+00:00",
+        "wall_seconds": 300,
+        "errors": [],
+        "owners": [
+          {
+            "pid": 2658933,
+            "start_ticks": 23176902,
+            "sid": 2658933,
+            "pgid": 2658933
+          },
+          {
+            "pid": 2658976,
+            "start_ticks": 23176911,
+            "sid": 2658933,
+            "pgid": 2658933
+          },
+          {
+            "pid": 2659009,
+            "start_ticks": 23176954,
+            "sid": 2658933,
+            "pgid": 2658933
+          },
+          {
+            "pid": 2659012,
+            "start_ticks": 23176965,
+            "sid": 2658933,
+            "pgid": 2658933
+          },
+          {
+            "pid": 2659038,
+            "start_ticks": 23177001,
+            "sid": 2658933,
+            "pgid": 2658933
+          },
+          {
+            "pid": 2659099,
+            "start_ticks": 23177044,
+            "sid": 2658933,
+            "pgid": 2658933
+          },
+          {
+            "pid": 2659138,
+            "start_ticks": 23177085,
+            "sid": 2658933,
+            "pgid": 2658933
+          },
+          {
+            "pid": 2659165,
+            "start_ticks": 23177133,
+            "sid": 2658933,
+            "pgid": 2658933
+          },
+          {
+            "pid": 2659190,
+            "start_ticks": 23177168,
+            "sid": 2658933,
+            "pgid": 2658933
+          },
+          {
+            "pid": 2659250,
+            "start_ticks": 23177209,
+            "sid": 2658933,
+            "pgid": 2658933
+          },
+          {
+            "pid": 2659276,
+            "start_ticks": 23177256,
+            "sid": 2658933,
+            "pgid": 2658933
+          },
+          {
+            "pid": 2659297,
+            "start_ticks": 23177305,
+            "sid": 2658933,
+            "pgid": 2658933
+          },
+          {
+            "pid": 2659323,
+            "start_ticks": 23177343,
+            "sid": 2658933,
+            "pgid": 2658933
+          },
+          {
+            "pid": 2659348,
+            "start_ticks": 23177382,
+            "sid": 2658933,
+            "pgid": 2658933
+          },
+          {
+            "pid": 2659393,
+            "start_ticks": 23177428,
+            "sid": 2658933,
+            "pgid": 2658933
+          },
+          {
+            "pid": 2659421,
+            "start_ticks": 23177472,
+            "sid": 2658933,
+            "pgid": 2658933
+          },
+          {
+            "pid": 2659456,
+            "start_ticks": 23177516,
+            "sid": 2658933,
+            "pgid": 2658933
+          },
+          {
+            "pid": 2659530,
+            "start_ticks": 23177553,
+            "sid": 2658933,
+            "pgid": 2658933
+          },
+          {
+            "pid": 2659559,
+            "start_ticks": 23177598,
+            "sid": 2658933,
+            "pgid": 2658933
+          },
+          {
+            "pid": 2659583,
+            "start_ticks": 23177642,
+            "sid": 2658933,
+            "pgid": 2658933
+          },
+          {
+            "pid": 2659611,
+            "start_ticks": 23177683,
+            "sid": 2658933,
+            "pgid": 2658933
+          },
+          {
+            "pid": 2659651,
+            "start_ticks": 23177725,
+            "sid": 2658933,
+            "pgid": 2658933
+          },
+          {
+            "pid": 2659690,
+            "start_ticks": 23177767,
+            "sid": 2658933,
+            "pgid": 2658933
+          },
+          {
+            "pid": 2659724,
+            "start_ticks": 23177819,
+            "sid": 2658933,
+            "pgid": 2658933
+          },
+          {
+            "pid": 2659790,
+            "start_ticks": 23177859,
+            "sid": 2658933,
+            "pgid": 2658933
+          },
+          {
+            "pid": 2659852,
+            "start_ticks": 23177898,
+            "sid": 2658933,
+            "pgid": 2658933
+          },
+          {
+            "pid": 2659875,
+            "start_ticks": 23177954,
+            "sid": 2658933,
+            "pgid": 2658933
+          },
+          {
+            "pid": 2659876,
+            "start_ticks": 23177954,
+            "sid": 2658933,
+            "pgid": 2658933
+          },
+          {
+            "pid": 2659877,
+            "start_ticks": 23177954,
+            "sid": 2658933,
+            "pgid": 2658933
+          },
+          {
+            "pid": 2659878,
+            "start_ticks": 23177954,
+            "sid": 2658933,
+            "pgid": 2658933
+          },
+          {
+            "pid": 2659879,
+            "start_ticks": 23177954,
+            "sid": 2658933,
+            "pgid": 2658933
+          },
+          {
+            "pid": 2659880,
+            "start_ticks": 23177954,
+            "sid": 2658933,
+            "pgid": 2658933
+          },
+          {
+            "pid": 2659881,
+            "start_ticks": 23177954,
+            "sid": 2658933,
+            "pgid": 2658933
+          },
+          {
+            "pid": 2659882,
+            "start_ticks": 23177955,
+            "sid": 2658933,
+            "pgid": 2658933
+          },
+          {
+            "pid": 2659884,
+            "start_ticks": 23177955,
+            "sid": 2658933,
+            "pgid": 2658933
+          },
+          {
+            "pid": 2659885,
+            "start_ticks": 23177955,
+            "sid": 2658933,
+            "pgid": 2658933
+          },
+          {
+            "pid": 2659886,
+            "start_ticks": 23177955,
+            "sid": 2658933,
+            "pgid": 2658933
+          },
+          {
+            "pid": 2659887,
+            "start_ticks": 23177955,
+            "sid": 2658933,
+            "pgid": 2658933
+          }
+        ],
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 231769.023562147,
+        "pid": 2658933,
+        "spawn_return_monotonic": 231769.025693981,
+        "direct_identity": {
+          "pid": 2658933,
+          "state": "R",
+          "ppid": 2658796,
+          "pgid": 2658933,
+          "sid": 2658933,
+          "start_ticks": 23176902,
+          "rss_bytes": 577536
+        },
+        "peak_live_owned_identities": 14,
+        "peak_session_rss_bytes": 659165184,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 1,
+        "finished_utc": "2026-10-13T09:16:57.359840+00:00",
+        "elapsed_seconds": 12.457539862021804,
+        "logs": {
+          "report-lints.stdout": {
+            "bytes": 618,
+            "sha256": "eb9cf2c642721da1c2e1b6cd280492a211dd3ad77a3a89c7248512d748857424"
+          },
+          "report-lints.stderr": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      }
+    ],
+    "evidence": {
+      "head": {
+        "stdout": "6035c4f92bf87362d7e55051ae1375b9befba89e\n",
+        "stderr": ""
+      },
+      "local-identity": {
+        "stdout": "",
+        "stderr": ""
+      },
+      "author-identity": {
+        "stdout": "yqYoi <52419113+yqYo1@users.noreply.github.com> 1791883004 +0900\n",
+        "stderr": ""
+      },
+      "dirty": {
+        "stdout": "docs/PHASE_DECODE_CACHE.ja.md\ndocs/PHASE_DECODE_CACHE.md\nsrc/program/generate.cpp\ntests/core/phase_cache_owner_test.cpp\n",
+        "stderr": ""
+      },
+      "new": {
+        "stdout": "include/strata/core/serve_first_row_capture.hpp\n",
+        "stderr": ""
+      },
+      "report-lints": {
+        "stdout": "== markdownlint\n== lychee\n🔍 0 Total (in 1ms) 🔗 0 Unique ✅ 0 OK 🚫 0 Errors\n\n== codespell\n== gitleaks: a possible secret in bench/results/2026-10-13-phase-gated-quality-capture/REPORT.md (gitleaks detect --no-git --redact --source bench/results/2026-10-13-phase-gated-quality-capture/REPORT.md)\n== gitleaks: a possible secret in bench/results/2026-10-13-phase-gated-quality-capture/controllers/main-phase-gated-quality-publication-v1.py.json (gitleaks detect --no-git --redact --source bench/results/2026-10-13-phase-gated-quality-capture/controllers/main-phase-gated-quality-publication-v1.py.json)\n== reuse\n",
+        "stderr": ""
+      }
+    },
+    "main_reviewed": true,
+    "performance_samples": [],
+    "adopted": false,
+    "gpu_executed": false,
+    "error": "AssertionError('report-lints')",
+    "finished_utc": "2026-10-13T09:16:57.361665+00:00"
+  },
+  "original_controller_sha256": {
+    "sha256": "fe8b23758578d209835ad2f11ec2c090a1889814fb2c690a94e307a5f15b8511"
+  },
+  "main_review": "generic-api-key matched ordinaryEnglish prose in REPORT.md and its controller copy; nosecret. Preserve failedpublicationstatus; onlyEnglishwordingcorrected, no checkdisabled"
+}

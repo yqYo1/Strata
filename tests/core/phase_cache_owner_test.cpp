@@ -3,10 +3,12 @@
 #include "strata/core/phase_cache_owner.hpp"
 #include "strata/core/head_upload_owner.hpp"
 #include "strata/core/phase_serve_cycle.hpp"
+#include "strata/core/serve_first_row_capture.hpp"
 #include "strata/prefill/workspace_layout.hpp"
 #include <array>
 #include <algorithm>
 #include <cstdio>
+#include <cstdlib>
 #include <cstring>
 #include <initializer_list>
 #include <map>
@@ -103,6 +105,83 @@ void gated_region_layout_fixture() {
     try { layout::advance(1, used, false, 0, offset); }
     catch (const std::overflow_error&) { ++overflow_checks; }
     check(overflow_checks == 4 && used == std::numeric_limits<uint64_t>::max(), "layout overflow guards");
+}
+int capture_write_call = 0, capture_write_fault = 0, capture_flush_fault = 0, capture_close_fault = 0;
+int capture_flush_calls = 0, capture_close_calls = 0;
+size_t capture_write(const void*, size_t, size_t count, std::FILE*) {
+    return ++capture_write_call == capture_write_fault ? count - 1 : count;
+}
+int capture_flush(std::FILE*) { ++capture_flush_calls; return capture_flush_fault; }
+int capture_close(std::FILE*) { ++capture_close_calls; return capture_close_fault; }
+void serve_first_row_fixture() {
+    using namespace strata::core;
+    for (const char* flag : std::initializer_list<const char*>{nullptr, "", "0", "01", "true", "1 "})
+        check(!serve_first_row_opt_in(flag), "capture non-exact opt-in accepted");
+    check(serve_first_row_opt_in("1"), "capture exact opt-in denied");
+    uint64_t bytes = 0;
+    check(serve_first_row_bytes(3, bytes) && bytes == 20, "capture row size");
+    for (int64_t vocab : {int64_t(-1), int64_t(0), INT64_MAX, int64_t(16777216)})
+        check(!serve_first_row_bytes(vocab, bytes), "capture invalid/overbudget vocab accepted");
+    ServeFirstRowCapture quota;
+    std::string error;
+    check(quota.begin(16777214, error), "capture exact byte budget denied");
+    check(!quota.begin(1, error), "capture active request allowed");
+    for (int fault : {0, 1, 2, 3, 4}) {
+        capture_write_call = capture_flush_calls = capture_close_calls = 0;
+        capture_write_fault = fault <= 2 ? fault : 0;
+        capture_flush_fault = fault == 3 ? -1 : 0;
+        capture_close_fault = fault == 4 ? -1 : 0;
+        const bool ok = serve_first_row_write(nullptr, {1.0f, 2.0f},
+                                              {capture_write, capture_flush, capture_close});
+        check(ok == (fault == 0), "capture write/flush/close failure lost");
+        check(capture_flush_calls == 1 && capture_close_calls == 1, "capture close skipped after failure");
+    }
+#ifdef __linux__
+    char folder[] = "/tmp/strata-first-row-XXXXXX";
+    const char* made = mkdtemp(folder);
+    check(made != nullptr, "capture fixture private directory");
+    // This fixture owns every path below its exclusive directory. It never
+    // cleans production diagnostic files or touches active measurement state.
+    struct Cleanup {
+        std::filesystem::path path;
+        ~Cleanup() { std::error_code ec; std::filesystem::remove_all(path, ec); }
+    } cleanup{folder};
+    ServeFirstRowCapture sink;
+    check(!sink.open(nullptr, error), "capture missing directory allowed");
+    check(sink.open(folder, error), "capture directory denied");
+    check(sink.begin(2, error), "capture begin denied");
+    check(!sink.publish({1.0f, INFINITY}, 2, error), "capture infinity published");
+    check(!sink.publish({NAN, 2.0f}, 2, error), "capture NaN published");
+    check(!sink.publish({1.0f}, 2, error), "capture truncated row published");
+    check(!std::filesystem::exists(cleanup.path / "request-1.bin"), "invalid capture final exists");
+    check(sink.publish({1.0f, 2.0f}, 2, error), "capture publication failed");
+    std::FILE* input = std::fopen((cleanup.path / "request-1.bin").c_str(), "rb");
+    check(input != nullptr, "capture readback open");
+    int32_t header[2] = {};
+    float row[2] = {};
+    const bool exact = std::fread(header, sizeof(int32_t), 2, input) == 2 &&
+        std::fread(row, sizeof(float), 2, input) == 2 && std::fgetc(input) == EOF;
+    check(std::fclose(input) == 0 && exact && header[0] == 2 && header[1] == 1 &&
+          row[0] == 1.0f && row[1] == 2.0f, "capture dump layout changed");
+    ServeFirstRowCapture duplicate;
+    check(duplicate.open(folder, error) && duplicate.begin(2, error), "duplicate setup");
+    check(!duplicate.publish({9.0f, 9.0f}, 2, error), "capture existing partial overwritten");
+    for (int request = 2; request <= 64; ++request) {
+        check(sink.begin(2, error), "capture bounded request denied");
+        check(sink.publish({1.0f, 2.0f}, 2, error), "capture bounded publication denied");
+    }
+    check(!sink.begin(2, error), "capture request quota bypassed");
+    // A new private directory with an existing final name exercises link-time
+    // no-overwrite independently of exclusive partial creation.
+    const auto collision = cleanup.path / "collision";
+    check(std::filesystem::create_directory(collision), "capture collision directory");
+    std::FILE* original = std::fopen((collision / "request-1.bin").c_str(), "wbx");
+    check(original && std::fputc(7, original) != EOF && std::fclose(original) == 0, "capture collision seed");
+    ServeFirstRowCapture collided;
+    check(collided.open(collision.c_str(), error) && collided.begin(2, error), "capture collision setup");
+    check(!collided.publish({1.0f, 2.0f}, 2, error) &&
+          std::filesystem::file_size(collision / "request-1.bin") == 1, "capture final overwritten");
+#endif
 }
 void head_upload_known_fixture() {
     using Head = strata::core::HeadUploadOwner;
@@ -416,6 +495,7 @@ void isolated_unknown(const std::function<void()>& fixture) {
 int main() {
     try {
         gated_region_layout_fixture();
+        serve_first_row_fixture();
         head_upload_known_fixture();
 #ifdef __linux__
         for (int fail_at : {1, 2})

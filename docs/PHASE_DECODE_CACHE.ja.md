@@ -122,3 +122,38 @@ shared region の実際の最大 count、設定容量、実行 chunk の T を�
 この guard は physical peak の測定を代替しません。容量の実機 qualification には、最初の
 chooser / GEMM peak、繰り返し GEN、4095 tail と final token、logit / persistent state 比較、
 full 262144 context と継続 / restore の確認が必要です。
+
+## serve の first logit row を保存する診断
+
+`STRATA_SERVE_FIRST_ROW_CAPTURE=1` と、既存の私有出力ディレクトリを指定する
+`STRATA_SERVE_FIRST_ROW_DIR` の両方で有効になります。省略、`0`、`01`、`true` は
+OFF です。OFF の場合、この診断の row allocation、copy、ファイル IO は行いません。
+速度測定には使いません。
+
+この経路は既存の phase-cache と head lease の契約を必要とします。
+単一 GPU の通常の直列 `GEN 1`、`--suffix-draft 0 --lookup-chain 0`、
+prompt/conversation cache と保存、adaptive swaps、batch、MTP、pipeline、
+`--dump-logits` を無効にした設定に限定します。起動設定だけでなく、実際の fresh state、
+再利用 token 数 0、最初の Verifier window の T=1 と位置 P-1 も確認します。
+raw `--spec` は Verifier の容量であり、既存の容量範囲を受け入れます。
+通常の `--spec 4` でも最初の実効 T=1 を必要とします。
+不適合の request は拒否し、不確実な copy や phase 処理の失敗時は所有者を解放せず終了します。
+
+通常の prefill、head reload、phase publish を通り、最初の正常な非 NaN/Inf window の
+`Verifier::copy_logits(0)` から全 vocabulary の FP32 row を読みます。
+request と最終 commit、phase completion が成功してから `request-N.bin` を公開します。
+layout は int32 vocabulary、int32 rows=1、vocabulary 個の FP32 です。
+stderr の COPIED は未完成、COMPLETE は request index、実際の prompt 長 P、
+予測位置 P-1、source row 0、実際の再利用 0、vocabulary、byte 数と完成ファイルを示します。
+
+1 process あたり最大 64 request、合計 64 MiB を予約します。作成、write、flush、close、
+byte 数、有限値を確認します。`.partial` を排他的に作成し、完成したファイルだけを
+hard link で排他的に公開するため、出力 filesystem は hard link をサポートする必要があります。
+既存の名前を上書きしません。失敗した partial を完成ファイルとして扱いません。
+成功した partial link も残すので、Main が閉じた run の hash と必要な証拠を確認してから
+[artifact retention](ARTIFACT_RETENTION.md) に従って整理します。
+
+固定履歴比較では各 request の prefix を `prompt + follow[:i]` にします。
+生成した argmax token を次の履歴に戻す必要はありません。外部 controller が各 prefix、
+target、完成 row、source/binary identity を結び付けます。1 row の捕捉は full sequence の
+teacher forcing、NLL、full quality、256K、RESTORE、速度の pass を意味しません。
