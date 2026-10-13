@@ -2697,6 +2697,21 @@ const uint8_t* ArenaExpertSource::device_alias(int64_t layer, int64_t expert) co
     return dev_slice_[(size_t) layer] + (uint64_t) expert * lay.blob_bytes(layer);
 }
 
+bool ArenaExpertSource::copy_range(int64_t layer, int64_t expert, size_t count, CopyRange& range) const {
+    if (!arena_ || !base_ || n_expert_ <= 0 || layer < 0 || expert < 0 || expert >= n_expert_ || count < 2 || count > 16 ||
+        count > static_cast<size_t>(n_expert_ - expert) || layer >= blobs_ / n_expert_) return false;
+    const auto& layout = strata::kernels::cpu::expert_layout();
+    const size_t width = static_cast<size_t>(layout.blob_bytes(layer));
+    if (!width || count > std::numeric_limits<size_t>::max() / width) return false;
+    const auto* arena = static_cast<const PinnedArena*>(arena_);
+    const uint8_t* first = arena->at(layout.blob_offset(layer, expert));
+    const uint8_t* allocation = nullptr;
+    size_t extent = 0;
+    if (!arena->host_usm_range(first, width * count, allocation, extent)) return false;
+    range = {first, allocation, extent};
+    return true;
+}
+
 const uint8_t* ArenaExpertSource::blob(int64_t layer, int64_t expert) {
     if (base_ == nullptr) return nullptr;
     if (layer < 0 || expert < 0 || expert >= n_expert_) return nullptr;

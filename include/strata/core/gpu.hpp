@@ -69,6 +69,11 @@ bool copy_async(void* dst, const void* src, size_t bytes, Stream s);
 /// held its issuer for about 160 us (bench/results/2026-10-09-xe-event-record).
 bool copy_async_after(void* dst, const void* src, size_t bytes, Stream s, const Event* after, Event* done);
 /// `height` rows of `width` bytes between pitched buffers (cudaMemcpy2DAsync).
+// Native USM 2D command, no graph/no retry. Caller proves exact allocation extents before entry.
+// All prior-reader events are dependencies; the same returned command is installed into each done event.
+bool copy_cohort_async(void* dst, size_t dp, const void* src, size_t sp, size_t width, size_t height,
+                       Stream stream, const Event* const* after, Event* const* done);
+
 bool copy2d_async(void* dst, size_t dpitch, const void* src, size_t spitch, size_t width, size_t height, Stream s);
 bool memset(void* dst, int value, size_t bytes);
 bool memset_async(void* dst, int value, size_t bytes, Stream s);

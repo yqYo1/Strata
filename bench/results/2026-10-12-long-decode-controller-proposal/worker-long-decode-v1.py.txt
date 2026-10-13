@@ -1,0 +1,771 @@
+# SPDX-FileCopyrightText: 2026 MistVVK and the XeStrata contributors
+# SPDX-License-Identifier: LGPL-3.0-or-later
+"""Main-owned Proposed same-binary32K GEN128, fixed18 tasks; SOURCE ONLY until fresh Main qualification."""
+import argparse
+import fcntl
+import importlib.util
+import json
+import os
+from pathlib import Path
+import re
+import sys
+import time
+
+sys.dont_write_bytecode = True
+# Immutable shared helpers are baseline dependencies, not qualification of this new controller.
+SHARED_PINS = {'protocol.py': '80a51a22f487d70b6739f38615d511c2e125488c19757e58fd518521a270c1a7', 'controller_cpu_fixtures.py': '4eb6e18ef41528724dce8b133124b4db169e909ab9fec27df62a29d50a1a8740', 'mock_model.py': 'eaaf35828350537872e2729b63ca326e5fde8763b78a4970c5e7a1d9f4c9ac0b', 'mapping.py': 'fbcf528ca27de0daee9bb3619d38438b941c8b79c52170429ffe39df53aa2984', 'common.py': '30474dde56306074439b3c9331c00d6c04e521e04357d37d36e18d83ac846212', 'run_root.py': '9bb66fdd53d27919593398184ac4317eabc25a140e43ce305162b61de2a3b36d', 'policy.py': 'db9e309997ce6750263344d7fcb152d8bec9ad4778fe2c6ad128cf374217c04d'}
+SHARED_ROOT = Path('/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-integrated-neutral-controller-source-v6')
+for name, digest in SHARED_PINS.items():
+    with (SHARED_ROOT / name).open('rb') as stream:
+        if __import__('hashlib').file_digest(stream, 'sha256').hexdigest() != digest:
+            raise ValueError('shared helper changed before import: ' + name)
+
+sys.path.insert(0, '/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/latest-update-integrated-neutral-controller-source-v6')
+from common import held_geometry, held_identity, request_budget_stop, admit, phase_health, closed, identity, load, normal_quit, require, sha, source_stable, strong
+import mapping
+from policy import (B, HERE, OWNER, OWNER_SHA, TREES, REVISIONS, BINARIES,
+                    PACK, MODEL, NATIVE, PROFILE, FIXTURE, FIXTURE_SHA, PCI, DUMP, HEALTH_LINES, LLVM, ICPX,
+                    argv_for, environment, cpu_cap)
+from protocol import FAULT, DiagnosticReader, diagnostics
+import hashlib
+import math
+
+CLEAN_PARENT = B / 'main-long-decode128-root-v1'
+FIRST16_SHA = 'f8aca127a7f45238d7567368ee8ad5c26c4a3488fc0cc6b83a4d19d50a6cbd6f'
+EOS_IDS = {248044, 248046}
+FIXTURE_SOURCE = Path(__file__).with_name('worker-long-decode-cpu-fixtures-v1.py.txt')
+PARENT_CONTROLLER_PIN = {'path': '/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-decode-worker-screen-v1.py', 'sha256': '0f1dec857583eeceae913ac6cc4fab7d066df25f1520a39c264d2e6c9559b0d5'}
+NAMESPACE = CLEAN_PARENT
+SEQUENCE = (('xe', 'timed1-on'),)
+CANDIDATE = Path('/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-prefill-leaf-service-events-20261012')
+BUILD_PROOF = B / 'main-prefill-leaf-service-build-root-v2/record.json'
+SOURCE_REVIEW = B / 'main-prefill-leaf-service-source-review-v2.json'
+RUNTIME_REVIEW = B / 'main-prefill-leaf-service-runtime-review-v2.json'
+OLD_STARTUP = B / 'latest-update-integrated-neutral-model-root-v6/xe-startup/record.json'
+OLD_REVIEW = B / 'latest-update-main-integrated-startup-review-v2.json'
+SELF_SHA = sha(Path(__file__))
+UTILITY_ENV = dict(PATH='/usr/bin:/bin', HOME='/home/yayoi', LANG='C.UTF-8', LC_ALL='C.UTF-8',
+                   XDG_RUNTIME_DIR='/run/user/' + str(os.getuid()),
+                   DBUS_SESSION_BUS_ADDRESS='unix:path=/run/user/' + str(os.getuid()) + '/bus')
+
+
+def validate_long(lines, engine, stderr, *, require_trace=True, expected_prompt_tokens=32768, expected_generated_tokens=128):
+    require(engine == 'xe' and expected_prompt_tokens == 32768 and expected_generated_tokens == 128,
+            'only actual32K fullGEN128 admitted')
+    m = expected_generated_tokens
+    n = expected_prompt_tokens
+    require(type(n) is int and 32768 <= n <= 65536, 'bounded actual prompt geometry32768..65536')
+    require(all(type(line) is str and len(line.encode()) <= 4096 for line in lines), 'bounded compact protocol fields')
+    require(lines and all(type(x) is str and not x.startswith(('ERR', 'BDONE', 'B ')) for x in lines), 'no selected-path failure/batch protocol')
+    allowed = ('RESUME ', 'PP ', 'REUSED ', 'T ', 'LP ', 'DONE ')
+    require(all(x.startswith(allowed) for x in lines), 'only source-qualified GEN tags')
+    require([x for x in lines if x.startswith('RESUME ')] == ['RESUME 0'] and
+            [x for x in lines if x.startswith('REUSED ')] == ['REUSED 0'], 'fresh token0 request with no reuse')
+    done = [x.split() for x in lines if x.startswith('DONE ')]
+    require(len(done) == 1 and len(done[0]) == 16 and lines[-1].startswith('DONE '), 'one complete final DONE')
+    d = done[0]
+    require(int(d[1]) == m and int(d[2]) == n and int(d[14]) == n and int(d[8]) == 0 and
+            d[5] == 'length' and list(map(int, d[6:8])) == [0, 0], 'full fresh GEN128, no draft/EOS truncation')
+    require(all(math.isfinite(float(d[i])) and float(d[i]) > 0 for i in (3, 4)), 'finite positive engine samples')
+    require(all(int(d[i]) >= 0 for i in (9, 10, 11, 12, 15)) and math.isfinite(float(d[13])) and float(d[13]) >= 0,
+            'finite nonnegative tier accounting')
+    pp = [x.split() for x in lines if x.startswith('PP ')]
+    ends = list(range(8192, n - 1, 8192)) + [n - 1] if engine == 'xe' else [n - 1]
+    require(all(len(x) == 5 for x in pp), 'complete PP fields')
+    require([int(x[1]) for x in pp] == ends and all(len(x) == 5 and int(x[2]) == n and
+            all(math.isfinite(float(v)) and float(v) >= 0 for v in x[3:]) for x in pp), 'actual full prompt route progress')
+    require(len(lines) == 1 + len(ends) + 1 + 2 * m + 1 and lines[0] == 'RESUME 0' and
+            lines[1 + len(ends)] == 'REUSED 0' and all(x.startswith('PP ') for x in lines[1:1 + len(ends)]),
+            'strict fresh prompt/output phase ordering')
+    output = [x for x in lines if x.startswith(('T ', 'LP '))]
+    require(len(output) == 2 * m, 'complete128 token/LP5 pairs')
+    ids = []
+    for i in range(m):
+        token, lp = output[2 * i].split(), output[2 * i + 1].split()
+        require(len(token) == 2 and token[0] == 'T' and 0 <= int(token[1]) < 248320, 'actual token domain/pair')
+        require(len(lp) == 7 and lp[0] == 'LP' and math.isfinite(float(lp[1])), 'finite LP5')
+        top = []
+        for field in lp[2:]:
+            tid, value = field.split(':')
+            require(0 <= int(tid) < 248320 and math.isfinite(float(value)), 'LP5 vocabulary/value')
+            top.append(int(tid))
+        require(len(set(top)) == 5, 'distinct top5 IDs')
+        require(int(token[1]) not in EOS_IDS, 'no emittedEOS token')
+        ids.append(int(token[1]))
+    chunks = re.findall(r'^strata trace: prompt chunk (\d+) of (\d+)$', stderr, re.M)
+    reads = re.findall(r'^strata trace: read (\d+) tokens \((windows|batched)\) in ([0-9.]+) ms$', stderr, re.M)
+    if not require_trace:
+        require(not chunks and not reads, 'clean timed route has tracing disabled')
+    elif engine == 'xe':
+        require(chunks == [(str(start), str(n - 1)) for start in range(0, n - 1, 8192)] and
+                len(reads) == 1 and reads[0][:2] == (str(n - 1), 'batched'), 'actual Xe all8192chunks through prompt n-1')
+    else:
+        require(not chunks and len(reads) == 1 and reads[0][:2] == (str(n - 1), 'windows'), 'official only serial read_windows, no batched route')
+    require(all(math.isfinite(float(x[2])) and float(x[2]) >= 0 for x in reads), 'finite individual traced part sample')
+    encoded = ('\n'.join(output) + '\n').encode()
+    return dict(prompt_tokens=n, source_bound_prefill_chunks=(n - 2) // 8192 + 1 if engine == 'xe' else None,
+                observed_prefill_chunks=len(chunks) if require_trace and engine == 'xe' else None, generated_tokens=m, finish='length', output_ids=ids,
+                token_logprob_sha256=hashlib.sha256(encoded).hexdigest(), token_logprob_lines=output,
+                first16_token_logprob_sha256=hashlib.sha256(('\n'.join(output[:32]) + '\n').encode()).hexdigest(),
+                engine_prefill_ms=float(d[3]), engine_decode_ms=float(d[4]), pp_samples=pp,
+                individual_read_part_samples=[dict(tokens=int(a), route=b, ms=float(c)) for a, b, c in reads],
+                actual_route=('batched8192' if engine == 'xe' else 'serial_read_windows8') if require_trace else None,
+                source_bound_route='batched8192' if engine == 'xe' else 'serial_read_windows8',
+                inferred_from_source=not require_trace,
+                route_evidence_scope='observed debug trace' if require_trace else 'source-bound only; clean tracing absent',
+                scope='Exact128 reported tokens/LP5 only; separate actual first16 fingerprint; no full-logit, quality, RESTORE or optimal-speed claim')
+
+
+def resolved_long(value):
+    if isinstance(value, str):
+        require(not any(tag in value.upper() for tag in ('PENDING', 'UNRESOLVED', 'TODO')), 'unresolved long admission')
+    elif isinstance(value, dict):
+        for item in value.values():
+            resolved_long(item)
+    elif isinstance(value, list):
+        for item in value:
+            resolved_long(item)
+
+
+def long_plan(q, sample, workers, gu_arm):
+    resolved_long(q)
+    long = q['long_decode128']
+    require(long.get('main_reviewed') is True and long.get('status') == 'passed', 'new long campaign review')
+    require(type(long.get('generated_tokens')) is int and type(long.get('prompt_tokens')) is int and
+            type(long.get('pool_tasks')) is int and
+            long.get('generated_tokens') == 128 and long.get('prompt_tokens') == 32768 and
+            long.get('pool_tasks') == 18 and long.get('first16_sha256') == FIRST16_SHA and
+            long.get('namespace') == str(CLEAN_PARENT), 'exact long geometry/namespace/fingerprint')
+    plan = long['order']
+    require(type(plan) is list and 1 <= len(plan) <= 18 and type(sample) is int and 1 <= sample <= len(plan),
+            'finite explicit Main order/sample')
+    require(all(type(row) is dict and set(row) == {'workers', 'gu_arm'} and type(row['workers']) is int and
+                row['workers'] in (3, 4, 5) and row['gu_arm'] in ('unchanged', 'off', 'on') for row in plan),
+            'only workers3/4/5 and explicit optional pairedGU arms')
+    require(plan[sample - 1] == dict(workers=workers, gu_arm=gu_arm), 'requested sample matches Main order')
+    if gu_arm != 'unchanged':
+        require(long.get('paired_gu_source_and_binary_qualified') is True, 'pairedGU cannot be assumed in current binary')
+    return plan
+
+
+def long_admission(q, sample, workers, gu_arm):
+    plan = long_plan(q, sample, workers, gu_arm)
+    long = q['long_decode128']
+    pins = {str(Path(__file__).resolve()): sha(Path(__file__)), str(FIXTURE_SOURCE.resolve()): sha(FIXTURE_SOURCE)}
+    require(long['source_pins'] == pins and long['shared_helper_pins'] == SHARED_PINS and
+            long['parent_controller_pin'] == PARENT_CONTROLLER_PIN and sha(Path(PARENT_CONTROLLER_PIN['path'])) ==
+            PARENT_CONTROLLER_PIN['sha256'], 'exact new long sources and immutable parent/shared dependencies')
+    for role in ('cpu', 'review'):
+        proof = load(identity(long['receipts'][role]))
+        if role == 'cpu':
+            closed(proof)
+        else:
+            require(proof.get('passed') is True and proof.get('complete') is True and
+                    proof.get('active') is False and not proof.get('error'), 'fresh complete Main source review')
+        require(proof.get('main_reviewed') is True and proof.get('gpu_executed') is False and
+                proof.get('model_executed') is False and proof.get('source_pins') == pins and
+                proof.get('shared_helper_pins') == SHARED_PINS and proof.get('generated_tokens') == 128,
+                'fresh long controller CPU/full-read proof, not old worker claim')
+        if role == 'cpu':
+            require(all(proof.get(key) is True for key in ('full128_parser_fixtures_passed',
+                'malformed_partial_duplicate_lp_fixtures_passed', 'invalid_order_admission_preowner_passed',
+                'owned_mock_quit_stop_passed')), 'Main actually qualified new parser/admission/owner fixtures')
+    built = closed(load(BUILD_PROOF))
+    generate_source = CANDIDATE / 'src/program/generate.cpp'
+    require(sha(generate_source) == built['source_pins']['src/program/generate.cpp'] and
+            re.search(r'eos_ids\s*=\s*\{248044,\s*248046\}', generate_source.read_text()),
+            'emittedEOS exclusion bound to actual candidate default/source pin')
+    if gu_arm != 'unchanged':
+        source = CANDIDATE / 'src/kernels/cpu/iq_avx2.cpp'
+        require(sha(source) == built['source_pins']['src/kernels/cpu/iq_avx2.cpp'] and
+                'STRATA_IQ256_PAIRED_GU' in source.read_text() and 'iq256_gu_rows_paired_v' in source.read_text(),
+                'actual qualified source implements pairedGU; no no-op flag acceptance')
+        proof = closed(load(identity(long['paired_gu_qualification_receipt'])))
+        require(proof.get('main_reviewed') is True and proof.get('cpu_bitwise_parity_passed') is True and
+                proof.get('source_pins') == built['source_pins'] and proof.get('binary') == built['builds']['free']['binary'],
+                'pairedGU qualification bound to exact candidate source/binary')
+    return plan
+
+
+def worker_info(startup, engine, extra, workers):
+    require(startup[-1].split() == ['READY', '262144', 'stop'], 'exact physical-context READY')
+    lines = [s for s in startup if s.startswith('INFO ')]
+    require(len(lines) == 1, 'one actual INFO')
+    result = {}
+    for word in lines[0].split()[1:]:
+        require('=' in word, 'INFO key/value field')
+        key, value = word.split('=', 1)
+        require(key not in result, 'duplicate INFO field')
+        result[key] = value
+    slots = result.get('expert_slots', '')
+    require(re.fullmatch(r'[0-9]+', slots) and 0 < int(slots) <= 48 * 512,
+            'actual positive integer expert slots within model population')
+    require(workers in (3,4,5), 'bounded worker sweep')
+    extra = dict(extra)
+    require(extra.get('pool_workers', '5') == '5', 'admitted baseline extra workers5')
+    extra['pool_workers'] = str(workers)
+    expected = dict(context='262144', kv='int8', kv_resident='32768', spec='4' if engine == 'xe' else '8',
+                    lookup='0', pool_workers=str(workers), pcie_frac='0.00', conversation_cache_mib='0')
+    require(all(k not in expected or str(v) == expected[k] for k, v in extra.items()), 'Main INFO cannot override fixed policy')
+    expected.update(extra)
+    require(all(result.get(k) == str(v) for k, v in expected.items()), 'actual effective fixed settings')
+    require(int(result['vram_free_mib']) >= 512, 'READY free VRAM >=512MiB')
+    require(result.get('batch_slots', '0') == '0', 'ordinary serial request only')
+    return result
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--sample', required=True, type=int, choices=range(1, 19))
+    parser.add_argument('--generated-tokens', required=True, type=int, choices=[128])
+    parser.add_argument('--workers', required=True, type=int, choices=[3,4,5])
+    parser.add_argument('--paired-gu', choices=['unchanged', 'off', 'on'], default='unchanged')
+    parser.add_argument('--engine', required=True, choices=['xe'])
+    parser.add_argument('--phase', required=True, choices=[phase for _, phase in SEQUENCE])
+    parser.add_argument('--qualification', required=True, type=Path)
+    parser.add_argument('--qualification-sha256', required=True)
+    args = parser.parse_args()
+    global NAMESPACE
+    args.profile_arm = '0'
+    NAMESPACE = CLEAN_PARENT / ('sample-' + str(args.sample) + '-workers-' + str(args.workers) + '-gu-' + args.paired_gu)
+    for path, digest in ((args.qualification, args.qualification_sha256),):
+        require(re.fullmatch('[0-9a-f]{64}', digest) and sha(path) == digest, 'resolved Main receipt hash')
+    production = load(HERE / 'production-source-pins.json')
+    q = load(args.qualification)
+    plan = long_admission(q, args.sample, args.workers, args.paired_gu)
+    e = phase_health(admit(q, args.engine, production), args.phase)
+    require(Path(sys.executable).resolve() == identity(q['tools']['python']).resolve(), 'actual qualified interpreter')
+    expected_health_env = environment(args.engine, args.phase == 'startup', e['extra_runtime_dirs'], args.phase)
+    expected_health_env.update(STRATA_PREFILL_RING='16', STRATA_PREFILL_NATIVE_DEQUANT_BATCH='1',
+                               STRATA_PREFILL_SERVICE_EVENTS=args.profile_arm)
+    if args.paired_gu != 'unchanged':
+        expected_health_env['STRATA_IQ256_PAIRED_GU'] = '1' if args.paired_gu == 'on' else '0'
+    build = closed(load(BUILD_PROOF))
+    source_review = load(SOURCE_REVIEW)
+    runtime_review = load(RUNTIME_REVIEW)
+    require(runtime_review['main_reviewed'] and runtime_review['small_gpu_fixture_passed'] and
+            runtime_review['build_proof_sha256'] == sha(BUILD_PROOF), 'actual Main small GPU fixture before model')
+    require(source_review['main_reviewed'] and source_review['agent_final_received'] and
+            build['source_pins'] == source_review['source_pins'], 'Main exact source review/build before GPU')
+    for name,digest in build['source_pins'].items():
+        require(sha(CANDIDATE/name) == digest, 'reviewed candidate source unchanged')
+    global BINARIES
+    BINARIES = {'xe':build['builds']['free']['binary']}
+    identity(BINARIES['xe'])
+    native_proof_path = B / 'main-prefill-native-batch-diagnostic-model-root-v1/xe-timed1-on/record.json'
+    native_proof_sha = sha(native_proof_path)
+    native_proof = closed(load(native_proof_path))
+    require(native_proof['boot_id'] == Path('/proc/sys/kernel/random/boot_id').read_text().strip() and native_proof['kernel_gate_passed'] and native_proof['model_normal_close'] and len(native_proof['native_group_lines']) == 192, 'closed sameboot exact nativebatch model diagnostic required')
+    boot = Path('/proc/sys/kernel/random/boot_id').read_text().strip()
+    require(sha(OWNER) == OWNER_SHA, 'owner hash immediately before import')
+    spec = importlib.util.spec_from_file_location('qualified_direct_owner', OWNER)
+    owner_module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(owner_module)
+    mapping.m = owner_module
+    pair = (args.engine, args.phase)
+    index = SEQUENCE.index(pair)
+    roots = [NAMESPACE / (engine + '-' + phase) for engine, phase in SEQUENCE]
+    with (B / 'owned-v0141-measurement.lock').open('a') as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        previous_roots = [CLEAN_PARENT / ('sample-' + str(i) + '-workers-' + str(plan[i - 1]['workers']) +
+            '-gu-' + plan[i - 1]['gu_arm']) for i in range(1, args.sample)]
+        require(not CLEAN_PARENT.exists() or set(CLEAN_PARENT.iterdir()) == set(previous_roots), 'fresh complete ABBA prefix')
+        for previous_root in previous_roots:
+            previous = closed(load(previous_root / 'xe-timed1-on/record.json'))
+            require(previous['boot_id'] == boot and previous['model_normal_close'] and previous['kernel_gate_passed'] and
+                    previous['qualification_sha256'] == args.qualification_sha256 and
+                    previous['validation']['generated_tokens'] == 128 and previous['pool_tasks'] == 18 and
+                    previous['main_controller_sha256'] == SELF_SHA, 'closed sameboot same-source/admission long predecessor')
+        require(not NAMESPACE.exists() or set(NAMESPACE.iterdir()) == set(roots[:index]),
+                'exact fresh successful prefix; existing failed root forbids retry/adoption')
+        prior = [closed(load(OLD_STARTUP))]
+        for root in roots[:index]:
+            value = closed(load(root / 'record.json'))
+            require(value['boot_id'] == boot and value['qualification_sha256'] == args.qualification_sha256 and
+                    value.get('model_normal_close') is True and value.get('kernel_gate_passed') is True and
+                    value['model_close']['quit_send_outcome'] == 'sent' and
+                    value['model_close']['quit_exit_outcome'] == 'exit observed', 'sameboot normally QUIT closed predecessor')
+            prior.append(value)
+        if args.phase != 'startup':
+            predecessor = OLD_STARTUP
+            require(prior[0]['engine'] == args.engine and prior[0]['phase'] == 'startup', 'same engine startup first')
+            review = load(OLD_REVIEW)
+            require(review.get('passed') is True and review.get('main_reviewed') is True and
+                    review.get('predecessor_sha256') == sha(predecessor) and
+                    review.get('compile_diagnostics_reviewed') is True and review.get('provider_identity_reviewed') is True,
+                    'Main reviewed actual startup diagnostics/provider before32K')
+        require(q.get('integrated_campaign_reviewed') is True and
+                q.get('clean_timing_environment_reviewed') is True, 'Main new integrated campaign/clean-env admission')
+        out = roots[index]
+        out.mkdir(parents=True)
+        env = expected_health_env
+        argv = argv_for(args.engine)
+        argv[0] = BINARIES[args.engine]['path']
+        worker_at = argv.index('--pool-workers') + 1
+        require(argv[worker_at] == '5' and '--pool-tasks' not in argv, 'unchanged baseline worker/task recipe')
+        argv[worker_at] = str(args.workers)
+        argv += ['--pool-tasks', '18']
+        r = dict(active=True, passed=False, complete=False, commands=[], guard_commands=[], boot_id=boot,
+                 started_utc=owner_module.utc(), engine=args.engine, phase=args.phase, binary=BINARIES[args.engine],
+                 qualification_sha256=args.qualification_sha256, qualification_path=str(args.qualification),
+                 candidate_build_proof_path=str(BUILD_PROOF), candidate_build_proof_sha256=sha(BUILD_PROOF),
+                 candidate_source_review_path=str(SOURCE_REVIEW), candidate_source_review_sha256=sha(SOURCE_REVIEW),
+                 candidate_source_pins=build['source_pins'],
+                 candidate_commit=runtime_review['candidate_commit'],
+                 runtime_review_path=str(RUNTIME_REVIEW), runtime_review_sha256=sha(RUNTIME_REVIEW),
+                 baseline_admission_scope='Existing baseline controller/provider/model only; candidate source/build review separately pinned',
+                 fresh_health_scope='Actual in-controller exact environment native integer test before launch and after normal QUIT',
+                 main_controller_path=str(Path(__file__)), main_controller_sha256=SELF_SHA,
+                 reference_startup_sha256=sha(OLD_STARTUP), reference_startup_path=str(OLD_STARTUP),
+                 production_source_manifest_sha256=sha(HERE / 'production-source-pins.json'),
+                 reference_controller_source_pins=q['controller_source_pins'], argv=argv, environment=env,
+                 model_inputs=q['model_inputs'], startup=[], request_protocol=[], protocol_events=[],
+                 ready_seen=False, gen_send_attempted=False, request_done_seen=False, model_normal_close=False,
+                 mapping_snapshots={}, mapping_read_budget={'bytes': 0}, model_launch_attempted=False,
+                 performance_eligible=False, full_context_runtime_qualified=False, restore_qualified=False,
+                 validation_and_tracing_overhead=False, decode_timing_diagnostic=False, production_leaf_service_diagnostic=args.profile_arm=='1', profile_arm=args.profile_arm, calibration_sample=args.sample, native_batch_arm='1', route_presumed_optimal=False, reset_executed=False,
+                 retry_count=0, adopted=False, raw_text_budget_bytes=64 << 20, total_file_budget_bytes=96 << 20,
+                 session_rss_budget_bytes=88 << 30, model_wall_seconds=300 if args.phase == 'startup' else 1800,
+                 startup_wall_seconds=300, prior_receipt_pins={str(x / 'record.json'): sha(x / 'record.json') for x in roots[:index]})
+        r.update(worker_arm=args.workers, pool_tasks=18, worker_sample=args.sample, paired_gu_arm=args.paired_gu,
+                 generated_token_request=args.generated_tokens, long_source_pins=q['long_decode128']['source_pins'],
+                 long_host_receipt_pins=q['long_decode128']['receipts'],
+                 measurement_scope='Fresh32K+GEN128 one selected worker process/sample; Main order explicit, fixed18 tasks, no tuning promotion.')
+        r['long_prior_receipt_pins'] = {str(path / 'xe-timed1-on/record.json'): sha(path / 'xe-timed1-on/record.json')
+                                         for path in previous_roots}
+        r['baseline_first16_receipt_path'] = str(native_proof_path)
+        r['baseline_first16_receipt_sha256'] = native_proof_sha
+        r['controller_allowed_cpus'] = sorted(os.sched_getaffinity(0))
+        r['cpu_topology'] = [{'cpu': cpu,
+            'package': Path('/sys/devices/system/cpu', 'cpu'+str(cpu), 'topology/physical_package_id').read_text().strip(),
+            'core': Path('/sys/devices/system/cpu', 'cpu'+str(cpu), 'topology/core_id').read_text().strip()}
+            for cpu in r['controller_allowed_cpus']]
+        def save():
+            (out / 'record.json').write_text(json.dumps(r, indent=2) + '\n')
+        save()
+        owner = owner_module.Owner(out / 'commands', save)
+        guard = owner_module.Owner(out / 'commands', save)
+        r['commands'], r['guard_commands'] = owner.commands, guard.commands
+        started = time.monotonic()
+        cursor = None
+        controller_wall = r['model_wall_seconds']
+        r['cpu_affinity_count'] = len(os.sched_getaffinity(0))
+        require(r['cpu_affinity_count'] > 0, 'positive actual CPU affinity')
+        r['cpu_cap_recipe'] = 'ceil(actual owned wall * affinity count)+60 cumulative CPU seconds'
+        def run(label, command, selected_env=UTILITY_ENV, interaction=None, wall=30, rss=4 << 30, cwd=None):
+            remaining = controller_wall - (time.monotonic() - started)
+            require(remaining > 0, 'finite controller whole-run deadline')
+            actual_wall = min(wall, remaining)
+            selected_owner = guard if label.startswith(('head-', 'status-', 'diff-')) else owner
+            c, so, se = selected_owner.run(label, command, selected_env, cwd or TREES[args.engine],
+                interaction=interaction, wall=actual_wall, cpu=cpu_cap(actual_wall, r['cpu_affinity_count']), text_cap=64 << 20,
+                file_cap=64 << 20, total_cap=96 << 20, rss_cap=rss)
+            if label == 'engine':
+                r['model_normal_close'] = bool(strong(c) and c.get('exit_code') == 0 and
+                    r.get('model_close', {}).get('quit_send_outcome') == 'sent' and
+                    r.get('model_close', {}).get('quit_exit_outcome') == 'exit observed')
+                r.setdefault('model_close', {}).update(normal=r['model_normal_close'],
+                    forced=bool(c.get('cleanup')), exit_code=c.get('exit_code'), owner_error=c.get('error'))
+                save()
+            require(strong(c) and c['exit_code'] == 0, 'normal anchored owned closure ' + label)
+            return so.read_text(), se.read_text()
+        def source_guard(label):
+            require(sha(Path(PARENT_CONTROLLER_PIN['path'])) == PARENT_CONTROLLER_PIN['sha256'],
+                    'original parent controller source immutable')
+            require(sha(native_proof_path) == native_proof_sha, 'original closed first16 baseline immutable')
+            require(all(sha(Path(path)) == digest for path, digest in q['long_decode128']['source_pins'].items()),
+                    'new long controller and fixture source unchanged')
+            for pin in q['long_decode128']['receipts'].values():
+                identity(pin)
+            if args.paired_gu != 'unchanged':
+                identity(q['long_decode128']['paired_gu_qualification_receipt'])
+            require(sha(args.qualification) == args.qualification_sha256 and
+                    sha(Path(__file__)) == SELF_SHA and sha(OLD_STARTUP) == r['reference_startup_sha256'] and sha(OWNER) == OWNER_SHA and
+                    sha(HERE / 'production-source-pins.json') == q['production_source_manifest_sha256'] and
+                    all(sha(HERE / p) == h for p, h in q['controller_source_pins'].items()), 'immutable admission/helpers')
+            source_stable(q['production_source_pins'])
+            require(sha(BUILD_PROOF) == r['candidate_build_proof_sha256'] and
+                    sha(SOURCE_REVIEW) == r['candidate_source_review_sha256'] and
+                    sha(RUNTIME_REVIEW) == r['runtime_review_sha256'] and
+                    all(sha(CANDIDATE/name) == digest for name,digest in build['source_pins'].items()),
+                    'exact candidate build/source closure')
+            candidate_head,_ = run('head-candidate-' + label, ['/usr/bin/git','rev-parse','HEAD'], cwd=CANDIDATE)
+            candidate_status,_ = run('status-candidate-' + label, ['/usr/bin/git','status','--porcelain','--untracked-files=all'], cwd=CANDIDATE)
+            require(candidate_head.strip() == r['candidate_commit'] and not candidate_status,
+                    'actual clean committed candidate branch')
+            identity(BINARIES[args.engine])
+            for pin in q['tools'].values():
+                identity(pin)
+            for pin in q['receipts'].values():
+                identity(pin)
+            identity(q['model_identity_receipt'])
+            held_identity(q['held_out_prompt']['input'])
+            identity(q['held_out_prompt']['preparation_receipt'])
+            for pin in e['receipts'].values():
+                identity(pin)
+            identity(e['health_binary'])
+            for pin in e['health_libraries'].values():
+                identity(pin)
+            for pin in e['mapped_libraries'].values():
+                identity(pin)
+            head, _ = run('head-' + label, ['/usr/bin/git', 'rev-parse', 'HEAD'])
+            status, _ = run('status-' + label, ['/usr/bin/git', 'status', '--porcelain', '--untracked-files=all'])
+            diff, _ = run('diff-' + label, ['/usr/bin/git', 'diff', 'HEAD'])
+            require(head.strip() == REVISIONS[args.engine] and status == diff == '', 'actual integrated clean source identity')
+            for item in q['model_inputs']:
+                require(mapping.stat_identity(Path(item['path'])) == item['stat'], 'full-hashed model identity unchanged')
+        def kernel(label):
+            text, _ = run(label, ['/usr/bin/journalctl', '-k', '--after-cursor', cursor, '--no-pager', '-o', 'json'])
+            rows = [json.loads(x) for x in text.splitlines()]
+            require(len(rows) <= 65536, 'finite kernel journal rows')
+            relevant = [x for x in rows if PCI in x.get('MESSAGE', '') or re.search(r'\bxe\b', x.get('MESSAGE', ''))]
+            faults = [x for x in relevant if FAULT.search(x.get('MESSAGE', ''))]
+            r[label] = dict(cursor=cursor, relevant_entries=relevant, fault_entries=faults,
+                            dump_present=DUMP.exists(), filter=FAULT.pattern)
+            save()
+            require(not faults and not DUMP.exists(), 'fresh kernel/devcoredump fault gate')
+        def health(label):
+            text, error = run(label, [e['health_binary']['path'], PCI],
+                              selected_env=env, wall=30)
+            lines = text.splitlines()
+            require(lines[:6] == HEALTH_LINES == e['health_stdout_prefix'] and
+                    all(x.startswith('LIBRARY ') for x in lines[6:]), 'actual completed integer health protocol')
+            observed = {x.removeprefix('LIBRARY ') for x in lines[6:]}
+            require(observed == set(e['health_libraries']) and
+                    all(sha(p) == v['sha256'] for p, v in e['health_libraries'].items()), 'actual health self-maps provider identity')
+            require(not diagnostics(text + error)['severe_messages'], 'health selected-path runtime clean')
+            r[label] = dict(protocol=lines[:6], self_maps=sorted(observed), provider=e['provider'])
+            save()
+        def capture(label, entry, poll):
+            def partial(snapshot):
+                r['mapping_snapshots'][label] = snapshot
+                save()
+            snapshot = mapping.mapping_snapshot(entry, poll, r['mapping_read_budget'], partial)
+            for path, item in snapshot['files'].items():
+                pin = e['mapped_libraries'].get(path)
+                require(pin and all(item[k] == pin[k] for k in ('path', 'canonical_path', 'sha256', 'stat', 'elf_build_id')),
+                        'actual mapped runtime/compiler/driver/stdlib/math identity')
+            require(set(e['required_runtime_paths']) <= set(snapshot['files']), 'actual required runtime provider present')
+            provider = LLVM if args.engine == 'xe' else ICPX
+            sycl = [v for p, v in snapshot['files'].items() if Path(p).name.startswith('libsycl.so')]
+            require(len(sycl) == 1 and Path(sycl[0]['canonical_path']).is_relative_to(provider / 'lib'),
+                    'actual native SYCL provider, no foreign forced adapter')
+            r['mapping_snapshots'][label] = snapshot
+            save()
+        try:
+            require(os.geteuid() != 0 and not DUMP.exists(), 'unprivileged no existing devcoredump')
+            source_guard('preflight')
+            memory = {x.split(':')[0]: int(x.split()[1]) * 1024 for x in Path('/proc/meminfo').read_text().splitlines()
+                      if x.startswith(('MemTotal:', 'MemAvailable:'))}
+            r['initial_host_memory'] = memory
+            require(memory['MemAvailable'] >= 80 << 30, '80GiB host reserve')
+            groups = [x.split(':', 2)[2] for x in Path('/proc/self/cgroup').read_text().splitlines() if x.startswith('0::')]
+            require(len(groups) == 1, 'known unified cgroup admission, unknown limits fail closed')
+            cgroup = (Path('/sys/fs/cgroup') / groups[0].lstrip('/')).resolve()
+            require(cgroup.is_relative_to('/sys/fs/cgroup'), 'bounded cgroup ancestor path')
+            for path in (cgroup, *cgroup.parents):
+                if not path.is_relative_to('/sys/fs/cgroup'):
+                    continue
+                if path == Path('/sys/fs/cgroup') and not (path / 'memory.max').exists():
+                    r.setdefault('cgroup_memory', []).append(dict(path=str(path), maximum='root-no-controller-cap',
+                                                                physical_reserve_bytes=memory['MemAvailable']))
+                    continue
+                require((path / 'memory.max').is_file() and (path / 'memory.current').is_file(), 'known ancestor memory limit')
+                maximum, current = (path / 'memory.max').read_text().strip(), int((path / 'memory.current').read_text())
+                r.setdefault('cgroup_memory', []).append(dict(path=str(path), maximum=maximum, current=current))
+                require(maximum == 'max' or int(maximum) - current >= 80 << 30, '80GiB cgroup reserve')
+            state, _ = run('embedding-state', ['/usr/bin/systemctl', '--user', 'show',
+                          'llama-server-qwen3embed.service', '-p', 'ActiveState'])
+            require(state.strip() == 'ActiveState=inactive', 'embedding service already inactive; no service changes')
+            text, _ = run('kernel-cursor', ['/usr/bin/journalctl', '-k', '-n', '0', '--show-cursor', '--no-pager'])
+            matches = re.findall(r'^-- cursor: (.+)$', text, re.M)
+            require(len(matches) == 1, 'fresh journal cursor before any health/model GPU work')
+            cursor = matches[0]
+            r['kernel_cursor_before'] = cursor
+            kernel('kernel-before-health')
+            files = sorted(str(p.resolve()) for base in (PACK, MODEL) for p in base.rglob('*') if p.is_file()) + [str(PROFILE.resolve())]
+            require(files == [x['path'] for x in q['model_inputs']] and str(NATIVE.resolve()) in files,
+                    'complete exact canonical pack/native/PLE/profile set; no MTP artifacts')
+            if args.phase != 'startup':
+                require(sha(FIXTURE) == FIXTURE_SHA, 'exact immutable64K fixture')
+                ids = [int(x) for x in re.split(r'[\s,]+', FIXTURE.read_text().strip())]
+                require(len(ids) == 65536 and all(0 <= x < 248320 for x in ids), 'complete canonical fixture count/bounds')
+                tail = load(FIXTURE.with_name('manifest.json'))
+                require(sha(FIXTURE.with_name('manifest.json')) == '0fbf6a16a90b55a3767145d1217b2027e218c0537a487faa428ab6527e6771b1' and
+                        tail['passed'] is True and tail['active'] is False and tail['suffix']['tokens'] == 49 and
+                        tail['suffix']['encode_exact'] is True and tail['suffix']['decode_exact'] is True, 'verified49 task tail')
+                tokens = ids[:32768 - 49] + ids[-49:]
+                if args.phase.startswith('heldout'):
+                    held = q['held_out_prompt']
+                    require(held.get('main_reviewed') is True and held.get('held_out') is True,
+                            'Main independently held-out prompt identity')
+                    held_path = held_identity(held['input'])
+                    tokens = [int(x) for x in re.split(r'[\s,]+', held_path.read_text().strip())]
+                    expected_held = held_geometry(held)
+                    require(len(tokens) == expected_held and 32768 <= len(tokens) <= 65536 and
+                            all(0 <= x < 248320 for x in tokens), 'held-out whole-document actual geometry/vocabulary bounds')
+                    require(tokens != ids[:32768 - 49] + ids[-49:], 'held-out differs from campaign prompt')
+                (out / 'tokens.txt').write_text(','.join(map(str, tokens)) + '\n')
+                r['input'] = dict(path=str(out / 'tokens.txt'), sha256=sha(out / 'tokens.txt'), tokens=len(tokens),
+                                  parent_path=str(FIXTURE), parent_sha256=FIXTURE_SHA,
+                                  derivation='first32719 IDs plus last49 IDs; no retokenization')
+                if args.phase.startswith('heldout'):
+                    r['input'].update(parent_path=str(held_path), parent_sha256=held['input']['sha256'],
+                                      preparation_receipt=held['preparation_receipt'],
+                                      derivation='Main reviewed entire independent held-out IDs; no truncation/splice/padding/retokenization')
+            text, _ = run('device-selected', ['/usr/bin/xpu-smi', 'discovery', '-d', '0', '-j'])
+            device = json.loads(text)
+            require(device['device_id'] == 0 and device['pci_bdf_address'] == PCI and device['device_state'] == 'normal', 'actual selected GPU normal')
+            r['device_discovery'] = device
+            text, _ = run('device-usage', ['/usr/bin/xpu-smi', 'stats', '-d', '0', '-j'])
+            stats = json.loads(text)
+            require(stats['device_index'] == 0 and stats['pci_bdf'] == PCI and 0 <= stats['memory']['used_mib']['tile_0']['current'] <= 256, 'actual idle selected GPU')
+            r['device_usage'] = stats
+            health('health-before')
+            kernel('kernel-after-prehealth')
+            admitted_at = time.monotonic()
+            stderr = out / 'commands/engine.stderr'
+            def post_ready_diagnostics():
+                with stderr.open('rb') as stream:
+                    stream.seek(r['ready_stderr_offset'])
+                    text = stream.read((64 << 20) + 1)
+                require(len(text) <= 64 << 20, 'post-READY diagnostic byte cap')
+                return diagnostics(text.decode('utf-8', errors='replace'))
+            def body(io, entry):
+                owner_poll = io.poll
+                next_progress = time.monotonic() + 30
+                next_diagnostic = 0.0
+                monitor = None
+                def poll():
+                    nonlocal next_progress, next_diagnostic
+                    request_budget_stop(io, entry, r, save, time.monotonic())
+                    owner_poll()
+                    if monitor is not None and time.monotonic() >= next_diagnostic:
+                        observed = monitor.check(stderr)
+                        if observed['severe_messages']:
+                            r['active_runtime_failure_diagnostics'] = observed
+                            save()
+                            raise ValueError('active post-READY runtime error')
+                        next_diagnostic = time.monotonic() + 1
+                    if time.monotonic() >= next_progress:
+                        elapsed = time.monotonic() - entry['spawn_begin_monotonic']
+                        size = stderr.stat().st_size
+                        r.setdefault('owned_progress', []).append(dict(elapsed_seconds=elapsed, stderr_bytes=size))
+                        require(len(r['owned_progress']) <= 64, 'finite progress samples')
+                        print(f'OWNED PROGRESS {args.engine} {args.phase} elapsed={elapsed:.1f}s stderr_bytes={size}', flush=True)
+                        save()
+                        next_progress = time.monotonic() + 30
+                    require(not DUMP.exists(), 'new devcoredump stops engine')
+                io.poll = poll
+                try:
+                    require(time.monotonic() - admitted_at < 30, 'fresh in-controller health launch')
+                    startup_deadline = entry['spawn_begin_monotonic'] + 300
+                    while True:
+                        remaining = startup_deadline - time.monotonic()
+                        require(remaining > 0, 'absolute300s startup deadline')
+                        line = io.line(min(120, remaining))
+                        r['startup'].append(line)
+                        require(len(r['startup']) <= 1000 and not line.startswith('ERR'), 'bounded non-error startup')
+                        if line.startswith('READY '):
+                            r['ready_seen'] = True
+                            r['ready_monotonic'] = time.monotonic()
+                            with stderr.open('rb') as stream:
+                                ready_bytes = stream.read((64 << 20) + 1)
+                            require(len(ready_bytes) <= 64 << 20, 'READY stderr cap')
+                            r['ready_stderr_observed_bytes'] = len(ready_bytes)
+                            # A partial line remains on the strict side so no enum can straddle and disappear.
+                            r['ready_stderr_offset'] = ready_bytes.rfind(b'\n') + 1
+                            monitor = DiagnosticReader(r['ready_stderr_offset'])
+                            break
+                    r['startup_wall_seconds_observed'] = r['ready_monotonic'] - entry['spawn_begin_monotonic']
+                    expected_info = dict(e['expected_info'])
+                    if args.phase != 'startup':
+                        expected_info['expert_slots'] = prior[0]['effective_info']['expert_slots']
+                    r['effective_info'] = worker_info(r['startup'], args.engine, expected_info, args.workers)
+                    require(Path('/proc', str(entry['pid']), 'exe').resolve() == Path(argv[0]).resolve() and
+                            sha(Path('/proc', str(entry['pid']), 'exe')) == BINARIES[args.engine]['sha256'], 'owned exact model executable')
+                    require(Path('/proc', str(entry['pid']), 'cmdline').read_bytes().split(b'\0')[:-1] == [x.encode() for x in argv], 'actual argv')
+                    actual_env = dict(x.decode().split('=', 1) for x in Path('/proc', str(entry['pid']), 'environ').read_bytes().split(b'\0') if b'=' in x)
+                    require(actual_env == env, 'actual complete explicit environment; no inherited secrets/flags')
+                    with stderr.open('rb') as stream:
+                        initial_stderr = stream.read(r['ready_stderr_offset']).decode('utf-8', errors='replace')
+                    r['selected_device_stderr_lines'] = [line for line in initial_stderr.splitlines()
+                        if any(re.fullmatch(pattern, line) for pattern in e['expected_device_stderr_patterns'])]
+                    require(all(any(re.fullmatch(pattern, line) for line in initial_stderr.splitlines())
+                                for pattern in e['expected_device_stderr_patterns']),
+                            'actual source-format selected device/backend identity')
+                    task_line = f'strata generate: CPU pool tasks/phase: 18 (capped by rows), participating threads: {args.workers + 1}'
+                    require(initial_stderr.splitlines().count(task_line) == 1, 'actual fixed18 tasks and selected participants')
+                    r['pool_task_line'] = task_line
+                    tids = sorted(Path('/proc', str(entry['pid']), 'task').iterdir())
+                    require(0 < len(tids) <= 128, 'bounded actual owned model thread census')
+                    r['ready_thread_affinity'] = {v.name: sorted(os.sched_getaffinity(int(v.name))) for v in tids}
+                    r['startup_diagnostics'] = diagnostics(initial_stderr, startup=True)
+                    r['startup_protocol_diagnostics'] = diagnostics('\n'.join(r['startup']), startup=True)
+                    require(not r['startup_diagnostics']['severe_messages'] and
+                            not r['startup_protocol_diagnostics']['severe_messages'], 'selected-path fatal/runtime gate')
+                    capture('ready', entry, io.poll)
+                    source_guard('ready')
+                    r['post_ready_diagnostics'] = post_ready_diagnostics()
+                    require(not r['post_ready_diagnostics']['severe_messages'], 'no new post-READY runtime errors')
+                    if args.phase != 'startup':
+                        require(entry['spawn_begin_monotonic'] + entry['wall_seconds'] - time.monotonic() > 90,
+                                'actual owned deadline has graceful STOP reserve before GEN')
+                        r['gen_send_attempted'] = True
+                        r['gen_send_monotonic'] = time.monotonic()
+                        save()
+                        io.send((f'GEN {args.generated_tokens} ckpt=0 logprobs=5 ' + ','.join(map(str, tokens)) + '\n').encode())
+                        r['gen_sent_monotonic'] = time.monotonic()
+                        while True:
+                            remaining = entry['spawn_begin_monotonic'] + entry['wall_seconds'] - time.monotonic()
+                            require(remaining > 0, 'absolute model deadline')
+                            line = io.line(remaining)
+                            at = time.monotonic()
+                            r['request_protocol'].append(line)
+                            r['protocol_events'].append(dict(line=line, monotonic=at))
+                            require(len(r['request_protocol']) <= 1000, 'bounded GEN protocol')
+                            if line.startswith('ERR'):
+                                r['request_error_seen'] = True
+                                raise ValueError('selected-path protocol ERR: ' + line)
+                            if line.startswith('PP '):
+                                print(line, flush=True)
+                                save()
+                            if line.startswith('REUSED '):
+                                r['prefill_end_monotonic'] = at
+                            if line.startswith('T ') and 'first_token_monotonic' not in r:
+                                r['first_token_monotonic'] = at
+                            if line.startswith('DONE '):
+                                r['request_done_seen'] = True
+                                r['done_monotonic'] = at
+                                break
+                        require(not r.get('budget_stop_requested'), 'budget cancellation remains FAILED/incomplete')
+                        r['post_ready_diagnostics'] = post_ready_diagnostics()
+                        require(not r['post_ready_diagnostics']['severe_messages'], 'no selected-window runtime errors')
+                        r['validation'] = validate_long(r['request_protocol'], args.engine, stderr.read_text(),
+                                                    require_trace=not (args.phase.startswith('timed') or args.phase.startswith('heldout')),
+                                                    expected_prompt_tokens=r['input']['tokens'],
+                                                    expected_generated_tokens=args.generated_tokens)
+                        r['host_wall_samples'] = dict(
+                            prefill_to_REUSED_seconds=r['prefill_end_monotonic'] - r['gen_send_monotonic'],
+                            decode_REUSED_to_DONE_seconds=r['done_monotonic'] - r['prefill_end_monotonic'],
+                            ttft_seconds=r['first_token_monotonic'] - r['gen_send_monotonic'],
+                            full_GEN_seconds=r['done_monotonic'] - r['gen_send_monotonic'],
+                            scope='Observed protocol wall boundaries, includes pipe/scheduling/tracing overhead; engine DONE timings retained separately')
+                        capture('done', entry, io.poll)
+                        source_guard('done')
+                    normal_quit(io, r, 'startup READY only' if args.phase == 'startup' else 'completed GEN128')
+                    save()
+                except BaseException as error:
+                    r['primary_model_failure'] = repr(error)
+                    save()
+                    # READY idle, DONE, or an ERR response permits a bounded normal QUIT attempt.
+                    if r['ready_seen'] and (not r['gen_send_attempted'] or r['request_done_seen'] or r.get('request_error_seen')):
+                        io.poll = owner_poll
+                        try:
+                            normal_quit(io, r, 'preserved failure at responsive boundary')
+                            save()
+                            return
+                        except BaseException as close_error:
+                            r['gate_close_error'] = repr(close_error)
+                            save()
+                    raise
+            r['model_launch_attempted'] = True
+            save()
+            so, se = run('engine', argv, selected_env=env, interaction=body,
+                         wall=r['model_wall_seconds'], rss=88 << 30)
+            r['decode_timing_lines'] = [line for line in se.splitlines() if line.startswith('strata decode timing: ')]
+            require(not r['decode_timing_lines'], 'quiet sampling excludes decode tracing')
+            r['decode_gpu_stage_lines'] = [line for line in se.splitlines() if line.startswith('strata decode GPU stages')]
+            r['pool_overlap_summary_lines'] = [line for line in se.splitlines() if re.search(r'pool multi|R4 overlap|CPU pool call|R4 host', line)]
+            r['service_event_lines'] = [line for line in se.splitlines() if line.startswith('strata prefill service ')]
+            r['native_group_lines'] = [line for line in se.splitlines() if line.startswith('[prefill-native-dequant-group-v2]')]
+            r['transfer_lines'] = [line for line in se.splitlines() if line.startswith('strata prefill expert H2D:')]
+            require(not r['native_group_lines'] and not r['transfer_lines'], 'quiet calibration excludes transfer/group tracing')
+            if args.profile_arm == '1':
+                require(r['service_event_lines'], 'actual production service diagnostic output required')
+                summary_lines = [line for line in r['service_event_lines'] if line.startswith('strata prefill service events: ')]
+                category_lines = [line for line in r['service_event_lines'] if line.startswith('strata prefill service category: ')]
+                require(len(summary_lines) == 1 and category_lines, 'one actual nonempty Prefill scope')
+                summary = dict(word.split('=',1) for word in summary_lines[0].split(': ',1)[1].split())
+                categories = [dict(word.split('=',1) for word in line.split(': ',1)[1].split()) for line in category_lines]
+                require(summary['status'] == 'complete' and summary['checked_boundary'] == '1' and
+                        all(summary[key] == '0' for key in ['overflow','pending','invalid_timestamp','query_errors','excluded_graph','bookkeeping_failed']),
+                        'actual selected leaf event timing complete and positive')
+                require(sum(int(row['count']) for row in categories) == sum(int(row['valid']) for row in categories) == int(summary['captured']),
+                        'all actual captured events reconcile to valid category counts')
+                require({'memcpy','grouped_gemm','iq_dequant_gu','iq_dequant_down'} <= {row['kind'] for row in categories},
+                        'actual production copies, grouped GEMM and native dequant categories present')
+                r['service_summary'] = summary
+                r['service_categories'] = categories
+            else:
+                require(not r['service_event_lines'], 'profiling-off has no service collection')
+
+            if args.phase != 'startup':
+                require(r['validation']['first16_token_logprob_sha256'] == FIRST16_SHA ==
+                        native_proof['validation']['token_logprob_sha256'],
+                        'actual first16 pairs equal immutable admitted original; full128 separately preserved')
+            r['final_diagnostics'] = post_ready_diagnostics()
+            r['protocol_diagnostics'] = diagnostics('\n'.join(r['request_protocol']))
+            require(r['model_normal_close'] and not r.get('primary_model_failure') and
+                    not r['final_diagnostics']['severe_messages'] and not r['protocol_diagnostics']['severe_messages'], 'normal QUIT and selected path success')
+            kernel('kernel-after-engine')
+            health('health-after')
+            kernel('kernel-after-posthealth')
+            source_guard('final')
+            require(all(sha(p) == digest for p, digest in r['prior_receipt_pins'].items()), 'immutable prior runs')
+            require(all(sha(Path(path)) == digest for path, digest in r['long_prior_receipt_pins'].items()),
+                    'earlier independent long samples immutable')
+            if args.sample > 1:
+                reference_path = previous_roots[0] / 'xe-timed1-on/record.json'
+                reference = closed(load(reference_path))
+                require(reference['input']['sha256'] == r['input']['sha256'] and reference['binary'] == r['binary'],
+                        'full128 comparison same input and qualified binary')
+                equal = reference['validation']['token_logprob_sha256'] == r['validation']['token_logprob_sha256']
+                r['long_output_reference'] = dict(path=str(reference_path), sha256=sha(reference_path),
+                    full128_token_logprob_equal=equal, scope='Reported128 output/LP5 only, not full vocabulary')
+                require(equal, 'all workers/optionalGU arms preserve newly observed full128 output fingerprint')
+            if args.sample > 1 and args.paired_gu != 'unchanged':
+                preceding = plan[args.sample - 2]
+                if preceding['workers'] == args.workers and {preceding['gu_arm'], args.paired_gu} == {'off', 'on'}:
+                    previous_path = previous_roots[-1] / 'xe-timed1-on/record.json'
+                    previous = closed(load(previous_path))
+                    require(previous['input']['sha256'] == r['input']['sha256'] and
+                            previous['input']['tokens'] == r['input']['tokens'] == 32768 and
+                            previous['worker_arm'] == r['worker_arm'] and previous['pool_tasks'] == r['pool_tasks'] == 18 and
+                            previous['binary'] == r['binary'] and
+                            {k: v for k, v in previous['environment'].items() if k != 'STRATA_IQ256_PAIRED_GU'} ==
+                            {k: v for k, v in r['environment'].items() if k != 'STRATA_IQ256_PAIRED_GU'},
+                            'adjacent GU pair same input/worker/binary/safety environment')
+                    equal = previous['validation']['token_logprob_sha256'] == r['validation']['token_logprob_sha256']
+                    r['paired_gu_comparison'] = dict(previous_path=str(previous_path), previous_sha256=sha(previous_path),
+                        order=[preceding['gu_arm'], args.paired_gu], full128_token_logprob_equal=equal,
+                        scope='128 reported tokens/LP5 only; no full vocabulary or quality parity')
+                    require(equal, 'optional pairedGU full128 token/LP5 equality')
+            r['complete'] = True
+        except BaseException as error:
+            r['error'] = repr(error)
+        finally:
+            if cursor and owner.active is None and guard.active is None:
+                try:
+                    kernel('kernel-final')
+                    r['kernel_gate_passed'] = True
+                except BaseException as error:
+                    r['kernel_gate_error'] = repr(error)
+            r['active'] = owner.active is not None or guard.active is not None
+            r['boot_unchanged'] = Path('/proc/sys/kernel/random/boot_id').read_text().strip() == boot
+            r['passed'] = bool(r['complete'] and not r['active'] and not r.get('error') and
+                not r.get('primary_model_failure') and r.get('kernel_gate_passed') and r['boot_unchanged'] and
+                all(strong(c) and c['exit_code'] == 0 for c in r['commands'] + r['guard_commands']))
+            r['finished_utc'] = owner_module.utc()
+            r['performance_sample_eligible'] = bool(r['passed'] and args.profile_arm == '0')
+            r['calibration_sample_eligible'] = bool(r['passed'])
+            r['performance_eligible'] = r['performance_sample_eligible']
+            r['screening_only'] = True
+            r['scope'] = '128 reported tokens/LP5; actual first16 prefix match only. No full-vocab quality/64K/256K/optimal-speed claim.'
+            save()
+        print(json.dumps({k: r.get(k) for k in ('passed', 'error', 'engine', 'phase', 'model_launch_attempted')}))
+        return 0 if r['passed'] else 1
+
+
+if __name__ == '__main__':
+    raise SystemExit(main())

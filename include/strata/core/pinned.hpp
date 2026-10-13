@@ -18,6 +18,7 @@
 #pragma once
 
 #include <cstdint>
+#include <cstddef>
 #include <string>
 #include <vector>
 
@@ -68,6 +69,8 @@ struct PinnedArena {
     /// copies does not give that on every runtime).  A layer at a time, each layer's pages given back once copied, so
     /// the arena is never held twice.  False (and `err`) with the mapping and its registrations as they were.
     bool to_host_usm(uint64_t pad, std::string& err);
+    // Proof is restricted to actual owned host-USM pieces; registration/mmap is not an allocation proof.
+    bool host_usm_range(const uint8_t* pointer, size_t bytes, const uint8_t*& allocation, size_t& extent) const;
     bool valid() const { return base != nullptr; }
     uint8_t* data() const { return (uint8_t*) base; }   // one mapping only: null for host USM blocks
     /// The byte at arena offset `off` (one mapping, or the host USM block of the layer that holds it).
