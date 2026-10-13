@@ -1,4 +1,5 @@
 #include "strata/sycl/runtime.hpp"
+#include "strata/sycl/checked_cleanup.hpp"
 
 #include <cstdio>
 #include <map>
@@ -179,19 +180,9 @@ Allocation &Allocation::operator=(Allocation &&other) noexcept {
 void Allocation::release() noexcept {
   if (!data_)
     return;
-  try {
-    runtime_->wait();
-  } catch (const std::exception &error) {
-    std::fprintf(stderr, "SYCL allocation cleanup: %s\n", error.what());
-  } catch (...) {
-    std::fprintf(stderr,
-                 "SYCL allocation cleanup: unknown asynchronous error\n");
-  }
-  try {
-    sycl::free(data_, runtime_->context());
-  } catch (...) {
-    std::fprintf(stderr, "SYCL allocation cleanup: free failed\n");
-  }
+  checked_cleanup([&] { runtime_->wait(); },
+                  [&] { sycl::free(data_, runtime_->context()); },
+                  "allocation completion check failed");
   data_ = nullptr;
   bytes_ = 0;
 }

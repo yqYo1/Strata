@@ -533,8 +533,10 @@ cudaError_t cudaGraphExecDestroy(cudaGraphExec_t graph) {
   const auto result = attempt([&] {
     if (graph->last)
       runtime_for()->wait(*graph->last);
+    // Sticky errors can skip this body, and a failed wait can leave ownership
+    // uncertain. Delete only after the checked retirement succeeds.
+    delete graph;
   });
-  delete graph;
   return result;
 }
 cudaError_t cudaGraphGetNodes(cudaGraph_t graph, cudaGraphNode_t *nodes,

@@ -1,0 +1,348 @@
+[
+  {
+    "root": "main-niko-service-port-tests-root-v1",
+    "passed": false,
+    "complete": false,
+    "error": null,
+    "commands": [
+      {
+        "label": "service-unit",
+        "exit_code": -15,
+        "errors": [],
+        "cleanup": [
+          {
+            "pid": 803642,
+            "start_ticks": 26865321,
+            "signal": "SIGTERM",
+            "result": "sent"
+          }
+        ],
+        "observed": false,
+        "reaped": true,
+        "session_empty": true
+      }
+    ]
+  },
+  {
+    "root": "main-niko-service-port-tests-root-v2",
+    "passed": false,
+    "complete": true,
+    "error": null,
+    "commands": [
+      {
+        "label": "service-unit",
+        "exit_code": 1,
+        "errors": [],
+        "cleanup": [],
+        "observed": true,
+        "reaped": true,
+        "session_empty": true
+      }
+    ]
+  },
+  {
+    "root": "main-niko-service-port-tests-root-v3",
+    "passed": false,
+    "complete": true,
+    "error": null,
+    "commands": [
+      {
+        "label": "service-unit",
+        "exit_code": 1,
+        "errors": [],
+        "cleanup": [],
+        "observed": true,
+        "reaped": true,
+        "session_empty": true
+      }
+    ]
+  },
+  {
+    "root": "main-niko-primary-host-qualification-root-v1",
+    "passed": false,
+    "complete": false,
+    "error": "AssertionError(('test-dependency', None, 1, '/home/yayoi/.local/share/strata-sycl/venv/bin/python: No module named pip\\n'))",
+    "commands": [
+      {
+        "label": "test-dependency",
+        "exit_code": 1,
+        "errors": [],
+        "cleanup": [],
+        "observed": true,
+        "reaped": true,
+        "session_empty": true
+      }
+    ]
+  },
+  {
+    "root": "main-niko-primary-host-qualification-root-v2",
+    "passed": false,
+    "complete": false,
+    "error": "AssertionError(('SYCL-generator-syntax', None, 1, 'In file included from /home/yayoi/orca/workspaces/Strata/sycl/src/program/generate.cpp:25:\\n/home/yayoi/orca/workspaces/Strata/sycl/include/strata/core/expert_source.hpp:668:13: error: \\'reads\\' overrides a member function but is not marked \\'override\\' [-Werror,-Winconsistent-missing-override]\\n  668 |     int64_t reads() const { return reads_; }\\n      |             ^\\n/home/yayoi/orca/workspaces/Strata/sycl/include/strata/core/expert_source.hpp:114:21: note: overridden virtual function is here\\n  114 |     virtual int64_t reads() const { return 0; }\\n      |                     ^\\n/home/yayoi/orca/workspaces/Strata/sycl/src/program/generate.cpp:837:72: error: use of undeclared identifier \\'STRATA_VERSION\\'\\n  837 |                     \"last finished step (0 = stopped, more = slow)\\\\n\", STRATA_VERSION, stage_text().c_str(),\\n      |                                                                        ^~~~~~~~~~~~~~\\n/home/yayoi/orca/workspaces/Strata/sycl/src/program/generate.cpp:3658:74: error: use of undeclared identifier \\'STRATA_VERSION\\'\\n 3658 |     std::fprintf(stderr, \"strata generate: session is up (engine %s)\\\\n\", STRATA_VERSION);\\n      |                                                                          ^~~~~~~~~~~~~~\\n/home/yayoi/orca/workspaces/Strata/sycl/src/program/generate.cpp:5176:72: error: expected \\')\\'\\n 5176 |                         \"conversation_cache_min_free_mib=%lld engine=\" STRATA_VERSION \"\\\\n\",\\n      |                                                                        ^\\n/home/yayoi/orca/workspaces/Strata/sycl/src/program/generate.cpp:5172:24: note: to match this \\'(\\'\\n 5172 |             std::printf(\"INFO context=%lld kv=%s kv_resident=%lld expert_slots=%lld expert_cache_mib=%lld \"\\n      |                        ^\\n4 errors generated.\\n'))",
+    "commands": [
+      {
+        "label": "test-dependency",
+        "exit_code": 0,
+        "errors": [],
+        "cleanup": [],
+        "observed": true,
+        "reaped": true,
+        "session_empty": true
+      },
+      {
+        "label": "service-unit-schema",
+        "exit_code": 0,
+        "errors": [],
+        "cleanup": [],
+        "observed": true,
+        "reaped": true,
+        "session_empty": true
+      },
+      {
+        "label": "cleanup-compile-normal",
+        "exit_code": 0,
+        "errors": [],
+        "cleanup": [],
+        "observed": true,
+        "reaped": true,
+        "session_empty": true
+      },
+      {
+        "label": "cleanup-run-normal",
+        "exit_code": 0,
+        "errors": [],
+        "cleanup": [],
+        "observed": true,
+        "reaped": true,
+        "session_empty": true
+      },
+      {
+        "label": "cleanup-compile-asan-ubsan",
+        "exit_code": 0,
+        "errors": [],
+        "cleanup": [],
+        "observed": true,
+        "reaped": true,
+        "session_empty": true
+      },
+      {
+        "label": "cleanup-run-asan-ubsan",
+        "exit_code": 0,
+        "errors": [],
+        "cleanup": [],
+        "observed": true,
+        "reaped": true,
+        "session_empty": true
+      },
+      {
+        "label": "checkpoint-compile-normal",
+        "exit_code": 0,
+        "errors": [],
+        "cleanup": [],
+        "observed": true,
+        "reaped": true,
+        "session_empty": true
+      },
+      {
+        "label": "checkpoint-run-normal",
+        "exit_code": 0,
+        "errors": [],
+        "cleanup": [],
+        "observed": true,
+        "reaped": true,
+        "session_empty": true
+      },
+      {
+        "label": "checkpoint-compile-asan-ubsan",
+        "exit_code": 0,
+        "errors": [],
+        "cleanup": [],
+        "observed": true,
+        "reaped": true,
+        "session_empty": true
+      },
+      {
+        "label": "checkpoint-run-asan-ubsan",
+        "exit_code": 0,
+        "errors": [],
+        "cleanup": [],
+        "observed": true,
+        "reaped": true,
+        "session_empty": true
+      },
+      {
+        "label": "host-cmake-configure",
+        "exit_code": 0,
+        "errors": [],
+        "cleanup": [],
+        "observed": true,
+        "reaped": true,
+        "session_empty": true
+      },
+      {
+        "label": "host-cmake-build",
+        "exit_code": 0,
+        "errors": [],
+        "cleanup": [],
+        "observed": true,
+        "reaped": true,
+        "session_empty": true
+      },
+      {
+        "label": "host-cmake-ctest",
+        "exit_code": 0,
+        "errors": [],
+        "cleanup": [],
+        "observed": true,
+        "reaped": true,
+        "session_empty": true
+      },
+      {
+        "label": "SYCL-runtime-compat-syntax",
+        "exit_code": 0,
+        "errors": [],
+        "cleanup": [],
+        "observed": true,
+        "reaped": true,
+        "session_empty": true
+      },
+      {
+        "label": "SYCL-generator-syntax",
+        "exit_code": 1,
+        "errors": [],
+        "cleanup": [],
+        "observed": true,
+        "reaped": true,
+        "session_empty": true
+      }
+    ]
+  },
+  {
+    "root": "main-niko-primary-syntax-finish-root-v1",
+    "passed": false,
+    "complete": false,
+    "error": null,
+    "commands": [
+      {
+        "label": "SYCL-generator-syntax",
+        "exit_code": 1,
+        "errors": [],
+        "cleanup": [],
+        "observed": true,
+        "reaped": true,
+        "session_empty": true
+      }
+    ]
+  },
+  {
+    "root": "main-niko-primary-syntax-finish-root-v2",
+    "passed": true,
+    "complete": true,
+    "error": null,
+    "commands": [
+      {
+        "label": "SYCL-generator-syntax",
+        "exit_code": 0,
+        "errors": [],
+        "cleanup": [],
+        "observed": true,
+        "reaped": true,
+        "session_empty": true
+      }
+    ]
+  },
+  {
+    "root": "main-niko-native-setup-tests-root-v1",
+    "passed": false,
+    "complete": true,
+    "error": null,
+    "commands": [
+      {
+        "label": "setup-unit",
+        "exit_code": 1,
+        "errors": [],
+        "cleanup": [],
+        "observed": true,
+        "reaped": true,
+        "session_empty": true
+      }
+    ]
+  },
+  {
+    "root": "main-niko-native-setup-tests-root-v2",
+    "passed": true,
+    "complete": true,
+    "error": null,
+    "commands": [
+      {
+        "label": "setup-unit",
+        "exit_code": 0,
+        "errors": [],
+        "cleanup": [],
+        "observed": true,
+        "reaped": true,
+        "session_empty": true
+      }
+    ]
+  },
+  {
+    "root": "main-niko-native-setup-tests-root-v3",
+    "passed": true,
+    "complete": true,
+    "error": null,
+    "commands": [
+      {
+        "label": "setup-unit",
+        "exit_code": 0,
+        "errors": [],
+        "cleanup": [],
+        "observed": true,
+        "reaped": true,
+        "session_empty": true
+      }
+    ]
+  },
+  {
+    "root": "main-niko-setup-isolation-root-v1",
+    "passed": false,
+    "complete": false,
+    "error": null,
+    "commands": [
+      {
+        "label": "primary",
+        "exit_code": 0,
+        "errors": [],
+        "cleanup": [],
+        "observed": true,
+        "reaped": true,
+        "session_empty": true
+      }
+    ]
+  },
+  {
+    "root": "main-niko-setup-isolation-root-v2",
+    "passed": true,
+    "complete": true,
+    "error": null,
+    "commands": [
+      {
+        "label": "primary",
+        "exit_code": 0,
+        "errors": [],
+        "cleanup": [],
+        "observed": true,
+        "reaped": true,
+        "session_empty": true
+      },
+      {
+        "label": "main",
+        "exit_code": 0,
+        "errors": [],
+        "cleanup": [],
+        "observed": true,
+        "reaped": true,
+        "session_empty": true
+      }
+    ]
+  }
+]
