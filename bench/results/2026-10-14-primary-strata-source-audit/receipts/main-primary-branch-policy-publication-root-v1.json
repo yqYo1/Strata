@@ -1,0 +1,319 @@
+{
+  "active": false,
+  "passed": false,
+  "complete": false,
+  "main_reviewed": true,
+  "gpu_executed": false,
+  "error": "AssertionError('metadata-lints')",
+  "finished_utc": "2026-10-13T18:31:49.944809+00:00",
+  "original_record_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-branch-policy-publication-root-v1/record.json",
+  "original_sha256": "f40d423b880a5c1d6cbeaf58d5e474d0c71fc5bc35424707703f8e2c976622ef",
+  "original_bytes": 30422,
+  "commands_without_duplicate_full_output": [
+    {
+      "label": "head",
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "started_utc": "2026-10-13T18:31:38.171385+00:00",
+      "finished_utc": "2026-10-13T18:31:38.297950+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.12630592001369223,
+      "ownership_status": "observed",
+      "direct_identity": {
+        "pid": 566940,
+        "state": "R",
+        "ppid": 566902,
+        "pgid": 566940,
+        "sid": 566940,
+        "start_ticks": 26506229,
+        "rss_bytes": 323584
+      },
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "survivors": [],
+      "errors": [],
+      "logs": {
+        "head.stdout": {
+          "bytes": 41,
+          "sha256": "c712971f1533c1724430d92c2e3eff4534ed8940f80f32697fe3051e68247534"
+        },
+        "head.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "owner_count": 1,
+      "owners_sha256": "aa979b0462174bbaaf309ee34925fdb89390096205c654d76e9571c21f41c8e0",
+      "environment_sha256": "fb4c6f8b402f00fd4251feaacf8b4a1edf5cc88e3cec40d8c53e7c4403f0718f",
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/cppcheck/usr/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/venv/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/cppcheck/usr/lib/x86_64-linux-gnu:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+        "OMP_NUM_THREADS": "1",
+        "GIT_TERMINAL_PROMPT": "0",
+        "GIT_SSH_COMMAND": "ssh -oBatchMode=yes",
+        "RUBYLIB": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/lib/ruby/vendor_ruby:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/chef-utils-16.12.3/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/kramdown-2.4.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/kramdown-parser-gfm-1.1.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mdl-0.13.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-cli-2.1.6/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-config-3.0.6/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-shellout-3.2.5/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/tomlrb-1.3.0/lib",
+        "GEM_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all:/usr/share/rubygems-integration/all:/usr/lib/ruby/gems/3.2.0",
+        "CPLUS_INCLUDE_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include",
+        "STRATA_LINT_BUILD": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-layer-major-bulk-upload-20261013/build/free"
+      }
+    },
+    {
+      "label": "local-identity",
+      "argv": [
+        "git",
+        "config",
+        "--local",
+        "--get-regexp",
+        "^user\\.(name|email)$"
+      ],
+      "started_utc": "2026-10-13T18:31:38.298728+00:00",
+      "finished_utc": "2026-10-13T18:31:38.427352+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 0.12837058800505474,
+      "ownership_status": "observed",
+      "direct_identity": {
+        "pid": 566944,
+        "state": "R",
+        "ppid": 566902,
+        "pgid": 566944,
+        "sid": 566944,
+        "start_ticks": 26506242,
+        "rss_bytes": 307200
+      },
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "survivors": [],
+      "errors": [],
+      "logs": {
+        "local-identity.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "local-identity.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "owner_count": 1,
+      "owners_sha256": "efbb76b57f425038a75954526cb9ac2ca71e768768775695ba1bc2ef68426719",
+      "environment_sha256": "fb4c6f8b402f00fd4251feaacf8b4a1edf5cc88e3cec40d8c53e7c4403f0718f",
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/cppcheck/usr/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/venv/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/cppcheck/usr/lib/x86_64-linux-gnu:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+        "OMP_NUM_THREADS": "1",
+        "GIT_TERMINAL_PROMPT": "0",
+        "GIT_SSH_COMMAND": "ssh -oBatchMode=yes",
+        "RUBYLIB": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/lib/ruby/vendor_ruby:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/chef-utils-16.12.3/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/kramdown-2.4.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/kramdown-parser-gfm-1.1.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mdl-0.13.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-cli-2.1.6/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-config-3.0.6/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-shellout-3.2.5/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/tomlrb-1.3.0/lib",
+        "GEM_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all:/usr/share/rubygems-integration/all:/usr/lib/ruby/gems/3.2.0",
+        "CPLUS_INCLUDE_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include",
+        "STRATA_LINT_BUILD": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-layer-major-bulk-upload-20261013/build/free"
+      }
+    },
+    {
+      "label": "author-identity",
+      "argv": [
+        "git",
+        "var",
+        "GIT_AUTHOR_IDENT"
+      ],
+      "started_utc": "2026-10-13T18:31:38.428063+00:00",
+      "finished_utc": "2026-10-13T18:31:38.565953+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.13762859301641583,
+      "ownership_status": "observed",
+      "direct_identity": {
+        "pid": 566948,
+        "state": "R",
+        "ppid": 566902,
+        "pgid": 566948,
+        "sid": 566948,
+        "start_ticks": 26506255,
+        "rss_bytes": 323584
+      },
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "survivors": [],
+      "errors": [],
+      "logs": {
+        "author-identity.stdout": {
+          "bytes": 65,
+          "sha256": "85b9fc0dc110dc1659705b5410bb94b2f4fefa09d57c079daf6034c0980714c0"
+        },
+        "author-identity.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "owner_count": 1,
+      "owners_sha256": "ab01dfd38096cc617fe9ed9132a2d0455cd5fb7123f7a6b3075f5b65af5c97e7",
+      "environment_sha256": "fb4c6f8b402f00fd4251feaacf8b4a1edf5cc88e3cec40d8c53e7c4403f0718f",
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/cppcheck/usr/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/venv/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/cppcheck/usr/lib/x86_64-linux-gnu:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+        "OMP_NUM_THREADS": "1",
+        "GIT_TERMINAL_PROMPT": "0",
+        "GIT_SSH_COMMAND": "ssh -oBatchMode=yes",
+        "RUBYLIB": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/lib/ruby/vendor_ruby:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/chef-utils-16.12.3/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/kramdown-2.4.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/kramdown-parser-gfm-1.1.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mdl-0.13.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-cli-2.1.6/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-config-3.0.6/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-shellout-3.2.5/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/tomlrb-1.3.0/lib",
+        "GEM_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all:/usr/share/rubygems-integration/all:/usr/lib/ruby/gems/3.2.0",
+        "CPLUS_INCLUDE_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include",
+        "STRATA_LINT_BUILD": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-layer-major-bulk-upload-20261013/build/free"
+      }
+    },
+    {
+      "label": "skill-validator",
+      "argv": [
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-layer-major-bulk-upload-20261013/.lint/venv/bin/python",
+        "/home/yayoi/.codex/skills/.system/skill-creator/scripts/quick_validate.py",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-layer-major-bulk-upload-20261013/.agents/skills/strata-upstream-sync"
+      ],
+      "started_utc": "2026-10-13T18:31:38.570561+00:00",
+      "finished_utc": "2026-10-13T18:31:38.733945+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.1629270249977708,
+      "ownership_status": "observed",
+      "direct_identity": {
+        "pid": 566982,
+        "state": "R",
+        "ppid": 566902,
+        "pgid": 566982,
+        "sid": 566982,
+        "start_ticks": 26506269,
+        "rss_bytes": 458752
+      },
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "survivors": [],
+      "errors": [],
+      "logs": {
+        "skill-validator.stdout": {
+          "bytes": 16,
+          "sha256": "db349825903d66adffea3ecf1bd8e1803043e8a71cf1a051235dabc5371f5bb0"
+        },
+        "skill-validator.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "owner_count": 1,
+      "owners_sha256": "c3e83dfa65a07d1cb2ac5a78fe5a5413a98dc24a75eb072749b14fce7a3d6020",
+      "environment_sha256": "fb4c6f8b402f00fd4251feaacf8b4a1edf5cc88e3cec40d8c53e7c4403f0718f",
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/cppcheck/usr/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/venv/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/cppcheck/usr/lib/x86_64-linux-gnu:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+        "OMP_NUM_THREADS": "1",
+        "GIT_TERMINAL_PROMPT": "0",
+        "GIT_SSH_COMMAND": "ssh -oBatchMode=yes",
+        "RUBYLIB": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/lib/ruby/vendor_ruby:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/chef-utils-16.12.3/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/kramdown-2.4.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/kramdown-parser-gfm-1.1.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mdl-0.13.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-cli-2.1.6/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-config-3.0.6/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-shellout-3.2.5/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/tomlrb-1.3.0/lib",
+        "GEM_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all:/usr/share/rubygems-integration/all:/usr/lib/ruby/gems/3.2.0",
+        "CPLUS_INCLUDE_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include",
+        "STRATA_LINT_BUILD": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-layer-major-bulk-upload-20261013/build/free"
+      }
+    },
+    {
+      "label": "metadata-lints",
+      "argv": [
+        "/bin/bash",
+        "tools/lint/run.sh",
+        "AGENTS.md",
+        "docs/ARTIFACT_RETENTION.md",
+        ".claude/skills/strata-upstream-sync/SKILL.md",
+        ".claude/skills/strata-upstream-sync/references/integration.md",
+        ".claude/skills/strata-upstream-sync/references/evaluation.md",
+        ".claude/skills/strata-upstream-sync/agents/openai.yaml",
+        "bench/results/2026-10-14-primary-branch-workflow/README.md",
+        "bench/results/2026-10-14-primary-branch-workflow/controller.json",
+        "bench/results/2026-10-14-primary-branch-workflow/policy.json",
+        "bench/results/2026-10-14-primary-branch-workflow/README.ja.md",
+        "bench/results/2026-10-14-primary-branch-workflow/research/research-primary-branch-policy-skill-preservation-round442-v1.txt.json",
+        "bench/results/2026-10-14-primary-branch-workflow/research/research-completed-cpu-diagnostic-branch-integration-round441-v1.txt.json",
+        "bench/results/2026-10-14-primary-branch-workflow/receipts/main-project-skill-visible-source-relocation-v1.json",
+        "bench/results/2026-10-14-primary-branch-workflow/receipts/main-decode-service-host-qualification-root-v1-record.json",
+        "bench/results/2026-10-14-primary-branch-workflow/receipts/main-decode-service-full-build-root-v1-record.json",
+        "bench/results/2026-10-14-primary-branch-workflow/receipts/main-route-union-host-qualification-root-v1-record.json"
+      ],
+      "started_utc": "2026-10-13T18:31:38.753349+00:00",
+      "finished_utc": "2026-10-13T18:31:49.933141+00:00",
+      "exit_code": 1,
+      "elapsed_seconds": 11.179381191032007,
+      "ownership_status": "observed",
+      "direct_identity": {
+        "pid": 566990,
+        "state": "R",
+        "ppid": 566902,
+        "pgid": 566990,
+        "sid": 566990,
+        "start_ticks": 26506287,
+        "rss_bytes": 421888
+      },
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "survivors": [],
+      "errors": [],
+      "logs": {
+        "metadata-lints.stdout": {
+          "bytes": 126,
+          "sha256": "8ff4f2fd6261104a9a42aead3755854e3055389270f9925d454ad774efa7f297"
+        },
+        "metadata-lints.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "owner_count": 31,
+      "owners_sha256": "119926e74a85b717501a59d0ee480112c7da5488d070b4fcadc7c328af6aba7b",
+      "environment_sha256": "fb4c6f8b402f00fd4251feaacf8b4a1edf5cc88e3cec40d8c53e7c4403f0718f",
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/cppcheck/usr/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/venv/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/cppcheck/usr/lib/x86_64-linux-gnu:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+        "OMP_NUM_THREADS": "1",
+        "GIT_TERMINAL_PROMPT": "0",
+        "GIT_SSH_COMMAND": "ssh -oBatchMode=yes",
+        "RUBYLIB": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/lib/ruby/vendor_ruby:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/chef-utils-16.12.3/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/kramdown-2.4.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/kramdown-parser-gfm-1.1.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mdl-0.13.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-cli-2.1.6/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-config-3.0.6/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-shellout-3.2.5/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/tomlrb-1.3.0/lib",
+        "GEM_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all:/usr/share/rubygems-integration/all:/usr/lib/ruby/gems/3.2.0",
+        "CPLUS_INCLUDE_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include",
+        "STRATA_LINT_BUILD": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-layer-major-bulk-upload-20261013/build/free"
+      }
+    }
+  ],
+  "environment": null,
+  "source_pins": null,
+  "qualification_transfers_to_primary": false
+}

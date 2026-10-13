@@ -1,0 +1,148 @@
+{
+  "revision": "4fa478f50f8da396e651e3ae862f8b1849d49b54",
+  "groups": {
+    "runtime_and_lifetime": [
+      {
+        "path": "src/sycl/runtime.cpp",
+        "sha256": "9c4e18cf8777148c8f4513b9aa376d7eb1441ee9895a955fb8696aadd741c2a1",
+        "bytes": 6402
+      },
+      {
+        "path": "src/sycl/device.cpp",
+        "sha256": "bd6a65f29cfc6497fd19228741026f4edad29d31e1690cef6cfe36ad7de760d6",
+        "bytes": 3743
+      },
+      {
+        "path": "include/strata/sycl/runtime.hpp",
+        "sha256": "bcfbb035fa5a95f0409db013158f756ba4136b0aa06f636c6ff747ec0bcfd0fd",
+        "bytes": 2555
+      }
+    ],
+    "prefill_scheduler": [
+      {
+        "path": "src/prefill/prefill.cpp",
+        "sha256": "6913f3ab5e8c71af753796c73ad7e24f8578331d66f0df5e9d842c9a38a9bfdc",
+        "bytes": 175001
+      },
+      {
+        "path": "src/prefill/sycl/moe_mmq.cpp",
+        "sha256": "403dccf14f3a632f3cb5a6b7ecbaaf7dcfae5f0c3fbf875dae2789b6f85978f8",
+        "bytes": 9155
+      },
+      {
+        "path": "src/prefill/sycl/moe_fused.cpp",
+        "sha256": "6321199ee8213ee1ff2b370929e7bc723e078d13e30a3b4ecb56fe8a3c03b438",
+        "bytes": 16049
+      }
+    ],
+    "expert_source_cache": [
+      {
+        "path": "src/core/expert_source.cpp",
+        "sha256": "daf174b8ded139073d0b16ff524892410bd8c74beb282878ff1afbbb4b27606b",
+        "bytes": 142455
+      },
+      {
+        "path": "src/core/expert_cache.cpp",
+        "sha256": "c691d1147fea50f351a208b676efc4ceaaee9d4e8534cdbf5f7672c934db7e19",
+        "bytes": 19036
+      },
+      {
+        "path": "include/strata/core/expert_source.hpp",
+        "sha256": "45347df4c9f01b79cc43885e5396e48535b546f6ed411c3848f2ed5b6b6041f6",
+        "bytes": 46014
+      },
+      {
+        "path": "include/strata/core/expert_cache.hpp",
+        "sha256": "d9df6e24fefdb61503d12803073cc0a7d654e9969aca0371ca06d4a463bc90ed",
+        "bytes": 12768
+      }
+    ],
+    "CPU_experts": [
+      {
+        "path": "src/kernels/cpu/native_expert.cpp",
+        "sha256": "fcb4a7c74ba45a13da162eed832860f9644f4544d3f269b9c8588f01b40fb106",
+        "bytes": 8558
+      },
+      {
+        "path": "src/kernels/cpu/iq_single_avx2.cpp",
+        "sha256": "8579db5f02086cc660d376a77e00a9285e038f6757a53e8b2a8ef6d79eb2074f",
+        "bytes": 19270
+      },
+      {
+        "path": "src/kernels/cpu/pool.cpp",
+        "sha256": "83c91704efeff4c88c25a9d1e69661f34ad76e556c154320ff6373edc7a168b8",
+        "bytes": 33730
+      }
+    ],
+    "SYCL_MoE": [
+      {
+        "path": "src/kernels/sycl/native_iq_esimd.cpp",
+        "sha256": "cdd822167d73c4446ca195b3f5c937c2fe545710000d87a707ffc9857fce18c1",
+        "bytes": 14394
+      },
+      {
+        "path": "src/kernels/sycl/native_mmq_xmx.cpp",
+        "sha256": "458e62475fc004b9a1a3f4d688bc981a9ab0d625a1cf2fe573920c36718f8e3b",
+        "bytes": 21965
+      },
+      {
+        "path": "src/kernels/sycl/expert_routing.cpp",
+        "sha256": "3fee7357d857c3d9f7d0c30b41d8eed719914b76e7ecacf30a6b3ac11e837f07",
+        "bytes": 3685
+      }
+    ],
+    "decode_state_attention": [
+      {
+        "path": "src/core/layer.cpp",
+        "sha256": "38dbcfab306d948d099ad3ae07e070a7311caad00f670d4b1c01001282c2b278",
+        "bytes": 104847
+      },
+      {
+        "path": "src/core/session.cpp",
+        "sha256": "f2ef0b5c115ba23bca711241fb720dd806bd505225c75c37fd8c11bbf531b5b2",
+        "bytes": 58955
+      },
+      {
+        "path": "src/kernels/sycl/decode_attention.cpp",
+        "sha256": "2ce2a61f6beb1acbf9c673da346e887b386fffedba10e7df2c157aedab8ac05d",
+        "bytes": 9895
+      },
+      {
+        "path": "src/kernels/sycl/native_qsa_indexer.cpp",
+        "sha256": "d87abcf8aece04bc1566f4310e0dee546b7c80e0b711d75d118551b606d38685",
+        "bytes": 8687
+      }
+    ],
+    "engine_CLI_protocol": [
+      {
+        "path": "src/program/generate.cpp",
+        "sha256": "aa58f73711d3ad9b2020a3d9f54b98610b3aa070abe8da0cbd56ba3f42b2b76a",
+        "bytes": 466912
+      }
+    ],
+    "server_setup_UI": [
+      {
+        "path": "serve/server.py",
+        "sha256": "fc85cfd3a5b0379c8482de7a81673cae76299751aa5fe614413bc01f1fa54408",
+        "bytes": 176957
+      },
+      {
+        "path": "serve/frontend.py",
+        "sha256": "e7b295d5240fac3b1bec1736e2c8d468030f8fe0c96bcc6a6b1570301258f3cf",
+        "bytes": 27978
+      },
+      {
+        "path": "setup.py",
+        "sha256": "aae623dcc2a7695bdd7f8f4cc263c8b2b6e634e3297993e33cfd2ec29601aa45",
+        "bytes": 220606
+      },
+      {
+        "path": "serve/web/app.js",
+        "sha256": "8eac0a86f9f6355a5e96c7517298be5e28546c942f80e312c9f81c82f11b3e7b",
+        "bytes": 53788
+      }
+    ]
+  },
+  "all_listed_source_unchanged": true,
+  "R448_path_correction": "primary SYCL prefill files are src/prefill/sycl/*.cpp; no src/prefill/moe_mmq.cpp exists here"
+}

@@ -14,6 +14,32 @@ offers the same steps as tools.
 
 ## Working on the code
 
+This is a personal fork based on **Niko1221/Strata**, optimized for this PC's
+Intel GPU, CPU and RAM. Niko1221/Strata is the only upstream. XeStrata and other
+engines are optional benchmark and implementation references; importing their
+whole engines, feature sets or release workflows is not required. Upstream
+contributions are not currently planned. CUDA/HIP implementation and validation
+are outside this work's scope.
+
+- The primary branch is **`feature/sycl`**. Use its existing worktree. Create a
+  child from its current commit only when isolation is needed; read-only research
+  needs no branch.
+- Integrate completed child source, tests, skills and reports into the actual
+  `feature/sycl` tree, then push. Update the fork's remote default through a PR
+  at each completed boundary; the ghq root remains the default mirror and only pulls.
+- Retire finished remote/local child branches and worktrees after integration.
+  Preserve branch-only reports and needed source as reachable original commits
+  before deletion. Keep unfinished children only with a concrete task and review point.
+- History preservation is not code integration or inference adoption. Record
+  candidate origin, actual implementation, measurements and per-component decisions.
+- Import Niko's non-inference functions as requested. Choose inference changes
+  per component, including prefill and decode separately; retain the faster
+  existing fork implementation. Evaluate reference-fork ideas under the same gates.
+
+Use the project-only [strata-upstream-sync skill](.agents/skills/strata-upstream-sync/SKILL.md).
+Its files live in `.claude/skills/strata-upstream-sync`, exposed by the relative
+`.agents/skills` link. Do not install it in user-wide skill directories.
+
 - How the engine works, every measured number, the API and all settings: [docs/DETAILS.md](docs/DETAILS.md) and
   the [paper](docs/paper/Strata-Paper.pdf).
 - AMD (HIP) build and validation: [docs/AMD_HIP.md](docs/AMD_HIP.md); multi-GPU: [docs/MULTI_GPU.md](docs/MULTI_GPU.md).

@@ -1,0 +1,898 @@
+{
+  "active": false,
+  "passed": true,
+  "complete": true,
+  "main_reviewed": true,
+  "worktree": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-decode-service-budget-20261014",
+  "source_only_phase_implementation_reviewed": true,
+  "main_correction": "Integrate qualified nonbulk 4K phase geometry without changing measured W; correct coalesced-job quant denominator to activation rows, make footer request flags explicit, keep Release fixture checks live, and qualify actual native pool scope/lifetime with synthetic CPU weights; defaultOFF and existing scheduling/math/GPU waits unchanged.",
+  "gpu_executed": false,
+  "model_executed": false,
+  "production_admitted": false,
+  "phase_cache_adopted": false,
+  "sourceLLVM_compiler_sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb",
+  "parent_revision": "97f8b40ca99ec298c24d7ecc7b270e530d43194d",
+  "scope": "DefaultOFF decode CPU service and route instrumentation with selected nonbulk4K sourceLLVM free/contrib-llvm/full-host-ASan-UBSan qualification; model receipts, overhead and 262144 physical stores/RESTORE remain unqualified",
+  "source_diff_sha256": "d82e7ca0332333661ed0106afacf057b2342e2bec28351cbc49a6f851479f910",
+  "finished_utc": "2026-10-13T18:16:59.021635+00:00",
+  "original_record_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-decode-service-full-build-root-v1/record.json",
+  "original_sha256": "fa731e12dafb6b772a21d1f70782130e22c1d019db522ea07a355b99682a25fe",
+  "original_bytes": 575097,
+  "commands_without_duplicate_full_output": [
+    {
+      "label": "head",
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "started_utc": "2026-10-13T18:07:15.259222+00:00",
+      "finished_utc": "2026-10-13T18:07:15.376913+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.11740402900613844,
+      "ownership_status": "observed",
+      "direct_identity": {
+        "pid": 466644,
+        "state": "R",
+        "ppid": 466548,
+        "pgid": 466644,
+        "sid": 466644,
+        "start_ticks": 26359938,
+        "rss_bytes": 454656
+      },
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "survivors": [],
+      "errors": [],
+      "logs": {
+        "head.stdout": {
+          "bytes": 41,
+          "sha256": "aa5d0efcb2ad15ccf8bb34deb08ed2d1d292ca616b4b5bb5e29bcc414327e9c8"
+        },
+        "head.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "owner_count": 1,
+      "owners_sha256": "efcc7c40b9dd227668bf9bfc4d6f05c4abd7213a92fc5bc7d52911e040394dba",
+      "environment_sha256": "42ada96ba95f7ab680a4c70564c12ebb8c9fe22d5c24a2f9553e97bfcee0f006"
+    },
+    {
+      "label": "changed-source",
+      "argv": [
+        "git",
+        "diff",
+        "--name-only"
+      ],
+      "started_utc": "2026-10-13T18:07:15.377870+00:00",
+      "finished_utc": "2026-10-13T18:07:15.494543+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.1164063989999704,
+      "ownership_status": "observed",
+      "direct_identity": {
+        "pid": 466660,
+        "state": "R",
+        "ppid": 466548,
+        "pgid": 466660,
+        "sid": 466660,
+        "start_ticks": 26359949,
+        "rss_bytes": 323584
+      },
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "survivors": [],
+      "errors": [],
+      "logs": {
+        "changed-source.stdout": {
+          "bytes": 574,
+          "sha256": "97d981496e5bb251193e66047eb9baa098c7f417961178e70e65e57163a77769"
+        },
+        "changed-source.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "owner_count": 1,
+      "owners_sha256": "3ab27d52743946f215556e54a8ebb324a7a0bd7e5fe60f573c99065f630d0467",
+      "environment_sha256": "42ada96ba95f7ab680a4c70564c12ebb8c9fe22d5c24a2f9553e97bfcee0f006"
+    },
+    {
+      "label": "new-source",
+      "argv": [
+        "git",
+        "ls-files",
+        "--others",
+        "--exclude-standard"
+      ],
+      "started_utc": "2026-10-13T18:07:15.495381+00:00",
+      "finished_utc": "2026-10-13T18:07:15.601964+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.10634593403665349,
+      "ownership_status": "observed",
+      "direct_identity": {
+        "pid": 466670,
+        "state": "R",
+        "ppid": 466548,
+        "pgid": 466670,
+        "sid": 466670,
+        "start_ticks": 26359961,
+        "rss_bytes": 323584
+      },
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "survivors": [],
+      "errors": [],
+      "logs": {
+        "new-source.stdout": {
+          "bytes": 479,
+          "sha256": "d860de0264a8b390a37f0800d9fe2710b085d456015d143c99a824121eb57c0b"
+        },
+        "new-source.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "owner_count": 1,
+      "owners_sha256": "6fa7c6e29dd16dac3d1210c6184752241ed66848527068f4757a95190717dc2c",
+      "environment_sha256": "42ada96ba95f7ab680a4c70564c12ebb8c9fe22d5c24a2f9553e97bfcee0f006"
+    },
+    {
+      "label": "source-diff",
+      "argv": [
+        "git",
+        "diff",
+        "--binary"
+      ],
+      "started_utc": "2026-10-13T18:07:15.610475+00:00",
+      "finished_utc": "2026-10-13T18:07:15.785343+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.17442083795322105,
+      "ownership_status": "observed",
+      "direct_identity": {
+        "pid": 466673,
+        "state": "R",
+        "ppid": 466548,
+        "pgid": 466673,
+        "sid": 466673,
+        "start_ticks": 26359973,
+        "rss_bytes": 401408
+      },
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "survivors": [],
+      "errors": [],
+      "logs": {
+        "source-diff.stdout": {
+          "bytes": 128468,
+          "sha256": "d82e7ca0332333661ed0106afacf057b2342e2bec28351cbc49a6f851479f910"
+        },
+        "source-diff.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "owner_count": 1,
+      "owners_sha256": "3b968ed8c5d8070ad7f32e04037852b551b44948bfb2629b2f76063e5bb9694f",
+      "environment_sha256": "42ada96ba95f7ab680a4c70564c12ebb8c9fe22d5c24a2f9553e97bfcee0f006"
+    },
+    {
+      "label": "configure-free",
+      "argv": [
+        "/usr/bin/cmake",
+        "-S",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-decode-service-budget-20261014",
+        "-B",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-decode-service-budget-20261014/build/free",
+        "-G",
+        "Ninja",
+        "-DCMAKE_BUILD_TYPE=Release",
+        "-DCMAKE_CXX_COMPILER=/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+        "-DCMAKE_C_COMPILER=/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang",
+        "-DSTRATA_LICENSE=free",
+        "-DSTRATA_ENABLE_XE=ON",
+        "-DSTRATA_CUDA_ARCHS=",
+        "-DSTRATA_HIP_ARCHS=",
+        "-DSTRATA_ONEMKL=OFF",
+        "-DSTRATA_PORTABLE=OFF",
+        "-DSTRATA_BUILD_TESTS=ON",
+        "-DSTRATA_NATIVE_EXPERTS=ON",
+        "-DSTRATA_WERROR=ON",
+        "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+        "-DSTRATA_GGML_DIR=/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011"
+      ],
+      "started_utc": "2026-10-13T18:07:15.788279+00:00",
+      "finished_utc": "2026-10-13T18:07:30.764882+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 14.97568610101007,
+      "ownership_status": "observed",
+      "direct_identity": {
+        "pid": 466709,
+        "state": "R",
+        "ppid": 466548,
+        "pgid": 466709,
+        "sid": 466709,
+        "start_ticks": 26359991,
+        "rss_bytes": 462848
+      },
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "survivors": [],
+      "errors": [],
+      "logs": {
+        "configure-free.stdout": {
+          "bytes": 2006,
+          "sha256": "84e1cfc7b15323619ba9774ff52f49de7899b44b6b55a85fd76027ba867511a2"
+        },
+        "configure-free.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "owner_count": 19,
+      "owners_sha256": "94d92339fdfa4ea9c09ca3508113bc3416ca551f0240e66f48b2756ecebd8403",
+      "environment_sha256": "42ada96ba95f7ab680a4c70564c12ebb8c9fe22d5c24a2f9553e97bfcee0f006"
+    },
+    {
+      "label": "build-free",
+      "argv": [
+        "/usr/bin/cmake",
+        "--build",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-decode-service-budget-20261014/build/free",
+        "--parallel",
+        "4",
+        "--target",
+        "strata",
+        "phase_cache_owner_test",
+        "pool_test",
+        "expert_multi_test",
+        "native_service_pool_test"
+      ],
+      "started_utc": "2026-10-13T18:07:30.766520+00:00",
+      "finished_utc": "2026-10-13T18:10:48.275875+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 197.50868861796334,
+      "ownership_status": "observed",
+      "direct_identity": {
+        "pid": 467611,
+        "state": "R",
+        "ppid": 466548,
+        "pgid": 467611,
+        "sid": 467611,
+        "start_ticks": 26361488,
+        "rss_bytes": 442368
+      },
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "survivors": [],
+      "errors": [],
+      "logs": {
+        "build-free.stdout": {
+          "bytes": 10600,
+          "sha256": "9d615d28ba8a1519dc166aaca097b4532a4682578b4503f0989beb4076481c49"
+        },
+        "build-free.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "owner_count": 376,
+      "owners_sha256": "b4b6c3bb672fb27801eaefd7c26ee2624c066d257e0f0dff243eebc2c8dab1fb",
+      "environment_sha256": "42ada96ba95f7ab680a4c70564c12ebb8c9fe22d5c24a2f9553e97bfcee0f006"
+    },
+    {
+      "label": "host-ctest-free",
+      "argv": [
+        "/usr/bin/ctest",
+        "--test-dir",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-decode-service-budget-20261014/build/free",
+        "-R",
+        "^(phase_cache_owner_test|pool_test|expert_multi_test|native_service_pool_test)$",
+        "--output-on-failure",
+        "-V"
+      ],
+      "started_utc": "2026-10-13T18:10:48.280413+00:00",
+      "finished_utc": "2026-10-13T18:10:48.811167+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.5289901220239699,
+      "ownership_status": "observed",
+      "direct_identity": {
+        "pid": 480101,
+        "state": "R",
+        "ppid": 466548,
+        "pgid": 480101,
+        "sid": 480101,
+        "start_ticks": 26381240,
+        "rss_bytes": 409600
+      },
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "survivors": [],
+      "errors": [],
+      "logs": {
+        "host-ctest-free.stdout": {
+          "bytes": 46855,
+          "sha256": "fc88476f68729d6cf1040dda9f44dcc232dad55e7c2b026428357bcfa95c9d60"
+        },
+        "host-ctest-free.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "owner_count": 2,
+      "owners_sha256": "9f2253d7a645e0db0b9a6aa743ed21820f06205e64aeb9cd2ef3f6e82768b5d0",
+      "environment_sha256": "42ada96ba95f7ab680a4c70564c12ebb8c9fe22d5c24a2f9553e97bfcee0f006"
+    },
+    {
+      "label": "configure-contrib-llvm",
+      "argv": [
+        "/usr/bin/cmake",
+        "-S",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-decode-service-budget-20261014",
+        "-B",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-decode-service-budget-20261014/build/contrib-llvm",
+        "-G",
+        "Ninja",
+        "-DCMAKE_BUILD_TYPE=Release",
+        "-DCMAKE_CXX_COMPILER=/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+        "-DCMAKE_C_COMPILER=/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang",
+        "-DSTRATA_LICENSE=contrib",
+        "-DSTRATA_ENABLE_XE=ON",
+        "-DSTRATA_CUDA_ARCHS=",
+        "-DSTRATA_HIP_ARCHS=",
+        "-DSTRATA_ONEMKL=ON",
+        "-DSTRATA_PORTABLE=OFF",
+        "-DSTRATA_BUILD_TESTS=ON",
+        "-DSTRATA_NATIVE_EXPERTS=ON",
+        "-DSTRATA_WERROR=ON",
+        "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+        "-DSTRATA_GGML_DIR=/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",
+        "-DSTRATA_ONEMATH_SOURCE=file:///home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/sync-xe-v0143-nonfinite-20261012/build/contrib-llvm/_deps/strata_onemath-subbuild/strata_onemath-populate-prefix/src/xestrata-3.tar.gz",
+        "-DMKL_ROOT=/opt/intel/oneapi/mkl/2026.1"
+      ],
+      "started_utc": "2026-10-13T18:10:48.835318+00:00",
+      "finished_utc": "2026-10-13T18:11:18.002217+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 29.164714136975817,
+      "ownership_status": "observed",
+      "direct_identity": {
+        "pid": 480206,
+        "state": "R",
+        "ppid": 466548,
+        "pgid": 480206,
+        "sid": 480206,
+        "start_ticks": 26381295,
+        "rss_bytes": 471040
+      },
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "survivors": [],
+      "errors": [],
+      "logs": {
+        "configure-contrib-llvm.stdout": {
+          "bytes": 3836,
+          "sha256": "84f07c15bab7d89b286daa7c3cf38c38e127a73014d87324f158a5107e253746"
+        },
+        "configure-contrib-llvm.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "owner_count": 45,
+      "owners_sha256": "58e0a1aaafd81121b5270ebb082c2027edd6e4659f0f68332369e8e8284cb186",
+      "environment_sha256": "42ada96ba95f7ab680a4c70564c12ebb8c9fe22d5c24a2f9553e97bfcee0f006"
+    },
+    {
+      "label": "build-contrib-llvm",
+      "argv": [
+        "/usr/bin/cmake",
+        "--build",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-decode-service-budget-20261014/build/contrib-llvm",
+        "--parallel",
+        "4",
+        "--target",
+        "strata",
+        "phase_cache_owner_test",
+        "pool_test",
+        "expert_multi_test",
+        "native_service_pool_test"
+      ],
+      "started_utc": "2026-10-13T18:11:18.007762+00:00",
+      "finished_utc": "2026-10-13T18:15:17.020010+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 239.01019260304747,
+      "ownership_status": "observed",
+      "direct_identity": {
+        "pid": 482107,
+        "state": "R",
+        "ppid": 466548,
+        "pgid": 482107,
+        "sid": 482107,
+        "start_ticks": 26384213,
+        "rss_bytes": 307200
+      },
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "survivors": [],
+      "errors": [],
+      "logs": {
+        "build-contrib-llvm.stdout": {
+          "bytes": 11674,
+          "sha256": "682cd992b4f7e1182463d120ce4f43ae7dc123679bee3fe17fe291d7ac5902ed"
+        },
+        "build-contrib-llvm.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "owner_count": 402,
+      "owners_sha256": "9929febad2e4e38d80705065a4066c008c07f6a96a0d8bee43365feb22b06d9e",
+      "environment_sha256": "42ada96ba95f7ab680a4c70564c12ebb8c9fe22d5c24a2f9553e97bfcee0f006"
+    },
+    {
+      "label": "host-ctest-contrib-llvm",
+      "argv": [
+        "/usr/bin/ctest",
+        "--test-dir",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-decode-service-budget-20261014/build/contrib-llvm",
+        "-R",
+        "^(phase_cache_owner_test|pool_test|expert_multi_test|native_service_pool_test)$",
+        "--output-on-failure",
+        "-V"
+      ],
+      "started_utc": "2026-10-13T18:15:17.027995+00:00",
+      "finished_utc": "2026-10-13T18:15:17.655760+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.6240304280072451,
+      "ownership_status": "observed",
+      "direct_identity": {
+        "pid": 496265,
+        "state": "R",
+        "ppid": 466548,
+        "pgid": 496265,
+        "sid": 496265,
+        "start_ticks": 26408115,
+        "rss_bytes": 471040
+      },
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "survivors": [],
+      "errors": [],
+      "logs": {
+        "host-ctest-contrib-llvm.stdout": {
+          "bytes": 46943,
+          "sha256": "0140e1b873f04d2afdce437b781c18ed55adc7031ef225bd536200ff610da48a"
+        },
+        "host-ctest-contrib-llvm.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "owner_count": 2,
+      "owners_sha256": "ebea9224b86d0c84a0077b598946543dcf78ef5db3160c8cf2805a1fc7078191",
+      "environment_sha256": "42ada96ba95f7ab680a4c70564c12ebb8c9fe22d5c24a2f9553e97bfcee0f006"
+    },
+    {
+      "label": "configure-phase-host",
+      "argv": [
+        "/usr/bin/cmake",
+        "-S",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-decode-service-budget-20261014",
+        "-B",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-decode-service-budget-20261014/build/phase-host",
+        "-G",
+        "Ninja",
+        "-DCMAKE_BUILD_TYPE=Release",
+        "-DCMAKE_CXX_COMPILER=/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+        "-DCMAKE_C_COMPILER=/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang",
+        "-DSTRATA_LICENSE=free",
+        "-DSTRATA_ENABLE_XE=OFF",
+        "-DSTRATA_BUILD_TESTS=ON",
+        "-DSTRATA_NATIVE_EXPERTS=ON",
+        "-DSTRATA_CUDA_ARCHS=",
+        "-DSTRATA_HIP_ARCHS=",
+        "-DSTRATA_ONEMKL=OFF",
+        "-DSTRATA_WERROR=ON",
+        "-DSTRATA_PORTABLE=OFF",
+        "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+        "-DSTRATA_GGML_DIR=/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011"
+      ],
+      "started_utc": "2026-10-13T18:15:17.688431+00:00",
+      "finished_utc": "2026-10-13T18:15:19.358786+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.6665428329724818,
+      "ownership_status": "observed",
+      "direct_identity": {
+        "pid": 496451,
+        "state": "R",
+        "ppid": 466548,
+        "pgid": 496451,
+        "sid": 496451,
+        "start_ticks": 26408181,
+        "rss_bytes": 327680
+      },
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "survivors": [],
+      "errors": [],
+      "logs": {
+        "configure-phase-host.stdout": {
+          "bytes": 1755,
+          "sha256": "e856e70e24d73181900bac20e3c420cd44dbb3ab9eb62b9f87c0ebe9923f5e6f"
+        },
+        "configure-phase-host.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "owner_count": 4,
+      "owners_sha256": "78c107582c45343a3804ba9677e7cd8fd64a492de3d0b5e1693ff09651e63462",
+      "environment_sha256": "42ada96ba95f7ab680a4c70564c12ebb8c9fe22d5c24a2f9553e97bfcee0f006"
+    },
+    {
+      "label": "build-phase-host",
+      "argv": [
+        "/usr/bin/cmake",
+        "--build",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-decode-service-budget-20261014/build/phase-host",
+        "--parallel",
+        "2",
+        "--target",
+        "phase_cache_owner_test",
+        "pool_test",
+        "expert_multi_test",
+        "native_service_pool_test"
+      ],
+      "started_utc": "2026-10-13T18:15:19.366860+00:00",
+      "finished_utc": "2026-10-13T18:16:01.545194+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 42.174714442982804,
+      "ownership_status": "observed",
+      "direct_identity": {
+        "pid": 496622,
+        "state": "R",
+        "ppid": 466548,
+        "pgid": 496622,
+        "sid": 496622,
+        "start_ticks": 26408349,
+        "rss_bytes": 274432
+      },
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "survivors": [],
+      "errors": [],
+      "logs": {
+        "build-phase-host.stdout": {
+          "bytes": 3534,
+          "sha256": "701de0ca3e9cc871c310869c691f79671b0edc7c42aed557b0c2e71b242e45a9"
+        },
+        "build-phase-host.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "owner_count": 76,
+      "owners_sha256": "ebe8ccfebf81fb09f21cb5f779f427475bfb75416e8e94f04eac5435b08cab95",
+      "environment_sha256": "42ada96ba95f7ab680a4c70564c12ebb8c9fe22d5c24a2f9553e97bfcee0f006"
+    },
+    {
+      "label": "ctest-phase-host",
+      "argv": [
+        "/usr/bin/ctest",
+        "--test-dir",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-decode-service-budget-20261014/build/phase-host",
+        "-R",
+        "^(phase_cache_owner_test|pool_test|expert_multi_test|native_service_pool_test)$",
+        "--output-on-failure",
+        "-V"
+      ],
+      "started_utc": "2026-10-13T18:16:01.554516+00:00",
+      "finished_utc": "2026-10-13T18:16:02.136992+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 0.5784881340223365,
+      "ownership_status": "observed",
+      "direct_identity": {
+        "pid": 499472,
+        "state": "R",
+        "ppid": 466548,
+        "pgid": 499472,
+        "sid": 499472,
+        "start_ticks": 26412568,
+        "rss_bytes": 393216
+      },
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "survivors": [],
+      "errors": [],
+      "logs": {
+        "ctest-phase-host.stdout": {
+          "bytes": 46921,
+          "sha256": "2db376c299e039ad41cfa6b3d3b519b588e33caac569bfe971c717ce67135c50"
+        },
+        "ctest-phase-host.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "owner_count": 2,
+      "owners_sha256": "94e1c360ca7cd92ccb6cb14fc61b0309adc3cf267c02bb20b6e8061878fc5799",
+      "environment_sha256": "42ada96ba95f7ab680a4c70564c12ebb8c9fe22d5c24a2f9553e97bfcee0f006"
+    },
+    {
+      "label": "configure-phase-host-asan",
+      "argv": [
+        "/usr/bin/cmake",
+        "-S",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-decode-service-budget-20261014",
+        "-B",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-decode-service-budget-20261014/build/phase-host-asan",
+        "-G",
+        "Ninja",
+        "-DCMAKE_BUILD_TYPE=Release",
+        "-DCMAKE_CXX_COMPILER=/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+        "-DCMAKE_C_COMPILER=/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang",
+        "-DSTRATA_LICENSE=free",
+        "-DSTRATA_ENABLE_XE=OFF",
+        "-DSTRATA_BUILD_TESTS=ON",
+        "-DSTRATA_NATIVE_EXPERTS=ON",
+        "-DSTRATA_CUDA_ARCHS=",
+        "-DSTRATA_HIP_ARCHS=",
+        "-DSTRATA_ONEMKL=OFF",
+        "-DSTRATA_WERROR=ON",
+        "-DSTRATA_PORTABLE=OFF",
+        "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+        "-DSTRATA_GGML_DIR=/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",
+        "-DSTRATA_SANITIZE=address,undefined"
+      ],
+      "started_utc": "2026-10-13T18:16:02.150447+00:00",
+      "finished_utc": "2026-10-13T18:16:03.771340+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.6151669290266,
+      "ownership_status": "observed",
+      "direct_identity": {
+        "pid": 499588,
+        "state": "R",
+        "ppid": 466548,
+        "pgid": 499588,
+        "sid": 499588,
+        "start_ticks": 26412627,
+        "rss_bytes": 606208
+      },
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "survivors": [],
+      "errors": [],
+      "logs": {
+        "configure-phase-host-asan.stdout": {
+          "bytes": 1760,
+          "sha256": "b55ec1f40759a0846800dff0f69abd83bb5ad1c32aaaf5994f46a77a36924c04"
+        },
+        "configure-phase-host-asan.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "owner_count": 4,
+      "owners_sha256": "39ca9891944731714e466a571663bdc72e314f2e035dca51205884874be21530",
+      "environment_sha256": "42ada96ba95f7ab680a4c70564c12ebb8c9fe22d5c24a2f9553e97bfcee0f006"
+    },
+    {
+      "label": "build-phase-host-asan",
+      "argv": [
+        "/usr/bin/cmake",
+        "--build",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-decode-service-budget-20261014/build/phase-host-asan",
+        "--parallel",
+        "2",
+        "--target",
+        "phase_cache_owner_test",
+        "pool_test",
+        "expert_multi_test",
+        "native_service_pool_test"
+      ],
+      "started_utc": "2026-10-13T18:16:03.784939+00:00",
+      "finished_utc": "2026-10-13T18:16:57.773708+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 53.982089878001716,
+      "ownership_status": "observed",
+      "direct_identity": {
+        "pid": 499819,
+        "state": "R",
+        "ppid": 466548,
+        "pgid": 499819,
+        "sid": 499819,
+        "start_ticks": 26412791,
+        "rss_bytes": 446464
+      },
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "survivors": [],
+      "errors": [],
+      "logs": {
+        "build-phase-host-asan.stdout": {
+          "bytes": 3534,
+          "sha256": "e3c93fd874895de9709ad7faff4d69ad43cf0f804e46e3d49540fff9c700d7c3"
+        },
+        "build-phase-host-asan.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "owner_count": 84,
+      "owners_sha256": "66dbb1fc6a50520fd6e12c4751f5e063e7088201d8c14e3b19ce468d009e40a3",
+      "environment_sha256": "42ada96ba95f7ab680a4c70564c12ebb8c9fe22d5c24a2f9553e97bfcee0f006"
+    },
+    {
+      "label": "ctest-phase-host-asan",
+      "argv": [
+        "/usr/bin/ctest",
+        "--test-dir",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-decode-service-budget-20261014/build/phase-host-asan",
+        "-R",
+        "^(phase_cache_owner_test|pool_test|expert_multi_test|native_service_pool_test)$",
+        "--output-on-failure",
+        "-V"
+      ],
+      "started_utc": "2026-10-13T18:16:57.786255+00:00",
+      "finished_utc": "2026-10-13T18:16:59.000491+00:00",
+      "exit_code": 0,
+      "elapsed_seconds": 1.208824528963305,
+      "ownership_status": "observed",
+      "direct_identity": {
+        "pid": 502978,
+        "state": "R",
+        "ppid": 466548,
+        "pgid": 502978,
+        "sid": 502978,
+        "start_ticks": 26418191,
+        "rss_bytes": 425984
+      },
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "survivors": [],
+      "errors": [],
+      "logs": {
+        "ctest-phase-host-asan.stdout": {
+          "bytes": 46976,
+          "sha256": "48e4789fc8fb845b0683fa7da1387af1449529345c8401b176d18786659c115f"
+        },
+        "ctest-phase-host-asan.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "owner_count": 3,
+      "owners_sha256": "7fcf4e3bf3c24f3027a6afd607187045cb2a41ac5be5cb050c4880fecccd713c",
+      "environment_sha256": "4a3c2a0cd51f7b9e9dac1c5e7cca9845fe82a0667dd8986ea4a9c9dda071c769",
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/venv/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+        "OMP_NUM_THREADS": "1",
+        "GIT_TERMINAL_PROMPT": "0",
+        "GIT_SSH_COMMAND": "ssh -oBatchMode=yes",
+        "RUBYLIB": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/lib/ruby/vendor_ruby:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/chef-utils-16.12.3/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/kramdown-2.4.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/kramdown-parser-gfm-1.1.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mdl-0.13.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-cli-2.1.6/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-config-3.0.6/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-shellout-3.2.5/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/tomlrb-1.3.0/lib",
+        "GEM_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all:/usr/share/rubygems-integration/all:/usr/lib/ruby/gems/3.2.0",
+        "ASAN_OPTIONS": "detect_leaks=1:halt_on_error=1",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+      }
+    }
+  ],
+  "environment": {
+    "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/venv/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/bin:/usr/bin:/bin",
+    "HOME": "/home/yayoi",
+    "LANG": "C.UTF-8",
+    "LC_ALL": "C.UTF-8",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+    "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+    "OMP_NUM_THREADS": "1",
+    "GIT_TERMINAL_PROMPT": "0",
+    "GIT_SSH_COMMAND": "ssh -oBatchMode=yes",
+    "RUBYLIB": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/lib/ruby/vendor_ruby:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/chef-utils-16.12.3/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/kramdown-2.4.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/kramdown-parser-gfm-1.1.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mdl-0.13.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-cli-2.1.6/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-config-3.0.6/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-shellout-3.2.5/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/tomlrb-1.3.0/lib",
+    "GEM_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all:/usr/share/rubygems-integration/all:/usr/lib/ruby/gems/3.2.0"
+  },
+  "source_pins": {
+    "CMakeLists.txt": "19ab3d8025cd45abed1c7e806a0c0256814938f7b0ef31e417f7b32fc4c8f2b1",
+    "docs/DECODE_ROUTE_LEDGER.md": "4cf24c84efb5a269666e981833ad914d8f9caf5ec6b02cc05823d61c1f8f9eba",
+    "docs/DECODE_SERVICE_CPU.ja.md": "0c3c065681342504ecb5e111e21caee6408a9876a3a357bf62d86908f7a9e315",
+    "docs/DECODE_SERVICE_CPU.md": "82c4a760a0a2e83894cd9b0ef00593cf558de31f2ffb76a9dd2834bfb01afc0d",
+    "docs/LAYER_MAJOR_PREFILL.ja.md": "c16ff5ee083ce0d25ce645de835d271e4bd09f96c5d71d1508420ff02303badf",
+    "docs/LAYER_MAJOR_PREFILL.md": "e9426d84124c196492a92bb66309e23832bd2bc8ef0795c392bab047e5e8743f",
+    "include/strata/core/decode_route_ledger.hpp": "4398c5df8f8f083868a2360a21707744e47d1fd5867918cba75f5eacc72b75b4",
+    "include/strata/core/decode_service_budget.hpp": "8c50f3f48a291e0905f90c96cc65b80d3eab7b5f8f353ab12537460b82097c16",
+    "include/strata/core/expert_cache.hpp": "7450cbfa5bb5356c0d2e6b7bf09ac06ffb341feffaac8182db694c64d98d53ac",
+    "include/strata/core/expert_source.hpp": "e4a4c475ae47fbaf797daecd9a616577cf94652f3f2af5d429fd5219d62654d3",
+    "include/strata/core/layer.hpp": "5c22fb192f8ae046e513c48eaa3feb8f51fb022937ce3d9f0bc78a1b420c44bc",
+    "include/strata/core/phase_cache_owner.hpp": "95dc08cfefe7c3fe7405d2fea74448d3d4b309551b3deb098739d7f2a2e82746",
+    "include/strata/core/phase_serve_cycle.hpp": "d2fa11d74b63aac8437d32fea85fab49e793f20a73a6282f31358b014498d4af",
+    "include/strata/core/serve_first_row_capture.hpp": "0fd0e9ba1d58cd2ece0c2b7c2470fa6ae8561706d0f8cbc7f29b57d5b5ccd66e",
+    "include/strata/core/session.hpp": "6fd804767cb1728812b6876f647d247d6cdf816e2d68210002d493f978b7075d",
+    "include/strata/kernels/cpu/pool.hpp": "391d62644769547d067376dbd5f7fc8d9279e989b2c8dff96a582360225dca66",
+    "include/strata/kernels/cpu/service_budget.hpp": "a4f0305a4b3e069bfe23a6d9dccd7a8829a4fd141d6a59c847aedea3fbe58386",
+    "include/strata/prefill/layer_major.hpp": "7409746cf90d20e8e25cb08a4123185be424db902b2de63a8bd3e25f8f0f6d6c",
+    "include/strata/prefill/prefill.hpp": "29b476be09e6968f52a0966938cffe62c4a30ed159c47de40ecb6322ea75c440",
+    "src/core/expert_cache.cpp": "013425f1e1fb70f7c4bb1618243bde014c1608e390377ae731f4a88a5600f87c",
+    "src/core/expert_source.cpp": "10bcbf72cf76c4e0ae189bc3e7fb855e6879893a82d58e9464e13c1bbfe9cac0",
+    "src/core/layer.cpp": "b413bfe63a3668c894466bb9e738fe8f812d333da43cb752bc472d4609100503",
+    "src/core/phase_cache_owner.cpp": "7f88f8f0c8fd78d5250e55fdc430c3e7bc909e881db9b8eeb288d5b3dac93388",
+    "src/core/session.cpp": "a21216b19f730ae49e452550543d612b04989a4e23a43d05d29b4d2c74523b54",
+    "src/kernels/cpu/pool.cpp": "fef5ea1c2fa5a6108af6b7e0e96eaf5929d488ccc2d7efb1bd98e3267b7e243c",
+    "src/prefill/prefill.cpp": "a5b06a60aa94ee0eef23997cf2506678546d23432f7019f103db52cbe6998120",
+    "src/program/generate.cpp": "3179940dc5e3aeb59822bb008ae92552d5f405bb8f3745cf1b1c34b8b43e0f1f",
+    "tests/core/native_service_pool_test.cpp": "6319cd649b41674a392edad5492ebf3f75aa42f5b93d7affb3f62b7cf4e91a96",
+    "tests/core/phase_cache_owner_test.cpp": "f5c3d094ebdb716f0be43b72a0aa5216d51b456c0e6cfdc66675b65614be5caa",
+    "tools/test_decode_route_ledger.cpp": "13a9116464a20b74c4ff9aea4645975d88b12535360c98bcc663ef1cdafee2c7",
+    "tools/test_decode_service_budget.cpp": "d24dbce3382d4bf1dc27e2821f9be97dcee47697d0470c82dce7016257c9d81a",
+    "tools/test_phase_cache_vmm.cpp": "b8ef42aa1893f09ac473d8e4b7fca22b253147a60596196224bbfd1d1bb4bd8f"
+  },
+  "qualification_transfers_to_primary": false,
+  "host_fixture_proof": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-decode-service-host-qualification-root-v1/record.json",
+    "sha256": "711fc6ac917c915a51c6bfaaf1bf65324c43cb532109e41a0bdcff98bedecd93"
+  },
+  "free": {
+    "binary_sha256": "1b96c69a6833fa316c65ddbe29890ccf5c53f18cec38b8916e6133bda1969473",
+    "native_pool_fixture_sha256": "5a3d155477493772387c8ec82a04f29b0bddfae4b52ecfd448c7cf9c6e03dc12",
+    "host_fixture_sha256": "fec99c7395df7bbf19f36a5e587377cf586337d42ff9d230c8cd45cd2e8dc173",
+    "compile_commands_sha256": "1db661713f7616920cd0143f733faac16030b273a70b5ddf778990632a768927",
+    "built": true,
+    "host_ctest_pass": true,
+    "gpu_vmm_executed": false
+  },
+  "contrib-llvm": {
+    "binary_sha256": "974f79155834d7a35214286b9080f72450f0630d14739e849f438e06d4ef5d24",
+    "native_pool_fixture_sha256": "5a3d155477493772387c8ec82a04f29b0bddfae4b52ecfd448c7cf9c6e03dc12",
+    "host_fixture_sha256": "fec99c7395df7bbf19f36a5e587377cf586337d42ff9d230c8cd45cd2e8dc173",
+    "compile_commands_sha256": "d9d2ff816ff9af212fd6df559e645e3fad20a796920efe2c703a7c1af5eb8e9b",
+    "built": true,
+    "host_ctest_pass": true,
+    "gpu_vmm_executed": false
+  },
+  "phase-host": {
+    "binary_sha256": "fec99c7395df7bbf19f36a5e587377cf586337d42ff9d230c8cd45cd2e8dc173",
+    "host_ctest_pass": true,
+    "sanitizer": null
+  },
+  "phase-host-asan": {
+    "binary_sha256": "037d65989169d822f37dae57a05a98f8badb265a379218f65517b23a69103f14",
+    "host_ctest_pass": true,
+    "sanitizer": "address,undefined"
+  }
+}
