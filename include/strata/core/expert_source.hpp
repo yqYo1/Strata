@@ -128,6 +128,8 @@ public:
     /// immediately and nothing is retained.  A CACHING source must return pointers into the cache, not into a
     /// reused staging buffer - otherwise the pool would read the next expert's bytes while computing this one.
     virtual const uint8_t* blob(int64_t layer, int64_t expert) = 0;
+    struct CopyRange { const uint8_t* first = nullptr; const uint8_t* allocation = nullptr; size_t extent = 0; };
+    virtual bool copy_range(int64_t, int64_t, size_t, CopyRange&) const { return false; }
 
     /// Blobs touched, for the driver to report.  A source that does not count returns 0.
     virtual int64_t reads() const { return 0; }
@@ -699,6 +701,7 @@ public:
     const uint8_t* blob(int64_t layer, int64_t expert) override;
     int64_t reads() const override { return reads_; }
     bool pinned(int64_t layer, int64_t expert) const override;
+    bool copy_range(int64_t layer, int64_t expert, size_t count, CopyRange& range) const override;
     const uint8_t* device_alias(int64_t layer, int64_t expert) const override;
     bool make_kernel_readable(std::string& err) override;
     void prefetch(int64_t layer, int64_t expert) override;

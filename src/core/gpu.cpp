@@ -5,8 +5,10 @@
 #include "strata/core/device.hpp"
 #include "strata/core/on_device.hpp"
 #include "strata/core/runtime.hpp"
+#include "strata/core/copy_cohort.hpp"
 
 #include <sycl/ext/oneapi/experimental/graph.hpp>
+#include <sycl/ext/oneapi/memcpy2d.hpp>
 #include <sycl/ext/oneapi/experimental/profiling_tag.hpp>
 #include <sycl/ext/oneapi/virtual_mem/physical_mem.hpp>
 #include <sycl/ext/oneapi/virtual_mem/virtual_mem.hpp>
@@ -267,6 +269,37 @@ bool copy_async_after(void* dst, const void* src, size_t bytes, Stream s, const 
         if (done != nullptr) done->ev = e;
         return true;
     } catch (const std::exception& e) { return fail("copy_async_after", e); }
+}
+
+bool copy_cohort_async(void* dst, size_t dp, const void* src, size_t sp, size_t width, size_t height,
+                       Stream stream, const Event* const* after, Event* const* done) {
+    try {
+        auto& queue = q(stream);
+        if (!dst || !src || !after || !done || height < 2 || height > 16 || width > dp || width > sp ||
+            !width || height > SIZE_MAX / width || dp > UINT32_MAX || sp > UINT32_MAX || width > UINT32_MAX || is_capturing(stream) ||
+            sycl::get_pointer_type(src, queue.get_context()) != sycl::usm::alloc::host ||
+            sycl::get_pointer_type(dst, queue.get_context()) != sycl::usm::alloc::device ||
+            sycl::get_pointer_device(dst, queue.get_context()) != queue.get_device())
+            throw core::DeviceError("copy cohort: invalid geometry/USM/queue");
+        std::vector<sycl::event> dependencies;
+        dependencies.reserve(height);
+        for (size_t row = 0; row < height; ++row) {
+            if (!done[row]) throw core::DeviceError("copy cohort: missing completion association");
+            if (after[row]) {
+                if (!after[row]->ev) throw core::DeviceError("copy cohort: missing last-reader event");
+                dependencies.push_back(*after[row]->ev);
+            }
+        }
+        const auto before = core::service_now();
+        const auto event = queue.ext_oneapi_memcpy2d(dst, dp, src, sp, width, height, dependencies);
+        const auto submitted = core::service_now();
+        core::ServiceMeta meta;
+        meta.kind = "memcpy2d"; meta.src = "host_usm"; meta.dst = "device_usm";
+        meta.bytes = width * height; meta.groups = static_cast<int64_t>(height);
+        core::record_service_event(queue, event, meta, before, submitted);
+        for (size_t row = 0; row < height; ++row) done[row]->ev = event;
+        return true;
+    } catch (const std::exception& e) { return fail("copy_cohort_async", e); }
 }
 
 bool copy2d_async(void* dst, size_t dpitch, const void* src, size_t spitch, size_t width, size_t height, Stream s) {

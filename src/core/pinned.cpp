@@ -343,6 +343,20 @@ bool PinnedArena::to_host_usm(uint64_t pad, std::string& err) {
     return true;
 }
 
+bool PinnedArena::host_usm_range(const uint8_t* pointer, size_t bytes,
+                                  const uint8_t*& allocation, size_t& extent) const {
+    if (layer_base.empty() || !pointer || !bytes) return false;
+    const uintptr_t address = reinterpret_cast<uintptr_t>(pointer);
+    for (const auto& piece : pieces_) {
+        const uintptr_t base = reinterpret_cast<uintptr_t>(piece.first);
+        if (address >= base && address - base <= piece.second && bytes <= piece.second - (address - base)) {
+            allocation = static_cast<const uint8_t*>(piece.first); extent = piece.second;
+            return true;
+        }
+    }
+    return false;
+}
+
 uint8_t* PinnedArena::at(uint64_t off) const {
     if (layer_base.empty()) return (uint8_t*) base + off;
     size_t l = (size_t) (std::upper_bound(bounds_.begin(), bounds_.end() - 1, off) - bounds_.begin());
