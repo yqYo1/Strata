@@ -92,6 +92,22 @@ head の退役と復元時間も prompt_ms に含まれます。
 完了した後の emb / bo / ple_emb と qkv / FP32 y を共有します。byte count、owned / borrowed carve、
 relayout は同じ起動時の設定を使い、FP32 y と normalizer の計算はそのままです。
 
+`STRATA_PREFILL_GATED_ALIAS=1` は別の既定 OFF の opt-in です。起動時に正確な `1` だけを
+受け入れ、未指定、`0`、`01` は OFF です。allocation 前に上の scratch alias と in-order compute
+queue を必須とします。両方の HC half で FP32 gated の up GEMM、`gr_mix_r` の全要素 read、
+最初の GDN / QSA / MoE scratch writer が同じ queue 上で順に完了するため、gated を shared
+region の先頭に置きます。R、xn16、injection、PLE / draft の local view と batching はそのままです。
+計算、dtype、precision、cache、session は変更しません。
+
+count と carve は同じ host-only layout helper と固定した設定を使います。region の容量は
+block 最大 extent と gate extent の大きい方です。trace は block 最大、gate extent、実際の region
+allocation の requested bytes、削減 requested bytes、winner、pointer equality を表示します。
+stock 12288 の block extent が gate より大きい設定では、ソース上の削減は
+503316736 bytes（480 MiB + 256 bytes）です。`Alloc::take` の padding を含む requested count
+であり、physical VRAM の削減、fit、速度の測定ではありません。12K の head lease と scratch
+alias の必須条件はそのままで、gated alias は明示的な A/B のための任意の設定です。
+reserve と容量を自動で下げません。
+
 固定 12288 容量は `STRATA_PHASE_PREFILL_12K=1` と `--prefill 12288`、上の lease と alias の両方を
 明示した場合だけ受け入れます。その他の phase の制約はそのままです。省略時は固定 8192 です。
 auto、別の容量、BF16X2、別途所有する KV stage は拒否します。初期化と全 fresh GEN 再初期化に

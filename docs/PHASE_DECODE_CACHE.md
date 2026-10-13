@@ -102,6 +102,24 @@ it shares emb / bo / ple_emb and qkv / FP32 y after their last readers complete.
 Byte counts, owned / borrowed carve and relayout use the same startup setting.
 FP32 y and its normalizer retain their calculations.
 
+`STRATA_PREFILL_GATED_ALIAS=1` is a separate opt-in, default OFF. Only exact `1`
+at startup enables it; absent, `0` and `01` stay OFF. Before allocation it requires
+the scratch alias above and an in-order compute queue. In both HC halves, the FP32
+gated up GEMM, the full gate read by `gr_mix_r`, and the first GDN / QSA / MoE
+scratch writer complete in order on that same queue, allowing gated at the shared
+region base. R, xn16, injection, and PLE / draft local views and batching remain.
+Calculations, dtype, precision, cache and session do not change.
+
+Count and carve use the same host-only layout helper and frozen setting. Region
+capacity is the larger of the block maximum extent and gate extent. Trace reports
+the block maximum, gate extent, actual region allocation requested bytes, saved
+requested bytes, winner and pointer equality. For stock 12288 settings with a
+block extent larger than the gate, the source-derived saving is 503316736 bytes
+(480 MiB + 256 bytes). This requested count includes `Alloc::take` padding; it is
+not a measurement of physical VRAM savings, fit or speed. The 12K requirements
+for head lease and scratch alias remain, with gated alias optional for explicit
+A/B. Reserve and capacity never decrease automatically.
+
 Fixed 12288 capacity requires explicit `STRATA_PHASE_PREFILL_12K=1`,
 `--prefill 12288`, and both lease and alias above. All other phase restrictions
 remain. Without the opt-in, capacity stays fixed at 8192. Auto, other capacities,

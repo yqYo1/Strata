@@ -1,0 +1,1096 @@
+{
+  "original_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prefill-gated-region-full-build-root-v2/record.json",
+  "original_sha256": {
+    "sha256": "da2f4093523330856a21ad6880061104baeebb47087869d28fb0cbaac1c9670c"
+  },
+  "record": {
+    "active": false,
+    "passed": true,
+    "complete": true,
+    "main_reviewed": true,
+    "commands": [
+      {
+        "label": "head",
+        "argv": [
+          "git",
+          "rev-parse",
+          "HEAD"
+        ],
+        "environment": {
+          "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/venv/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/bin:/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "PYTHONDONTWRITEBYTECODE": "1",
+          "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+          "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+          "OMP_NUM_THREADS": "1",
+          "GIT_TERMINAL_PROMPT": "0",
+          "GIT_SSH_COMMAND": "ssh -oBatchMode=yes",
+          "RUBYLIB": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/lib/ruby/vendor_ruby:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/chef-utils-16.12.3/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/kramdown-2.4.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/kramdown-parser-gfm-1.1.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mdl-0.13.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-cli-2.1.6/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-config-3.0.6/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-shellout-3.2.5/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/tomlrb-1.3.0/lib",
+          "GEM_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all:/usr/share/rubygems-integration/all:/usr/lib/ruby/gems/3.2.0"
+        },
+        "started_utc": "2026-10-13T07:24:32.139852+00:00",
+        "wall_seconds": 30,
+        "errors": [],
+        "owners": [
+          {
+            "pid": 2231756,
+            "start_ticks": 22503626,
+            "sid": 2231756,
+            "pgid": 2231756
+          }
+        ],
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 225036.261376029,
+        "pid": 2231756,
+        "spawn_return_monotonic": 225036.26320309,
+        "direct_identity": {
+          "pid": 2231756,
+          "state": "R",
+          "ppid": 2231691,
+          "pgid": 2231756,
+          "sid": 2231756,
+          "start_ticks": 22503626,
+          "rss_bytes": 458752
+        },
+        "peak_live_owned_identities": 1,
+        "peak_session_rss_bytes": 0,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 0,
+        "finished_utc": "2026-10-13T07:24:32.263176+00:00",
+        "elapsed_seconds": 0.12305804900825024,
+        "logs": {
+          "head.stdout": {
+            "bytes": 41,
+            "sha256": "22ab3224235c8a8d06f262085f24e094ea986a7e3ce8c4a6d115c641f2b260b2"
+          },
+          "head.stderr": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      {
+        "label": "changed-source",
+        "argv": [
+          "git",
+          "diff",
+          "--name-only"
+        ],
+        "environment": {
+          "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/venv/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/bin:/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "PYTHONDONTWRITEBYTECODE": "1",
+          "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+          "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+          "OMP_NUM_THREADS": "1",
+          "GIT_TERMINAL_PROMPT": "0",
+          "GIT_SSH_COMMAND": "ssh -oBatchMode=yes",
+          "RUBYLIB": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/lib/ruby/vendor_ruby:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/chef-utils-16.12.3/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/kramdown-2.4.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/kramdown-parser-gfm-1.1.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mdl-0.13.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-cli-2.1.6/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-config-3.0.6/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-shellout-3.2.5/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/tomlrb-1.3.0/lib",
+          "GEM_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all:/usr/share/rubygems-integration/all:/usr/lib/ruby/gems/3.2.0"
+        },
+        "started_utc": "2026-10-13T07:24:32.264005+00:00",
+        "wall_seconds": 30,
+        "errors": [],
+        "owners": [
+          {
+            "pid": 2231768,
+            "start_ticks": 22503638,
+            "sid": 2231768,
+            "pgid": 2231768
+          }
+        ],
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 225036.3856781,
+        "pid": 2231768,
+        "spawn_return_monotonic": 225036.387467841,
+        "direct_identity": {
+          "pid": 2231768,
+          "state": "R",
+          "ppid": 2231691,
+          "pgid": 2231768,
+          "sid": 2231768,
+          "start_ticks": 22503638,
+          "rss_bytes": 393216
+        },
+        "peak_live_owned_identities": 1,
+        "peak_session_rss_bytes": 0,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 0,
+        "finished_utc": "2026-10-13T07:24:32.385325+00:00",
+        "elapsed_seconds": 0.12098389299353585,
+        "logs": {
+          "changed-source.stdout": {
+            "bytes": 119,
+            "sha256": "ebda33355dfa2f644fce44b438d960aab76470d8d6305c69758910eb4334a6fb"
+          },
+          "changed-source.stderr": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      {
+        "label": "new-source",
+        "argv": [
+          "git",
+          "ls-files",
+          "--others",
+          "--exclude-standard"
+        ],
+        "environment": {
+          "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/venv/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/bin:/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "PYTHONDONTWRITEBYTECODE": "1",
+          "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+          "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+          "OMP_NUM_THREADS": "1",
+          "GIT_TERMINAL_PROMPT": "0",
+          "GIT_SSH_COMMAND": "ssh -oBatchMode=yes",
+          "RUBYLIB": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/lib/ruby/vendor_ruby:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/chef-utils-16.12.3/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/kramdown-2.4.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/kramdown-parser-gfm-1.1.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mdl-0.13.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-cli-2.1.6/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-config-3.0.6/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-shellout-3.2.5/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/tomlrb-1.3.0/lib",
+          "GEM_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all:/usr/share/rubygems-integration/all:/usr/lib/ruby/gems/3.2.0"
+        },
+        "started_utc": "2026-10-13T07:24:32.386048+00:00",
+        "wall_seconds": 30,
+        "errors": [],
+        "owners": [
+          {
+            "pid": 2231788,
+            "start_ticks": 22503650,
+            "sid": 2231788,
+            "pgid": 2231788
+          }
+        ],
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 225036.50756289,
+        "pid": 2231788,
+        "spawn_return_monotonic": 225036.509316943,
+        "direct_identity": {
+          "pid": 2231788,
+          "state": "R",
+          "ppid": 2231691,
+          "pgid": 2231788,
+          "sid": 2231788,
+          "start_ticks": 22503650,
+          "rss_bytes": 323584
+        },
+        "peak_live_owned_identities": 1,
+        "peak_session_rss_bytes": 0,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 0,
+        "finished_utc": "2026-10-13T07:24:32.508480+00:00",
+        "elapsed_seconds": 0.12219005398219451,
+        "logs": {
+          "new-source.stdout": {
+            "bytes": 44,
+            "sha256": "79424264e6fadc1750d9df928d574a065f8a48d13994e7d7aed9340ff613a11a"
+          },
+          "new-source.stderr": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      {
+        "label": "source-diff",
+        "argv": [
+          "git",
+          "diff",
+          "--binary"
+        ],
+        "environment": {
+          "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/venv/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/bin:/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "PYTHONDONTWRITEBYTECODE": "1",
+          "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+          "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+          "OMP_NUM_THREADS": "1",
+          "GIT_TERMINAL_PROMPT": "0",
+          "GIT_SSH_COMMAND": "ssh -oBatchMode=yes",
+          "RUBYLIB": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/lib/ruby/vendor_ruby:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/chef-utils-16.12.3/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/kramdown-2.4.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/kramdown-parser-gfm-1.1.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mdl-0.13.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-cli-2.1.6/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-config-3.0.6/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-shellout-3.2.5/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/tomlrb-1.3.0/lib",
+          "GEM_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all:/usr/share/rubygems-integration/all:/usr/lib/ruby/gems/3.2.0"
+        },
+        "started_utc": "2026-10-13T07:24:32.512670+00:00",
+        "wall_seconds": 30,
+        "errors": [],
+        "owners": [
+          {
+            "pid": 2231796,
+            "start_ticks": 22503663,
+            "sid": 2231796,
+            "pgid": 2231796
+          }
+        ],
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 225036.634402921,
+        "pid": 2231796,
+        "spawn_return_monotonic": 225036.636528103,
+        "direct_identity": {
+          "pid": 2231796,
+          "state": "R",
+          "ppid": 2231691,
+          "pgid": 2231796,
+          "sid": 2231796,
+          "start_ticks": 22503663,
+          "rss_bytes": 327680
+        },
+        "peak_live_owned_identities": 1,
+        "peak_session_rss_bytes": 0,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 0,
+        "finished_utc": "2026-10-13T07:24:32.638668+00:00",
+        "elapsed_seconds": 0.12555840800632723,
+        "logs": {
+          "source-diff.stdout": {
+            "bytes": 23373,
+            "sha256": "d7d6177d9f2ed77011fb9d3477a69b40912c1e9fdb935e41ac4323db07cc82ed"
+          },
+          "source-diff.stderr": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      {
+        "label": "build-free",
+        "argv": [
+          "/usr/bin/cmake",
+          "--build",
+          "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-prefill-gated-region-alias-20261013/build/free",
+          "--parallel",
+          "4",
+          "--target",
+          "phase_cache_owner_test"
+        ],
+        "environment": {
+          "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/venv/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/bin:/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "PYTHONDONTWRITEBYTECODE": "1",
+          "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+          "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+          "OMP_NUM_THREADS": "1",
+          "GIT_TERMINAL_PROMPT": "0",
+          "GIT_SSH_COMMAND": "ssh -oBatchMode=yes",
+          "RUBYLIB": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/lib/ruby/vendor_ruby:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/chef-utils-16.12.3/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/kramdown-2.4.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/kramdown-parser-gfm-1.1.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mdl-0.13.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-cli-2.1.6/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-config-3.0.6/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-shellout-3.2.5/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/tomlrb-1.3.0/lib",
+          "GEM_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all:/usr/share/rubygems-integration/all:/usr/lib/ruby/gems/3.2.0"
+        },
+        "started_utc": "2026-10-13T07:24:32.640196+00:00",
+        "wall_seconds": 1200,
+        "errors": [],
+        "owners": [
+          {
+            "pid": 2231806,
+            "start_ticks": 22503676,
+            "sid": 2231806,
+            "pgid": 2231806
+          },
+          {
+            "pid": 2231807,
+            "start_ticks": 22503677,
+            "sid": 2231806,
+            "pgid": 2231806
+          },
+          {
+            "pid": 2231812,
+            "start_ticks": 22503678,
+            "sid": 2231806,
+            "pgid": 2231812
+          },
+          {
+            "pid": 2231819,
+            "start_ticks": 22503678,
+            "sid": 2231806,
+            "pgid": 2231812
+          }
+        ],
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 225036.761952999,
+        "pid": 2231806,
+        "spawn_return_monotonic": 225036.76383807,
+        "direct_identity": {
+          "pid": 2231806,
+          "state": "R",
+          "ppid": 2231691,
+          "pgid": 2231806,
+          "sid": 2231806,
+          "start_ticks": 22503676,
+          "rss_bytes": 446464
+        },
+        "peak_live_owned_identities": 4,
+        "peak_session_rss_bytes": 204410880,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 0,
+        "finished_utc": "2026-10-13T07:24:36.090535+00:00",
+        "elapsed_seconds": 3.4498766839969903,
+        "logs": {
+          "build-free.stdout": {
+            "bytes": 156,
+            "sha256": "9037e8a3015b68c1a25b88fade9fb5505b84cc196f440f316a3b4da6a8f78878"
+          },
+          "build-free.stderr": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      {
+        "label": "host-ctest-free",
+        "argv": [
+          "/usr/bin/ctest",
+          "--test-dir",
+          "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-prefill-gated-region-alias-20261013/build/free",
+          "-R",
+          "^phase_cache_owner_test$",
+          "--output-on-failure"
+        ],
+        "environment": {
+          "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/venv/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/bin:/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "PYTHONDONTWRITEBYTECODE": "1",
+          "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+          "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+          "OMP_NUM_THREADS": "1",
+          "GIT_TERMINAL_PROMPT": "0",
+          "GIT_SSH_COMMAND": "ssh -oBatchMode=yes",
+          "RUBYLIB": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/lib/ruby/vendor_ruby:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/chef-utils-16.12.3/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/kramdown-2.4.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/kramdown-parser-gfm-1.1.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mdl-0.13.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-cli-2.1.6/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-config-3.0.6/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-shellout-3.2.5/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/tomlrb-1.3.0/lib",
+          "GEM_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all:/usr/share/rubygems-integration/all:/usr/lib/ruby/gems/3.2.0"
+        },
+        "started_utc": "2026-10-13T07:24:36.091802+00:00",
+        "wall_seconds": 180,
+        "errors": [],
+        "owners": [
+          {
+            "pid": 2231998,
+            "start_ticks": 22504021,
+            "sid": 2231998,
+            "pgid": 2231998
+          }
+        ],
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 225040.213549783,
+        "pid": 2231998,
+        "spawn_return_monotonic": 225040.215131191,
+        "direct_identity": {
+          "pid": 2231998,
+          "state": "R",
+          "ppid": 2231691,
+          "pgid": 2231998,
+          "sid": 2231998,
+          "start_ticks": 22504021,
+          "rss_bytes": 462848
+        },
+        "peak_live_owned_identities": 1,
+        "peak_session_rss_bytes": 12054528,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 0,
+        "finished_utc": "2026-10-13T07:24:36.328496+00:00",
+        "elapsed_seconds": 0.23622138300561346,
+        "logs": {
+          "host-ctest-free.stdout": {
+            "bytes": 443,
+            "sha256": "17b928bc5eb87e4a49bc48682e011473856bbcfff0dea902402ab306ca9afeb8"
+          },
+          "host-ctest-free.stderr": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      {
+        "label": "build-contrib-llvm",
+        "argv": [
+          "/usr/bin/cmake",
+          "--build",
+          "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-prefill-gated-region-alias-20261013/build/contrib-llvm",
+          "--parallel",
+          "4",
+          "--target",
+          "phase_cache_owner_test"
+        ],
+        "environment": {
+          "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/venv/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/bin:/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "PYTHONDONTWRITEBYTECODE": "1",
+          "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+          "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+          "OMP_NUM_THREADS": "1",
+          "GIT_TERMINAL_PROMPT": "0",
+          "GIT_SSH_COMMAND": "ssh -oBatchMode=yes",
+          "RUBYLIB": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/lib/ruby/vendor_ruby:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/chef-utils-16.12.3/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/kramdown-2.4.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/kramdown-parser-gfm-1.1.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mdl-0.13.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-cli-2.1.6/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-config-3.0.6/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-shellout-3.2.5/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/tomlrb-1.3.0/lib",
+          "GEM_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all:/usr/share/rubygems-integration/all:/usr/lib/ruby/gems/3.2.0"
+        },
+        "started_utc": "2026-10-13T07:24:36.350799+00:00",
+        "wall_seconds": 1200,
+        "errors": [],
+        "owners": [
+          {
+            "pid": 2232044,
+            "start_ticks": 22504047,
+            "sid": 2232044,
+            "pgid": 2232044
+          },
+          {
+            "pid": 2232045,
+            "start_ticks": 22504048,
+            "sid": 2232044,
+            "pgid": 2232044
+          },
+          {
+            "pid": 2232047,
+            "start_ticks": 22504050,
+            "sid": 2232044,
+            "pgid": 2232047
+          },
+          {
+            "pid": 2232048,
+            "start_ticks": 22504050,
+            "sid": 2232044,
+            "pgid": 2232047
+          },
+          {
+            "pid": 2232276,
+            "start_ticks": 22504369,
+            "sid": 2232044,
+            "pgid": 2232276
+          },
+          {
+            "pid": 2232277,
+            "start_ticks": 22504369,
+            "sid": 2232044,
+            "pgid": 2232276
+          }
+        ],
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 225040.472720696,
+        "pid": 2232044,
+        "spawn_return_monotonic": 225040.47441628,
+        "direct_identity": {
+          "pid": 2232044,
+          "state": "R",
+          "ppid": 2231691,
+          "pgid": 2232044,
+          "sid": 2232044,
+          "start_ticks": 22504047,
+          "rss_bytes": 479232
+        },
+        "peak_live_owned_identities": 4,
+        "peak_session_rss_bytes": 204136448,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 0,
+        "finished_utc": "2026-10-13T07:24:39.747488+00:00",
+        "elapsed_seconds": 3.396044617984444,
+        "logs": {
+          "build-contrib-llvm.stdout": {
+            "bytes": 156,
+            "sha256": "9037e8a3015b68c1a25b88fade9fb5505b84cc196f440f316a3b4da6a8f78878"
+          },
+          "build-contrib-llvm.stderr": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      {
+        "label": "host-ctest-contrib-llvm",
+        "argv": [
+          "/usr/bin/ctest",
+          "--test-dir",
+          "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-prefill-gated-region-alias-20261013/build/contrib-llvm",
+          "-R",
+          "^phase_cache_owner_test$",
+          "--output-on-failure"
+        ],
+        "environment": {
+          "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/venv/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/bin:/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "PYTHONDONTWRITEBYTECODE": "1",
+          "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+          "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+          "OMP_NUM_THREADS": "1",
+          "GIT_TERMINAL_PROMPT": "0",
+          "GIT_SSH_COMMAND": "ssh -oBatchMode=yes",
+          "RUBYLIB": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/lib/ruby/vendor_ruby:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/chef-utils-16.12.3/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/kramdown-2.4.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/kramdown-parser-gfm-1.1.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mdl-0.13.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-cli-2.1.6/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-config-3.0.6/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-shellout-3.2.5/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/tomlrb-1.3.0/lib",
+          "GEM_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all:/usr/share/rubygems-integration/all:/usr/lib/ruby/gems/3.2.0"
+        },
+        "started_utc": "2026-10-13T07:24:39.749028+00:00",
+        "wall_seconds": 180,
+        "errors": [],
+        "owners": [
+          {
+            "pid": 2232286,
+            "start_ticks": 22504387,
+            "sid": 2232286,
+            "pgid": 2232286
+          }
+        ],
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 225043.870892169,
+        "pid": 2232286,
+        "spawn_return_monotonic": 225043.872897656,
+        "direct_identity": {
+          "pid": 2232286,
+          "state": "R",
+          "ppid": 2231691,
+          "pgid": 2232286,
+          "sid": 2232286,
+          "start_ticks": 22504387,
+          "rss_bytes": 602112
+        },
+        "peak_live_owned_identities": 1,
+        "peak_session_rss_bytes": 12079104,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 0,
+        "finished_utc": "2026-10-13T07:24:39.990403+00:00",
+        "elapsed_seconds": 0.24078862500027753,
+        "logs": {
+          "host-ctest-contrib-llvm.stdout": {
+            "bytes": 459,
+            "sha256": "7e7aa5d586ce4c5c3871012b799a01412a6373d4da021fea88332e7ecb412b65"
+          },
+          "host-ctest-contrib-llvm.stderr": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      {
+        "label": "build-phase-host",
+        "argv": [
+          "/usr/bin/cmake",
+          "--build",
+          "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-prefill-gated-region-alias-20261013/build/phase-host",
+          "--parallel",
+          "2",
+          "--target",
+          "phase_cache_owner_test"
+        ],
+        "environment": {
+          "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/venv/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/bin:/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "PYTHONDONTWRITEBYTECODE": "1",
+          "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+          "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+          "OMP_NUM_THREADS": "1",
+          "GIT_TERMINAL_PROMPT": "0",
+          "GIT_SSH_COMMAND": "ssh -oBatchMode=yes",
+          "RUBYLIB": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/lib/ruby/vendor_ruby:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/chef-utils-16.12.3/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/kramdown-2.4.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/kramdown-parser-gfm-1.1.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mdl-0.13.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-cli-2.1.6/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-config-3.0.6/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-shellout-3.2.5/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/tomlrb-1.3.0/lib",
+          "GEM_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all:/usr/share/rubygems-integration/all:/usr/lib/ruby/gems/3.2.0"
+        },
+        "started_utc": "2026-10-13T07:24:40.007473+00:00",
+        "wall_seconds": 1200,
+        "errors": [],
+        "owners": [
+          {
+            "pid": 2232318,
+            "start_ticks": 22504412,
+            "sid": 2232318,
+            "pgid": 2232318
+          },
+          {
+            "pid": 2232319,
+            "start_ticks": 22504413,
+            "sid": 2232318,
+            "pgid": 2232318
+          },
+          {
+            "pid": 2232320,
+            "start_ticks": 22504414,
+            "sid": 2232318,
+            "pgid": 2232320
+          },
+          {
+            "pid": 2232321,
+            "start_ticks": 22504414,
+            "sid": 2232318,
+            "pgid": 2232320
+          }
+        ],
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 225044.129289466,
+        "pid": 2232318,
+        "spawn_return_monotonic": 225044.130904738,
+        "direct_identity": {
+          "pid": 2232318,
+          "state": "R",
+          "ppid": 2231691,
+          "pgid": 2232318,
+          "sid": 2232318,
+          "start_ticks": 22504412,
+          "rss_bytes": 471040
+        },
+        "peak_live_owned_identities": 4,
+        "peak_session_rss_bytes": 202534912,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 0,
+        "finished_utc": "2026-10-13T07:24:43.319445+00:00",
+        "elapsed_seconds": 3.3114196399983484,
+        "logs": {
+          "build-phase-host.stdout": {
+            "bytes": 156,
+            "sha256": "9037e8a3015b68c1a25b88fade9fb5505b84cc196f440f316a3b4da6a8f78878"
+          },
+          "build-phase-host.stderr": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      {
+        "label": "ctest-phase-host",
+        "argv": [
+          "/usr/bin/ctest",
+          "--test-dir",
+          "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-prefill-gated-region-alias-20261013/build/phase-host",
+          "-R",
+          "^phase_cache_owner_test$",
+          "--output-on-failure",
+          "-V"
+        ],
+        "environment": {
+          "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/venv/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/bin:/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "PYTHONDONTWRITEBYTECODE": "1",
+          "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+          "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+          "OMP_NUM_THREADS": "1",
+          "GIT_TERMINAL_PROMPT": "0",
+          "GIT_SSH_COMMAND": "ssh -oBatchMode=yes",
+          "RUBYLIB": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/lib/ruby/vendor_ruby:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/chef-utils-16.12.3/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/kramdown-2.4.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/kramdown-parser-gfm-1.1.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mdl-0.13.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-cli-2.1.6/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-config-3.0.6/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-shellout-3.2.5/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/tomlrb-1.3.0/lib",
+          "GEM_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all:/usr/share/rubygems-integration/all:/usr/lib/ruby/gems/3.2.0"
+        },
+        "started_utc": "2026-10-13T07:24:43.321008+00:00",
+        "wall_seconds": 180,
+        "errors": [],
+        "owners": [
+          {
+            "pid": 2232504,
+            "start_ticks": 22504744,
+            "sid": 2232504,
+            "pgid": 2232504
+          }
+        ],
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 225047.442948182,
+        "pid": 2232504,
+        "spawn_return_monotonic": 225047.444851507,
+        "direct_identity": {
+          "pid": 2232504,
+          "state": "R",
+          "ppid": 2231691,
+          "pgid": 2232504,
+          "sid": 2232504,
+          "start_ticks": 22504744,
+          "rss_bytes": 299008
+        },
+        "peak_live_owned_identities": 1,
+        "peak_session_rss_bytes": 11616256,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 0,
+        "finished_utc": "2026-10-13T07:24:43.563292+00:00",
+        "elapsed_seconds": 0.24162166399764828,
+        "logs": {
+          "ctest-phase-host.stdout": {
+            "bytes": 20783,
+            "sha256": "fae05fd1dd3d97002b587b8fcc6bdb0e387b7751f58775284ca48cac1574c0a0"
+          },
+          "ctest-phase-host.stderr": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      {
+        "label": "build-phase-host-asan",
+        "argv": [
+          "/usr/bin/cmake",
+          "--build",
+          "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-prefill-gated-region-alias-20261013/build/phase-host-asan",
+          "--parallel",
+          "2",
+          "--target",
+          "phase_cache_owner_test"
+        ],
+        "environment": {
+          "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/venv/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/bin:/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "PYTHONDONTWRITEBYTECODE": "1",
+          "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+          "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+          "OMP_NUM_THREADS": "1",
+          "GIT_TERMINAL_PROMPT": "0",
+          "GIT_SSH_COMMAND": "ssh -oBatchMode=yes",
+          "RUBYLIB": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/lib/ruby/vendor_ruby:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/chef-utils-16.12.3/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/kramdown-2.4.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/kramdown-parser-gfm-1.1.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mdl-0.13.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-cli-2.1.6/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-config-3.0.6/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-shellout-3.2.5/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/tomlrb-1.3.0/lib",
+          "GEM_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all:/usr/share/rubygems-integration/all:/usr/lib/ruby/gems/3.2.0"
+        },
+        "started_utc": "2026-10-13T07:24:43.565691+00:00",
+        "wall_seconds": 1200,
+        "errors": [],
+        "owners": [
+          {
+            "pid": 2232568,
+            "start_ticks": 22504768,
+            "sid": 2232568,
+            "pgid": 2232568
+          },
+          {
+            "pid": 2232569,
+            "start_ticks": 22504769,
+            "sid": 2232568,
+            "pgid": 2232568
+          },
+          {
+            "pid": 2232570,
+            "start_ticks": 22504770,
+            "sid": 2232568,
+            "pgid": 2232570
+          },
+          {
+            "pid": 2232571,
+            "start_ticks": 22504770,
+            "sid": 2232568,
+            "pgid": 2232570
+          },
+          {
+            "pid": 2232906,
+            "start_ticks": 22505331,
+            "sid": 2232568,
+            "pgid": 2232906
+          },
+          {
+            "pid": 2232907,
+            "start_ticks": 22505331,
+            "sid": 2232568,
+            "pgid": 2232906
+          },
+          {
+            "pid": 2232909,
+            "start_ticks": 22505332,
+            "sid": 2232568,
+            "pgid": 2232906
+          }
+        ],
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 225047.687668161,
+        "pid": 2232568,
+        "spawn_return_monotonic": 225047.689813442,
+        "direct_identity": {
+          "pid": 2232568,
+          "state": "R",
+          "ppid": 2231691,
+          "pgid": 2232568,
+          "sid": 2232568,
+          "start_ticks": 22504768,
+          "rss_bytes": 458752
+        },
+        "peak_live_owned_identities": 5,
+        "peak_session_rss_bytes": 228409344,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 0,
+        "finished_utc": "2026-10-13T07:24:49.922094+00:00",
+        "elapsed_seconds": 6.355696739017731,
+        "logs": {
+          "build-phase-host-asan.stdout": {
+            "bytes": 156,
+            "sha256": "9037e8a3015b68c1a25b88fade9fb5505b84cc196f440f316a3b4da6a8f78878"
+          },
+          "build-phase-host-asan.stderr": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      {
+        "label": "ctest-phase-host-asan",
+        "argv": [
+          "/usr/bin/ctest",
+          "--test-dir",
+          "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-prefill-gated-region-alias-20261013/build/phase-host-asan",
+          "-R",
+          "^phase_cache_owner_test$",
+          "--output-on-failure",
+          "-V"
+        ],
+        "environment": {
+          "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/venv/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/bin:/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "PYTHONDONTWRITEBYTECODE": "1",
+          "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+          "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+          "OMP_NUM_THREADS": "1",
+          "GIT_TERMINAL_PROMPT": "0",
+          "GIT_SSH_COMMAND": "ssh -oBatchMode=yes",
+          "RUBYLIB": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/lib/ruby/vendor_ruby:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/chef-utils-16.12.3/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/kramdown-2.4.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/kramdown-parser-gfm-1.1.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mdl-0.13.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-cli-2.1.6/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-config-3.0.6/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-shellout-3.2.5/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/tomlrb-1.3.0/lib",
+          "GEM_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all:/usr/share/rubygems-integration/all:/usr/lib/ruby/gems/3.2.0",
+          "ASAN_OPTIONS": "detect_leaks=1:halt_on_error=1",
+          "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+        },
+        "started_utc": "2026-10-13T07:24:49.923777+00:00",
+        "wall_seconds": 180,
+        "errors": [],
+        "owners": [
+          {
+            "pid": 2232959,
+            "start_ticks": 22505404,
+            "sid": 2232959,
+            "pgid": 2232959
+          }
+        ],
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 225054.045769369,
+        "pid": 2232959,
+        "spawn_return_monotonic": 225054.047448832,
+        "direct_identity": {
+          "pid": 2232959,
+          "state": "R",
+          "ppid": 2231691,
+          "pgid": 2232959,
+          "sid": 2232959,
+          "start_ticks": 22505404,
+          "rss_bytes": 405504
+        },
+        "peak_live_owned_identities": 1,
+        "peak_session_rss_bytes": 11755520,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 0,
+        "finished_utc": "2026-10-13T07:24:50.340531+00:00",
+        "elapsed_seconds": 0.4160417410021182,
+        "logs": {
+          "ctest-phase-host-asan.stdout": {
+            "bytes": 20813,
+            "sha256": "ac694b3f613bebdbc08663571f66be020f191542737129fccca40e5aa2d6b7f8"
+          },
+          "ctest-phase-host-asan.stderr": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      }
+    ],
+    "environment": {
+      "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/venv/bin:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/bin:/usr/bin:/bin",
+      "HOME": "/home/yayoi",
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+      "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+      "OMP_NUM_THREADS": "1",
+      "GIT_TERMINAL_PROMPT": "0",
+      "GIT_SSH_COMMAND": "ssh -oBatchMode=yes",
+      "RUBYLIB": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/lib/ruby/vendor_ruby:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/chef-utils-16.12.3/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/kramdown-2.4.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/kramdown-parser-gfm-1.1.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mdl-0.13.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-cli-2.1.6/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-config-3.0.6/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-shellout-3.2.5/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/tomlrb-1.3.0/lib",
+      "GEM_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all:/usr/share/rubygems-integration/all:/usr/lib/ruby/gems/3.2.0"
+    },
+    "worktree": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-prefill-gated-region-alias-20261013",
+    "gpu_executed": false,
+    "model_executed": false,
+    "production_admitted": false,
+    "phase_cache_adopted": false,
+    "sourceLLVM_compiler_sha256": {
+      "sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb"
+    },
+    "source_pins": {
+      "docs/PHASE_DECODE_CACHE.ja.md": {
+        "sha256": "b3e95925abe4fc9711d768b79761a97dbd527b55233154fc0995950cf4a791d8"
+      },
+      "docs/PHASE_DECODE_CACHE.md": {
+        "sha256": "9b924d493de5d54e8c67d9bd6e498275e86f6142df23731485574ef74741e8f7"
+      },
+      "include/strata/prefill/workspace_layout.hpp": {
+        "sha256": "1c7f4fb1a608cf735247bde23b41d5587bee2fd11e5abdf6a6291d5a11af154f"
+      },
+      "src/prefill/prefill.cpp": {
+        "sha256": "38be9fbb7f6df990bafc106447e8b5ef1a193054dea5eb914563bc6f90380476"
+      },
+      "tests/core/phase_cache_owner_test.cpp": {
+        "sha256": "6eb7fc0c6c82ad379422165b06d37eb44954f2ca50e82b419d2970f4c8f8451e"
+      }
+    },
+    "source_diff_sha256": {
+      "sha256": "d7d6177d9f2ed77011fb9d3477a69b40912c1e9fdb935e41ac4323db07cc82ed"
+    },
+    "free": {
+      "binary_sha256": {
+        "sha256": "9ed4c48d791ffbffdc00a272759dc6c66d209c9e738de2deef1c56267bd896d9"
+      },
+      "vmm_fixture_sha256": {
+        "sha256": "12fc8a3a260fd30aca89f1967e15e78f63227fd01241342198480430133881e1"
+      },
+      "host_fixture_sha256": {
+        "sha256": "5f383e2fbd6b75513f51c95ca49fedb7ea6b26eb080e433c5df550cdae6b3292"
+      },
+      "compile_commands_sha256": {
+        "sha256": "df6be6bae027705cd74596a30af6f6f41e0cae28ae7b3511bcfbfcb09b256888"
+      },
+      "built": true,
+      "host_ctest_pass": true,
+      "gpu_vmm_executed": false
+    },
+    "contrib-llvm": {
+      "binary_sha256": {
+        "sha256": "1c2ae66d76ec15f15a6bdcf7b7fbdfc123d40e685a51ce26f1c4e822d4a8d053"
+      },
+      "vmm_fixture_sha256": {
+        "sha256": "12fc8a3a260fd30aca89f1967e15e78f63227fd01241342198480430133881e1"
+      },
+      "host_fixture_sha256": {
+        "sha256": "5f383e2fbd6b75513f51c95ca49fedb7ea6b26eb080e433c5df550cdae6b3292"
+      },
+      "compile_commands_sha256": {
+        "sha256": "00dde21cc3e23912258545c67cb637d79b2d9d2bc357d5742cb60f173246810f"
+      },
+      "built": true,
+      "host_ctest_pass": true,
+      "gpu_vmm_executed": false
+    },
+    "phase-host": {
+      "binary_sha256": {
+        "sha256": "5f383e2fbd6b75513f51c95ca49fedb7ea6b26eb080e433c5df550cdae6b3292"
+      },
+      "host_ctest_pass": true,
+      "sanitizer": null
+    },
+    "phase-host-asan": {
+      "binary_sha256": {
+        "sha256": "bbe86c81166d1d32bf0ebe848cf0a704abfc2aaa35f40535b1c799f80e96eb6b"
+      },
+      "host_ctest_pass": true,
+      "sanitizer": "address,undefined"
+    },
+    "inherited_startup_and_server_receipt": {
+      "sha256": "8e0df12368d0bfe5e91131c2cdd88f8d328a70e2baa5fa5bc8d8e726d743cf5e"
+    },
+    "engine_rebuilt": false,
+    "main_fixture_fix": "Both Linux unknown-owner helpers are noreturn and exit their child after all existing assertions; deliberate retained ownership and no destructor/free are preserved. No test checks removed.",
+    "scope": "Only CPU fixture changed: sourceLLVM free/contrib-llvm and Release/ASan-UBSan CPU fixture rebuilds; engine binaries and their source/server qualification inherited unchanged from gated v1; no GPU/model",
+    "finished_utc": "2026-10-13T07:24:50.346062+00:00",
+    "evidence": {
+      "head": {
+        "stdout": "fd595aa7ef34bc04d16c2f385f0d62f09c8f3adc\n",
+        "stderr": ""
+      },
+      "changed-source": {
+        "stdout": "docs/PHASE_DECODE_CACHE.ja.md\ndocs/PHASE_DECODE_CACHE.md\nsrc/prefill/prefill.cpp\ntests/core/phase_cache_owner_test.cpp\n",
+        "stderr": ""
+      },
+      "new-source": {
+        "stdout": "include/strata/prefill/workspace_layout.hpp\n",
+        "stderr": ""
+      },
+      "build-free": {
+        "stdout": "[1/2] Building CXX object CMakeFiles/phase_cache_owner_test.dir/tests/core/phase_cache_owner_test.cpp.o\n[2/2] Linking CXX executable phase_cache_owner_test\n",
+        "stderr": ""
+      },
+      "host-ctest-free": {
+        "stdout": "Internal ctest changing into directory: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-prefill-gated-region-alias-20261013/build/free\nTest project /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-prefill-gated-region-alias-20261013/build/free\n    Start 6: phase_cache_owner_test\n1/1 Test #6: phase_cache_owner_test ...........   Passed    0.13 sec\n\n100% tests passed, 0 tests failed out of 1\n\nTotal Test time (real) =   0.14 sec\n",
+        "stderr": ""
+      },
+      "build-contrib-llvm": {
+        "stdout": "[1/2] Building CXX object CMakeFiles/phase_cache_owner_test.dir/tests/core/phase_cache_owner_test.cpp.o\n[2/2] Linking CXX executable phase_cache_owner_test\n",
+        "stderr": ""
+      },
+      "host-ctest-contrib-llvm": {
+        "stdout": "Internal ctest changing into directory: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-prefill-gated-region-alias-20261013/build/contrib-llvm\nTest project /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-prefill-gated-region-alias-20261013/build/contrib-llvm\n    Start 6: phase_cache_owner_test\n1/1 Test #6: phase_cache_owner_test ...........   Passed    0.13 sec\n\n100% tests passed, 0 tests failed out of 1\n\nTotal Test time (real) =   0.14 sec\n",
+        "stderr": ""
+      },
+      "build-phase-host": {
+        "stdout": "[1/2] Building CXX object CMakeFiles/phase_cache_owner_test.dir/tests/core/phase_cache_owner_test.cpp.o\n[2/2] Linking CXX executable phase_cache_owner_test\n",
+        "stderr": ""
+      },
+      "ctest-phase-host": {
+        "stdout": "Internal ctest changing into directory: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-prefill-gated-region-alias-20261013/build/phase-host\nUpdateCTestConfiguration  from :/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-prefill-gated-region-alias-20261013/build/phase-host/DartConfiguration.tcl\nUpdateCTestConfiguration  from :/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-prefill-gated-region-alias-20261013/build/phase-host/DartConfiguration.tcl\nTest project /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-prefill-gated-region-alias-20261013/build/phase-host\nConstructing a list of tests\nDone constructing a list of tests\nUpdating test list for fixtures\nAdded 0 tests to meet fixture requirements\nChecking test dependency graph...\nChecking test dependency graph end\ntest 6\n    Start 6: phase_cache_owner_test\n\n6: Test command: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-prefill-gated-region-alias-20261013/build/phase-host/phase_cache_owner_test\n6: Working Directory: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-prefill-gated-region-alias-20261013/build/phase-host\n6: Test timeout computed to be: 15\n6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=quiesce calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=retire_workspace calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=grow_fill_publish calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.004 nested=1\n6: strata phase-cache: stage=cycle operation=successful_prompt calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.014 nested=1\n6: strata phase-cache: stage=cycle operation=complete_gen calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=quiesce calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=graph_retire calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=invalidate_detach calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.001 nested=1\n6: strata phase-cache: stage=cycle operation=reinit_workspace calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.008 nested=1\n6: strata phase-cache: stage=cycle operation=quiesce calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=retire_workspace calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=grow_fill_publish calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.003 nested=1\n6: strata phase-cache: stage=cycle operation=successful_prompt calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.008 nested=1\n6: strata phase-cache: stage=cycle operation=complete_gen calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=quiesce calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=retire_workspace calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=grow_fill_publish calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=successful_prompt calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.006 nested=1\n6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=quiesce calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=retire_workspace calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=grow_fill_publish calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=successful_prompt calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.005 nested=1\n6: strata phase-cache: stage=cycle operation=complete_gen calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=quiesce calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=graph_retire calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.003 nested=1\n6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=quiesce calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=retire_workspace calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=grow_fill_publish calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=successful_prompt calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.005 nested=1\n6: strata phase-cache: stage=cycle operation=complete_gen calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=quiesce calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=graph_retire calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=invalidate_detach calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.005 nested=1\n6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=quiesce calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=retire_workspace calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=grow_fill_publish calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=successful_prompt calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.005 nested=1\n6: strata phase-cache: stage=cycle operation=complete_gen calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=quiesce calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=graph_retire calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=invalidate_detach calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=reinit_workspace calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.007 nested=1\n6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=quiesce calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=retire_workspace calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=grow_fill_publish calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=successful_prompt calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.005 nested=1\n6: strata phase-cache: stage=cycle operation=complete_gen calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=quiesce calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=graph_retire calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=head_release calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=reinit_workspace calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.007 nested=1\n6: strata phase-cache: stage=cycle operation=quiesce calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=retire_workspace calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=head_reload calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=grow_fill_publish calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=successful_prompt calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.006 nested=1\n6: strata phase-cache: stage=cycle operation=complete_gen calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=quiesce calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=graph_retire calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=invalidate_detach calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=head_release calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=reinit_workspace calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.008 nested=1\n6: strata phase-cache: stage=cycle operation=quiesce calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=retire_workspace calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=head_reload calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=grow_fill_publish calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=successful_prompt calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.006 nested=1\n6: strata phase-cache: stage=cycle operation=complete_gen calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=quiesce calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.002 nested=1\n6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=quiesce calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=graph_retire calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.003 nested=1\n6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=quiesce calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=graph_retire calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=head_release calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.005 nested=1\n6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=quiesce calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=graph_retire calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=head_release calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=reinit_workspace calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.006 nested=1\n6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=quiesce calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=graph_retire calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=head_release calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=reinit_workspace calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.007 nested=1\n6: strata phase-cache: stage=cycle operation=quiesce calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=successful_prompt calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.002 nested=1\n6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=quiesce calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=graph_retire calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=head_release calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=reinit_workspace calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.006 nested=1\n6: strata phase-cache: stage=cycle operation=quiesce calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=retire_workspace calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=successful_prompt calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.003 nested=1\n6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=quiesce calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=graph_retire calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=head_release calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=reinit_workspace calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.006 nested=1\n6: strata phase-cache: stage=cycle operation=quiesce calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=retire_workspace calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=head_reload calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=successful_prompt calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.005 nested=1\n6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: PASS actual phase owner CPU bookkeeping/fault contract\n1/1 Test #6: phase_cache_owner_test ...........   Passed    0.14 sec\n\nThe following tests passed:\n\tphase_cache_owner_test\n\n100% tests passed, 0 tests failed out of 1\n\nTotal Test time (real) =   0.14 sec\n",
+        "stderr": ""
+      },
+      "build-phase-host-asan": {
+        "stdout": "[1/2] Building CXX object CMakeFiles/phase_cache_owner_test.dir/tests/core/phase_cache_owner_test.cpp.o\n[2/2] Linking CXX executable phase_cache_owner_test\n",
+        "stderr": ""
+      },
+      "ctest-phase-host-asan": {
+        "stdout": "Internal ctest changing into directory: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-prefill-gated-region-alias-20261013/build/phase-host-asan\nUpdateCTestConfiguration  from :/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-prefill-gated-region-alias-20261013/build/phase-host-asan/DartConfiguration.tcl\nUpdateCTestConfiguration  from :/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-prefill-gated-region-alias-20261013/build/phase-host-asan/DartConfiguration.tcl\nTest project /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-prefill-gated-region-alias-20261013/build/phase-host-asan\nConstructing a list of tests\nDone constructing a list of tests\nUpdating test list for fixtures\nAdded 0 tests to meet fixture requirements\nChecking test dependency graph...\nChecking test dependency graph end\ntest 6\n    Start 6: phase_cache_owner_test\n\n6: Test command: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-prefill-gated-region-alias-20261013/build/phase-host-asan/phase_cache_owner_test\n6: Working Directory: /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-prefill-gated-region-alias-20261013/build/phase-host-asan\n6: Test timeout computed to be: 15\n6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=quiesce calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.004 nested=1\n6: strata phase-cache: stage=cycle operation=retire_workspace calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.006 nested=1\n6: strata phase-cache: stage=cycle operation=grow_fill_publish calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.026 nested=1\n6: strata phase-cache: stage=cycle operation=successful_prompt calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.044 nested=1\n6: strata phase-cache: stage=cycle operation=complete_gen calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=quiesce calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=graph_retire calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.002 nested=1\n6: strata phase-cache: stage=cycle operation=invalidate_detach calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.009 nested=1\n6: strata phase-cache: stage=cycle operation=reinit_workspace calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.019 nested=1\n6: strata phase-cache: stage=cycle operation=quiesce calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=retire_workspace calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.005 nested=1\n6: strata phase-cache: stage=cycle operation=grow_fill_publish calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.012 nested=1\n6: strata phase-cache: stage=cycle operation=successful_prompt calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.024 nested=1\n6: strata phase-cache: stage=cycle operation=complete_gen calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=quiesce calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.008 nested=1\n6: strata phase-cache: stage=cycle operation=retire_workspace calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=grow_fill_publish calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.003 nested=1\n6: strata phase-cache: stage=cycle operation=successful_prompt calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.021 nested=1\n6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=quiesce calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=retire_workspace calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=grow_fill_publish calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=successful_prompt calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.020 nested=1\n6: strata phase-cache: stage=cycle operation=complete_gen calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=quiesce calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=graph_retire calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.007 nested=1\n6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=quiesce calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=retire_workspace calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=grow_fill_publish calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=successful_prompt calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.011 nested=1\n6: strata phase-cache: stage=cycle operation=complete_gen calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=quiesce calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=graph_retire calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=invalidate_detach calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.011 nested=1\n6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=quiesce calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=retire_workspace calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=grow_fill_publish calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=successful_prompt calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.010 nested=1\n6: strata phase-cache: stage=cycle operation=complete_gen calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=quiesce calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=graph_retire calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=invalidate_detach calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=reinit_workspace calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.013 nested=1\n6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=quiesce calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=retire_workspace calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=grow_fill_publish calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=successful_prompt calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.016 nested=1\n6: strata phase-cache: stage=cycle operation=complete_gen calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=quiesce calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=graph_retire calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.006 nested=1\n6: strata phase-cache: stage=cycle operation=head_release calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=reinit_workspace calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.016 nested=1\n6: strata phase-cache: stage=cycle operation=quiesce calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=retire_workspace calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=head_reload calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=grow_fill_publish calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=successful_prompt calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.009 nested=1\n6: strata phase-cache: stage=cycle operation=complete_gen calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=quiesce calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=graph_retire calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=invalidate_detach calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=head_release calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=reinit_workspace calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.011 nested=1\n6: strata phase-cache: stage=cycle operation=quiesce calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=retire_workspace calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=head_reload calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=grow_fill_publish calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=successful_prompt calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.008 nested=1\n6: strata phase-cache: stage=cycle operation=complete_gen calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=quiesce calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.002 nested=1\n6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=quiesce calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=graph_retire calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.006 nested=1\n6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=quiesce calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=graph_retire calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=head_release calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.006 nested=1\n6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=quiesce calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=graph_retire calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=head_release calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=reinit_workspace calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.008 nested=1\n6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=quiesce calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=graph_retire calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=head_release calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=reinit_workspace calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.012 nested=1\n6: strata phase-cache: stage=cycle operation=quiesce calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=successful_prompt calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.002 nested=1\n6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=quiesce calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=graph_retire calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=head_release calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=reinit_workspace calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.008 nested=1\n6: strata phase-cache: stage=cycle operation=quiesce calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=retire_workspace calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=successful_prompt calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.004 nested=1\n6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=quiesce calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=graph_retire calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=head_release calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=reinit_workspace calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.010 nested=1\n6: strata phase-cache: stage=cycle operation=quiesce calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=retire_workspace calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=head_reload calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: strata phase-cache: stage=cycle operation=successful_prompt calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.006 nested=1\n6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1\n6: PASS actual phase owner CPU bookkeeping/fault contract\n1/1 Test #6: phase_cache_owner_test ...........   Passed    0.28 sec\n\nThe following tests passed:\n\tphase_cache_owner_test\n\n100% tests passed, 0 tests failed out of 1\n\nTotal Test time (real) =   0.28 sec\n",
+        "stderr": ""
+      }
+    }
+  }
+}

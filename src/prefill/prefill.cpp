@@ -42,6 +42,7 @@
 
 #include "strata/prefill/publication.hpp"
 #include "strata/prefill/compact_moe.hpp"
+#include "strata/prefill/workspace_layout.hpp"
 #include "strata/prefill/issuer_timing.hpp"
 #include <algorithm>
 #include <chrono>
@@ -203,21 +204,20 @@ struct Alloc {
     bool count_only = false;
     std::vector<void*>* owned = nullptr;
     template <typename T> T* take(size_t n, bool& ok) {
-        constexpr uint64_t limit = std::numeric_limits<uint64_t>::max();
-        if (n > (limit - 511) / sizeof(T)) throw std::overflow_error("prefill: aligned take overflow");
-        const uint64_t bytes = (static_cast<uint64_t>(n) * sizeof(T) + 511) & ~255ull;
-        if (bytes > limit - used) throw std::overflow_error("prefill: allocation count overflow");
-        if (count_only) { used += bytes; return nullptr; }
+        const uint64_t bytes = workspace::take_bytes(n, sizeof(T));
+        uint64_t offset = 0, next = used;
+        if (!workspace::advance(bytes, next, base != nullptr && !count_only, cap, offset)) {
+            ok = false; failed_bytes = bytes; return nullptr;
+        }
+        if (count_only) { used = next; return nullptr; }
         if (base != nullptr) {
-            if (used > cap || bytes > cap - used) { ok = false; failed_bytes = bytes; return nullptr; }
-            T* p = (T*) (base + used);
-            used += bytes;
-            return p;
+            used = next;
+            return (T*) (base + offset);
         }
         void* p = nullptr;
         if (!strata::gpu::alloc_device(&p, bytes)) { ok = false; failed_bytes = bytes; return nullptr; }
         owned->push_back(p);
-        used += bytes;
+        used = next;
         return (T*) p;
     }
 };
@@ -598,6 +598,14 @@ bool scratch_alias_enabled() {
     }();
     return on;
 }
+bool gated_alias_enabled() {
+    static const bool on = workspace::exact_one(std::getenv("STRATA_PREFILL_GATED_ALIAS"));
+    return on;
+}
+void validate_gated_alias() {
+    if (gated_alias_enabled() && !scratch_alias_enabled())
+        throw std::runtime_error("prefill: STRATA_PREFILL_GATED_ALIAS requires STRATA_PREFILL_SCRATCH_ALIAS=1");
+}
 static_assert(C >= ZV, "GDN y must fit in the retired qkv plane");
 uint64_t gdn_set_bytes(size_t T) {
     Alloc a; a.count_only = true; bool ok = true;
@@ -700,6 +708,19 @@ bool Prefill::init(const core::WeightTable& wt, const core::ModelGeometry& g, co
         catch (const std::exception& exception) { err = exception.what(); return false; }
     }
     m.T = chunk; m.cs = stream; m.stats = &stats_;
+    try {
+        validate_gated_alias();
+        if (gated_alias_enabled()) {
+            if (chunk <= 0) throw std::runtime_error("prefill: gated alias needs a positive chunk");
+            workspace::take_bytes(workspace::product(static_cast<size_t>(chunk), D), sizeof(float));
+        }
+    }
+    catch (const std::exception& exception) { err = exception.what(); return false; }
+    if (gated_alias_enabled() &&
+        !core::Runtime::get().stream(stream).has_property<sycl::property::queue::in_order>()) {
+        err = "prefill: STRATA_PREFILL_GATED_ALIAS requires an in-order compute queue";
+        return false;
+    }
     if (scratch_alias_enabled() &&
         !core::Runtime::get().stream(stream).has_property<sycl::property::queue::in_order>()) {
         err = "prefill: STRATA_PREFILL_SCRATCH_ALIAS requires an in-order compute queue";
@@ -825,7 +846,8 @@ bool Prefill::carve(size_t T, void* alloc) {
     // the borrowed cache slots at an 8192-token chunk)
     m.emb = o.take<float>(T * N, ok); m.R = o.take<float>(T * D, ok); m.xn = o.take<float>(T * HC, ok);
     m.xn16 = o.take<uint16_t>(T * D, ok); m.lo = o.take<float>(T * LR, ok); m.lo16 = o.take<uint16_t>(T * LR, ok);
-    m.gated = o.take<float>(T * D, ok); m.inj = o.take<float>(T * HC, ok);
+    m.gated = gated_alias_enabled() ? nullptr : o.take<float>(workspace::product(T, D), ok);
+    m.inj = o.take<float>(T * HC, ok);
     m.mixed = o.take<float>(T * N, ok); m.mixed_bf = o.take<uint16_t>(T * N, ok);
     m.mixed_h = o.take<uint16_t>(T * N, ok);
     // emb's last reader is gr_broadcast on cs (or no embedding at all with hand_in).
@@ -844,12 +866,18 @@ bool Prefill::carve(size_t T, void* alloc) {
     m.cap = strata::kernels::qsa_selection_width(strata::kernels::kTopkMaxCells, s);
     m.max_blocks = ss.qsa_states[ss.qsa_primary()].max_cells / s.idx_block + 2;
     {
-        // one region for the attention half's and the MoE half's scratch (see gdn_set_bytes)
-        const uint64_t region = std::max({gdn_set_bytes(T), qsa_set_bytes(T, m.cap, m.max_blocks, m.sel_batch,
-                                                                           m.attn_batch, s), moe_set_bytes(T, m.g->n_expert)});
-        uint8_t* base = o.take<uint8_t>((size_t) region, ok);
+        // HC gate production/mix precedes each block's first writer on the same ordered queue.
+        // PLE/draft keep their earlier/local views; R, xn16 and injection remain separate.
+        const auto layout = workspace::region_layout(gdn_set_bytes(T),
+            qsa_set_bytes(T, m.cap, m.max_blocks, m.sel_batch, m.attn_batch, s),
+            moe_set_bytes(T, m.g->n_expert), workspace::product(T, D), gated_alias_enabled());
+        const uint64_t region = layout.region_extent;
+        uint8_t* base = o.take<uint8_t>(workspace::extent_size(region), ok);
+        if (!ok || base == nullptr) return false;
+        if (gated_alias_enabled()) m.gated = workspace::gate_view(base, layout);
         m.region = base;
-        m.region_bytes = region;
+        // PLE/draft batching retains the original block region extent even if gated enlarges its backing.
+        m.region_bytes = layout.block_max;
         Alloc a;
         a.base = base; a.cap = region; a.owned = &m.owned;
         m.qkv = a.take<float>(T * C, ok); m.z = a.take<float>(T * ZV, ok); m.ab = a.take<float>(T * 2 * HV, ok);
@@ -937,6 +965,20 @@ bool Prefill::carve(size_t T, void* alloc) {
                      (unsigned long long) mo, (unsigned long long) m.region_bytes,
                      gd == m.region_bytes ? "gdn" : qs == m.region_bytes ? "qsa" : "moe",
                      (void*) m.emb, (void*) m.bo, (void*) m.ple_emb, (void*) m.qkv, (void*) m.y);
+    }
+    if (ok && scratch_alias_enabled() && std::getenv("STRATA_TRACE")) {
+        const auto layout = workspace::region_layout(gdn_set_bytes(T),
+            qsa_set_bytes(T, m.cap, m.max_blocks, m.sel_batch, m.attn_batch, s),
+            moe_set_bytes(T, g.n_expert), workspace::product(T, D), gated_alias_enabled());
+        std::fprintf(stderr, "strata prefill gated alias: enabled=%d T=%zu borrowed=%d requested=%llu "
+                     "block_max=%llu block_winner=%s gate_extent=%llu region_extent=%llu "
+                     "allocated_region=%llu region_winner=%s saved_requested=%llu "
+                     "gated=%p region=%p pointer_equal=%d\n", (int) gated_alias_enabled(), T, (int) m.borrowed,
+                     (unsigned long long) o.used, (unsigned long long) layout.block_max, layout.block_winner,
+                     (unsigned long long) layout.gate_extent, (unsigned long long) layout.region_extent,
+                     (unsigned long long) layout.allocated_region, layout.region_winner,
+                     (unsigned long long) layout.saved_requested, (void*) m.gated, (void*) m.region,
+                     (int) ((void*) m.gated == (void*) m.region));
     }
     return ok;
 }
@@ -1126,6 +1168,11 @@ double Prefill::pinned_share() { return g_pinned_share; }
 
 uint64_t Prefill::bytes_needed(const core::ModelGeometry& g, const core::SessionState& ss, int64_t chunk) {
     // the same allocation sequence as `init`, counted
+    validate_gated_alias();
+    if (gated_alias_enabled()) {
+        if (chunk <= 0) throw std::runtime_error("prefill: gated alias needs a positive chunk");
+        workspace::take_bytes(workspace::product(static_cast<size_t>(chunk), D), sizeof(float));
+    }
     if (chunk == 12288 && core::phase_cache_requested()) validate_phase_capacity(g, ss, chunk);
     const size_t T = (size_t) chunk;
     bool ok = true;
@@ -1134,7 +1181,8 @@ uint64_t Prefill::bytes_needed(const core::ModelGeometry& g, const core::Session
     o.take<uint16_t>((size_t) GEMM_SCRATCH, ok);
     auto f = [&](size_t n) { o.take<float>(n, ok); };
     f(T * N); f(T * D); f(T * HC); o.take<uint16_t>(T * D, ok); f(T * LR); o.take<uint16_t>(T * LR, ok);
-    f(T * D); f(T * HC); f(T * N); o.take<uint16_t>(T * N, ok); o.take<uint16_t>(T * N, ok);
+    if (!gated_alias_enabled()) f(workspace::product(T, D));
+    f(T * HC); f(T * N); o.take<uint16_t>(T * N, ok); o.take<uint16_t>(T * N, ok);
     if (!scratch_alias_enabled()) f(T * N);
     if (bf16x2_hc()) { o.take<uint16_t>(T * D, ok); o.take<uint16_t>(T * LR, ok); }
     if (bf16x2()) o.take<uint16_t>(T * N, ok);
@@ -1144,8 +1192,9 @@ uint64_t Prefill::bytes_needed(const core::ModelGeometry& g, const core::Session
     s.idx_dim = g.idx_key_dim;
     const int64_t cap = strata::kernels::qsa_selection_width(strata::kernels::kTopkMaxCells, s);
     const int64_t max_blocks = ss.qsa_states[ss.qsa_primary()].max_cells / s.idx_block + 2;
-    o.take<uint8_t>((size_t) std::max({gdn_set_bytes(T), qsa_set_bytes(T, cap, max_blocks, 256, 32, s),
-                                       moe_set_bytes(T, g.n_expert)}), ok);
+    const auto layout = workspace::region_layout(gdn_set_bytes(T), qsa_set_bytes(T, cap, max_blocks, 256, 32, s),
+        moe_set_bytes(T, g.n_expert), workspace::product(T, D), gated_alias_enabled());
+    o.take<uint8_t>(workspace::extent_size(layout.region_extent), ok);
     if (mmq_plan().fallback) {
         o.take<uint16_t>((size_t) (g_expert_group * GU_ELEMS), ok);
         o.take<uint16_t>((size_t) (g_expert_group * D_ELEMS), ok);
@@ -1749,6 +1798,8 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
                 gr_silu(m.lo, m.lo16, T, m.cs, m.lo16_lo);
                 if (!bf16_proj(m.gemm, wu, m.lo16, m.gated, T, su, err, 0, m.lo16_lo)) return false;
                 if (!bf16_proj(m.gemm, wi, m.xn16, m.inj, T, si, err, 0, m.xn16_lo)) return false;
+                // Both HC halves: up GEMM -> full gate read in mix -> first GDN/QSA/MoE writer.
+                // Gemm's oneMath/native products and mix use this same in-order cs. No later gate reader.
                 gr_mix_r(m.R, m.xn, (const float*) wn->data, m.gated, m.mixed, m.mixed_bf, T, m.cs, m.mixed_h,
                          m.mixed_bf_lo);
 

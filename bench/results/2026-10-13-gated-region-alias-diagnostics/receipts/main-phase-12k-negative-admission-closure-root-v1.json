@@ -1,0 +1,646 @@
+{
+  "original_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-phase-12k-negative-admission-closure-root-v1/record.json",
+  "original_sha256": {
+    "sha256": "9a76fc5f4c96732b0af20ec8686f2eaca93d39c68f50206193899d076b0c90d3"
+  },
+  "record": {
+    "active": false,
+    "passed": true,
+    "complete": true,
+    "commands": [
+      {
+        "label": "source-head",
+        "argv": [
+          "git",
+          "rev-parse",
+          "HEAD"
+        ],
+        "environment": {
+          "PATH": "/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "XDG_RUNTIME_DIR": "/run/user/1000",
+          "PYTHONDONTWRITEBYTECODE": "1"
+        },
+        "started_utc": "2026-10-13T05:46:59.436172+00:00",
+        "wall_seconds": 120,
+        "errors": [],
+        "owners": [
+          {
+            "pid": 1881734,
+            "start_ticks": 21918355,
+            "sid": 1881734,
+            "pgid": 1881734
+          }
+        ],
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 219183.557743073,
+        "pid": 1881734,
+        "spawn_return_monotonic": 219183.559427905,
+        "direct_identity": {
+          "pid": 1881734,
+          "state": "R",
+          "ppid": 1881686,
+          "pgid": 1881734,
+          "sid": 1881734,
+          "start_ticks": 21918355,
+          "rss_bytes": 454656
+        },
+        "peak_live_owned_identities": 1,
+        "peak_session_rss_bytes": 0,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 0,
+        "finished_utc": "2026-10-13T05:46:59.550541+00:00",
+        "elapsed_seconds": 0.11406697699567303,
+        "logs": {
+          "source-head.stdout": {
+            "bytes": 41,
+            "sha256": "22ab3224235c8a8d06f262085f24e094ea986a7e3ce8c4a6d115c641f2b260b2"
+          },
+          "source-head.stderr": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      {
+        "label": "source-status",
+        "argv": [
+          "git",
+          "status",
+          "--porcelain",
+          "--untracked-files=all"
+        ],
+        "environment": {
+          "PATH": "/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "XDG_RUNTIME_DIR": "/run/user/1000",
+          "PYTHONDONTWRITEBYTECODE": "1"
+        },
+        "started_utc": "2026-10-13T05:46:59.551248+00:00",
+        "wall_seconds": 120,
+        "errors": [],
+        "owners": [
+          {
+            "pid": 1881737,
+            "start_ticks": 21918367,
+            "sid": 1881737,
+            "pgid": 1881737
+          }
+        ],
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 219183.672784976,
+        "pid": 1881737,
+        "spawn_return_monotonic": 219183.674472503,
+        "direct_identity": {
+          "pid": 1881737,
+          "state": "R",
+          "ppid": 1881686,
+          "pgid": 1881737,
+          "sid": 1881737,
+          "start_ticks": 21918367,
+          "rss_bytes": 446464
+        },
+        "peak_live_owned_identities": 1,
+        "peak_session_rss_bytes": 4304896,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 0,
+        "finished_utc": "2026-10-13T05:46:59.706324+00:00",
+        "elapsed_seconds": 0.15483483299613,
+        "logs": {
+          "source-status.stdout": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "source-status.stderr": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      {
+        "label": "kernel-before-posthealth",
+        "argv": [
+          "/usr/bin/journalctl",
+          "-k",
+          "--after-cursor",
+          "s=9944479cfd1a45c28a589619cb8f2881;i=c15bbb8;b=cfda0b6a7c134fe2bdf58f9202770840;m=32c40d5d6f;t=65db21387351d;x=b2a9691f3634754d",
+          "--no-pager",
+          "-o",
+          "json"
+        ],
+        "environment": {
+          "PATH": "/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "XDG_RUNTIME_DIR": "/run/user/1000",
+          "PYTHONDONTWRITEBYTECODE": "1"
+        },
+        "started_utc": "2026-10-13T05:47:00.197002+00:00",
+        "wall_seconds": 120,
+        "errors": [],
+        "owners": [
+          {
+            "pid": 1881785,
+            "start_ticks": 21918431,
+            "sid": 1881785,
+            "pgid": 1881785
+          }
+        ],
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 219184.318765919,
+        "pid": 1881785,
+        "spawn_return_monotonic": 219184.320591838,
+        "direct_identity": {
+          "pid": 1881785,
+          "state": "R",
+          "ppid": 1881686,
+          "pgid": 1881785,
+          "sid": 1881785,
+          "start_ticks": 21918431,
+          "rss_bytes": 483328
+        },
+        "peak_live_owned_identities": 1,
+        "peak_session_rss_bytes": 0,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 0,
+        "finished_utc": "2026-10-13T05:47:00.316542+00:00",
+        "elapsed_seconds": 0.11907310600508936,
+        "logs": {
+          "kernel-before-posthealth.stdout": {
+            "bytes": 28221,
+            "sha256": "30a58dcd9e7f2f2d364b7a6dec423a2f0df1f52ab03db27cd9733673e6504081"
+          },
+          "kernel-before-posthealth.stderr": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      {
+        "label": "health-after-negative-admission",
+        "argv": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/xe-source-llvm-small-health-root-v3/health",
+          "0000:05:00.0"
+        ],
+        "environment": {
+          "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib",
+          "XDG_RUNTIME_DIR": "/run/user/1000",
+          "NEOReadDebugKeys": "1",
+          "EnableDirectSubmission": "0",
+          "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+          "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0.12.0",
+          "CUDA_MODULE_LOADING": "EAGER",
+          "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+          "SYCL_CACHE_PERSISTENT": "0",
+          "ZEL_ENABLE_LOADER_LOGGING": "0",
+          "ZEL_LOADER_LOG_CONSOLE": "0",
+          "ZEL_LOADER_LOGGING_LEVEL": "warning",
+          "ZE_ENABLE_VALIDATION_LAYER": "1",
+          "ZE_ENABLE_PARAMETER_VALIDATION": "1",
+          "UR_LOG_LOADER": "level:error;output:stderr",
+          "UR_LOG_LEVEL_ZERO": "level:error;output:stderr",
+          "STRATA_GPU_PCI": "0000:05:00.0",
+          "STRATA_EVENT_MARK": "barrier",
+          "STRATA_VERIFY_SEGMENTED": "1",
+          "STRATA_VERIFY_DEVICE_PLAN": "0",
+          "STRATA_PREFILL_ISSUER": "0",
+          "STRATA_PREFILL_RING": "16",
+          "STRATA_ARENA_HOST_USM": "1",
+          "STRATA_PREFILL_FIRST": "0",
+          "STRATA_PREFILL_CPU_SHARE": "0",
+          "STRATA_PREFILL_CPU_GATE": "0",
+          "STRATA_PREFILL_FUSED": "0",
+          "STRATA_PREFILL_NATIVE_DEQUANT_BATCH": "1",
+          "STRATA_PREFILL_COMPACT_MOE_SCRATCH": "1",
+          "STRATA_PRELOAD_KERNELS": "0",
+          "STRATA_MTP_PREFILL_SYNC": "1",
+          "STRATA_NAN_GUARD": "1",
+          "STRATA_PREFILL_SERVICE_EVENTS": "0",
+          "STRATA_COPY_ENGINE": "0",
+          "STRATA_VERIFY_RESIDENT_GRAPH": "0",
+          "PYTHONDONTWRITEBYTECODE": "1",
+          "STRATA_PHASE_DECODE_CACHE": "1",
+          "STRATA_PHASE_HEAD_LEASE": "1",
+          "STRATA_PREFILL_SCRATCH_ALIAS": "1",
+          "STRATA_PHASE_PREFILL_12K": "1",
+          "STRATA_TRACE": "1"
+        },
+        "started_utc": "2026-10-13T05:47:00.320497+00:00",
+        "wall_seconds": 120,
+        "errors": [],
+        "owners": [
+          {
+            "pid": 1881788,
+            "start_ticks": 21918444,
+            "sid": 1881788,
+            "pgid": 1881788
+          }
+        ],
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 219184.442245162,
+        "pid": 1881788,
+        "spawn_return_monotonic": 219184.444046795,
+        "direct_identity": {
+          "pid": 1881788,
+          "state": "R",
+          "ppid": 1881686,
+          "pgid": 1881788,
+          "sid": 1881788,
+          "start_ticks": 21918444,
+          "rss_bytes": 421888
+        },
+        "peak_live_owned_identities": 1,
+        "peak_session_rss_bytes": 13385728,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 0,
+        "finished_utc": "2026-10-13T05:47:00.570247+00:00",
+        "elapsed_seconds": 0.24929681600769982,
+        "logs": {
+          "health-after-negative-admission.stdout": {
+            "bytes": 3839,
+            "sha256": "1472f0ecbd6e1e428f0a2da69ecbd803645065225a58eaa38fdeea33a62aabca"
+          },
+          "health-after-negative-admission.stderr": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      {
+        "label": "kernel-after-posthealth",
+        "argv": [
+          "/usr/bin/journalctl",
+          "-k",
+          "--after-cursor",
+          "s=9944479cfd1a45c28a589619cb8f2881;i=c15bbb8;b=cfda0b6a7c134fe2bdf58f9202770840;m=32c40d5d6f;t=65db21387351d;x=b2a9691f3634754d",
+          "--no-pager",
+          "-o",
+          "json"
+        ],
+        "environment": {
+          "PATH": "/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "XDG_RUNTIME_DIR": "/run/user/1000",
+          "PYTHONDONTWRITEBYTECODE": "1"
+        },
+        "started_utc": "2026-10-13T05:47:00.571867+00:00",
+        "wall_seconds": 120,
+        "errors": [],
+        "owners": [
+          {
+            "pid": 1881819,
+            "start_ticks": 21918469,
+            "sid": 1881819,
+            "pgid": 1881819
+          }
+        ],
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 219184.69355933,
+        "pid": 1881819,
+        "spawn_return_monotonic": 219184.695413131,
+        "direct_identity": {
+          "pid": 1881819,
+          "state": "R",
+          "ppid": 1881686,
+          "pgid": 1881819,
+          "sid": 1881819,
+          "start_ticks": 21918469,
+          "rss_bytes": 446464
+        },
+        "peak_live_owned_identities": 1,
+        "peak_session_rss_bytes": 0,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 0,
+        "finished_utc": "2026-10-13T05:47:00.693717+00:00",
+        "elapsed_seconds": 0.12143480000668205,
+        "logs": {
+          "kernel-after-posthealth.stdout": {
+            "bytes": 28221,
+            "sha256": "ab150882d474059cb85b4c19f8218bc2c3b0fb4aec9cee1eb3bd31425e29a689"
+          },
+          "kernel-after-posthealth.stderr": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      {
+        "label": "model-hashes-after-negative-admission",
+        "argv": [
+          "/usr/bin/sha256sum",
+          "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+          "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00002-of-00002.gguf",
+          "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/conversions.json",
+          "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/dense.bin",
+          "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/index.txt",
+          "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/native_experts.txt",
+          "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/chat_template.jinja",
+          "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/merges.txt",
+          "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/token_type.json",
+          "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/tokenizer.json",
+          "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/vocab.json",
+          "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-prefill-service-events-20261010/data/expert-profile.bin"
+        ],
+        "environment": {
+          "PATH": "/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "XDG_RUNTIME_DIR": "/run/user/1000",
+          "PYTHONDONTWRITEBYTECODE": "1"
+        },
+        "started_utc": "2026-10-13T05:47:00.696630+00:00",
+        "wall_seconds": 600,
+        "errors": [],
+        "owners": [
+          {
+            "pid": 1881823,
+            "start_ticks": 21918481,
+            "sid": 1881823,
+            "pgid": 1881823
+          }
+        ],
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 219184.818469183,
+        "pid": 1881823,
+        "spawn_return_monotonic": 219184.820628553,
+        "direct_identity": {
+          "pid": 1881823,
+          "state": "R",
+          "ppid": 1881686,
+          "pgid": 1881823,
+          "sid": 1881823,
+          "start_ticks": 21918481,
+          "rss_bytes": 131072
+        },
+        "peak_live_owned_identities": 1,
+        "peak_session_rss_bytes": 2789376,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 0,
+        "finished_utc": "2026-10-13T05:49:05.424037+00:00",
+        "elapsed_seconds": 124.72685721499147,
+        "logs": {
+          "model-hashes-after-negative-admission.stdout": {
+            "bytes": 1955,
+            "sha256": "0177104b049908cd2c98b907aaa80182229b17de02480912e56706c1fde790a5"
+          },
+          "model-hashes-after-negative-admission.stderr": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      }
+    ],
+    "original_failed_receipt": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-phase-head-alias-12k-admission-root-v1/record.json",
+      "sha256": "984b1aee977e8b826d1066073b7776e99d1e4bde081d74242051b258638d236c",
+      "passed": false,
+      "complete": false,
+      "observation_complete": false
+    },
+    "source_revision": "fd595aa7ef34bc04d16c2f385f0d62f09c8f3adc",
+    "source_pins": {
+      "docs/PHASE_DECODE_CACHE.ja.md": {
+        "sha256": "21eb5d54c3b95ffb6e1d04f0b742b90c9a1523a771fe8e10c08938e78f6de6fd"
+      },
+      "docs/PHASE_DECODE_CACHE.md": {
+        "sha256": "9c932766073d03c6e8b784a2cd2d081fb841af40c5396ffebe40b07a1ce9dec0"
+      },
+      "include/strata/core/head_upload_owner.hpp": {
+        "sha256": "92229d3ee69243868813ef9b256bf4b68d68113d3b09c2adfc08bc86d0a75315"
+      },
+      "include/strata/core/native_head.hpp": {
+        "sha256": "fae5c657629f10471d84d851bfc45a60b52f3da55506359bcc13e6924cd809dd"
+      },
+      "include/strata/core/phase_serve_cycle.hpp": {
+        "sha256": "90dfd8c5683c1c7685c26660ea4343fd2814fbd3516a8f270a817bfbb9e1ba08"
+      },
+      "include/strata/prefill/prefill.hpp": {
+        "sha256": "766f4b8c7b7426fc21bf1e811074990391462ab0defc60d24fd78174fb4c367c"
+      },
+      "src/core/native_head.cpp": {
+        "sha256": "c2e33955c61be6c5866400c4c28be13d48933810a7de1aec8f6a6707f93a6f20"
+      },
+      "src/core/verify.cpp": {
+        "sha256": "0db1e663c6dbe2e2a1d5d79a7f367bd4764ba037909dc9f65f5a3b3f15a2adce"
+      },
+      "src/prefill/prefill.cpp": {
+        "sha256": "58b59c09e38a65dee6c15227bb157de0da5ba1e5d34032c5a368bd3b009e85fe"
+      },
+      "src/program/generate.cpp": {
+        "sha256": "3c610bca5b82695ff90fd3d2cd0a961833f848f04e75e4be602713921315fefc"
+      },
+      "tests/core/phase_cache_owner_test.cpp": {
+        "sha256": "bee18f06d740f7039e02bfffed6290bb6fd8273c7997f81da6559d39d4b27138"
+      }
+    },
+    "binary_sha256": {
+      "sha256": "c62a7c275c3fca10fd206f8c6435c07f54eea49cf93606b8c2b4203c79d4ac89"
+    },
+    "boot_id": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "provider_hashes": {
+      "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libsycl.so.9.0.0-0": {
+        "sha256": "74243bafb2766fd1a038cf80fd62632b4aad9ecfdc0d3ce8711e4515a93d7008"
+      },
+      "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libumf.so.1.1.0": {
+        "sha256": "ebe65269abd5869010ab256375e8663f7a8f8b5453e0be0c78f615eb71581ab9"
+      },
+      "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0.12.0": {
+        "sha256": "05bcafc4a0d45d33f957f16ffb4ba4776da675e79ade1121b93b94b8549335d8"
+      },
+      "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0": {
+        "sha256": "bb6e1311850e4b1a924e42acae80c2b3610934625a4985aaa67967abe31356fc"
+      },
+      "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395": {
+        "sha256": "dfa844e5afd8e8f74bf5ce9da3ea2837706d9116bc8efeaed90efba5acaf7b1c"
+      },
+      "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0": {
+        "sha256": "b764efda507f173560fa6055d433dd5c76140180b4a7c532e1cea813cde67363"
+      },
+      "/usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1.32.0": {
+        "sha256": "db1856f379706d51b6ded84ce028d4aa48740ef63793f60e8a1e027c6db6ffb5"
+      },
+      "/usr/lib/x86_64-linux-gnu/libze_validation_layer.so.1.32.0": {
+        "sha256": "5b5ead80d98959d0f0a27a8981bb911c354720d39a4aa2125dc18266ad67d970"
+      }
+    },
+    "capacity_ledgers": [
+      {
+        "workspace_requested": 3847054336,
+        "tok_dev_requested": 49152,
+        "mode1_identity_requested": 262144,
+        "stage_in_workspace": 276825088,
+        "gdn_set": 1469056768,
+        "qsa_set": 1634831104,
+        "moe_set": 1631505920,
+        "shared_max": 1634831104,
+        "conditional_chooser_bound": 305135616,
+        "conditional_lazy_gemm_bound": 0,
+        "runtime_reserve": 734003200,
+        "requested_peak_bound": 4886504448,
+        "fresh_free": 5319360512,
+        "physical_fit_proof": 0
+      },
+      {
+        "workspace_requested": 3847054336,
+        "tok_dev_requested": 49152,
+        "mode1_identity_requested": 262144,
+        "stage_in_workspace": 276825088,
+        "gdn_set": 1469056768,
+        "qsa_set": 1634831104,
+        "moe_set": 1631505920,
+        "shared_max": 1634831104,
+        "conditional_chooser_bound": 305135616,
+        "conditional_lazy_gemm_bound": 0,
+        "runtime_reserve": 734003200,
+        "requested_peak_bound": 4886504448,
+        "fresh_free": 4422336512,
+        "physical_fit_proof": 0
+      }
+    ],
+    "first_short_request_complete": true,
+    "second_long_request_not_admitted": true,
+    "actual_chunk_rows": [
+      [
+        "1023",
+        "0"
+      ]
+    ],
+    "free_drop_bytes": 897024000,
+    "free_drop_cause": "unattributed",
+    "performance_eligible": false,
+    "quality_qualified": false,
+    "full_physical262144_qualified": false,
+    "capacity_admitted": false,
+    "reset_executed": false,
+    "service_changes": false,
+    "controller_sha256": {
+      "sha256": "a1db9309d1ab4335bbefa3916317675528e22d30a3b05085bc9ad4ce5f67e41b"
+    },
+    "retention": {
+      "owner": "main",
+      "budget_bytes": 8388608,
+      "consumer": "closed negative12K admission review and next gated alias candidate",
+      "next_review": "after candidate model qualification and committed report"
+    },
+    "kernel_checks": {
+      "kernel-before-posthealth": {
+        "total_rows": 37,
+        "fault_entries": [],
+        "dump_present": false
+      },
+      "kernel-after-posthealth": {
+        "total_rows": 37,
+        "fault_entries": [],
+        "dump_present": false
+      }
+    },
+    "gpu_healthy_after_negative_admission": true,
+    "full_model_hashes_after": {
+      "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf": {
+        "sha256": "4c1eb2ceb4915e1192f4f386021897bde56a97f40a0bb78bb86465e0f7d2aca3"
+      },
+      "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00002-of-00002.gguf": {
+        "sha256": "316b46f3a2dbd68c900f43136ab9449f9dcc3725dfd8c794847c204bc161e113"
+      },
+      "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/conversions.json": {
+        "sha256": "51df3cd6ffd0d38c2da8e2d3a95a604b4a96c20b06fc639a9bf477282a42b86a"
+      },
+      "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/dense.bin": {
+        "sha256": "d2af3d8331e5c7a1985d1d589747230f9d56719a6d33c7cddc9ee6b81cde6b13"
+      },
+      "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/index.txt": {
+        "sha256": "b2a014878c3b61d6a6f915e194055a5e68ede34f9465dd1cb13249d902f008ac"
+      },
+      "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/native_experts.txt": {
+        "sha256": "d9ac2dfa3ee63c55c9c6a6db26f72da0cec0ee41733f007e5cbbbba71617aa5d"
+      },
+      "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/chat_template.jinja": {
+        "sha256": "12827f24b742ea4e80cdc12dbcf9622227056b9f797252a3149263d4f9aaadce"
+      },
+      "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/merges.txt": {
+        "sha256": "4ba698529766c7a2f5052083ea10cdf2485577f5237a332ee291054eb11e3332"
+      },
+      "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/token_type.json": {
+        "sha256": "5088c8c298fc06af8382ddb3b76c888703ac2634e82263b97eedcc2ad202738b"
+      },
+      "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/tokenizer.json": {
+        "sha256": "c0bd435efbc6c3b28964b47999afe16c4ad268c7c7c4e8cb3af410796a6f30bf"
+      },
+      "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/vocab.json": {
+        "sha256": "4ba64f0332abcfb0b600b7df1537d1e836e68009d5fb7cdb77339738dc6365c4"
+      },
+      "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-prefill-service-events-20261010/data/expert-profile.bin": {
+        "sha256": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf"
+      }
+    },
+    "original_status_preserved": true,
+    "negative_capacity_outcome_reviewed": true,
+    "finished_utc": "2026-10-13T05:49:05.809709+00:00",
+    "evidence": {
+      "source-head": {
+        "stdout": "fd595aa7ef34bc04d16c2f385f0d62f09c8f3adc\n",
+        "stderr": ""
+      },
+      "source-status": {
+        "stdout": "",
+        "stderr": ""
+      },
+      "kernel-before-posthealth": {
+        "summary": "Cursor, fault filter/counts, relevant findings and dump status retained in kernel_checks; unrelated full journal text retired."
+      },
+      "health-after-negative-admission": {
+        "stdout": "STATUS 0000:05:00.0 0\nQUEUE 0000:05:00.0\nH2D 65536 complete\nKERNEL 16384 complete\nD2H 65536 complete\nPASS 0000:05:00.0: 1 round, 16384 exact words\nLIBRARY /usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1.32.0\nLIBRARY /usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1.32.0\nLIBRARY /usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1.32.0\nLIBRARY /usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1.32.0\nLIBRARY /usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1.32.0\nLIBRARY /usr/lib/x86_64-linux-gnu/libze_validation_layer.so.1.32.0\nLIBRARY /usr/lib/x86_64-linux-gnu/libze_validation_layer.so.1.32.0\nLIBRARY /usr/lib/x86_64-linux-gnu/libze_validation_layer.so.1.32.0\nLIBRARY /usr/lib/x86_64-linux-gnu/libze_validation_layer.so.1.32.0\nLIBRARY /usr/lib/x86_64-linux-gnu/libze_validation_layer.so.1.32.0\nLIBRARY /usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395\nLIBRARY /usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395\nLIBRARY /usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395\nLIBRARY /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libumf.so.1.1.0\nLIBRARY /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libumf.so.1.1.0\nLIBRARY /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libumf.so.1.1.0\nLIBRARY /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libumf.so.1.1.0\nLIBRARY /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0.12.0\nLIBRARY /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0.12.0\nLIBRARY /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0.12.0\nLIBRARY /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0.12.0\nLIBRARY /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0\nLIBRARY /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0\nLIBRARY /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0\nLIBRARY /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0\nLIBRARY /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libsycl.so.9.0.0-0\nLIBRARY /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libsycl.so.9.0.0-0\nLIBRARY /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libsycl.so.9.0.0-0\nLIBRARY /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libsycl.so.9.0.0-0\nLIBRARY /usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0\nLIBRARY /usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0\nLIBRARY /usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0\nLIBRARY /usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0\nLIBRARY /usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0\n",
+        "stderr": ""
+      },
+      "kernel-after-posthealth": {
+        "summary": "Cursor, fault filter/counts, relevant findings and dump status retained in kernel_checks; unrelated full journal text retired."
+      },
+      "model-hashes-after-negative-admission": {
+        "stdout": "4c1eb2ceb4915e1192f4f386021897bde56a97f40a0bb78bb86465e0f7d2aca3  /home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf\n316b46f3a2dbd68c900f43136ab9449f9dcc3725dfd8c794847c204bc161e113  /home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00002-of-00002.gguf\n51df3cd6ffd0d38c2da8e2d3a95a604b4a96c20b06fc639a9bf477282a42b86a  /home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/conversions.json\nd2af3d8331e5c7a1985d1d589747230f9d56719a6d33c7cddc9ee6b81cde6b13  /home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/dense.bin\nb2a014878c3b61d6a6f915e194055a5e68ede34f9465dd1cb13249d902f008ac  /home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/index.txt\nd9ac2dfa3ee63c55c9c6a6db26f72da0cec0ee41733f007e5cbbbba71617aa5d  /home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/native_experts.txt\n12827f24b742ea4e80cdc12dbcf9622227056b9f797252a3149263d4f9aaadce  /home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/chat_template.jinja\n4ba698529766c7a2f5052083ea10cdf2485577f5237a332ee291054eb11e3332  /home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/merges.txt\n5088c8c298fc06af8382ddb3b76c888703ac2634e82263b97eedcc2ad202738b  /home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/token_type.json\nc0bd435efbc6c3b28964b47999afe16c4ad268c7c7c4e8cb3af410796a6f30bf  /home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/tokenizer.json\n4ba64f0332abcfb0b600b7df1537d1e836e68009d5fb7cdb77339738dc6365c4  /home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/vocab.json\n8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf  /home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/diag-sycl-prefill-service-events-20261010/data/expert-profile.bin\n",
+        "stderr": ""
+      }
+    }
+  }
+}

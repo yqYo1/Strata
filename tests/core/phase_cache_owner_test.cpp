@@ -3,6 +3,8 @@
 #include "strata/core/phase_cache_owner.hpp"
 #include "strata/core/head_upload_owner.hpp"
 #include "strata/core/phase_serve_cycle.hpp"
+#include "strata/prefill/workspace_layout.hpp"
+#include <array>
 #include <algorithm>
 #include <cstdio>
 #include <cstring>
@@ -21,6 +23,87 @@ namespace {
 using Owner = strata::core::PhaseCacheOwner;
 using Backend = strata::core::PhaseCacheBackend;
 void check(bool value, const char* message) { if (!value) throw std::runtime_error(message); }
+void gated_region_layout_fixture() {
+    namespace layout = strata::prefill::workspace;
+    check(!layout::exact_one(nullptr) && !layout::exact_one("0") && !layout::exact_one("01") &&
+          !layout::exact_one("true") && layout::exact_one("1"), "gated alias exact opt-in");
+    // G<B, G=B, G>B: all dimensions and cursor operations come from the production helper.
+    for (uint64_t block : {uint64_t{1024}, uint64_t{512}, uint64_t{256}}) {
+        for (bool alias : {false, true}) {
+            const auto plan = layout::region_layout(block, 256, 256, 64, alias);
+            const auto baseline = layout::region_layout(block, 256, 256, 64, false);
+            check(plan.gate_extent == 512 && plan.block_max == block, "gate/block extent");
+            check(plan.region_extent == (alias && block < 512 ? 512 : block), "region max");
+            check(std::strcmp(plan.region_winner, alias && block < 512 ? "gated" : "gdn") == 0,
+                  "gate winner mislabeled as block");
+            uint64_t counted = 0, offset = 0;
+            const uint64_t prefix = layout::take_bytes(7, sizeof(float));
+            const uint64_t tail = layout::take_bytes(17, sizeof(uint16_t));
+            check(layout::advance(prefix, counted, false, 0, offset), "count prefix");
+            if (!alias) check(layout::advance(plan.gate_extent, counted, false, 0, offset), "count gate");
+            check(layout::advance(plan.allocated_region, counted, false, 0, offset), "count region");
+            check(layout::advance(tail, counted, false, 0, offset), "count tail");
+            check(plan.saved_requested == (alias ? baseline.gate_extent + baseline.allocated_region -
+                  plan.allocated_region : 0), "saved requested padding");
+            alignas(256) std::array<uint8_t, 4096> storage{};
+            // Fake owned requests and exact-capacity borrowed carve consume the same production cursor.
+            for (bool bounded : {false, true}) {
+                uint64_t used = 0, gate_offset = 0, region_offset = 0, tail_offset = 0;
+                std::vector<uint64_t> owned_requests;
+                auto take = [&](uint64_t bytes, uint64_t& start) {
+                    const bool success = layout::advance(bytes, used, bounded, counted, start);
+                    if (success && !bounded) owned_requests.push_back(bytes);
+                    return success;
+                };
+                check(take(prefix, offset), "view prefix");
+                if (!alias) check(take(plan.gate_extent, gate_offset), "view gate");
+                check(take(plan.allocated_region, region_offset), "view region");
+                if (alias) gate_offset = region_offset;
+                check(take(tail, tail_offset) && used == counted, "count/view agreement");
+                check(region_offset % 256 == 0 && tail_offset % 256 == 0, "view alignment");
+                auto* region = storage.data() + region_offset;
+                auto* gate = alias ? reinterpret_cast<uint8_t*>(layout::gate_view(region, plan)) :
+                                    storage.data() + gate_offset;
+                check((gate == region) == alias && region != storage.data() &&
+                      region + plan.region_extent <= storage.data() + tail_offset, "pointer/range layout");
+                uint64_t gate_used = 0, gate_start = 0;
+                check(layout::advance(plan.gate_extent, gate_used, true,
+                      alias ? plan.region_extent : plan.gate_extent, gate_start), "bounded gate view");
+                check(gate_start == 0 && gate_used == plan.gate_extent, "gate view offset");
+                check(bounded ? owned_requests.empty() : owned_requests.size() == (alias ? 3u : 4u),
+                      "borrowed view acquired an owned take");
+            }
+            uint64_t short_used = counted - tail, failed_offset = 123;
+            check(!layout::advance(tail, short_used, true, counted - 1, failed_offset) &&
+                  short_used == counted - tail && failed_offset == 123, "small cap mutated cursor");
+        }
+    }
+    // Shrink/regrow layouts independently rebuild extents; stock 12K retains Alloc's 256-byte padding.
+    const auto large = layout::region_layout(2048, 1024, 512, 128, true);
+    const auto small = layout::region_layout(1024, 512, 256, 64, true);
+    check(small.region_extent < large.region_extent &&
+          layout::region_layout(2048, 1024, 512, 128, true).region_extent == large.region_extent,
+          "relayout shrink/regrow extent");
+    const auto stock = layout::region_layout(1024, 1634831104, 1024,
+        layout::product(12288, 10240), true);
+    check(stock.saved_requested == 503316736, "stock 12K gate requested savings");
+    bool small_view_rejected = false;
+    alignas(256) std::array<uint8_t, 1024> short_storage{};
+    try { layout::gate_view(short_storage.data(), layout::region_layout(256, 256, 256, 64, false)); }
+    catch (const std::runtime_error&) { small_view_rejected = true; }
+    check(small_view_rejected, "gate view exceeds block capacity without enlargement");
+    int overflow_checks = 0;
+    try { layout::product(std::numeric_limits<size_t>::max(), 2); }
+    catch (const std::overflow_error&) { ++overflow_checks; }
+    try { layout::take_bytes(std::numeric_limits<uint64_t>::max(), 4); }
+    catch (const std::overflow_error&) { ++overflow_checks; }
+    try { layout::region_layout(std::numeric_limits<uint64_t>::max(), 1, 1, 64, true); }
+    catch (const std::overflow_error&) { ++overflow_checks; }
+    uint64_t used = std::numeric_limits<uint64_t>::max(), offset = 0;
+    try { layout::advance(1, used, false, 0, offset); }
+    catch (const std::overflow_error&) { ++overflow_checks; }
+    check(overflow_checks == 4 && used == std::numeric_limits<uint64_t>::max(), "layout overflow guards");
+}
 void head_upload_known_fixture() {
     using Head = strata::core::HeadUploadOwner;
     for (int allocation_fault : {0, 1, 2, 3, 4}) {
@@ -100,7 +183,7 @@ void head_upload_destructor_fixture() {
           "head unknown destructor failed to terminate before cleanup");
 }
 
-void head_upload_unknown_fixture(int fault) {
+[[noreturn]] void head_upload_unknown_fixture(int fault) {
     using Head = strata::core::HeadUploadOwner;
     // This fixture exits its child without destructors, matching retained owners.
     auto* owner = new Head;
@@ -138,8 +221,9 @@ void head_upload_unknown_fixture(int fault) {
     check(!owner->stage(retry_source, source_address, 16, 8, allocate, free, upload, convert) &&
           allocations == calls && uploads == 1 && conversions == (fault >= 2),
           "head unknown completion retried callbacks");
+    _exit(0); // all assertions passed; OS tears down the intentionally retained owner
 }
-void head_release_unknown_fixture(int fail_at, bool after_release) {
+[[noreturn]] void head_release_unknown_fixture(int fail_at, bool after_release) {
     using Head = strata::core::HeadUploadOwner;
     auto* owner = new Head;
     auto source = std::make_shared<const Head::Payload>(16, uint8_t{0x37});
@@ -169,6 +253,7 @@ void head_release_unknown_fixture(int fail_at, bool after_release) {
     check(!owner->stage(source, source->data(), 16, 8, allocate, release,
                        [](void*, const void*, size_t) { return true; }, [](void*) { return true; }),
           "head uncertain release accepted retry");
+    _exit(0); // all assertions passed; no uncertain owner destructor may run
 }
 #endif
 
@@ -330,6 +415,7 @@ void isolated_unknown(const std::function<void()>& fixture) {
 }
 int main() {
     try {
+        gated_region_layout_fixture();
         head_upload_known_fixture();
 #ifdef __linux__
         for (int fail_at : {1, 2})
