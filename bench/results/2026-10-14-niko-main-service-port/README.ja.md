@@ -85,9 +85,16 @@ isolation controllerのPath/bytes取扱い失敗も元のfailed/incomplete statu
 [receipts-index.json](receipts-index.json) は元JSONをbyte一致で圧縮保存したpath/hash表。
 [outcomes.json](outcomes.json)、[初回の48失敗](initial-setup-failures.json)、controller source、
 各環境・command・所有PID・終了/cleanup・全個別判定を保存した。
+ソースと証拠のcommitは `51ad49e895c7dce75c0fb74b254255d504f22704`。
+中間ソース211件のhashを全て照合し、未commitだった4種類の原文と12 controllerの出典も
+`06da66fe052934be4d1f66ca755458edc905bf7a` に保存した。
 新規テスト用dependency targetは32 MiB budget、後続の機能検証がconsumer。main機能適合の
-完了またはdependency更新時に再検討する。全成功ログや重複fixture出力の削除は
-commit後にhashを確認して直列に実施し、manifestを別commitに残す。
+完了またはdependency更新時に再検討する。commit後に元データと保存済みgzipのbyte/hash一致を
+確認し、12個の終了済みjob rootを直列に削除した。100ファイル、7,509,335 logical bytes。
+個別path/hash/理由は [deletion-manifest.json.gz](deletion-manifest.json.gz)、実行結果は
+[retention-results.json](retention-results.json) に残した。receipt内の元のB配下pathは履歴であり、
+以後はGitのgzipとmanifestから読む。source fixtureと共通owner、compiler、現在consumerがある
+dependency targetは保持した。閉じたCPU build/binaryはsource・recipe・hashを残して退役した。
 
 研究用LunaのR449/R450は返答まで介入せず、Mainは別作業を継続した。実装用Solとは役割を分け、
 Solはbuild/test/GPUを実行せず、全検証はMainが直列管理した。原文・hashと過去レポートの参照は

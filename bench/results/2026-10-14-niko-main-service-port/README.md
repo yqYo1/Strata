@@ -42,7 +42,15 @@ preserved, rather than rewritten by the final successful checks.
 Original JSON receipts are stored byte-identically in gzip with a
 [hash index](receipts-index.json). Source/commands/environment, all individual
 results, ownership/exit, short relevant diagnostics and research are committed.
-Closed raw-log retirement is separately recorded after this evidence commit.
+The source/evidence commit is `51ad49e895c7dce75c0fb74b254255d504f22704`.
+All 211 intermediate source pins were matched, including four saved exact source
+variants and 12 controller recipes in `06da66fe052934be4d1f66ca755458edc905bf7a`.
+After checking committed gzip against the originals, Main serially retired 12
+closed job roots, 100 files and 7,509,335 logical bytes. The path/hash/reason
+[manifest](deletion-manifest.json.gz) and [receipt](retention-results.json) retain
+that action. Historical B paths in immutable receipts are now read through the
+committed gzip/manifest. Source fixtures, owner, compiler and active test dependency
+consumer remain available; closed CPU build/binaries have source/recipe/hash proof.
 The test-only optional dependency target has a named follow-up consumer and a
 32 MiB budget; the serving venv was unchanged.
 
