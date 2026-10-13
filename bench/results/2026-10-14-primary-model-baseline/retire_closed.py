@@ -38,6 +38,7 @@ def main():
     committed(D / 'research-index.json')
     records = [x for x in index if x['original_path'].endswith('/record.json')]
     manifest = []
+    kept = []
     with (B / 'owned-v0141-measurement.lock').open('a') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         for entry in records:
@@ -46,12 +47,9 @@ def main():
             assert sha(data) == entry['decoded_sha256']
             record = json.loads(data)
             assert not record['active']
-            if any(not command.get('observation_complete') for command in record['commands']):
-                # Retain the representative deadline/STOP evidence until a
-                # corrected normal-exit diagnostic closes this question.
-                continue
+            incomplete_observation = any(not command.get('observation_complete') for command in record['commands'])
             for command in record['commands']:
-                assert command.get('observation_complete') and command.get('direct_child_reaped') and command.get('session_empty')
+                assert command.get('direct_child_reaped') and command.get('session_empty') and not command.get('survivors')
                 for owner in command.get('owners', []):
                     assert not alive_same(owner['pid'], owner['start_ticks']), owner
             root = Path(entry['original_path']).parent
@@ -60,6 +58,13 @@ def main():
             for path in paths:
                 assert path.is_file() and not path.is_symlink()
                 data = path.read_bytes()
+                if incomplete_observation and path.name == 'engine.stderr':
+                    kept.append(dict(path=str(path), bytes=len(data), sha256=sha(data), owner='Main',
+                        consumer='one representative partial-prefill/STOP case compared with next normal-exit diagnostic',
+                        byte_budget=256 << 10, review_point='next normal-exit/STOP-grace proof or recipe supersession',
+                        original_observation_complete=False))
+                    assert len(data) <= 256 << 10
+                    continue
                 manifest.append(dict(path=str(path), bytes=len(data), sha256=sha(data),
                     retained=[entry['path'], 'model-diagnostic-windows.json'],
                     reason='closed duplicate full API/build/progress log; exact receipts and compact mechanism evidence committed'))
@@ -95,6 +100,7 @@ def main():
         result = dict(files=len(manifest), logical_bytes=sum(x['bytes'] for x in manifest),
             snapshots_or_actual_free_bytes_not_inferred=True,
             unchanged_original_result_status=True,
+            kept_failure_diagnostics=kept,
             kept_build_consumer='next unchanged-Niko-client primary speed baseline and native function adaptation',
             build_budget_bytes=4 << 30,
             kept_observer_consumer='next corrected diagnostic if R463 exception remains; otherwise retire separately',

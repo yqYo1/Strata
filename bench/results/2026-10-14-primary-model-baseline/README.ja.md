@@ -170,3 +170,22 @@ validation・warning/progressを保持してログ負荷を減らす。事前wal
 v5の代表deadline/STOP raw証拠は次のnormal-exit/停止猶予の比較がconsumer。
 責任者Main、text budget64 MiB、現在の少量ログを保持し、比較完了/recipe置換時に再検討する。
 他のclosed成功trace・重複build outputと終了した研究原文は、commit照合後に退役する。
+
+## 境界の整理結果
+
+build・host契約・系譜の証拠を94bc3148、追加のCPU棄却照合・機能対応・実GPU/モデル結果を
+7ed2ecd9でcommit/pushした。原receiptのdecoded byte/hashとGit内容、全known owned PIDの
+start ticks消失を照合し、retirement.json/deletion-manifest.jsonl.gzに92ファイルの
+path/hash/理由を保存して24,781,120 logical bytesを退役した。実空き容量の増加は推定しない。
+original failed/incompleteとobservation_complete=falseは変更していない。
+
+v5のengine.stderrだけは40,511 bytes、保持上限256 KiB、上記のnormal-exit/STOP-grace比較を
+consumerとして保持する。full successful API trace・重複build output・外部の重複research
+原文・同じclosed receiptのB側copyは退役した。以後はこのディレクトリのgzip/original research
+とregistryを使う。既存controllerを再現するときは必要なseed receiptをGitから復元し、新しい
+controllerはcanonical Git receiptから読む。B側の元pathを存在する再開checkpointと扱わない。
+
+保持buildは約136 MB、次の主モデルbaseline/native機能適合がconsumer。observerは次の
+corrected-range診断の例外切り分けがconsumerで、normal long completion/recipe置換時に
+再検討する。モデル・ユーザー設定・サービス・GPU状態はcleanupで変更していない。
+mainはbeddab2fのまま。default反映とfresh Niko同期は未完了であり、この監査の完了とは別。
