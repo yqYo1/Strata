@@ -99,6 +99,10 @@ The files a change touches must get no new findings; findings that were there be
 The records that came from upstream's `bench/results` (other people's measurements, listed in `tools/lint/records.txt`) and other projects' files in `third_party/<area>/<project>/` (kept as they are; XeStrata's `patches/` there excepted) get only gitleaks and `reuse lint`.
 clang-tidy reads `compile_commands.json` from the build folder (`build/free`, or `STRATA_LINT_BUILD`): configure it with `-DCMAKE_EXPORT_COMPILE_COMMANDS=ON`.
 
+For this workspace's performance comparisons, use upstream's unchanged `bench.sh` as
+described in [docs/MEASUREMENT_WORKFLOW.md](docs/MEASUREMENT_WORKFLOW.md). Keep native GEN and
+kernel/transfer fixtures for diagnostics; compare model speeds with the same upstream client.
+
 Then run the existing tests the change can affect (CTest in the build folder, `python -m unittest` for `serve/` and `tools/`).
 For memory and undefined-behavior bugs, build in a folder of its own with `-DSTRATA_SANITIZE=address,undefined` (for example `build/free-asan`) and run CTest there.
 It instruments the project's own host code only, not ggml or the SYCL device code; do not run its binaries under Intel SDE.

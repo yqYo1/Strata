@@ -1,0 +1,87 @@
+{
+  "main_reviewed": true,
+  "source_revision": "0f1127823e6c77f324093d9ffcf42cb773ce8ced",
+  "upstream_revision": "7695859aa13afb248bdb4d36f9b2e95707db079d",
+  "benchmark_method": "Unchanged upstream bench.sh --long --runs3",
+  "copy_engine": 0,
+  "phase_cache": 0,
+  "samples": [
+    {
+      "prompt_tokens": 32049,
+      "generated_tokens": 24,
+      "read_tokens": 32049,
+      "reused_tokens": 0,
+      "prompt_tps": 384.8,
+      "prompt_tps_source": "engine",
+      "decode_tps": 7.3,
+      "decode_tps_source": "engine",
+      "prompt_ms": 83294.8,
+      "decode_ms": 3279.4
+    },
+    {
+      "prompt_tokens": 32049,
+      "generated_tokens": 24,
+      "read_tokens": 32049,
+      "reused_tokens": 0,
+      "prompt_tps": 383.1,
+      "prompt_tps_source": "engine",
+      "decode_tps": 7.8,
+      "decode_tps_source": "engine",
+      "prompt_ms": 83650.9,
+      "decode_ms": 3068.9
+    },
+    {
+      "prompt_tokens": 32049,
+      "generated_tokens": 24,
+      "read_tokens": 32049,
+      "reused_tokens": 0,
+      "prompt_tps": 386.9,
+      "prompt_tps_source": "engine",
+      "decode_tps": 8.6,
+      "decode_tps_source": "engine",
+      "prompt_ms": 82841.5,
+      "decode_ms": 2775.6
+    }
+  ],
+  "prefill": {
+    "samples": [
+      384.8,
+      383.1,
+      386.9
+    ],
+    "median": 384.8,
+    "minimum": 383.1,
+    "maximum": 386.9
+  },
+  "decode": {
+    "samples": [
+      7.3,
+      7.8,
+      8.6
+    ],
+    "median": 7.8,
+    "minimum": 7.3,
+    "maximum": 8.6
+  },
+  "actual_prompt_tokens": 32049,
+  "actual_generated_tokens": 24,
+  "stock_long_comparison_eligible": true,
+  "strict32768_performance_eligible": false,
+  "all_official_requests_succeeded": true,
+  "no_fresh_gpu_faults": true,
+  "prepost_identities_unchanged": true,
+  "normal_quit": true,
+  "optimization_adopted": false,
+  "quality_evaluated": false,
+  "full_physical262144_qualified": false,
+  "phase_on_measured": false,
+  "research_registry_count": 922,
+  "main_errata": [
+    "R376v1 mode0 assumption was wrong for actual phase lifetime. v2 mode1 host-authoritative full262144/resident32768 is authoritative.",
+    "Mode1 int8 stage is276825088 requested bytes; identity table262144 bytes is outside bytes_needed. Both are chunk-independent.",
+    "Total bytes_needed 8K-to16K delta2455109632 bytes remains valid under the stated branches; actual init also adds32768 token-buffer bytes. Physical fit is still unqualified.",
+    "Model v3 scope says two outputs each; max_new2 is a cap, actual1024 request returned valid EOS1 and32768 returned2. Original receipt stays unchanged.",
+    "R378 proposes a future client parameter extension only; current client and32K/24 caps stay unchanged."
+  ],
+  "next_step": "Same binary/config/client quiet phase ON in a separate owned process; compare prefill and decode independently; qualify quality/full256K separately"
+}
