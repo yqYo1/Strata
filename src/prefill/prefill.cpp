@@ -41,6 +41,7 @@
 #include "strata/core/gpu.hpp"
 
 #include "strata/prefill/publication.hpp"
+#include "strata/prefill/route_union.hpp"
 #include "strata/prefill/compact_moe.hpp"
 #include "strata/prefill/workspace_layout.hpp"
 #include "strata/prefill/layer_major.hpp"
@@ -455,6 +456,7 @@ struct Prefill::Impl {
     HostVec<int32_t> bounds_host;
     std::unique_ptr<mmq::Context> mmq_ctx;
     HostVec<int32_t> ids_host, slot_host, src_host;
+    RouteUnion* route_union = nullptr; // request-local borrowed receipt
     std::vector<int32_t> cnt, off;
     uint16_t* dq_gu = nullptr;               // G experts' gate/up, GU_ELEMS apart, and down, D_ELEMS apart
     uint16_t* dq_d = nullptr;
@@ -1415,6 +1417,10 @@ struct PfTimer {
 
 bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& err) {
     if (!impl_ || !impl_->ss || !impl_->g || impl_->T <= 0) { err = "prefill: not initialized"; return false; }
+    if (layer_major::exact_one(std::getenv("STRATA_PREFILL_ROUTE_UNION")) &&
+        (n == 0 || !layer_major::requested())) {
+        RouteUnion declined; declined.emit(false);
+    }
     if (n == 0) return run_impl(tokens, n, pos0, err);
     return layer_major::requested() ? run_layer_major(tokens, n, pos0, err) : run_impl(tokens, n, pos0, err);
 }
@@ -1424,6 +1430,11 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     Impl& m = *impl_;
     const auto& g = *m.g;
     const core::OnDevice on_device(m.device);
+    const bool union_requested = layer_major::exact_one(std::getenv("STRATA_PREFILL_ROUTE_UNION"));
+    struct AdmissionReceipt {
+        bool requested, handed_off = false;
+        ~AdmissionReceipt() { if (requested && !handed_off) { RouteUnion declined; declined.emit(false); } }
+    } admission{union_requested};
     if (!tokens || stage_lb_ != 0 || stage_le_ != g.n_layers || next_ || hand_in_ || m.borrowed ||
         !m.src || !m.cache ||
         (m.cache->phase_mode() && (!core::phase_cache_requested() || !m.cache->phase_owner()->prefill_leased())) ||
@@ -1472,12 +1483,19 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     std::vector<float> rows;
     std::vector<uint8_t> staged;
     std::vector<int32_t> residency;
+    std::unique_ptr<RouteUnion> union_receipt;
+    if (union_requested) {
+        union_receipt = std::make_unique<RouteUnion>();
+        union_receipt->reset(g.n_layers, g.n_expert, plan.tokens, plan.chunks, K);
+    }
+    bool union_success = false;
     const auto started = Clock::now();
     struct Restore {
         Prefill& p; Impl& m;
         int64_t lb, le; const core::ExpertCache* cache; const int32_t* residency;
         decltype(on_chunk) chunk; decltype(on_stage_chunk) stage;
         Clock::time_point started;
+        RouteUnion* receipt; bool& success;
         ~Restore() {
             layer_major::retire([&] {
                 if (m.stager) m.stager->cancel();
@@ -1492,11 +1510,15 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
                 m.residual_gpu = nullptr; m.residual_host = nullptr;
                 m.residual_layout = {};
                 p.stats_.ms_total += ms_since(started);
+                m.route_union = nullptr;
+                if (receipt) receipt->emit(success);
             }, [] {
                 publication::cleanup_require(false, "layer-major restore drain", strata::gpu::last_error);
             });
         }
-    } restore{*this, m, stage_lb_, stage_le_, m.cache, m.host_res, on_chunk, on_stage_chunk, started};
+    } restore{*this, m, stage_lb_, stage_le_, m.cache, m.host_res, on_chunk, on_stage_chunk, started, union_receipt.get(), union_success};
+    admission.handed_off = true;
+    m.route_union = union_receipt.get();
     if (plan.host_bytes / sizeof(float) > rows.max_size() || uint64_t(MAXBLOB()) > staged.max_size() ||
         layer_major::product(uint64_t(g.n_layers), uint64_t(g.n_expert)) > residency.max_size()) {
         err = "layer-major: host owner vector extent exceeds max_size"; return false;
@@ -1565,6 +1587,7 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
             std::fflush(stderr);
         }
     }
+    union_success = true;
     return true;
 } catch (const std::exception& exception) {
     err = std::string("layer-major: ") + exception.what(); return false;
@@ -2282,6 +2305,10 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                     }
                     publication::cleanup_require(strata::gpu::stream_sync(m.cs), "strata::gpu::stream_sync(m.cs)", strata::gpu::last_error);
                     pt.fold();
+                    // Existing checked wait has made the consumed route IDs host-visible.
+                    if (m.route_union)
+                        m.route_union->observe(l, uint64_t(c0), uint64_t(T), m.ids_host.data(),
+                            uint64_t(m.ids_host.size()), lay_c.blob_bytes(l));
                     if (m.cpu_pend) {   // auto: the last CPU-sharing layer's GPU time is final now
                         m.cpu_pend = false;
                         float g_ms = 0;

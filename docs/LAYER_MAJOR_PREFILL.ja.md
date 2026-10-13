@@ -111,3 +111,16 @@ expert copyを含むhost wall時間で、PCIe単独のservice時間ではあり�
 新たなGPU eventやwaitは追加しません。このソース変更に新たな性能・数値検証
 結果はありません。CPU検査、2回の新規GEN、全head/state比較、実際の容量検査、
 stock long benchmarkで別に検証する必要があります。
+
+`STRATA_PREFILL_ROUTE_UNION=1` は既定OFFの診断です。新規layer-major要求だけで、
+既存のチェック済みルート読戻しの待機後に、各層の512-bit集合を更新します。
+対象は1〜64層、512 experts、K=10です。対象外の形状・フローは診断をdeclineし、
+推論の適格条件を変更しません。新しいkernel、読戻し、同期、時計は追加しません。
+要求ごとに集合を初期化し、tokenごとのルートは保持しません。要求所有の固定構造は
+8 KiB未満で、集計時の一時集合は64 bytesです。既定OFFではこの構造を割り当てません。
+既存の要求終了ドレイン後に最大64層分と集計1行を出力します。`active_visits`は
+各chunkの異なるexpert数の和、`union_experts`は要求全体で異なるexpert数です。
+各層のrows/chunksを期待値と照合し、順序・ID・extent・counterのoverflowを検査します。
+中断・エラー・不足したcoverageはcompleteになりません。`union_logical_bytes`は
+集合の大きさ×`layout.blob_bytes(layer)`で、PCIe実測値ではありません。実際の
+upload量、cache配置、ルート選択、演算は変更しません。この変更のCPU/GPU検証は未実施です。

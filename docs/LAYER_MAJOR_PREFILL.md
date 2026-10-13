@@ -122,3 +122,20 @@ it is a host wall interval, not isolated PCIe service time. No new timing events
 or waits are added. This source option has no new performance or numerical
 qualification: CPU checks, two fresh GENs, complete head/state comparisons,
 actual memory admission and the long stock benchmark remain required.
+
+`STRATA_PREFILL_ROUTE_UNION=1` enables a default-OFF diagnostic for fresh layer-major
+requests. After the existing checked route-readback wait, it updates one 512-bit
+set per layer. Eligibility is 1–64 layers, 512 experts and K=10; other geometries
+or flows decline the diagnostic without changing inference eligibility. It adds
+no kernel, readback, synchronization or clock. Sets reset per request; token routes
+are not retained. The fixed request-owned structure is below 8 KiB, with a 64-byte
+temporary chunk set. The structure is not allocated when the flag is OFF.
+After the existing request retirement drain, it emits at most 64 layer rows and
+one summary. `active_visits` sums distinct active experts in each chunk;
+`union_experts` counts distinct experts across the request. Per-layer row/chunk
+coverage is checked against expectations, along with order, IDs, extents and
+counter overflow. Cancellation, errors and incomplete coverage cannot publish
+complete status. `union_logical_bytes` is cardinality times
+`layout.blob_bytes(layer)`, not measured PCIe traffic. Upload extents, cache
+placement, route choices and math stay unchanged. CPU/GPU validation of this
+change has not been run.
