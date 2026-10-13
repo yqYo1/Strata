@@ -51,7 +51,7 @@ def main():
                     and not command.get('survivors')), (root, command['label'])
                 # Failed deadlines keep observation_complete=false. Publishing
                 # their original evidence is not a successful lifecycle proof.
-            for name in ['record.json', 'result.json', 'engine-exit.json', 'engine-start.json', 'control-action.json']:
+            for name in ['record.json', 'result.json', 'engine-exit.json', 'engine-start.json', 'control-action.json', 'config.json', 'plan.json']:
                 source = output / name
                 data = original(source)
                 if data is None:
