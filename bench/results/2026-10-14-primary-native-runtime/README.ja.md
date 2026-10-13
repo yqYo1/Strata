@@ -133,3 +133,31 @@ Gitへ保存・照合後に退役する。必要なcompiler/buildは次の主モ
 次は主モデルのbaselineとボトルネック計測を、無変更のNiko `bench.sh`/standard clientを使う
 速度測定と別のdebugプロセスで行う。容量・state・処理順を変更する場合は、262144の実消費、
 出力なし、出力余地を残した近傍、継続・RESTOREも確認してから採用する。
+
+## 最終整理の結果
+
+sourceと実行証拠は `e442e85e` にcommit/pushした。個別receiptのdecoded byte/hash、
+250種類のsource fingerprint、最終binary hash、Git connectivityを照合後、
+参考枝 `feat/layer-major-bulk-upload-20261013` をremote/localとworktreeから退役した。
+現在このforkの枝は `feature/sycl` と `main` の2本。元tip `28a7b9ae...` と旧skill tip
+`97f8b40...` は主作業から元commit指定で復元可能。参考sourceは必要なときにそのcommitから
+読むため、今後の実装用にXe系の枝を保持しない。
+
+[reference-retirement.json](reference-retirement.json) と
+[reference-deletion-manifest.jsonl.gz](reference-deletion-manifest.jsonl.gz) に5,157ファイル等の
+path/hash/理由を保存。別cloneのtoolchainへ向くsymlinkはunlinkだけで、targetは保持した。
+[log-retirement.json](log-retirement.json) と
+[log-deletion-manifest.jsonl.gz](log-deletion-manifest.jsonl.gz) は19個の閉じたrunの
+raw trace・重複build output・終了済みhost fixture binary・外部の重複研究原文等134ファイルを
+対象にした。合計292,056,714 logical bytesを退役。snapshotが保持するextentや実空き容量の
+増加はこの数字から推定しない。成功だけでなく初回scale不一致と全compile失敗も保存済み。
+
+receipt内の元B配下pathと研究のoriginal_pathは履歴。以後はこのGitディレクトリのgzipと
+研究原文を使う。従来のcontrollerを厳密に再現する場合は、必要な入力record/sourceを
+Gitのreceipt/source indexから戻す。新しい主モデルcontrollerは、最終v13 receiptの
+source/binary/envを起点にする。
+主build `B/main-primary-native-build-root-v1/build` は4 GiB budgetで保持し、次のnative
+モデル/HTTP baselineと機能適合がconsumer。baseline完了またはbinary/toolchain更新時に
+再検討する。最終の照合は [final-verification.json](final-verification.json)。
+`main` はまだ `beddab2f` のまま。native機能差の適合・状態検証、default更新、
+その後の新しいNiko更新の確認・評価は未完了であり、この整理をその成功とは報告しない。
