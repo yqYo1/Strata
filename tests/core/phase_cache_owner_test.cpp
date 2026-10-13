@@ -4,6 +4,7 @@
 #include "strata/core/head_upload_owner.hpp"
 #include "strata/core/phase_serve_cycle.hpp"
 #include "strata/prefill/workspace_layout.hpp"
+#include "strata/prefill/layer_major.hpp"
 #include <array>
 #include <algorithm>
 #include <cstdio>
@@ -23,6 +24,85 @@ namespace {
 using Owner = strata::core::PhaseCacheOwner;
 using Backend = strata::core::PhaseCacheBackend;
 void check(bool value, const char* message) { if (!value) throw std::runtime_error(message); }
+void layer_major_layout_fixture() {
+    namespace lm = strata::prefill::layer_major;
+    for (const char* text : std::initializer_list<const char*>{nullptr, "", "0", "01", "true", "1 "})
+        check(!lm::exact_one(text), "layer-major nonexact flag accepted");
+    check(lm::exact_one("1"), "layer-major exact flag denied");
+    uint64_t prefix = 77;
+    for (const char* text : std::initializer_list<const char*>{nullptr, "", "-1", "+1", "1 ", " 1", "0x1", "262145", "184467440737095516160"})
+        check(!lm::prefix_value(text, prefix) && prefix == 77, "layer-major invalid prefix accepted/changed output");
+    check(lm::prefix_value("0", prefix) && prefix == 0, "layer-major zero prefix denied");
+    check(lm::prefix_value("262144", prefix) && prefix == 262144, "layer-major bounded prefix denied");
+    const auto p = lm::plan(32767, 0, 65538, 8192, 10240, 16385, 512, 48, 1382400, 700ull << 20);
+    check(p.gpu_tokens == 16384 && p.chunks == 4 && p.gpu_bytes == 671088640 &&
+          p.host_bytes == 671047680 && p.cache_bytes == 707788800, "layer-major requested ledger/round-down mismatch");
+    bool gpu = false; uint64_t offset = 0;
+    check(lm::chunk_store(p, 8192, 8192, gpu, offset) && gpu && offset == 83886080, "layer-major GPU chunk map");
+    check(lm::chunk_store(p, 16384, 8192, gpu, offset) && !gpu && offset == 0, "layer-major host chunk map");
+    check(lm::chunk_store(p, 24576, 8191, gpu, offset) && !gpu && offset == 83886080, "layer-major last chunk map");
+    check(!lm::chunk_store(p, 8192, 8193, gpu, offset) && !lm::chunk_store(p, 32767, 1, gpu, offset),
+          "layer-major cross-store/out-of-range chunk accepted");
+    const auto all = lm::plan(17, 0, 32, 8, 4, 17, 2, 2, 257, 1);
+    check(all.gpu_tokens == 17 && all.host_bytes == 0 && all.chunks == 3 && all.cache_bytes == 1024,
+          "layer-major whole final chunk/slot alignment");
+    for (int fault = 0; fault < 8; ++fault) {
+        bool rejected = false;
+        try {
+            (void) lm::plan(fault == 0 ? -1 : 17, fault == 1 ? 1 : 0,
+                fault == 2 ? 16 : 32, fault == 3 ? 0 : 8, fault == 4 ? INT64_MAX : 4,
+                fault == 5 ? 262145 : 0, 2, 2, fault == 6 ? INT64_MAX : 257, fault == 7 ? 0 : 1);
+        } catch (const std::exception&) { rejected = true; }
+        check(rejected, "layer-major span/product/cache/reserve fault admitted");
+    }
+    check(lm::full_context_span(262144, 0, 262144, true), "layer-major physical exhaustion denied");
+    check(!lm::full_context_span(262143, 0, 262144, true) &&
+          !lm::full_context_span(262145, 0, 262144, true) &&
+          !lm::full_context_span(262144, 1, 262144, true) &&
+          !lm::full_context_span(262144, 0, 32768, true) &&
+          !lm::full_context_span(262144, 0, 262144, false), "layer-major probe span/callback guard");
+    for (int64_t n : {262141LL, 262142LL, 262143LL, 262144LL}) {
+        const auto edge = lm::plan(n, 0, 262144, 8192, 10240, 32768, 512, 48, 1382400, 700ull << 20);
+        check(edge.chunks == 32 && edge.gpu_tokens == 32768, "layer-major boundary ledger");
+        const uint64_t final_count = uint64_t(n - 31 * 8192);
+        check(lm::chunk_store(edge, 31 * 8192, final_count, gpu, offset) && !gpu &&
+              offset == uint64_t(31 * 8192 - 32768) * 10240,
+              "layer-major full/final partial chunk lost");
+        check(!lm::chunk_store(edge, uint64_t(n), 1, gpu, offset), "layer-major final-page overrun");
+    }
+    bool beyond = false;
+    try { (void) lm::plan(262145, 0, 262144, 8192, 10240, 32768, 512, 48, 1382400, 700ull << 20); }
+    catch (const std::exception&) { beyond = true; }
+    check(beyond, "layer-major beyond physical capacity admitted");
+    const auto warmup = lm::plan(17, 0, 262144, 8, 4, 32768, 2, 2, 257, 1);
+    check(warmup.gpu_tokens == 17 && warmup.host_bytes == 0, "layer-major prefix budget not clamped to warmup");
+    const auto larger = lm::plan(33, 0, 262144, 8, 4, 17, 2, 2, 257, 1);
+    check(larger.gpu_tokens == 16 && larger.host_bytes == uint64_t(17) * 4 * sizeof(float), "layer-major budget boundary not rounded down");
+    check(lm::device_ring_slots(384, true) == 0 && lm::device_ring_slots(384, false) == 384,
+          "layer-major device-ring count/carve selection");
+    int32_t resident[2] = {0, 1};
+    uint64_t offsets[3] = {0, 512, 1024};
+    check(lm::layer_ready(2, 2, 257, resident, offsets), "layer-major actual sized capacity denied");
+    check(!lm::layer_ready(2, 1, 257, resident, offsets) &&
+          !lm::layer_ready(2, 2, 513, resident, offsets) &&
+          !lm::layer_ready(2, 2, 257, nullptr, offsets), "layer-major insufficient/missing capacity accepted");
+    resident[1] = -1;
+    check(!lm::layer_ready(2, 2, 257, resident, offsets), "layer-major missing expert accepted with ring0");
+    resident[1] = 1; offsets[2] = 511;
+    check(!lm::layer_ready(2, 2, 1, resident, offsets), "layer-major decreasing offset accepted");
+    int outputs = 0;
+    for (int layer = 0; layer < 48; ++layer)
+        for (int chunk = 0; chunk < 4; ++chunk)
+            if (lm::final_layer(layer + 1, 48)) ++outputs;
+    check(outputs == 4 && !lm::final_layer(0, 0), "layer-major published intermediate layer callbacks");
+    for (bool completed : {false, true}) {
+        std::vector<int> order;
+        lm::retire([&] { order.push_back(1); return completed; },
+                   [&] { order.push_back(2); }, [&] { order.push_back(3); });
+        check(order == (completed ? std::vector<int>{1, 2} : std::vector<int>{1, 3}),
+              "layer-major restored stack owners before drain or on unknown completion");
+    }
+}
 void gated_region_layout_fixture() {
     namespace layout = strata::prefill::workspace;
     check(!layout::exact_one(nullptr) && !layout::exact_one("0") && !layout::exact_one("01") &&
@@ -415,6 +495,7 @@ void isolated_unknown(const std::function<void()>& fixture) {
 }
 int main() {
     try {
+        layer_major_layout_fixture();
         gated_region_layout_fixture();
         head_upload_known_fixture();
 #ifdef __linux__
