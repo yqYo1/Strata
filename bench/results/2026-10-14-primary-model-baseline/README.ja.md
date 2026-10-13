@@ -189,3 +189,8 @@ controllerはcanonical Git receiptから読む。B側の元pathを存在する�
 corrected-range診断の例外切り分けがconsumerで、normal long completion/recipe置換時に
 再検討する。モデル・ユーザー設定・サービス・GPU状態はcleanupで変更していない。
 mainはbeddab2fのまま。default反映とfresh Niko同期は未完了であり、この監査の完了とは別。
+
+強制deadline後の別プロセスでも小runtime healthを確認した。64回のchanging cross-queue
+handoffと境界/ownership/sticky errorのfixtureがexit0、UR success832/ZE success3325、
+fresh fault0/dump無し。現在GPUを使えることの確認であり、終了したモデルの正常終了や
+長文/速度合格を後から成立させない。このcontrollerはcanonical Git receiptから直接読む。

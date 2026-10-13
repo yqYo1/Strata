@@ -23,14 +23,25 @@ def main():
     roots = [f'main-primary-model-diagnostic-root-v{x}' for x in (1, 2, 4)]
     roots += [f'main-primary-size-t-range-build-root-v{x}' for x in (1, 2)]
     roots += ['main-primary-throw-observer-root-v1']
-    for optional in ['main-primary-size-t-range-gpu-root-v1', 'main-primary-model-diagnostic-root-v5']:
-        if (B / optional / 'record.json').is_file():
+    previous = json.loads((D / 'receipts-index.json').read_text()) if (D / 'receipts-index.json').exists() else []
+    def original(source):
+        if source.exists():
+            return source.read_bytes()
+        matches = [entry for entry in previous if entry['original_path'] == str(source)]
+        if not matches:
+            return None
+        data = gzip.decompress((D / matches[0]['path']).read_bytes())
+        assert sha(data) == matches[0]['decoded_sha256']
+        return data
+    for optional in ['main-primary-size-t-range-gpu-root-v1', 'main-primary-model-diagnostic-root-v5',
+                     'main-primary-post-deadline-gpu-root-v1']:
+        if original(B / optional / 'record.json') is not None:
             roots.append(optional)
     with (B / 'owned-v0141-measurement.lock').open('a') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         for root in roots:
             output = B / root
-            record = json.loads((output / 'record.json').read_text())
+            record = json.loads(original(output / 'record.json'))
             assert not record['active'], root
             for command in record['commands']:
                 assert (command.get('exit_code') is not None
@@ -40,9 +51,9 @@ def main():
                 # their original evidence is not a successful lifecycle proof.
             for name in ['record.json', 'result.json', 'engine-exit.json', 'control-action.json']:
                 source = output / name
-                if not source.exists():
+                data = original(source)
+                if data is None:
                     continue
-                data = source.read_bytes()
                 target = D / 'receipts' / root / (name + '.gz')
                 target.parent.mkdir(parents=True, exist_ok=True)
                 compressed = gzip.compress(data, mtime=0)
@@ -63,8 +74,8 @@ def main():
             (464, 'research-primary-prior-cpu-rejections-round464-v1.txt'),
             (465, 'research-primary-native-function-provenance-round465-v1.txt'),
         ]:
-            data = (R / name).read_bytes()
             target = D / 'research' / name
+            data = (R / name).read_bytes() if (R / name).exists() else target.read_bytes()
             target.parent.mkdir(parents=True, exist_ok=True)
             if target.exists():
                 assert target.read_bytes() == data
@@ -83,11 +94,12 @@ def main():
                 'R464 dc2 source receipt is NT1 with E=8/64 distinct experts; E=8 is not NT8. Three quoted E64 cells differ slightly from the original summary. Original receipt and prior-cpu-decision.json are authoritative.',
                 'R464 identifies prior real-weight counter-evidence. Old toolchain version is not pinned by its run.json; a compiler/assembly change must be evaluated explicitly, not presumed absent.',
                 'R465 reduces applicable native feature gaps to single-GPU batch/parallel service contracts and elastic VRAM. Multi-device trim/remote/stage/auto-placement are not promotion blockers for this PC.']), indent=2) + '\n')
-        windows = []
+        windows = json.loads((D / 'model-diagnostic-windows.json').read_text()) if (D / 'model-diagnostic-windows.json').exists() else []
         for version in (1, 2, 4, 5):
             source = B / f'main-primary-model-diagnostic-root-v{version}/owned/engine.stderr'
             if not source.exists():
                 continue
+            windows = [item for item in windows if item['version'] != version]
             lines = source.read_text().splitlines()
             indices = set()
             for i, line in enumerate(lines):
@@ -107,9 +119,10 @@ def main():
                 reason='distinct CLI/startup/range mechanism and relevant request/phase evidence'))
         (D / 'model-diagnostic-windows.json').write_text(json.dumps(windows, indent=2) + '\n')
         gpu = B / 'main-primary-size-t-range-gpu-root-v1'
-        if (gpu / 'record.json').is_file():
-            summaries = []
+        summaries = json.loads((D / 'gpu-diagnostic-summary.json').read_text()) if (D / 'gpu-diagnostic-summary.json').exists() else []
+        for gpu in [gpu, B / 'main-primary-post-deadline-gpu-root-v1']:
             for source in sorted((gpu / 'owned').glob('*debug.stderr')):
+                summaries = [item for item in summaries if item['path'] != str(source)]
                 data = source.read_bytes()
                 text = data.decode()
                 known = '<VALIDATION>[ERROR]: There are no valid references to handle 0'
@@ -121,7 +134,7 @@ def main():
                     other_validation=[line for line in text.splitlines() if '<VALIDATION>[ERROR]' in line and line.strip() != known],
                     query_false_count=text.count('ERROR (2013265955) in zeCommandListIsGraphCaptureEnabledExt'),
                     phase_markers=[line for line in text.splitlines() if line.startswith(('runtime:', 'compat:'))]))
-            (D / 'gpu-diagnostic-summary.json').write_text(json.dumps(summaries, indent=2) + '\n')
+        (D / 'gpu-diagnostic-summary.json').write_text(json.dumps(summaries, indent=2) + '\n')
         prior = subprocess.check_output(['git', '-C', str(P), 'show',
             'dc2ca4eee42c5870e11a1339c0fccc9fd9e856f6:bench/results/2026-10-04-sycl-cpu-single-pair/run.json'])
         prior_record = json.loads(prior)

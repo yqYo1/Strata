@@ -89,15 +89,18 @@ def main():
                 reason='finished read-only report; exact original committed, use project registry for next round'))
         # Persist identities before unlink; never rewrite original pass/failure.
         output = D / 'deletion-manifest.jsonl.gz'
-        assert not output.exists()
-        raw = ''.join(json.dumps(item) + '\n' for item in manifest).encode()
+        previous = [json.loads(line) for line in gzip.decompress(output.read_bytes()).decode().splitlines()] if output.exists() else []
+        previous_paths = {item['path']: item for item in previous}
+        assert not any(item['path'] in previous_paths for item in manifest), 'retired path unexpectedly recreated'
+        combined = previous + manifest
+        raw = ''.join(json.dumps(item) + '\n' for item in combined).encode()
         output.write_bytes(gzip.compress(raw, mtime=0))
         assert gzip.decompress(output.read_bytes()) == raw
         for item in manifest:
             path = Path(item['path'])
             assert sha(path.read_bytes()) == item['sha256']
             path.unlink()
-        result = dict(files=len(manifest), logical_bytes=sum(x['bytes'] for x in manifest),
+        result = dict(files=len(combined), logical_bytes=sum(x['bytes'] for x in combined),
             snapshots_or_actual_free_bytes_not_inferred=True,
             unchanged_original_result_status=True,
             kept_failure_diagnostics=kept,
