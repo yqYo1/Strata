@@ -72,6 +72,8 @@ struct PinnedArena {
     uint8_t* data() const { return (uint8_t*) base; }   // one mapping only: null for host USM blocks
     /// The byte at arena offset `off` (one mapping, or the host USM block of the layer that holds it).
     uint8_t* at(uint64_t off) const;
+    /// Actual owned Host-USM allocation extent, in the current Runtime context.
+    bool owned_host_range(const void* pointer, uint64_t bytes) const;
     std::vector<uint8_t*> layer_base;   // host USM blocks, one per layer (empty: one mapping)
 
 private:

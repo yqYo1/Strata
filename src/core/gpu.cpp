@@ -185,6 +185,13 @@ void vmem_free(void* va, size_t bytes) {
     catch (const std::exception& e) { fail("vmem_free", e); }
 }
 
+bool vmem_free_checked(void* va, size_t bytes) {
+    try {
+        sx::free_virtual_mem(reinterpret_cast<uintptr_t>(va), bytes, rt().context());
+        return true;
+    } catch (const std::exception& e) { return fail("vmem_free_checked", e); }
+}
+
 VmemSegment* vmem_map(void* va, size_t bytes) {
     try {
         auto* seg = new VmemSegment{sx::physical_mem(rt().device(), rt().context(), bytes)};

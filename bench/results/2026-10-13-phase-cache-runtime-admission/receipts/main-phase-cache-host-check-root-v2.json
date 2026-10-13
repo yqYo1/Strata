@@ -1,0 +1,789 @@
+{
+  "active": false,
+  "passed": true,
+  "complete": true,
+  "main_reviewed": true,
+  "gpu_executed": false,
+  "model_executed": false,
+  "commands": [
+    {
+      "label": "configure-phase-host",
+      "argv": [
+        "/usr/bin/cmake",
+        "-S",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-phase-cache-stock-bench-20261013",
+        "-G",
+        "Ninja",
+        "-DCMAKE_BUILD_TYPE=Release",
+        "-DCMAKE_CXX_COMPILER=/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+        "-DCMAKE_C_COMPILER=/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang",
+        "-DSTRATA_LICENSE=free",
+        "-DSTRATA_ENABLE_XE=OFF",
+        "-DSTRATA_BUILD_TESTS=ON",
+        "-DSTRATA_CUDA_ARCHS=",
+        "-DSTRATA_HIP_ARCHS=",
+        "-DSTRATA_ONEMKL=OFF",
+        "-DSTRATA_WERROR=ON",
+        "-DSTRATA_PORTABLE=OFF",
+        "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+        "-DSTRATA_GGML_DIR=/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",
+        "-B",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-phase-cache-stock-bench-20261013/build/phase-host"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-12T23:56:57.883427+00:00",
+      "wall_seconds": 180,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 555956,
+          "start_ticks": 19818200,
+          "sid": 555956,
+          "pgid": 555956
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 198182.004999156,
+      "pid": 555956,
+      "spawn_return_monotonic": 198182.008538637,
+      "direct_identity": {
+        "pid": 555956,
+        "state": "R",
+        "ppid": 555934,
+        "pgid": 555956,
+        "sid": 555956,
+        "start_ticks": 19818200,
+        "rss_bytes": 1200128
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 15278080,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-12T23:56:58.178150+00:00",
+      "elapsed_seconds": 0.29444523600977845,
+      "logs": {
+        "configure-phase-host.stdout": {
+          "bytes": 547,
+          "sha256": "a4317d9b67474f95d27a683b5f8cf6d35b3f50f02ea6f23cc51f409cdfaf9668"
+        },
+        "configure-phase-host.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "build-phase-host",
+      "argv": [
+        "/usr/bin/cmake",
+        "--build",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-phase-cache-stock-bench-20261013/build/phase-host",
+        "--parallel",
+        "2",
+        "--target",
+        "phase_cache_owner_test"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-12T23:56:58.178993+00:00",
+      "wall_seconds": 180,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 555981,
+          "start_ticks": 19818230,
+          "sid": 555981,
+          "pgid": 555981
+        },
+        {
+          "pid": 555982,
+          "start_ticks": 19818231,
+          "sid": 555981,
+          "pgid": 555981
+        },
+        {
+          "pid": 555983,
+          "start_ticks": 19818231,
+          "sid": 555981,
+          "pgid": 555983
+        },
+        {
+          "pid": 555984,
+          "start_ticks": 19818231,
+          "sid": 555981,
+          "pgid": 555984
+        },
+        {
+          "pid": 555985,
+          "start_ticks": 19818231,
+          "sid": 555981,
+          "pgid": 555983
+        },
+        {
+          "pid": 555986,
+          "start_ticks": 19818231,
+          "sid": 555981,
+          "pgid": 555984
+        },
+        {
+          "pid": 556136,
+          "start_ticks": 19818501,
+          "sid": 555981,
+          "pgid": 556136
+        },
+        {
+          "pid": 556137,
+          "start_ticks": 19818501,
+          "sid": 555981,
+          "pgid": 556136
+        },
+        {
+          "pid": 556138,
+          "start_ticks": 19818501,
+          "sid": 555981,
+          "pgid": 556136
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 198182.30055701,
+      "pid": 555981,
+      "spawn_return_monotonic": 198182.30289161,
+      "direct_identity": {
+        "pid": 555981,
+        "state": "R",
+        "ppid": 555934,
+        "pgid": 555981,
+        "sid": 555981,
+        "start_ticks": 19818230,
+        "rss_bytes": 417792
+      },
+      "peak_live_owned_identities": 6,
+      "peak_session_rss_bytes": 341585920,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-12T23:57:01.051148+00:00",
+      "elapsed_seconds": 2.8718903089757077,
+      "logs": {
+        "build-phase-host.stdout": {
+          "bytes": 318,
+          "sha256": "bebf721753b1f7277556a98139f3ee896bb6d8a4817781271182762a6588d61b"
+        },
+        "build-phase-host.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "ctest-phase-host",
+      "argv": [
+        "/usr/bin/ctest",
+        "--test-dir",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-phase-cache-stock-bench-20261013/build/phase-host",
+        "-R",
+        "^phase_cache_owner_test$",
+        "--output-on-failure",
+        "-V"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-12T23:57:01.052304+00:00",
+      "wall_seconds": 180,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 556144,
+          "start_ticks": 19818517,
+          "sid": 556144,
+          "pgid": 556144
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 198185.173857336,
+      "pid": 556144,
+      "spawn_return_monotonic": 198185.175623095,
+      "direct_identity": {
+        "pid": 556144,
+        "state": "R",
+        "ppid": 555934,
+        "pgid": 556144,
+        "sid": 556144,
+        "start_ticks": 19818517,
+        "rss_bytes": 516096
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 12062720,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-12T23:57:01.279915+00:00",
+      "elapsed_seconds": 0.22732706600800157,
+      "logs": {
+        "ctest-phase-host.stdout": {
+          "bytes": 10597,
+          "sha256": "929b77f2db910974aec15d661b015c57ff929552c1f432c1868792a5cd7f66e5"
+        },
+        "ctest-phase-host.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "configure-phase-host-asan",
+      "argv": [
+        "/usr/bin/cmake",
+        "-S",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-phase-cache-stock-bench-20261013",
+        "-G",
+        "Ninja",
+        "-DCMAKE_BUILD_TYPE=Release",
+        "-DCMAKE_CXX_COMPILER=/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+        "-DCMAKE_C_COMPILER=/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang",
+        "-DSTRATA_LICENSE=free",
+        "-DSTRATA_ENABLE_XE=OFF",
+        "-DSTRATA_BUILD_TESTS=ON",
+        "-DSTRATA_CUDA_ARCHS=",
+        "-DSTRATA_HIP_ARCHS=",
+        "-DSTRATA_ONEMKL=OFF",
+        "-DSTRATA_WERROR=ON",
+        "-DSTRATA_PORTABLE=OFF",
+        "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+        "-DSTRATA_GGML_DIR=/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",
+        "-B",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-phase-cache-stock-bench-20261013/build/phase-host-asan",
+        "-DSTRATA_SANITIZE=address,undefined"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-12T23:57:01.281276+00:00",
+      "wall_seconds": 180,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 556184,
+          "start_ticks": 19818540,
+          "sid": 556184,
+          "pgid": 556184
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 198185.402866342,
+      "pid": 556184,
+      "spawn_return_monotonic": 198185.404886039,
+      "direct_identity": {
+        "pid": 556184,
+        "state": "R",
+        "ppid": 555934,
+        "pgid": 556184,
+        "sid": 556184,
+        "start_ticks": 19818540,
+        "rss_bytes": 585728
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 14708736,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-12T23:57:01.562147+00:00",
+      "elapsed_seconds": 0.2805613960081246,
+      "logs": {
+        "configure-phase-host-asan.stdout": {
+          "bytes": 552,
+          "sha256": "1d2d0bfde173a61a3cfb81efc29bc152bf0ba19c2dad68445b79d05607f7147e"
+        },
+        "configure-phase-host-asan.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "build-phase-host-asan",
+      "argv": [
+        "/usr/bin/cmake",
+        "--build",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-phase-cache-stock-bench-20261013/build/phase-host-asan",
+        "--parallel",
+        "2",
+        "--target",
+        "phase_cache_owner_test"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-12T23:57:01.563283+00:00",
+      "wall_seconds": 180,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 556211,
+          "start_ticks": 19818568,
+          "sid": 556211,
+          "pgid": 556211
+        },
+        {
+          "pid": 556212,
+          "start_ticks": 19818569,
+          "sid": 556211,
+          "pgid": 556211
+        },
+        {
+          "pid": 556214,
+          "start_ticks": 19818570,
+          "sid": 556211,
+          "pgid": 556214
+        },
+        {
+          "pid": 556215,
+          "start_ticks": 19818570,
+          "sid": 556211,
+          "pgid": 556215
+        },
+        {
+          "pid": 556216,
+          "start_ticks": 19818570,
+          "sid": 556211,
+          "pgid": 556214
+        },
+        {
+          "pid": 556217,
+          "start_ticks": 19818570,
+          "sid": 556211,
+          "pgid": 556215
+        },
+        {
+          "pid": 556487,
+          "start_ticks": 19819012,
+          "sid": 556211,
+          "pgid": 556487
+        },
+        {
+          "pid": 556489,
+          "start_ticks": 19819012,
+          "sid": 556211,
+          "pgid": 556487
+        },
+        {
+          "pid": 556490,
+          "start_ticks": 19819013,
+          "sid": 556211,
+          "pgid": 556487
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 198185.684879725,
+      "pid": 556211,
+      "spawn_return_monotonic": 198185.687407779,
+      "direct_identity": {
+        "pid": 556211,
+        "state": "R",
+        "ppid": 555934,
+        "pgid": 556211,
+        "sid": 556211,
+        "start_ticks": 19818568,
+        "rss_bytes": 1155072
+      },
+      "peak_live_owned_identities": 6,
+      "peak_session_rss_bytes": 373997568,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-12T23:57:06.712016+00:00",
+      "elapsed_seconds": 5.14840911902138,
+      "logs": {
+        "build-phase-host-asan.stdout": {
+          "bytes": 318,
+          "sha256": "bebf721753b1f7277556a98139f3ee896bb6d8a4817781271182762a6588d61b"
+        },
+        "build-phase-host-asan.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "ctest-phase-host-asan",
+      "argv": [
+        "/usr/bin/ctest",
+        "--test-dir",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-phase-cache-stock-bench-20261013/build/phase-host-asan",
+        "-R",
+        "^phase_cache_owner_test$",
+        "--output-on-failure",
+        "-V"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "ASAN_OPTIONS": "detect_leaks=1:halt_on_error=1",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+      },
+      "started_utc": "2026-10-12T23:57:06.713859+00:00",
+      "wall_seconds": 180,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 556563,
+          "start_ticks": 19819083,
+          "sid": 556563,
+          "pgid": 556563
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 198190.83567427,
+      "pid": 556563,
+      "spawn_return_monotonic": 198190.837985266,
+      "direct_identity": {
+        "pid": 556563,
+        "state": "R",
+        "ppid": 555934,
+        "pgid": 556563,
+        "sid": 556563,
+        "start_ticks": 19819083,
+        "rss_bytes": 417792
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 11960320,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-12T23:57:07.092023+00:00",
+      "elapsed_seconds": 0.37767727600294165,
+      "logs": {
+        "ctest-phase-host-asan.stdout": {
+          "bytes": 10627,
+          "sha256": "460fcfc2d474d4650a43cf771ac94e3e7b1d41478f1461f412ea9933fe2f7e5b"
+        },
+        "ctest-phase-host-asan.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "production_admitted": false,
+  "phase_cache_adopted": false,
+  "source_pins": {
+    "CMakeLists.txt": {
+      "sha256": "cbf71b9357a6941d569287aca17ef56e3ce1213842df09d924f586d9822de178"
+    },
+    "include/strata/core/phase_cache_owner.hpp": {
+      "sha256": "a78d6d53d3b7c5666ca8272e9deb4e495f7b7b3cc276c9c24517a4950dccfd21"
+    },
+    "include/strata/core/phase_serve_cycle.hpp": {
+      "sha256": "676a41678f131e4ae2efaa56fed97315e83abd5d7cf8a2d0dbd591e5b84dbc49"
+    },
+    "include/strata/core/phase_timing.hpp": {
+      "sha256": "4ead9cc01ec13ba1ba1c02001b465422345c75fb8f141efa936c8cd7f061d787"
+    },
+    "src/core/phase_cache_owner.cpp": {
+      "sha256": "d16d4fe6bffce01ad1c9298dd072b5310ae97280fd7b9c172be035e6fdc85dc8"
+    },
+    "tests/core/phase_cache_owner_test.cpp": {
+      "sha256": "f422c5f00ef5cd4639da3b022133e4673672236d5daada247b5f5d4d15abc210"
+    },
+    "serve/server.py": {
+      "sha256": "942d4a03b0340896b2eda5fbaa75268a51513619284acb5650f0605f83131bbe"
+    },
+    "serve/test_server.py": {
+      "sha256": "8e4fa978d57c2b05a1a3ec644dae9fb9ad141ef281c726b1e5bac12f5ca53345"
+    }
+  },
+  "phase-host": {
+    "binary_sha256": {
+      "sha256": "3072f6c12b9e2bf416643885149c390a10e681124aa5105c58f2ec16492c5947"
+    },
+    "compile_commands_sha256": {
+      "sha256": "49a3088b36570b1b468d6c8234a2ae25e9339fe4b1f68082209087da9161f46d"
+    },
+    "release_ndebug": true,
+    "sanitizer": null
+  },
+  "phase-host-asan": {
+    "binary_sha256": {
+      "sha256": "ef38fbdd54d42c22a97ad75154b34dfae7568828b72e642d634f09a6e7d74640"
+    },
+    "compile_commands_sha256": {
+      "sha256": "26f43e3c058ca811b2da9830505954694a74a1ff33479c3dfb15870b6c81481a"
+    },
+    "release_ndebug": true,
+    "sanitizer": "address,undefined"
+  },
+  "scope": "Actual CPU owner lifetime/fault and uncertain-map fail-stop orchestration, Release NDEBUG and host ASan/UBSan; server source unchanged since qualified suite; no GPU/VMM/backend/model qualification",
+  "finished_utc": "2026-10-12T23:57:07.102750+00:00",
+  "output_evidence": {
+    "configure-phase-host": {
+      "stdout": {
+        "bytes": 547,
+        "sha256": "a4317d9b67474f95d27a683b5f8cf6d35b3f50f02ea6f23cc51f409cdfaf9668",
+        "retained_lines": [],
+        "extraction": "All v4/v5 output; other receipts retain diagnostic/progress/check summaries. Original pinned receipt stays unchanged."
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "retained_lines": [],
+        "extraction": "All v4/v5 output; other receipts retain diagnostic/progress/check summaries. Original pinned receipt stays unchanged."
+      }
+    },
+    "build-phase-host": {
+      "stdout": {
+        "bytes": 318,
+        "sha256": "bebf721753b1f7277556a98139f3ee896bb6d8a4817781271182762a6588d61b",
+        "retained_lines": [],
+        "extraction": "All v4/v5 output; other receipts retain diagnostic/progress/check summaries. Original pinned receipt stays unchanged."
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "retained_lines": [],
+        "extraction": "All v4/v5 output; other receipts retain diagnostic/progress/check summaries. Original pinned receipt stays unchanged."
+      }
+    },
+    "ctest-phase-host": {
+      "stdout": {
+        "bytes": 10597,
+        "sha256": "929b77f2db910974aec15d661b015c57ff929552c1f432c1868792a5cd7f66e5",
+        "retained_lines": [
+          "6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=quiesce calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=retire_workspace calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=grow_fill_publish calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.004 nested=1",
+          "6: strata phase-cache: stage=cycle operation=successful_prompt calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.010 nested=1",
+          "6: strata phase-cache: stage=cycle operation=complete_gen calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=quiesce calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=graph_retire calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=invalidate_detach calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.001 nested=1",
+          "6: strata phase-cache: stage=cycle operation=reinit_workspace calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.008 nested=1",
+          "6: strata phase-cache: stage=cycle operation=quiesce calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=retire_workspace calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=grow_fill_publish calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.003 nested=1",
+          "6: strata phase-cache: stage=cycle operation=successful_prompt calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.008 nested=1",
+          "6: strata phase-cache: stage=cycle operation=complete_gen calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=quiesce calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=retire_workspace calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=grow_fill_publish calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=successful_prompt calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.005 nested=1",
+          "6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=quiesce calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=retire_workspace calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=grow_fill_publish calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=successful_prompt calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.005 nested=1",
+          "6: strata phase-cache: stage=cycle operation=complete_gen calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=quiesce calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=graph_retire calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.003 nested=1",
+          "6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=quiesce calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=retire_workspace calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=grow_fill_publish calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=successful_prompt calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.005 nested=1",
+          "6: strata phase-cache: stage=cycle operation=complete_gen calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=quiesce calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=graph_retire calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=invalidate_detach calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.005 nested=1",
+          "6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=quiesce calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=retire_workspace calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=grow_fill_publish calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=successful_prompt calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.005 nested=1",
+          "6: strata phase-cache: stage=cycle operation=complete_gen calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=quiesce calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=graph_retire calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=invalidate_detach calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=reinit_workspace calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.006 nested=1",
+          "6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=quiesce calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=retire_workspace calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=grow_fill_publish calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=successful_prompt calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.005 nested=1",
+          "6: strata phase-cache: stage=cycle operation=complete_gen calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: PASS actual phase owner CPU bookkeeping/fault contract"
+        ],
+        "extraction": "All v4/v5 output; other receipts retain diagnostic/progress/check summaries. Original pinned receipt stays unchanged."
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "retained_lines": [],
+        "extraction": "All v4/v5 output; other receipts retain diagnostic/progress/check summaries. Original pinned receipt stays unchanged."
+      }
+    },
+    "configure-phase-host-asan": {
+      "stdout": {
+        "bytes": 552,
+        "sha256": "1d2d0bfde173a61a3cfb81efc29bc152bf0ba19c2dad68445b79d05607f7147e",
+        "retained_lines": [],
+        "extraction": "All v4/v5 output; other receipts retain diagnostic/progress/check summaries. Original pinned receipt stays unchanged."
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "retained_lines": [],
+        "extraction": "All v4/v5 output; other receipts retain diagnostic/progress/check summaries. Original pinned receipt stays unchanged."
+      }
+    },
+    "build-phase-host-asan": {
+      "stdout": {
+        "bytes": 318,
+        "sha256": "bebf721753b1f7277556a98139f3ee896bb6d8a4817781271182762a6588d61b",
+        "retained_lines": [],
+        "extraction": "All v4/v5 output; other receipts retain diagnostic/progress/check summaries. Original pinned receipt stays unchanged."
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "retained_lines": [],
+        "extraction": "All v4/v5 output; other receipts retain diagnostic/progress/check summaries. Original pinned receipt stays unchanged."
+      }
+    },
+    "ctest-phase-host-asan": {
+      "stdout": {
+        "bytes": 10627,
+        "sha256": "460fcfc2d474d4650a43cf771ac94e3e7b1d41478f1461f412ea9933fe2f7e5b",
+        "retained_lines": [
+          "6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=quiesce calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.006 nested=1",
+          "6: strata phase-cache: stage=cycle operation=retire_workspace calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.006 nested=1",
+          "6: strata phase-cache: stage=cycle operation=grow_fill_publish calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.290 nested=1",
+          "6: strata phase-cache: stage=cycle operation=successful_prompt calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.588 nested=1",
+          "6: strata phase-cache: stage=cycle operation=complete_gen calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=quiesce calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=graph_retire calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.006 nested=1",
+          "6: strata phase-cache: stage=cycle operation=invalidate_detach calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.008 nested=1",
+          "6: strata phase-cache: stage=cycle operation=reinit_workspace calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.024 nested=1",
+          "6: strata phase-cache: stage=cycle operation=quiesce calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=retire_workspace calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.005 nested=1",
+          "6: strata phase-cache: stage=cycle operation=grow_fill_publish calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.013 nested=1",
+          "6: strata phase-cache: stage=cycle operation=successful_prompt calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.026 nested=1",
+          "6: strata phase-cache: stage=cycle operation=complete_gen calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=quiesce calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=retire_workspace calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=grow_fill_publish calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.007 nested=1",
+          "6: strata phase-cache: stage=cycle operation=successful_prompt calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.016 nested=1",
+          "6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=quiesce calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=retire_workspace calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=grow_fill_publish calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=successful_prompt calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.008 nested=1",
+          "6: strata phase-cache: stage=cycle operation=complete_gen calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=quiesce calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=graph_retire calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.005 nested=1",
+          "6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=quiesce calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=retire_workspace calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=grow_fill_publish calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=successful_prompt calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.009 nested=1",
+          "6: strata phase-cache: stage=cycle operation=complete_gen calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=quiesce calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=graph_retire calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=invalidate_detach calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.010 nested=1",
+          "6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=quiesce calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=retire_workspace calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=grow_fill_publish calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=successful_prompt calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.010 nested=1",
+          "6: strata phase-cache: stage=cycle operation=complete_gen calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=quiesce calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=graph_retire calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=invalidate_detach calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=reinit_workspace calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.013 nested=1",
+          "6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=quiesce calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=retire_workspace calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=grow_fill_publish calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=successful_prompt calls=1 success=1 failed=0 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.014 nested=1",
+          "6: strata phase-cache: stage=cycle operation=complete_gen calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: strata phase-cache: stage=cycle operation=begin_gen calls=1 success=0 failed=1 attempt_bytes=0 success_bytes=0 host_elapsed_ms=0.000 nested=1",
+          "6: PASS actual phase owner CPU bookkeeping/fault contract"
+        ],
+        "extraction": "All v4/v5 output; other receipts retain diagnostic/progress/check summaries. Original pinned receipt stays unchanged."
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "retained_lines": [],
+        "extraction": "All v4/v5 output; other receipts retain diagnostic/progress/check summaries. Original pinned receipt stays unchanged."
+      }
+    }
+  }
+}

@@ -410,6 +410,8 @@ struct TokenHits {
     float* x_scale = nullptr;            ///< and its fp32 scales (the CPU pool's contract)
     void* scratch = nullptr;             ///< moe_hit_grouped_scratch_bytes(k, ...)
     float* hit_out = nullptr;            ///< device, k * n_embd
+    const uint64_t* slot_off = nullptr;  ///< phase full-capacity metadata, stable before verifier init
+    int64_t slot_capacity = 0;
     bool on() const { return d_res && cache_base && d_slot && d_dst && d_count && x_q8 && x_scale && scratch && hit_out; }
 };
 

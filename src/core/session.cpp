@@ -846,6 +846,10 @@ namespace strata::core {
 bool session_capture_token(const WeightTable& tables, const ModelGeometry& g, SessionState& s, float* parts_dev,
                            const float* y_miss_host, size_t parts_bytes, TokenGraph& tg, std::string& err,
                            const TokenHits* hits) {
+    if (hits && hits->slot_off) {
+        err = "the uniform token graph does not accept phase/native offset-table caches";
+        return false;
+    }
     // A whole-token graph contains device waits for CPU flags.  Waiting for that graph cannot serialize
     // the handoff: it would wait on the host work itself.  Use SessionGraphs pre/post pairs instead.
     if (!strata::gpu::host_handoff_concurrent()) {

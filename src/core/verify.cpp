@@ -153,6 +153,24 @@ void Verifier::diag(std::FILE* f) const {
                  last_t_, (long long) last_pos0_, cur_layer_ + 1, rd(h_seq_), rd(h_flag_), rd(h_flagA_), rd(h_flagB_));
 }
 
+bool Verifier::retire_phase_graphs(std::string& err) {
+    if (!hits_.readable || !wait_commit(err) || (cs_ && !strata::gpu::stream_sync(cs_)) ||
+        (copy_ && !strata::gpu::stream_sync(copy_))) {
+        if (err.empty()) err = "verify: phase graph retirement requires checked serial completion";
+        return false;
+    }
+    for (auto& e : exec_) { if (e) strata::gpu::graph_destroy(e); e = nullptr; }
+    for (auto& e : exec_res_) { if (e) strata::gpu::graph_destroy(e); e = nullptr; }
+    for (auto& v : segs_) { for (auto* e : v) strata::gpu::graph_destroy(e); v.clear(); }
+    if (commit_exec_) strata::gpu::graph_destroy(commit_exec_);
+    commit_exec_ = nullptr;
+    for (auto& kv : exec_bm_) if (kv.second) strata::gpu::graph_destroy(kv.second);
+    exec_bm_.clear();
+    for (auto& kv : commit_bm_) if (kv.second) strata::gpu::graph_destroy(kv.second);
+    commit_bm_.clear();
+    return true;
+}
+
 Verifier::~Verifier() {
     const Verifier* self = this;
     g_diag_verifier.compare_exchange_strong(self, nullptr);
@@ -205,6 +223,7 @@ void Verifier::tune_device(const ModelGeometry& g, void* stream) {
 
 bool Verifier::init(const WeightTable& wt, const ModelGeometry& g, SessionState& ss, const VerifyHits& hits,
                     const NativeHead* head, int max_t, std::string& err) {
+    if (hits.readable && !hits.readable(hits.readable_user, err)) return false;
     g_diag_verifier.store(this);
     diag_verify_fn().store(&diag_active_verifier);
     device_ = current_device();   // a layer split's stage on another GPU: init runs on it (OnDevice)
@@ -1440,6 +1459,7 @@ bool Verifier::capture_commit(std::string& err) {
 
 bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool, void* user, int32_t* out,
                    std::string& err) {
+    if (hits_.readable && !hits_.readable(hits_.readable_user, err)) return false;
     using namespace strata::kernels;
     const OnDevice on_device(device_);
     // No window may reuse state or host staging after an unconfirmed/failed commit.
@@ -1929,6 +1949,7 @@ bool Verifier::capture_commit_batch(const int* rows, int S, int hbase, std::stri
 
 bool Verifier::run_slots(int S, const int32_t* tokens, const int64_t* pos, PoolMultiFn pool, void* user, int32_t* out,
                          std::string& err) {
+    if (hits_.readable) { err = "phase cache excludes batch/pipelined windows"; return false; }
     int rows[8] = {};
     for (int t = 0; t < S && t < 8; ++t) rows[t] = t;
     return run_slot_rows(rows, S, tokens, pos, pool, user, out, err);
@@ -2047,6 +2068,7 @@ bool Verifier::stage_batch(const int* rows, int S, int hbase, const int32_t* tok
 
 bool Verifier::run_slot_rows(const int* rows, int S, const int32_t* tokens, const int64_t* pos, PoolMultiFn pool,
                              void* user, int32_t* out, std::string& err) {
+    if (hits_.readable) { err = "phase cache excludes batch/pipelined windows"; return false; }
     using namespace strata::kernels;
     const OnDevice on_device(device_);
     const ModelGeometry& g = *g_;
@@ -2164,6 +2186,7 @@ bool Verifier::commit_slot_prefixes(const int* keep, std::string& err) {
 }
 
 bool Verifier::batch_launch(int base, int S, const int32_t* tokens, const int64_t* pos, std::string& err) {
+    if (hits_.readable) { err = "phase cache excludes batch/pipelined windows"; return false; }
     const OnDevice on_device(device_);
     if (b_running_) { err = "verify: batch_launch while this stage is busy"; return false; }
     int rows[8] = {};
@@ -2521,6 +2544,7 @@ bool Verifier::prestage(int T, const int32_t* tokens, int64_t pos0, const int32_
 }
 
 bool Verifier::pl_launch(int T, const int32_t* tokens, int64_t pos0, std::string& err) {
+    if (hits_.readable) { err = "phase cache excludes batch/pipelined windows"; return false; }
     if (!strata::gpu::host_handoff_concurrent(cs_)) {
         err = "verify: batch/pipelined windows require a qualified concurrent host-USM handoff";
         return false;

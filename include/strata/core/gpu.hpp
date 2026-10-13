@@ -86,6 +86,8 @@ bool vmem_supported();
 size_t vmem_granularity();
 void* vmem_reserve(size_t bytes);
 void vmem_free(void* va, size_t bytes);
+/// Checked release; failure retains the caller's reservation owner for fail-stop teardown.
+bool vmem_free_checked(void* va, size_t bytes);
 /// A new physical segment of `bytes` mapped read-write at `va`; null when the device has no memory for it.
 VmemSegment* vmem_map(void* va, size_t bytes);
 /// Unmaps `seg` from `va` and gives its memory back (the device must not be using it).

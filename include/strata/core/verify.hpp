@@ -56,12 +56,18 @@ struct VerifyHits {
     int64_t blob = 0;
     const int32_t* h_res = nullptr;       ///< host [n_layers * n_expert] slot or -1: a window whose layers have every
                                           ///< expert resident runs without the host (null: never)
+    /// Optional phase-owner guard: actual checked publication/backing must be complete.
+    bool (*readable)(void*, std::string&) = nullptr;
+    void* readable_user = nullptr;
 };
 
 class Verifier {
 public:
     Verifier() = default;
     ~Verifier();
+    /// Serial phase transition only: drain and discard captured readers, keeping
+    /// the same verifier/session/table buffers for recapture after publication.
+    bool retire_phase_graphs(std::string& err);
     Verifier(const Verifier&) = delete;
     Verifier& operator=(const Verifier&) = delete;
 

@@ -4702,5 +4702,34 @@ class NonFiniteLogits(unittest.TestCase):
         self.assertEqual(eng.slot_held, [[], []])
 
 
+class PhaseExperimentLifetime(unittest.TestCase):
+    def test_exact_child_flag_is_frozen_without_spawning(self):
+        with mock.patch.dict(os.environ, {"STRATA_PHASE_DECODE_CACHE": "1"}):
+            for flag in ("0", "01", "1 ", ""):
+                eng = StrataEngine("strata", [], env={"STRATA_PHASE_DECODE_CACHE": flag}, lazy=True)
+                self.assertFalse(eng.phase_decode_cache)
+            eng = StrataEngine("strata", [], env={"STRATA_PHASE_DECODE_CACHE": "1"}, lazy=True)
+            self.assertTrue(eng.phase_decode_cache)
+            self.assertFalse(eng.phase_spawn_attempted)
+            eng.phase_spawn_attempted = True
+            with mock.patch.object(eng, "close") as close:
+                with self.assertRaises(EngineDied):
+                    eng.restart()
+                close.assert_not_called()               # do not retire/recreate an uncertain process
+
+    def test_failed_phase_request_cannot_run_reload_hooks(self):
+        tok = ByteTokenizer()
+        eng = DyingEngine(tok, "answer", max_context=CTX)
+        eng.phase_decode_cache, eng.phase_spawn_attempted, eng.dead = True, True, True
+        svc = Service(eng, tok, ChatTemplate(TEMPLATE))
+        svc.before_load = ["must-not-run"]
+        with mock.patch("serve.server.subprocess.run") as hook:
+            for _ in range(2):
+                with self.assertRaises(EngineDied):
+                    svc.ensure_loaded()
+            hook.assert_not_called()
+        self.assertEqual(eng.restarts, 0)
+
+
 if __name__ == "__main__":
     unittest.main()

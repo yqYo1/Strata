@@ -225,6 +225,19 @@ if(STRATA_BUILD_TESTS AND CMAKE_SYSTEM_NAME STREQUAL "Linux")
   set_tests_properties(copy_stream_policy_test PROPERTIES TIMEOUT 10)
 endif()
 
+add_library(strata_phase_cache_owner STATIC src/core/phase_cache_owner.cpp)
+target_include_directories(strata_phase_cache_owner PUBLIC include)
+target_link_libraries(strata_phase_cache_owner PUBLIC strata_warnings)
+
+if(STRATA_BUILD_TESTS)
+  enable_testing()
+  add_executable(phase_cache_owner_test tests/core/phase_cache_owner_test.cpp)
+  target_include_directories(phase_cache_owner_test PRIVATE include)
+  target_link_libraries(phase_cache_owner_test PRIVATE strata_phase_cache_owner strata_warnings)
+  add_test(NAME phase_cache_owner_test COMMAND phase_cache_owner_test)
+  set_tests_properties(phase_cache_owner_test PROPERTIES TIMEOUT 15)
+endif()
+
 # ---- host-only platform and n-gram reader ----------------------------------
 # These never touched the GPU runtime; they sat inside the CUDA build only because their consumers did.
 add_library(strata_platform STATIC src/platform/memory.cpp src/platform/direct_file.cpp)
@@ -386,10 +399,10 @@ if(STRATA_ENABLE_XE)
                       "SHELL:${_strata_spirv_translator} --spirv-ext=+SPV_KHR_integer_dot_product")
 
   add_library(strata_core STATIC src/core/device.cpp src/core/pinned.cpp src/core/gpu.cpp src/core/graph.cpp
-                                 src/core/weights.cpp src/core/layout.cpp)
+                                 src/core/weights.cpp src/core/layout.cpp src/core/phase_cache_backend.cpp)
   target_include_directories(strata_core PUBLIC include)
   target_link_libraries(strata_core PUBLIC strata_sycl strata_warnings strata_plan strata_platform
-                                           ${CMAKE_DL_LIBS})
+                                           ${CMAKE_DL_LIBS} strata_phase_cache_owner)
 
   add_executable(strata-device src/core/device_main.cpp)
   target_link_libraries(strata-device PRIVATE strata_core)
@@ -462,6 +475,9 @@ if(STRATA_ENABLE_XE)
   if(STRATA_BUILD_TESTS)
     # Manually owned synthetic event diagnostic; deliberately not registered with CTest.
     add_executable(native_grouped_gemm_event_bench tools/native_grouped_gemm_event_bench.cpp)
+    # Explicitly Main-owned finite actual VMM fixture; not registered with CTest.
+    add_executable(phase_cache_vmm_test tools/test_phase_cache_vmm.cpp)
+    target_link_libraries(phase_cache_vmm_test PRIVATE strata_core)
     target_link_libraries(native_grouped_gemm_event_bench PRIVATE strata_kernels)
     # Manually owned runtime fixture: no unguarded GPU CTest registration.
     add_executable(native_copy_stream_test tools/test_native_copy_stream.cpp)
@@ -852,7 +868,7 @@ else()
 endif()
 set_property(SOURCE src/kernels/cpu/q2_avx2.cpp APPEND PROPERTY COMPILE_DEFINITIONS ${_strata_avxvnni})
 find_package(Threads REQUIRED)
-target_link_libraries(strata_kernels_cpu PUBLIC Threads::Threads PRIVATE strata_warnings)
+target_link_libraries(strata_kernels_cpu PUBLIC Threads::Threads strata_phase_cache_owner PRIVATE strata_warnings)
 
 # ---- plan v0.3 P6: the i-quant models' CPU experts (IQ2_XS / IQ3_XXS files) ----
 #

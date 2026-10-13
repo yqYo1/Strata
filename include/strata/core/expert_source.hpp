@@ -694,6 +694,8 @@ public:
     void set_gguf(const std::string& shard1) { gguf_ = shard1; }
     void close();
 
+    /// Only genuine owned Host-USM arena bytes; no mmap/transient/registered substitute.
+    const uint8_t* phase_blob(int64_t layer, int64_t expert, uint64_t bytes);
     bool mapped() const { return base_ != nullptr; }
     int64_t blobs() const { return blobs_; }
     const uint8_t* blob(int64_t layer, int64_t expert) override;

@@ -1,0 +1,936 @@
+{
+  "active": false,
+  "passed": false,
+  "complete": false,
+  "main_reviewed": true,
+  "gpu_executed": false,
+  "model_executed": false,
+  "commands": [
+    {
+      "label": "configure-phase-host",
+      "argv": [
+        "/usr/bin/cmake",
+        "-S",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-phase-cache-stock-bench-20261013",
+        "-G",
+        "Ninja",
+        "-DCMAKE_BUILD_TYPE=Release",
+        "-DCMAKE_CXX_COMPILER=/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+        "-DCMAKE_C_COMPILER=/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang",
+        "-DSTRATA_LICENSE=free",
+        "-DSTRATA_ENABLE_XE=OFF",
+        "-DSTRATA_BUILD_TESTS=ON",
+        "-DSTRATA_CUDA_ARCHS=",
+        "-DSTRATA_HIP_ARCHS=",
+        "-DSTRATA_ONEMKL=OFF",
+        "-DSTRATA_WERROR=ON",
+        "-DSTRATA_PORTABLE=OFF",
+        "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+        "-DSTRATA_GGML_DIR=/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",
+        "-B",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-phase-cache-stock-bench-20261013/build/phase-host"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-12T23:21:03.091518+00:00",
+      "wall_seconds": 180,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 418158,
+          "start_ticks": 19602721,
+          "sid": 418158,
+          "pgid": 418158
+        },
+        {
+          "pid": 418190,
+          "start_ticks": 19602748,
+          "sid": 418158,
+          "pgid": 418158
+        },
+        {
+          "pid": 418193,
+          "start_ticks": 19602750,
+          "sid": 418158,
+          "pgid": 418193
+        },
+        {
+          "pid": 418194,
+          "start_ticks": 19602750,
+          "sid": 418158,
+          "pgid": 418193
+        },
+        {
+          "pid": 418196,
+          "start_ticks": 19602751,
+          "sid": 418158,
+          "pgid": 418193
+        },
+        {
+          "pid": 418216,
+          "start_ticks": 19602773,
+          "sid": 418158,
+          "pgid": 418158
+        },
+        {
+          "pid": 418217,
+          "start_ticks": 19602774,
+          "sid": 418158,
+          "pgid": 418217
+        },
+        {
+          "pid": 418218,
+          "start_ticks": 19602774,
+          "sid": 418158,
+          "pgid": 418217
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 196027.21305301,
+      "pid": 418158,
+      "spawn_return_monotonic": 196027.214545739,
+      "direct_identity": {
+        "pid": 418158,
+        "state": "R",
+        "ppid": 418134,
+        "pgid": 418158,
+        "sid": 418158,
+        "start_ticks": 19602721,
+        "rss_bytes": 299008
+      },
+      "peak_live_owned_identities": 5,
+      "peak_session_rss_bytes": 85139456,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-12T23:21:04.721724+00:00",
+      "elapsed_seconds": 1.6299718740046956,
+      "logs": {
+        "configure-phase-host.stdout": {
+          "bytes": 1757,
+          "sha256": "0c1f8a05ac7ca29ab4495eeb9bb40bac28e9f1620f385a81d23b4c40d59eb3f5"
+        },
+        "configure-phase-host.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "build-phase-host",
+      "argv": [
+        "/usr/bin/cmake",
+        "--build",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-phase-cache-stock-bench-20261013/build/phase-host",
+        "--parallel",
+        "2",
+        "--target",
+        "phase_cache_owner_test"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-12T23:21:04.722806+00:00",
+      "wall_seconds": 180,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 418332,
+          "start_ticks": 19602884,
+          "sid": 418332,
+          "pgid": 418332
+        },
+        {
+          "pid": 418333,
+          "start_ticks": 19602885,
+          "sid": 418332,
+          "pgid": 418332
+        },
+        {
+          "pid": 418334,
+          "start_ticks": 19602885,
+          "sid": 418332,
+          "pgid": 418334
+        },
+        {
+          "pid": 418335,
+          "start_ticks": 19602885,
+          "sid": 418332,
+          "pgid": 418335
+        },
+        {
+          "pid": 418336,
+          "start_ticks": 19602885,
+          "sid": 418332,
+          "pgid": 418334
+        },
+        {
+          "pid": 418337,
+          "start_ticks": 19602885,
+          "sid": 418332,
+          "pgid": 418335
+        },
+        {
+          "pid": 418511,
+          "start_ticks": 19603122,
+          "sid": 418332,
+          "pgid": 418511
+        },
+        {
+          "pid": 418512,
+          "start_ticks": 19603122,
+          "sid": 418332,
+          "pgid": 418511
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 196028.844439245,
+      "pid": 418332,
+      "spawn_return_monotonic": 196028.846530309,
+      "direct_identity": {
+        "pid": 418332,
+        "state": "R",
+        "ppid": 418134,
+        "pgid": 418332,
+        "sid": 418332,
+        "start_ticks": 19602884,
+        "rss_bytes": 442368
+      },
+      "peak_live_owned_identities": 6,
+      "peak_session_rss_bytes": 339611648,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-12T23:21:07.260488+00:00",
+      "elapsed_seconds": 2.5373517039988656,
+      "logs": {
+        "build-phase-host.stdout": {
+          "bytes": 318,
+          "sha256": "bebf721753b1f7277556a98139f3ee896bb6d8a4817781271182762a6588d61b"
+        },
+        "build-phase-host.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "ctest-phase-host",
+      "argv": [
+        "/usr/bin/ctest",
+        "--test-dir",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-phase-cache-stock-bench-20261013/build/phase-host",
+        "-R",
+        "^phase_cache_owner_test$",
+        "--output-on-failure"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-12T23:21:07.261297+00:00",
+      "wall_seconds": 180,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 418518,
+          "start_ticks": 19603138,
+          "sid": 418518,
+          "pgid": 418518
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 196031.382860862,
+      "pid": 418518,
+      "spawn_return_monotonic": 196031.384530623,
+      "direct_identity": {
+        "pid": 418518,
+        "state": "R",
+        "ppid": 418134,
+        "pgid": 418518,
+        "sid": 418518,
+        "start_ticks": 19603138,
+        "rss_bytes": 425984
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 12144640,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-12T23:21:07.461302+00:00",
+      "elapsed_seconds": 0.19972756298375316,
+      "logs": {
+        "ctest-phase-host.stdout": {
+          "bytes": 449,
+          "sha256": "5a9bd5455eae9ba772da57837e1d352f375608564e2f0efd0ed34c15a62ecb9c"
+        },
+        "ctest-phase-host.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "configure-phase-host-asan",
+      "argv": [
+        "/usr/bin/cmake",
+        "-S",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-phase-cache-stock-bench-20261013",
+        "-G",
+        "Ninja",
+        "-DCMAKE_BUILD_TYPE=Release",
+        "-DCMAKE_CXX_COMPILER=/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+        "-DCMAKE_C_COMPILER=/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang",
+        "-DSTRATA_LICENSE=free",
+        "-DSTRATA_ENABLE_XE=OFF",
+        "-DSTRATA_BUILD_TESTS=ON",
+        "-DSTRATA_CUDA_ARCHS=",
+        "-DSTRATA_HIP_ARCHS=",
+        "-DSTRATA_ONEMKL=OFF",
+        "-DSTRATA_WERROR=ON",
+        "-DSTRATA_PORTABLE=OFF",
+        "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+        "-DSTRATA_GGML_DIR=/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",
+        "-B",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-phase-cache-stock-bench-20261013/build/phase-host-asan",
+        "-DSTRATA_SANITIZE=address,undefined"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-12T23:21:07.463455+00:00",
+      "wall_seconds": 180,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 418530,
+          "start_ticks": 19603158,
+          "sid": 418530,
+          "pgid": 418530
+        },
+        {
+          "pid": 418604,
+          "start_ticks": 19603210,
+          "sid": 418530,
+          "pgid": 418530
+        },
+        {
+          "pid": 418605,
+          "start_ticks": 19603210,
+          "sid": 418530,
+          "pgid": 418605
+        },
+        {
+          "pid": 418606,
+          "start_ticks": 19603210,
+          "sid": 418530,
+          "pgid": 418605
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 196031.585318852,
+      "pid": 418530,
+      "spawn_return_monotonic": 196031.587367737,
+      "direct_identity": {
+        "pid": 418530,
+        "state": "R",
+        "ppid": 418134,
+        "pgid": 418530,
+        "sid": 418530,
+        "start_ticks": 19603158,
+        "rss_bytes": 569344
+      },
+      "peak_live_owned_identities": 4,
+      "peak_session_rss_bytes": 85999616,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-12T23:21:09.065331+00:00",
+      "elapsed_seconds": 1.6013530049822293,
+      "logs": {
+        "configure-phase-host-asan.stdout": {
+          "bytes": 1762,
+          "sha256": "39ad5a2b0c23171ae13294519772854bc28116e3f05508f549e1fc8c9de5cd0f"
+        },
+        "configure-phase-host-asan.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "build-phase-host-asan",
+      "argv": [
+        "/usr/bin/cmake",
+        "--build",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-phase-cache-stock-bench-20261013/build/phase-host-asan",
+        "--parallel",
+        "2",
+        "--target",
+        "phase_cache_owner_test"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-12T23:21:09.066351+00:00",
+      "wall_seconds": 180,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 418708,
+          "start_ticks": 19603318,
+          "sid": 418708,
+          "pgid": 418708
+        },
+        {
+          "pid": 418710,
+          "start_ticks": 19603319,
+          "sid": 418708,
+          "pgid": 418708
+        },
+        {
+          "pid": 418711,
+          "start_ticks": 19603320,
+          "sid": 418708,
+          "pgid": 418711
+        },
+        {
+          "pid": 418712,
+          "start_ticks": 19603320,
+          "sid": 418708,
+          "pgid": 418712
+        },
+        {
+          "pid": 418713,
+          "start_ticks": 19603320,
+          "sid": 418708,
+          "pgid": 418711
+        },
+        {
+          "pid": 418714,
+          "start_ticks": 19603320,
+          "sid": 418708,
+          "pgid": 418712
+        },
+        {
+          "pid": 418911,
+          "start_ticks": 19603695,
+          "sid": 418708,
+          "pgid": 418911
+        },
+        {
+          "pid": 418912,
+          "start_ticks": 19603695,
+          "sid": 418708,
+          "pgid": 418911
+        },
+        {
+          "pid": 418917,
+          "start_ticks": 19603703,
+          "sid": 418708,
+          "pgid": 418911
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 196033.187990238,
+      "pid": 418708,
+      "spawn_return_monotonic": 196033.189752062,
+      "direct_identity": {
+        "pid": 418708,
+        "state": "R",
+        "ppid": 418134,
+        "pgid": 418708,
+        "sid": 418708,
+        "start_ticks": 19603318,
+        "rss_bytes": 274432
+      },
+      "peak_live_owned_identities": 6,
+      "peak_session_rss_bytes": 363872256,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-12T23:21:13.615825+00:00",
+      "elapsed_seconds": 4.549120768002467,
+      "logs": {
+        "build-phase-host-asan.stdout": {
+          "bytes": 318,
+          "sha256": "bebf721753b1f7277556a98139f3ee896bb6d8a4817781271182762a6588d61b"
+        },
+        "build-phase-host-asan.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "ctest-phase-host-asan",
+      "argv": [
+        "/usr/bin/ctest",
+        "--test-dir",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-phase-cache-stock-bench-20261013/build/phase-host-asan",
+        "-R",
+        "^phase_cache_owner_test$",
+        "--output-on-failure"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "ASAN_OPTIONS": "detect_leaks=1:halt_on_error=1",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+      },
+      "started_utc": "2026-10-12T23:21:13.616983+00:00",
+      "wall_seconds": 180,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 418967,
+          "start_ticks": 19603773,
+          "sid": 418967,
+          "pgid": 418967
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 196037.738672613,
+      "pid": 418967,
+      "spawn_return_monotonic": 196037.740311046,
+      "direct_identity": {
+        "pid": 418967,
+        "state": "R",
+        "ppid": 418134,
+        "pgid": 418967,
+        "sid": 418967,
+        "start_ticks": 19603773,
+        "rss_bytes": 380928
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 11972608,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-12T23:21:13.889527+00:00",
+      "elapsed_seconds": 0.27212689799489453,
+      "logs": {
+        "ctest-phase-host-asan.stdout": {
+          "bytes": 459,
+          "sha256": "0401d19675e95af7421242f15c8f77966a4bbd2b04bd94027eece8d8c123bc69"
+        },
+        "ctest-phase-host-asan.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "server-phase-lifetime",
+      "argv": [
+        "/usr/bin/python3",
+        "-m",
+        "unittest",
+        "serve.test_server.PhaseExperimentLifetime",
+        "-v"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-12T23:21:13.893470+00:00",
+      "wall_seconds": 180,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 418980,
+          "start_ticks": 19603801,
+          "sid": 418980,
+          "pgid": 418980
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 196038.015193507,
+      "pid": 418980,
+      "spawn_return_monotonic": 196038.017239817,
+      "direct_identity": {
+        "pid": 418980,
+        "state": "R",
+        "ppid": 418134,
+        "pgid": 418980,
+        "sid": 418980,
+        "start_ticks": 19603801,
+        "rss_bytes": 393216
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 9924608,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-12T23:21:14.302965+00:00",
+      "elapsed_seconds": 0.40904630700242706,
+      "logs": {
+        "server-phase-lifetime.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "server-phase-lifetime.stderr": {
+          "bytes": 398,
+          "sha256": "dd8f559358801408a500df51e9ddd528da0acef07950df26305d5df9e5e31a61"
+        }
+      }
+    },
+    {
+      "label": "server-suite",
+      "argv": [
+        "/usr/bin/python3",
+        "-m",
+        "unittest",
+        "serve.test_server",
+        "-v"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-12T23:21:14.304492+00:00",
+      "wall_seconds": 180,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 418999,
+          "start_ticks": 19603842,
+          "sid": 418999,
+          "pgid": 418999
+        },
+        {
+          "pid": 420804,
+          "start_ticks": 19606235,
+          "sid": 418999,
+          "pgid": 418999
+        },
+        {
+          "pid": 420856,
+          "start_ticks": 19606292,
+          "sid": 418999,
+          "pgid": 418999
+        },
+        {
+          "pid": 420882,
+          "start_ticks": 19606344,
+          "sid": 418999,
+          "pgid": 418999
+        },
+        {
+          "pid": 420910,
+          "start_ticks": 19606402,
+          "sid": 418999,
+          "pgid": 418999
+        },
+        {
+          "pid": 420952,
+          "start_ticks": 19606454,
+          "sid": 418999,
+          "pgid": 418999
+        },
+        {
+          "pid": 420981,
+          "start_ticks": 19606512,
+          "sid": 418999,
+          "pgid": 418999
+        },
+        {
+          "pid": 421743,
+          "start_ticks": 19607633,
+          "sid": 418999,
+          "pgid": 418999
+        },
+        {
+          "pid": 421767,
+          "start_ticks": 19607654,
+          "sid": 418999,
+          "pgid": 418999
+        },
+        {
+          "pid": 424167,
+          "start_ticks": 19611442,
+          "sid": 418999,
+          "pgid": 418999
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 196038.426256188,
+      "pid": 418999,
+      "spawn_return_monotonic": 196038.427964632,
+      "direct_identity": {
+        "pid": 418999,
+        "state": "R",
+        "ppid": 418134,
+        "pgid": 418999,
+        "sid": 418999,
+        "start_ticks": 19603842,
+        "rss_bytes": 458752
+      },
+      "peak_live_owned_identities": 2,
+      "peak_session_rss_bytes": 140419072,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 1,
+      "finished_utc": "2026-10-12T23:22:36.675776+00:00",
+      "elapsed_seconds": 82.37080156500451,
+      "logs": {
+        "server-suite.stdout": {
+          "bytes": 27840,
+          "sha256": "5c1e62af99382ac0f4e836b748e54c416c8ff451d8c7984ae83812ce82b63401"
+        },
+        "server-suite.stderr": {
+          "bytes": 39932,
+          "sha256": "09d067fe751c075db29d8d13719b7d5fcfe7870cbff4246ff8b0d3c20f6ef23a"
+        }
+      }
+    }
+  ],
+  "production_admitted": false,
+  "phase_cache_adopted": false,
+  "source_pins": {
+    "CMakeLists.txt": {
+      "sha256": "cbf71b9357a6941d569287aca17ef56e3ce1213842df09d924f586d9822de178"
+    },
+    "include/strata/core/phase_cache_owner.hpp": {
+      "sha256": "63a5ead3187dd264477a83d909fc6013d2359b76d73bd532393e178cd782279d"
+    },
+    "include/strata/core/phase_serve_cycle.hpp": {
+      "sha256": "676a41678f131e4ae2efaa56fed97315e83abd5d7cf8a2d0dbd591e5b84dbc49"
+    },
+    "include/strata/core/phase_timing.hpp": {
+      "sha256": "4ead9cc01ec13ba1ba1c02001b465422345c75fb8f141efa936c8cd7f061d787"
+    },
+    "src/core/phase_cache_owner.cpp": {
+      "sha256": "522cfbb6b8f97a43da43d33c319867485d1ef1659474096921d2305697ea0980"
+    },
+    "tests/core/phase_cache_owner_test.cpp": {
+      "sha256": "990549d5ca1f30111b0738ba3e41c842af188e83a4b02d060f4fcb83e95ed1dc"
+    },
+    "serve/server.py": {
+      "sha256": "942d4a03b0340896b2eda5fbaa75268a51513619284acb5650f0605f83131bbe"
+    },
+    "serve/test_server.py": {
+      "sha256": "8e4fa978d57c2b05a1a3ec644dae9fb9ad141ef281c726b1e5bac12f5ca53345"
+    }
+  },
+  "phase-host": {
+    "binary_sha256": {
+      "sha256": "5a21c5694636cac01d9f4f7fd5bf2562be63a1401f65018c71e20aa9f747e8b7"
+    },
+    "compile_commands_sha256": {
+      "sha256": "49a3088b36570b1b468d6c8234a2ae25e9339fe4b1f68082209087da9161f46d"
+    },
+    "release_ndebug": true,
+    "sanitizer": null
+  },
+  "phase-host-asan": {
+    "binary_sha256": {
+      "sha256": "ca0cdb45ae27d6e2b69b715cfdf2752cb74c803124dcc7446386dda934c1149b"
+    },
+    "compile_commands_sha256": {
+      "sha256": "26f43e3c058ca811b2da9830505954694a74a1ff33479c3dfb15870b6c81481a"
+    },
+    "release_ndebug": true,
+    "sanitizer": "address,undefined"
+  },
+  "error": "AssertionError('server-suite')",
+  "finished_utc": "2026-10-12T23:22:36.677719+00:00",
+  "output_evidence": {
+    "configure-phase-host": {
+      "stdout": {
+        "bytes": 1757,
+        "sha256": "0c1f8a05ac7ca29ab4495eeb9bb40bac28e9f1620f385a81d23b4c40d59eb3f5",
+        "retained_lines": [],
+        "extraction": "All v4/v5 output; other receipts retain diagnostic/progress/check summaries. Original pinned receipt stays unchanged."
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "retained_lines": [],
+        "extraction": "All v4/v5 output; other receipts retain diagnostic/progress/check summaries. Original pinned receipt stays unchanged."
+      }
+    },
+    "build-phase-host": {
+      "stdout": {
+        "bytes": 318,
+        "sha256": "bebf721753b1f7277556a98139f3ee896bb6d8a4817781271182762a6588d61b",
+        "retained_lines": [],
+        "extraction": "All v4/v5 output; other receipts retain diagnostic/progress/check summaries. Original pinned receipt stays unchanged."
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "retained_lines": [],
+        "extraction": "All v4/v5 output; other receipts retain diagnostic/progress/check summaries. Original pinned receipt stays unchanged."
+      }
+    },
+    "ctest-phase-host": {
+      "stdout": {
+        "bytes": 449,
+        "sha256": "5a9bd5455eae9ba772da57837e1d352f375608564e2f0efd0ed34c15a62ecb9c",
+        "retained_lines": [],
+        "extraction": "All v4/v5 output; other receipts retain diagnostic/progress/check summaries. Original pinned receipt stays unchanged."
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "retained_lines": [],
+        "extraction": "All v4/v5 output; other receipts retain diagnostic/progress/check summaries. Original pinned receipt stays unchanged."
+      }
+    },
+    "configure-phase-host-asan": {
+      "stdout": {
+        "bytes": 1762,
+        "sha256": "39ad5a2b0c23171ae13294519772854bc28116e3f05508f549e1fc8c9de5cd0f",
+        "retained_lines": [],
+        "extraction": "All v4/v5 output; other receipts retain diagnostic/progress/check summaries. Original pinned receipt stays unchanged."
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "retained_lines": [],
+        "extraction": "All v4/v5 output; other receipts retain diagnostic/progress/check summaries. Original pinned receipt stays unchanged."
+      }
+    },
+    "build-phase-host-asan": {
+      "stdout": {
+        "bytes": 318,
+        "sha256": "bebf721753b1f7277556a98139f3ee896bb6d8a4817781271182762a6588d61b",
+        "retained_lines": [],
+        "extraction": "All v4/v5 output; other receipts retain diagnostic/progress/check summaries. Original pinned receipt stays unchanged."
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "retained_lines": [],
+        "extraction": "All v4/v5 output; other receipts retain diagnostic/progress/check summaries. Original pinned receipt stays unchanged."
+      }
+    },
+    "ctest-phase-host-asan": {
+      "stdout": {
+        "bytes": 459,
+        "sha256": "0401d19675e95af7421242f15c8f77966a4bbd2b04bd94027eece8d8c123bc69",
+        "retained_lines": [],
+        "extraction": "All v4/v5 output; other receipts retain diagnostic/progress/check summaries. Original pinned receipt stays unchanged."
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "retained_lines": [],
+        "extraction": "All v4/v5 output; other receipts retain diagnostic/progress/check summaries. Original pinned receipt stays unchanged."
+      }
+    },
+    "server-phase-lifetime": {
+      "stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "retained_lines": [],
+        "extraction": "All v4/v5 output; other receipts retain diagnostic/progress/check summaries. Original pinned receipt stays unchanged."
+      },
+      "stderr": {
+        "bytes": 398,
+        "sha256": "dd8f559358801408a500df51e9ddd528da0acef07950df26305d5df9e5e31a61",
+        "retained_lines": [
+          "Ran 2 tests in 0.013s",
+          "OK"
+        ],
+        "extraction": "All v4/v5 output; other receipts retain diagnostic/progress/check summaries. Original pinned receipt stays unchanged."
+      }
+    },
+    "server-suite": {
+      "stdout": {
+        "bytes": 27840,
+        "sha256": "5c1e62af99382ac0f4e836b748e54c416c8ff451d8c7984ae83812ce82b63401",
+        "retained_lines": [
+          "[strata] the engine reported an error: verify: layer 31 never rang (an illegal memory access was encountered)",
+          "[strata] the engine reported an error: verify: layer 31 never rang (an illegal memory access was encountered)"
+        ],
+        "extraction": "All v4/v5 output; other receipts retain diagnostic/progress/check summaries. Original pinned receipt stays unchanged."
+      },
+      "stderr": {
+        "bytes": 39932,
+        "sha256": "09d067fe751c075db29d8d13719b7d5fcfe7870cbff4246ff8b0d3c20f6ef23a",
+        "retained_lines": [
+          "BrokenPipeError: [Errno 32] Broken pipe",
+          "ConnectionResetError: the client is gone",
+          "ConnectionResetError: the client is gone",
+          "ModuleNotFoundError: No module named 'regex'",
+          "ModuleNotFoundError: No module named 'regex'",
+          "ModuleNotFoundError: No module named 'regex'",
+          "Ran 249 tests in 81.933s",
+          "FAILED (errors=3)"
+        ],
+        "extraction": "All v4/v5 output; other receipts retain diagnostic/progress/check summaries. Original pinned receipt stays unchanged."
+      }
+    }
+  }
+}

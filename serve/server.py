@@ -636,6 +636,8 @@ class StrataEngine:
     (`temperature=F top_p=F top_k=N seed=N`, the engine's own spelling).  An absent temperature keeps the
     engine's default, which is greedy; `temperature=0` means the same thing, so it is not forwarded.
     """
+    phase_decode_cache: bool
+    phase_spawn_attempted: bool
     gpu_busy: Callable[[], bool | None] | None = None   # unknown does not establish idle
     gpu_pcis: list[str] | None = None
     silence_s = ENGINE_SILENCE_S         # #481: main() sets the config's engine_silence_s (survives restart())
@@ -665,6 +667,11 @@ class StrataEngine:
                  env: dict | None = None, lazy: bool = False, cpus: list[int] | None = None):
         self.cpus = list(cpus) if cpus is not None else None
         self.spawn = (exe, list(args), cwd, log, env)   # to start it again after it died (issue #27)
+        # Freeze the engine's exact opt-in using its child environment. A phase
+        # experiment owns one process lifetime, including a short warm-up GEN.
+        self.__dict__.setdefault("phase_decode_cache", (os.environ if env is None else env).get(
+            "STRATA_PHASE_DECODE_CACHE") == "1")
+        self.__dict__.setdefault("phase_spawn_attempted", False)
         paths = {k: v for k, v in zip(args, args[1:]) if k in ("--native", "--pack")}
         self.model_path = paths.get("--native") or paths.get("--pack", "pack/full")
         self.log_path = log
@@ -686,6 +693,10 @@ class StrataEngine:
             self.info["version"] = None
         if lazy:
             return
+        if self.phase_decode_cache:
+            if self.phase_spawn_attempted:
+                raise EngineDied("phase-cache experiment ended; start a new server explicitly")
+            self.phase_spawn_attempted = True
         self.unloaded = False            # `ended` stays True until READY (below): not alive while starting (#344)
         self.log = open(log, "a", encoding="utf-8") if log else subprocess.DEVNULL
         loading = threading.Event()                     # set once READY: the narrator below stops
@@ -951,6 +962,10 @@ class StrataEngine:
         close() ends and waits for the old process first (EngineStuck when it cannot be ended).  A start that still
         exits before READY - a dead engine's VRAM can take a while to come back, notably on ROCm - is retried
         (PR #637)."""
+        if getattr(self, "phase_decode_cache", False):
+            if getattr(self, "phase_spawn_attempted", False):
+                raise EngineDied("phase-cache experiment ended; automatic restart is disabled")
+            tries = 1                           # a lazy first start is allowed once, never retried
         info = dict(self.info)
         self.starting = True                     # prepare() answers 503 "starting" meanwhile (#344)
         try:
@@ -2864,6 +2879,9 @@ class Service:
         the free-VRAM check.  The caller holds self.fifo."""
         if self.loaded() and not self._vision_down():
             return
+        if (getattr(self.engine, "phase_decode_cache", False) and
+                getattr(self.engine, "phase_spawn_attempted", False)):
+            raise EngineDied("phase-cache experiment ended; automatic reload is disabled")
         if self.before_load:
             cmd = self.before_load
             print(f"[strata] before loading: {cmd if isinstance(cmd, str) else ' '.join(map(str, cmd))}", flush=True)
