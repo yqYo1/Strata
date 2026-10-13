@@ -39,6 +39,8 @@ struct PrefillStats {
     int64_t chunks = 0;
     double ms_total = 0;
     double ms_experts_host = 0;     ///< host time staging non-resident experts
+    uint64_t layer_upload_logical_bytes = 0, layer_upload_copy_calls = 0;
+    uint64_t layer_upload_bulk_layers = 0, layer_upload_fallback_layers = 0;
     int64_t experts_streamed = 0;   ///< expert blobs copied host -> device
     int64_t experts_dma = 0;        ///< ...of which straight from the pinned arena (no CPU copy)
     int64_t experts_resident = 0;   ///< expert-layer groups served from the VRAM tier
@@ -118,6 +120,10 @@ public:
     /// first, -1 for none) and is advanced to the last two of these.
     bool run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& err);
 
+    /// Required explicit operator reserve for the layer-major route.
+    /// Set before init; no automatic reduction or residual-placement fallback.
+    void set_layer_major_reserve(uint64_t bytes) { layer_major_reserve_ = bytes; }
+
     const PrefillStats& stats() const { return stats_; }
 
     /// Plan v0.3 P6: called after every chunk with the chunk's final multi-stream residual rows (device,
@@ -148,6 +154,9 @@ public:
     }
 
 private:
+    uint64_t layer_major_reserve_ = 0;
+    bool run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::string& err);
+    bool run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, std::string& err);
     int64_t stage_lb_ = 0, stage_le_ = -1;
     Prefill* next_ = nullptr;
     const float* hand_in_ = nullptr;    ///< the previous stage's rows of the chunk being read (host, pinned)

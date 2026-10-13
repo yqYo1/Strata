@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 // Manually owned, runtime-dependent fixture; no unguarded GPU CTest.
 #include "strata/core/phase_cache_owner.hpp"
+#include "strata/core/expert_cache.hpp"
 #include "strata/core/gpu.hpp"
 #include "strata/core/pinned.hpp"
 #include "strata/core/runtime.hpp"
@@ -19,9 +20,188 @@ namespace {
 void check(bool value, const char* message) { if (!value) throw std::runtime_error(message); }
 void check(bool value, const std::string& message) { if (!value) throw std::runtime_error(message); }
 void progress(const char* text) { std::puts(text); std::fflush(stdout); }
+int small_layer_bulk() {
+    // Explicit synthetic device fixture, <=1 MiB device payload; not model/PCIe performance evidence.
+    constexpr uint64_t maximum = 2048, physical = maximum * 512;
+    strata::core::ExpertCache cache;
+    std::unique_ptr<strata::core::PinnedArena> arena;
+    std::string error;
+    int result = 1;
+    try { (void) strata::core::Runtime::get(); }
+    catch (const std::exception& exception) { std::fprintf(stderr, "SKIP bulk runtime: %s\n", exception.what()); return 77; }
+    auto copy_checked = [&](void* dst, const void* src, size_t bytes) {
+        if (!strata::gpu::copy(dst, src, bytes)) {
+            std::fprintf(stderr, "FAIL bulk fixture uncertain checked copy; retaining owners: %s\n", strata::gpu::last_error());
+            std::fflush(stderr); std::_Exit(1);
+        }
+    };
+    try {
+        if (!cache.open_private_layer_sized(std::vector<int64_t>(512, maximum), 1, 512, error)) {
+            std::fprintf(stderr, "SKIP small bulk cache allocation: %s\n", error.c_str()); return 77;
+        }
+        arena = std::make_unique<strata::core::PinnedArena>(physical + maximum,
+            std::vector<uint64_t>{0, physical}, maximum, true);
+        auto* source = arena->at(0);
+        check(source && arena->owned_host_range(source, physical), "small bulk source ownership");
+        std::vector<uint8_t> got(maximum);
+        for (uint64_t width : {uint64_t{256}, uint64_t{512}, uint64_t{768}, uint64_t{1024},
+                               uint64_t{1280}, uint64_t{1536}, uint64_t{1792}}) {
+            if (!strata::gpu::device_sync()) { std::fprintf(stderr, "FAIL bulk drain; retaining owners\n"); std::_Exit(1); }
+            check(cache.set_private_layer_stride(width, true), "small bulk active layout");
+            check(cache.bytes() == physical && cache.full_bytes() == physical && cache.bytes_of(512) == physical,
+                  "small bulk physical accounting changed");
+            for (uint64_t e = 0; e < 512; ++e)
+                for (uint64_t j = 0; j < width; ++j)
+                    source[e * width + j] = static_cast<uint8_t>(j % 2 ? (e >> 8) + j * 19 : e + j * 17);
+            check(arena->owned_host_range(source, width * 512), "small bulk exact contiguous view");
+            copy_checked(cache.device_slot(0), source, width * 512);
+            for (int32_t e = 0; e < 512; ++e) {
+                check(cache.slot_offsets()[e] == uint64_t(e) * width && cache.slot_offset(e) == uint64_t(e) * width &&
+                      cache.slot_view_bytes(e) == width && cache.device_slot(e) == cache.device_slot(0) + uint64_t(e) * width,
+                      "small bulk all512 pointer/offset/view mismatch");
+                copy_checked(got.data(), cache.device_slot(e), width);
+                check(std::memcmp(got.data(), source + uint64_t(e) * width, width) == 0, "small bulk expert canary mismatch");
+            }
+        }
+        check(!cache.set_private_layer_stride(257, true), "small bulk unaligned layout accepted");
+        check(cache.restore_private_layer_layout(true) && cache.slot_offset(511) == 511 * maximum &&
+              cache.slot_view_bytes(511) == maximum, "small bulk fallback reserved layout");
+        // Declined layout falls back before writes; ordinary slots retain their original capacity stride.
+        for (int32_t e = 0; e < 512; ++e) {
+            std::fill_n(source + uint64_t(e) * maximum, maximum, static_cast<uint8_t>(e));
+            copy_checked(cache.device_slot(e), source + uint64_t(e) * maximum, maximum);
+        }
+        for (int32_t e = 0; e < 512; ++e) {
+            copy_checked(got.data(), cache.device_slot(e), maximum);
+            check(std::memcmp(got.data(), source + uint64_t(e) * maximum, maximum) == 0,
+                  "small bulk declined-layout per-expert fallback canary");
+        }
+        result = 0;
+    } catch (const std::exception& exception) {
+        std::fprintf(stderr, "FAIL small bulk fixture: %s\n", exception.what());
+    }
+    if (!strata::gpu::device_sync()) { std::fprintf(stderr, "FAIL bulk close drain; retaining owners\n"); std::_Exit(1); }
+    cache.close();
+    arena.reset();
+    if (result == 0) progress("PASS small actual owned Host-USM bulk all512 canary/layout/accounting (no model)");
+    return result;
+}
+int full_lease(const std::shared_ptr<strata::core::PhaseCacheBackend>& backend,
+               const strata::core::PhaseCacheBackend::Caps& caps) {
+    using Owner = strata::core::PhaseCacheOwner;
+    constexpr uint64_t limit = uint64_t{16} << 20, unit = uint64_t{2} << 20;
+    uint64_t gran = caps.granularity;
+    if (!caps.device_minimum || !caps.context_minimum || gran % caps.device_minimum) return 77;
+    for (const uint64_t alignment : {unit, caps.device_minimum, caps.context_minimum, uint64_t{256}}) {
+        const uint64_t factor = alignment / std::gcd(gran, alignment);
+        if (gran > std::numeric_limits<uint64_t>::max() / factor) return 77;
+        gran *= factor;
+    }
+    if (gran > (limit - 65536) / 3 || gran > caps.maximum || caps.free < Owner::guard_bytes + gran * 3) {
+        progress("SKIP real full-lease geometry exceeds finite small fixture admission");
+        return 77;
+    }
+    Owner owner(backend);
+    std::string error;
+    std::vector<uint8_t> padding(static_cast<size_t>(gran), 0xA5), readback(static_cast<size_t>(gran));
+    std::vector<uint8_t> expected(static_cast<size_t>(gran), 0xA5);
+    std::unique_ptr<strata::core::PinnedArena> arena;
+    void* d_res = nullptr;
+    std::array<int32_t, 16> table{};
+    const Owner::Quiesce quiet = [&](std::string& message) { return backend->drain(message); };
+    int result = 1;
+    try {
+        progress("BEGIN tiny two-layer real full physical lease");
+        arena = std::make_unique<strata::core::PinnedArena>(4096, std::vector<uint64_t>{0, 4096}, 1024, true);
+        auto* source = arena->at(0);
+        check(arena->owned_host_range(source, 2048), "full-lease immutable source range unavailable");
+        for (size_t i = 0; i < 2048; ++i) source[i] = static_cast<uint8_t>(i * 23 + i / 1024 + 9);
+        d_res = strata::gpu::alloc_device(sizeof(table));
+        check(d_res && strata::gpu::is_host_usm(source), "full-lease fixture allocation failed");
+        check(owner.reserve({1024, 1024}, 8, limit - 65536, error), error);
+        check(owner.capacity() == 10 && owner.reserved_bytes() == gran * 3, "full-lease bounded geometry");
+        const auto* offsets = owner.capacity_offsets();
+        const auto* host_table = owner.host_residency();
+        void* const virtual_base = owner.base();
+        const Owner::Publish upload = [&](const int32_t* rows, size_t count, std::string& message) {
+            if (count != table.size()) { message = "full-lease residency geometry mismatch"; return false; }
+            if (!strata::gpu::copy(d_res, rows, sizeof(table))) { message = strata::gpu::last_error(); return false; }
+            if (!strata::gpu::copy(table.data(), d_res, sizeof(table))) { message = strata::gpu::last_error(); return false; }
+            if (!std::equal(table.begin(), table.end(), rows)) { message = "full-lease device table readback mismatch"; return false; }
+            return true;
+        };
+        const auto refill_base = [&] {
+            check(!owner.readers_ready() && owner.mapped_slots() == 6, "baseline remap prematurely readable");
+            check(strata::gpu::copy(owner.base(), padding.data(), padding.size()), strata::gpu::last_error());
+            std::fill(expected.begin(), expected.end(), 0xA5);
+            for (uint32_t layer = 0; layer < 2; ++layer) {
+                for (uint32_t expert = 0; expert < 3; ++expert) {
+                    const uint32_t slot = layer * 3 + expert;
+                    check(owner.fill_checked(layer, expert, slot, source + static_cast<size_t>(layer) * 1024, 1024, error), error);
+                    std::memcpy(expected.data() + offsets[slot], source + static_cast<size_t>(layer) * 1024, 1024);
+                }
+            }
+            check(!owner.readers_ready() && owner.publish(upload, error), error);
+            check(owner.readers_ready(), "baseline checked publication did not enable readers");
+            check(strata::gpu::copy(readback.data(), owner.base(), readback.size()), strata::gpu::last_error());
+            check(readback == expected, "baseline payload/padding readback mismatch");
+        };
+        check(owner.map_base(quiet, error), error);
+        refill_base();
+        for (int request = 0; request < 2; ++request) {
+            progress("FULL LEASE extras fill/publish/readback");
+            check(owner.map_extras(quiet, error) && owner.mapped_slots() == 10 && owner.mapped_bytes() == gran * 3,
+                  error);
+            for (uint32_t layer = 0; layer < 2; ++layer) {
+                const uint32_t slot = 6 + layer * 2;
+                check(strata::gpu::copy(owner.device_slot(slot), padding.data(), padding.size()), strata::gpu::last_error());
+                check(owner.fill_checked(layer, 3, slot, source + static_cast<size_t>(layer) * 1024, 1024, error), error);
+            }
+            check(owner.publish(upload, error), error);
+            for (uint32_t layer = 0; layer < 2; ++layer) {
+                check(owner.resident_slot(layer, 3) == static_cast<int32_t>(6 + layer * 2), "extra layer residency mismatch");
+                check(strata::gpu::copy(readback.data(), owner.device_slot(6 + layer * 2), readback.size()), strata::gpu::last_error());
+                check(std::memcmp(readback.data(), source + static_cast<size_t>(layer) * 1024, 1024) == 0 &&
+                      std::all_of(readback.begin() + 1024, readback.end(), [](uint8_t byte) { return byte == 0xA5; }),
+                      "extra layer payload/padding mismatch");
+            }
+            progress("FULL LEASE checked empty table and all physical extents detached");
+            check(owner.begin_prefill(quiet, upload, error), error);
+            check(owner.prefill_leased() && !owner.readers_ready() && owner.mapped_slots() == 0 &&
+                  owner.mapped_bytes() == 0 && owner.retained_physical_bytes() == 0,
+                  "full lease retained physical backing/readers");
+            check(owner.base() == virtual_base && owner.capacity_offsets() == offsets && owner.host_residency() == host_table,
+                  "full lease changed retained virtual/table pointers");
+            check(std::all_of(table.begin(), table.end(), [](int32_t slot) { return slot == -1; }) &&
+                  std::all_of(host_table, host_table + table.size(), [](int32_t slot) { return slot == -1; }),
+                  "full lease failed to invalidate the entire published table");
+            for (uint32_t slot = 0; slot < owner.capacity(); ++slot)
+                check(!owner.device_slot(slot), "unmapped full lease exposed a device slot");
+            // Never dereference the retained virtual address while unmapped.
+            progress("FULL LEASE baseline remap/refill/checked publication");
+            check(owner.finish_prefill(quiet, error) && !owner.prefill_leased() && !owner.readers_ready(), error);
+            check(owner.base() == virtual_base && owner.capacity_offsets() == offsets && owner.host_residency() == host_table,
+                  "baseline restore changed retained pointers");
+            refill_base();
+        }
+        result = 0;
+    } catch (const std::exception& exception) {
+        std::fprintf(stderr, "FAIL full physical lease fixture: %s\n", exception.what());
+    }
+    if (!owner.close(quiet, error) || !backend->drain(error)) {
+        std::fprintf(stderr, "FAIL full-lease checked close; retaining all owners: %s\n", error.c_str());
+        std::fflush(stderr);
+        std::_Exit(1);
+    }
+    arena.reset();
+    strata::gpu::free(d_res);
+    if (result == 0) progress("PASS tiny actual full physical lease closed: two layers, two cycles (no model inference)");
+    return result;
+}
 }
 int main(int argc, char** argv) {
-    if (argc != 2 || std::strcmp(argv[1], "--small-vmm") != 0) return 2;
+    if (argc == 2 && std::strcmp(argv[1], "--small-layer-bulk") == 0) return small_layer_bulk();
+    if (argc != 2 || (std::strcmp(argv[1], "--small-vmm") != 0 && std::strcmp(argv[1], "--small-full-lease") != 0)) return 2;
     using Owner = strata::core::PhaseCacheOwner;
     std::shared_ptr<strata::core::PhaseCacheBackend> backend;
     try { backend = strata::core::make_phase_cache_gpu_backend(0); }
@@ -35,6 +215,7 @@ int main(int argc, char** argv) {
         std::fprintf(stderr, "SKIP actual VMM/free capability unavailable: %s\n", error.c_str());
         return 77;
     }
+    if (std::strcmp(argv[1], "--small-full-lease") == 0) return full_lease(backend, caps);
     constexpr uint64_t limit = uint64_t{16} << 20, unit = uint64_t{2} << 20;
     uint64_t gran = caps.granularity;
     if (!caps.device_minimum || !caps.context_minimum || gran % caps.device_minimum) return 77;

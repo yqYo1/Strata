@@ -26,6 +26,7 @@
 #include <filesystem>
 #include <sstream>
 #include <limits>
+#include <stdexcept>
 #include <map>
 #include <memory>
 #include <new>
@@ -2384,6 +2385,7 @@ LoadStats load_experts_gguf(const std::string& gguf, uint8_t* dst,
 ArenaExpertSource::~ArenaExpertSource() { close(); }
 
 bool ArenaExpertSource::register_on(int device, std::string& err) {
+    layer_spans_owned_ = false; // split registrations decline this stronger single-owner view
     return arena_ == nullptr || static_cast<PinnedArena*>(arena_)->register_on(device, err);
 }
 
@@ -2603,6 +2605,7 @@ bool ArenaExpertSource::open(const std::string& pack_dir, int64_t n_layers, int6
     blobs_ = n_layers * n_expert;
     n_expert_ = n_expert;
     reads_ = 0;
+    layer_spans_owned_ = host_usm && shared_arena_file.empty();
     note_ = a->note;
     gib_per_s_ = st.gib_per_second();
     load_seconds_ = st.seconds;
@@ -2613,6 +2616,7 @@ bool ArenaExpertSource::open(const std::string& pack_dir, int64_t n_layers, int6
 }
 
 void ArenaExpertSource::close() {
+    layer_spans_owned_ = false;
 #if !defined(_WIN32)
     if (map_ != nullptr) munmap(map_, (size_t) map_bytes_);
 #endif
@@ -2695,6 +2699,29 @@ const uint8_t* ArenaExpertSource::device_alias(int64_t layer, int64_t expert) co
     // one registration slice per layer
     if ((size_t) layer >= dev_slice_.size()) return nullptr;
     return dev_slice_[(size_t) layer] + (uint64_t) expert * lay.blob_bytes(layer);
+}
+
+bool ArenaExpertSource::layer_span(int64_t layer, ExpertLayerSpan& out) const {
+    out = {};
+    const auto& layout = strata::kernels::cpu::expert_layout();
+    if (!layer_spans_owned_ || !arena_ || map_ || !base_ || !layout.native || n_expert_ != 512 || layout.n_expert != 512 ||
+        layer < 0 || layer >= layout.n_layers || static_cast<size_t>(layer) >= layout.bytes.size() ||
+        static_cast<size_t>(layer) >= layout.offset.size() || layer >= blobs_ / n_expert_) return false;
+    const auto stride = layout.blob_bytes(layer);
+    if (!stride || stride % 256 || stride > std::numeric_limits<uint64_t>::max() / 512) return false;
+    const auto bytes = stride * 512, offset = layout.layer_offset(layer);
+    if (offset > layout.total || bytes > layout.total - offset) return false;
+    const auto* arena = static_cast<const PinnedArena*>(arena_);
+    const auto* pointer = arena->at(offset);
+    if (!pointer || !arena->owned_host_range(pointer, bytes)) return false;
+    out = {pointer, bytes, stride, layer, 512, this};
+    return true;
+}
+void ArenaExpertSource::consumed_layer_span(const ExpertLayerSpan& span) {
+    // This source remains owned by the request through synchronous completion.
+    if (span.owner != this || span.experts != 512 || reads_ > std::numeric_limits<int64_t>::max() - 512)
+        throw std::overflow_error("arena layer span read accounting");
+    reads_ += 512;
 }
 
 const uint8_t* ArenaExpertSource::phase_blob(int64_t layer, int64_t expert, uint64_t bytes) {

@@ -234,6 +234,18 @@ bool ExpertCache::phase_publish(std::string& err) {
         return phase_upload(table, count, e);
     }, err);
 }
+bool ExpertCache::phase_begin_prefill(const PhaseCacheOwner::Quiesce& proof, std::string& err) {
+    if (!phase_) { err = "phase cache owner missing"; return false; }
+    if (!phase_->begin_prefill(proof, [&](const int32_t* table, size_t count, std::string& e) {
+        return phase_upload(table, count, e);
+    }, err)) return false;
+    fills_ = 0;
+    return true;
+}
+bool ExpertCache::phase_finish_prefill(const PhaseCacheOwner::Quiesce& proof, std::string& err) {
+    if (!phase_) { err = "phase cache owner missing"; return false; }
+    return phase_->finish_prefill(proof, err);
+}
 bool ExpertCache::phase_invalidate_extras(std::string& err) {
     if (!phase_) { err = "phase cache owner missing"; return false; }
     if (!phase_->invalidate_extras([&](const int32_t* table, size_t count, std::string& e) {
@@ -278,9 +290,24 @@ bool ExpertCache::open_segmented(uint64_t want, std::string& err) {
     }
     // a whole number of 2 MiB pages as well: Level Zero reports 64 KiB but refused a 0.49 GiB segment of 64 KiB
     // pages (UR_RESULT_ERROR_INVALID_VALUE, the B70), and CUDA's granularity is 2 MiB
-    const uint64_t g = std::lcm(gran, (uint64_t) 2 << 20);
+    const uint64_t unit = uint64_t{2} << 20;
+    const uint64_t divisor = std::gcd(gran, unit);
+    if (!divisor) { err = "ExpertCache: invalid segmented allocation granularity"; return false; }
+    const uint64_t factor = unit / divisor;
+    if (!factor || gran > std::numeric_limits<uint64_t>::max() / factor) {
+        err = "ExpertCache: segmented allocation granularity overflow"; return false;
+    }
+    const uint64_t g = gran * factor;
+    const uint64_t signed_limit = uint64_t(std::numeric_limits<int64_t>::max());
+    if (!g || g > signed_limit || !want || want > signed_limit - (g - 1) ||
+        seg_req_ <= 0 || uint64_t(seg_req_) > signed_limit - (g - 1)) {
+        err = "ExpertCache: invalid or overflowing segmented allocation extent"; return false;
+    }
     const uint64_t total = (want + g - 1) / g * g;
-    seg_ = (int64_t) (((uint64_t) seg_req_ + g - 1) / g * g);
+    if (total > std::numeric_limits<size_t>::max()) {
+        err = "ExpertCache: segmented allocation exceeds addressable extent"; return false;
+    }
+    seg_ = int64_t((uint64_t(seg_req_) + g - 1) / g * g);
     void* va = strata::gpu::vmem_reserve((size_t) total);
     if (va == nullptr) {
         err = std::string("ExpertCache: cannot reserve the segmented cache's address range: ") + strata::gpu::last_error();
@@ -338,6 +365,7 @@ int64_t ExpertCache::slots_within(int64_t bytes) const {
 }
 
 bool ExpertCache::shrink(int64_t keep_bytes, std::string& err) {
+    if (private_layer_layout_) { err = "private layer cache physical reservation is immutable"; return false; }
     if (phase_) { err = "phase cache rejects legacy mapped-prefix resize"; return false; }
     if (segs_.empty()) {
         err = "the expert cache is not segmented (the engine needs --vram-elastic)";
@@ -360,6 +388,7 @@ bool ExpertCache::shrink(int64_t keep_bytes, std::string& err) {
 }
 
 bool ExpertCache::grow(int64_t want_bytes, std::string& err) {
+    if (private_layer_layout_) { err = "private layer cache physical reservation is immutable"; return false; }
     if (phase_) { err = "phase cache rejects legacy mapped-prefix resize"; return false; }
     if (segs_.empty()) {
         err = "the expert cache is not segmented (the engine needs --vram-elastic)";
@@ -500,10 +529,36 @@ bool ExpertCache::open_sized(const std::vector<int64_t>& slot_bytes, int64_t n_l
     return true;
 }
 
+bool ExpertCache::open_private_layer_sized(const std::vector<int64_t>& sizes, int64_t layers,
+                                           int64_t experts, std::string& err) {
+    if (phase_ || layers != 1 || sizes.size() != layer_bulk::slots || experts != static_cast<int64_t>(layer_bulk::slots) ||
+        sizes.front() <= 0 || sizes.front() > std::numeric_limits<int64_t>::max() / 512 || sizes.front() % 256 ||
+        std::any_of(sizes.begin(), sizes.end(), [&](int64_t bytes) { return bytes != sizes.front(); })) {
+        err = "private layer cache requires 512 uniform aligned reserved slots"; return false;
+    }
+    if (!open_sized(sizes, layers, experts, err)) return false;
+    private_layer_layout_ = true;
+    return true;
+}
+bool ExpertCache::set_private_layer_stride(uint64_t stride, bool readers_drained) {
+    if (!private_layer_layout_ || phase_ || !base_ || vmm_ || !segs_.empty() ||
+        slots_ != 512 || live_slots_ != slots_ || off_.size() != 513 ||
+        !layer_bulk::compact(off_.data(), 512, static_cast<uint64_t>(full_bytes()), stride,
+                             readers_drained, active_layer_offsets_)) return false;
+    active_layer_stride_ = stride;
+    return true;
+}
+bool ExpertCache::restore_private_layer_layout(bool readers_drained) {
+    if (!private_layer_layout_ || !readers_drained) return false;
+    active_layer_stride_ = 0;
+    return true;
+}
+
 void ExpertCache::close() {
     if (phase_ && phase_->open()) std::terminate(); // explicit retired-reader proof is mandatory
     phase_.reset();
 
+    private_layer_layout_ = false; active_layer_stride_ = 0;
     off_.clear();
     if (!segs_.empty()) {
         release_segmented();
@@ -569,6 +624,7 @@ int32_t ExpertCache::admit(int64_t layer, int64_t expert) {
 uint8_t* ExpertCache::device_slot(int32_t slot) {
     if (phase_) return slot >= 0 ? static_cast<uint8_t*>(phase_->device_slot(slot)) : nullptr;
     if (slot < 0 || slot >= slots_) return nullptr;
+    if (active_layer_stride_) return base_ + active_layer_offsets_[(size_t) slot];
     if (!off_.empty()) return base_ + off_[(size_t) slot];
     return base_ + (size_t) slot * (size_t) blob_;
 }
@@ -576,6 +632,7 @@ uint8_t* ExpertCache::device_slot(int32_t slot) {
 const uint8_t* ExpertCache::device_slot(int32_t slot) const {
     if (phase_) return slot >= 0 ? static_cast<uint8_t*>(phase_->device_slot(slot)) : nullptr;
     if (slot < 0 || slot >= slots_) return nullptr;
+    if (active_layer_stride_) return base_ + active_layer_offsets_[(size_t) slot];
     if (!off_.empty()) return base_ + off_[(size_t) slot];
     return base_ + (size_t) slot * (size_t) blob_;
 }
@@ -583,6 +640,9 @@ const uint8_t* ExpertCache::device_slot(int32_t slot) const {
 bool ExpertCache::fill_slot(int32_t slot, const uint8_t* host_blob, void* stream, std::string& err, int64_t bytes) {
     if (phase_) { err = "phase cache requires checked immutable profile fill"; return false; }
     const size_t n = (size_t) (bytes > 0 && bytes <= blob_ ? bytes : blob_);
+    if (active_layer_stride_ && n > slot_view_bytes(slot)) {
+        err = "private layer cache fill exceeds active slot view"; return false;
+    }
     uint8_t* dst = device_slot(slot);
     if (dst == nullptr) {
         err = "ExpertCache::fill_slot: slot " + std::to_string(slot) + " is outside 0.." +
@@ -605,6 +665,9 @@ bool ExpertCache::fill_slot(int32_t slot, const uint8_t* host_blob, void* stream
 bool ExpertCache::fill_slot_blocking(int32_t slot, const uint8_t* host_blob, std::string& err, int64_t bytes) {
     if (phase_) { err = "phase cache requires checked immutable profile fill"; return false; }
     const size_t n = (size_t) (bytes > 0 && bytes <= blob_ ? bytes : blob_);
+    if (active_layer_stride_ && n > slot_view_bytes(slot)) {
+        err = "private layer cache fill exceeds active slot view"; return false;
+    }
     uint8_t* dst = device_slot(slot);
     if (dst == nullptr) {
         err = "ExpertCache::fill_slot_blocking: slot outside the arena";
@@ -626,6 +689,9 @@ bool ExpertCache::fill_slot_blocking(int32_t slot, const uint8_t* host_blob, std
 bool ExpertCache::fill_slot_queued(int32_t slot, const uint8_t* host_blob, std::string& err, int64_t bytes) {
     if (phase_) { err = "phase cache requires checked immutable profile fill"; return false; }
     const size_t n = (size_t) (bytes > 0 && bytes <= blob_ ? bytes : blob_);
+    if (active_layer_stride_ && n > slot_view_bytes(slot)) {
+        err = "private layer cache fill exceeds active slot view"; return false;
+    }
     uint8_t* dst = device_slot(slot);
     if (dst == nullptr || host_blob == nullptr) {
         err = dst == nullptr ? "ExpertCache::fill_slot_queued: slot outside the arena"
@@ -653,6 +719,9 @@ bool ExpertCache::sync_queued(std::string& err) {
 bool ExpertCache::verify_slot(int32_t slot, const uint8_t* host_blob, std::string& err, int64_t bytes) {
     if (phase_) { err = "phase cache requires checked immutable profile fill"; return false; }
     const int64_t nb = bytes > 0 && bytes <= blob_ ? bytes : blob_;
+    if (active_layer_stride_ && static_cast<uint64_t>(nb) > slot_view_bytes(slot)) {
+        err = "private layer cache verification exceeds active slot view"; return false;
+    }
     const uint8_t* src = device_slot(slot);
     if (src == nullptr) {
         err = "ExpertCache::verify_slot: slot outside the arena";

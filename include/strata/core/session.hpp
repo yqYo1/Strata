@@ -104,6 +104,9 @@ uint64_t session_init(const ModelGeometry& g, int64_t max_cells, int64_t k, void
 void session_release(SessionState& s);
 
 void session_zero(SessionState& s, const ModelGeometry& g, const float* R_init, void* stream);
+/// Checks each reset submission, including streamed map reset. Caller must drain
+/// before reuse; false requires fail-stop if completion/ownership is uncertain.
+bool session_zero_checked(SessionState& s, const ModelGeometry& g, const float* R_init, void* stream);
 
 /// One token: layers 0..47 in order, each a `block_layer`, and the residual is updated in place.
 ///

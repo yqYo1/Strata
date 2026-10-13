@@ -28,6 +28,7 @@
 // The order of work is `Memory/R4-design-note.md` §7: slots and residency first, then the split, then the
 // kernel. This is that first step, and the step it unblocks is the one that can be measured.
 #pragma once
+#include "strata/core/layer_bulk_layout.hpp"
 
 #include "strata/core/phase_cache_owner.hpp"
 #include <cstddef>
@@ -100,16 +101,31 @@ public:
     /// Plan v0.3 P6: slots of the given sizes, back to back (a native pack's blobs differ per layer, and a
     /// profile-filled tier never moves an expert to another layer's slot, so each slot keeps its first size).
     bool open_sized(const std::vector<int64_t>& slot_bytes, int64_t n_layers, int64_t n_expert, std::string& err);
+    /// Only the layer-major private ordinary allocation may use a compact active view.
+    bool open_private_layer_sized(const std::vector<int64_t>& sizes, int64_t layers, int64_t experts, std::string& err);
+    bool set_private_layer_stride(uint64_t stride, bool readers_drained);
+    bool restore_private_layer_layout(bool readers_drained);
+    uint64_t slot_view_bytes(int32_t slot) const {
+        if (slot < 0 || slot >= slots_) return 0;
+        const auto* offsets = slot_offsets();
+        return offsets ? offsets[slot + 1] - offsets[slot] : static_cast<uint64_t>(blob_);
+    }
     /// Byte offset of each slot in the arena (null for uniform slots).
-    const uint64_t* slot_offsets() const { return phase_ ? phase_->capacity_offsets() : (off_.empty() ? nullptr : off_.data()); }
+    const uint64_t* slot_offsets() const {
+        if (phase_) return phase_->capacity_offsets();
+        return active_layer_stride_ ? active_layer_offsets_.data() : (off_.empty() ? nullptr : off_.data());
+    }
     void close();
     bool open_phase(const std::vector<int64_t>& blobs, uint32_t experts, uint32_t extras,
                     uint64_t virtual_cap, std::string& err);
     bool phase_fill(uint32_t layer, uint32_t expert, const void* immutable_blob, uint64_t bytes, std::string& err);
     bool phase_publish(std::string& err);
+    bool phase_begin_prefill(const PhaseCacheOwner::Quiesce&, std::string& err);
+    bool phase_finish_prefill(const PhaseCacheOwner::Quiesce&, std::string& err);
     bool phase_invalidate_extras(std::string& err);
     bool phase_close(const PhaseCacheOwner::Quiesce& retire_readers, std::string& err);
     PhaseCacheOwner* phase_owner() { return phase_.get(); }
+    const PhaseCacheOwner* phase_owner() const { return phase_.get(); }
     bool phase_mode() const { return phase_ != nullptr; }
     int32_t* phase_device_residency() const { return phase_d_res_; }
     int64_t slot_capacity() const { return phase_ ? phase_->capacity() : slots_; }
@@ -227,6 +243,7 @@ public:
             if (s == phase_->capacity()) return phase_->reserved_bytes();
             return s >= 0 && s < phase_->capacity() ? phase_->capacity_offsets()[s] : 0;
         }
+        if (active_layer_stride_) return s >= 0 && s <= slots_ ? active_layer_offsets_[(size_t) s] : 0;
         return off_.empty() ? (uint64_t) s * (uint64_t) blob_ : off_[(size_t) s];
     }
 
@@ -263,7 +280,10 @@ private:
     /// R4.2g.  `per_layer_` off (the default) leaves `next_free_` as the only admission counter, so the
     /// pre-existing path is untouched.
     bool per_layer_ = false;
+    bool private_layer_layout_ = false;
     std::vector<int32_t> layer_next_;   ///< [n_layers] -> that layer's next free slot
+    uint64_t active_layer_stride_ = 0;
+    layer_bulk::Offsets active_layer_offsets_{};
     std::vector<uint64_t> off_;         ///< plan v0.3 P6: slot offsets (slots + 1 entries) when sized
     int64_t admitted_ = 0;
 };

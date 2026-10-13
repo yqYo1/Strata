@@ -118,9 +118,22 @@ bool exchange_cache_complement(std::vector<uint64_t>& offsets, size_t in, size_t
 /// Phase 2 has NO cache (`phase-2-correct-engine.md`: hit rate `h = 0`), so the only implementation is a
 /// file-backed reader.  The interface exists anyway because Phase 3 replaces exactly this object with the VRAM
 /// cache, and because a test can supply an in-memory source without a 34 GB artifact.
+class ExpertSource;
+struct ExpertLayerSpan {
+    const uint8_t* data = nullptr;
+    uint64_t bytes = 0, stride = 0;
+    int64_t layer = -1, experts = 0;
+    const ExpertSource* owner = nullptr;
+};
 class ExpertSource {
 public:
     virtual ~ExpertSource() = default;
+    /// Immutable owned contiguous Host-USM view, valid until source close/destruction,
+    /// including across blob() calls. Default declines; not the short blob() lease.
+    /// Inspecting a view does not count reads. Account only after checked full consumption.
+    virtual bool layer_span(int64_t layer, ExpertLayerSpan& out) const { (void) layer; out = {}; return false; }
+    virtual void consumed_layer_span(const ExpertLayerSpan& span) { (void) span; }
+
 
     /// The expert-layout blob for `(layer, expert)`, or nullptr if it cannot be produced.
     ///
@@ -696,6 +709,8 @@ public:
 
     /// Only genuine owned Host-USM arena bytes; no mmap/transient/registered substitute.
     const uint8_t* phase_blob(int64_t layer, int64_t expert, uint64_t bytes);
+    bool layer_span(int64_t layer, ExpertLayerSpan& out) const override;
+    void consumed_layer_span(const ExpertLayerSpan& span) override;
     bool mapped() const { return base_ != nullptr; }
     int64_t blobs() const { return blobs_; }
     const uint8_t* blob(int64_t layer, int64_t expert) override;
@@ -720,6 +735,7 @@ public:
     double load_copy_seconds() const { return load_copy_s_; }
 
 private:
+    bool layer_spans_owned_ = false; ///< exact initial Host-USM mode, no split registration
     void* arena_ = nullptr;          ///< the PinnedArena, owned
     void* map_ = nullptr;            ///< STRATA_ARENA_MMAP: the arena file, mapped read-only (not the PinnedArena)
     uint64_t map_bytes_ = 0;

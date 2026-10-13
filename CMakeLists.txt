@@ -477,7 +477,7 @@ if(STRATA_ENABLE_XE)
     add_executable(native_grouped_gemm_event_bench tools/native_grouped_gemm_event_bench.cpp)
     # Explicitly Main-owned finite actual VMM fixture; not registered with CTest.
     add_executable(phase_cache_vmm_test tools/test_phase_cache_vmm.cpp)
-    target_link_libraries(phase_cache_vmm_test PRIVATE strata_core)
+    target_link_libraries(phase_cache_vmm_test PRIVATE strata_engine)
     target_link_libraries(native_grouped_gemm_event_bench PRIVATE strata_kernels)
     # Manually owned runtime fixture: no unguarded GPU CTest registration.
     add_executable(native_copy_stream_test tools/test_native_copy_stream.cpp)
