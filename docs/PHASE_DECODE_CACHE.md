@@ -120,3 +120,40 @@ capacity and actual run chunk T. This guard does not replace physical peak
 measurement. Runtime capacity qualification requires first-use chooser / GEMM
 peaks, repeated GEN, the 4095 tail and final token, logits / persistent state
 comparisons, full 262144 context and continuation / restore checks.
+
+## Diagnostic capture of the first serve logit row
+
+Both `STRATA_SERVE_FIRST_ROW_CAPTURE=1` and `STRATA_SERVE_FIRST_ROW_DIR`, naming an
+existing private output directory, enable this diagnostic. Absent, `0`, `01`, and
+`true` are OFF. When OFF, this diagnostic performs no row allocation, copy, or
+file IO. Do not use it for speed measurements.
+
+This route requires the existing phase-cache and head lease contracts. It accepts
+only ordinary serial `GEN 1` on one GPU, with `--spec 1 --suffix-draft 0
+--lookup-chain 0`, and prompt/conversation caches and saves, adaptive swaps,
+batch, MTP, pipeline, and `--dump-logits` disabled. Besides startup settings, it
+checks actual fresh state, zero reused tokens, and the first Verifier window's
+T=1 and position P-1. It rejects incompatible requests and exits without releasing
+owners on uncertain copy or phase failure.
+
+After ordinary prefill, head reload, and phase publication, it reads the full FP32
+vocabulary row through `Verifier::copy_logits(0)` after the first successful
+window without NaN/Inf. It publishes `request-N.bin` only after the request, last
+commit, and phase completion succeed. The layout is int32 vocabulary, int32
+rows=1, then vocabulary FP32 values. COPIED on stderr means incomplete; COMPLETE
+records request index, actual prompt length P, predicted position P-1, source row
+0, actual reuse 0, vocabulary, byte size, and the completed filename.
+
+Each process reserves at most 64 requests and 64 MiB in total. Creation, write,
+flush, close, byte size, and finite values are checked. It creates `.partial`
+exclusively and publishes only completed files through an exclusive hard link,
+so the output filesystem must support hard links. It never overwrites an existing
+name. Failed partials are not completed captures. Successful partial links also
+remain: Main reviews hashes and required evidence after the run closes, then
+follows [artifact retention](ARTIFACT_RETENTION.md) for cleanup.
+
+For fixed history comparisons, each request's prefix is `prompt + follow[:i]`.
+The generated argmax token does not need to feed the next history. An external
+controller binds each prefix, target, completed row, and source/binary identity.
+A single captured row does not establish full sequence teacher forcing, NLL,
+full quality, 256K, RESTORE, or a speed pass.

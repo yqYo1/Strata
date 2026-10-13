@@ -20,6 +20,7 @@
 #include "strata/core/runtime.hpp"
 #include "strata/core/device.hpp"
 #include "strata/core/phase_serve_cycle.hpp"
+#include "strata/core/serve_first_row_capture.hpp"
 #include "strata/core/expert_cache.hpp"
 #include "strata/core/conversation_snapshot.hpp"
 #include "strata/core/conversation_disk.hpp"
@@ -4143,6 +4144,25 @@ int main(int argc, char** argv) {
         std::fflush(stderr); std::fflush(stdout);
         std::_Exit(1); // retain all owners/buffers on uncertain work; never unwind/free pending DMA
     };
+    const bool serve_first_row = strata::core::serve_first_row_opt_in(std::getenv("STRATA_SERVE_FIRST_ROW_CAPTURE"));
+    strata::core::ServeFirstRowCapture first_row_capture;
+    if (serve_first_row) {
+        // Reuse the qualified phase contract and its observed fresh-state gates;
+        // this diagnostic needs the actual prefill -> reload -> Verifier route.
+        if (!phase_cache || !phase_head_lease || !o.serve || multi_gpu || split_same || !stages.empty() ||
+            o.batch != 0 || o.pipeline_windows != 0 || !o.mtp.empty() || o.spec != 1 ||
+            o.suffix_draft != 0 || o.lookup_chain != 0 || o.prompt_cache != 0 ||
+            o.conversation_cache_mib != 0 || !o.conversation_save.empty() || o.adapt_swaps != 0 ||
+            o.adapt_async > 0 || !o.dump_logits.empty())
+            phase_fatal("serve-first-row requires phase-cache/head-lease/fresh single-GPU serve spec1/max_new1, "
+                        "no batch/MTP/suffix/lookup/reuse/adaptive/dump-logits");
+        std::string capture_error;
+        try {
+            if (!first_row_capture.open(std::getenv("STRATA_SERVE_FIRST_ROW_DIR"), capture_error))
+                phase_fatal("serve-first-row: " + capture_error);
+        } catch (const std::exception& exception) { phase_fatal(exception.what()); }
+        std::fprintf(stderr, "strata serve-first-row: ENABLED max_requests=64 max_bytes=67108864 diagnostic_only=1\n");
+    }
     const auto phase_env_is = [](const char* name, const char* expected) {
         const char* value = std::getenv(name);
         return value && std::strcmp(value, expected) == 0;
@@ -8612,6 +8632,11 @@ int main(int argc, char** argv) {
                 continue;
             }
             const int64_t n = (int64_t) ids.size();
+            std::vector<float> captured_first_row; // empty/no allocation when opt-in is OFF
+            if (serve_first_row && (max_new != 1 || geni || req_pin != 0 || req_pcie_frac != 0.0)) {
+                std::printf("ERR serve-first-row requires fresh ordinary GEN max_new=1 pin=0 PCIe0\n");
+                std::fflush(stdout); continue;
+            }
             if (phase_cache) {
                 const auto* owner = xcache.phase_owner();
                 strata::core::PhaseFreshState fresh;
@@ -8734,6 +8759,8 @@ int main(int argc, char** argv) {
             bool bad = false;
             for (int64_t t : ids) bad = bad || t < 0 || t >= n_vocab;
             if (bad) { std::printf("ERR a token id is outside the vocabulary\n"); continue; }
+            if (serve_first_row && !first_row_capture.begin(ver.vocab(), err))
+                phase_fatal("serve-first-row: " + err);
             const auto phase_request_started = phase_cache ? Clock::now() : Clock::time_point{};
             if (phase_cache) {
                 const auto before = xcache.phase_owner()->timings();
@@ -9024,6 +9051,9 @@ int main(int argc, char** argv) {
                 }
             }
             int64_t reread_to = -1;   // STRATA_CKPT_REREAD only: read [0, reread_to) again instead of restoring
+            if (serve_first_row && (resume != 0 || from_live || live_ok || !checks.empty() ||
+                tail_ckpt_len != -1 || conversations.size() || conversations.bytes() || disk.enabled()))
+                phase_fatal("serve-first-row actual reuse state is not empty");
             if (resume == 0) {
                 strata::core::session_zero(ss, g, nullptr, main_cs);
                 const bool fresh_zero_done = strata::gpu::stream_sync(main_stream);
@@ -10318,6 +10348,10 @@ int main(int argc, char** argv) {
                     std::printf("ERR the K/V cannot grow: no VRAM is left\n");
                     return 1;
                 }
+                if (serve_first_row && (!first_window || produced_n != 0 || max_new != 1 || T != 1 ||
+                    p != n - 1 || resume != 0 || use_mtp || from_sfx || chain_n != 0 ||
+                    !phase_cycle.workspace_retired() || phase_cycle.failed()))
+                    phase_fatal("serve-first-row effective first-window/phase/position contract failed");
                 tr("window", p, T);
                 const Clock::time_point tw0 = Clock::now();
                 dt_pre += std::chrono::duration<double, std::milli>(tw0 - round0).count();
@@ -10357,6 +10391,24 @@ int main(int argc, char** argv) {
                     }
                     finish = "nonfinite";
                     break;
+                }
+                if (serve_first_row) {
+                    try { captured_first_row.resize((size_t) ver.vocab()); }
+                    catch (const std::exception& exception) { phase_fatal(exception.what()); }
+                    // Checked Verifier API synchronizes the row copy. On failure
+                    // exit without unwinding uncertain device work or DMA owners.
+                    try {
+                        if (!ver.copy_logits(0, captured_first_row.data()))
+                            phase_fatal("serve-first-row checked logits copy failed");
+                    } catch (const std::exception& exception) { phase_fatal(exception.what()); }
+                    if (!std::all_of(captured_first_row.begin(), captured_first_row.end(),
+                                     [](float value) { return std::isfinite(value); }))
+                        phase_fatal("serve-first-row NaN/Inf logits; no completed file");
+                    std::fprintf(stderr, "strata serve-first-row: COPIED request=%llu prompt_P=%lld "
+                                         "predicted_position=%lld source_row=0 effective_T=%d actual_reuse=%lld complete=0\n",
+                                 (unsigned long long) first_row_capture.request(), (long long) n,
+                                 (long long) p, T, (long long) resume);
+                    std::fflush(stderr);
                 }
                 // the window's first a + 1 tokens are in the session now (the last output is not: it is next x)
                 for (int i = 0; i <= a; ++i) consumed.push_back(window[(size_t) i]);
@@ -10578,6 +10630,14 @@ int main(int argc, char** argv) {
             const int64_t req_hits = drive.d.cache_hits - decode_hits0;
             if (phase_cache && !phase_cycle.complete_gen(!cancelled && !nf_hit && !nan_flush && !stop_req.load(), err))
                 phase_fatal("unsuccessful decode cannot complete a phase request or admit another GEN: " + err);
+            if (serve_first_row) {
+                if (produced_n != 1 || cancelled || nf_hit || nan_flush || stop_req.load() || captured_first_row.empty())
+                    phase_fatal("serve-first-row incomplete request cannot publish");
+                try {
+                    if (!first_row_capture.publish(captured_first_row, n, err))
+                        phase_fatal("serve-first-row: " + err);
+                } catch (const std::exception& exception) { phase_fatal(exception.what()); }
+            }
             const int64_t req_look = (drive.d.cache_hits + drive.d.cache_admitted + drive.d.cache_refused) - decode_look0;
             const int64_t req_offload = drive.d.offload_entries - offload0;
             // #471: the prompt tokens this request read - all the fresh ones, or as far as the prompt pass got when a
