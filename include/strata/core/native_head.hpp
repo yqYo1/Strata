@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 #pragma once
 
+#include "strata/core/head_upload_owner.hpp"
 #include <cstddef>
 #include <cstdint>
 #include <string>
@@ -22,9 +23,23 @@ public:
     NativeHead& operator=(const NativeHead&) = delete;
 
     bool load(const std::string& gguf, int64_t n_in, int64_t n_out, std::string& err);
+    // Explicit caller contract: checked device completion and every captured reader retired.
+    struct DrainedReaders { bool device_complete = false, graphs_retired = false; };
+    bool release_for_prefill(DrainedReaders proof, std::string& err);
+    bool reload_after_prefill(std::string& err);
+    int source_type() const { return source_type_; }
+    int input_dim() const { return n_in_; }
+    int output_dim() const { return n_out_; }
+    uint64_t scratch_bytes() const;
     bool run(const float* mixed, float* logits, void* stream, std::string& err) const;
     uint64_t weight_bytes() const { return bytes_; }
-    bool loaded() const { return weights_ != nullptr; }
+    bool loaded() const { return weights_ != nullptr && !upload_.uncertain(); }
+    bool poisoned() const { return upload_.uncertain(); }
+    uint64_t cpu_payload_bytes() const { return source_snapshot_ ? source_snapshot_->size() : 0; }
+    struct UploadState { const void* weights; const void* scratch; const void* source;
+                         uint64_t bytes, scratch_bytes; bool uncertain; };
+    UploadState upload_state() const { return {upload_.weights(), upload_.scratch(), upload_.source(),
+        upload_.bytes(), upload_.scratch_bytes(), upload_.uncertain()}; }
     /// Plan v0.3 P6: the GGUF blocks, for the verify window's multi-column head.
     const void* weights() const { return weights_; }
     int type() const { return type_; }
@@ -32,11 +47,16 @@ public:
     size_t row_bytes() const { return n_out_ > 0 ? (size_t) (bytes_ / (uint64_t) n_out_) : 0; }
 
 private:
+    HeadUploadOwner upload_;
+    std::shared_ptr<const HeadUploadOwner::Payload> source_snapshot_;
     void* weights_ = nullptr;
     void* scratch_ = nullptr;
     uint64_t bytes_ = 0;
     int n_in_ = 0, n_out_ = 0;
     int type_ = -1;
+    int source_type_ = -1, converted_type_ = -1;
+    std::string source_path_;
+    bool leased_ = false;
 };
 
 /// Plan v0.3 P6: `token_embd.weight` in its GGUF form (the IQ model files), in mapped pinned host memory: a row

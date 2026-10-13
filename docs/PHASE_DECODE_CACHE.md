@@ -71,3 +71,52 @@ slot counts as copy counts. Failed operation elapsed spans and attempted bytes
 are retained. `host_elapsed_ms` spans marked `nested=1` include nested work: their
 sum is not wall time. They are neither GPU event timing nor transfer-only device
 time. Compare the upstream client's whole request wall separately.
+
+
+## Native head prefill lease and fixed 12288 capacity
+
+`STRATA_PHASE_HEAD_LEASE=1` defaults to OFF. It defers Prefill initialization until
+first GEN, then releases native head weights and scratch after quiescence and
+reader graph retirement at each GEN. After the complete Prefill run and reset,
+it restores the head with the same upload and conversion from immutable original
+raw GGUF bytes copied into CPU RAM before the first upload. Conversion uses the existing
+Runtime checked drain to check stored asynchronous errors and include its watchdog. The snapshot holds
+only the byte count validated against supported type and shape. Reload does not
+reopen the file or accept changed contents with unchanged metadata. Additional
+CPU payload storage requires exact `STRATA_PHASE_HEAD_LEASE=1`; no head D2H copy
+is made.
+Verifier retains the same NativeHead object and captures new graphs after reload.
+An upload or conversion failure with unknown submission / completion retains
+weights, scratch and the original CPU source owner, pointers and byte counts,
+and rejects retry / run / release / reload. An uncertain owner destructor
+fails-stop before freeing a DMA source. Only allocation failures before any
+submission can safely clean up and retry. A failed release API also poisons the owner
+without assuming whether storage was released; further release and retry are refused.
+Each successful release clears its pointer before the next release, preventing a later
+failure from causing a double free. Failure, cancellation,
+nonfinite values and unknown completion fail-stop; reload is not recovery.
+Head retirement and restoration time enter prompt_ms.
+
+`STRATA_PREFILL_SCRATCH_ALIAS=1` also defaults to OFF. On an in-order compute queue,
+it shares emb / bo / ple_emb and qkv / FP32 y after their last readers complete.
+Byte counts, owned / borrowed carve and relayout use the same startup setting.
+FP32 y and its normalizer retain their calculations.
+
+Fixed 12288 capacity requires explicit `STRATA_PHASE_PREFILL_12K=1`,
+`--prefill 12288`, and both lease and alias above. All other phase restrictions
+remain. Without the opt-in, capacity stays fixed at 8192. Auto, other capacities,
+BF16X2 and separately owned KV staging are rejected. Initialization and every
+fresh GEN reinitialization use the same capacity; insufficient memory never
+reduces it to 8192. Full context remains 262144.
+
+After head release, fresh device free is compared against recounted workspace,
+token buffer, mode1 identity table, conditional GDN chooser and lazy GEMM bounds,
+and existing `--vram-reserve-mib`. KV staging is reported inside workspace without
+double counting. Reserve is the existing operator setting (default 700 MiB,
+positive required), leaving room for uncertain JIT, backend, provider and
+fragmentation costs. No GPU model identifier selects admission. Logs distinguish
+requested-byte estimates, the actual shared-region maximum count, configured
+capacity and actual run chunk T. This guard does not replace physical peak
+measurement. Runtime capacity qualification requires first-use chooser / GEMM
+peaks, repeated GEN, the 4095 tail and final token, logits / persistent state
+comparisons, full 262144 context and continuation / restore checks.

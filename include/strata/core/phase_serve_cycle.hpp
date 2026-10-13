@@ -15,6 +15,16 @@ inline bool phase_cache_requested() {
     static const bool requested = phase_cache_opt_in(std::getenv("STRATA_PHASE_DECODE_CACHE"));
     return requested;
 }
+inline bool phase_prefill_capacity_admitted(bool phase, bool opt12k, bool lease, bool alias,
+                                            bool automatic, int64_t requested) {
+    if (!phase) return !opt12k;
+    return !automatic && (opt12k ? lease && alias && requested == 12288 : requested == 8192);
+}
+inline bool phase_requested_add(uint64_t bytes, uint64_t& total) {
+    if (bytes > std::numeric_limits<uint64_t>::max() - total) return false;
+    total += bytes;
+    return true;
+}
 inline bool phase_request_kind(const std::string& line) {
     return line == "QUIT" || line.rfind("GEN ", 0) == 0;
 }
@@ -40,13 +50,21 @@ public:
     using Operation = std::function<bool(std::string&)>;
     Operation quiesce, retire_workspace, grow_fill_publish, invalidate_detach, reinit_workspace;
     Operation retire_readers;
+    Operation release_head, reload_head;
     bool begin_gen(std::string& error) {
         PhaseLoggedCall timing("begin_gen");
+        if (static_cast<bool>(release_head) != static_cast<bool>(reload_head))
+            return fail("phase cycle: incomplete head lease callbacks", error);
         if (failed_ || active_ || decoding_ || requests_ == std::numeric_limits<uint64_t>::max()) return fail("phase cycle: overlapping/failed GEN", error);
         if (retired_) {
             if (!call(quiesce, "quiesce", error) || !call(retire_readers, "graph_retire", error) ||
-                !call(invalidate_detach, "invalidate_detach", error) || !call(reinit_workspace, "reinit_workspace", error)) return false;
+                !call(invalidate_detach, "invalidate_detach", error) ||
+                (release_head && !call(release_head, "head_release", error)) || !call(reinit_workspace, "reinit_workspace", error)) return false;
             retired_ = false;
+        }
+        if (requests_ == 0 && release_head) {
+            if (!call(quiesce, "quiesce", error) || !call(retire_readers, "graph_retire", error) ||
+                !call(release_head, "head_release", error) || !call(reinit_workspace, "reinit_workspace", error)) return false;
         }
         active_ = true;
         ++requests_;
@@ -57,6 +75,7 @@ public:
         if (failed_ || !active_ || retired_) return fail("phase cycle: invalid prompt boundary", error);
         if (!call(quiesce, "quiesce", error) || !call(retire_workspace, "retire_workspace", error)) return false;
         retired_ = true;
+        if (reload_head && !call(reload_head, "head_reload", error)) return false;
         if (!call(grow_fill_publish, "grow_fill_publish", error)) return false;
         active_ = false;
         decoding_ = true;

@@ -2295,7 +2295,15 @@ int main(int argc, char** argv) {
         else if (a == "--vram-elastic") o.vram_elastic = true;
         else if (a == "--vram-segment-mib") o.vram_segment_mib = std::strtoll(next("--vram-segment-mib"), nullptr, 10);
         else if (a == "--vram-reserve-mib") {
-            o.vram_reserve_mib = (int) std::strtol(next("--vram-reserve-mib"), nullptr, 10);
+            const char* value = next("--vram-reserve-mib");
+            char* end = nullptr;
+            errno = 0;
+            const long reserve = std::strtol(value, &end, 10);
+            if (errno == ERANGE || end == value || *end != '\0' || reserve < 0 || reserve > std::numeric_limits<int>::max()) {
+                std::fprintf(stderr, "strata generate: --vram-reserve-mib requires a bounded nonnegative integer\n");
+                return 2;
+            }
+            o.vram_reserve_mib = static_cast<int>(reserve);
             o.vram_reserve_given = true;
         }
         else if (a == "--vram-reserve-later-mib")
@@ -2303,7 +2311,16 @@ int main(int argc, char** argv) {
         else if (a == "--prefill") {
             const std::string v = next("--prefill");
             o.prefill_auto = v == "auto";
-            o.prefill_chunk = o.prefill_auto ? 8192 : std::atoll(v.c_str());
+            if (o.prefill_auto) o.prefill_chunk = 8192;
+            else {
+                char* end = nullptr;
+                errno = 0;
+                o.prefill_chunk = std::strtoll(v.c_str(), &end, 10);
+                if (errno == ERANGE || end == v.c_str() || *end != '\0' || o.prefill_chunk < 0) {
+                    std::fprintf(stderr, "strata generate: --prefill requires a nonnegative bounded integer or auto\n");
+                    return 2;
+                }
+            }
         }
         else if (a == "--no-split-rows") o.no_split_rows = true;
         else if (a == "--no-prefill-borrow") o.no_prefill_borrow = true;
@@ -2469,6 +2486,27 @@ int main(int argc, char** argv) {
             // tokens would look like a working run.
             std::fprintf(stderr, "unknown argument: %s\n", a.c_str());
             usage();
+            return 2;
+        }
+    }
+    // Check raw options before generic normalization can disable pipeline or
+    // rewrite auto capacity, and before any model/device allocation.
+    {
+        const bool phase = strata::core::phase_cache_requested();
+        const bool opt12k = strata::core::phase_cache_opt_in(std::getenv("STRATA_PHASE_PREFILL_12K"));
+        const bool lease = strata::core::phase_cache_opt_in(std::getenv("STRATA_PHASE_HEAD_LEASE"));
+        const bool alias = strata::core::phase_cache_opt_in(std::getenv("STRATA_PREFILL_SCRATCH_ALIAS"));
+        if ((opt12k || (phase && o.prefill_chunk == 12288)) &&
+            (!strata::core::phase_prefill_capacity_admitted(phase, opt12k, lease, alias,
+                                                          o.prefill_auto, o.prefill_chunk) ||
+             !o.serve || !o.mtp.empty() || o.batch != 0 || o.pipeline_windows != 0 ||
+             !o.no_prefill_borrow || !o.layer_split.empty() || !o.split_device.empty() ||
+             o.prompt_cache != 0 || o.conversation_cache_mib != 0 || !o.conversation_save.empty() ||
+             o.max_context != 262144 || o.kv != "int8" || o.kv_resident != 32768 ||
+             o.vram_elastic || o.kv_grow != 0 || o.vram_reserve_mib <= 0 ||
+             (o.native_head_gguf.empty() && o.native_preset.empty()) || o.vision || o.full_context_probe)) {
+            std::fprintf(stderr, "strata phase-cache: 12288 requires explicit phase/head-lease/scratch-alias=1, "
+                "raw --prefill 12288/pipeline0 and singleGPU serve/noMTP/noBorrow/noReuse/int8KV32768/context262144\n");
             return 2;
         }
     }
@@ -3983,8 +4021,9 @@ int main(int argc, char** argv) {
             std::fprintf(stderr, "strata generate: %s%s\n", err.c_str(), vram_free_note().c_str());
             return 1;
         }
-        std::fprintf(stderr, "strata generate: experimental native Q5_K head, %llu bytes, in %.1f s\n",
-                     (unsigned long long) native_head.weight_bytes(),
+        std::fprintf(stderr, "strata generate: experimental native head source_type=%d native_type=%d dims=%dx%d, %llu bytes, cpu_payload=%llu, in %.1f s\n",
+                     native_head.source_type(), native_head.type(), native_head.input_dim(), native_head.output_dim(),
+                     (unsigned long long) native_head.weight_bytes(), (unsigned long long) native_head.cpu_payload_bytes(),
                      std::chrono::duration<double>(std::chrono::steady_clock::now() - head_t0).count());
     }
     std::vector<float> logits((size_t) n_vocab);
@@ -4095,6 +4134,9 @@ int main(int argc, char** argv) {
     // numbers if the slots do not fit, instead of handing back a cache smaller than it was asked for.
     mem_mark("the weights, the session and the drafter");
     const bool phase_cache = strata::core::phase_cache_requested();
+    static const bool phase_prefill_12k = strata::core::phase_cache_opt_in(std::getenv("STRATA_PHASE_PREFILL_12K"));
+    const int64_t phase_prefill_capacity = phase_prefill_12k ? 12288 : 8192;
+    static const bool phase_head_lease = strata::core::phase_cache_opt_in(std::getenv("STRATA_PHASE_HEAD_LEASE"));
     auto phase_fatal = [](const std::string& reason) -> void {
         std::fprintf(stderr, "strata phase-cache: FAILED %s\n", reason.c_str());
         std::printf("FATAL phase-cache %s\n", reason.c_str());
@@ -4110,7 +4152,7 @@ int main(int argc, char** argv) {
         return !value || std::strcmp(value, "0") == 0;
     };
     if (phase_cache && (!o.serve || multi_gpu || split_same || !stages.empty() || !o.mtp.empty() || o.batch != 0 ||
-        o.pipeline_windows != 0 || !o.no_prefill_borrow || o.prefill_auto || o.prefill_chunk != 8192 ||
+        o.pipeline_windows != 0 || !o.no_prefill_borrow || o.prefill_auto || o.prefill_chunk != phase_prefill_capacity ||
         o.no_pool || o.pcie_frac != 0.0 || o.adapt_swaps != 0 || o.vram_elastic || o.kv_grow != 0 ||
         o.max_context != 262144 || o.kv != "int8" || o.kv_resident != 32768 || o.prompt_cache != 0 ||
         o.conversation_cache_mib != 0 || !o.conversation_save.empty() || o.vision || o.resident_cpu_experts ||
@@ -4125,9 +4167,24 @@ int main(int argc, char** argv) {
         !phase_env_is("STRATA_PREFILL_FIRST", "0") || !phase_env_is("STRATA_PREFILL_ISSUER", "0") ||
         !phase_env_off("STRATA_PREFILL_CPU_SHARE") ||
         !phase_env_off("STRATA_PREFILL_CPU_GATE")))
-        phase_fatal("unsupported mode: require serve/singleGPU/noMTP/noBorrow/chunk8192/batch0/pipeline0/PCIe0/"
+        phase_fatal("unsupported mode: require serve/singleGPU/noMTP/noBorrow/validated-fixed-chunk/batch0/pipeline0/PCIe0/"
                     "adapt0/nativeHostUSM/cache128-perlayer/int8KV32768/context262144/noGrow/noReuse/segmented1/"
                     "deviceplan0/residentgraph0/native-dequant-batch1");
+    if (phase_head_lease && (!phase_cache || !native_head.loaded() || o.native_head_gguf.empty()))
+        phase_fatal("head lease requires qualified phase-cache serve/noMTP/native-head mode");
+    if (!strata::core::phase_prefill_capacity_admitted(phase_cache, phase_prefill_12k, phase_head_lease,
+        phase_env_is("STRATA_PREFILL_SCRATCH_ALIAS", "1"), o.prefill_auto, o.prefill_chunk))
+        phase_fatal("unsupported fixed phase prefill capacity/opt-in combination");
+    if (phase_prefill_12k && (!phase_cache || !phase_head_lease || o.prefill_auto ||
+        o.prefill_chunk != 12288 || !phase_env_is("STRATA_PREFILL_SCRATCH_ALIAS", "1") ||
+        !phase_env_off("STRATA_PREFILL_BF16X2") || o.vram_reserve_mib <= 0))
+        phase_fatal("STRATA_PHASE_PREFILL_12K=1 requires phase-cache/head-lease/scratch-alias=1, "
+                    "--prefill 12288, unchanged FP32 mode and positive --vram-reserve-mib");
+    strata::prefill::PhaseCapacityEstimate phase_capacity_estimate;
+    if (phase_prefill_12k) {
+        try { phase_capacity_estimate = strata::prefill::Prefill::phase_capacity_estimate(wt, g, ss, phase_prefill_capacity); }
+        catch (const std::exception& exception) { phase_fatal(exception.what()); }
+    }
     // Experimental +16 ranked experts/layer: bounded source-v3 comparison quota,
     // not an optimal size. Actual VMM/free/max capability gates decide admission;
     // default OFF preserves the ordinary cache on devices without this capacity.
@@ -4186,8 +4243,7 @@ int main(int argc, char** argv) {
             const auto& format = layout.fmt[layer];
             strata::kernels::cpu::NativeFmt checked;
             if (phase_rank[layer].size() != 3 + phase_extra_per_layer ||
-                format.n_embd != g.n_embd ||
-                format.n_ff != strata::kernels::cpu::FF ||
+                format.n_embd != g.n_embd || format.n_ff != strata::kernels::cpu::FF ||
                 !strata::kernels::cpu::native_fmt(format.gu_type, format.d_type, g.n_embd, strata::kernels::cpu::FF,
                                                 checked, err) || checked.n_embd != g.n_embd ||
                 checked.n_ff != strata::kernels::cpu::FF || checked.bytes != layout.blob_bytes(native_layer) ||
@@ -5937,7 +5993,7 @@ int main(int argc, char** argv) {
         if (multi_gpu) sp.set_stage(0, split_at[0], &stages[0]->sp);
         // the pool is idle while a prompt is read unless batch slots decode between its parts
         if (!multi_gpu && o.batch <= 0 && !o.no_pool) sp.set_cpu_pool(&pool);
-        if (!sp.init(wt, g, ss, srcp, &xcache, host_res.data(), o.prefill_chunk, main_cs, err, borrow, borrow_bytes)) {
+        if (!phase_head_lease && !sp.init(wt, g, ss, srcp, &xcache, host_res.data(), o.prefill_chunk, main_cs, err, borrow, borrow_bytes)) {
             std::fprintf(stderr, "strata serve: %s\n", err.c_str());
             if (err.find("fit") != std::string::npos)   // #85: say what frees VRAM
                 std::fprintf(stderr, "strata serve: the GPU has too little free VRAM for the prompt path: turn images "
@@ -7990,6 +8046,19 @@ int main(int argc, char** argv) {
         };
         if (phase_cache) {
             phase_chunk_callback = sp.on_chunk;
+            if (phase_prefill_12k) {
+                const auto original_chunk_callback = phase_chunk_callback;
+                phase_chunk_callback = [&, original_chunk_callback](const float* rows, int64_t count,
+                        int64_t pos, std::string& e) {
+                    if (count <= 0 || count > phase_prefill_capacity || pos < 0 ||
+                        pos > ss.max_cells || count > ss.max_cells - pos) {
+                        e = "phase actual chunk exceeds admitted extent"; return false;
+                    }
+                    std::fprintf(stderr, "strata phase-capacity: configured=%lld actual_run_T=%lld pos=%lld\n",
+                                 (long long) phase_prefill_capacity, (long long) count, (long long) pos);
+                    return !original_chunk_callback || original_chunk_callback(rows, count, pos, e);
+                };
+            }
             phase_stop_callback = sp.should_stop;
             phase_cycle.quiesce = [&](std::string& e) {
                 if (!phase_session_valid()) { e = "persistent SessionState owner/geometry changed"; return false; }
@@ -8002,7 +8071,41 @@ int main(int argc, char** argv) {
                 // wait_commit confirms the remaining GPU commit, pool.run is synchronous.
                 return true;
             };
-            phase_cycle.retire_readers = [&](std::string& e) { return ver.retire_phase_graphs(e); };
+            phase_cycle.retire_readers = [&](std::string& e) {
+                if (!ver.retire_phase_graphs(e)) return false;
+                if (phase_head_lease) {
+                    strata::core::session_graphs_free(gr);
+                    strata::core::token_graph_free(tgraph);
+                }
+                return true;
+            };
+            if (phase_head_lease) {
+                phase_cycle.release_head = [&](std::string& e) {
+                    // Final expert group/ring/pinned-share settings are fixed now.
+                    // Recount before release; never reuse the early validation count.
+                    if (phase_prefill_12k) {
+                        try { phase_capacity_estimate = strata::prefill::Prefill::phase_capacity_estimate(wt, g, ss, phase_prefill_capacity); }
+                        catch (const std::exception& exception) { e = exception.what(); return false; }
+                    }
+                    size_t before = 0, after = 0, total = 0;
+                    if (!strata::gpu::mem_info(&before, &total)) { e = "unknown free before head release"; return false; }
+                    if (!native_head.release_for_prefill({true, true}, e)) return false;
+                    if (!strata::gpu::mem_info(&after, &total)) { e = "unknown free after head release"; return false; }
+                    std::fprintf(stderr, "strata head-lease: released weights=%llu scratch=%llu free_before=%zu free_after=%zu\n",
+                        (unsigned long long) native_head.weight_bytes(), (unsigned long long) native_head.scratch_bytes(), before, after);
+                    return true;
+                };
+                phase_cycle.reload_head = [&](std::string& e) {
+                    if (stop_req.load()) { e = "cancelled before head reload"; return false; }
+                    if (!native_head.reload_after_prefill(e)) return false;
+                    std::fprintf(stderr, "strata head-lease: reloaded source_type=%d native_type=%d weights=%llu scratch=%llu dims=%dx%d cpu_payload=%llu poisoned=%d\n",
+                        native_head.source_type(), native_head.type(),
+                        (unsigned long long) native_head.weight_bytes(), (unsigned long long) native_head.scratch_bytes(),
+                        native_head.input_dim(), native_head.output_dim(),
+                        (unsigned long long) native_head.cpu_payload_bytes(), native_head.poisoned() ? 1 : 0);
+                    return true;
+                };
+            }
             phase_cycle.retire_workspace = [&](std::string& e) {
                 size_t free = 0, total = 0;
                 if (!strata::gpu::mem_info(&free, &total)) { e = "unknown actual free before retirement"; return false; }
@@ -8070,13 +8173,45 @@ int main(int argc, char** argv) {
             };
             phase_cycle.reinit_workspace = [&](std::string& e) {
                 const auto start = Clock::now();
+                if (o.prefill_chunk != phase_prefill_capacity) { e = "phase configured capacity changed"; return false; }
+                if (phase_prefill_12k) {
+                    size_t free = 0, total = 0;
+                    if (!strata::gpu::mem_info(&free, &total)) { e = "unknown free after head release"; return false; }
+                    const auto& counts = phase_capacity_estimate;
+                    const uint64_t reserve = static_cast<uint64_t>(o.vram_reserve_mib) * (1ull << 20);
+                    uint64_t requested = 0;
+                    for (const uint64_t bytes : {counts.workspace, counts.tokens, counts.identity,
+                                               counts.chooser, counts.lazy_gemm, reserve}) {
+                        if (!strata::core::phase_requested_add(bytes, requested)) {
+                            e = "phase requested peak overflow"; return false;
+                        }
+                    }
+                    std::fprintf(stderr, "strata phase-capacity: capacity=%lld workspace_requested=%llu "
+                        "tok_dev_requested=%llu mode1_identity_requested=%llu stage_in_workspace=%llu "
+                        "gdn_set=%llu qsa_set=%llu moe_set=%llu shared_max=%llu "
+                        "conditional_chooser_bound=%llu conditional_lazy_gemm_bound=%llu "
+                        "runtime_reserve=%llu requested_peak_bound=%llu fresh_free=%zu physical_fit_proof=0\n",
+                        (long long) phase_prefill_capacity, (unsigned long long) counts.workspace,
+                        (unsigned long long) counts.tokens, (unsigned long long) counts.identity,
+                        (unsigned long long) counts.stage_in_workspace, (unsigned long long) counts.gdn,
+                        (unsigned long long) counts.qsa, (unsigned long long) counts.moe,
+                        (unsigned long long) std::max({counts.gdn, counts.qsa, counts.moe}),
+                        (unsigned long long) counts.chooser, (unsigned long long) counts.lazy_gemm,
+                        (unsigned long long) reserve, (unsigned long long) requested, free);
+                    // Existing operator reserve covers unbounded JIT/backend/provider/fragmentation
+                    // uncertainty. This requested-byte bound is pending physical peak qualification.
+                    if (requested > free) { e = "insufficient fresh free for requested 12288 bound and runtime reserve; "
+                        "no capacity fallback (operator may tune --vram-reserve-mib)"; return false; }
+                }
                 sp.set_cpu_pool(&pool);
                 sp.on_chunk = phase_chunk_callback;
                 sp.should_stop = phase_stop_callback;
-                if (!sp.init(wt, g, ss, srcp, &xcache, host_res.data(), 8192, main_cs, e, nullptr, 0)) return false;
+                if (!sp.init(wt, g, ss, srcp, &xcache, host_res.data(), phase_prefill_capacity, main_cs, e, nullptr, 0)) return false;
+                if (sp.chunk() != phase_prefill_capacity) { e = "phase workspace capacity mismatch"; return false; }
                 if (!phase_session_valid()) { e = "reinit changed persistent SessionState"; return false; }
-                std::fprintf(stderr, "strata phase-cache: fresh_GEN workspace_reinitialized chunk8192 mapped=%u "
-                                     "capacity=%u session_context262144 requests=%llu reinit_ms=%.3f\n",
+                std::fprintf(stderr, "strata phase-cache: fresh_GEN workspace_reinitialized capacity=%lld actual_capacity=%lld mapped=%u "
+                                     "owner_capacity=%u session_context262144 requests=%llu reinit_ms=%.3f\n",
+                             (long long) phase_prefill_capacity, (long long) sp.chunk(),
                              xcache.phase_owner()->mapped_slots(), xcache.phase_owner()->capacity(),
                              static_cast<unsigned long long>(phase_cycle.requests()),
                              std::chrono::duration<double, std::milli>(Clock::now() - start).count());
@@ -8966,7 +9101,7 @@ int main(int argc, char** argv) {
             static const bool no_short = std::getenv("STRATA_CKPT_REREAD") != nullptr;
             int64_t req_short_read = o.short_read;   // STRATA_PIPELINE_SWITCH may set it per request (short_read=)
             auto windows_ok = [&](int64_t a, int64_t b) -> bool {
-                if (no_short || !sr_cost.windows(b - a, req_short_read,
+                if (phase_head_lease || no_short || !sr_cost.windows(b - a, req_short_read,
                                                  o.short_read_given || req_short_read != o.short_read))
                     return false;
                 if (sp.embd_rows != nullptr)
@@ -9499,7 +9634,7 @@ int main(int argc, char** argv) {
             }
             cpu_jobs.finish(cancelled ? "cancelled_or_nonfinite" : "prompt_complete");
             if (phase_cache) {
-                if (cancelled || nf_hit || stop_req.load()) phase_fatal("unsuccessful prompt cannot retire/grow phase cache");
+                if (cancelled || nf_hit || nan_flush || stop_req.load()) phase_fatal("unsuccessful prompt cannot retire/grow phase cache");
                 const auto before = xcache.phase_owner()->timings();
                 const bool success = phase_cycle.successful_prompt(err);
                 phase_owner_timing_report("successful_prompt", before);

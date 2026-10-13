@@ -11,6 +11,9 @@
 
 #include "strata/core/gpu.hpp"
 #include <climits>
+#include <cstdlib>
+#include <limits>
+#include <sstream>
 #include <cstring>
 #include <exception>
 #include <stdexcept>
@@ -18,74 +21,127 @@
 namespace strata::core {
 
 NativeHead::~NativeHead() {
-    if (scratch_) strata::gpu::free(scratch_);
-    if (weights_) strata::gpu::free(weights_);
+    // Terminate before member destruction can retire a pending DMA source.
+    if (upload_.uncertain()) std::terminate();
+    upload_.clear([](void* pointer) { strata::gpu::free(pointer); });
 }
 
 bool NativeHead::load(const std::string& path, int64_t n_in, int64_t n_out, std::string& err) {
+    if (upload_.uncertain()) { err = "native head upload owner is poisoned"; return false; }
     if (loaded()) { err = "native head is already loaded"; return false; }
     if (n_in <= 0 || n_out <= 0 || n_in > INT_MAX || n_out > INT_MAX || n_in % 256) {
         err = "native head requires positive int32 dimensions and whole 256-value rows";
         return false;
     }
     try {
-        // The architecture is the metadata shard's; output.weight comes from whichever shard of `path`'s model
-        // holds it (shard 2 of Unsloth's UD-Q4_K_XL, whose shard 1 holds no tensor; upstream 02cfe36).  GgufModel
-        // refuses a missing shard and a duplicate across shards.
-        const strata::GgufModel model = strata::GgufModel::open(path);
-        err = strata::check_architecture(model.meta());
-        if (!err.empty()) return false;
-        size_t at = 0;
-        const strata::TensorInfo* tensor = model.find("output.weight", &at);
-        const strata::GgufFile& gguf = model.shard(at);
-        if (!tensor || !strata::kernels::native_mmvq_supported((int) tensor->type) || tensor->shape.size() != 2 ||
-            tensor->shape[0] != (uint64_t) n_in || tensor->shape[1] != (uint64_t) n_out) {
-            err = "native head: expected a natively supported output.weight with the canonical head dimensions";
-            return false;
+        std::shared_ptr<const void> source_owner;
+        const void* source = nullptr;
+        uint64_t bytes = bytes_;
+        int source_type = source_type_;
+        if (source_snapshot_) {
+            if (path != source_path_ || n_in != n_in_ || n_out != n_out_) {
+                err = "native head immutable source dimensions/path changed"; return false;
+            }
+            source_owner = source_snapshot_;
+            source = source_snapshot_->data();
+        } else {
+            // Retain the mapping in the staged owner before any upload can submit.
+            auto model = std::make_shared<strata::GgufModel>(strata::GgufModel::open(path));
+            err = strata::check_architecture(model->meta());
+            if (!err.empty()) return false;
+            size_t at = 0;
+            const strata::TensorInfo* tensor = model->find("output.weight", &at);
+            if (!tensor || !strata::kernels::native_mmvq_supported((int) tensor->type) ||
+                tensor->shape.size() != 2 || tensor->shape[0] != (uint64_t) n_in ||
+                tensor->shape[1] != (uint64_t) n_out) {
+                err = "native head: expected a natively supported output.weight with the canonical head dimensions";
+                return false;
+            }
+            const strata::GgufFile& gguf = model->shard(at);
+            source_type = (int) tensor->type;
+            bytes = strata::kernels::native_mmvq_weight_bytes(source_type, (int) n_in, (int) n_out);
+            if (!bytes || bytes > std::numeric_limits<size_t>::max() ||
+                !model->in_bounds(*tensor, at) || strata::tensor_payload_bytes(*tensor) != bytes) {
+                err = "native head: truncated or inconsistent output.weight payload"; return false;
+            }
+            source = gguf.tensor_data(*tensor);
+            strata::platform::advise_willneed(source, bytes);
+            source_path_ = path;
+            source_type_ = source_type; bytes_ = bytes;
+            n_in_ = (int) n_in; n_out_ = (int) n_out;
+            const char* lease = std::getenv("STRATA_PHASE_HEAD_LEASE");
+            if (lease && std::strcmp(lease, "1") == 0) {
+                // Copy exactly the validated raw GGUF payload BEFORE its first H2D.
+                source_snapshot_ = HeadUploadOwner::snapshot(source, (size_t) bytes);
+                source_owner = source_snapshot_; source = source_snapshot_->data();
+            } else {
+                source_owner = model; // default: no additional CPU payload storage
+            }
         }
-        const uint64_t bytes = strata::kernels::native_mmvq_weight_bytes((int) tensor->type, (int) n_in, (int) n_out);
-        const uint64_t payload = gguf.file_size() - gguf.data_start();
-        if (tensor->offset > payload || bytes > payload - tensor->offset) {
-            err = "native head: truncated output.weight payload";
-            return false;
-        }
-        void* weights = nullptr;
-        void* scratch = nullptr;
-        bool status = strata::gpu::alloc_device(&weights, bytes);
-        if (status)
-            status = strata::gpu::alloc_device(&scratch, strata::kernels::native_q8_1_bytes((int) n_in, 1));
-        strata::platform::advise_willneed(gguf.tensor_data(*tensor), bytes);
-        if (status)
-            status = strata::gpu::copy(weights, gguf.tensor_data(*tensor), bytes);
+        int type = source_type;
+        const bool status = upload_.stage(source_owner, source, (size_t) bytes,
+            strata::kernels::native_q8_1_bytes((int) n_in, 1),
+            [](void** pointer, size_t size) { return strata::gpu::alloc_device(pointer, size); },
+            [](void* pointer) { strata::gpu::free(pointer); },
+            [](void* dest, const void* src, size_t size) { return strata::gpu::copy(dest, src, size); },
+            [&](void* weights) {
+                if (type == 14 && strata::kernels::native_q6_k_rows_ok((int) n_in)) {
+                    sycl::queue& q = strata::core::Runtime::get().compute();
+                    strata::kernels::native_q6_k_to_rows(weights, (int) n_in, (int) n_out, &q);
+                    if (source_snapshot_) strata::core::Runtime::get().finish(q); else q.wait();
+                    type = strata::kernels::kNativeQ6KRows;
+                } else if (type == 8 && strata::kernels::native_q8_0_rows_ok((int) n_in)) {
+                    sycl::queue& q = strata::core::Runtime::get().compute();
+                    strata::kernels::native_q8_0_to_rows(weights, (int) n_in, (int) n_out, &q);
+                    if (source_snapshot_) strata::core::Runtime::get().finish(q); else q.wait();
+                    type = strata::kernels::kNativeQ8Rows;
+                }
+                return true;
+            });
         if (!status) {
-            if (scratch) strata::gpu::free(scratch);
-            if (weights) strata::gpu::free(weights);
             err = std::string("native head upload: ") + strata::gpu::last_error();
-            return false;
+        } else if (leased_ && type != converted_type_) {
+            upload_.clear([](void* pointer) { strata::gpu::free(pointer); });
+            err = "native head reload conversion changed"; return false;
+        } else {
+            converted_type_ = type; leased_ = false;
+            weights_ = upload_.weights(); scratch_ = upload_.scratch(); type_ = type;
+            return true;
         }
-        int type = (int) tensor->type;
-        if (type == 14 && strata::kernels::native_q6_k_rows_ok((int) n_in)) {   // aligned loads (native_mmvq.hpp)
-            sycl::queue& q = strata::core::Runtime::get().compute();
-            strata::kernels::native_q6_k_to_rows(weights, (int) n_in, (int) n_out, &q);
-            q.wait();
-            type = strata::kernels::kNativeQ6KRows;
-        } else if (type == 8 && strata::kernels::native_q8_0_rows_ok((int) n_in)) {
-            sycl::queue& q = strata::core::Runtime::get().compute();
-            strata::kernels::native_q8_0_to_rows(weights, (int) n_in, (int) n_out, &q);
-            q.wait();
-            type = strata::kernels::kNativeQ8Rows;
-        }
-        weights_ = weights;
-        scratch_ = scratch;
-        bytes_ = bytes;
-        n_in_ = (int) n_in;
-        n_out_ = (int) n_out;
-        type_ = type;
-        return true;
     } catch (const std::exception& error) {
         err = std::string("native head: ") + error.what();
-        return false;
+    } catch (...) {
+        err = "native head: unknown upload/conversion exception";
     }
+    if (upload_.uncertain()) {
+        std::ostringstream retained;
+        retained << "; uncertain completion; retained weights=" << upload_.weights()
+                 << " bytes=" << upload_.bytes() << " scratch=" << upload_.scratch()
+                 << " scratch_bytes=" << upload_.scratch_bytes() << " source=" << upload_.source();
+        err += retained.str();
+    }
+    return false;
+}
+
+uint64_t NativeHead::scratch_bytes() const {
+    return n_in_ > 0 ? strata::kernels::native_q8_1_bytes(n_in_, 1) : 0;
+}
+
+bool NativeHead::release_for_prefill(DrainedReaders proof, std::string& err) {
+    if (upload_.uncertain() || !source_snapshot_ || !proof.device_complete || !proof.graphs_retired || !loaded() || leased_) {
+        err = "native head release requires loaded owner and explicit drained/retired readers"; return false;
+    }
+    upload_.clear([](void* pointer) { strata::gpu::free(pointer); });
+    scratch_ = nullptr; weights_ = nullptr;
+    leased_ = true;
+    return true;
+}
+
+bool NativeHead::reload_after_prefill(std::string& err) {
+    if (upload_.uncertain() || !leased_ || loaded() || !source_snapshot_) {
+        err = "native head is not safely leased"; return false;
+    }
+    return load(source_path_, n_in_, n_out_, err);
 }
 
 bool NativeHead::run(const float* mixed, float* logits, void* stream, std::string& err) const {

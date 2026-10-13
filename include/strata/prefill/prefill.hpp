@@ -28,6 +28,12 @@ namespace strata::kernels::cpu { class ExpertPool; }
 
 namespace strata::prefill {
 
+// Requested owner counts. Conditional peaks and reserve are not physical fit proof.
+struct PhaseCapacityEstimate {
+    uint64_t workspace = 0, tokens = 0, identity = 0, stage_in_workspace = 0;
+    uint64_t gdn = 0, qsa = 0, moe = 0, chooser = 0, lazy_gemm = 0;
+};
+
 struct PrefillStats {
     int64_t tokens = 0;
     int64_t chunks = 0;
@@ -102,7 +108,10 @@ public:
     static void set_expert_group(int g);
     static int expert_group();
 
-    /// Device bytes `init` needs for a chunk of `chunk` tokens (what a borrowed region must hold).
+    /// Conservative requested owner/conditional-peak counts for bounded phase capacity.
+    static PhaseCapacityEstimate phase_capacity_estimate(const core::WeightTable& wt,
+        const core::ModelGeometry& g, const core::SessionState& ss, int64_t chunk);
+    /// Device bytes `init` needs for a chunk (what a borrowed region must hold).
     static uint64_t bytes_needed(const core::ModelGeometry& g, const core::SessionState& ss, int64_t chunk);
 
     /// Positions [pos0, pos0 + n) holding `tokens`; `ss.ple_prev` must be the two tokens before pos0 (oldest
