@@ -3,6 +3,8 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 // src/core/expert_source.cpp - the adapter.  See the header for the three clauses of the contract.
 #include "strata/core/expert_source.hpp"
+#include "strata/core/decode_route_ledger.hpp"
+#include "strata/core/decode_service_budget.hpp"
 #include "strata/core/remote_experts.hpp"
 
 #include "strata/kernels/cpu/expert_layout.hpp"
@@ -1411,6 +1413,218 @@ bool cpu_job_histogram_requested() {
 }
 }
 
+namespace {
+bool decode_route_ledger_requested() {
+    static const bool on = [] { const char* v = std::getenv("STRATA_DECODE_ROUTE_LEDGER");
+        return v && std::strcmp(v, "1") == 0; }();
+    return on;
+}
+}
+DecodeRouteLedgerScope::DecodeRouteLedgerScope(ExpertDispatch& d,int64_t layers,bool eligible)
+    : dispatch_(d),requested_(decode_route_ledger_requested()) {
+    if (!requested_ || !eligible || d.remote_count!=0) return;
+    const auto& lay=strata::kernels::cpu::expert_layout();
+    if (!lay.native || layers<1 || layers>64 || lay.fmt.size()!=(size_t)layers) return;
+    try {
+        auto candidate=std::make_shared<DecodeRouteLedger>(); candidate->layers=layers;
+        for (int64_t l=0;l<layers;++l) candidate->fmt[l]=lay.fmt[(size_t)l];
+        std::shared_ptr<DecodeRouteLedger> expected;
+        if (std::atomic_compare_exchange_strong(&d.decode_route_ledger,&expected,candidate)) state_=candidate;
+    } catch (const std::bad_alloc&) {}
+}
+DecodeRouteLedgerScope::~DecodeRouteLedgerScope() { finish("error_or_early_exit",0); }
+void DecodeRouteLedgerScope::finish(const char* status,int64_t emitted) {
+    if (finished_) return;
+    finished_=true;
+    if (!requested_) return;
+    if (!state_) {
+        std::fprintf(stderr,"strata decode route ledger: status=%.32s eligible=0 incomplete=1\n",status?status:"unknown"); return;
+    }
+    auto expected=state_;
+    std::atomic_compare_exchange_strong(&dispatch_.decode_route_ledger,&expected,std::shared_ptr<DecodeRouteLedger>{});
+    std::lock_guard<std::mutex> lock(state_->mutex); state_->active=false;
+    // Ordinary serve runs the last prompt token through its first T=1 verify window.
+    // Check coverage against emitted, while retaining independently observed calls.
+    const bool normal_close = status && (std::strcmp(status,"length")==0 || std::strcmp(status,"stop")==0);
+    auto coverage = decode_route_ledger_coverage(state_->layers,emitted,state_->layer_calls,
+                                                normal_close,state_->invalid,state_->overflow);
+    if (coverage.complete) for (int64_t l=0;l<state_->layers;++l)
+        if (state_->calls_by_layer[l]!=(uint64_t)emitted) coverage.complete=false;
+    // One output block, <=512 KiB, only on request close. No worker logging.
+    try {
+        std::string out; out.reserve(512*1024); char line[512];
+        std::snprintf(line,sizeof line,"strata decode route ledger: status=%.32s eligible=1 emitted=%lld layer_calls=%llu invalid=%d overflow=%d coverage_complete=%d expected_calls_known=%d expected_layer_calls=%llu cardinality_cap=2048 storage_cap=131072 output_cap=524288 queued_h2d_bytes=unavailable logical_bytes_are_not_dram_or_h2d=1\n",
+            status?status:"unknown",(long long)emitted,(unsigned long long)state_->layer_calls,state_->invalid,state_->overflow,
+            coverage.complete,coverage.expected_known,(unsigned long long)coverage.expected_calls);
+        out+=line;
+        const char* owners[]={"cpu_native","gpu_vram","gpu_pcie_staged","gpu_pcie_mapped"};
+        for (int64_t l=0;l<state_->layers;++l) for (int o=0;o<4;++o) for (int nt=1;nt<=8;++nt) {
+            const auto& b=state_->rows[l][o][nt-1]; if (!b.groups) continue;
+            std::snprintf(line,sizeof line,"layer=%lld gu=%d down=%d nt=%d owner=%s groups=%llu entries=%llu logical_gu_bytes=%llu logical_down_bytes=%llu logical_blob_bytes=%llu\n",
+                (long long)l,state_->fmt[l].gu_type,state_->fmt[l].d_type,nt,owners[o],
+                (unsigned long long)b.groups,(unsigned long long)b.entries,(unsigned long long)b.gu,
+                (unsigned long long)b.down,(unsigned long long)b.blob);
+            if (out.size()+std::strlen(line)>512*1024) {
+                std::fprintf(stderr,"strata decode route ledger: status=output_budget_exceeded incomplete=1\n"); return;
+            }
+            out+=line;
+        }
+        std::fwrite(out.data(),1,out.size(),stderr);
+    } catch (const std::bad_alloc&) {
+        std::fprintf(stderr,"strata decode route ledger: status=output_allocation_failed incomplete=1\n");
+    }
+}
+
+// This mutex protects binding only; the request mutex protects complete dispatcher calls and close.
+namespace {
+std::mutex service_binding_mutex;
+bool decode_service_budget_requested() {
+    static const bool on=[] { const char* v=std::getenv("STRATA_DECODE_SERVICE_CPU");
+        return v && std::strcmp(v,"1")==0; }();
+    return on;
+}
+}
+class DecodeServiceBudget {
+public:
+    strata::kernels::cpu::NativeServiceBudget pool;
+    strata::kernels::cpu::ServiceCounter dispatch[64];
+    std::mutex mutex;
+    int64_t layers=0;
+    int workers=0;
+    uint64_t completed[64]{},cpu_jobs=0,cpu_activation_rows=0,route_entries=0;
+    bool active=true,invalid=false,overflow=false;
+    void add(uint64_t& dst,uint64_t value) {
+        if (value>UINT64_MAX-dst) { dst=UINT64_MAX; overflow=true; } else dst+=value;
+    }
+};
+namespace {
+std::shared_ptr<DecodeServiceBudget> service_observer(ExpertDispatch& d) {
+    if (!decode_service_budget_requested()) return {};
+    std::lock_guard<std::mutex> lock(service_binding_mutex); return d.decode_service_budget;
+}
+// Constructed before dispatch validation, destroyed after the complete layer callback returns.
+// All native batches return through the existing final parked boundary before this unbinds.
+class DispatchServiceScope {
+    ExpertDispatch& d_;
+    std::shared_ptr<DecodeServiceBudget> state_;
+    std::unique_lock<std::mutex> lock_;
+    int64_t layer_;
+    strata::kernels::cpu::ServiceClockScope clock_;
+    strata::kernels::cpu::ServiceCounter* counter(int64_t nt) {
+        if (!state_ || !state_->active) return nullptr;
+        if (nt!=1 || layer_<0 || layer_>=state_->layers || !d_.pool || d_.remote_count!=0 ||
+            !strata::kernels::cpu::expert_layout().native) { state_->invalid=true; return nullptr; }
+        d_.pool->service_budget(&state_->pool); return &state_->dispatch[layer_];
+    }
+public:
+    DispatchServiceScope(ExpertDispatch& d,int64_t nt):d_(d),state_(service_observer(d)),
+        lock_(state_ ? std::unique_lock<std::mutex>(state_->mutex) : std::unique_lock<std::mutex>()),
+        layer_(d.layers),clock_(counter(nt)) {}
+    ~DispatchServiceScope() {
+        if (!state_ || !state_->active) return;
+        if (d_.pool) d_.pool->service_budget(nullptr);
+        if (layer_<0 || layer_>=state_->layers || d_.failed || d_.layers!=layer_+1) state_->invalid=true;
+        else state_->add(state_->completed[layer_],1);
+    }
+    void jobs(int count,int64_t entries,const strata::kernels::cpu::ExpertJobMulti* jobs) {
+        if (!state_ || !state_->active) return;
+        if (count<0 || entries<0 || (count && !jobs)) { state_->invalid=true; return; }
+        uint64_t rows=0;
+        for (int i=0;i<count;++i)
+            if (!strata::kernels::cpu::service_activation_rows_add(rows,jobs[i].nt,strata::kernels::cpu::MAXT)) {
+                state_->invalid=true; return;
+            }
+        state_->add(state_->cpu_jobs,(uint64_t)count);
+        state_->add(state_->cpu_activation_rows,rows); state_->add(state_->route_entries,(uint64_t)entries);
+    }
+};
+}
+DecodeServiceBudgetScope::DecodeServiceBudgetScope(ExpertDispatch& d,int64_t layers,bool eligible)
+    :dispatch_(d),requested_(decode_service_budget_requested()) {
+    if (!requested_ || !eligible || !d.pool || d.remote_count!=0 || layers<1 || layers>64 ||
+        d.pool->workers()>strata::kernels::cpu::NativeServiceBudget::kWorkers ||
+        !strata::kernels::cpu::expert_layout().native ||
+        strata::kernels::cpu::expert_layout().fmt.size()!=(size_t)layers) return;
+    try {
+        auto candidate=std::make_shared<DecodeServiceBudget>(); candidate->layers=layers;
+        candidate->workers=d.pool->workers();
+        std::lock_guard<std::mutex> lock(service_binding_mutex);
+        if (!d.decode_service_budget) { d.decode_service_budget=candidate; state_=candidate; }
+    } catch (const std::bad_alloc&) {}
+}
+DecodeServiceBudgetScope::~DecodeServiceBudgetScope() { finish("error_or_early_exit",0); }
+void DecodeServiceBudgetScope::finish(const char* status,int64_t emitted,double decode_ms) {
+    if (finished_) return;
+    finished_=true;
+    if (!requested_) return;
+    if (!state_) {
+        std::fprintf(stderr,"strata decode service cpu: status=%.32s eligible=0 incomplete=1\n",status?status:"unknown"); return;
+    }
+    {
+        std::lock_guard<std::mutex> binding(service_binding_mutex);
+        if (dispatch_.decode_service_budget==state_) dispatch_.decode_service_budget.reset();
+    }
+    std::lock_guard<std::mutex> lock(state_->mutex); state_->active=false;
+    const bool normal=status && (std::strcmp(status,"length")==0 || std::strcmp(status,"stop")==0);
+    bool complete=normal && emitted>=0 && !state_->invalid && !state_->overflow &&
+        state_->pool.complete(state_->workers);
+    for (int64_t l=0;l<state_->layers;++l)
+        if (!strata::kernels::cpu::service_layer_complete(state_->dispatch[l],state_->completed[l],emitted,normal)) complete=false;
+    strata::kernels::cpu::ServiceCounter worker_sum[6];
+    for (int b=0;b<6;++b) {
+        for (int i=1;i<=state_->workers;++i) worker_sum[b].merge(state_->pool.slots[i].call[b]);
+        if (!worker_sum[b].complete()) complete=false;
+    }
+    const auto& quant=state_->pool.slots[0];
+    if (quant.call[1].calls>UINT64_MAX-quant.call[4].calls ||
+        quant.call[1].calls+quant.call[4].calls!=state_->cpu_activation_rows) complete=false;
+    uint64_t probe=0; const bool available=strata::kernels::cpu::service_cpu_now(probe);
+    complete=complete && available;
+    // Fixed rows and a checked 64 KiB block. Clock failures retain receipts and the original close status.
+    try {
+        std::string out; out.reserve(65536); char line[768];
+        auto append=[&] { if (out.size()+std::strlen(line)>65536) return false; out+=line; return true; };
+        std::snprintf(line,sizeof line,"strata decode service cpu: status=%.32s eligible=1 incomplete=%d clock_available=%d availability_probe_reads=1 emitted=%lld decode_wall_ms=%.6f workers=%d cpu_jobs=%llu cpu_activation_rows=%llu route_entries=%llu actual_dispatch_nt=1 output_cap=65536 wall_spans_overlap=1 wall_minus_cpu_is_not_pure_wait=1 logical_bytes_are_not_dram_or_time=1\n",
+            status?status:"unknown",!complete,available,(long long)emitted,decode_ms,state_->workers,
+            (unsigned long long)state_->cpu_jobs,(unsigned long long)state_->cpu_activation_rows,
+            (unsigned long long)state_->route_entries);
+        bool bounded=append();
+        auto row=[&](const char* domain,const char* bucket,int layer,const strata::kernels::cpu::ServiceCounter& c,uint64_t tasks) {
+            std::snprintf(line,sizeof line,"domain=%s bucket=%s layer=%d calls=%llu tasks=%llu cpu_ns=%llu wall_ns=%llu cpu_clock_reads=%llu invalid=%d overflow=%d\n",
+                domain,bucket,layer,(unsigned long long)c.calls,(unsigned long long)tasks,
+                (unsigned long long)c.cpu_ns,(unsigned long long)c.wall_ns,(unsigned long long)c.reads,c.invalid,c.overflow);
+            bounded=append() && bounded;
+        };
+        const char* names[]={"native_gu","native_quant_h","native_down","q2_gu_swiglu","act_quant_h","q2_down"};
+        for (int b=0;b<6;++b) {
+            row("call_issuer",names[b],-1,state_->pool.slots[0].call[b],0);
+            row("call_worker_sum",names[b],-1,worker_sum[b],0);
+        }
+        const char* phases[]={"gu","down"}; const char* boundaries[]={"parked_before","publish_to_done","done_to_parked"};
+        for (int ph=0;ph<2;++ph) {
+            uint64_t issuer=state_->pool.slots[0].tasks[ph],workers=0;
+            bool task_overflow=false;
+            for (int i=1;i<=state_->workers;++i) {
+                const uint64_t v=state_->pool.slots[i].tasks[ph];
+                if (v>UINT64_MAX-workers) { workers=UINT64_MAX; task_overflow=true; } else workers+=v;
+            }
+            if (task_overflow) complete=false;
+            std::snprintf(line,sizeof line,"domain=tasks bucket=%s issuer=%llu workers=%llu overflow=%d\n",phases[ph],
+                (unsigned long long)issuer,(unsigned long long)workers,task_overflow); bounded=append() && bounded;
+            for (int b=0;b<3;++b) row(phases[ph],boundaries[b],-1,state_->pool.phase[ph][b],0);
+        }
+        for (int64_t l=0;l<state_->layers;++l) row("dispatch_issuer","complete_layer",(int)l,state_->dispatch[l],state_->completed[l]);
+        // This footer is authoritative, including aggregation failures discovered during formatting.
+        std::snprintf(line,sizeof line,"strata decode service cpu close: status=%.32s incomplete=%d output_bounded=%d request_invalid=%d request_overflow=%d\n",
+            status?status:"unknown",!complete || !bounded,bounded,state_->invalid,state_->overflow);
+        bounded=append() && bounded;
+        if (bounded) std::fwrite(out.data(),1,out.size(),stderr);
+        else std::fprintf(stderr,"strata decode service cpu: status=%.32s output_budget_exceeded=1 incomplete=1\n",status?status:"unknown");
+    } catch (const std::bad_alloc&) {
+        std::fprintf(stderr,"strata decode service cpu: status=%.32s output_allocation_failed=1 incomplete=1\n",status?status:"unknown");
+    }
+}
+
 // A fixed64layer model envelope and one immutable GU/Down pair per layer. Request-local only.
 class CpuJobHistogram {
 public:
@@ -1755,6 +1969,7 @@ int pcie_split_m(const PcieSplitTimes& t, bool overlap, int f, int h) {
 void expert_pool_dispatch_multi(ExpertDispatch& d, const float* x_f, const int32_t* ids, int64_t n_tok, int64_t k,
                                 float* out) {
     using namespace strata::kernels::cpu;
+    DispatchServiceScope service(d,n_tok);
     if (d.failed) return;
     if (n_tok < 1 || n_tok > MAXT) {
         d.failed = true;
@@ -1980,6 +2195,7 @@ void expert_pool_dispatch_multi(ExpertDispatch& d, const float* x_f, const int32
         }
     const auto c3 = std::chrono::steady_clock::now();
     pt("run", njobs);
+    service.jobs(njobs,n_tok*k,d.jobs_multi.data());
     if (njobs > 0) {
         if (native) {
             if (cpu_job_histogram_requested()) {
@@ -1999,6 +2215,15 @@ void expert_pool_dispatch_multi(ExpertDispatch& d, const float* x_f, const int32
     }
     const auto c4 = std::chrono::steady_clock::now();
     pt("ran");
+    if (decode_route_ledger_requested()) {
+        const auto observer=std::atomic_load(&d.decode_route_ledger);
+        if (observer) {
+            if (decode_route_ledger_dispatch_eligible(native,n_tok,d.remote_count) &&
+                d.layers >= 0 && d.layers < observer->layers && (size_t)d.layers < lay.fmt.size())
+                observer->record(d.layers,ids,kind,n,d.jobs_multi.data(),njobs,lay.fmt[(size_t)d.layers],d.plan && d.plan->pcie_mode!=0);
+            else { std::lock_guard<std::mutex> lock(observer->mutex); observer->invalid=true; }
+        }
+    }
     auto ms = [](auto a, auto b) { return std::chrono::duration<double, std::milli>(b - a).count(); };
     d.ms_plan += ms(c0, c1);
     d.ms_actq += ms(c1, c2);

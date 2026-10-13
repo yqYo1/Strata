@@ -208,6 +208,26 @@ bool PhaseCacheOwner::detach_extent(size_t index, std::string& error) {
     extent.physical = nullptr;
     return true;
 }
+bool PhaseCacheOwner::begin_prefill(const Quiesce& proof, const Publish& publish, std::string& error) {
+    if (!base_ || poisoned_ || prefill_leased_ || !readers_ready_)
+        return fail("phase cache: prefill lease state invalid", error);
+    readers_ready_ = false;
+    if (!quiesce(proof, error)) return false;
+    std::fill(staged_.begin(), staged_.end(), -1);
+    if (!upload(publish, error)) return false; // checked empty device/host table BEFORE detach
+    readers_ready_ = false;
+    for (size_t i = extents_.size(); i > 0; --i)
+        if (!detach_extent(i - 1, error)) return false;
+    std::fill(filled_.begin(), filled_.end(), -1);
+    prefill_leased_ = true;
+    return true;
+}
+bool PhaseCacheOwner::finish_prefill(const Quiesce& proof, std::string& error) {
+    if (!prefill_leased()) return fail("phase cache: finish prefill without retired lease", error);
+    if (!map_base(proof, error)) return false;
+    prefill_leased_ = false; // caller must refill/check/publish baseline before any decode reader
+    return true;
+}
 bool PhaseCacheOwner::map_base(const Quiesce& proof, std::string& error) {
     readers_ready_ = false;
     if (!base_ || poisoned_ || extents_[0].physical) return fail("phase cache: base map state invalid", error);
@@ -328,7 +348,7 @@ bool PhaseCacheOwner::upload(const Publish& callback, std::string& error) {
 }
 bool PhaseCacheOwner::publish(const Publish& callback, std::string& error) {
     readers_ready_ = false;
-    if (!base_ || poisoned_) return fail("phase cache: closed/poisoned owner cannot publish", error);
+    if (!base_ || poisoned_ || prefill_leased_) return fail("phase cache: closed/poisoned/leased owner cannot publish", error);
     return upload(callback, error);
 }
 bool PhaseCacheOwner::invalidate_extras(const Publish& callback, std::string& error) {

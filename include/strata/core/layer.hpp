@@ -332,6 +332,8 @@ void qsa_kv_resolve(const QsaState& st, const ModelGeometry& g, const int32_t* i
 /// Zeroes the pools AND the indexer, so a fresh sequence matches the reference's own `zeros()`.  The KV pool
 /// matters even for cells that are never attended, because `kv_gather` reads whatever the selection names.
 void qsa_state_zero(const QsaState& st, const ModelGeometry& g, void* stream);
+/// Submission-checked zero; caller must drain, or fail-stop without releasing owners.
+bool qsa_state_zero_checked(const QsaState& st, const ModelGeometry& g, void* stream);
 
 // ================================ PER-STAGE TIMING, DEBUG ONLY ================================
 //

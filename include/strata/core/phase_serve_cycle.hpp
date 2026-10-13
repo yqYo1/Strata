@@ -16,9 +16,14 @@ inline bool phase_cache_requested() {
     return requested;
 }
 inline bool phase_prefill_capacity_admitted(bool phase, bool opt12k, bool lease, bool alias,
-                                            bool automatic, int64_t requested) {
+                                            bool automatic, int64_t requested, bool layer_major = false) {
     if (!phase) return !opt12k;
-    return !automatic && (opt12k ? lease && alias && requested == 12288 : requested == 8192);
+    return !automatic && (opt12k ? !layer_major && lease && alias && requested == 12288 : requested == 8192 ||
+        (layer_major && lease && alias && requested == 4096));
+}
+inline bool phase_actual_chunk_admitted(int64_t capacity, int64_t count, int64_t pos, int64_t extent) {
+    return capacity > 0 && count > 0 && count <= capacity && pos >= 0 &&
+           pos <= extent && count <= extent - pos;
 }
 inline bool phase_requested_add(uint64_t bytes, uint64_t& total) {
     if (bytes > std::numeric_limits<uint64_t>::max() - total) return false;
@@ -51,20 +56,27 @@ public:
     Operation quiesce, retire_workspace, grow_fill_publish, invalidate_detach, reinit_workspace;
     Operation retire_readers;
     Operation release_head, reload_head;
+    Operation begin_prefill, finish_prefill;
     bool begin_gen(std::string& error) {
         PhaseLoggedCall timing("begin_gen");
+        if (begin_prefill && !release_head)
+            return fail("phase cycle: cache lease requires head lease", error);
+        if (static_cast<bool>(begin_prefill) != static_cast<bool>(finish_prefill))
+            return fail("phase cycle: incomplete cache lease callbacks", error);
         if (static_cast<bool>(release_head) != static_cast<bool>(reload_head))
             return fail("phase cycle: incomplete head lease callbacks", error);
         if (failed_ || active_ || decoding_ || requests_ == std::numeric_limits<uint64_t>::max()) return fail("phase cycle: overlapping/failed GEN", error);
         if (retired_) {
             if (!call(quiesce, "quiesce", error) || !call(retire_readers, "graph_retire", error) ||
                 !call(invalidate_detach, "invalidate_detach", error) ||
-                (release_head && !call(release_head, "head_release", error)) || !call(reinit_workspace, "reinit_workspace", error)) return false;
+                (release_head && !call(release_head, "head_release", error)) ||
+                (begin_prefill && !call(begin_prefill, "begin_prefill", error)) || !call(reinit_workspace, "reinit_workspace", error)) return false;
             retired_ = false;
         }
         if (requests_ == 0 && release_head) {
             if (!call(quiesce, "quiesce", error) || !call(retire_readers, "graph_retire", error) ||
-                !call(release_head, "head_release", error) || !call(reinit_workspace, "reinit_workspace", error)) return false;
+                !call(release_head, "head_release", error) ||
+                (begin_prefill && !call(begin_prefill, "begin_prefill", error)) || !call(reinit_workspace, "reinit_workspace", error)) return false;
         }
         active_ = true;
         ++requests_;
@@ -75,6 +87,7 @@ public:
         if (failed_ || !active_ || retired_) return fail("phase cycle: invalid prompt boundary", error);
         if (!call(quiesce, "quiesce", error) || !call(retire_workspace, "retire_workspace", error)) return false;
         retired_ = true;
+        if (finish_prefill && !call(finish_prefill, "finish_prefill", error)) return false;
         if (reload_head && !call(reload_head, "head_reload", error)) return false;
         if (!call(grow_fill_publish, "grow_fill_publish", error)) return false;
         active_ = false;

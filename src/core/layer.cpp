@@ -875,6 +875,38 @@ void qsa_state_zero(const QsaState& st, const ModelGeometry& g, void* stream) {
     strata::gpu::memset_async(st.idx_pooled, 0, (size_t) st.idx_pooled_rows * s.idx_dim * 4, cs);
 }
 
+bool qsa_state_zero_checked(const QsaState& st, const ModelGeometry& g, void* stream) try {
+    const QsaShapes s = qsa_shapes(g);
+    strata::gpu::Stream cs = stream;
+    // an elastic state zeroes what is mapped (the rest is zeroed when it is mapped)
+    const int64_t live_slots = st.kv_elastic >= 0 ? pool_slots_mapped(*pools()[(size_t) st.kv_elastic]) : st.n_slots;
+    const size_t rows = (size_t) live_slots * s.n_head_kv * s.page_size;
+    if (st.kv_hybrid) {
+        if (!strata::gpu::memset_async(st.k_q, 0, rows * s.head_dim, cs)) return false;
+        if (!strata::gpu::memset_async(st.k_scale, 0, rows * (s.head_dim / strata::kernels::KV_Q8_GROUP) * 2, cs)) return false;
+        if (!strata::gpu::memset_async(st.v_q4, 0, rows * strata::kernels::kv_q4_bytes_per_head((int) s.head_dim), cs)) return false;
+    } else if (st.kv_q4) {
+        if (!strata::gpu::memset_async(st.k_q4, 0, rows * strata::kernels::kv_q4_bytes_per_head((int) s.head_dim), cs)) return false;
+        if (!strata::gpu::memset_async(st.v_q4, 0, rows * strata::kernels::kv_q4_bytes_per_head((int) s.head_dim), cs)) return false;
+    } else if (st.kv_int8) {
+        if (!strata::gpu::memset_async(st.k_q, 0, rows * s.head_dim, cs)) return false;
+        if (!strata::gpu::memset_async(st.v_q, 0, rows * s.head_dim, cs)) return false;
+        if (!strata::gpu::memset_async(st.k_scale, 0, rows * (s.head_dim / strata::kernels::KV_Q8_GROUP) * 2, cs)) return false;
+        if (!strata::gpu::memset_async(st.v_scale, 0, rows * (s.head_dim / strata::kernels::KV_Q8_GROUP) * 2, cs)) return false;
+    } else {
+        if (!strata::gpu::memset_async(st.k_pool, 0, rows * s.head_dim * 2, cs)) return false;
+        if (!strata::gpu::memset_async(st.v_pool, 0, rows * s.head_dim * 2, cs)) return false;
+    }
+    // A streamed state starts over with nothing resident. Its host copy is not cleared (GBs over PCIe per new
+    // conversation): no reader names a cell before this sequence has written it, and a block copied in whole
+    // carries the unwritten cells past the end, which nothing reads.
+    if (st.kv_mode == 1) strata::kernels::kv_stream_reset(st.map, stream);
+    if (!strata::gpu::memset_async(st.idx_tail, 0, (size_t) (s.idx_block - 1) * s.idx_dim * 4, cs)) return false;
+    if (!strata::gpu::memset_async(st.idx_dead, 0, (size_t) s.idx_dim * 4, cs)) return false;
+    if (!strata::gpu::memset_async(st.idx_pooled, 0, (size_t) st.idx_pooled_rows * s.idx_dim * 4, cs)) return false;
+    return true;
+} catch (...) { return false; }
+
 strata::kernels::QsaAttnPools qsa_attn_pools(const QsaState& st) {
     strata::kernels::QsaAttnPools pools;
     pools.page_table = st.page_table;

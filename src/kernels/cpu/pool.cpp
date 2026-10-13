@@ -319,6 +319,7 @@ void ExpertPool::drain(int id, ExpertScratch& scratch, uint32_t epoch) {
             s2_expert_down_rows(jobs_[e].blob, split_[(size_t) e].a2, jobs_[e].out, r0, r1);
         } else if (mode_ >= 5) {
             // plan v0.3 P6: native layers, 5 = gate/up rows, 6 = down rows
+            if (service_budget_) service_budget_->task(id,mode_==5?0:1);
             const int per = mode_ == 5 ? FF : H;
             const int64_t g0 = mrows_ * (int64_t) i / mtasks_, g1 = mrows_ * (int64_t) (i + 1) / mtasks_;
             for (int64_t r = g0; r < g1;) {
@@ -326,6 +327,8 @@ void ExpertPool::drain(int id, ExpertScratch& scratch, uint32_t epoch) {
                 const int r1 = (int) std::min<int64_t>(per, r0 + (g1 - r));
                 SplitBufMulti& sb = split_multi_[(size_t) e];
                 if (mode_ == 5 && nfmt_->gu_type == 42) {
+                    ServiceClockScope service(service_budget_ && service_budget_->slot(id) ?
+                        &service_budget_->slot(id)->call[3] : nullptr);
                     // a native Q2_0 pack: gate and up rows on the Q2_0 kernels, then SwiGLU
                     thread_local float gbuf[MAXT][FF], ubuf[MAXT][FF];
                     float* gp[MAXT];
@@ -340,8 +343,12 @@ void ExpertPool::drain(int id, ExpertScratch& scratch, uint32_t epoch) {
                 } else if (mode_ == 5) {
                     float* ff[MAXT];
                     for (int t = 0; t < mjobs_[e].nt; ++t) ff[t] = sb.ff[t];
+                    ServiceClockScope service(service_budget_ && service_budget_->slot(id) ?
+                        &service_budget_->slot(id)->call[0] : nullptr);
                     native_gu_rows(*nfmt_, mjobs_[e].blob, mjobs_[e].nact, mjobs_[e].nt, ff, r0, r1);
                 } else if (nfmt_->d_type == 42) {
+                    ServiceClockScope service(service_budget_ && service_budget_->slot(id) ?
+                        &service_budget_->slot(id)->call[5] : nullptr);
                     // Q2_0 down (most IQ layers): the AVX-512 kernel, ggml-cpu has only a scalar one on x86
                     const ActQ* a2[MAXT];
                     for (int t = 0; t < mjobs_[e].nt; ++t) a2[t] = &sb.a2[t];
@@ -350,6 +357,8 @@ void ExpertPool::drain(int id, ExpertScratch& scratch, uint32_t epoch) {
                 } else {
                     const void* hq[MAXT];
                     for (int t = 0; t < mjobs_[e].nt; ++t) hq[t] = sb.hq[t];
+                    ServiceClockScope service(service_budget_ && service_budget_->slot(id) ?
+                        &service_budget_->slot(id)->call[2] : nullptr);
                     native_down_rows(*nfmt_, mjobs_[e].blob, hq, mjobs_[e].nt, mjobs_[e].out, r0, r1);
                 }
                 r += r1 - r0;
@@ -379,13 +388,22 @@ void ExpertPool::drain(int id, ExpertScratch& scratch, uint32_t epoch) {
 }
 
 void ExpertPool::run_phase(int mode, int n_tasks) {
-    wait_parked("before a phase");
+    if (service_budget_ && (mode==5 || mode==6)) {
+        auto& planned=service_budget_->planned_tasks[mode-5];
+        if (n_tasks<0 || (uint64_t)n_tasks>UINT64_MAX-planned) service_budget_->invalid=true;
+        else planned+=(uint64_t)n_tasks;
+    }
+    auto* phase=service_budget_ && (mode==5 || mode==6) ? service_budget_->phase[mode-5] : nullptr;
+    { ServiceClockScope service(phase ? &phase[0] : nullptr); wait_parked("before a phase"); }
     mode_ = mode;
     njobs_ = n_tasks;
-    const uint32_t e = begin_batch(n_tasks);
-    if (host_works_) drain(-1, host_scratch_, e);
-    wait_done(n_tasks);
-    wait_parked("after a phase");
+    {
+        ServiceClockScope service(phase ? &phase[1] : nullptr);
+        const uint32_t e = begin_batch(n_tasks);
+        if (host_works_) drain(-1, host_scratch_, e);
+        wait_done(n_tasks);
+    }
+    { ServiceClockScope service(phase ? &phase[2] : nullptr); wait_parked("after a phase"); }
     hstate_.store(kIdle, std::memory_order_relaxed);
     hstate_ms_.store(now_ms(), std::memory_order_relaxed);
 }
@@ -490,8 +508,14 @@ void ExpertPool::run_split_multi_native(const NativeFmt& f, ExpertJobMulti* jobs
         const auto b = std::chrono::steady_clock::now();
         for (int e = 0; e < nb; ++e)
             for (int t = 0; t < mjobs_[e].nt; ++t)
-                if (f.d_type == 42) act_quant_any(split_multi_[(size_t) e].ff[t], FF, split_multi_[(size_t) e].a2[t]);
-                else native_quant_h(f, split_multi_[(size_t) e].ff[t], split_multi_[(size_t) e].hq[t]);
+                if (f.d_type == 42) {
+                    ServiceClockScope service(service_budget_ ? &service_budget_->slots[0].call[4] : nullptr);
+                    act_quant_any(split_multi_[(size_t) e].ff[t], FF, split_multi_[(size_t) e].a2[t]);
+                }
+                else {
+                    ServiceClockScope service(service_budget_ ? &service_budget_->slots[0].call[1] : nullptr);
+                    native_quant_h(f, split_multi_[(size_t) e].ff[t], split_multi_[(size_t) e].hq[t]);
+                }
         const auto c = std::chrono::steady_clock::now();
         mrows_ = (int64_t) nb * H;
         mtasks_ = phase_tasks(mrows_);

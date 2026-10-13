@@ -29,6 +29,7 @@
 // the worker woke for, and a late worker's claim simply fails.  A claim that succeeds belongs to the current
 // batch, whose description the host cannot change until that job's `done` has landed.
 #pragma once
+#include "strata/kernels/cpu/service_budget.hpp"
 
 #include "strata/kernels/cpu/expert.hpp"
 #include "strata/kernels/cpu/native_expert.hpp"
@@ -116,6 +117,9 @@ public:
     ExpertPool(const ExpertPool&) = delete;
     ExpertPool& operator=(const ExpertPool&) = delete;
 
+    // Bind only from the serialized issuer, outside an existing native pool call.
+    // No diagnostic state is read after a failed claim. Unbind after the final worker-park boundary.
+    void service_budget(NativeServiceBudget* budget) { service_budget_=budget; }
     int workers() const { return n_; }
     /// Whether the host thread also drains.  Reported at startup, because "the engine adapts to the machine it
     /// is on" is only true if the engine says which adaptation it took.
@@ -181,6 +185,7 @@ public:
 private:
     int phase_tasks(int64_t rows) const;
     int tasks_ = 0;
+    NativeServiceBudget* service_budget_=nullptr;
     void worker(int id);
     void drain(int id, ExpertScratch& scratch, uint32_t epoch);
     void run_phase(int mode, int n_tasks);

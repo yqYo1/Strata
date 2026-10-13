@@ -1008,6 +1008,16 @@ if(STRATA_BUILD_TESTS)
   add_test(NAME expert_parity COMMAND expert_parity --selftest
            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 
+  # Host-only actual native pool/service receipts, including coalesced activation rows and request rebinding.
+  add_executable(native_service_pool_test tests/core/native_service_pool_test.cpp)
+  target_link_libraries(native_service_pool_test PRIVATE strata_kernels_cpu strata_warnings)
+  if(STRATA_NATIVE_EXPERTS)
+    target_include_directories(native_service_pool_test PRIVATE third_party/main/ggml)
+  endif()
+  add_test(NAME native_service_pool_test COMMAND native_service_pool_test)
+  set_tests_properties(native_service_pool_test PROPERTIES SKIP_RETURN_CODE 77 TIMEOUT 120
+    ENVIRONMENT "STRATA_POOL_SPIN_US=0")
+
   add_executable(pool_test src/kernels/cpu/pool_test.cpp)
   target_link_libraries(pool_test PRIVATE strata_kernels_cpu)
   add_test(NAME pool_test COMMAND pool_test --selftest WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
