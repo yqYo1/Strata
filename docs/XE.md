@@ -27,6 +27,21 @@ A smaller card is checked by making the B70 look like one.
 `STRATA_NO_XMX=1` takes the paths without the matrix engines.
 The processor's own graphics (a UHD 770 on the development machine) is a second, real configuration for checks.
 
+## Experimental prefill scratch sharing
+
+`STRATA_PREFILL_SCRATCH_ALIAS=1` shares retired FP32 scratch with its next use.
+It is off by default and enabled only by the exact value `1`, frozen at its first reference in the process.
+The equally sized `emb`, `bo`, and `ple_emb` planes use one allocation; GDN writes FP32 `y` into `qkv` after convolution finishes reading it.
+The normalizer still reads `y` and produces FP16 output. Arithmetic, casts, kernels, and submission order stay the same.
+Initialization rejects a compute queue without the in-order property.
+Owned storage, borrowed relayout, image embeddings, layer splits, PLE, BF16x2, MMQ, and smaller chunks use the same sharing rules.
+With `STRATA_TRACE`, each layout emits one line of requested bytes, the set that wins the shared maximum, and alias pointers.
+
+This is a source-only change: free and contrib-llvm builds, GPU parity, speed, and physical peak memory are unverified.
+The shared region remains the maximum of GDN, QSA, and MoE, so a smaller GDN set need not reduce that maximum.
+Requested-byte savings are not measured free VRAM. Automatic chunk selection, context bounds and checks, and callbacks are unchanged.
+There is no result establishing that a 16K chunk or the maximum context fits.
+
 ## Integration through Strata 0.1.40
 
 The changes of upstream Strata 0.1.39 to 0.1.40.2 (`e8ca9afd`) are carried into Xe, except the Windows implementation.

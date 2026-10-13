@@ -568,10 +568,21 @@ constexpr int64_t GEMM_SCRATCH = 32ll << 20;        // FP16 elements for the lar
 // of the largest holds them all.  That is ~260 KB of the ~680 KB a prompt token cost - which is what lets a chunk
 // grow (every expert is streamed once per chunk, so a bigger chunk streams fewer bytes per token).  The sizes are
 // counted with the same `take` sequence `init` uses; a mismatch makes `init` fail with "do not fit", never overlap.
+// Frozen process-wide opt-in: sizing and every owned/borrowed carve see the same value.
+bool scratch_alias_enabled() {
+    static const bool on = [] {
+        const char* v = std::getenv("STRATA_PREFILL_SCRATCH_ALIAS");
+        return v != nullptr && v[0] == '1' && v[1] == '\0';
+    }();
+    return on;
+}
+static_assert(C >= ZV, "GDN y must fit in the retired qkv plane");
 uint64_t gdn_set_bytes(size_t T) {
     Alloc a; a.count_only = true; bool ok = true;
     a.take<float>(T * C, ok); a.take<float>(T * ZV, ok); a.take<float>(T * 2 * HV, ok); a.take<float>(T * HV, ok);
-    a.take<float>(T * HV, ok); a.take<float>(T * C, ok); a.take<float>(T * ZV, ok); a.take<uint16_t>(T * ZV, ok);
+    a.take<float>(T * HV, ok); a.take<float>(T * C, ok);
+    if (!scratch_alias_enabled()) a.take<float>(T * ZV, ok);
+    a.take<uint16_t>(T * ZV, ok);
     return a.used;
 }
 uint64_t qsa_set_bytes(size_t T, int64_t cap, int64_t max_blocks, int64_t sel_batch, int64_t attn_batch,
@@ -663,6 +674,11 @@ bool Prefill::init(const core::WeightTable& wt, const core::ModelGeometry& g, co
     Impl& m = *impl_;
     m.wt = &wt; m.g = &g; m.ss = &ss; m.src = src; m.cache = cache; m.host_res = host_res;
     m.T = chunk; m.cs = stream; m.stats = &stats_;
+    if (scratch_alias_enabled() &&
+        !core::Runtime::get().stream(stream).has_property<sycl::property::queue::in_order>()) {
+        err = "prefill: STRATA_PREFILL_SCRATCH_ALIAS requires an in-order compute queue";
+        return false;
+    }
     // Reject unsupported opt-ins before allocating anything: MMQ GU stays route-sized, and the existing NaN
     // diagnostic needs all GU rows at once. A compact run must use the ordered queue contract of Runtime.
     m.compact_moe = compact_moe_enabled();
@@ -785,7 +801,14 @@ bool Prefill::carve(size_t T, void* alloc) {
     m.xn16 = o.take<uint16_t>(T * D, ok); m.lo = o.take<float>(T * LR, ok); m.lo16 = o.take<uint16_t>(T * LR, ok);
     m.gated = o.take<float>(T * D, ok); m.inj = o.take<float>(T * HC, ok);
     m.mixed = o.take<float>(T * N, ok); m.mixed_bf = o.take<uint16_t>(T * N, ok);
-    m.mixed_h = o.take<uint16_t>(T * N, ok); m.bo = o.take<float>(T * N, ok);
+    m.mixed_h = o.take<uint16_t>(T * N, ok);
+    // emb's last reader is gr_broadcast on cs (or no embedding at all with hand_in).
+    // Layer 0's bo last reader is gr_write[_norm_rs/_cvec_norm_rs], before ple_land.
+    // Layer 1's batched/per-token PLE reads finish on cs before its first bo write.
+    // Stages starting later never read ple_emb; stages ending before layer 1 land
+    // it after their last bo read. Image rows, BF16x2 and MMQ do not alter these
+    // boundaries. Skip take entirely: owned must contain only the one allocation.
+    m.bo = scratch_alias_enabled() ? m.emb : o.take<float>(T * N, ok);
     if (bf16x2_hc()) { m.xn16_lo = o.take<uint16_t>(T * D, ok); m.lo16_lo = o.take<uint16_t>(T * LR, ok); }
     if (bf16x2()) m.mixed_bf_lo = o.take<uint16_t>(T * N, ok);
     m.steps_dev = o.take<int32_t>(T * strata::kernels::kStepCount, ok);
@@ -805,7 +828,8 @@ bool Prefill::carve(size_t T, void* alloc) {
         a.base = base; a.cap = region; a.owned = &m.owned;
         m.qkv = a.take<float>(T * C, ok); m.z = a.take<float>(T * ZV, ok); m.ab = a.take<float>(T * 2 * HV, ok);
         m.gate = a.take<float>(T * HV, ok); m.beta = a.take<float>(T * HV, ok); m.hbuf = a.take<float>(T * C, ok);
-        m.y = a.take<float>(T * ZV, ok); m.y_h = a.take<uint16_t>(T * ZV, ok);
+        m.y = scratch_alias_enabled() ? m.qkv : a.take<float>(T * ZV, ok);
+        m.y_h = a.take<uint16_t>(T * ZV, ok);
         Alloc b;
         b.base = base; b.cap = region; b.owned = &m.owned;
         m.Kc = b.take<float>(T * 512, ok); m.Vc = b.take<float>(T * 512, ok); m.Qf = b.take<float>(T * 12288, ok);
@@ -872,10 +896,22 @@ bool Prefill::carve(size_t T, void* alloc) {
             m.used_of[i] = i;
         }
     }
-    m.ple_emb = o.take<float>(T * N, ok);
+    m.ple_emb = scratch_alias_enabled() ? m.emb : o.take<float>(T * N, ok);
     m.ple_norm = o.take<float>((size_t) strata::kernels::NG_HC_DIM, ok);
     take_stage(o, ss, s, m.stage, ok);
     m.T = (int64_t) T;
+    if (ok && scratch_alias_enabled() && std::getenv("STRATA_TRACE")) {
+        const uint64_t gd = gdn_set_bytes(T);
+        const uint64_t qs = qsa_set_bytes(T, m.cap, m.max_blocks, m.sel_batch, m.attn_batch, s);
+        const uint64_t mo = moe_set_bytes(T, g.n_expert);
+        std::fprintf(stderr, "strata prefill scratch alias: T=%zu borrowed=%d requested=%llu "
+                     "gdn=%llu qsa=%llu moe=%llu region=%llu winner=%s "
+                     "emb=%p bo=%p ple_emb=%p qkv=%p y=%p\n", T, (int) m.borrowed,
+                     (unsigned long long) o.used, (unsigned long long) gd, (unsigned long long) qs,
+                     (unsigned long long) mo, (unsigned long long) m.region_bytes,
+                     gd == m.region_bytes ? "gdn" : qs == m.region_bytes ? "qsa" : "moe",
+                     (void*) m.emb, (void*) m.bo, (void*) m.ple_emb, (void*) m.qkv, (void*) m.y);
+    }
     return ok;
 }
 
@@ -1071,7 +1107,8 @@ uint64_t Prefill::bytes_needed(const core::ModelGeometry& g, const core::Session
     o.take<uint16_t>((size_t) GEMM_SCRATCH, ok);
     auto f = [&](size_t n) { o.take<float>(n, ok); };
     f(T * N); f(T * D); f(T * HC); o.take<uint16_t>(T * D, ok); f(T * LR); o.take<uint16_t>(T * LR, ok);
-    f(T * D); f(T * HC); f(T * N); o.take<uint16_t>(T * N, ok); o.take<uint16_t>(T * N, ok); f(T * N);
+    f(T * D); f(T * HC); f(T * N); o.take<uint16_t>(T * N, ok); o.take<uint16_t>(T * N, ok);
+    if (!scratch_alias_enabled()) f(T * N);
     if (bf16x2_hc()) { o.take<uint16_t>(T * D, ok); o.take<uint16_t>(T * LR, ok); }
     if (bf16x2()) o.take<uint16_t>(T * N, ok);
     o.take<int32_t>(T * strata::kernels::kStepCount, ok);
@@ -1100,7 +1137,7 @@ uint64_t Prefill::bytes_needed(const core::ModelGeometry& g, const core::Session
         }
     }
     for (int i = 0; i < ring_slots(T); ++i) o.take<uint8_t>((size_t) MAXBLOB(), ok);
-    f(T * N);
+    if (!scratch_alias_enabled()) f(T * N);
     f((size_t) strata::kernels::NG_HC_DIM);
     strata::kernels::KvHostPools stage;
     take_stage(o, ss, s, stage, ok);
@@ -1663,6 +1700,10 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
                     pt.mark(kPfGdnConv, cs);   // "gdn" is the projections in; the rest on their own lines
                     gdn_gates(m.ab, (const float*) wdt->data, (const float*) wsa->data, m.gate, m.beta, T, m.cs);
                     gdn_conv(conv, m.qkv, (const float*) wc->data, m.hbuf, T, EPS, m.cs);
+                    // Conv is qkv's last reader. The in-order cs completes it before
+                    // recurrence materializes FP32 y in qkv's T*C >= T*ZV span.
+                    // Keep raw y: the recurrence's output normalizer reads it to
+                    // produce y_h; neither its math nor its completion changes.
                     pt.mark(kPfGdnRec, cs);
                     gdn_recurrence(state, m.hbuf, m.gate, m.beta, m.z, (const float*) wnm->data, EPS, m.y, m.y_h, T, m.cs);
                     pt.mark(kPfGdnOut, cs);
