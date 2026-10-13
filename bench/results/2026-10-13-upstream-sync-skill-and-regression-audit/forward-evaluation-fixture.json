@@ -1,0 +1,107 @@
+{
+  "scope": "Synthetic read-only behavioral evaluation, not hardware results",
+  "user_request": "本家とXeStrataの更新を評価し、必要な機能を全て取り込み、優れた推論部品を選んでください。性能比較には上流bench.shを使ってください。",
+  "hardware": "Intel SYCL GPU and AVX2 CPU; HIP/CUDA inference excluded",
+  "changes": [
+    {
+      "id": "api-stream-recovery",
+      "kind": "server/API",
+      "implemented_in": "serve and C++ generate",
+      "dependency": "new engine error/status interface"
+    },
+    {
+      "id": "cli-chat-mode",
+      "kind": "CLI user functionality",
+      "dependency": "new CLI option; old fork lacks equivalent"
+    },
+    {
+      "id": "iq3-gu-gpu",
+      "kind": "MoE IQ3 GU GPU prefill kernel",
+      "matched": true,
+      "fork_us": [
+        50,
+        49,
+        51
+      ],
+      "upstream_us": [
+        40,
+        41,
+        39
+      ],
+      "correctness": "fixed-input finite numerical checks pass"
+    },
+    {
+      "id": "iq3-down-gpu",
+      "kind": "MoE IQ3 Down GPU prefill kernel",
+      "matched": true,
+      "fork_us": [
+        80,
+        81,
+        79
+      ],
+      "upstream_us": [
+        110,
+        109,
+        111
+      ],
+      "correctness": "pass"
+    },
+    {
+      "id": "iq3-cpu-nt1",
+      "kind": "MoE IQ3 CPU decode NT1",
+      "matched": true,
+      "fork_us": [
+        3,
+        3.1,
+        2.9
+      ],
+      "upstream_us": [
+        5,
+        4.9,
+        5.1
+      ],
+      "correctness": "pass"
+    },
+    {
+      "id": "iq3-cpu-nt8",
+      "kind": "MoE IQ3 CPU NT8",
+      "matched": true,
+      "fork_us": [
+        10,
+        9.9,
+        10.1
+      ],
+      "upstream_us": [
+        4,
+        4.1,
+        3.9
+      ],
+      "correctness": "pass"
+    }
+  ],
+  "whole_engine": {
+    "upstream_unpatched_box_defaults": {
+      "prefill_tps": 400,
+      "decode_tps": 9,
+      "chunk": 512,
+      "decode_mtp": false
+    },
+    "fork_best_known": {
+      "prefill_tps": 646,
+      "decode_tps": 14,
+      "chunk": 8192,
+      "decode_mtp": true
+    },
+    "upstream_parameter_search": "not performed",
+    "whole_model_partial_candidate": "not measured",
+    "upstream_bench_long_actual_input": 32049,
+    "upstream_bench_long_output": 24
+  },
+  "log_state": {
+    "earlier_generation128": true,
+    "current_generation24": true,
+    "source_changed": true,
+    "full_context_configured": 262144,
+    "largest_physical_test": 65536
+  }
+}

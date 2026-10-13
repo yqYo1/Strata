@@ -1,0 +1,37 @@
+{
+  "original_extract_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-session-speed-statements-audit-v2.json",
+  "original_extract_sha256": {
+    "sha256": "649a37fa21b455846a2b051065bf62453ac1feae8e74e59cced97bc1809b3329"
+  },
+  "parsed_statements": 409,
+  "selected_user_facing_statements": [
+    {
+      "timestamp": "2026-10-03T08:16:19.507Z",
+      "phase": "final_answer",
+      "text": "IQ3_S 版の取得、SYCL 対応の追加、動作確認、性能調整を完了しました。**既定のローカル起動設定も IQ3_S に変更済み**です。Q2_0 の設定は別ファイルに保存し、従来の API モデル名も alias として使えるようにしています。\n\n取得した公式 GGUF は 2 分割・合計 **83.62 GB** で、両方の SHA-256 を検証しました。IQ3_S という名前でも内部には IQ2_S、IQ3_XXS、IQ4 系などが混在するため、不足していた **IQ2_S・IQ3_XXS・IQ3_S の GPU 演算と転送処理**を追加しました。追加の再量子化は行っていません。\n\n今回の性能調整では、GPU キャッシュを層ごとの expert サイズで確保するよう変更しました。同じ約 4.09 GiB に置ける expert が **1,649 → 2,137、約 30% 増加**しています。\n\nB570 10 GiB／Ryzen 5 5600X／RAM 125 GiB、context 512、128 トークン生成で、変更前後を交互に 3 組測定した中央値です。\n\n| リクエスト | 変更前 | 変更後 |\n|---|---:|---:|\n| 文章・初回 | 12.27 token/s | **12.94 token/s** |\n| 文章・再実行 | 14.07 token/s | **14.37 token/s** |\n| コード生成・初回 | 15.71 token/s | **16.43 token/s** |\n| コード生成・再実行 | 17.81 token/s | **18.30 token/s** |\n\n改善幅は **2.1〜5.4%** でした。MTP 閾値、CPU ワーカー数、キャッシュ更新量も調べ、最終的に **閾値 0.9・4 ワーカー・更新量 64** を選びました。\n\nこの表はモデル起動と入力処理を含みません。初回入力処理だけでも、37／45 トークンで中央値 **6.97／8.79 秒**かかっています。また、バックグラウンド負荷は隔離していません。**IQ3_S は、以前の Q2_0 のコード生成 29.70 token/s には届いていません。**\n\n現在は、GPU 上の正規化・Attention・GDN・ルーティング・量子化行列演算、RAM 上の CPU expert、GPU キャッシュと動的更新、prefill、MTP、連続リクエストまで動作しています。OpenAI／Anthropic API、Web UI、ストリーミング、中断後の復帰も実モデルで確認しました。検証用サーバーは停止済みです。\n\n検証結果と精度上の範囲は次のとおりです。\n\n- SYCL テスト **34 件すべて成功**。実 GGUF の **447 テンソル**から先頭・中間・末尾の行を採って照合しました。\n- 独立した GGML 復号器と、全コードブック・符号・スケールを照合しました。CPU 版 llama.cpp との短い比較でも、**25 入力位置すべての最大確率トークンが一致**しました。\n- キャッシュ配置を同じ 1,649 枠に固定した変更前後比較では、**64 生成トークンと、棄却候補を含む 69 行の全語彙 logits が全ビット一致**しました。\n\nCPU 参照との logits 全値はビット一致していません。また、CPU／GPUや通常生成／MTPの計算差により、設定間で文章が変わる場合があります。広範な品質評価や、IQ3_S と Q2_0 の品質比較は未実施です。\n\nfork 元は `git-workflow` に従って独立 clone し、最新の [Niko1221/Strata `99f3dbd`・engine 0.1.38](https://github.com/Niko1221/Strata/tree/99f3dbd0b21d1401b3769e0c0d963913607f380b) と比較しました。この fork は 0.1.34 を土台としており、最新版はまだ統合していません。\n\n| 項目 | 現在不足している部分 |\n|---|---|\n| **入力処理の高速化** | 最新の量子化 MMQ・融合 INT8 expert 演算・転送の重ね合わせが未移植。現在は FP16 展開＋oneMKL |\n| Prompt Attention | 高速な行列演算経路が未実装で、分割 Attention にフォールバック |\n| 複数 GPU | 新しい `--peer-device` expert tier は未対応。SYCL は現在 1 GPU |\n| キャッシュの学習・保存 | `--adapt-decay`、`--expert-profile-save` などの新機能が未取り込み |\n| CPU 最適化 | 最新の IQ4_XS 用 AVX2 複数トークン演算が未取り込み。既存フォールバックは動作 |\n| サーバーの修正 | 無応答時の再起動、診断、中断時の集計、Host／Origin 検査などが未取り込み |\n| 自動セットアップ | Intel GPU の検出・SYCL 自動ビルド・配布に未対応。現在は Linux の手動構成 |\n| その他の量子化 | IQ2_XXS・IQ2_XS・IQ1 系などは GPU ネイティブ経路が未対応 |\n\n**未実装と未検証は分けて扱っています。** INT8／Q4／K8V4 KV は演算単位の検証がありますが、今回の実モデル測定は FP16・context 512 です。長文脈、Vision の全経路、Windows、Coder／Swift／Unsloth 版は、この環境では未検証です。性能面では、まず入力処理の量子化 expert 演算が大きな改善対象になります。\n\n詳細は [実装状況と upstream 差分の報告](/home/yayoi/orca/workspaces/Strata/sycl/docs/SYCL_STATUS_2026-10-03.md) に、全測定の要約は [run.json](/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-03-sycl-iq3s/run.json) に保存しました。`feature/sycl` へ **`17d88b6` まで push 済み**で、モデル・実行ログ・バイナリダンプは Git に入れていません。"
+    },
+    {
+      "timestamp": "2026-10-05T08:32:29.114Z",
+      "phase": "final_answer",
+      "text": "埋め込みサービスを停止し、`inactive / MainPID=0`を確認しました。今後の測定後も停止したままにします。\n\nRAM→VRAMは実測で**約6.1〜6.5 GB/s**でした。エンジン内の転送も約6.2 GB/sなので、帯域上限に近い状態です。ただし計算との重なりがあり、転送待ちが支配的かは帯域だけでは断定できません。\n\n同条件の32K入力比較では、転送を減らした変更で**453→646 token/s**に改善し、全出力が一致しました。検証結果を含む[PR #6](https://github.com/yqYo1/Strata/pull/6)をマージ済みです。"
+    },
+    {
+      "timestamp": "2026-10-05T11:21:36.069Z",
+      "phase": "final_answer",
+      "text": "比較しました。**RAMから復元＋グラフ再作成は、VRAMからRAMへ退避して戻す方式より速い結果でした。**\n\nB570・約325 MiBのキャッシュで、解放・再確保・復元を含む単発測定です。\n\n| 方式 | 所要時間 |\n|---|---:|\n| 全解放・VRAMから退避して復元 | 278 ms |\n| 全解放・RAMから復元＋グラフ再作成 | 153 ms |\n| 全解放・RAMから固定アドレスへ復元 | 54 ms |\n| 半分解放・VRAMから退避して復元 | 113 ms |\n| 半分解放・RAMから固定アドレスへ復元 | 25 ms |\n\nグラフ再作成自体は約103 msでした。この構成では、全解放するなら固定アドレスを維持して既存RAMから復元する方式が有力です。\n\n64K入力・4Kチャンクでは、保持／半分解放／全解放で約520／533／540 token/s。出力・状態・復元した重みの一致も確認し、[GitHub PR #8](https://github.com/yqYo1/Strata/pull/8)に反映しました。速度差は反復測定で確認が必要です。"
+    },
+    {
+      "timestamp": "2026-10-13T00:00:48.880Z",
+      "phase": "final_answer",
+      "text": "上流の未変更の `bench.sh --long --runs 3` に切り替えました。今後の性能比較もこの方式に統一します。\n\n32,049トークン入力・24トークン出力、各3回の中央値です。\n\n| 条件 | prefill | decode |\n|---|---:|---:|\n| COPY無効 | 407.5 tok/s | 8.6 tok/s |\n| COPY有効 | 474.8 tok/s | 8.7 tok/s |\n\nprefillは約16.5%改善しました。decodeの差は測定範囲が重なるため判定保留です。両条件ともGPU障害なく正常終了しました。\n\n[測定結果](/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/feat-fixed-history-logits-comparator-20261013/bench/results/2026-10-13-upstream-benchsh-quiet-copy-pair/REPORT.md)は `0109097` にコミット・push済みです。"
+    },
+    {
+      "timestamp": "2026-10-13T07:39:16.578Z",
+      "phase": "commentary",
+      "text": "`bench.sh` 方式への切り替えは完了し、上流のクライアントを変更せず長文を各 3 回測定済みです。直近の比較では、prefill の中央値は **約375〜385 t/s**、decode は **約7.8〜8.2 t/s** で、目標の 1000 / 70 t/s にはまだ届いていません。decode の差はばらつきと重なるため、改善とは判定していません。\n\n実装面では、一時領域の共有で **約480 MiBを削減**し、以前は容量不足で拒否された **12Kチャンクでの32K入力**を処理できました。通常終了・後続GPU確認も通り、変更と測定記録は `6035c4f` にコミット・push済みです。現在は、繰り返し実行と64K入力でも成立するかの確認、実際のserve経路での品質比較の準備を進めています。新候補の速度は、まだ `bench.sh` で測っていません。\n"
+    }
+  ],
+  "v1_parser_wrong_channel_returned_zero": true,
+  "v1_not_promoted": true,
+  "scope": "User-facing historical statements only; authoritative paired result is independently read from Git, not inferred from chat."
+}
