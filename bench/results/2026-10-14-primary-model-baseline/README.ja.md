@@ -194,3 +194,5 @@ mainはbeddab2fのまま。default反映とfresh Niko同期は未完了であり
 handoffと境界/ownership/sticky errorのfixtureがexit0、UR success832/ZE success3325、
 fresh fault0/dump無し。現在GPUを使えることの確認であり、終了したモデルの正常終了や
 長文/速度合格を後から成立させない。このcontrollerはcanonical Git receiptから直接読む。
+その成功raw traceもreceipt/summaryのcommit照合後に退役した。今回の累計は99ファイル、
+26,221,242 logical bytes。保持する代表engine.stderrは引き続き1件/40,511 bytes。
