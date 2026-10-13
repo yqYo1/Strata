@@ -1108,30 +1108,42 @@ struct PfTimer {
     std::vector<int> ph;
     size_t used = 0;
     double ms[kPfCount] = {};
+    // Host wall spent in the timer's CPU API calls and local bookkeeping, not GPU service.
+    double mark_host_ms = 0, fold_host_ms = 0;
+    size_t marker_calls = 0, new_events = 0, fold_calls = 0, completed_intervals = 0;
     void mark(int phase, strata::gpu::Stream s) {
         if (!on) return;
+        const auto t_call = Clock::now();
+        ++marker_calls;
         if (used == ev.size()) {
             strata::gpu::Event* e = nullptr;
             publication::require(strata::gpu::event_create(&e, true), "timer event_create", strata::gpu::last_error);
+            ++new_events;
             ev.push_back(e);
             ph.push_back(0);
         }
         ph[used] = phase;
         publication::require(strata::gpu::event_record(ev[used], s), "strata::gpu::event_record(ev[used], s)", strata::gpu::last_error);
         ++used;
+        mark_host_ms += ms_since(t_call);
     }
     // every recorded mark has completed (the stream was synchronized): charge the gaps, keep the last mark
     void fold() {
-        if (!on || used < 2) return;
+        if (!on) return;
+        const auto t_call = Clock::now();
+        ++fold_calls;
+        if (used < 2) { fold_host_ms += ms_since(t_call); return; }
         for (size_t i = 0; i + 1 < used; ++i) {
             float t = 0.0f;
             publication::require(strata::gpu::event_elapsed_ms(&t, ev[i], ev[i + 1]),
                                  "prefill phase timer interval", strata::gpu::last_error);
+            ++completed_intervals;
             ms[ph[i]] += t;
         }
         std::swap(ev[0], ev[used - 1]);
         std::swap(ph[0], ph[used - 1]);
         used = 1;
+        fold_host_ms += ms_since(t_call);
     }
     ~PfTimer() {
         for (strata::gpu::Event* e : ev) strata::gpu::event_destroy(e);
@@ -2462,6 +2474,10 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
         std::fprintf(stderr, "strata prefill timing: host: chunk setup (PLE rows, the expert stream plan) %.0f ms, "
                              "waiting for each chunk %.0f ms, after each chunk (the draft layer, progress) %.0f ms, "
                              "PLE %.0f ms\n", host_setup_ms, host_sync_ms, host_chunk_ms, stats_.ms_ple);
+        std::fprintf(stderr, "strata prefill timer overhead: host wall CPU API overhead: mark %.3f ms "
+                             "(marker calls %zu, new event creations %zu), fold %.3f ms "
+                             "(fold calls %zu, completed intervals %zu); not GPU service or timer calibration\n",
+                     pt.mark_host_ms, pt.marker_calls, pt.new_events, pt.fold_host_ms, pt.fold_calls, pt.completed_intervals);
     }
     if (std::getenv("STRATA_STATE_HASH_GDN") != nullptr) {   // debug: the GDN states as the prompt path leaves them
         publication::cleanup_require(strata::gpu::stream_sync(m.cs), "strata::gpu::stream_sync(m.cs)", strata::gpu::last_error);
