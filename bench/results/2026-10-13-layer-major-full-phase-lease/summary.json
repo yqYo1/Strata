@@ -1,0 +1,1090 @@
+{
+  "source_pins": {
+    "docs/LAYER_MAJOR_PREFILL.ja.md": {
+      "sha256": "caa6ea6e17bedaeb0d9bdb92fefe0a2506e5219b37ec0b0735a7baf493fb5d08"
+    },
+    "docs/LAYER_MAJOR_PREFILL.md": {
+      "sha256": "727f5b1005f258bbc41217bf56beb081f5bc5dea7bc3c8c37fc9b5b38b28b55e"
+    },
+    "include/strata/core/expert_cache.hpp": {
+      "sha256": "7450cbfa5bb5356c0d2e6b7bf09ac06ffb341feffaac8182db694c64d98d53ac"
+    },
+    "include/strata/core/layer.hpp": {
+      "sha256": "5c22fb192f8ae046e513c48eaa3feb8f51fb022937ce3d9f0bc78a1b420c44bc"
+    },
+    "include/strata/core/phase_cache_owner.hpp": {
+      "sha256": "95dc08cfefe7c3fe7405d2fea74448d3d4b309551b3deb098739d7f2a2e82746"
+    },
+    "include/strata/core/phase_serve_cycle.hpp": {
+      "sha256": "3538ad1fd438e81aca155755721dc5fb42350ce123ef033590776a14f6d43c93"
+    },
+    "include/strata/core/serve_first_row_capture.hpp": {
+      "sha256": "0fd0e9ba1d58cd2ece0c2b7c2470fa6ae8561706d0f8cbc7f29b57d5b5ccd66e"
+    },
+    "include/strata/core/session.hpp": {
+      "sha256": "6fd804767cb1728812b6876f647d247d6cdf816e2d68210002d493f978b7075d"
+    },
+    "include/strata/prefill/layer_major.hpp": {
+      "sha256": "7409746cf90d20e8e25cb08a4123185be424db902b2de63a8bd3e25f8f0f6d6c"
+    },
+    "include/strata/prefill/prefill.hpp": {
+      "sha256": "29b476be09e6968f52a0966938cffe62c4a30ed159c47de40ecb6322ea75c440"
+    },
+    "src/core/expert_cache.cpp": {
+      "sha256": "013425f1e1fb70f7c4bb1618243bde014c1608e390377ae731f4a88a5600f87c"
+    },
+    "src/core/layer.cpp": {
+      "sha256": "b413bfe63a3668c894466bb9e738fe8f812d333da43cb752bc472d4609100503"
+    },
+    "src/core/phase_cache_owner.cpp": {
+      "sha256": "7f88f8f0c8fd78d5250e55fdc430c3e7bc909e881db9b8eeb288d5b3dac93388"
+    },
+    "src/core/session.cpp": {
+      "sha256": "a21216b19f730ae49e452550543d612b04989a4e23a43d05d29b4d2c74523b54"
+    },
+    "src/prefill/prefill.cpp": {
+      "sha256": "86d903837de7cf3dc0cd6401cc19320f9e3b317f6528760f3d1265f7dc0c29dc"
+    },
+    "src/program/generate.cpp": {
+      "sha256": "4c6e7927247842b24f15f3635a8fce7c364adebf243ac4dd19f060f6b25d148c"
+    },
+    "tests/core/phase_cache_owner_test.cpp": {
+      "sha256": "79b1d37eec941c7b5cf6802558ab5180e3e688b495d8f2f3a02e764f73bf0c83"
+    },
+    "tools/test_phase_cache_vmm.cpp": {
+      "sha256": "b8ef42aa1893f09ac473d8e4b7fca22b253147a60596196224bbfd1d1bb4bd8f"
+    }
+  },
+  "binary_sha256": {
+    "sha256": "992ecc4d0de0df69a7301e62c366111d8e506aba34bd2e2382730b90ca049f48"
+  },
+  "full_builds_pass": true,
+  "actual_parent_no_new_lints_pass": true,
+  "actual_tiny_full_lease_pass": true,
+  "actual_phase_all_ram_pass": true,
+  "actual_phase_gpu16384_ram_tail_pass": true,
+  "requests": [
+    {
+      "prompt_tokens": 1024,
+      "max_new": 1,
+      "packet_sha256": {
+        "sha256": "633ca92769455817e89619a75e40ff3a4fc0cdfce97051e0d13759bf653a63b2"
+      },
+      "checkpoint_key_omitted": true,
+      "complete": true,
+      "done_line": "DONE 1 1024 32050.9 399.6 stop 0 0 0 67 480 0 0 0.0 1024 0",
+      "output_ids": [
+        248046
+      ],
+      "diagnostic_engine_timings_only": true,
+      "performance_eligible": false
+    },
+    {
+      "prompt_tokens": 32768,
+      "max_new": 1,
+      "packet_sha256": {
+        "sha256": "954f3d84f822264d53daf10c733057fda8f4f4de201df138bd64e92fadd42164"
+      },
+      "checkpoint_key_omitted": true,
+      "complete": true,
+      "done_line": "DONE 1 32768 76785.0 163.7 length 0 0 0 36 480 0 0 0.0 32768 0",
+      "output_ids": [
+        12055
+      ],
+      "diagnostic_engine_timings_only": true,
+      "performance_eligible": false
+    }
+  ],
+  "admissions": [
+    "mode=fresh-resident-or-streamed tokens=1023 chunks=1 requested_gpu_rows=16384 gpu_rows=1023 host_rows=0 gpu_residual_bytes=41902080 host_residual_bytes=0 layer_cache_bytes=1363148800 reserve=734003200 fresh_vram=3273674752 fresh_ram=32642379776 preexisting_workspace_head_state_charged=1",
+    "mode=fresh-resident-or-streamed tokens=32767 chunks=4 requested_gpu_rows=16384 gpu_rows=16384 host_rows=16383 gpu_residual_bytes=671088640 host_residual_bytes=671047680 layer_cache_bytes=1363148800 reserve=734003200 fresh_vram=3052232704 fresh_ram=32541941760 preexisting_workspace_head_state_charged=1"
+  ],
+  "layer_rows": [
+    [
+      "0",
+      "512",
+      "1114112000",
+      "1",
+      "1023",
+      "0"
+    ],
+    [
+      "1",
+      "512",
+      "773324800",
+      "1",
+      "1023",
+      "0"
+    ],
+    [
+      "2",
+      "512",
+      "1009254400",
+      "1",
+      "1023",
+      "0"
+    ],
+    [
+      "3",
+      "512",
+      "1009254400",
+      "1",
+      "1023",
+      "0"
+    ],
+    [
+      "4",
+      "512",
+      "1009254400",
+      "1",
+      "1023",
+      "0"
+    ],
+    [
+      "5",
+      "512",
+      "1009254400",
+      "1",
+      "1023",
+      "0"
+    ],
+    [
+      "6",
+      "512",
+      "1009254400",
+      "1",
+      "1023",
+      "0"
+    ],
+    [
+      "7",
+      "512",
+      "1114112000",
+      "1",
+      "1023",
+      "0"
+    ],
+    [
+      "8",
+      "512",
+      "773324800",
+      "1",
+      "1023",
+      "0"
+    ],
+    [
+      "9",
+      "512",
+      "1009254400",
+      "1",
+      "1023",
+      "0"
+    ],
+    [
+      "10",
+      "512",
+      "773324800",
+      "1",
+      "1023",
+      "0"
+    ],
+    [
+      "11",
+      "512",
+      "1009254400",
+      "1",
+      "1023",
+      "0"
+    ],
+    [
+      "12",
+      "512",
+      "878182400",
+      "1",
+      "1023",
+      "0"
+    ],
+    [
+      "13",
+      "512",
+      "773324800",
+      "1",
+      "1023",
+      "0"
+    ],
+    [
+      "14",
+      "512",
+      "1114112000",
+      "1",
+      "1023",
+      "0"
+    ],
+    [
+      "15",
+      "512",
+      "1009254400",
+      "1",
+      "1023",
+      "0"
+    ],
+    [
+      "16",
+      "512",
+      "1114112000",
+      "1",
+      "1023",
+      "0"
+    ],
+    [
+      "17",
+      "512",
+      "1192755200",
+      "1",
+      "1023",
+      "0"
+    ],
+    [
+      "18",
+      "512",
+      "1114112000",
+      "1",
+      "1023",
+      "0"
+    ],
+    [
+      "19",
+      "512",
+      "1009254400",
+      "1",
+      "1023",
+      "0"
+    ],
+    [
+      "20",
+      "512",
+      "878182400",
+      "1",
+      "1023",
+      "0"
+    ],
+    [
+      "21",
+      "512",
+      "956825600",
+      "1",
+      "1023",
+      "0"
+    ],
+    [
+      "22",
+      "512",
+      "1114112000",
+      "1",
+      "1023",
+      "0"
+    ],
+    [
+      "23",
+      "512",
+      "1009254400",
+      "1",
+      "1023",
+      "0"
+    ],
+    [
+      "24",
+      "512",
+      "1009254400",
+      "1",
+      "1023",
+      "0"
+    ],
+    [
+      "25",
+      "512",
+      "1192755200",
+      "1",
+      "1023",
+      "0"
+    ],
+    [
+      "26",
+      "512",
+      "1009254400",
+      "1",
+      "1023",
+      "0"
+    ],
+    [
+      "27",
+      "512",
+      "1192755200",
+      "1",
+      "1023",
+      "0"
+    ],
+    [
+      "28",
+      "512",
+      "1192755200",
+      "1",
+      "1023",
+      "0"
+    ],
+    [
+      "29",
+      "512",
+      "1192755200",
+      "1",
+      "1023",
+      "0"
+    ],
+    [
+      "30",
+      "512",
+      "878182400",
+      "1",
+      "1023",
+      "0"
+    ],
+    [
+      "31",
+      "512",
+      "1114112000",
+      "1",
+      "1023",
+      "0"
+    ],
+    [
+      "32",
+      "512",
+      "1009254400",
+      "1",
+      "1023",
+      "0"
+    ],
+    [
+      "33",
+      "512",
+      "1114112000",
+      "1",
+      "1023",
+      "0"
+    ],
+    [
+      "34",
+      "512",
+      "1009254400",
+      "1",
+      "1023",
+      "0"
+    ],
+    [
+      "35",
+      "512",
+      "1192755200",
+      "1",
+      "1023",
+      "0"
+    ],
+    [
+      "36",
+      "512",
+      "773324800",
+      "1",
+      "1023",
+      "0"
+    ],
+    [
+      "37",
+      "512",
+      "1114112000",
+      "1",
+      "1023",
+      "0"
+    ],
+    [
+      "38",
+      "512",
+      "1114112000",
+      "1",
+      "1023",
+      "0"
+    ],
+    [
+      "39",
+      "512",
+      "1009254400",
+      "1",
+      "1023",
+      "0"
+    ],
+    [
+      "40",
+      "512",
+      "1192755200",
+      "1",
+      "1023",
+      "0"
+    ],
+    [
+      "41",
+      "512",
+      "1114112000",
+      "1",
+      "1023",
+      "0"
+    ],
+    [
+      "42",
+      "512",
+      "1114112000",
+      "1",
+      "1023",
+      "0"
+    ],
+    [
+      "43",
+      "512",
+      "1114112000",
+      "1",
+      "1023",
+      "0"
+    ],
+    [
+      "44",
+      "512",
+      "1192755200",
+      "1",
+      "1023",
+      "0"
+    ],
+    [
+      "45",
+      "512",
+      "1192755200",
+      "1",
+      "1023",
+      "0"
+    ],
+    [
+      "46",
+      "512",
+      "1114112000",
+      "1",
+      "1023",
+      "0"
+    ],
+    [
+      "47",
+      "512",
+      "1363148800",
+      "1",
+      "1023",
+      "0"
+    ],
+    [
+      "0",
+      "512",
+      "1114112000",
+      "4",
+      "16384",
+      "16383"
+    ],
+    [
+      "1",
+      "512",
+      "773324800",
+      "4",
+      "16384",
+      "16383"
+    ],
+    [
+      "2",
+      "512",
+      "1009254400",
+      "4",
+      "16384",
+      "16383"
+    ],
+    [
+      "3",
+      "512",
+      "1009254400",
+      "4",
+      "16384",
+      "16383"
+    ],
+    [
+      "4",
+      "512",
+      "1009254400",
+      "4",
+      "16384",
+      "16383"
+    ],
+    [
+      "5",
+      "512",
+      "1009254400",
+      "4",
+      "16384",
+      "16383"
+    ],
+    [
+      "6",
+      "512",
+      "1009254400",
+      "4",
+      "16384",
+      "16383"
+    ],
+    [
+      "7",
+      "512",
+      "1114112000",
+      "4",
+      "16384",
+      "16383"
+    ],
+    [
+      "8",
+      "512",
+      "773324800",
+      "4",
+      "16384",
+      "16383"
+    ],
+    [
+      "9",
+      "512",
+      "1009254400",
+      "4",
+      "16384",
+      "16383"
+    ],
+    [
+      "10",
+      "512",
+      "773324800",
+      "4",
+      "16384",
+      "16383"
+    ],
+    [
+      "11",
+      "512",
+      "1009254400",
+      "4",
+      "16384",
+      "16383"
+    ],
+    [
+      "12",
+      "512",
+      "878182400",
+      "4",
+      "16384",
+      "16383"
+    ],
+    [
+      "13",
+      "512",
+      "773324800",
+      "4",
+      "16384",
+      "16383"
+    ],
+    [
+      "14",
+      "512",
+      "1114112000",
+      "4",
+      "16384",
+      "16383"
+    ],
+    [
+      "15",
+      "512",
+      "1009254400",
+      "4",
+      "16384",
+      "16383"
+    ],
+    [
+      "16",
+      "512",
+      "1114112000",
+      "4",
+      "16384",
+      "16383"
+    ],
+    [
+      "17",
+      "512",
+      "1192755200",
+      "4",
+      "16384",
+      "16383"
+    ],
+    [
+      "18",
+      "512",
+      "1114112000",
+      "4",
+      "16384",
+      "16383"
+    ],
+    [
+      "19",
+      "512",
+      "1009254400",
+      "4",
+      "16384",
+      "16383"
+    ],
+    [
+      "20",
+      "512",
+      "878182400",
+      "4",
+      "16384",
+      "16383"
+    ],
+    [
+      "21",
+      "512",
+      "956825600",
+      "4",
+      "16384",
+      "16383"
+    ],
+    [
+      "22",
+      "512",
+      "1114112000",
+      "4",
+      "16384",
+      "16383"
+    ],
+    [
+      "23",
+      "512",
+      "1009254400",
+      "4",
+      "16384",
+      "16383"
+    ],
+    [
+      "24",
+      "512",
+      "1009254400",
+      "4",
+      "16384",
+      "16383"
+    ],
+    [
+      "25",
+      "512",
+      "1192755200",
+      "4",
+      "16384",
+      "16383"
+    ],
+    [
+      "26",
+      "512",
+      "1009254400",
+      "4",
+      "16384",
+      "16383"
+    ],
+    [
+      "27",
+      "512",
+      "1192755200",
+      "4",
+      "16384",
+      "16383"
+    ],
+    [
+      "28",
+      "512",
+      "1192755200",
+      "4",
+      "16384",
+      "16383"
+    ],
+    [
+      "29",
+      "512",
+      "1192755200",
+      "4",
+      "16384",
+      "16383"
+    ],
+    [
+      "30",
+      "512",
+      "878182400",
+      "4",
+      "16384",
+      "16383"
+    ],
+    [
+      "31",
+      "512",
+      "1114112000",
+      "4",
+      "16384",
+      "16383"
+    ],
+    [
+      "32",
+      "512",
+      "1009254400",
+      "4",
+      "16384",
+      "16383"
+    ],
+    [
+      "33",
+      "512",
+      "1114112000",
+      "4",
+      "16384",
+      "16383"
+    ],
+    [
+      "34",
+      "512",
+      "1009254400",
+      "4",
+      "16384",
+      "16383"
+    ],
+    [
+      "35",
+      "512",
+      "1192755200",
+      "4",
+      "16384",
+      "16383"
+    ],
+    [
+      "36",
+      "512",
+      "773324800",
+      "4",
+      "16384",
+      "16383"
+    ],
+    [
+      "37",
+      "512",
+      "1114112000",
+      "4",
+      "16384",
+      "16383"
+    ],
+    [
+      "38",
+      "512",
+      "1114112000",
+      "4",
+      "16384",
+      "16383"
+    ],
+    [
+      "39",
+      "512",
+      "1009254400",
+      "4",
+      "16384",
+      "16383"
+    ],
+    [
+      "40",
+      "512",
+      "1192755200",
+      "4",
+      "16384",
+      "16383"
+    ],
+    [
+      "41",
+      "512",
+      "1114112000",
+      "4",
+      "16384",
+      "16383"
+    ],
+    [
+      "42",
+      "512",
+      "1114112000",
+      "4",
+      "16384",
+      "16383"
+    ],
+    [
+      "43",
+      "512",
+      "1114112000",
+      "4",
+      "16384",
+      "16383"
+    ],
+    [
+      "44",
+      "512",
+      "1192755200",
+      "4",
+      "16384",
+      "16383"
+    ],
+    [
+      "45",
+      "512",
+      "1192755200",
+      "4",
+      "16384",
+      "16383"
+    ],
+    [
+      "46",
+      "512",
+      "1114112000",
+      "4",
+      "16384",
+      "16383"
+    ],
+    [
+      "47",
+      "512",
+      "1363148800",
+      "4",
+      "16384",
+      "16383"
+    ]
+  ],
+  "normal_quit": {
+    "original_command": "QUIT",
+    "written": true,
+    "pipe_closed_after_write": true,
+    "fallback_signals": [],
+    "engine_exit": 0,
+    "reaped": true,
+    "session_empty": true,
+    "owner_closed": true
+  },
+  "kernel_checks": {
+    "kernel-before": {
+      "filter": "page fault|fault response|timestamp stuck|wedg|engine reset|gt reset|guc.*(?:timeout|timed out|failed)|device.*lost|Timed out wait for G2H|Check job timeout|Timedout job|Schedule disable failed|trying reset|\\breset (?:queued|started|done)\\b",
+      "total_rows": 0,
+      "fault_entries": [],
+      "relevant_entries": [],
+      "dump_present": false
+    },
+    "kernel-after-prehealth": {
+      "filter": "page fault|fault response|timestamp stuck|wedg|engine reset|gt reset|guc.*(?:timeout|timed out|failed)|device.*lost|Timed out wait for G2H|Check job timeout|Timedout job|Schedule disable failed|trying reset|\\breset (?:queued|started|done)\\b",
+      "total_rows": 3,
+      "fault_entries": [],
+      "relevant_entries": [],
+      "dump_present": false
+    },
+    "kernel-after-model": {
+      "filter": "page fault|fault response|timestamp stuck|wedg|engine reset|gt reset|guc.*(?:timeout|timed out|failed)|device.*lost|Timed out wait for G2H|Check job timeout|Timedout job|Schedule disable failed|trying reset|\\breset (?:queued|started|done)\\b",
+      "total_rows": 16,
+      "fault_entries": [],
+      "relevant_entries": [],
+      "dump_present": false
+    },
+    "kernel-posthealth": {
+      "filter": "page fault|fault response|timestamp stuck|wedg|engine reset|gt reset|guc.*(?:timeout|timed out|failed)|device.*lost|Timed out wait for G2H|Check job timeout|Timedout job|Schedule disable failed|trying reset|\\breset (?:queued|started|done)\\b",
+      "total_rows": 16,
+      "fault_entries": [],
+      "relevant_entries": [],
+      "dump_present": false
+    }
+  },
+  "captures": [
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-layer-major-phase-prefix16k-first-row-root-v1/captures/request-1.bin",
+      "sha256": "6ae19dee292aef2e70ac2f9fdcb1e125a4cbaddae42e6de5e3a5f83a91d2607f",
+      "bytes": 993288,
+      "shape": [
+        1,
+        248320
+      ],
+      "dtype": "IEEE754FP32LE",
+      "prompt_tokens": 1024,
+      "predicted_position": 1023,
+      "argmax": 248046,
+      "finite": true,
+      "consumer": "Main actualserve first-row producer qualification and fixed-history comparator integration",
+      "byte_budget": 2097152,
+      "next_review": "After actual producer integration/paired comparison, retain only required reference rows"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-layer-major-phase-prefix16k-first-row-root-v1/captures/request-2.bin",
+      "sha256": "d3903d0a0eefc77dbb3493ed413b007104eb365944e67df641684f00d9297c54",
+      "bytes": 993288,
+      "shape": [
+        1,
+        248320
+      ],
+      "dtype": "IEEE754FP32LE",
+      "prompt_tokens": 32768,
+      "predicted_position": 32767,
+      "argmax": 12055,
+      "finite": true,
+      "consumer": "Main actualserve first-row producer qualification and fixed-history comparator integration",
+      "byte_budget": 2097152,
+      "next_review": "After actual producer integration/paired comparison, retain only required reference rows"
+    }
+  ],
+  "full32k_paired_rows": [
+    {
+      "active": false,
+      "passed": true,
+      "complete": true,
+      "main_reviewed": true,
+      "gpu_executed": false,
+      "model_executed": false,
+      "records": [
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-phase-gated-quality-first-row-root-v1/record.json",
+          "sha256": "3624d44d9e3802488784746c81da3bbe306d5c0518250f706bf3cf8a3242a8f1"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-layer-major-phase-first-row-root-v1/record.json",
+          "sha256": "c6dbca59e5e4502ddaa1b8dad6fd3a26897c7d657c25314469a63de7c6330f7f"
+        }
+      ],
+      "controlled_treatment": "layer-major full physical cache lease/allRAM vs existing chunk-major phase/head path; same numeric model/input/context/chunk/providers, explicit700 vs pinned default700",
+      "quality_qualified": false,
+      "full_physical262144_qualified": false,
+      "restore_qualified": false,
+      "performance_eligible": false,
+      "performance_samples": [],
+      "adopted": false,
+      "scope": "One actually retained32K first verifier row at position32767, full248320 FP32LE values; no whole generation/corpus capability proof",
+      "exact_bytes_equal": true,
+      "max_absolute_logit_delta": 0.0,
+      "target_scores": [
+        {
+          "target": 12055,
+          "log_probability": -0.07559987522708411,
+          "nll": 0.07559987522708411,
+          "argmax": 12055
+        },
+        {
+          "target": 12055,
+          "log_probability": -0.07559987522708411,
+          "nll": 0.07559987522708411,
+          "argmax": 12055
+        }
+      ],
+      "nll_delta": 0.0,
+      "capture_sha256": [
+        {
+          "sha256": "d3903d0a0eefc77dbb3493ed413b007104eb365944e67df641684f00d9297c54"
+        },
+        {
+          "sha256": "d3903d0a0eefc77dbb3493ed413b007104eb365944e67df641684f00d9297c54"
+        }
+      ],
+      "bytes_per_capture": 993288,
+      "shape": [
+        1,
+        248320
+      ],
+      "actual_prompt": 32768,
+      "actual_position": 32767,
+      "archival1024_fingerprint_match": true,
+      "archival1024_scope": "Historical qualifiedK capture hash only; K1024 bytes retired, no fresh two-file comparison",
+      "finished_utc": "2026-10-13T11:40:36.790761+00:00"
+    },
+    {
+      "active": false,
+      "passed": true,
+      "complete": true,
+      "main_reviewed": true,
+      "gpu_executed": false,
+      "model_executed": false,
+      "records": [
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-phase-gated-quality-first-row-root-v1/record.json",
+          "sha256": "3624d44d9e3802488784746c81da3bbe306d5c0518250f706bf3cf8a3242a8f1"
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-layer-major-phase-prefix16k-first-row-root-v1/record.json",
+          "sha256": "a120ee29ff9731099cf0825d68943ef4410285a1c5877bef1beaada7029b073b"
+        }
+      ],
+      "controlled_treatment": "layer-major full physical cache lease/GPU16384+RAMtail vs existing chunk-major phase/head path; same numeric model/input/context/chunk/providers, explicit700 vs pinned default700",
+      "quality_qualified": false,
+      "full_physical262144_qualified": false,
+      "restore_qualified": false,
+      "performance_eligible": false,
+      "performance_samples": [],
+      "adopted": false,
+      "scope": "One actually retained32K first verifier row at position32767, full248320 FP32LE values; no whole generation/corpus capability proof",
+      "exact_bytes_equal": true,
+      "max_absolute_logit_delta": 0.0,
+      "target_scores": [
+        {
+          "target": 12055,
+          "log_probability": -0.07559987522708411,
+          "nll": 0.07559987522708411,
+          "argmax": 12055
+        },
+        {
+          "target": 12055,
+          "log_probability": -0.07559987522708411,
+          "nll": 0.07559987522708411,
+          "argmax": 12055
+        }
+      ],
+      "nll_delta": 0.0,
+      "capture_sha256": [
+        {
+          "sha256": "d3903d0a0eefc77dbb3493ed413b007104eb365944e67df641684f00d9297c54"
+        },
+        {
+          "sha256": "d3903d0a0eefc77dbb3493ed413b007104eb365944e67df641684f00d9297c54"
+        }
+      ],
+      "bytes_per_capture": 993288,
+      "shape": [
+        1,
+        248320
+      ],
+      "actual_prompt": 32768,
+      "actual_position": 32767,
+      "archival1024_fingerprint_match": true,
+      "archival1024_scope": "Historical qualifiedK capture hash only; K1024 bytes retired, no fresh two-file comparison",
+      "finished_utc": "2026-10-13T12:08:45.317200+00:00"
+    }
+  ],
+  "explicit_reserve_mib": 700,
+  "configured_chunk": 8192,
+  "context": 262144,
+  "int8_resident": 32768,
+  "quality_qualified": false,
+  "full_physical262144_qualified": false,
+  "restore_qualified": false,
+  "stock_benchmark_executed": false,
+  "performance_samples": [],
+  "adopted": false,
+  "next_step": "Qualify4K geometry and source+copy span, then unchanged upstream bench.sh --long --runs3; actual262144 exhausted context remains required before adoption",
+  "skill_scope": {
+    "project": "/home/yayoi/orca/workspaces/Strata/sycl",
+    "project_only_canonical_revision": "97f8b40ca99ec298c24d7ecc7b270e530d43194d",
+    "user_global_paths_absent": true,
+    "experimental_branch_inherits_old_root_skill": "Before adoption carry project-only scope relocation; current project discovery targets corrected canonical worktree"
+  },
+  "research_completed": 987
+}

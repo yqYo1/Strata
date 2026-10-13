@@ -3,10 +3,13 @@
 #include "strata/core/phase_cache_owner.hpp"
 #include "strata/core/head_upload_owner.hpp"
 #include "strata/core/phase_serve_cycle.hpp"
+#include "strata/core/serve_first_row_capture.hpp"
 #include "strata/prefill/workspace_layout.hpp"
+#include "strata/prefill/layer_major.hpp"
 #include <array>
 #include <algorithm>
 #include <cstdio>
+#include <cstdlib>
 #include <cstring>
 #include <initializer_list>
 #include <map>
@@ -23,6 +26,66 @@ namespace {
 using Owner = strata::core::PhaseCacheOwner;
 using Backend = strata::core::PhaseCacheBackend;
 void check(bool value, const char* message) { if (!value) throw std::runtime_error(message); }
+void layer_major_layout_fixture() {
+    namespace lm = strata::prefill::layer_major;
+    for (const char* text : std::initializer_list<const char*>{nullptr, "", "0", "01", "true", "1 "})
+        check(!lm::exact_one(text), "layer-major nonexact flag accepted");
+    check(lm::exact_one("1"), "layer-major exact flag denied");
+    uint64_t prefix = 77;
+    for (const char* text : std::initializer_list<const char*>{nullptr, "", "-1", "+1", "1 ", " 1", "0x1", "262145", "184467440737095516160"})
+        check(!lm::prefix_value(text, prefix) && prefix == 77, "layer-major invalid prefix accepted/changed output");
+    check(lm::prefix_value("0", prefix) && prefix == 0, "layer-major zero prefix denied");
+    check(lm::prefix_value("262144", prefix) && prefix == 262144, "layer-major bounded prefix denied");
+    const auto p = lm::plan(32767, 0, 65538, 8192, 10240, 16385, 512, 48, 1382400, 700ull << 20);
+    check(p.gpu_tokens == 16384 && p.chunks == 4 && p.gpu_bytes == 671088640 &&
+          p.host_bytes == 671047680 && p.cache_bytes == 707788800, "layer-major requested ledger/round-down mismatch");
+    bool gpu = false; uint64_t offset = 0;
+    check(lm::chunk_store(p, 8192, 8192, gpu, offset) && gpu && offset == 83886080, "layer-major GPU chunk map");
+    check(lm::chunk_store(p, 16384, 8192, gpu, offset) && !gpu && offset == 0, "layer-major host chunk map");
+    check(lm::chunk_store(p, 24576, 8191, gpu, offset) && !gpu && offset == 83886080, "layer-major last chunk map");
+    check(!lm::chunk_store(p, 8192, 8193, gpu, offset) && !lm::chunk_store(p, 32767, 1, gpu, offset),
+          "layer-major cross-store/out-of-range chunk accepted");
+    const auto all = lm::plan(17, 0, 32, 8, 4, 17, 2, 2, 257, 1);
+    check(all.gpu_tokens == 17 && all.host_bytes == 0 && all.chunks == 3 && all.cache_bytes == 1024,
+          "layer-major whole final chunk/slot alignment");
+    for (int fault = 0; fault < 8; ++fault) {
+        bool rejected = false;
+        try {
+            (void) lm::plan(fault == 0 ? -1 : 17, fault == 1 ? 1 : 0,
+                fault == 2 ? 16 : 32, fault == 3 ? 0 : 8, fault == 4 ? INT64_MAX : 4,
+                fault == 5 ? 262145 : 0, 2, 2, fault == 6 ? INT64_MAX : 257, fault == 7 ? 0 : 1);
+        } catch (const std::exception&) { rejected = true; }
+        check(rejected, "layer-major span/product/cache/reserve fault admitted");
+    }
+    const auto warmup = lm::plan(17, 0, 262144, 8, 4, 32768, 2, 2, 257, 1);
+    check(warmup.gpu_tokens == 17 && warmup.host_bytes == 0, "layer-major prefix budget not clamped to warmup");
+    const auto larger = lm::plan(33, 0, 262144, 8, 4, 17, 2, 2, 257, 1);
+    check(larger.gpu_tokens == 16 && larger.host_bytes == uint64_t(17) * 4 * sizeof(float), "layer-major budget boundary not rounded down");
+    check(lm::device_ring_slots(384, true) == 0 && lm::device_ring_slots(384, false) == 384,
+          "layer-major device-ring count/carve selection");
+    int32_t resident[2] = {0, 1};
+    uint64_t offsets[3] = {0, 512, 1024};
+    check(lm::layer_ready(2, 2, 257, resident, offsets), "layer-major actual sized capacity denied");
+    check(!lm::layer_ready(2, 1, 257, resident, offsets) &&
+          !lm::layer_ready(2, 2, 513, resident, offsets) &&
+          !lm::layer_ready(2, 2, 257, nullptr, offsets), "layer-major insufficient/missing capacity accepted");
+    resident[1] = -1;
+    check(!lm::layer_ready(2, 2, 257, resident, offsets), "layer-major missing expert accepted with ring0");
+    resident[1] = 1; offsets[2] = 511;
+    check(!lm::layer_ready(2, 2, 1, resident, offsets), "layer-major decreasing offset accepted");
+    int outputs = 0;
+    for (int layer = 0; layer < 48; ++layer)
+        for (int chunk = 0; chunk < 4; ++chunk)
+            if (lm::final_layer(layer + 1, 48)) ++outputs;
+    check(outputs == 4 && !lm::final_layer(0, 0), "layer-major published intermediate layer callbacks");
+    for (bool completed : {false, true}) {
+        std::vector<int> order;
+        lm::retire([&] { order.push_back(1); return completed; },
+                   [&] { order.push_back(2); }, [&] { order.push_back(3); });
+        check(order == (completed ? std::vector<int>{1, 2} : std::vector<int>{1, 3}),
+              "layer-major restored stack owners before drain or on unknown completion");
+    }
+}
 void gated_region_layout_fixture() {
     namespace layout = strata::prefill::workspace;
     check(!layout::exact_one(nullptr) && !layout::exact_one("0") && !layout::exact_one("01") &&
@@ -103,6 +166,83 @@ void gated_region_layout_fixture() {
     try { layout::advance(1, used, false, 0, offset); }
     catch (const std::overflow_error&) { ++overflow_checks; }
     check(overflow_checks == 4 && used == std::numeric_limits<uint64_t>::max(), "layout overflow guards");
+}
+int capture_write_call = 0, capture_write_fault = 0, capture_flush_fault = 0, capture_close_fault = 0;
+int capture_flush_calls = 0, capture_close_calls = 0;
+size_t capture_write(const void*, size_t, size_t count, std::FILE*) {
+    return ++capture_write_call == capture_write_fault ? count - 1 : count;
+}
+int capture_flush(std::FILE*) { ++capture_flush_calls; return capture_flush_fault; }
+int capture_close(std::FILE*) { ++capture_close_calls; return capture_close_fault; }
+void serve_first_row_fixture() {
+    using namespace strata::core;
+    for (const char* flag : std::initializer_list<const char*>{nullptr, "", "0", "01", "true", "1 "})
+        check(!serve_first_row_opt_in(flag), "capture non-exact opt-in accepted");
+    check(serve_first_row_opt_in("1"), "capture exact opt-in denied");
+    uint64_t bytes = 0;
+    check(serve_first_row_bytes(3, bytes) && bytes == 20, "capture row size");
+    for (int64_t vocab : {int64_t(-1), int64_t(0), INT64_MAX, int64_t(16777216)})
+        check(!serve_first_row_bytes(vocab, bytes), "capture invalid/overbudget vocab accepted");
+    ServeFirstRowCapture quota;
+    std::string error;
+    check(quota.begin(16777214, error), "capture exact byte budget denied");
+    check(!quota.begin(1, error), "capture active request allowed");
+    for (int fault : {0, 1, 2, 3, 4}) {
+        capture_write_call = capture_flush_calls = capture_close_calls = 0;
+        capture_write_fault = fault <= 2 ? fault : 0;
+        capture_flush_fault = fault == 3 ? -1 : 0;
+        capture_close_fault = fault == 4 ? -1 : 0;
+        const bool ok = serve_first_row_write(nullptr, {1.0f, 2.0f},
+                                              {capture_write, capture_flush, capture_close});
+        check(ok == (fault == 0), "capture write/flush/close failure lost");
+        check(capture_flush_calls == 1 && capture_close_calls == 1, "capture close skipped after failure");
+    }
+#ifdef __linux__
+    char folder[] = "/tmp/strata-first-row-XXXXXX";
+    const char* made = mkdtemp(folder);
+    check(made != nullptr, "capture fixture private directory");
+    // This fixture owns every path below its exclusive directory. It never
+    // cleans production diagnostic files or touches active measurement state.
+    struct Cleanup {
+        std::filesystem::path path;
+        ~Cleanup() { std::error_code ec; std::filesystem::remove_all(path, ec); }
+    } cleanup{folder};
+    ServeFirstRowCapture sink;
+    check(!sink.open(nullptr, error), "capture missing directory allowed");
+    check(sink.open(folder, error), "capture directory denied");
+    check(sink.begin(2, error), "capture begin denied");
+    check(!sink.publish({1.0f, INFINITY}, 2, error), "capture infinity published");
+    check(!sink.publish({NAN, 2.0f}, 2, error), "capture NaN published");
+    check(!sink.publish({1.0f}, 2, error), "capture truncated row published");
+    check(!std::filesystem::exists(cleanup.path / "request-1.bin"), "invalid capture final exists");
+    check(sink.publish({1.0f, 2.0f}, 2, error), "capture publication failed");
+    std::FILE* input = std::fopen((cleanup.path / "request-1.bin").c_str(), "rb");
+    check(input != nullptr, "capture readback open");
+    int32_t header[2] = {};
+    float row[2] = {};
+    const bool exact = std::fread(header, sizeof(int32_t), 2, input) == 2 &&
+        std::fread(row, sizeof(float), 2, input) == 2 && std::fgetc(input) == EOF;
+    check(std::fclose(input) == 0 && exact && header[0] == 2 && header[1] == 1 &&
+          row[0] == 1.0f && row[1] == 2.0f, "capture dump layout changed");
+    ServeFirstRowCapture duplicate;
+    check(duplicate.open(folder, error) && duplicate.begin(2, error), "duplicate setup");
+    check(!duplicate.publish({9.0f, 9.0f}, 2, error), "capture existing partial overwritten");
+    for (int request = 2; request <= 64; ++request) {
+        check(sink.begin(2, error), "capture bounded request denied");
+        check(sink.publish({1.0f, 2.0f}, 2, error), "capture bounded publication denied");
+    }
+    check(!sink.begin(2, error), "capture request quota bypassed");
+    // A new private directory with an existing final name exercises link-time
+    // no-overwrite independently of exclusive partial creation.
+    const auto collision = cleanup.path / "collision";
+    check(std::filesystem::create_directory(collision), "capture collision directory");
+    std::FILE* original = std::fopen((collision / "request-1.bin").c_str(), "wbx");
+    check(original && std::fputc(7, original) != EOF && std::fclose(original) == 0, "capture collision seed");
+    ServeFirstRowCapture collided;
+    check(collided.open(collision.c_str(), error) && collided.begin(2, error), "capture collision setup");
+    check(!collided.publish({1.0f, 2.0f}, 2, error) &&
+          std::filesystem::file_size(collision / "request-1.bin") == 1, "capture final overwritten");
+#endif
 }
 void head_upload_known_fixture() {
     using Head = strata::core::HeadUploadOwner;
@@ -415,7 +555,9 @@ void isolated_unknown(const std::function<void()>& fixture) {
 }
 int main() {
     try {
+        layer_major_layout_fixture();
         gated_region_layout_fixture();
+        serve_first_row_fixture();
         head_upload_known_fixture();
 #ifdef __linux__
         for (int fail_at : {1, 2})
@@ -817,6 +959,58 @@ int main() {
                   requested == std::numeric_limits<uint64_t>::max() - 3, "peak overflow changed count");
             check(strata::core::phase_requested_add(3, requested) &&
                   requested == std::numeric_limits<uint64_t>::max(), "exact peak sum rejected");
+        }
+        {
+            auto backend = std::make_shared<Mock>();
+            Owner owner(backend);
+            check(owner.reserve({1024}, 8, uint64_t{16} << 20, error) &&
+                  owner.map_base(quiet, error), "prefill lease setup");
+            const auto* offsets = owner.capacity_offsets();
+            const auto* table = owner.host_residency();
+            for (int request = 0; request < 2; ++request) {
+                check(owner.fill_checked(0, 0, 0, bytes.data(), bytes.size(), error) &&
+                      owner.publish(publish, error), "prefill lease baseline");
+                check(owner.begin_prefill(quiet, publish, error) && owner.prefill_leased() &&
+                      !owner.readers_ready() && owner.mapped_slots() == 0 &&
+                      owner.retained_physical_bytes() == 0 && !owner.device_slot(0) &&
+                      owner.host_residency()[0] == -1, "prefill lease retained decode backing");
+                check(owner.capacity_offsets() == offsets && owner.host_residency() == table,
+                      "prefill lease changed retained table/virtual geometry");
+                check(owner.finish_prefill(quiet, error) && !owner.prefill_leased() &&
+                      !owner.readers_ready() && owner.mapped_slots() == 3 &&
+                      owner.resident_slot(0, 0) == -1, "prefill finish exposed unverified baseline");
+            }
+            finish(owner, backend, error);
+        }
+        {
+            auto backend = std::make_shared<Mock>();
+            Owner owner(backend);
+            check(owner.reserve({1024}, 8, uint64_t{16} << 20, error) && owner.map_base(quiet, error) &&
+                  owner.fill_checked(0, 0, 0, bytes.data(), bytes.size(), error) && owner.publish(publish, error) &&
+                  owner.begin_prefill(quiet, publish, error) && owner.prefill_leased(), "closed lease setup");
+            finish(owner, backend, error);
+            check(!owner.open() && !owner.prefill_leased() && !owner.readers_ready(),
+                  "closed owner remained eligible for prefill lease");
+        }
+        {
+            // Both fresh GENs must release head/cache before allocating prompt owners;
+            // private prompt owners retire before baseline restoration/head reload/decode.
+            strata::core::PhaseServeCycle cycle;
+            bool head = true, cache = true, workspace = false;
+            cycle.quiesce = [](std::string&) { return true; };
+            cycle.retire_readers = [](std::string&) { return true; };
+            cycle.release_head = [&](std::string&) { head = false; return !workspace; };
+            cycle.begin_prefill = [&](std::string&) { cache = false; return !head && !workspace; };
+            cycle.reinit_workspace = [&](std::string&) { workspace = true; return !head && !cache; };
+            cycle.retire_workspace = [&](std::string&) { workspace = false; return !head && !cache; };
+            cycle.finish_prefill = [&](std::string&) { cache = true; return !head && !workspace; };
+            cycle.reload_head = [&](std::string&) { head = true; return cache && !workspace; };
+            cycle.grow_fill_publish = [&](std::string&) { return head && cache && !workspace; };
+            cycle.invalidate_detach = [](std::string&) { return true; };
+            for (int request = 0; request < 2; ++request)
+                check(cycle.begin_gen(error) && !head && !cache && workspace &&
+                      cycle.successful_prompt(error) && head && cache && !workspace &&
+                      cycle.complete_gen(true, error), "cache/head lease owner ordering");
         }
         std::puts("PASS actual phase owner CPU bookkeeping/fault contract");
         return 0;
