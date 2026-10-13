@@ -5,6 +5,9 @@
 #include "strata/core/expert_cache.hpp"
 
 #include "strata/core/gpu.hpp"
+#include "strata/core/on_device.hpp"
+#include <exception>
+#include <limits>
 
 #include <algorithm>
 #include <cstdio>
@@ -169,6 +172,95 @@ bool write_expert_profile(const std::string& path, int64_t n_layers, int64_t n_e
     return true;
 }
 
+bool ExpertCache::open_phase(const std::vector<int64_t>& blobs, uint32_t experts, uint32_t extras,
+                             uint64_t virtual_cap, std::string& err) {
+    if (virtual_cap > static_cast<uint64_t>(std::numeric_limits<int64_t>::max())) {
+        err = "phase cache: reservation exceeds signed byte-count range";
+        return false;
+    }
+    close();
+    phase_ = std::make_unique<PhaseCacheOwner>(make_phase_cache_gpu_backend(current_device()));
+    const PhaseCacheOwner::Quiesce startup = [](std::string& e) {
+        if (strata::gpu::device_sync()) return true;
+        e = strata::gpu::last_error(); return false;
+    };
+    if (!phase_->reserve(blobs, experts, virtual_cap, err, extras) || !phase_->map_base(startup, err)) return false;
+    base_ = static_cast<uint8_t*>(phase_->base());
+    slots_ = phase_->capacity();
+    n_layers_ = static_cast<int64_t>(blobs.size()); n_expert_ = experts;
+    phase_check_.assign(phase_->residency_size(), kNotResident);
+    if (!strata::gpu::alloc_device(reinterpret_cast<void**>(&phase_d_res_), phase_check_.size() * sizeof(int32_t))) {
+        err = strata::gpu::last_error(); return false;
+    }
+    return phase_publish(err);
+}
+
+bool ExpertCache::phase_fill(uint32_t layer, uint32_t expert, const void* source, uint64_t bytes, std::string& err) {
+    if (!phase_) { err = "phase cache is not open"; return false; }
+    const int32_t slot = phase_->vacant_slot(layer);
+    if (slot < 0) { err = "phase cache layer has no mapped vacant profile slot"; return false; }
+    if (!phase_->fill_checked(layer, expert, static_cast<uint32_t>(slot), source, bytes, err)) return false;
+    if (fills_ >= phase_->capacity()) { err = "phase cache fill counter exceeded bounded capacity"; return false; }
+    ++fills_;
+    uint64_t hash = 14695981039346656037ull;
+    for (uint64_t i = 0; i < bytes; ++i) hash = (hash ^ static_cast<const uint8_t*>(source)[i]) * 1099511628211ull;
+    std::fprintf(stderr, "strata phase-cache: slot_checked layer=%u expert=%u slot=%d bytes=%llu fnv1a64=%016llx\n",
+                 layer, expert, slot, static_cast<unsigned long long>(bytes), static_cast<unsigned long long>(hash));
+    return true;
+}
+
+bool ExpertCache::phase_upload(const int32_t* table, size_t count, std::string& err) {
+    if (!phase_d_res_ || count != phase_check_.size()) {
+        err = "phase cache residency upload geometry invalid"; return false;
+    }
+    auto& metrics = phase_->transfer_timings();
+    const uint64_t bytes = count * sizeof(int32_t);
+    bool written = false;
+    { PhaseTimedCall timing(metrics.residency_h2d, bytes);
+      written = timing.result(strata::gpu::copy(phase_d_res_, table, bytes)); }
+    bool read = false;
+    if (written) { PhaseTimedCall timing(metrics.residency_d2h, bytes);
+      read = timing.result(strata::gpu::copy(phase_check_.data(), phase_d_res_, bytes)); }
+    if (!written || !read) { err = strata::gpu::last_error(); return false; }
+    bool equal = false;
+    { PhaseTimedCall timing(metrics.residency_compare, bytes);
+      equal = timing.result(std::memcmp(table, phase_check_.data(), bytes) == 0); }
+    if (!equal) { err = "phase cache complete host/device residency mismatch"; return false; }
+    return true;
+}
+bool ExpertCache::phase_publish(std::string& err) {
+    if (!phase_) { err = "phase cache owner missing"; return false; }
+    return phase_->publish([&](const int32_t* table, size_t count, std::string& e) {
+        return phase_upload(table, count, e);
+    }, err);
+}
+bool ExpertCache::phase_invalidate_extras(std::string& err) {
+    if (!phase_) { err = "phase cache owner missing"; return false; }
+    if (!phase_->invalidate_extras([&](const int32_t* table, size_t count, std::string& e) {
+            return phase_upload(table, count, e);
+        }, err)) return false;
+    fills_ = resident(); // bounded current phase, not an unbounded lifetime signed counter
+    return true;
+}
+
+bool ExpertCache::phase_close(const PhaseCacheOwner::Quiesce& retired, std::string& err) {
+    if (!phase_) return true;
+    const auto before = phase_->timings();
+    const bool closed = phase_->close(retired, err);
+    const auto& after = phase_->timings();
+    phase_timing_delta("checked_close", "quiesce", after.quiesce, before.quiesce);
+    phase_timing_delta("checked_close", "unmap", after.unmap, before.unmap);
+    phase_timing_delta("checked_close", "destroy", after.destroy, before.destroy);
+    phase_timing_delta("checked_close", "drain", after.drain, before.drain);
+    phase_timing_delta("checked_close", "release", after.release, before.release);
+    phase_timing_delta("checked_close", "close", after.close, before.close);
+    if (!closed) return false;
+    strata::gpu::free(phase_d_res_);
+    phase_d_res_ = nullptr;
+    phase_.reset(); base_ = nullptr; slots_ = live_slots_ = 0;
+    return true;
+}
+
 ExpertCache::~ExpertCache() { close(); }
 
 // ---- #533: the segmented arena (--vram-elastic): one address range for the whole arena, backed by physical
@@ -229,6 +321,7 @@ void ExpertCache::release_segmented() {
 }
 
 int64_t ExpertCache::mapped_bytes() const {
+    if (phase_) return static_cast<int64_t>(phase_->mapped_bytes());
     if (segs_.empty()) return base_ != nullptr ? full_bytes() : 0;
     int64_t b = 0;
     for (int64_t i = 0; i < mapped_segs_; ++i) b += seg_size_[(size_t) i];
@@ -236,6 +329,7 @@ int64_t ExpertCache::mapped_bytes() const {
 }
 
 int64_t ExpertCache::slots_within(int64_t bytes) const {
+    if (phase_) throw std::logic_error("phase cache has no mapped-prefix slot count");
     if (bytes >= full_bytes()) return slots_;
     if (bytes <= 0) return 0;
     if (off_.empty()) return blob_ > 0 ? bytes / blob_ : 0;
@@ -244,6 +338,7 @@ int64_t ExpertCache::slots_within(int64_t bytes) const {
 }
 
 bool ExpertCache::shrink(int64_t keep_bytes, std::string& err) {
+    if (phase_) { err = "phase cache rejects legacy mapped-prefix resize"; return false; }
     if (segs_.empty()) {
         err = "the expert cache is not segmented (the engine needs --vram-elastic)";
         return false;
@@ -265,6 +360,7 @@ bool ExpertCache::shrink(int64_t keep_bytes, std::string& err) {
 }
 
 bool ExpertCache::grow(int64_t want_bytes, std::string& err) {
+    if (phase_) { err = "phase cache rejects legacy mapped-prefix resize"; return false; }
     if (segs_.empty()) {
         err = "the expert cache is not segmented (the engine needs --vram-elastic)";
         return false;
@@ -405,6 +501,9 @@ bool ExpertCache::open_sized(const std::vector<int64_t>& slot_bytes, int64_t n_l
 }
 
 void ExpertCache::close() {
+    if (phase_ && phase_->open()) std::terminate(); // explicit retired-reader proof is mandatory
+    phase_.reset();
+
     off_.clear();
     if (!segs_.empty()) {
         release_segmented();
@@ -432,6 +531,7 @@ void ExpertCache::close() {
 void ExpertCache::layer_slot_range(int64_t layer, int64_t& lo, int64_t& hi) const {
     lo = 0;
     hi = 0;
+    if (phase_) throw std::logic_error("phase cache uses explicit noncontiguous layer membership");
     if (n_layers_ <= 0 || slots_ <= 0 || layer < 0 || layer >= n_layers_) return;
     const int64_t q = slots_ / n_layers_;
     lo = layer * q;
@@ -439,11 +539,14 @@ void ExpertCache::layer_slot_range(int64_t layer, int64_t& lo, int64_t& hi) cons
 }
 
 int32_t ExpertCache::slot_of(int64_t layer, int64_t expert) const {
+    if (phase_) return layer >= 0 && layer < n_layers_ && expert >= 0 && expert < n_expert_
+        ? phase_->resident_slot(static_cast<uint32_t>(layer), static_cast<uint32_t>(expert)) : kNotResident;
     if (layer < 0 || layer >= n_layers_ || expert < 0 || expert >= n_expert_) return kNotResident;
     return residency_[(size_t) (layer * n_expert_ + expert)];
 }
 
 int32_t ExpertCache::admit(int64_t layer, int64_t expert) {
+    if (phase_) return slot_of(layer, expert); // static checked profile; no compulsory/dynamic admission
     if (layer < 0 || layer >= n_layers_ || expert < 0 || expert >= n_expert_) return kNotResident;
     const size_t at = (size_t) (layer * n_expert_ + expert);
     if (residency_[at] != kNotResident) return residency_[at];
@@ -464,18 +567,21 @@ int32_t ExpertCache::admit(int64_t layer, int64_t expert) {
 }
 
 uint8_t* ExpertCache::device_slot(int32_t slot) {
+    if (phase_) return slot >= 0 ? static_cast<uint8_t*>(phase_->device_slot(slot)) : nullptr;
     if (slot < 0 || slot >= slots_) return nullptr;
     if (!off_.empty()) return base_ + off_[(size_t) slot];
     return base_ + (size_t) slot * (size_t) blob_;
 }
 
 const uint8_t* ExpertCache::device_slot(int32_t slot) const {
+    if (phase_) return slot >= 0 ? static_cast<uint8_t*>(phase_->device_slot(slot)) : nullptr;
     if (slot < 0 || slot >= slots_) return nullptr;
     if (!off_.empty()) return base_ + off_[(size_t) slot];
     return base_ + (size_t) slot * (size_t) blob_;
 }
 
 bool ExpertCache::fill_slot(int32_t slot, const uint8_t* host_blob, void* stream, std::string& err, int64_t bytes) {
+    if (phase_) { err = "phase cache requires checked immutable profile fill"; return false; }
     const size_t n = (size_t) (bytes > 0 && bytes <= blob_ ? bytes : blob_);
     uint8_t* dst = device_slot(slot);
     if (dst == nullptr) {
@@ -497,6 +603,7 @@ bool ExpertCache::fill_slot(int32_t slot, const uint8_t* host_blob, void* stream
 }
 
 bool ExpertCache::fill_slot_blocking(int32_t slot, const uint8_t* host_blob, std::string& err, int64_t bytes) {
+    if (phase_) { err = "phase cache requires checked immutable profile fill"; return false; }
     const size_t n = (size_t) (bytes > 0 && bytes <= blob_ ? bytes : blob_);
     uint8_t* dst = device_slot(slot);
     if (dst == nullptr) {
@@ -517,6 +624,7 @@ bool ExpertCache::fill_slot_blocking(int32_t slot, const uint8_t* host_blob, std
 }
 
 bool ExpertCache::fill_slot_queued(int32_t slot, const uint8_t* host_blob, std::string& err, int64_t bytes) {
+    if (phase_) { err = "phase cache requires checked immutable profile fill"; return false; }
     const size_t n = (size_t) (bytes > 0 && bytes <= blob_ ? bytes : blob_);
     uint8_t* dst = device_slot(slot);
     if (dst == nullptr || host_blob == nullptr) {
@@ -543,6 +651,7 @@ bool ExpertCache::sync_queued(std::string& err) {
 }
 
 bool ExpertCache::verify_slot(int32_t slot, const uint8_t* host_blob, std::string& err, int64_t bytes) {
+    if (phase_) { err = "phase cache requires checked immutable profile fill"; return false; }
     const int64_t nb = bytes > 0 && bytes <= blob_ ? bytes : blob_;
     const uint8_t* src = device_slot(slot);
     if (src == nullptr) {

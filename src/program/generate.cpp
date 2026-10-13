@@ -19,6 +19,7 @@
 
 #include "strata/core/runtime.hpp"
 #include "strata/core/device.hpp"
+#include "strata/core/phase_serve_cycle.hpp"
 #include "strata/core/expert_cache.hpp"
 #include "strata/core/conversation_snapshot.hpp"
 #include "strata/core/conversation_disk.hpp"
@@ -3982,7 +3983,8 @@ int main(int argc, char** argv) {
             std::fprintf(stderr, "strata generate: %s%s\n", err.c_str(), vram_free_note().c_str());
             return 1;
         }
-        std::fprintf(stderr, "strata generate: experimental native Q5_K head, %llu bytes, in %.1f s\n",
+        std::fprintf(stderr, "strata generate: experimental native head source_type=%d native_type=%d dims=%dx%d, %llu bytes, in %.1f s\n",
+                     native_head.source_type(), native_head.type(), native_head.input_dim(), native_head.output_dim(),
                      (unsigned long long) native_head.weight_bytes(),
                      std::chrono::duration<double>(std::chrono::steady_clock::now() - head_t0).count());
     }
@@ -4093,6 +4095,49 @@ int main(int argc, char** argv) {
     // sees the memory this process actually has left rather than the card's idle figure - and refuses with both
     // numbers if the slots do not fit, instead of handing back a cache smaller than it was asked for.
     mem_mark("the weights, the session and the drafter");
+    const bool phase_cache = strata::core::phase_cache_requested();
+    static const bool phase_head_lease = strata::core::phase_cache_opt_in(std::getenv("STRATA_PHASE_HEAD_LEASE"));
+    auto phase_fatal = [](const std::string& reason) -> void {
+        std::fprintf(stderr, "strata phase-cache: FAILED %s\n", reason.c_str());
+        std::printf("FATAL phase-cache %s\n", reason.c_str());
+        std::fflush(stderr); std::fflush(stdout);
+        std::_Exit(1); // retain all owners/buffers on uncertain work; never unwind/free pending DMA
+    };
+    const auto phase_env_is = [](const char* name, const char* expected) {
+        const char* value = std::getenv(name);
+        return value && std::strcmp(value, expected) == 0;
+    };
+    const auto phase_env_off = [](const char* name) {
+        const char* value = std::getenv(name);
+        return !value || std::strcmp(value, "0") == 0;
+    };
+    if (phase_cache && (!o.serve || multi_gpu || split_same || !stages.empty() || !o.mtp.empty() || o.batch != 0 ||
+        o.pipeline_windows != 0 || !o.no_prefill_borrow || o.prefill_auto || o.prefill_chunk != 8192 ||
+        o.no_pool || o.pcie_frac != 0.0 || o.adapt_swaps != 0 || o.vram_elastic || o.kv_grow != 0 ||
+        o.max_context != 262144 || o.kv != "int8" || o.kv_resident != 32768 || o.prompt_cache != 0 ||
+        o.conversation_cache_mib != 0 || !o.conversation_save.empty() || o.vision || o.resident_cpu_experts ||
+        o.resident_gib != 0 || o.mmap_experts || srcp != &arena_src || !native_pack ||
+        !o.expert_cache_per_layer || o.expert_cache != 128 || o.expert_profile.empty() || !o.expert_profile_save.empty() ||
+        o.short_read != 0 || !o.short_read_given ||
+        g.n_layers != 48 || g.n_expert != 512 ||
+        std::any_of(o.expert_cache_remote.begin(), o.expert_cache_remote.end(), [](int n) { return n != 0; }) ||
+        !phase_env_is("STRATA_VERIFY_SEGMENTED", "1") || !phase_env_is("STRATA_VERIFY_RESIDENT_GRAPH", "0") ||
+        !phase_env_is("STRATA_VERIFY_DEVICE_PLAN", "0") ||
+        !phase_env_is("STRATA_PREFILL_NATIVE_DEQUANT_BATCH", "1") ||
+        !phase_env_is("STRATA_PREFILL_FIRST", "0") || !phase_env_is("STRATA_PREFILL_ISSUER", "0") ||
+        !phase_env_off("STRATA_PREFILL_CPU_SHARE") ||
+        !phase_env_off("STRATA_PREFILL_CPU_GATE")))
+        phase_fatal("unsupported mode: require serve/singleGPU/noMTP/noBorrow/chunk8192/batch0/pipeline0/PCIe0/"
+                    "adapt0/nativeHostUSM/cache128-perlayer/int8KV32768/context262144/noGrow/noReuse/segmented1/"
+                    "deviceplan0/residentgraph0/native-dequant-batch1");
+    if (phase_head_lease && (!phase_cache || !native_head.loaded() || o.native_head_gguf.empty()))
+        phase_fatal("head lease requires qualified phase-cache serve/noMTP/native-head mode");
+    // Experimental +16 ranked experts/layer: bounded source-v3 comparison quota,
+    // not an optimal size. Actual VMM/free/max capability gates decide admission;
+    // default OFF preserves the ordinary cache on devices without this capacity.
+    constexpr uint32_t phase_extra_per_layer = 16;
+    std::array<std::vector<int32_t>, 48> phase_rank;
+    std::vector<int64_t> phase_blobs;
     strata::core::ExpertCache xcache;
     // #533: --vram-elastic: the cache in physical segments (the VRAM command resizes it between requests).  Serve
     // mode, one GPU, no helper caches: anything else keeps the one allocation, said once.
@@ -4124,6 +4169,38 @@ int main(int argc, char** argv) {
         if (o.expert_cache == 0) o.expert_cache = -1;
         std::fprintf(stderr, "strata generate: profile %s: %zu ranked pairs, built for %lld slots\n",
                      o.expert_profile.c_str(), profile.size(), (long long) pslots);
+    }
+    if (phase_cache) {
+        const auto& layout = strata::kernels::cpu::expert_layout();
+        if (!layout.native || layout.fmt.size() != 48 || layout.bytes.size() != 48 ||
+            profile.size() != static_cast<size_t>(g.n_layers * g.n_expert))
+            phase_fatal("native layout or complete immutable ranked profile missing");
+        std::vector<bool> seen(profile.size(), false);
+        for (const auto& pair : profile) {
+            if (pair.first < 0 || pair.first >= 48 || pair.second < 0 || pair.second >= 512)
+                phase_fatal("ranked profile pair out of range");
+            const size_t index = static_cast<size_t>(pair.first) * 512 + pair.second;
+            if (seen[index]) phase_fatal("duplicate ranked profile pair");
+            seen[index] = true;
+            auto& rank = phase_rank[static_cast<size_t>(pair.first)];
+            if (rank.size() < 3 + phase_extra_per_layer) rank.push_back(pair.second);
+        }
+        for (size_t layer = 0; layer < 48; ++layer) {
+            const int64_t native_layer = static_cast<int64_t>(layer);
+            const auto& format = layout.fmt[layer];
+            strata::kernels::cpu::NativeFmt checked;
+            if (phase_rank[layer].size() != 3 + phase_extra_per_layer ||
+                format.n_embd != g.n_embd || format.n_ff != strata::kernels::cpu::FF ||
+                !strata::kernels::cpu::native_fmt(format.gu_type, format.d_type, g.n_embd, strata::kernels::cpu::FF,
+                                                checked, err) || checked.n_embd != g.n_embd ||
+                checked.n_ff != strata::kernels::cpu::FF || checked.bytes != layout.blob_bytes(native_layer) ||
+                checked.up_off != format.up_off || checked.down_off != format.down_off)
+                phase_fatal("native GU/Down format/blob/ranked quota validation failed: " + err);
+            phase_blobs.push_back(static_cast<int64_t>(checked.bytes));
+            for (const int32_t expert : phase_rank[layer])
+                if (!arena_src.phase_blob(native_layer, expert, checked.bytes))
+                    phase_fatal("ranked immutable source lacks actual owned Host-USM allocation extent");
+        }
     }
     // #477: the whole ranking as loaded, the prior of --expert-profile-save's order (a layer split keeps only
     // CUDA0's pairs in `profile` below).  Empty without --expert-profile-save.
@@ -4398,11 +4475,16 @@ int main(int argc, char** argv) {
                 --fake_fails;
                 err = "ExpertCache: device allocation failed: out of memory (STRATA_TEST_CACHE_FAIL)";
             } else {
-                ok = sized_slots.empty()
+                if (phase_cache) {
+                    if (o.expert_cache != 144 || sized_slots.size() != 144)
+                        phase_fatal("actual initial cache geometry is not three slots per layer");
+                    ok = xcache.open_phase(phase_blobs, 512, phase_extra_per_layer, uint64_t{8} << 30, err);
+                } else ok = sized_slots.empty()
                     ? xcache.open(o.expert_cache, g.n_layers, g.n_expert, (int64_t) strata::kernels::cpu::expert_layout().max_blob, err)
                     : xcache.open_sized(sized_slots, g.n_layers, g.n_expert, err);
             }
             if (!ok) {
+                if (phase_cache) phase_fatal("opening actual VMM phase owner failed: " + err);
                 // An auto cache retries a smaller size if the allocation fails.
                 if (auto_cache && failed < 8 && shrink_to(cache_bytes() / 4 * 3)) {
                     ++failed;
@@ -4449,7 +4531,9 @@ int main(int argc, char** argv) {
                      "strata generate: the GPU computes the experts in the cache; it rounds differently from the CPU,\n"
                      "                 so a reply can differ slightly from a run without the cache (same quality:\n"
                      "                 bench/results/2026-09-27-cache-parity).\n");
-        if (o.expert_cache_per_layer) {
+        if (phase_cache) {
+            std::fprintf(stderr, "strata phase-cache: initial144 capacity912 explicit3+16/layer defaultOFF\n");
+        } else if (o.expert_cache_per_layer) {
             int64_t lo = 0, hi = 0;
             xcache.layer_slot_range(0, lo, hi);
             std::fprintf(stderr, "                 R4.2g PER-LAYER: each layer owns %lld slots (%lld..%lld).\n",
@@ -4463,8 +4547,34 @@ int main(int argc, char** argv) {
     // ---- R4.2e: fill the tier from the profile.  This is the only place the plan is applied, and it runs
     // ONCE: global admission takes the hottest prefix; per-layer admission takes each layer's hottest pairs
     // until its quota is full. A sparse profile can leave slots empty. No eviction changes the ranked policy.
+    if (phase_cache) {
+        for (uint32_t layer = 0; layer < 48; ++layer)
+            for (uint32_t row = 0; row < 3; ++row) {
+                const uint32_t expert = static_cast<uint32_t>(phase_rank[layer][row]);
+                const uint64_t bytes = static_cast<uint64_t>(phase_blobs[layer]);
+                const auto* blob = arena_src.phase_blob(layer, expert, bytes);
+                if (!blob || !xcache.phase_fill(layer, expert, blob, bytes, err))
+                    phase_fatal("baseline native profile byte fill/check failed: " + err);
+            }
+        const bool baseline_published = xcache.phase_publish(err);
+        const auto& startup_timings = xcache.phase_owner()->timings();
+        strata::core::phase_timing_delta("startup", "reserve", startup_timings.reserve, {});
+        strata::core::phase_timing_delta("startup", "quiesce", startup_timings.quiesce, {});
+        strata::core::phase_timing_delta("startup", "physical", startup_timings.physical, {});
+        strata::core::phase_timing_delta("startup", "map", startup_timings.map, {});
+        strata::core::phase_timing_delta("startup", "h2d", startup_timings.h2d, {});
+        strata::core::phase_timing_delta("startup", "d2h", startup_timings.d2h, {});
+        strata::core::phase_timing_delta("startup", "compare", startup_timings.compare, {});
+        strata::core::phase_timing_delta("startup", "residency_h2d", startup_timings.residency_h2d, {});
+        strata::core::phase_timing_delta("startup", "residency_d2h", startup_timings.residency_d2h, {});
+        strata::core::phase_timing_delta("startup", "residency_compare", startup_timings.residency_compare, {});
+        strata::core::phase_timing_delta("startup", "publish", startup_timings.publish, {});
+        strata::core::phase_timing_delta("startup", "drain", startup_timings.drain, {});
+        if (!baseline_published || xcache.resident() != 144)
+            phase_fatal("baseline complete residency upload/check failed: " + err);
+    }
     int64_t prefilled = 0;
-    if (!profile.empty() && srcp != nullptr) {
+    if (!phase_cache && !profile.empty() && srcp != nullptr) {
         const int64_t want = std::min<int64_t>((int64_t) profile.size(), xcache.slots());
         // A full layer is not a full cache: its next ranked pair may precede another layer's first pair.
         const int64_t scan = xcache.per_layer_admission() && want > 0 ? (int64_t) profile.size() : want;
@@ -5269,7 +5379,7 @@ int main(int argc, char** argv) {
     // Plan v0.3 P4: with a PROFILE-filled cache the residency is static, so the hit decision moves onto the
     // device and the token graph keeps it.  (A cache filled on demand still needs the per-layer host path.)
     std::vector<int32_t> host_res;
-    int32_t* d_res = nullptr;
+    int32_t* d_res = phase_cache ? xcache.phase_device_residency() : nullptr;
     int32_t* d_hit_count = nullptr;
 
     // ---- THE ELASTIC K/V (--kv-grow; vmm.hpp, upstream 9e3dbfe7).  Allocated for the whole --max-context up front,
@@ -5491,13 +5601,17 @@ int main(int argc, char** argv) {
                 host_res[(size_t) (l * g.n_expert + e)] = slot;
                 if (slot != strata::core::kNotResident) ++resident;
             }
-        if (!strata::gpu::alloc_device((void**) &d_res, host_res.size() * sizeof(int32_t)) ||
+        if ((!phase_cache && !strata::gpu::alloc_device((void**) &d_res, host_res.size() * sizeof(int32_t))) ||
             !strata::gpu::alloc_device((void**) &d_hit_count, sizeof(int32_t)) ||
             !strata::gpu::copy(d_res, host_res.data(), host_res.size() * sizeof(int32_t))) {
             std::fprintf(stderr, "strata generate: the device residency table could not be staged\n");
             return 1;
         }
         thits.d_res = d_res;
+        if (phase_cache) {
+            thits.slot_off = xcache.slot_offsets();
+            thits.slot_capacity = xcache.slot_capacity();
+        }
         thits.n_expert = g.n_expert;
         // a file-backed arena (STRATA_ARENA_MMAP): the experts a GPU holds are handed back first
         // (STRATA_ARENA_RELEASE=0 keeps them): the fill read the whole arena, and left mapped and referenced it crowds
@@ -5506,7 +5620,7 @@ int main(int argc, char** argv) {
         {
             static const bool keep = std::getenv("STRATA_ARENA_RELEASE") && std::getenv("STRATA_ARENA_RELEASE")[0] == '0';
             uint64_t released = 0;
-            if (!keep)
+            if (!keep && !phase_cache)
                 for (size_t i = 0; i < host_res.size(); ++i)
                     if (host_res[i] != strata::core::kNotResident)
                         released += srcp->release((int64_t) i / g.n_expert, (int64_t) i % g.n_expert);
@@ -5826,7 +5940,7 @@ int main(int argc, char** argv) {
         if (multi_gpu) sp.set_stage(0, split_at[0], &stages[0]->sp);
         // the pool is idle while a prompt is read unless batch slots decode between its parts
         if (!multi_gpu && o.batch <= 0 && !o.no_pool) sp.set_cpu_pool(&pool);
-        if (!sp.init(wt, g, ss, srcp, &xcache, host_res.data(), o.prefill_chunk, main_cs, err, borrow, borrow_bytes)) {
+        if (!phase_head_lease && !sp.init(wt, g, ss, srcp, &xcache, host_res.data(), o.prefill_chunk, main_cs, err, borrow, borrow_bytes)) {
             std::fprintf(stderr, "strata serve: %s\n", err.c_str());
             if (err.find("fit") != std::string::npos)   // #85: say what frees VRAM
                 std::fprintf(stderr, "strata serve: the GPU has too little free VRAM for the prompt path: turn images "
@@ -5849,13 +5963,26 @@ int main(int argc, char** argv) {
             std::fprintf(stderr, "strata serve: the penalty-history allocation failed\n");
             return 1;
         }
-        strata::core::Verifier ver;
+        strata::core::Verifier ordinary_ver;
+        std::unique_ptr<strata::core::Verifier> phase_ver;
+        if (phase_cache) phase_ver = std::make_unique<strata::core::Verifier>();
+        strata::core::Verifier& ver = phase_cache ? *phase_ver : ordinary_ver;
         strata::core::VerifyHits vh;
         vh.d_res = thits.d_res;
         vh.cache_base = thits.cache_base;
         vh.blob = thits.blob;
         vh.slot_off = xcache.slot_offsets();   // E-6: the device plan's pointers
-        vh.n_slots = xcache.slots();
+        vh.n_slots = xcache.slot_capacity();
+        if (phase_cache) {
+            vh.slot_off = thits.slot_off;
+            vh.n_slots = thits.slot_capacity;
+            vh.readable_user = &xcache;
+            vh.readable = [](void* cache, std::string& e) {
+                const auto* owner = static_cast<strata::core::ExpertCache*>(cache)->phase_owner();
+                if (owner && owner->readers_ready() && owner->capacity() == 912) return true;
+                e = "phase cache reader sees incomplete/poisoned backing or residency"; return false;
+            };
+        }
         vh.h_res = host_res.empty() ? nullptr : host_res.data();   // every expert resident: windows without the host
         // Layer split: `ver` runs layers [0, K1) and hands its residual to the next stage's verifier, and so on; the
         // last runs the head.  The hand-offs are host USM: one buffer between two stages on one GPU, and one on each
@@ -7804,6 +7931,188 @@ int main(int argc, char** argv) {
                 if (!pump(false)) return false;
             return true;
         };
+        strata::core::PhaseServeCycle phase_cycle;
+        strata::prefill::PrefillStats phase_prompt_stats{};
+        decltype(sp.on_chunk) phase_chunk_callback;
+        decltype(sp.should_stop) phase_stop_callback;
+        uint64_t phase_free_before = 0, phase_free_after = 0;
+        const auto* phase_session_R = ss.R;
+        const auto* phase_session_gdn = ss.gdn_state;
+        const auto* phase_session_qsa = ss.qsa_states;
+        const auto* phase_session_ple = ss.ple.hist;
+        struct PhaseQsaKeep {
+            const void *k, *v, *ks, *vs, *page, *index;
+            int64_t slots;
+        };
+        std::vector<PhaseQsaKeep> phase_qsa_keep;
+        if (phase_cache) {
+            for (int64_t ordinal = ss.qsa_ord0; ordinal < ss.qsa_ord0 + ss.qsa_alloc; ++ordinal) {
+                const auto& state = ss.qsa_states[ordinal];
+                if (state.max_cells != 262144 || state.kv_mode != 1 || !state.kv_int8 || state.n_slots <= 0)
+                    phase_fatal("actual full-context/int8 resident KV geometry does not match admission");
+                phase_qsa_keep.push_back({state.k_q, state.v_q, state.k_scale, state.v_scale,
+                                          state.page_table, state.idx_pooled, state.n_slots});
+            }
+        }
+        auto phase_session_valid = [&]() {
+            if (ss.R != phase_session_R || ss.gdn_state != phase_session_gdn || ss.qsa_states != phase_session_qsa ||
+                ss.ple.hist != phase_session_ple || ss.max_cells != 262144 || o.max_context != 262144) return false;
+            for (size_t row = 0; row < phase_qsa_keep.size(); ++row) {
+                const auto& state = ss.qsa_states[ss.qsa_ord0 + static_cast<int64_t>(row)];
+                const auto& keep = phase_qsa_keep[row];
+                if (state.k_q != keep.k || state.v_q != keep.v || state.k_scale != keep.ks || state.v_scale != keep.vs ||
+                    state.page_table != keep.page || state.idx_pooled != keep.index || state.n_slots != keep.slots ||
+                    state.max_cells != 262144 || state.kv_mode != 1 || !state.kv_int8) return false;
+            }
+            return true;
+        };
+        auto phase_refresh = [&]() {
+            const auto* owner = xcache.phase_owner();
+            if (!owner || owner->residency_size() != host_res.size()) phase_fatal("host reader map geometry changed");
+            std::copy(owner->host_residency(), owner->host_residency() + owner->residency_size(), host_res.begin());
+        }; // callbacks retain this lambda through the entire serve loop
+        auto phase_owner_timing_report = [&](const char* stage, const strata::core::PhaseCacheOwner::Timings& before) {
+            const auto& after = xcache.phase_owner()->timings();
+            strata::core::phase_timing_delta(stage, "quiesce", after.quiesce, before.quiesce);
+            strata::core::phase_timing_delta(stage, "map", after.map, before.map);
+            strata::core::phase_timing_delta(stage, "unmap", after.unmap, before.unmap);
+            strata::core::phase_timing_delta(stage, "h2d", after.h2d, before.h2d);
+            strata::core::phase_timing_delta(stage, "d2h", after.d2h, before.d2h);
+            strata::core::phase_timing_delta(stage, "compare", after.compare, before.compare);
+            strata::core::phase_timing_delta(stage, "publish", after.publish, before.publish);
+            strata::core::phase_timing_delta(stage, "invalidate", after.invalidate, before.invalidate);
+            strata::core::phase_timing_delta(stage, "close", after.close, before.close);
+            strata::core::phase_timing_delta(stage, "physical", after.physical, before.physical);
+            strata::core::phase_timing_delta(stage, "destroy", after.destroy, before.destroy);
+            strata::core::phase_timing_delta(stage, "drain", after.drain, before.drain);
+            strata::core::phase_timing_delta(stage, "reserve", after.reserve, before.reserve);
+            strata::core::phase_timing_delta(stage, "release", after.release, before.release);
+            strata::core::phase_timing_delta(stage, "residency_h2d", after.residency_h2d, before.residency_h2d);
+            strata::core::phase_timing_delta(stage, "residency_d2h", after.residency_d2h, before.residency_d2h);
+            strata::core::phase_timing_delta(stage, "residency_compare", after.residency_compare, before.residency_compare);
+        };
+        if (phase_cache) {
+            phase_chunk_callback = sp.on_chunk;
+            phase_stop_callback = sp.should_stop;
+            phase_cycle.quiesce = [&](std::string& e) {
+                if (!phase_session_valid()) { e = "persistent SessionState owner/geometry changed"; return false; }
+                if (ajob || !pending.empty()) { e = "unexpected adaptive producer in phase arm"; return false; }
+                if (!ver.wait_commit(e) || !strata::gpu::device_sync()) {
+                    if (e.empty()) e = strata::gpu::last_error(); return false;
+                }
+                // Prefill::run joined issuer/cpu_fut and completed stager before success;
+                // Verifier::run completed its CPU/DMA producer guards before returning;
+                // wait_commit confirms the remaining GPU commit, pool.run is synchronous.
+                return true;
+            };
+            phase_cycle.retire_readers = [&](std::string& e) {
+                if (!ver.retire_phase_graphs(e)) return false;
+                if (phase_head_lease) {
+                    strata::core::session_graphs_free(gr);
+                    strata::core::token_graph_free(tgraph);
+                }
+                return true;
+            };
+            if (phase_head_lease) {
+                phase_cycle.release_head = [&](std::string& e) {
+                    size_t before = 0, after = 0, total = 0;
+                    if (!strata::gpu::mem_info(&before, &total)) { e = "unknown free before head release"; return false; }
+                    if (!native_head.release_for_prefill({true, true}, e)) return false;
+                    if (!strata::gpu::mem_info(&after, &total)) { e = "unknown free after head release"; return false; }
+                    std::fprintf(stderr, "strata head-lease: released weights=%llu scratch=%llu free_before=%zu free_after=%zu\n",
+                        (unsigned long long) native_head.weight_bytes(), (unsigned long long) native_head.scratch_bytes(), before, after);
+                    return true;
+                };
+                phase_cycle.reload_head = [&](std::string& e) {
+                    if (stop_req.load()) { e = "cancelled before head reload"; return false; }
+                    if (!native_head.reload_after_prefill(e)) return false;
+                    std::fprintf(stderr, "strata head-lease: reloaded source_type=%d native_type=%d weights=%llu scratch=%llu dims=%dx%d\n",
+                        native_head.source_type(), native_head.type(),
+                        (unsigned long long) native_head.weight_bytes(), (unsigned long long) native_head.scratch_bytes(),
+                        native_head.input_dim(), native_head.output_dim());
+                    return true;
+                };
+            }
+            phase_cycle.retire_workspace = [&](std::string& e) {
+                size_t free = 0, total = 0;
+                if (!strata::gpu::mem_info(&free, &total)) { e = "unknown actual free before retirement"; return false; }
+                phase_free_before = free;
+                phase_prompt_stats = sp.stats();
+                std::fprintf(stderr, "strata phase-cache: prompt_stats tokens=%lld chunks=%lld total_ms=%.3f "
+                                     "streamed=%lld resident=%lld cpu=%lld\n",
+                             static_cast<long long>(phase_prompt_stats.tokens), static_cast<long long>(phase_prompt_stats.chunks),
+                             phase_prompt_stats.ms_total, static_cast<long long>(phase_prompt_stats.experts_streamed),
+                             static_cast<long long>(phase_prompt_stats.experts_resident),
+                             static_cast<long long>(phase_prompt_stats.experts_cpu));
+                {
+                    strata::core::PhaseLoggedCall reset_timing("prefill_reset");
+                    sp.reset(); // releases/drains Impl including Gemm's lazy tc_w/tc_x, not SessionState
+                    reset_timing.result(true);
+                }
+                if (!phase_session_valid()) { e = "retirement changed persistent SessionState"; return false; }
+                if (!strata::gpu::mem_info(&free, &total)) { e = "unknown actual free after retirement"; return false; }
+                phase_free_after = free;
+                return true;
+            };
+            phase_cycle.grow_fill_publish = [&](std::string& e) {
+                const auto start = Clock::now();
+                auto* owner = xcache.phase_owner();
+                if (!owner || !owner->map_extras(phase_cycle.quiesce, e)) return false;
+                for (uint32_t layer = 0; layer < 48; ++layer)
+                    for (uint32_t row = 3; row < 3 + phase_extra_per_layer; ++row) {
+                        if (stop_req.load()) { e = "cancelled during phase cache treatment"; return false; }
+                        const uint32_t expert = static_cast<uint32_t>(phase_rank[layer][row]);
+                        const uint64_t bytes = static_cast<uint64_t>(phase_blobs[layer]);
+                        const auto* blob = arena_src.phase_blob(layer, expert, bytes);
+                        if (!blob || !xcache.phase_fill(layer, expert, blob, bytes, e)) return false;
+                    }
+                if (!xcache.phase_publish(e) || owner->mapped_slots() != 912 || xcache.resident() != 912) return false;
+                phase_refresh();
+                const auto mappings = owner->mapping_snapshot();
+                for (size_t extent = 0; extent < mappings.size(); ++extent) {
+                    const auto& mapping = mappings[extent];
+                    std::fprintf(stderr, "strata phase-cache: extent=%zu offset=%llu bytes=%llu mapped=%d owned=%d uncertain=%d\n",
+                                 extent, static_cast<unsigned long long>(mapping.offset),
+                                 static_cast<unsigned long long>(mapping.bytes), mapping.mapped ? 1 : 0,
+                                 mapping.owns_physical ? 1 : 0, mapping.uncertain ? 1 : 0);
+                }
+                std::fprintf(stderr, "strata phase-cache: retired_prompt free_before=%llu free_after=%llu "
+                             "mapped=%u capacity=%u mapped_bytes=%llu retained_physical=%llu grow_fill_publish_ms=%.3f "
+                             "requested_native_dequant_batch=1 full_context=262144\n",
+                             static_cast<unsigned long long>(phase_free_before), static_cast<unsigned long long>(phase_free_after),
+                             owner->mapped_slots(), owner->capacity(),
+                             static_cast<unsigned long long>(owner->mapped_bytes()),
+                             static_cast<unsigned long long>(owner->retained_physical_bytes()),
+                             std::chrono::duration<double, std::milli>(Clock::now() - start).count());
+                std::fflush(stderr);
+                return true;
+            };
+            phase_cycle.invalidate_detach = [&](std::string& e) {
+                const auto start = Clock::now();
+                if (!xcache.phase_invalidate_extras(e)) return false;
+                phase_refresh(); // actual checked d_res upload already completed
+                auto* owner = xcache.phase_owner();
+                if (!owner->unmap_extras(phase_cycle.quiesce, e) || owner->mapped_slots() != 144) return false;
+                std::fprintf(stderr, "strata phase-cache: invalidate_detach_ms=%.3f mapped=%u capacity=%u\n",
+                             std::chrono::duration<double, std::milli>(Clock::now() - start).count(),
+                             owner->mapped_slots(), owner->capacity());
+                return true;
+            };
+            phase_cycle.reinit_workspace = [&](std::string& e) {
+                const auto start = Clock::now();
+                sp.set_cpu_pool(&pool);
+                sp.on_chunk = phase_chunk_callback;
+                sp.should_stop = phase_stop_callback;
+                if (!sp.init(wt, g, ss, srcp, &xcache, host_res.data(), 8192, main_cs, e, nullptr, 0)) return false;
+                if (!phase_session_valid()) { e = "reinit changed persistent SessionState"; return false; }
+                std::fprintf(stderr, "strata phase-cache: fresh_GEN workspace_reinitialized chunk8192 mapped=%u "
+                                     "capacity=%u session_context262144 requests=%llu reinit_ms=%.3f\n",
+                             xcache.phase_owner()->mapped_slots(), xcache.phase_owner()->capacity(),
+                             static_cast<unsigned long long>(phase_cycle.requests()),
+                             std::chrono::duration<double, std::milli>(Clock::now() - start).count());
+                return true;
+            };
+        } // phase-only callback wiring; default path allocates no phase callback state
         for (;;) {
             if (batch_on() || (piped && pipe_inflight())) {   // the slots decode while no line waits
                 if (!try_next_line(line)) {
@@ -7816,6 +8125,11 @@ int main(int argc, char** argv) {
                 if (piped && line.rfind("BSTOP ", 0) != 0 && !pipe_drain()) return 1;
             } else if (!next_line(line)) {
                 break;
+            }
+            if (phase_cache && !strata::core::phase_request_kind(line)) {
+                std::printf("ERR phase-cache supports fresh GEN and QUIT only; no SAVE/RESTORE/GENI/reuse/batch/VRAM\n");
+                std::fflush(stdout);
+                continue;
             }
             // --batch: BSTOP <slot> ends that slot at its next batch window; BGEN <slot> <max_new> ... reads the
             // request's prompt and first token as a GEN 1, then continues it in that slot
@@ -8133,6 +8447,7 @@ int main(int argc, char** argv) {
             // parked after it.  It still resumes from a checkpoint it matches, and still saves the system-prompt root
             // when that reaches --prompt-cache-root.  Absent = checkpointed as before.
             int req_ckpt = 1;
+            bool req_ckpt_given = false;
             // pin=N: the first N prompt tokens are a shared read-only prefix (a long document that many short queries
             // follow).  The prompt is read in two parts at N, the checkpoint there is PINNED (retention never evicts it,
             // a parked conversation holding it stays parked) and a later request that resumes from it does not park the
@@ -8159,7 +8474,10 @@ int main(int argc, char** argv) {
                     const std::string key = tok.substr(0, eq);
                     const float fv = std::strtof(tok.c_str() + eq + 1, nullptr);
                     if (key == "cvec") req_cvec = std::atoi(tok.c_str() + eq + 1);
-                    else if (key == "ckpt") req_ckpt = std::strtol(tok.c_str() + eq + 1, nullptr, 10) != 0;
+                    else if (key == "ckpt") {
+                        req_ckpt = std::strtol(tok.c_str() + eq + 1, nullptr, 10) != 0;
+                        req_ckpt_given = true;
+                    }
                     else if (key == "pin") req_pin = std::max<long long>(0, std::strtoll(tok.c_str() + eq + 1, nullptr, 10));
                     else if (key == "temperature") req_temperature = fv;
                     else if (key == "top_p") req_top_p = fv;
@@ -8189,6 +8507,30 @@ int main(int argc, char** argv) {
                 continue;
             }
             const int64_t n = (int64_t) ids.size();
+            if (phase_cache) {
+                const auto* owner = xcache.phase_owner();
+                strata::core::PhaseFreshState fresh;
+                fresh.capacities_zero = o.prompt_cache == 0 && o.conversation_cache_mib == 0 && !conversations.enabled();
+                // begin_gen retires prior graphs and extras before prompt work.
+                fresh.healthy_baseline = owner && owner->readers_ready() && !owner->poisoned() &&
+                    owner->mapped_slots() == (phase_cycle.workspace_retired() ? 912u : 144u);
+                fresh.session_geometry = phase_session_valid();
+                fresh.live = live_ok || !live.empty() || !live_imgs.empty();
+                fresh.checkpoint = !checks.empty() || tail_ckpt_len != -1 || !part_at.empty();
+                fresh.parked = conversations.size() != 0;
+                fresh.reuse = conversations.bytes() != 0 || disk.enabled();
+                fresh.slot = !bs.empty() || admit_slot >= 0;
+                fresh.split = multi_gpu || split_same || !stages.empty() || !conv_stages.empty();
+                fresh.failed = nan_flush || nf_hit || phase_cycle.failed();
+                if (geni || req_pin != 0 || req_pcie_frac != 0.0 || n < 2 || n >= 262144 ||
+                    !strata::core::phase_fresh_admission(fresh) ||
+                    !std::all_of(ids.begin(), ids.end(), [&](int64_t token) { return token >= 0 && token < n_vocab; })) {
+                    std::printf("ERR phase-cache requires fresh bounded GEN pin=0 PCIe0 and empty actual reuse state\n");
+                    std::fflush(stdout); continue;
+                }
+                if (req_ckpt && !req_ckpt_given)
+                    std::fprintf(stderr, "strata phase-cache: request bit defaulted; no checkpoint state exists\n");
+            }
             req_imgs.clear();
             if (geni && !o.vision) { std::printf("ERR this engine was started without --vision\n"); continue; }
             if (geni || !mrope_identity) {
@@ -8287,6 +8629,13 @@ int main(int argc, char** argv) {
             bool bad = false;
             for (int64_t t : ids) bad = bad || t < 0 || t >= n_vocab;
             if (bad) { std::printf("ERR a token id is outside the vocabulary\n"); continue; }
+            const auto phase_request_started = phase_cache ? Clock::now() : Clock::time_point{};
+            if (phase_cache) {
+                const auto before = xcache.phase_owner()->timings();
+                const bool success = phase_cycle.begin_gen(err);
+                phase_owner_timing_report("begin_gen", before);
+                if (!success) phase_fatal("fresh GEN transition failed: " + err);
+            }
             std::array<int64_t, 3> remote_before{};
             std::array<int64_t, 3> launches_before{};
             std::array<uint64_t, 3> compact_before{}, full_before{};
@@ -8298,7 +8647,7 @@ int main(int argc, char** argv) {
                 full_before[(size_t) r] = remote_experts[(size_t) r].full_row_bytes();
             }
             cur = ids;
-            const Clock::time_point r0 = Clock::now();
+            const Clock::time_point r0 = phase_cache ? phase_request_started : Clock::now();
             // ---- where this request starts reading: the live session, or a checkpoint, whose tokens AND pictures are
             // exactly the start of this prompt - at most n - 1 of them, the last token is always the first window
             auto starts_with = [&](const std::vector<int32_t>& pre, const std::vector<ImgKey>& pre_imgs) -> bool {
@@ -8392,6 +8741,9 @@ int main(int argc, char** argv) {
                 }
             const auto parked = conversations.best(ids, req_imgs, want_cvec);
             std::optional<strata::core::SavedConversation> incoming;
+            if (phase_cache && (resume != 0 || from_live || slot_source >= 0 || slot_tokens != 0 ||
+                                resumed_from0 || slot_ck || parked.tokens != 0 || incoming))
+                phase_fatal("fresh-state selection unexpectedly enabled reuse after admission");
             int64_t in_tokens = 0;
             bool in_live = false;
             const char* in_source = "ram";
@@ -8569,7 +8921,8 @@ int main(int argc, char** argv) {
             int64_t reread_to = -1;   // STRATA_CKPT_REREAD only: read [0, reread_to) again instead of restoring
             if (resume == 0) {
                 strata::core::session_zero(ss, g, nullptr, main_cs);
-                strata::gpu::stream_sync(main_stream);
+                const bool fresh_zero_done = strata::gpu::stream_sync(main_stream);
+                if (phase_cache && !fresh_zero_done) phase_fatal("fresh session initialization did not complete");
                 for (auto& st : stages) {
                     const strata::core::OnDevice on(st->dev);
                     strata::core::session_zero(st->ss, g, nullptr, (void*) st->stream);
@@ -8643,7 +8996,7 @@ int main(int argc, char** argv) {
             static const bool no_short = std::getenv("STRATA_CKPT_REREAD") != nullptr;
             int64_t req_short_read = o.short_read;   // STRATA_PIPELINE_SWITCH may set it per request (short_read=)
             auto windows_ok = [&](int64_t a, int64_t b) -> bool {
-                if (no_short || !sr_cost.windows(b - a, req_short_read,
+                if (phase_head_lease || no_short || !sr_cost.windows(b - a, req_short_read,
                                                  o.short_read_given || req_short_read != o.short_read))
                     return false;
                 if (sp.embd_rows != nullptr)
@@ -9052,6 +9405,8 @@ int main(int argc, char** argv) {
             // (PR #65, code-martin.)  Only for a system prompt of --prompt-cache-root tokens or more: a small one
             // is cheaper to read again than the extra part costs (~0.3 s).
             const int64_t last_turn = turn_at;   // ckpt=0 drops the split there, the root is still looked for before it
+            if (phase_cache && (turn_at != -1 || resume != 0 || from_live || !checks.empty()))
+                phase_fatal("fresh GEN unexpectedly selected a checkpoint split");
             if (!req_ckpt) turn_at = -1;
             int64_t root_at = -1;
             if (o.prompt_cache > 0 && o.turn_token >= 0 && o.prompt_cache_root > 0 && (read_from == 0 || resumed_from0))
@@ -9173,11 +9528,19 @@ int main(int argc, char** argv) {
                 }
             }
             cpu_jobs.finish(cancelled ? "cancelled_or_nonfinite" : "prompt_complete");
+            if (phase_cache) {
+                if (cancelled || nf_hit || nan_flush || stop_req.load()) phase_fatal("unsuccessful prompt cannot retire/grow phase cache");
+                const auto before = xcache.phase_owner()->timings();
+                const bool success = phase_cycle.successful_prompt(err);
+                phase_owner_timing_report("successful_prompt", before);
+                if (!success) phase_fatal("retire/map/fill/publish failed: " + err);
+            }
             tr("prompt done (slots refilled)");
             if (il_parts > 0)
                 std::fprintf(stderr, "strata batch: the prompt was read in %lld parts, the slots decoding %.0f ms between "
                                      "them\n", (long long) il_parts + 1, il_ms);
-            const double prompt_ms = std::chrono::duration<double, std::milli>(Clock::now() - r0).count();
+            const double prompt_ms = std::chrono::duration<double, std::milli>(
+                Clock::now() - r0).count();
             std::printf("REUSED %lld\n", (long long) resume);   // the prompt is read; the first window comes next
             std::fflush(stdout);
             // the verify windows: the first holds the last prompt token alone
@@ -10003,6 +10366,15 @@ int main(int argc, char** argv) {
                 live_imgs = imgs_below(req_imgs, (int64_t) live.size());
                 live_ok = o.prompt_cache > 0 && req_ckpt && !nf_hit && !nan_flush;
             }
+            if (phase_cache) {
+                if (live_ok || !checks.empty() || tail_ckpt_len != -1 || conversations.size() || conversations.bytes())
+                    phase_fatal("completed phase GEN unexpectedly retained reusable session state");
+                // Capacity zero means these completed IDs cannot be a resume
+                // source. Drop their metadata while preserving session buffers;
+                // the next fresh prompt uses the ordinary checked session_zero.
+                live.clear();
+                live_imgs.clear();
+            }
             static const bool state_hash = std::getenv("STRATA_STATE_HASH") != nullptr;
             if (state_hash && !cancelled && o.prompt_cache > 0) {   // every finished request, ckpt=0 too (parity gates)
                 // DEBUG: a fingerprint of every part of the session over the positions it holds ([0, L)), and
@@ -10099,6 +10471,8 @@ int main(int argc, char** argv) {
                              (unsigned long long) h_pool_full, ss.ple_prev[0], ss.ple_prev[1]);
             }
             const int64_t req_hits = drive.d.cache_hits - decode_hits0;
+            if (phase_cache && !phase_cycle.complete_gen(!cancelled && !nf_hit && !nan_flush && !stop_req.load(), err))
+                phase_fatal("unsuccessful decode cannot complete a phase request or admit another GEN: " + err);
             const int64_t req_look = (drive.d.cache_hits + drive.d.cache_admitted + drive.d.cache_refused) - decode_look0;
             const int64_t req_offload = drive.d.offload_entries - offload0;
             // #471: the prompt tokens this request read - all the fresh ones, or as far as the prompt pass got when a
@@ -10287,6 +10661,35 @@ int main(int argc, char** argv) {
                                          "failed)\n");
                 }
             }
+        }
+        if (phase_cache) {
+            strata::core::PhaseLoggedCall quit_timing("quit");
+            bool quit_quiesced = false;
+            { strata::core::PhaseLoggedCall timing("quit_quiesce");
+              quit_quiesced = timing.result(phase_cycle.quiesce(err)); }
+            if (!quit_quiesced) phase_fatal("QUIT quiescence failed: " + err);
+            if (!phase_cycle.workspace_retired()) {
+                strata::core::PhaseLoggedCall timing("quit_prefill_reset");
+                sp.reset();
+                timing.result(true);
+            }
+            {
+                strata::core::PhaseLoggedCall timing("quit_graph_retire");
+                phase_ver.reset(); // checked Verifier destructor retires captured readers
+                strata::core::session_graphs_free(gr);
+                strata::core::token_graph_free(tgraph);
+                timing.result(true);
+            }
+            drive.d.cache = nullptr; drive.d.cache_base = nullptr; drive.d.cache_slot_off = nullptr;
+            drive.d.host_res = nullptr; thits = {}; vh = {};
+            if (!xcache.phase_close([](std::string& e) {
+                    if (strata::gpu::device_sync()) return true;
+                    e = strata::gpu::last_error(); return false;
+                }, err)) phase_fatal("QUIT checked VMM close failed: " + err);
+            d_res = nullptr;
+            quit_timing.result(true);
+            std::fprintf(stderr, "strata phase-cache: normal_QUIT owner_closed requests=%llu\n",
+                         static_cast<unsigned long long>(phase_cycle.requests()));
         }
         save_profile("exit");   // #477: QUIT, or the server closed stdin
         return 0;

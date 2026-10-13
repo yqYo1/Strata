@@ -29,7 +29,11 @@
 // kernel. This is that first step, and the step it unblocks is the one that can be measured.
 #pragma once
 
+#include "strata/core/phase_cache_owner.hpp"
 #include <cstddef>
+#include <stdexcept>
+#include <cstdio>
+#include <exception>
 #include <cstdint>
 #include <memory>
 #include <string>
@@ -97,21 +101,38 @@ public:
     /// profile-filled tier never moves an expert to another layer's slot, so each slot keeps its first size).
     bool open_sized(const std::vector<int64_t>& slot_bytes, int64_t n_layers, int64_t n_expert, std::string& err);
     /// Byte offset of each slot in the arena (null for uniform slots).
-    const uint64_t* slot_offsets() const { return off_.empty() ? nullptr : off_.data(); }
+    const uint64_t* slot_offsets() const { return phase_ ? phase_->capacity_offsets() : (off_.empty() ? nullptr : off_.data()); }
     void close();
+    bool open_phase(const std::vector<int64_t>& blobs, uint32_t experts, uint32_t extras,
+                    uint64_t virtual_cap, std::string& err);
+    bool phase_fill(uint32_t layer, uint32_t expert, const void* immutable_blob, uint64_t bytes, std::string& err);
+    bool phase_publish(std::string& err);
+    bool phase_invalidate_extras(std::string& err);
+    bool phase_close(const PhaseCacheOwner::Quiesce& retire_readers, std::string& err);
+    PhaseCacheOwner* phase_owner() { return phase_.get(); }
+    bool phase_mode() const { return phase_ != nullptr; }
+    int32_t* phase_device_residency() const { return phase_d_res_; }
+    int64_t slot_capacity() const { return phase_ ? phase_->capacity() : slots_; }
+
 
     bool valid() const { return base_ != nullptr; }
     /// The slots usable now: all of them, unless `shrink` gave the tail's VRAM back (#533) - then the ones wholly
     /// inside the VRAM still backed, always a prefix.  The prompt path's loan (the last slots) and every report follow
     /// this; `full_slots()` is what `open` allocated.
-    int64_t slots() const { return live_slots_; }
-    int64_t full_slots() const { return slots_; }
+    int64_t slots() const { return phase_ ? phase_->mapped_slots() : live_slots_; }
+    int64_t full_slots() const { return slot_capacity(); }
     /// Slots actually claimed.  Not the same as `slots()` - the cache does not evict, so a run that routes
     /// fewer distinct experts than there are slots leaves the rest empty.
-    int64_t resident() const { return per_layer_ ? admitted_ : next_free_; }
+    int64_t resident() const {
+        if (!phase_) return per_layer_ ? admitted_ : next_free_;
+        int64_t count = 0;
+        for (size_t i = 0; i < phase_->residency_size(); ++i) count += phase_->host_residency()[i] >= 0;
+        return count;
+    }
     /// The bytes of `slots()` (all of the arena unless shrunk); `full_bytes()`: of every slot.
-    int64_t bytes() const { return slot_end(live_slots_); }
-    int64_t full_bytes() const { return slot_end(slots_); }
+    // open_phase bounds the reservation by the signed byte-count range.
+    int64_t bytes() const { return phase_ ? static_cast<int64_t>(phase_->mapped_bytes()) : slot_end(live_slots_); }
+    int64_t full_bytes() const { return phase_ ? static_cast<int64_t>(phase_->reserved_bytes()) : slot_end(slots_); }
 
     /// **#533: HOT VRAM RESIZE, OPT-IN (--vram-elastic).**  With a segment size set before `open`/`open_sized`, the
     /// arena is one reserved address range backed by physical segments of that size (strata::gpu's virtual memory)
@@ -201,12 +222,28 @@ public:
     /// The arena's range (null: one allocation).
     VmmRange* vmm_range() { return vmm_.get(); }
     /// Byte offset of slot `s` in the arena (s == slots(): the end).
-    uint64_t slot_offset(int64_t s) const { return off_.empty() ? (uint64_t) s * (uint64_t) blob_ : off_[(size_t) s]; }
+    uint64_t slot_offset(int64_t s) const {
+        if (phase_) {
+            if (s == phase_->capacity()) return phase_->reserved_bytes();
+            return s >= 0 && s < phase_->capacity() ? phase_->capacity_offsets()[s] : 0;
+        }
+        return off_.empty() ? (uint64_t) s * (uint64_t) blob_ : off_[(size_t) s];
+    }
 
 private:
-    int64_t slot_end(int64_t n) const { return off_.empty() ? n * blob_ : (int64_t) off_[(size_t) n]; }
+    bool phase_upload(const int32_t* table, size_t count, std::string& err);
+    int64_t slot_end(int64_t n) const {
+        if (phase_) {
+            std::fprintf(stderr, "phase cache: mapped-prefix byte span is invalid; retaining owners\n");
+            std::terminate();
+        }
+        return off_.empty() ? n * blob_ : (int64_t) off_[(size_t) n];
+    }
     bool open_segmented(uint64_t want, std::string& err);
     void release_segmented();
+    std::unique_ptr<PhaseCacheOwner> phase_;
+    int32_t* phase_d_res_ = nullptr;
+    std::vector<int32_t> phase_check_; // survives failed pending D2H until checked owner close
     uint8_t* base_ = nullptr;
     int64_t live_slots_ = 0;              ///< #533: slots() - all of them unless shrunk
     int64_t seg_req_ = 0;                 ///< #533: the segment size asked for (0: one allocation)

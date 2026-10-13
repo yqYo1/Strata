@@ -2697,6 +2697,14 @@ const uint8_t* ArenaExpertSource::device_alias(int64_t layer, int64_t expert) co
     return dev_slice_[(size_t) layer] + (uint64_t) expert * lay.blob_bytes(layer);
 }
 
+const uint8_t* ArenaExpertSource::phase_blob(int64_t layer, int64_t expert, uint64_t bytes) {
+    const auto& layout = strata::kernels::cpu::expert_layout();
+    if (!arena_ || map_ || !layout.native || layer < 0 || layer >= layout.n_layers ||
+        expert < 0 || expert >= n_expert_ || bytes != layout.blob_bytes(layer)) return nullptr;
+    const auto* pointer = blob(layer, expert);
+    return static_cast<const PinnedArena*>(arena_)->owned_host_range(pointer, bytes) ? pointer : nullptr;
+}
+
 const uint8_t* ArenaExpertSource::blob(int64_t layer, int64_t expert) {
     if (base_ == nullptr) return nullptr;
     if (layer < 0 || expert < 0 || expert >= n_expert_) return nullptr;

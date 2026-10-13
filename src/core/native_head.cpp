@@ -49,6 +49,14 @@ bool NativeHead::load(const std::string& path, int64_t n_in, int64_t n_out, std:
             err = "native head: truncated output.weight payload";
             return false;
         }
+        if (leased_ && (!model.in_bounds(*tensor, at) || strata::tensor_payload_bytes(*tensor) != bytes)) {
+            err = "native head reload payload descriptor changed"; return false;
+        }
+        if (leased_ && (path != source_path_ || n_in != n_in_ || n_out != n_out_ ||
+            (int) tensor->type != source_type_ || bytes != bytes_ || gguf.path() != shard_path_ ||
+            tensor->offset != source_offset_ || gguf.file_size() != shard_bytes_ || gguf.data_start() != data_start_)) {
+            err = "native head reload descriptor changed"; return false;
+        }
         void* weights = nullptr;
         void* scratch = nullptr;
         bool status = strata::gpu::alloc_device(&weights, bytes);
@@ -67,14 +75,21 @@ bool NativeHead::load(const std::string& path, int64_t n_in, int64_t n_out, std:
         if (type == 14 && strata::kernels::native_q6_k_rows_ok((int) n_in)) {   // aligned loads (native_mmvq.hpp)
             sycl::queue& q = strata::core::Runtime::get().compute();
             strata::kernels::native_q6_k_to_rows(weights, (int) n_in, (int) n_out, &q);
-            q.wait();
+            if (leased_) q.wait_and_throw(); else q.wait();
             type = strata::kernels::kNativeQ6KRows;
         } else if (type == 8 && strata::kernels::native_q8_0_rows_ok((int) n_in)) {
             sycl::queue& q = strata::core::Runtime::get().compute();
             strata::kernels::native_q8_0_to_rows(weights, (int) n_in, (int) n_out, &q);
-            q.wait();
+            if (leased_) q.wait_and_throw(); else q.wait();
             type = strata::kernels::kNativeQ8Rows;
         }
+        if (leased_ && type != converted_type_) {
+            strata::gpu::free(scratch); strata::gpu::free(weights);
+            err = "native head reload conversion changed"; return false;
+        }
+        source_path_ = path; shard_path_ = gguf.path();
+        source_offset_ = tensor->offset; shard_bytes_ = gguf.file_size(); data_start_ = gguf.data_start();
+        source_type_ = (int) tensor->type; converted_type_ = type; leased_ = false;
         weights_ = weights;
         scratch_ = scratch;
         bytes_ = bytes;
@@ -86,6 +101,25 @@ bool NativeHead::load(const std::string& path, int64_t n_in, int64_t n_out, std:
         err = std::string("native head: ") + error.what();
         return false;
     }
+}
+
+uint64_t NativeHead::scratch_bytes() const {
+    return n_in_ > 0 ? strata::kernels::native_q8_1_bytes(n_in_, 1) : 0;
+}
+
+bool NativeHead::release_for_prefill(DrainedReaders proof, std::string& err) {
+    if (!proof.device_complete || !proof.graphs_retired || !loaded() || leased_) {
+        err = "native head release requires loaded owner and explicit drained/retired readers"; return false;
+    }
+    strata::gpu::free(scratch_); scratch_ = nullptr;
+    strata::gpu::free(weights_); weights_ = nullptr;
+    leased_ = true;
+    return true;
+}
+
+bool NativeHead::reload_after_prefill(std::string& err) {
+    if (!leased_ || loaded()) { err = "native head is not safely leased"; return false; }
+    return load(source_path_, n_in_, n_out_, err);
 }
 
 bool NativeHead::run(const float* mixed, float* logits, void* stream, std::string& err) const {

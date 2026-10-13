@@ -343,6 +343,23 @@ bool PinnedArena::to_host_usm(uint64_t pad, std::string& err) {
     return true;
 }
 
+bool PinnedArena::owned_host_range(const void* pointer, uint64_t bytes) const {
+    if (!pointer || !bytes || layer_base.empty()) return false;
+    const auto address = reinterpret_cast<uintptr_t>(pointer);
+    bool inside = false;
+    for (const auto& piece : pieces_) {
+        const auto start = reinterpret_cast<uintptr_t>(piece.first);
+        if (address >= start && address - start <= piece.second && bytes <= piece.second - (address - start)) {
+            inside = true;
+            break;
+        }
+    }
+    if (!inside) return false;
+    auto* owner = Runtime::owner(pointer);
+    return owner == &Runtime::get() &&
+           sycl::get_pointer_type(pointer, owner->context()) == sycl::usm::alloc::host;
+}
+
 uint8_t* PinnedArena::at(uint64_t off) const {
     if (layer_base.empty()) return (uint8_t*) base + off;
     size_t l = (size_t) (std::upper_bound(bounds_.begin(), bounds_.end() - 1, off) - bounds_.begin());
