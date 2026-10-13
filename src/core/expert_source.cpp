@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 // src/core/expert_source.cpp - the adapter.  See the header for the three clauses of the contract.
 #include "strata/core/expert_source.hpp"
+#include "strata/core/decode_route_ledger.hpp"
 #include "strata/core/remote_experts.hpp"
 
 #include "strata/kernels/cpu/expert_layout.hpp"
@@ -1411,6 +1412,68 @@ bool cpu_job_histogram_requested() {
 }
 }
 
+namespace {
+bool decode_route_ledger_requested() {
+    static const bool on = [] { const char* v = std::getenv("STRATA_DECODE_ROUTE_LEDGER");
+        return v && std::strcmp(v, "1") == 0; }();
+    return on;
+}
+}
+DecodeRouteLedgerScope::DecodeRouteLedgerScope(ExpertDispatch& d,int64_t layers,bool eligible)
+    : dispatch_(d),requested_(decode_route_ledger_requested()) {
+    if (!requested_ || !eligible || d.remote_count!=0) return;
+    const auto& lay=strata::kernels::cpu::expert_layout();
+    if (!lay.native || layers<1 || layers>64 || lay.fmt.size()!=(size_t)layers) return;
+    try {
+        auto candidate=std::make_shared<DecodeRouteLedger>(); candidate->layers=layers;
+        for (int64_t l=0;l<layers;++l) candidate->fmt[l]=lay.fmt[(size_t)l];
+        std::shared_ptr<DecodeRouteLedger> expected;
+        if (std::atomic_compare_exchange_strong(&d.decode_route_ledger,&expected,candidate)) state_=candidate;
+    } catch (const std::bad_alloc&) {}
+}
+DecodeRouteLedgerScope::~DecodeRouteLedgerScope() { finish("error_or_early_exit",0); }
+void DecodeRouteLedgerScope::finish(const char* status,int64_t emitted) {
+    if (finished_) return;
+    finished_=true;
+    if (!requested_) return;
+    if (!state_) {
+        std::fprintf(stderr,"strata decode route ledger: status=%.32s eligible=0 incomplete=1\n",status?status:"unknown"); return;
+    }
+    auto expected=state_;
+    std::atomic_compare_exchange_strong(&dispatch_.decode_route_ledger,&expected,std::shared_ptr<DecodeRouteLedger>{});
+    std::lock_guard<std::mutex> lock(state_->mutex); state_->active=false;
+    // Ordinary serve runs the last prompt token through its first T=1 verify window.
+    // Check coverage against emitted, while retaining independently observed calls.
+    const bool normal_close = status && (std::strcmp(status,"length")==0 || std::strcmp(status,"stop")==0);
+    auto coverage = decode_route_ledger_coverage(state_->layers,emitted,state_->layer_calls,
+                                                normal_close,state_->invalid,state_->overflow);
+    if (coverage.complete) for (int64_t l=0;l<state_->layers;++l)
+        if (state_->calls_by_layer[l]!=(uint64_t)emitted) coverage.complete=false;
+    // One output block, <=512 KiB, only on request close. No worker logging.
+    try {
+        std::string out; out.reserve(512*1024); char line[512];
+        std::snprintf(line,sizeof line,"strata decode route ledger: status=%.32s eligible=1 emitted=%lld layer_calls=%llu invalid=%d overflow=%d coverage_complete=%d expected_calls_known=%d expected_layer_calls=%llu cardinality_cap=2048 storage_cap=131072 output_cap=524288 queued_h2d_bytes=unavailable logical_bytes_are_not_dram_or_h2d=1\n",
+            status?status:"unknown",(long long)emitted,(unsigned long long)state_->layer_calls,state_->invalid,state_->overflow,
+            coverage.complete,coverage.expected_known,(unsigned long long)coverage.expected_calls);
+        out+=line;
+        const char* owners[]={"cpu_native","gpu_vram","gpu_pcie_staged","gpu_pcie_mapped"};
+        for (int64_t l=0;l<state_->layers;++l) for (int o=0;o<4;++o) for (int nt=1;nt<=8;++nt) {
+            const auto& b=state_->rows[l][o][nt-1]; if (!b.groups) continue;
+            std::snprintf(line,sizeof line,"layer=%lld gu=%d down=%d nt=%d owner=%s groups=%llu entries=%llu logical_gu_bytes=%llu logical_down_bytes=%llu logical_blob_bytes=%llu\n",
+                (long long)l,state_->fmt[l].gu_type,state_->fmt[l].d_type,nt,owners[o],
+                (unsigned long long)b.groups,(unsigned long long)b.entries,(unsigned long long)b.gu,
+                (unsigned long long)b.down,(unsigned long long)b.blob);
+            if (out.size()+std::strlen(line)>512*1024) {
+                std::fprintf(stderr,"strata decode route ledger: status=output_budget_exceeded incomplete=1\n"); return;
+            }
+            out+=line;
+        }
+        std::fwrite(out.data(),1,out.size(),stderr);
+    } catch (const std::bad_alloc&) {
+        std::fprintf(stderr,"strata decode route ledger: status=output_allocation_failed incomplete=1\n");
+    }
+}
+
 // A fixed64layer model envelope and one immutable GU/Down pair per layer. Request-local only.
 class CpuJobHistogram {
 public:
@@ -1999,6 +2062,15 @@ void expert_pool_dispatch_multi(ExpertDispatch& d, const float* x_f, const int32
     }
     const auto c4 = std::chrono::steady_clock::now();
     pt("ran");
+    if (decode_route_ledger_requested()) {
+        const auto observer=std::atomic_load(&d.decode_route_ledger);
+        if (observer) {
+            if (decode_route_ledger_dispatch_eligible(native,n_tok,d.remote_count) &&
+                d.layers >= 0 && d.layers < observer->layers && (size_t)d.layers < lay.fmt.size())
+                observer->record(d.layers,ids,kind,n,d.jobs_multi.data(),njobs,lay.fmt[(size_t)d.layers],d.plan && d.plan->pcie_mode!=0);
+            else { std::lock_guard<std::mutex> lock(observer->mutex); observer->invalid=true; }
+        }
+    }
     auto ms = [](auto a, auto b) { return std::chrono::duration<double, std::milli>(b - a).count(); };
     d.ms_plan += ms(c0, c1);
     d.ms_actq += ms(c1, c2);

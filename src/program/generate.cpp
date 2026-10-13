@@ -27,6 +27,7 @@
 #include "strata/core/session_save_reclaim.hpp"
 #include "strata/core/conversation_memory.hpp"
 #include "strata/core/expert_source.hpp"
+#include "strata/core/decode_route_ledger.hpp"
 #include "strata/core/remote_experts.hpp"
 #include "strata/core/on_device.hpp"
 #include "strata/core/layer.hpp"
@@ -9680,6 +9681,9 @@ int main(int argc, char** argv) {
             consumed.reserve((size_t) (n + max_new + S));
             for (int64_t i = 0; i < n - 1; ++i) consumed.push_back((int32_t) ids[(size_t) i]);
             const char* finish = "length";
+            strata::core::DecodeRouteLedgerScope decode_route_ledger(drive.d,g.n_layers,
+                strata::core::decode_route_ledger_eligible(!geni && admit_slot<0, o.batch,
+                    n_stages, use_mtp, o.suffix_draft, o.lookup_chain, std::max(o.spec,o.batch)));
             const Clock::time_point d0 = Clock::now();
             // STRATA_DECODE_TIMING=1: where a request's decode time goes (one line per request)
             static const bool dec_timing = std::getenv("STRATA_DECODE_TIMING") != nullptr;
@@ -10438,6 +10442,7 @@ int main(int argc, char** argv) {
                 std::printf("ERR %s\n", err.c_str());
                 return 1;
             }
+            decode_route_ledger.finish(finish,produced_n);
             if (dec_timing && dec_windows > 0) {
                 const DecSnap d1 = dec_snap();
                 const double w = (double) dec_windows, L = (double) g.n_layers;

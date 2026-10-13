@@ -212,11 +212,13 @@ struct GpuPlanSink {
 
 struct PcieSplitTimes;
 class CpuJobHistogram;
+class DecodeRouteLedger;
 
 /// The adapter's own state.  One per session, reused every layer so the token path allocates nothing (P2.T10).
 struct ExpertDispatch {
     // Runtime access is atomic; startup copies occur only while empty; a prompt-scope binding owns the observer, never job buffers.
     std::shared_ptr<CpuJobHistogram> cpu_job_histogram;
+    std::shared_ptr<DecodeRouteLedger> decode_route_ledger;
     strata::kernels::cpu::ExpertPool* pool = nullptr;
     ExpertSource* src = nullptr;
     RemoteExperts* remote[3] = {}; ///< optional CUDA1..3 tiers for otherwise CPU-served rows
@@ -364,6 +366,19 @@ struct ExpertDispatch {
 };
 
 // Opt-in serial prompt observer. No dispatch/control result depends on these counters.
+class DecodeRouteLedgerScope {
+public:
+    DecodeRouteLedgerScope(ExpertDispatch&, int64_t layers, bool eligible);
+    ~DecodeRouteLedgerScope();
+    DecodeRouteLedgerScope(const DecodeRouteLedgerScope&) = delete;
+    DecodeRouteLedgerScope& operator=(const DecodeRouteLedgerScope&) = delete;
+    void finish(const char* status, int64_t emitted);
+private:
+    ExpertDispatch& dispatch_;
+    std::shared_ptr<DecodeRouteLedger> state_;
+    bool requested_ = false, finished_ = false;
+};
+
 class CpuJobHistogramScope {
 public:
     class Binding {
