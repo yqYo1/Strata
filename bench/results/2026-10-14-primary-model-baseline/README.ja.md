@@ -280,3 +280,25 @@ R473/R474のLuna原文も返答後にhash照合して登録した。関連fixtur
 ホストstackを優先し、watchdogの引数で限定した長い監視猶予とphase/診断のdata raceを検討する。
 R473のVerifier::diagのplain last_t_/last_pos0_読み取りは、verify実行と並行すればdata raceとなる
 source上の修正対象だが、今回prefill中のcanary破壊原因としては未確定。
+
+
+## この境界の保存と保持
+
+0eb55689にv6正常終了/v7失敗/全調査とrecipe、4433319eにclosed launch config/plan原文を
+commitした。全39receiptのarchive/decoded hash、全16研究原文、closed owned identityの
+消失を確認してretentionを実施。累計160ファイル、37,979,345 logical bytesを退役した。
+volume snapshotや実空き容量の増加は推定しない。以前のdeadline rawはnormal longと
+STOP-grace/元control evidenceの記録により現在consumerが無くなり退役。
+
+未解決v7のengine.stderrだけ4605 bytesを保持する。SHA
+ea9cd15d925cf13681edd9e4707f070d9391a602eeeb15f2095accfbe21f5fd5、
+Main責任、上限256KiB、consumerは次のcoldJIT/watchdog/host-stack原因調査。
+解決・countermeasure/recipe置換後に見直す。原failed/complete=falseは変更していない。
+B側record/config/plan等はcanonical Git gzipへ退役し、次のcontroller/researchはGit receiptを使う。
+build約136MB/4GiB budget、observer16KBは次の原因調査に必要な版へ置換または退役。
+MainのGPU/server/ownerは全て終了、常設serviceとGPU bindingに変更なし。
+準備だけの重複plan JSONはtemplate-retirement.jsonlにhash/理由を保存して削除した。
+
+主branchはfeature/sycl、remote/local枝とworktreeは引き続き2つ。
+mainはbeddab2fのまま、必要なnative非推論機能の適合とdefault反映、fresh Niko評価は未完了。
+Xeの比較値をprimaryへ移さず、source由来・APIの義務・採用した計算部品を今後も分ける。
