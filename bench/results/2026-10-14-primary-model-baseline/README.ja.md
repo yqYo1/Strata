@@ -112,3 +112,61 @@ R461系統/R462部品を並行依頼し、返答まで介入せずMainはsource/
 consumerは次の主モデル診断・機能適合、binary更新/診断終了時に見直す。
 例外observerは16 MiB budget、次のbounded診断がconsumer。新しいGPU reset/unbind、
 サービス停止、既存server置換は行っていない。
+
+## 追加の履歴・機能照合
+
+R464は旧primaryの `dc2ca4eee42c5870e11a1339c0fccc9fd9e856f6` を直接調べた。
+同じ5600X、実GGUFのIQ3_Sを含む3形式、NT1のQ8_K活性、E=8/64個のexpertと
+unroll1/2/4でgate/upのload共有を試し、全180sampleが数値条件を満たしたが、全中央値は退行。
+この結果はprimaryのGitに既にある。Zの狭い合成NT1の平均差だけで候補を再提出しない。
+current compiler/code/実routeの条件変更を示す場合に限り再検討する。
+R464の「NT8もprimaryで測った」は、expert数E=8との混同であり採用しない。
+引用された3つのE64数値にも小さな相違があるため、原run.jsonと
+prior-cpu-decision.jsonを正とする。旧recordはcompilerのversionを固定しておらず、
+現在toolchainと同一だと主張しない。原研究レポートは訂正履歴とともにそのまま保存する。
+
+R465はNiko 0.1.39、fork mainの実SYCL overlay、primaryを機能単位で照合した。
+このPCで適用可能なnative不足は、単一GPUの並列要求・admission/cancel/response契約と
+動的VRAM reserve/resize。serverが保存済みparallel>=2を--batchとして渡すと、現在の
+primaryはunknown flagで起動拒否する。vram_elasticも同様。設定を無言で消してはいないが、
+機能実装の代用になるものではない。静的vram_reserve_mibは別の既存機能として保持する。
+Nikoの非推論機能を保持する指示は既にあるので、この2項目の適合を任意の確認事項にしない。
+
+batch-groups、trim-stage、remote helper cache、peer/tier、複数deviceのauto-placementは
+複数GPU・layer splitの機能。ここを単一Arcでのdefault反映のblockerにせず、対象外理由と
+保存設定の明示的拒否を記録する。mainのSYCL VMMはNikoのAPIを独自に適合した実装で、
+device aspectによる拒否もあり、このPCで稼働済みとは扱わない。
+
+R464/R465も過去registryを渡して反復し、Mainの実モデル診断と並行で進めた。
+返答まで途中介入せず、調査だけでsourceやGPUを変更していない。
+
+## 後続の実機結果
+
+size_t設定でruntime、MMQ、GEMM、native graphの4つのdebug実行が合格した。
+UR successは各832/9494/14284/639件、各プロセスexit0、fresh GPU fault0、dump無し。
+GPU receiptとgpu-diagnostic-summary.jsonにAPI error・既知null-pool警告・QUERY_FALSEを分ける。
+full validationのログ全体がcleanだったとは主張しない。
+
+同じ61055入力のv5はshort HTTP成功後、prefillの53248位置のchunk開始まで進んだ。
+元のrange exceptionとobserverのSYCL throwは再発していない。ただし完走前に1200秒の
+owned wall deadlineで終了。runnerは-15、serverにも最後はSIGKILL、nativeへSIGTERMを
+送った記録はあるが、real-engine exit receiptは無い。observation_complete=falseのまま保存し、
+正常終了・長文合格・速度合格へ書き換えない。session_empty=true/survivorsなし、各owned identityは
+消失し、同一boot/fresh fault0/dump無しを確認した。longのDONE/sampleは得ていない。
+
+終了前にowned native stdinへSTOPを送ったcontrol-action.jsonも保存する。送信は
+22:52:15.300 UTC、owner開始22:32:46.777 UTCで、wall上限まで約31.477秒しかなかった。
+sourceはstop_reqをstdin threadで設定し、sp.should_stopがchunk境界で確認する。
+従って停止が期限に間に合わなかっただけで、STOP未伝達やengineのbugを認定しない。
+Mainの停止猶予が不足していた。最後のchunk開始markerを、61055全入力の消費や出力成功と
+数えない。観測された範囲では対策後のrange guard failureは消えたが、正確な元のsubmitと
+完走の確認はまだ残る。
+
+次の長文診断は、既に小fixtureで行ったfull lifetime検査と分け、LevelZero/UR parameter
+validation・warning/progressを保持してログ負荷を減らす。事前wall budgetとchunkの停止猶予を
+十分に確保する。さらに別のquiet processで無変更Niko bench.sh/標準clientの速度測定と
+設定調整を行う。今回の約0.9 t/s short診断や未完了longを、性能退行の採否に使わない。
+
+v5の代表deadline/STOP raw証拠は次のnormal-exit/停止猶予の比較がconsumer。
+責任者Main、text budget64 MiB、現在の少量ログを保持し、比較完了/recipe置換時に再検討する。
+他のclosed成功trace・重複build outputと終了した研究原文は、commit照合後に退役する。

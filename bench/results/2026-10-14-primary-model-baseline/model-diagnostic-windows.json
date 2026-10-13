@@ -168,5 +168,147 @@
       }
     ],
     "reason": "distinct CLI/startup/range mechanism and relevant request/phase evidence"
+  },
+  {
+    "version": 5,
+    "original_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-model-diagnostic-root-v5/owned/engine.stderr",
+    "original_bytes": 40511,
+    "original_sha256": "ae6326eaab4aecd70eadcea12f711ddbee37166f979fa254b25434c50970f0bf",
+    "original_lines": 624,
+    "selected_lines": [
+      {
+        "line": 585,
+        "text": "strata serve: 1405 MiB of VRAM free with everything loaded"
+      },
+      {
+        "line": 586,
+        "text": "strata trace: request 28 0"
+      },
+      {
+        "line": 587,
+        "text": "strata trace: prompt start 27 -1"
+      },
+      {
+        "line": 588,
+        "text": "strata trace: prompt chunk 0 of 27"
+      },
+      {
+        "line": 589,
+        "text": "<VALIDATION>[ERROR]: There are no valid references to handle 0"
+      },
+      {
+        "line": 590,
+        "text": "strata prefill timing: 27 tokens, GPU timeline 30028 ms, wall 30426 ms, host staging 3460 ms: embed+steps 9610 (32.0%) hc read 939 (3.1%) gdn 405 (1.3%) qsa proj 834 (2.8%) qsa indexer 206 (0.7%) qsa select 191 (0.6%) qsa attn 6623 (22.1%) router+shared 837 (2.8%) host grouping 245 (0.8%) gather 769 (2.6%) wait copy 906 (3.0%) dequant 6778 (22.6%) gemm gate/up 324 (1.1%) gemm down 510 (1.7%) combine 25 (0.1%) ple 429 (1.4%) kv stage 2 (0.0%) gdn conv+gates 259 (0.9%) gdn recurrence 17 (0.1%) gdn out proj 119 (0.4%)"
+      },
+      {
+        "line": 591,
+        "text": "strata prefill timing: host: chunk setup (PLE rows, the expert stream plan) 9609 ms, waiting for each chunk 0 ms, after each chunk (the draft layer, progress) 277 ms, PLE 429 ms"
+      },
+      {
+        "line": 592,
+        "text": "strata trace: read 27 tokens (batched) in 30427.4 ms"
+      },
+      {
+        "line": 593,
+        "text": "strata trace: prompt done (slots refilled) -1 -1"
+      },
+      {
+        "line": 594,
+        "text": "strata trace: window 27 1"
+      },
+      {
+        "line": 595,
+        "text": "strata verify: captured the 1-token window in 49 event-completed segments"
+      },
+      {
+        "line": 596,
+        "text": "strata verify: capture 1 tokens 4264.921 ms, free VRAM 1176.5 MiB"
+      },
+      {
+        "line": 604,
+        "text": "strata trace: window 34 4"
+      },
+      {
+        "line": 605,
+        "text": "strata decode timing: 5 windows, avg T 3.40, 1.60 tokens/window, 1786.81 ms/window = verify 1445.94 (GPU-reach wait 111.10 + per-layer host 337.89 [plan 14.74 actq 0.88 jobs 0.11 CPU 318.14] + stage 9.91) + commit/emit 0.29 + draft 340.54; per layer-window: CPU experts 22.68 (33.15 entries), VRAM hits 0.85, PCIe 0.00"
+      },
+      {
+        "line": 606,
+        "text": "strata serve: prompt 28 tokens = 0 reused + 28 read in 30447 ms (0.9 tok/s), 8 generated in 8934 ms (0.9 tok/s), drafts accepted 4 of 12, 0 checkpoints"
+      },
+      {
+        "line": 607,
+        "text": "strata serve: decode expert cache hit rate: 2.5% (204 hits / 8160 lookups)"
+      },
+      {
+        "line": 608,
+        "text": "strata serve: KV streaming: 93.33% of 1800 block reads hit VRAM, 0.5 MiB read from RAM"
+      },
+      {
+        "line": 609,
+        "text": "strata trace: request 61055 0"
+      },
+      {
+        "line": 610,
+        "text": "strata trace: prompt start 61054 -1"
+      },
+      {
+        "line": 611,
+        "text": "strata trace: prompt chunk 0 of 61054"
+      },
+      {
+        "line": 612,
+        "text": "strata trace: prompt chunk 4096 of 61054"
+      },
+      {
+        "line": 613,
+        "text": "strata trace: prompt chunk 8192 of 61054"
+      },
+      {
+        "line": 614,
+        "text": "strata trace: prompt chunk 12288 of 61054"
+      },
+      {
+        "line": 615,
+        "text": "strata trace: prompt chunk 16384 of 61054"
+      },
+      {
+        "line": 616,
+        "text": "strata trace: prompt chunk 20480 of 61054"
+      },
+      {
+        "line": 617,
+        "text": "strata trace: prompt chunk 24576 of 61054"
+      },
+      {
+        "line": 618,
+        "text": "strata trace: prompt chunk 28672 of 61054"
+      },
+      {
+        "line": 619,
+        "text": "strata trace: prompt chunk 32768 of 61054"
+      },
+      {
+        "line": 620,
+        "text": "strata trace: prompt chunk 36864 of 61054"
+      },
+      {
+        "line": 621,
+        "text": "strata trace: prompt chunk 40960 of 61054"
+      },
+      {
+        "line": 622,
+        "text": "strata trace: prompt chunk 45056 of 61054"
+      },
+      {
+        "line": 623,
+        "text": "strata trace: prompt chunk 49152 of 61054"
+      },
+      {
+        "line": 624,
+        "text": "strata trace: prompt chunk 53248 of 61054"
+      }
+    ],
+    "reason": "distinct CLI/startup/range mechanism and relevant request/phase evidence"
   }
 ]
