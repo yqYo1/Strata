@@ -125,6 +125,30 @@ Work with the repository through `git`, not the GitHub CLI (`gh`), with these ex
 
 Do not create, comment on or edit issues and pull requests with `gh`.
 
+## Retiring completed experiment branches
+
+At each completed experiment boundary, remove local/remote branches and worktrees
+that have no next implementation, comparison, diagnostic or tool dependency.
+Record the concrete consumer and next review point for each retained branch.
+Before deletion, preserve unique report/source commits as ancestors of the current
+working branch and push that history. Save an abandoned uncommitted source draft
+as an explicitly unqualified Git source snapshot before retiring its worktree.
+Original commit IDs and repository-relative paths must remain usable with
+`git show COMMIT:PATH`; a deletion manifest lists the original refs and commits.
+
+A history-only merge preserves old commits without adopting their inference code.
+Do not use ancestry through such a merge to claim that upstream features or kernel
+changes have been integrated. Use the functional coverage/adoption reports and
+actual source trees. The 2026-10-14 preservation merge is
+`8927eb6991f01f8dcca34aa2f0b31fb2549923e9`; the measured code before it was
+`85cb6b1968bd5c2156eed3b10dbb332f92ee95ac`.
+
+Historical worktree paths in reports are provenance, not a reason to keep a
+completed checkout indefinitely. Recover retired reports/source by commit and
+path. Preserve necessary fixtures, toolchains and data before removing a worktree;
+serialize retirement with all builds, tests and GPU runs. Do not create backup
+branches or tags as a substitute for the preserved history.
+
 ## Packages
 
 Build the deb and rpm packages with `tools/package/build.sh` ([docs/BUILD.md](docs/BUILD.md#the-deb-and-rpm-packages)) and leave `XESTRATA_JOBS` unset: its default compiles as many files at once as there are threads, and intel/llvm's links limit themselves to the free RAM.
