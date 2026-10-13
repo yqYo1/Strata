@@ -59,10 +59,82 @@
       "sha256": "5f616bda48e4d1a71d6a13196e1ef1386e58098d455dcfe9db9fefbc3addf968",
       "model": "gpt-6-luna",
       "read_only": true
+    },
+    {
+      "round": 466,
+      "path": "research/research-primary-best-settings-reconciliation-round466-v1.txt",
+      "original_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-primary-best-settings-reconciliation-round466-v1.txt",
+      "sha256": "558266317da8cf79c2be4017b376b0f4e7f40cbc1cc74821f15932dbf7a53c07",
+      "model": "gpt-6-luna",
+      "read_only": true
+    },
+    {
+      "round": 467,
+      "path": "research/research-primary-debug-overhead-and-profiler-round467-v1.txt",
+      "original_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-primary-debug-overhead-and-profiler-round467-v1.txt",
+      "sha256": "5323cfb0066d915c9a7dd7def6fbcc5c95303451afe609e1ab1b3ba130a36ac3",
+      "model": "gpt-6-luna",
+      "read_only": true
+    },
+    {
+      "round": 468,
+      "path": "research/research-primary-single-gpu-batch-adaptation-round468-v1.txt",
+      "original_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-primary-single-gpu-batch-adaptation-round468-v1.txt",
+      "sha256": "91f2d5adada89fb1bac3fadec8434e339eab91c3f043cf7b69a469990d5363c6",
+      "model": "gpt-6-luna",
+      "read_only": true
+    },
+    {
+      "round": 469,
+      "path": "research/research-primary-elastic-vram-contract-round469-v1.txt",
+      "original_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-primary-elastic-vram-contract-round469-v1.txt",
+      "sha256": "59b1ca0e06f93c906b732852c5fdedc0f386ccc6dc406acc44c403054a93c966",
+      "model": "gpt-6-luna",
+      "read_only": true
+    },
+    {
+      "round": 470,
+      "path": "research/research-primary-prefill-transfer-roofline-round470-v1.txt",
+      "original_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-primary-prefill-transfer-roofline-round470-v1.txt",
+      "sha256": "840a85f5e489c9995b35807ba3fffb078ea5ff958e437b65e5493aa340433ad3",
+      "model": "gpt-6-luna",
+      "read_only": true
+    },
+    {
+      "round": 471,
+      "path": "research/research-primary-phase-vram-release-candidates-round471-v1.txt",
+      "original_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-primary-phase-vram-release-candidates-round471-v1.txt",
+      "sha256": "90d13da933e0e01d200a41ed643b652d2fc2f4383e4d2d3a5b38cdfa4281b879",
+      "model": "gpt-6-luna",
+      "read_only": true
+    },
+    {
+      "round": 472,
+      "path": "research/research-primary-serve-phase-lifetimes-round472-v1.txt",
+      "original_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-primary-serve-phase-lifetimes-round472-v1.txt",
+      "sha256": "d1e9b849f0d439bf1ceb0e8050d61a76f4f1b2c5787fb177ba4791b8ea272252",
+      "model": "gpt-6-luna",
+      "read_only": true
+    },
+    {
+      "round": 473,
+      "path": "research/research-primary-cold-jit-watchdog-host-abort-round473-v1.txt",
+      "original_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-primary-cold-jit-watchdog-host-abort-round473-v1.txt",
+      "sha256": "79091cc701f6884dbf27f7fcc1120e00b79f84f082ea49e4ce9929eba6858058",
+      "model": "gpt-6-luna",
+      "read_only": true
+    },
+    {
+      "round": 474,
+      "path": "research/research-primary-prefill-progress-and-issue-stage-round474-v1.txt",
+      "original_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-primary-prefill-progress-and-issue-stage-round474-v1.txt",
+      "sha256": "8fc0f0ab633111e052deb7065cf369a96fd97b65eb883e4b3a9ba4b21f691170",
+      "model": "gpt-6-luna",
+      "read_only": true
     }
   ],
   "no_intervention_until_final": true,
-  "main_work_in_parallel": "primary source/ref audit and native range-contract build",
+  "main_work_in_parallel": "primary model range-contract normal-exit diagnosis; Main-controlled real GPU session; source reads and report reconciliation",
   "main_corrections": [
     "R461/R462 describe committed HEAD; the new uncommitted range flag is a separate Main change.",
     "R463 identifies the SYCL host guard, not the exact failing operation. Flag/build/host test alone do not prove the model fix.",
@@ -70,6 +142,16 @@
     "Niko shared non-inference obligations remain even where main Arc lacks the root CUDA batch protocol.",
     "R464 dc2 source receipt is NT1 with E=8/64 distinct experts; E=8 is not NT8. Three quoted E64 cells differ slightly from the original summary. Original receipt and prior-cpu-decision.json are authoritative.",
     "R464 identifies prior real-weight counter-evidence. Old toolchain version is not pinned by its run.json; a compiler/assembly change must be evaluated explicitly, not presumed absent.",
-    "R465 reduces applicable native feature gaps to single-GPU batch/parallel service contracts and elastic VRAM. Multi-device trim/remote/stage/auto-placement are not promotion blockers for this PC."
+    "R465 reduces applicable native feature gaps to single-GPU batch/parallel service contracts and elastic VRAM. Multi-device trim/remote/stage/auto-placement are not promotion blockers for this PC.",
+    "R466 184.61t/s is historical primary actual4K under context8192/FP16/cache512, not current>=32K or Xe 667-694. Current --native path already applies its preset.",
+    "R467 lifetime flags are authoritative in canonical v5 receipt: UR_LAYER_FULL_VALIDATION. The current v6 explicitly uses UR_LAYER_PARAMETER_VALIDATION, with same ZE parameters/timers/model settings.",
+    "R468 source proposal is not implementation/qualification; INFO capability must not advertise unimplemented batch behavior. Serial snapshot scheduling is not native independent-row batching.",
+    "R469 ext_oneapi_virtual_mem availability and allocation success on this B570 remain runtime questions; unsupported capability must be reported truthfully.",
+    "Current v6 has native expert-hit graph enabled by default; STRATA_SYCL_NATIVE_HIT_GRAPH=0 is absent. R466 hypothetical hit-graph opt-out must not be attributed to this run. Current diagnostic has none of the historical positive XMX/same-queue/ring/direct toggles; speed recipe will record them explicitly after current-compiler checks.",
+    "R470 traffic/roofline are source projections, not completed-copy observations or current bandwidth. Its arithmetic uses one combined GU matrix1280x2560 (two640x2560 gate/up matrices), plus Down2560x640; wording two1280x2560 matrices is inaccurate. The computed9,830,400 FLOP/expert-row remains correct. Its incompletion statement refers to previous v5, not live v6.",
+    "R471 incorrectly applies non-serve CLI ordering6235/6588 to active --serve. Main verified live serve branch creates Verifier at4629, initializes arena4699, records freeVRAM4714 before READY5217 or any request. Therefore verifier arena is live during current prefill;1405->1047 markers are upfront init, not post-prompt. R471 claim verifier release cannot improve current prefill is rejected; other proposed leases need serve-specific re-auditR472. Original report retained.",
+    "Further Main correction from actual v6 engine.stderr: startup freeVRAM3936 after expert cache/graphs ->1686 after head/prompt workspace ->1405 after Verifier arena+MTP binding. Verifier reports63.8MiB arena; MTP head212.9MiB. Only after short request graph captures does free become1176.5(T1) and1046.7(T4). Thus R472/its supplied premise that1405->1047 are both upfront is false. Capture/runtime retained memory is live before subsequent long prompt, not first short prompt;357MiB is not Verifier arena size and graph destruction reclaim is unmeasured. Source conclusions owned4K scratch persists in --serve and verifier initialized before READY remain valid.",
+    "R473/R474 concern failed v7, not v6 normal completion. Idle Verifier release completion proves no Prefill drain. Related fixture105s is whole process, not measured single zeModuleCreate or single layer time. Cold-JIT watchdog false positive and host-canary cause remain hypotheses. No unchanged retry or accepted-settings adoption.",
+    "R474 compact tile count ceil270/8=34 is not the per-expert padded sum. Sum of up to16 ceil(rows_e/8) is safely bounded by ceil270/8+15=49 (a tighter maximum47); both remain small and do not change fixed prefix17 safety. Native flags cause same-queue event elision; SYCL m.copy=m.cs already holds in v6."
   ]
 }

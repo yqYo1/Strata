@@ -58,11 +58,11 @@ def main():
             for path in paths:
                 assert path.is_file() and not path.is_symlink()
                 data = path.read_bytes()
-                if incomplete_observation and path.name == 'engine.stderr':
+                if root.name == 'main-primary-model-accepted-diagnostic-root-v7' and path.name == 'engine.stderr':
                     kept.append(dict(path=str(path), bytes=len(data), sha256=sha(data), owner='Main',
-                        consumer='one representative partial-prefill/STOP case compared with next normal-exit diagnostic',
-                        byte_budget=256 << 10, review_point='next normal-exit/STOP-grace proof or recipe supersession',
-                        original_observation_complete=False))
+                        consumer='one representative initial-prompt watchdog/host-stack failure; next current-compiler cold-JIT or queue-lifecycle diagnosis',
+                        byte_budget=256 << 10, review_point='after host stack/cold-JIT countermeasure resolves or supersedes this distinct failure',
+                        original_observation_complete=not incomplete_observation))
                     assert len(data) <= 256 << 10
                     continue
                 manifest.append(dict(path=str(path), bytes=len(data), sha256=sha(data),
@@ -106,7 +106,7 @@ def main():
             kept_failure_diagnostics=kept,
             kept_build_consumer='next unchanged-Niko-client primary speed baseline and native function adaptation',
             build_budget_bytes=4 << 30,
-            kept_observer_consumer='next corrected diagnostic if R463 exception remains; otherwise retire separately',
+            kept_observer_consumer='bounded next host-failure diagnosis, replace with host-abort observer or retire after recipe supersession',
             next_review='native model countermeasure or binary/recipe change')
         (D / 'retirement.json').write_text(json.dumps(result, indent=2) + '\n')
     print(json.dumps(result), flush=True)

@@ -196,3 +196,87 @@ fresh fault0/dump無し。現在GPUを使えることの確認であり、終了
 長文/速度合格を後から成立させない。このcontrollerはcanonical Git receiptから直接読む。
 その成功raw traceもreceipt/summaryのcommit照合後に退役した。今回の累計は99ファイル、
 26,221,242 logical bytes。保持する代表engine.stderrは引き続き1件/40,511 bytes。
+
+
+## 61055入力の正常終了と設定復元時の新しい失敗
+
+v6は同じ3fa2375eab38... binary、model/context/KV/cache/spec/prefillで、URを
+FULL_VALIDATIONからPARAMETER_VALIDATIONへ切り替えて完走した。
+ZE parameter検査・warning、phase timers、進捗・SYCL throw観測を維持。
+全体wall2700秒、単一longのsoft STOPは開始1500秒後、少なくとも300秒の猶予を設計した。
+実行前のhost-only FIFO fixtureで別prompt/古いPID identityを拒否し、正しいowned pipeだけに
+STOP改行を送ることを確認した。実モデルはsoft STOPを使わず正常終了したので、モデル上の
+STOP試験が合格したとは扱わない。
+
+- short28/reuse0/8output: prompt19140.8ms、decode6468.7ms。
+- long61055/reuse0/1output: prompt968021.2ms、decode173.1ms、TTFT968.601s。
+  63.1/5.8t/sは補助診断の値で、quiet速度・長いdecode・正式bench.sh値ではない。
+- native engine0、server0、wrapper/owner0、全owned session空、cleanup signal不要。
+  fresh GPU fault0、dumpなし、同一boot。元のSYCL範囲例外なし。
+- 61055全入力の正常処理を確認した。厳密65536入力、262144全入力、近傍出力・最後cell・
+  継続/内部conversation RESTOREの合格には置き換えない。
+
+R466の過去primary184.61t/sは4007入力/context8192/FP16/cache512であり、現条件と別。
+現在診断で有効にしていなかったexact XMX tile8/compact、same-queue event省略、ring8を
+別候補として明示した。native GGUF presetとexpert-hit graphは元から有効。
+FP16-only prompt native-KV設定は現int8には適用しない。
+
+current compilerのXMX MMQ fixtureは105.36秒で正常終了した。元のreductionとのbitwise比較、
+17形式/odd shape/padding/canary/read-only/compactの検査を含み、UR success10307、
+ZE success20956、fresh GPU fault0。小componentの合格だけで実model採用にしない。
+
+続くv7はXMX exact tile8/compact/pack0、same-queue1/ring8だけを上記model設定に足した。
+最初の27 batched入力のlayer0で進捗が止まり、既定60秒のwatchdogがstall_reportを出した。
+2秒後、まだ未使用のVerifier queueのreleaseはfinished0ms、その後stack smashingでnative -6
+(wrapper134)。server/runnerはこのengine失敗を受けて終了し、所有identityは全て退役、
+fresh GPU fault0/dumpなし/同一boot。longを開始していない。quiet stock3を起動しない。
+
+cold XMX componentの全体105秒とwatchdog60秒からJITの誤監視は候補だが、v7で停止した
+正確なAPI/stackは未観測。host stack canary破壊の原因も未確定。timerを伸ばすだけで修正と
+認定せず、次は引数別の実行/ZE・URの初回ログとhost abort stackを取得する。
+同じ設定を無対策で再実行しない。GPU reset/unbind/services変更は行っていない。
+
+run_server_job_v3以降は失敗時もreal engine exitを保存し、両native/server正常終了だけを
+passedにする。準備したquiet stock recipeはv7同条件の正常終了を必須seedにするので、
+現在は実行不可。無変更Niko bench.shとstandard clientのhashを保持し、--long --runs3を使用。
+client自身は部分失敗でもexit0にする場合があるため、Main controllerは全chat/prompt/agentの
+個別成功、long3回/reuse0/実入力数/phase有限値と正常exitを検査する。stock約32049入力は
+nominal32Kで、strict32768以上や64Kと呼ばない。全個別値と失敗を保持する。
+
+## HTTPのVRAM寿命を実際の入口で照合
+
+R471はstandalone CLI6235以降の順をHTTPへ適用したため、Mainが棄却しR472を依頼した。
+HTTP --serveは4699でVerifierを初期化し、5217READYより前にprefill-owned workspace/MTPbindを
+保持する。no-prefill-borrowのPrefill spはserve scopeに生存し、decode/end-of-requestでresetしない。
+一方、CLIにはprompt後prefill.resetがある。2入口を同じ寿命としない。
+
+さらにMainが原engine logと照合すると、startup freeVRAMは3936→1686→1405MiB、Verifier arena
+63.8MiBとMTP subset head212.9MiB。short後のT1/T4 graph captureで1176.5→1046.7MiBとなる。
+R472へ渡した「1405→1047が両upfront」はMain入力の誤りで、訂正をregistryに保存した。
+約358MiBはcapture/runtimeの増分であり、Verifier arenaの容量でも解放が保証された容量でもない。
+現在longには既にcaptured graphsが生存。reclaim量は破棄後のallocator ledgerが必要。
+
+prefill中のdecode用graph/weight退役・再構築と、decode中のprefill workspace返却/ExpertCacheへの
+振替は別の具体的候補。cache/raw pointer/Verifier graph/MTP/pendingcommit/STOP/RESTOREの
+queueとleaseを全て排他・drainし、途中失敗を残さない適合が必要。未実装・未測定。
+R468/R469のparallel protocol/elastic APIの2つの本家非推論機能も未完了。
+
+R470はcurrent chunk-major stream_allをsourceから集計した。64K入力/cache128の4K chunksでは
+expert payloadだけで最大804.677GB、最も有利な128expertの保存を仮定しても799.225GB。
+1000t/sには約12.2GB/s、8Kなら約6.1GB/sが必要な条件となる。過去6.5GB/s probeを現在帯域と
+断定しない。routing-only ring8、实际residency、8Kfit、overlap、必要computeは別条件。
+実際のDMA完了byte counter/profilerやhardware ceilingはまだ測定していない。
+
+R466–R472のLuna原文・Main訂正をregistry/Gitへ保存する。調査から返るまで途中介入せず、
+Mainはrealmodel・MMQを直列管理しながらsource/設定/報告を照合した。R473/R474へ新失敗の
+coldJIT/watchdogとstage/stagerを分けて反復依頼した。枝は増やさない。
+main/default反映とfresh Niko単体の設定最適化付き評価・選択的統合は引き続き未完了。
+
+
+新失敗後も別プロセスの小runtime healthがexit0、UR success832/ZE success3325、
+fresh fault0/dumpなし。GPUを現在使える確認で、v7のmodel失敗を合格へ変えない。
+R473/R474のLuna原文も返答後にhash照合して登録した。関連fixture105秒は全体時間であり、
+単一zeModuleCreate/単一layerの所要時間を測った値ではない。次はcold初回APIログと
+ホストstackを優先し、watchdogの引数で限定した長い監視猶予とphase/診断のdata raceを検討する。
+R473のVerifier::diagのplain last_t_/last_pos0_読み取りは、verify実行と並行すればdata raceとなる
+source上の修正対象だが、今回prefill中のcanary破壊原因としては未確定。

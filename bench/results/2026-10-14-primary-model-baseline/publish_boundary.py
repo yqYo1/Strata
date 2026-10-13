@@ -34,7 +34,9 @@ def main():
         assert sha(data) == matches[0]['decoded_sha256']
         return data
     for optional in ['main-primary-size-t-range-gpu-root-v1', 'main-primary-model-diagnostic-root-v5',
-                     'main-primary-post-deadline-gpu-root-v1']:
+                     'main-primary-post-deadline-gpu-root-v1', 'main-primary-model-diagnostic-root-v6',
+                     'main-primary-accepted-mmq-gpu-root-v1', 'main-primary-model-accepted-diagnostic-root-v7',
+                     'main-primary-stock-bench-accepted-root-v1', 'main-primary-post-abort-gpu-root-v1']:
         if original(B / optional / 'record.json') is not None:
             roots.append(optional)
     with (B / 'owned-v0141-measurement.lock').open('a') as lock:
@@ -49,7 +51,7 @@ def main():
                     and not command.get('survivors')), (root, command['label'])
                 # Failed deadlines keep observation_complete=false. Publishing
                 # their original evidence is not a successful lifecycle proof.
-            for name in ['record.json', 'result.json', 'engine-exit.json', 'control-action.json']:
+            for name in ['record.json', 'result.json', 'engine-exit.json', 'engine-start.json', 'control-action.json']:
                 source = output / name
                 data = original(source)
                 if data is None:
@@ -64,8 +66,9 @@ def main():
                     target.write_bytes(compressed)
                 index.append(dict(original_path=str(source), path=str(target.relative_to(D)),
                     decoded_bytes=len(data), decoded_sha256=sha(data), archive_sha256=sha(target.read_bytes())))
+        prior_research = json.loads((D / 'research-index.json').read_text()) if (D / 'research-index.json').exists() else {}
         reports = []
-        for round_number, name in [
+        known_reports = [
             (459, 'research-primary-profiler-attribution-round459-v1.txt'),
             (460, 'research-low-vram-moe-scheduling-round460-v1.txt'),
             (461, 'research-primary-origin-reaudit-round461-v1.txt'),
@@ -73,7 +76,10 @@ def main():
             (463, 'research-primary-large-range-contract-round463-v1.txt'),
             (464, 'research-primary-prior-cpu-rejections-round464-v1.txt'),
             (465, 'research-primary-native-function-provenance-round465-v1.txt'),
-        ]:
+        ]
+        known_rounds = {number for number, _ in known_reports}
+        known_reports += [(entry['round'], Path(entry['path']).name) for entry in prior_research.get('reports', []) if entry['round'] not in known_rounds]
+        for round_number, name in known_reports:
             target = D / 'research' / name
             data = (R / name).read_bytes() if (R / name).exists() else target.read_bytes()
             target.parent.mkdir(parents=True, exist_ok=True)
@@ -83,20 +89,14 @@ def main():
                 target.write_bytes(data)
             reports.append(dict(round=round_number, path=str(target.relative_to(D)),
                 original_path=str(R / name), sha256=sha(data), model='gpt-6-luna', read_only=True))
-        (D / 'research-index.json').write_text(json.dumps(dict(
-            prior_indexes=['../2026-10-14-primary-native-runtime/research-index.json',
+        prior_research.update(prior_indexes=['../2026-10-14-primary-native-runtime/research-index.json',
                            '../2026-10-14-niko-main-service-port/research-index.json'], reports=reports,
-            no_intervention_until_final=True, main_work_in_parallel='primary source/ref audit and native range-contract build',
-            main_corrections=['R461/R462 describe committed HEAD; the new uncommitted range flag is a separate Main change.',
-                'R463 identifies the SYCL host guard, not the exact failing operation. Flag/build/host test alone do not prove the model fix.',
-                'Real primary short HTTP succeeded with heavy diagnostics; it is not a qualified speed baseline.',
-                'Niko shared non-inference obligations remain even where main Arc lacks the root CUDA batch protocol.',
-                'R464 dc2 source receipt is NT1 with E=8/64 distinct experts; E=8 is not NT8. Three quoted E64 cells differ slightly from the original summary. Original receipt and prior-cpu-decision.json are authoritative.',
-                'R464 identifies prior real-weight counter-evidence. Old toolchain version is not pinned by its run.json; a compiler/assembly change must be evaluated explicitly, not presumed absent.',
-                'R465 reduces applicable native feature gaps to single-GPU batch/parallel service contracts and elastic VRAM. Multi-device trim/remote/stage/auto-placement are not promotion blockers for this PC.']), indent=2) + '\n')
+                           no_intervention_until_final=True)
+        (D / 'research-index.json').write_text(json.dumps(prior_research, indent=2, ensure_ascii=False) + '\n')
         windows = json.loads((D / 'model-diagnostic-windows.json').read_text()) if (D / 'model-diagnostic-windows.json').exists() else []
-        for version in (1, 2, 4, 5):
-            source = B / f'main-primary-model-diagnostic-root-v{version}/owned/engine.stderr'
+        for version in (1, 2, 4, 5, 6, 7):
+            root_name = f'main-primary-model-diagnostic-root-v{version}' if version != 7 else 'main-primary-model-accepted-diagnostic-root-v7'
+            source = B / root_name / 'owned/engine.stderr'
             if not source.exists():
                 continue
             windows = [item for item in windows if item['version'] != version]
@@ -105,7 +105,9 @@ def main():
             for i, line in enumerate(lines):
                 if any(marker in line for marker in ['strata trace: request', 'strata trace: prompt start',
                     'strata trace: prompt chunk', 'strata serve: prompt ', 'strata prefill timing:',
-                    'strata decode timing:', 'needs --spec', 'unknown argument', 'unknown option',
+                    'strata decode timing:', 'free after', 'free with everything', 'window up to', 'draft head over',
+                    'capture 1 tokens', 'capture 4 tokens', 'no progress for', 'stall report', 'expert pool threads',
+                    'memory:', 'released the verify', 'stack smashing', 'needs --spec', 'unknown argument', 'unknown option',
                     'terminate called', 'what():', 'strata diagnostic SYCL throw:']):
                     indices.update(range(max(0, i-1), min(len(lines), i+6)))
             # A remaining throw needs its whole backtrace, not just its signal.
@@ -120,7 +122,7 @@ def main():
         (D / 'model-diagnostic-windows.json').write_text(json.dumps(windows, indent=2) + '\n')
         gpu = B / 'main-primary-size-t-range-gpu-root-v1'
         summaries = json.loads((D / 'gpu-diagnostic-summary.json').read_text()) if (D / 'gpu-diagnostic-summary.json').exists() else []
-        for gpu in [gpu, B / 'main-primary-post-deadline-gpu-root-v1']:
+        for gpu in [gpu, B / 'main-primary-post-deadline-gpu-root-v1', B / 'main-primary-accepted-mmq-gpu-root-v1', B / 'main-primary-post-abort-gpu-root-v1']:
             for source in sorted((gpu / 'owned').glob('*debug.stderr')):
                 summaries = [item for item in summaries if item['path'] != str(source)]
                 data = source.read_bytes()
