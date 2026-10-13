@@ -1,0 +1,56 @@
+{
+  "prior_indexes": [
+    "../2026-10-14-primary-native-runtime/research-index.json",
+    "../2026-10-14-niko-main-service-port/research-index.json"
+  ],
+  "reports": [
+    {
+      "round": 459,
+      "path": "research/research-primary-profiler-attribution-round459-v1.txt",
+      "original_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-primary-profiler-attribution-round459-v1.txt",
+      "sha256": "ccb623e26402118197820b129c04847a268a1f32a6408fb97bd0107c00361ccc",
+      "model": "gpt-6-luna",
+      "read_only": true
+    },
+    {
+      "round": 460,
+      "path": "research/research-low-vram-moe-scheduling-round460-v1.txt",
+      "original_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-low-vram-moe-scheduling-round460-v1.txt",
+      "sha256": "45d9f1a090c774fcce1a7e8ee86bee8eb010e352ca488ce370030d903af87f38",
+      "model": "gpt-6-luna",
+      "read_only": true
+    },
+    {
+      "round": 461,
+      "path": "research/research-primary-origin-reaudit-round461-v1.txt",
+      "original_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-primary-origin-reaudit-round461-v1.txt",
+      "sha256": "4b105e077533c1b557f31b7399c08d21bc90abfef099ab33ec273c6c46de4741",
+      "model": "gpt-6-luna",
+      "read_only": true
+    },
+    {
+      "round": 462,
+      "path": "research/research-primary-component-reaudit-round462-v1.txt",
+      "original_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-primary-component-reaudit-round462-v1.txt",
+      "sha256": "9ed1fb60c18d2f7212ffb2e503e4fd9f069d0006019134238555ada48ce4803a",
+      "model": "gpt-6-luna",
+      "read_only": true
+    },
+    {
+      "round": 463,
+      "path": "research/research-primary-large-range-contract-round463-v1.txt",
+      "original_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-primary-large-range-contract-round463-v1.txt",
+      "sha256": "c0d0f52126fc6be5abf13677e89b2473fb8b794af6adb224156069347aac9a11",
+      "model": "gpt-6-luna",
+      "read_only": true
+    }
+  ],
+  "no_intervention_until_final": true,
+  "main_work_in_parallel": "primary source/ref audit and native range-contract build",
+  "main_corrections": [
+    "R461/R462 describe committed HEAD; the new uncommitted range flag is a separate Main change.",
+    "R463 identifies the SYCL host guard, not the exact failing operation. Flag/build/host test alone do not prove the model fix.",
+    "Real primary short HTTP succeeded with heavy diagnostics; it is not a qualified speed baseline.",
+    "Niko shared non-inference obligations remain even where main Arc lacks the root CUDA batch protocol."
+  ]
+}

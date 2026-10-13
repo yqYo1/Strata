@@ -1,0 +1,114 @@
+# 主ブランチの再監査と実モデル診断
+
+2026-10-14。唯一の上流は **Niko1221/Strata**。`yqYo1/Strata` は
+Arc B570 10 GiB、Ryzen 5 5600X、128 GB RAMを使う個人用fork。
+現時点で上流への貢献は予定しない。CUDA/HIP推論の移植・測定は対象外。
+XeStrataは独立した比較・アーキテクチャ・部品の参考先であり、全エンジンや機能を同期しない。
+この方針はAGENTSとプロジェクト専用のstrata-upstream-syncスキルに既に保存されている。
+
+## Gitと実ソース
+
+開始点は `feature/sycl` の `5fdf9a1517526085c9a2fef2eccfb24f87b4f241`。
+GitHub APIでもforkのparent/sourceはともにNiko1221/Strata、defaultはmain。
+local/remoteの枝はmainとfeature/syclの2本、登録worktreeも2つ。
+ghq rootのmainは `beddab2fd6b61631d73b39b7484bc9a585ebe1de` のcleanなmirror。
+新しい枝やPR、上流への投稿は作っていない。
+
+| 対象 | 実際の内容・状態 |
+| --- | --- |
+| 主推論の基礎 `4fa478f5` | Niko 0.1.38 `99f3dbd0b21d1401b3769e0c0d963913607f380b` を基礎にした、このforkのSYCL・CPU最適化系統 |
+| primary HEAD | 表示0.1.38。主のchunk/ring/stager、native MMQ/fused、CPU GU/Down、cache・sessionを維持し、Niko機能と互換・寿命・数値修正を部分移植 |
+| fork main `beddab2f` | 0.1.39系。SYCLではroot CMakeがsycl/へ入りreturnし、移植済みsycl/src/program/generate.cppとcore/prefillを選ぶ。primaryとは別の実ソース |
+| 旧skill `97f8b40c` | ユーザーの指摘どおりXe由来。退役済み。スキル実体はprimaryの.claude/skills、.agents/skillsは相対リンク。ユーザー全体へのinstall無し |
+| 旧比較tip `28a7b9ae` | Xe由来の実験。枝/worktreeは退役済み。元commitから復元可能。主実装・上流評価の代用にしない |
+
+[primary-audit.json](primary-audit.json) は元tree、代表sourceのblob、現在のworking
+source SHA、実remote、枝/worktree、archive mergeのfirst-parentとの差分を保存する。
+`8927eb69` は45親のXe側archive、`45268002` は主側archive。いずれもfirst-parentから
+product pathsの差分は空。前者がprimaryを祖先に含み、後者がXeを祖先に含むのは履歴保存であり、
+計算ソースの統合ではない。通常のmerge済み判定や版番号で機能採用を認定しない。
+
+| 部品・機能 | 主実装の監査結果と採否 |
+| --- | --- |
+| prefill処理順・転送 | 主のchunk/ring/issuer/stagerと形式別MMQ/fused dispatchを保持。Xe layer-major＋owned bulk span uploadは未採用 |
+| decode CPU | 主のAVX2 GU/Downとnative poolを保持。Xe paired IQ3_S GUのactivation-load共有は未採用。NT1の合成差をモデル利益としない |
+| decode GPU/state | 主のsession/cache/QSA/KV streaming/verifyを保持。Xeのdecode全群へ置換していない |
+| Responses/API/UI、setup等 | 前境界でNiko系mainから適合。service 268件/7 skip、setup等295件/4 skip。mock/hostの合格と実運用は分ける |
+| 動的VRAM | mainの実Arc SYCL sourceにvirtual-memory segment/resize機能がある。primaryでlease/安全な退役・失敗時capacity/reportingの適合は未完了。実機対応も未確認 |
+| 並列・CLI | Niko共通の非推論機能は対応義務が残る。mainのroot CUDA batchを既存Arc機能と誤認せず、実能力・エラー契約を含む機能単位で適合する |
+
+Nikoの非推論機能は全件対象。推論は形式、形状、prefill/decode、GU/Down等の部品ごとに
+正しさと速度で選ぶ。Xe側の機能不足を必須同期項目にせず、参考forkの配布・build方針にも
+合わせない。compiler/ggmlを既存Xe調査worktreeの保持領域から使うことと、Xeの製品ソースを
+採用することも別である。
+
+最近の約667–694 token/sはXe由来の比較実装の値で、現在primaryの速度ではない。
+全個別値は前のsource-audit/reference-measurements.jsonで保持している。
+main/defaultの反映、必要なnative機能・状態の整合、fresh Niko更新の確認・無改変単体の
+設定最適化付き測定・部品別取り込みは未完了。履歴整理をその完了と呼ばない。
+
+## 実モデルの初回診断
+
+使用modelはQwen3.8-Flash-Next-GSQ-RCO-IQ3_Sの2 shardと既存native pack、MTP。
+modelのGUはIQ2_S20層/IQ3_XXS17層/IQ3_S10層/IQ4_XS1層、DownはIQ4_NL39層/Q2_0 9層。
+max-context262144、int8 KV/resident32768、cache128/per-layer、workers5、PCIe share0、
+spec4/prefill4096、prefill borrow OFF/reserve700、reuse cache OFF。
+現在のCLIとmetadataを実sourceで確認し、別系統のunsupported flagsを混ぜない。
+ユーザーの保存済み設定・サービス・GPU bindingを変更していない。
+
+| attempt | 元の結果 |
+| --- | --- |
+| v1 | 主CLIに無い--no-kv-growでengine exit2。Mainの設定取り違え。参照実装の他3flagもsource preflightで除外 |
+| v2 | --serveに必要なspec/MTP/prefill条件を満たさずengine exit2。model読み込み後に拒否。終了時のUR reference診断を成功ログ扱いしない |
+| v3 | MTP metadataをindex.txtと誤認したpreflightで停止。GPU/owner起動無し。実ファイルはdense.txt |
+| v4 short | HTTP応答成功、28入力/reuse0/8出力。heavy validation・timing・cold JITの診断であり速度比較ではない |
+| v4 long | 実61055入力、engine prefill61054、chunk0でSYCL range exception→SIGABRT。engine -6、wrapper134。新GPU fault0、dump無し、同一boot、全所有process終了 |
+
+v4 shortはprompt_ms26959.0、decode_ms7887.3、TTFT31.059 s、total34.851 s。
+その1.0/1.0 t/sをチューニングのclean baselineにしない。長文は標準clientのchat/long_promptを
+使う補助診断で、無変更bench.shの速度suiteではない。実61055を厳密65536と呼ばない。
+正式な比較は無変更のNiko bench.sh/標準clientで各3回、実入力数・reuse・phaseを保存する。
+出力24 tokenの短いdecodeと長いdecodeも区別する。
+
+## 大きな実行範囲の契約
+
+例外は `Provided range and/or offset does not fit in int`。
+Intel LLVMのhost headerと公式UsersManualを照合すると、defaultは各kernelのglobal rangeが
+INT_MAX以内というコンパイル契約。多次元の線形積も検査する。
+R463で調べたQSA/Attention/GDN/PLE等の最初のchunkの式はINT_MAX未満で、正確な発生元は
+未確定。oneMKL内部のlaunchはwrapperのshape検査だけでは分からない。
+
+cmake/sycl_backend.cmakeで `-fsycl-id-queries-range=size_t` のcompiler対応を検査し、
+SYCL runtimeから全consumerのcompile/device linkへPUBLICに伝える。既存のtensor容量・
+explicit int変換の検査は残す。input/context/chunkを縮めて回避しない。
+full native engine、runtime/compat/MMQ/GEMMとhost契約fixtureを再buildした。
+v1はhost専用のSDK helperをdevice compilationでも参照したfixture compile失敗。
+原sourceをrange-contract-failed-v1.cppに保存し、SYCLの通常headerをincludeしてhost側だけで
+helperを呼ぶv2が合格。v1 failed statusは書き換えない。
+
+host fixtureはINT_MAX+1、2D線形積2^31、2D nd_rangeの8 Gi-itemをhost guardが許可することと
+size_t contractの伝播を確認するだけで、巨大GPU launch・実モデル・256K全消費の証明ではない。
+最後のnative engine SHAは3fa2375eab38dbd3be187e2bed410099b03103a73429d29e67d5b11e975943ee。
+例外観測用のLinux preloadはhost-only selftestで元SYCL exceptionのcatchとstack出力を確認した。
+診断engineだけに適用し、正式速度には使わない。型・引数・destructor・再throwを変更しない。
+
+小GPU確認と同じ実長文の再診断はこの境界時点では未実行。range flagは対策候補であり、
+モデル問題が解消したとはまだ認定しない。物理262144全入力/出力なし、近傍の出力枠、
+最終cell、継続・RESTOREも未完了。
+
+## 証拠・反復・保持
+
+[receipts-index.json](receipts-index.json) は全closed attemptの原record/result/exitを
+decoded hashで保存する。[model-diagnostic-windows.json](model-diagnostic-windows.json) は
+別のCLI/startup/range機構と必要なprogressを抽出し、full原logのhash/行位置も残す。
+成功full API trace・重複build outputは検証後にretention policyで退役する。
+
+R459–R463のLuna原文は [research-index.json](research-index.json) から参照する。
+R461系統/R462部品を並行依頼し、返答まで介入せずMainはsource/ref監査・buildを継続した。
+続いてR463でrange契約を再調査した。調査提案、Mainの実装、実機測定の合格を分ける。
+旧registryを共有して調査を反復する。
+
+保持buildはB/main-primary-native-build-root-v1/build、4 GiB budget。
+consumerは次の主モデル診断・機能適合、binary更新/診断終了時に見直す。
+例外observerは16 MiB budget、次のbounded診断がconsumer。新しいGPU reset/unbind、
+サービス停止、既存server置換は行っていない。

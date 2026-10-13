@@ -1,0 +1,60 @@
+R459 primary bottleneck attribution: source map and VTune 2026.4 plan
+Date: 2026-10-14
+Scope: read-only analysis of the primary SYCL path at feature/sycl commit 5fdf9a151752. No profiler collection, build, test, model run, source/config edit, Git mutation, GPU work, or cleanup was performed for this report. The current primary binary identity supplied by Main is SHA-256 e619b94b0016d696b3a796fd590864afcc023f091d01ca6255a54d0bb872b763. Runtime/MMQ/fused/native/GEMM checks passed, but no model baseline has yet been measured; this report makes no measured bottleneck claim.
+
+Question answered
+Existing timers can identify phase work, but they do not by themselves establish the end-to-end critical path. Several timings overlap: prefill host issue and device copy overlap compute; decode CPU expert work may overlap the GPU hit graph; event waits measure completion of prior device work, not necessarily idle. Attribute the critical path by pairing one marked HTTP request window with the VTune host/device timeline and Strata's stage counters, preserving overlap instead of summing all phase durations.
+
+Local profiler capability and limits
+The local executable is `/opt/intel/oneapi/vtune/2026.4/bin64/vtune`, version `Intel VTune Profiler 2026.4.0 build 632893`; it is not on PATH. Its local help exposes `xpu-offload`, `gpu-hotspots`, and `hotspots`, `-start-paused`, `-follow-child`, `-data-limit`, `-command resume|pause|mark|stop`, and `timeline`, `summary`, `hotspots` reports. The `xpu-offload` knobs include `collect-cpu-sampling` (default false), `enable-stack-collection` (false), `enable-characterization-insights` (false), `collect-programming-api` (true), `collect-memory-bandwidth` (false), `enable-tasks-stack-collection` (false), and `enable-user-tasks` (true). `hotspots` software sampling uses a 10 ms interval. Current sysctls are `perf_event_paranoid=4` and `kernel.yama.ptrace_scope=1`; no sudo or system setting changes were made. Launching the server as the profiled command and following children avoids relying on attach to the already-running service. CPU hardware-counter analysis is not a viable assumption on this host; use software sampling and API/task tracing. Intel GPU hardware metrics are conditional and are not required for the first attribution pass.
+
+Recommended diagnostic collection (separate from the clean Niko baseline)
+Keep the main no-change `bench.sh` baseline unprofiled and without timing environment variables. For a diagnostic repeat, launch the exact same server command as a VTune child, then send the same fixed HTTP request from another shell. Use separate bounded result directories for prefill and decode, or collect one short request of each with clear marks:
+
+```sh
+VT=/opt/intel/oneapi/vtune/2026.4/bin64/vtune
+"$VT" -collect xpu-offload -start-paused -follow-child \
+  -knob collect-cpu-sampling=true \
+  -knob enable-stack-collection=true \
+  -knob enable-characterization-insights=false \
+  -knob collect-programming-api=true \
+  -knob enable-tasks-stack-collection=false \
+  -knob collect-memory-bandwidth=false \
+  -data-limit=500 -r /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/vtune-r459-prefill \
+  -- <the unchanged primary server launch command>
+```
+
+In a second shell, resume collection, mark the request boundary, issue the exact fixed HTTP request, mark its end, then stop collection:
+
+```sh
+"$VT" -command resume -r <result-dir>
+"$VT" -command mark -r <result-dir>
+<same fixed HTTP request>
+"$VT" -command mark -r <result-dir>
+"$VT" -command stop -r <result-dir>
+```
+
+The collector command runs in the server terminal while the server remains alive; use the second shell for control/client commands. If the local CLI requires result-command options in a different order, follow its displayed syntax. The 500 MB is a collection cap, not a claim about expected result size; if the cap truncates the marked window, split prefill/decode into separate collections. Do not use profiled timings as throughput results. `STRATA_PREFILL_TIMING=1` adds per-phase GPU event timing and should be enabled only on a separate diagnostic repeat when the existing phase labels are needed; it perturbs the path. `STRATA_DECODE_TIMING=1` prints existing request/stage counters and is also diagnostic-only. Leave `STRATA_POOL_TRACE` off because it flushes per-layer trace output. VTune's summary/timeline and compact extracted counters are the intended evidence; keep the raw result only until that evidence is checked, under the stated 500 MB cap, then delete it with a path/hash/reason manifest per `docs/ARTIFACT_RETENTION.md`. Owner: primary runtime investigation; consumer: the next bottleneck-attribution decision; review/delete when the compact summary is verified or the question is superseded.
+
+Source attribution and interpretation
+
+Prefill:
+- `src/prefill/prefill.cpp:1224-1262` implements `STRATA_PREFILL_TIMING` phase intervals on the compute stream. The interval since one marker is charged to the preceding phase. A reported interval can include a device wait for host grouping or a copy dependency; it is not a kernel-only duration.
+- `src/prefill/prefill.cpp:1488-1492,1573-1653` implements the streamed expert ring. The inline `ms_experts_host` interval includes slot/stager waits and submission work. In the threaded issuer path, `iss_ms` includes staging/slot waits and API submission on the issuer thread. Neither is DMA-completion time. `experts_streamed` counts streamed experts; `experts_dma` counts only the direct pinned path, so neither alone is a byte-completion counter.
+- `src/prefill/prefill.cpp:2036-2042` makes the compute stream wait on the prior `copied` event before GEMM. The device-timeline wait-copy span is a dependency wait, and may expose a copy critical path; compare it with copy completion and issue times rather than adding it to host issue time.
+- On successful completion, the final compute/copy stream synchronization around `src/prefill/prefill.cpp:2704-2712` establishes that submitted copies have completed. The current aggregate output does not provide per-layer completed bytes. A minimal follow-up counter, if attribution remains ambiguous, is per-layer submitted blob count and `count * ExpertLayout::blob_bytes(layer)`, plus a completion marker after the copy stream synchronization; record failed/incomplete requests separately. Pair this with request wall time, issuer CPU span, copy-event intervals, and compute dependency waits. Do not sum overlapping intervals.
+
+Decode:
+- `src/program/generate.cpp:5871-5889,6003-6016` prints `STRATA_DECODE_TIMING` request windows/average token time, wall verification time, `ver.ms_wait`, per-layer host `ver.ms_pool`, plan/activation/job/CPU-drive intervals, commit/emit and draft work, routing/cache counters, `pcie_experts`, and the GPU profile stages.
+- In SYCL, `src/core/verify.cpp:1260-1280` measures `ms_wait` around `cudaEventSynchronize(layer_done_)`. This is completion latency for the preceding GPU segment, not necessarily GPU idle time. `ms_pool` spans host planning/activation/CPU work after that event and can overlap the optional GPU hit graph. The `copy_` synchronization around `src/core/verify.cpp:1332-1336` ensures the preceding asynchronous source-copy callback has completed before advancing.
+- `src/core/verify.cpp:1492-1501` enqueues `n` expert blobs of `bytes` through `fetch_dma`; its host callback signals after queued H2D completion. For true copied bytes, count actual enqueued copies times per-layer blob bytes and count them complete only after that callback/synchronization. Do not use `pcie_experts` as bytes: `src/core/expert_source.cpp:1927-1995` increments that counter when planning fetch groups, before fetch execution; mapped/alias modes can read directly and pass zero copies to `fetch`. Keep separate planned groups, direct-mapped reads, H2D-submitted bytes, and H2D-completed bytes if this becomes a suspected bottleneck.
+- `src/core/expert_source.cpp:2032-2114` separates planning, activation queue, job creation, and CPU run time. The job count is actual unique misses; source format is available per layer. File/source logical bytes and prefetch counts are not physical storage I/O or DRAM bandwidth.
+- `src/kernels/cpu/pool.cpp:669-691` reports per-phase wall time for the native split path (Gate/Up, quantization, Down), but not worker-active versus worker-wait time. The generic `ExpertPool::phase_ms` wait-for-park/drain/repark counters belong to `run()` and should not be assumed to describe `run_split_multi_native`. `--stats` can give aggregate pool phases; `STRATA_POOL_TRACE` is too perturbative for the first pass. If VTune stacks and phase times still cannot distinguish compute from pool synchronization, the smallest useful instrumentation is bounded per-worker active and wait nanoseconds/jobs per phase, aggregated by `(layer, gu_type, down_type)` rather than a full per-expert trace.
+
+Reading the result
+For each marked request, compare host request wall, CPU stack/sample timeline, GPU queue/task timeline, existing phase spans, copy completions, and pool phase totals on the same interval. Identify which dependency controls request completion. A phase's CPU time may overlap GPU execution; `ms_wait` may simply await useful GPU work; planned PCIe group count is not transfer volume; and worker-phase wall time is not aggregate worker CPU time. Only after this correlation should a bottleneck or optimization target be named. The initial collection uses `xpu-offload`; `gpu-hotspots` is a separate optional experiment only if the local Arc B570 driver/tool capability check confirms GPU hardware metrics are available. No GPU collection or capability check was performed here.
+
+Research inputs read
+- `bench/results/2026-10-14-primary-native-runtime/README.ja.md`, `research-index.json`, and research R451-R458.
+- `bench/results/2026-10-14-primary-strata-source-audit/research-index.json` and `bench/results/2026-10-14-niko-main-service-port/research-index.json`.
+- Primary implementation anchors listed above; local VTune 2026.4 CLI help/version; current `perf_event_paranoid` and `yama/ptrace_scope` values.

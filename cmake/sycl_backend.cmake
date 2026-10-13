@@ -4,11 +4,15 @@ check_cxx_compiler_flag("-fsycl" STRATA_COMPILER_HAS_FSYCL)
 if(NOT STRATA_COMPILER_HAS_FSYCL)
   message(FATAL_ERROR "SYCL requires a SYCL compiler; configure with -DCMAKE_CXX_COMPILER=icpx")
 endif()
+check_cxx_compiler_flag("-fsycl -fsycl-id-queries-range=size_t" STRATA_COMPILER_HAS_SYCL_SIZE_T_RANGE)
+if(NOT STRATA_COMPILER_HAS_SYCL_SIZE_T_RANGE)
+  message(FATAL_ERROR "SYCL requires -fsycl-id-queries-range=size_t for large context launches")
+endif()
 
 # Intel's packaged compiler and the open-source SYCL headers expose different
 # math APIs. Probe the selected compiler instead of inferring from its version.
 set(_strata_sycl_required_flags "${CMAKE_REQUIRED_FLAGS}")
-set(CMAKE_REQUIRED_FLAGS "${CMAKE_REQUIRED_FLAGS} -fsycl -fno-fast-math -ffp-contract=off")
+set(CMAKE_REQUIRED_FLAGS "${CMAKE_REQUIRED_FLAGS} -fsycl -fsycl-id-queries-range=size_t -fno-fast-math -ffp-contract=off")
 check_cxx_source_compiles("#include <sycl/sycl.hpp>
 #include <sycl/ext/intel/math.hpp>
 int main() {
@@ -26,8 +30,11 @@ endif()
 
 add_library(strata_sycl_runtime STATIC src/sycl/runtime.cpp src/sycl/compat.cpp)
 target_include_directories(strata_sycl_runtime PUBLIC ${PROJECT_SOURCE_DIR}/include ${PROJECT_SOURCE_DIR}/include/strata/sycl/compat)
-target_compile_options(strata_sycl_runtime PUBLIC -fsycl)
-target_link_options(strata_sycl_runtime PUBLIC -fsycl)
+# The compiler's default asserts every global range fits in signed int. Large
+# context/USM operations cannot make that promise. Keep the same index contract
+# in every consumer and at device link; tensor dimensions still validate bounds.
+target_compile_options(strata_sycl_runtime PUBLIC -fsycl -fsycl-id-queries-range=size_t)
+target_link_options(strata_sycl_runtime PUBLIC -fsycl -fsycl-id-queries-range=size_t)
 
 set(STRATA_SYCL_DEVICE_ARCH "" CACHE STRING "Intel GPU AOT target, e.g. bmg_g21 (empty uses JIT)")
 option(STRATA_SYCL_AOT_DOUBLE_GRF "Use 256 GRFs for ESIMD AOT images (no effect for JIT)" OFF)
@@ -98,6 +105,10 @@ target_link_libraries(strata PRIVATE strata_prefill strata_spec)
 option(STRATA_SYCL_TESTS "Build GPU parity and runtime tests for SYCL" ON)
 if(STRATA_SYCL_TESTS)
   enable_testing()
+  add_executable(sycl_range_contract_test tests/sycl/range_contract.cpp)
+  target_link_libraries(sycl_range_contract_test PRIVATE strata_sycl_runtime)
+  add_test(NAME sycl_range_contract COMMAND sycl_range_contract_test)
+  set_tests_properties(sycl_range_contract PROPERTIES TIMEOUT 30)
   add_executable(expert_profile_save_test tests/core/expert_profile_save_test.cpp)
   target_link_libraries(expert_profile_save_test PRIVATE strata_engine)
   add_test(NAME expert_profile_save_test COMMAND expert_profile_save_test)

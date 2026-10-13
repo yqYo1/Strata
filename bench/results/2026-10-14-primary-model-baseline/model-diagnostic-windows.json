@@ -1,0 +1,172 @@
+[
+  {
+    "version": 1,
+    "original_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-model-diagnostic-root-v1/owned/engine.stderr",
+    "original_bytes": 14393,
+    "original_sha256": "84e0fc0c10249cef09f6ff3ec5b7890a14486fc5d0a123233e1eba118966a0e1",
+    "original_lines": 172,
+    "selected_lines": [
+      {
+        "line": 1,
+        "text": "unknown argument: --no-kv-grow"
+      },
+      {
+        "line": 2,
+        "text": "strata generate --pack DIR --tokens \"1,2,3\" [options]"
+      },
+      {
+        "line": 3,
+        "text": ""
+      },
+      {
+        "line": 4,
+        "text": "  --pack DIR           the pack directory (default pack/full)"
+      },
+      {
+        "line": 5,
+        "text": "  --tokens LIST        the prompt as comma-separated token IDS (required)"
+      },
+      {
+        "line": 6,
+        "text": "  --tokens-file PATH   pretokenized prompt, commas or whitespace (alternative to --tokens)"
+      }
+    ],
+    "reason": "distinct CLI/startup/range mechanism and relevant request/phase evidence"
+  },
+  {
+    "version": 2,
+    "original_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-model-diagnostic-root-v2/owned/engine.stderr",
+    "original_bytes": 30961,
+    "original_sha256": "6c4ba6c427e6fbf297a0c420f574b68eedd630c955df23d9c93232affdbcdcb2",
+    "original_lines": 428,
+    "selected_lines": [
+      {
+        "line": 395,
+        "text": "<VALIDATION>[ERROR]: There are no valid references to handle 0"
+      },
+      {
+        "line": 396,
+        "text": "strata serve: needs --spec T, --mtp DIR and --prefill CHUNK (and a fillable --expert-cache; the graphed hit path additionally needs --expert-profile P)"
+      },
+      {
+        "line": 397,
+        "text": "<VALIDATION>[ERROR]: Retained 1 reference(s) to handle 0x14079eb0"
+      },
+      {
+        "line": 398,
+        "text": "<VALIDATION>[ERROR]: Handle 0x14079eb0 was recorded for first time here:"
+      },
+      {
+        "line": 399,
+        "text": "<VALIDATION>[ERROR]: #0 /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0(+0x5be51f) [0x735a7427351f]"
+      },
+      {
+        "line": 400,
+        "text": "<VALIDATION>[ERROR]: #1 /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0(+0x41f43c) [0x735a740d443c]"
+      },
+      {
+        "line": 401,
+        "text": "<VALIDATION>[ERROR]: #2 /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0(+0x41f884) [0x735a740d4884]"
+      }
+    ],
+    "reason": "distinct CLI/startup/range mechanism and relevant request/phase evidence"
+  },
+  {
+    "version": 4,
+    "original_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-model-diagnostic-root-v4/owned/engine.stderr",
+    "original_bytes": 40160,
+    "original_sha256": "d89680478dd0aacbad947f556836db24c8d3f90ffff74d2294ecafb4d5453076",
+    "original_lines": 613,
+    "selected_lines": [
+      {
+        "line": 585,
+        "text": "strata serve: 1405 MiB of VRAM free with everything loaded"
+      },
+      {
+        "line": 586,
+        "text": "strata trace: request 28 0"
+      },
+      {
+        "line": 587,
+        "text": "strata trace: prompt start 27 -1"
+      },
+      {
+        "line": 588,
+        "text": "strata trace: prompt chunk 0 of 27"
+      },
+      {
+        "line": 589,
+        "text": "<VALIDATION>[ERROR]: There are no valid references to handle 0"
+      },
+      {
+        "line": 590,
+        "text": "strata prefill timing: 27 tokens, GPU timeline 26578 ms, wall 26947 ms, host staging 3146 ms: embed+steps 8151 (30.7%) hc read 1084 (4.1%) gdn 379 (1.4%) qsa proj 724 (2.7%) qsa indexer 154 (0.6%) qsa select 165 (0.6%) qsa attn 5769 (21.7%) router+shared 759 (2.9%) host grouping 231 (0.9%) gather 638 (2.4%) wait copy 847 (3.2%) dequant 6175 (23.2%) gemm gate/up 297 (1.1%) gemm down 478 (1.8%) combine 26 (0.1%) ple 336 (1.3%) kv stage 3 (0.0%) gdn conv+gates 225 (0.8%) gdn recurrence 15 (0.1%) gdn out proj 122 (0.5%)"
+      },
+      {
+        "line": 591,
+        "text": "strata prefill timing: host: chunk setup (PLE rows, the expert stream plan) 8146 ms, waiting for each chunk 0 ms, after each chunk (the draft layer, progress) 250 ms, PLE 336 ms"
+      },
+      {
+        "line": 592,
+        "text": "strata trace: read 27 tokens (batched) in 26948.9 ms"
+      },
+      {
+        "line": 593,
+        "text": "strata trace: prompt done (slots refilled) -1 -1"
+      },
+      {
+        "line": 594,
+        "text": "strata trace: window 27 1"
+      },
+      {
+        "line": 595,
+        "text": "strata verify: captured the 1-token window in 49 event-completed segments"
+      },
+      {
+        "line": 596,
+        "text": "strata verify: capture 1 tokens 3875.310 ms, free VRAM 1176.5 MiB"
+      },
+      {
+        "line": 604,
+        "text": "strata trace: window 34 4"
+      },
+      {
+        "line": 605,
+        "text": "strata decode timing: 5 windows, avg T 3.40, 1.60 tokens/window, 1577.47 ms/window = verify 1239.57 (GPU-reach wait 87.84 + per-layer host 270.62 [plan 11.79 actq 0.55 jobs 0.10 CPU 255.01] + stage 17.12) + commit/emit 0.29 + draft 337.58; per layer-window: CPU experts 22.68 (33.15 entries), VRAM hits 0.85, PCIe 0.00"
+      },
+      {
+        "line": 606,
+        "text": "strata serve: prompt 28 tokens = 0 reused + 28 read in 26959 ms (1.0 tok/s), 8 generated in 7887 ms (1.0 tok/s), drafts accepted 4 of 12, 0 checkpoints"
+      },
+      {
+        "line": 607,
+        "text": "strata serve: decode expert cache hit rate: 2.5% (204 hits / 8160 lookups)"
+      },
+      {
+        "line": 608,
+        "text": "strata serve: KV streaming: 93.33% of 1800 block reads hit VRAM, 0.5 MiB read from RAM"
+      },
+      {
+        "line": 609,
+        "text": "strata trace: request 61055 0"
+      },
+      {
+        "line": 610,
+        "text": "strata trace: prompt start 61054 -1"
+      },
+      {
+        "line": 611,
+        "text": "strata trace: prompt chunk 0 of 61054"
+      },
+      {
+        "line": 612,
+        "text": "terminate called after throwing an instance of 'sycl::_V1::exception'"
+      },
+      {
+        "line": 613,
+        "text": "  what():  Provided range and/or offset does not fit in int. Pass `-fsycl-id-queries-range=size_t' to remove this limit."
+      }
+    ],
+    "reason": "distinct CLI/startup/range mechanism and relevant request/phase evidence"
+  }
+]
