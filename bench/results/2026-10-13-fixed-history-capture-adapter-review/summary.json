@@ -1,0 +1,39 @@
+{
+  "main_reviewed": true,
+  "source_pins": {
+    "tools/fixed_history_capture_receipt.py": {
+      "sha256": "13a1eec054e5a72b953774d1a3c8fd8a7951707af8bda5269a758646fbcaae58"
+    },
+    "tools/test_fixed_history_capture_receipt.py": {
+      "sha256": "9fb951b23a0f5e3f7d7dd1e5d0ca59bb4bfaa2157ae9cce1d57ef3e75a97c677"
+    },
+    "docs/FIXED_HISTORY_CAPTURE_RECEIPT.ja.md": {
+      "sha256": "1e975b2176a51cc17cd54fd9a2f73cd64b39b532e37f6ef76723a8fb7d64f00c"
+    },
+    "docs/FIXED_HISTORY_CAPTURE_RECEIPT.md": {
+      "sha256": "c109fb67dee277ee8aa7745a9beba9402ebb84c4069e16502573074d65141519"
+    }
+  },
+  "new_adapter_schema_tests": 9,
+  "existing_comparator_tests": 11,
+  "new_source_lints_passed": true,
+  "first_lint_failed_status_retained": true,
+  "source_only_runtime": false,
+  "cpu_checks_executed": true,
+  "gpu_executed": false,
+  "model_executed": false,
+  "production_capture_qualified": false,
+  "persistent_state_qualified": false,
+  "quality_qualified": false,
+  "adopted": false,
+  "benchmark_method": "Unchanged pristine upstream bench.sh --long --runs 3",
+  "performance_samples_added": false,
+  "research_registry_count": 913,
+  "main_errata": [
+    "R372v1 incorrectly required explicit ckpt0 despite the implemented observed-fresh-state omission admission; corrected v2 is authoritative.",
+    "R373v1 mislabeled TPS as ms and reversed the improvement direction. V2 fixes units/direction and finds existing native copy stream is already prefill-only.",
+    "Native queue selection and unchanged decode CPU guard overhead are separate questions; no new selector is implemented.",
+    "Actual raw spec4/noMTP/suffix0 yields effective verifier T1; raw spec0 is not the stock measured argv."
+  ],
+  "next_step": "Main actual production capture/controller and persistent state validation; phase model admission with new pinned source/config and unchanged stock benchmark"
+}
