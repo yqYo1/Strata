@@ -20,6 +20,7 @@
 #include "strata/core/runtime.hpp"
 #include "strata/core/device.hpp"
 #include "strata/core/phase_serve_cycle.hpp"
+#include "strata/prefill/layer_major.hpp"
 #include "strata/core/expert_cache.hpp"
 #include "strata/core/conversation_snapshot.hpp"
 #include "strata/core/conversation_disk.hpp"
@@ -2510,6 +2511,23 @@ int main(int argc, char** argv) {
             return 2;
         }
     }
+    if (strata::prefill::layer_major::requested()) {
+        bool remote = false;
+        for (int slots : o.expert_cache_remote) remote = remote || slots != 0;
+        if (!strata::prefill::layer_major::frozen_prefix().valid || o.batch != 0 ||
+            !o.mtp.empty() || o.pipeline_windows != 0 || !o.layer_split.empty() || !o.split_device.empty() ||
+            remote || o.vision || o.full_context_probe || strata::core::phase_cache_requested() ||
+            o.kv_grow != 0 || o.vram_elastic || !o.no_prefill_borrow ||
+            o.prefill_auto || o.prefill_chunk <= 0 || o.prefill_until != 0 || o.max_context <= 0 || o.max_context > 262144 ||
+            (!o.serve && o.tokens.size() < 2) || o.prompt_cache != 0 || o.conversation_cache_mib != 0 ||
+            !o.conversation_save.empty() || (o.serve && (!o.short_read_given || o.short_read != 0)) ||
+            !o.vram_reserve_given || o.vram_reserve_mib <= 0 || o.resident_cpu_experts ||
+            o.adapt_swaps != 0 || o.adapt_async > 0) {
+            std::fprintf(stderr, "layer-major prototype: require explicit bounded R_GPU, explicit positive "
+                "--vram-reserve-mib, fresh single-GPU serve-or-standalone/resident-or-streamed/fixed owned prefill, "
+                "no checkpoints/reuse/split/helper/MTP/pipeline/phase/adaptive; serve requires --short-read 0\n"); return 2;
+        }
+    }
     if (o.full_context_probe) {
         namespace probe = strata::program::full_context_probe;
         bool remote = false;
@@ -3607,8 +3625,17 @@ int main(int argc, char** argv) {
     // The session state starts zeroed for every pack (upstream 853aa46, ec64796): a native pack, and a canonical one
     // whose prompt goes through the batched prompt path, start at position 0 without the put_input that zeroed it,
     // and a reused allocation then held overflow/NaN that saturated the layer stack.  --serve zeroes it per request.
-    strata::core::session_zero(ss, g, nullptr, main_cs);
+    if (strata::prefill::layer_major::requested()) {
+        if (!strata::core::session_zero_checked(ss, g, nullptr, main_cs)) {
+            std::fprintf(stderr, "layer-major: initial checked reset failed; retaining owners\n");
+            std::fflush(stderr); std::_Exit(74);
+        }
+    } else strata::core::session_zero(ss, g, nullptr, main_cs);
     if (!strata::gpu::stream_sync(main_cs)) {
+        if (strata::prefill::layer_major::requested()) {
+            std::fprintf(stderr, "layer-major: initial reset drain failed; retaining owners\n");
+            std::fflush(stderr); std::_Exit(74);
+        }
         std::fprintf(stderr, "strata generate: zeroing the session state failed\n");
         return 1;
     }
@@ -5934,6 +5961,8 @@ int main(int argc, char** argv) {
             o.conversation_save.clear();
         }
         strata::prefill::Prefill sp;
+        if (strata::prefill::layer_major::requested())
+            sp.set_layer_major_reserve(uint64_t(o.vram_reserve_mib) * (1ull << 20));
         void* borrow = nullptr;
         uint64_t borrow_bytes = 0;
         int32_t lend_first = -1;          // the first slot the prompt path may borrow (its largest chunk)
@@ -6713,7 +6742,8 @@ int main(int argc, char** argv) {
             strata::core::progress_at("reading the prompt (batched), done up to token", done);
             strata::core::progress_beat();
             std::fflush(stdout);
-            const bool periodic_checkpoint = o.prompt_cache_every > 0 && done >= pp_next_check;
+            const bool periodic_checkpoint = !strata::prefill::layer_major::requested() &&
+                o.prompt_cache_every > 0 && done >= pp_next_check;
             // Keep the prefill's existing chunk geometry. One extra near-tail checkpoint
             // can serve a branch whose shared prefix ends before the final cached state.
             const bool tail_checkpoint = o.prompt_cache_tail && o.prompt_cache > 0 && o.prompt_cache_every > 0 &&
@@ -8231,6 +8261,10 @@ int main(int argc, char** argv) {
             } else if (!next_line(line)) {
                 break;
             }
+            if (strata::prefill::layer_major::requested() && !strata::core::phase_request_kind(line)) {
+                std::printf("ERR layer-major supports fresh GEN and QUIT only; no SAVE/RESTORE/images/reuse/batch/VRAM\n");
+                std::fflush(stdout); continue;
+            }
             if (phase_cache && !strata::core::phase_request_kind(line)) {
                 std::printf("ERR phase-cache supports fresh GEN and QUIT only; no SAVE/RESTORE/GENI/reuse/batch/VRAM\n");
                 std::fflush(stdout);
@@ -8612,6 +8646,13 @@ int main(int argc, char** argv) {
                 continue;
             }
             const int64_t n = (int64_t) ids.size();
+            if (strata::prefill::layer_major::requested() &&
+                (geni || req_pin != 0 || req_pcie_frac != 0.0 || req_pcie_set || n < 1 || nf_hit || nan_flush ||
+                 live_ok || !live.empty() || !live_imgs.empty() || !checks.empty() || tail_ckpt_len != -1 || conversations.size() ||
+                 conversations.bytes() || disk.enabled() || admit_slot >= 0)) {
+                std::printf("ERR layer-major requires ordinary fresh GEN with no actual reuse/checkpoint/slot state\n");
+                std::fflush(stdout); continue;
+            }
             if (phase_cache) {
                 const auto* owner = xcache.phase_owner();
                 strata::core::PhaseFreshState fresh;
@@ -9024,10 +9065,19 @@ int main(int argc, char** argv) {
                 }
             }
             int64_t reread_to = -1;   // STRATA_CKPT_REREAD only: read [0, reread_to) again instead of restoring
+            if (strata::prefill::layer_major::requested() && (resume != 0 || from_live || incoming || slot_source >= 0)) {
+                std::fprintf(stderr, "layer-major: actual reuse admission failed; retaining owners\n");
+                std::fflush(stderr); std::_Exit(74);
+            }
             if (resume == 0) {
-                strata::core::session_zero(ss, g, nullptr, main_cs);
+                if (strata::prefill::layer_major::requested()) {
+                    if (!strata::core::session_zero_checked(ss, g, nullptr, main_cs)) {
+                        std::fprintf(stderr, "layer-major: fresh GEN checked reset failed; retaining owners\n");
+                        std::fflush(stderr); std::_Exit(74);
+                    }
+                } else strata::core::session_zero(ss, g, nullptr, main_cs);
                 const bool fresh_zero_done = strata::gpu::stream_sync(main_stream);
-                if (phase_cache && !fresh_zero_done) phase_fatal("fresh session initialization did not complete");
+                if ((phase_cache || strata::prefill::layer_major::requested()) && !fresh_zero_done) phase_fatal("fresh session initialization did not complete");
                 for (auto& st : stages) {
                     const strata::core::OnDevice on(st->dev);
                     strata::core::session_zero(st->ss, g, nullptr, (void*) st->stream);
@@ -9101,7 +9151,7 @@ int main(int argc, char** argv) {
             static const bool no_short = std::getenv("STRATA_CKPT_REREAD") != nullptr;
             int64_t req_short_read = o.short_read;   // STRATA_PIPELINE_SWITCH may set it per request (short_read=)
             auto windows_ok = [&](int64_t a, int64_t b) -> bool {
-                if (phase_head_lease || no_short || !sr_cost.windows(b - a, req_short_read,
+                if (strata::prefill::layer_major::requested() || phase_head_lease || no_short || !sr_cost.windows(b - a, req_short_read,
                                                  o.short_read_given || req_short_read != o.short_read))
                     return false;
                 if (sp.embd_rows != nullptr)
@@ -10471,9 +10521,9 @@ int main(int argc, char** argv) {
                 live_imgs = imgs_below(req_imgs, (int64_t) live.size());
                 live_ok = o.prompt_cache > 0 && req_ckpt && !nf_hit && !nan_flush;
             }
-            if (phase_cache) {
+            if (phase_cache || strata::prefill::layer_major::requested()) {
                 if (live_ok || !checks.empty() || tail_ckpt_len != -1 || conversations.size() || conversations.bytes())
-                    phase_fatal("completed phase GEN unexpectedly retained reusable session state");
+                    phase_fatal("completed fresh GEN unexpectedly retained reusable session state");
                 // Capacity zero means these completed IDs cannot be a resume
                 // source. Drop their metadata while preserving session buffers;
                 // the next fresh prompt uses the ordinary checked session_zero.
@@ -10806,6 +10856,8 @@ int main(int argc, char** argv) {
     int64_t spec_pos = -1;  // plan v0.3 P6: where the speculative loop starts (-1 = not used; a native pack's
                             // one-token prompt starts it at 0)
     strata::prefill::Prefill prefill;
+    if (strata::prefill::layer_major::requested())
+        prefill.set_layer_major_reserve(uint64_t(o.vram_reserve_mib) * (1ull << 20));
     bool kvg_started = false;   // the elastic K/V took this run's cells
     double prefill_batched_ms = 0;
     std::FILE* final_r = o.dump_final_r.empty() ? nullptr : std::fopen(o.dump_final_r.c_str(), "wb");

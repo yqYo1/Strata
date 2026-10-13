@@ -1,0 +1,918 @@
+{
+  "source_revision": "8b48d17c99b70d32781f9f5b056602a598a37b1c",
+  "source_pins": {
+    "docs/LAYER_MAJOR_PREFILL.ja.md": {
+      "sha256": "3b4f65aa2b7e21d483eca15b274dc413f53c087339112ee012d95c1d0e423e10"
+    },
+    "docs/LAYER_MAJOR_PREFILL.md": {
+      "sha256": "d1903faea42bbef25889b1986264ec00112cd5f59e4c28dacd1aba2a22d7d6f9"
+    },
+    "include/strata/core/layer.hpp": {
+      "sha256": "5c22fb192f8ae046e513c48eaa3feb8f51fb022937ce3d9f0bc78a1b420c44bc"
+    },
+    "include/strata/core/session.hpp": {
+      "sha256": "6fd804767cb1728812b6876f647d247d6cdf816e2d68210002d493f978b7075d"
+    },
+    "include/strata/prefill/layer_major.hpp": {
+      "sha256": "7409746cf90d20e8e25cb08a4123185be424db902b2de63a8bd3e25f8f0f6d6c"
+    },
+    "include/strata/prefill/prefill.hpp": {
+      "sha256": "29b476be09e6968f52a0966938cffe62c4a30ed159c47de40ecb6322ea75c440"
+    },
+    "src/core/layer.cpp": {
+      "sha256": "b413bfe63a3668c894466bb9e738fe8f812d333da43cb752bc472d4609100503"
+    },
+    "src/core/session.cpp": {
+      "sha256": "a21216b19f730ae49e452550543d612b04989a4e23a43d05d29b4d2c74523b54"
+    },
+    "src/prefill/prefill.cpp": {
+      "sha256": "b0e67266fb9b9e6e9a145a074aa6f07d383a9384cc0e798a28e82ab67380016d"
+    },
+    "src/program/generate.cpp": {
+      "sha256": "b06e6d275f52be386541642d73897bc70cb7db97cbb1f8b758afc3a6343e62a2"
+    },
+    "tests/core/phase_cache_owner_test.cpp": {
+      "sha256": "aed3f142ee822066343ccf9dc4116bc4dd8bf3316186b1fbf5f2507a39725300"
+    }
+  },
+  "binary_sha256": {
+    "sha256": "325d42d7cb819e6faf2c9fa5fee0ed513153899a6210f90893e6bece791c1249"
+  },
+  "build_modes": [
+    "free",
+    "contrib-llvm"
+  ],
+  "full_builds_pass": true,
+  "host_ctest_four_configurations_pass": true,
+  "host_asan_ubsan_pass": true,
+  "server_phase_lifetime_pass": true,
+  "actual_parent_no_new_lints_pass": true,
+  "actual_device_phase0_lifecycle_pass": true,
+  "exact_requests": [
+    {
+      "prompt_tokens": 1024,
+      "max_new": 1,
+      "packet_sha256": {
+        "sha256": "633ca92769455817e89619a75e40ff3a4fc0cdfce97051e0d13759bf653a63b2"
+      },
+      "checkpoint_key_omitted": true,
+      "complete": true,
+      "done_line": "DONE 1 1024 17792.6 458.9 stop 0 0 0 20 480 0 0 0.0 1024 0",
+      "output_ids": [
+        248046
+      ],
+      "diagnostic_engine_timings_only": true,
+      "performance_eligible": false
+    },
+    {
+      "prompt_tokens": 32768,
+      "max_new": 1,
+      "packet_sha256": {
+        "sha256": "954f3d84f822264d53daf10c733057fda8f4f4de201df138bd64e92fadd42164"
+      },
+      "checkpoint_key_omitted": true,
+      "complete": true,
+      "done_line": "DONE 1 32768 78407.5 286.8 length 0 0 0 13 480 0 0 0.0 32768 0",
+      "output_ids": [
+        12055
+      ],
+      "diagnostic_engine_timings_only": true,
+      "performance_eligible": false
+    }
+  ],
+  "admissions": [
+    "mode=fresh-resident-or-streamed tokens=1023 chunks=1 requested_gpu_rows=0 gpu_rows=0 host_rows=1023 gpu_residual_bytes=0 host_residual_bytes=41902080 layer_cache_bytes=1363148800 reserve=734003200 fresh_vram=2455273472 fresh_ram=32427577344 preexisting_workspace_head_state_charged=1",
+    "mode=fresh-resident-or-streamed tokens=32767 chunks=4 requested_gpu_rows=0 gpu_rows=0 host_rows=32767 gpu_residual_bytes=0 host_residual_bytes=1342136320 layer_cache_bytes=1363148800 reserve=734003200 fresh_vram=2233851904 fresh_ram=32254214144 preexisting_workspace_head_state_charged=1"
+  ],
+  "layer_rows": [
+    [
+      "0",
+      "512",
+      "1114112000",
+      "1",
+      "0",
+      "1023"
+    ],
+    [
+      "1",
+      "512",
+      "773324800",
+      "1",
+      "0",
+      "1023"
+    ],
+    [
+      "2",
+      "512",
+      "1009254400",
+      "1",
+      "0",
+      "1023"
+    ],
+    [
+      "3",
+      "512",
+      "1009254400",
+      "1",
+      "0",
+      "1023"
+    ],
+    [
+      "4",
+      "512",
+      "1009254400",
+      "1",
+      "0",
+      "1023"
+    ],
+    [
+      "5",
+      "512",
+      "1009254400",
+      "1",
+      "0",
+      "1023"
+    ],
+    [
+      "6",
+      "512",
+      "1009254400",
+      "1",
+      "0",
+      "1023"
+    ],
+    [
+      "7",
+      "512",
+      "1114112000",
+      "1",
+      "0",
+      "1023"
+    ],
+    [
+      "8",
+      "512",
+      "773324800",
+      "1",
+      "0",
+      "1023"
+    ],
+    [
+      "9",
+      "512",
+      "1009254400",
+      "1",
+      "0",
+      "1023"
+    ],
+    [
+      "10",
+      "512",
+      "773324800",
+      "1",
+      "0",
+      "1023"
+    ],
+    [
+      "11",
+      "512",
+      "1009254400",
+      "1",
+      "0",
+      "1023"
+    ],
+    [
+      "12",
+      "512",
+      "878182400",
+      "1",
+      "0",
+      "1023"
+    ],
+    [
+      "13",
+      "512",
+      "773324800",
+      "1",
+      "0",
+      "1023"
+    ],
+    [
+      "14",
+      "512",
+      "1114112000",
+      "1",
+      "0",
+      "1023"
+    ],
+    [
+      "15",
+      "512",
+      "1009254400",
+      "1",
+      "0",
+      "1023"
+    ],
+    [
+      "16",
+      "512",
+      "1114112000",
+      "1",
+      "0",
+      "1023"
+    ],
+    [
+      "17",
+      "512",
+      "1192755200",
+      "1",
+      "0",
+      "1023"
+    ],
+    [
+      "18",
+      "512",
+      "1114112000",
+      "1",
+      "0",
+      "1023"
+    ],
+    [
+      "19",
+      "512",
+      "1009254400",
+      "1",
+      "0",
+      "1023"
+    ],
+    [
+      "20",
+      "512",
+      "878182400",
+      "1",
+      "0",
+      "1023"
+    ],
+    [
+      "21",
+      "512",
+      "956825600",
+      "1",
+      "0",
+      "1023"
+    ],
+    [
+      "22",
+      "512",
+      "1114112000",
+      "1",
+      "0",
+      "1023"
+    ],
+    [
+      "23",
+      "512",
+      "1009254400",
+      "1",
+      "0",
+      "1023"
+    ],
+    [
+      "24",
+      "512",
+      "1009254400",
+      "1",
+      "0",
+      "1023"
+    ],
+    [
+      "25",
+      "512",
+      "1192755200",
+      "1",
+      "0",
+      "1023"
+    ],
+    [
+      "26",
+      "512",
+      "1009254400",
+      "1",
+      "0",
+      "1023"
+    ],
+    [
+      "27",
+      "512",
+      "1192755200",
+      "1",
+      "0",
+      "1023"
+    ],
+    [
+      "28",
+      "512",
+      "1192755200",
+      "1",
+      "0",
+      "1023"
+    ],
+    [
+      "29",
+      "512",
+      "1192755200",
+      "1",
+      "0",
+      "1023"
+    ],
+    [
+      "30",
+      "512",
+      "878182400",
+      "1",
+      "0",
+      "1023"
+    ],
+    [
+      "31",
+      "512",
+      "1114112000",
+      "1",
+      "0",
+      "1023"
+    ],
+    [
+      "32",
+      "512",
+      "1009254400",
+      "1",
+      "0",
+      "1023"
+    ],
+    [
+      "33",
+      "512",
+      "1114112000",
+      "1",
+      "0",
+      "1023"
+    ],
+    [
+      "34",
+      "512",
+      "1009254400",
+      "1",
+      "0",
+      "1023"
+    ],
+    [
+      "35",
+      "512",
+      "1192755200",
+      "1",
+      "0",
+      "1023"
+    ],
+    [
+      "36",
+      "512",
+      "773324800",
+      "1",
+      "0",
+      "1023"
+    ],
+    [
+      "37",
+      "512",
+      "1114112000",
+      "1",
+      "0",
+      "1023"
+    ],
+    [
+      "38",
+      "512",
+      "1114112000",
+      "1",
+      "0",
+      "1023"
+    ],
+    [
+      "39",
+      "512",
+      "1009254400",
+      "1",
+      "0",
+      "1023"
+    ],
+    [
+      "40",
+      "512",
+      "1192755200",
+      "1",
+      "0",
+      "1023"
+    ],
+    [
+      "41",
+      "512",
+      "1114112000",
+      "1",
+      "0",
+      "1023"
+    ],
+    [
+      "42",
+      "512",
+      "1114112000",
+      "1",
+      "0",
+      "1023"
+    ],
+    [
+      "43",
+      "512",
+      "1114112000",
+      "1",
+      "0",
+      "1023"
+    ],
+    [
+      "44",
+      "512",
+      "1192755200",
+      "1",
+      "0",
+      "1023"
+    ],
+    [
+      "45",
+      "512",
+      "1192755200",
+      "1",
+      "0",
+      "1023"
+    ],
+    [
+      "46",
+      "512",
+      "1114112000",
+      "1",
+      "0",
+      "1023"
+    ],
+    [
+      "47",
+      "512",
+      "1363148800",
+      "1",
+      "0",
+      "1023"
+    ],
+    [
+      "0",
+      "512",
+      "1114112000",
+      "4",
+      "0",
+      "32767"
+    ],
+    [
+      "1",
+      "512",
+      "773324800",
+      "4",
+      "0",
+      "32767"
+    ],
+    [
+      "2",
+      "512",
+      "1009254400",
+      "4",
+      "0",
+      "32767"
+    ],
+    [
+      "3",
+      "512",
+      "1009254400",
+      "4",
+      "0",
+      "32767"
+    ],
+    [
+      "4",
+      "512",
+      "1009254400",
+      "4",
+      "0",
+      "32767"
+    ],
+    [
+      "5",
+      "512",
+      "1009254400",
+      "4",
+      "0",
+      "32767"
+    ],
+    [
+      "6",
+      "512",
+      "1009254400",
+      "4",
+      "0",
+      "32767"
+    ],
+    [
+      "7",
+      "512",
+      "1114112000",
+      "4",
+      "0",
+      "32767"
+    ],
+    [
+      "8",
+      "512",
+      "773324800",
+      "4",
+      "0",
+      "32767"
+    ],
+    [
+      "9",
+      "512",
+      "1009254400",
+      "4",
+      "0",
+      "32767"
+    ],
+    [
+      "10",
+      "512",
+      "773324800",
+      "4",
+      "0",
+      "32767"
+    ],
+    [
+      "11",
+      "512",
+      "1009254400",
+      "4",
+      "0",
+      "32767"
+    ],
+    [
+      "12",
+      "512",
+      "878182400",
+      "4",
+      "0",
+      "32767"
+    ],
+    [
+      "13",
+      "512",
+      "773324800",
+      "4",
+      "0",
+      "32767"
+    ],
+    [
+      "14",
+      "512",
+      "1114112000",
+      "4",
+      "0",
+      "32767"
+    ],
+    [
+      "15",
+      "512",
+      "1009254400",
+      "4",
+      "0",
+      "32767"
+    ],
+    [
+      "16",
+      "512",
+      "1114112000",
+      "4",
+      "0",
+      "32767"
+    ],
+    [
+      "17",
+      "512",
+      "1192755200",
+      "4",
+      "0",
+      "32767"
+    ],
+    [
+      "18",
+      "512",
+      "1114112000",
+      "4",
+      "0",
+      "32767"
+    ],
+    [
+      "19",
+      "512",
+      "1009254400",
+      "4",
+      "0",
+      "32767"
+    ],
+    [
+      "20",
+      "512",
+      "878182400",
+      "4",
+      "0",
+      "32767"
+    ],
+    [
+      "21",
+      "512",
+      "956825600",
+      "4",
+      "0",
+      "32767"
+    ],
+    [
+      "22",
+      "512",
+      "1114112000",
+      "4",
+      "0",
+      "32767"
+    ],
+    [
+      "23",
+      "512",
+      "1009254400",
+      "4",
+      "0",
+      "32767"
+    ],
+    [
+      "24",
+      "512",
+      "1009254400",
+      "4",
+      "0",
+      "32767"
+    ],
+    [
+      "25",
+      "512",
+      "1192755200",
+      "4",
+      "0",
+      "32767"
+    ],
+    [
+      "26",
+      "512",
+      "1009254400",
+      "4",
+      "0",
+      "32767"
+    ],
+    [
+      "27",
+      "512",
+      "1192755200",
+      "4",
+      "0",
+      "32767"
+    ],
+    [
+      "28",
+      "512",
+      "1192755200",
+      "4",
+      "0",
+      "32767"
+    ],
+    [
+      "29",
+      "512",
+      "1192755200",
+      "4",
+      "0",
+      "32767"
+    ],
+    [
+      "30",
+      "512",
+      "878182400",
+      "4",
+      "0",
+      "32767"
+    ],
+    [
+      "31",
+      "512",
+      "1114112000",
+      "4",
+      "0",
+      "32767"
+    ],
+    [
+      "32",
+      "512",
+      "1009254400",
+      "4",
+      "0",
+      "32767"
+    ],
+    [
+      "33",
+      "512",
+      "1114112000",
+      "4",
+      "0",
+      "32767"
+    ],
+    [
+      "34",
+      "512",
+      "1009254400",
+      "4",
+      "0",
+      "32767"
+    ],
+    [
+      "35",
+      "512",
+      "1192755200",
+      "4",
+      "0",
+      "32767"
+    ],
+    [
+      "36",
+      "512",
+      "773324800",
+      "4",
+      "0",
+      "32767"
+    ],
+    [
+      "37",
+      "512",
+      "1114112000",
+      "4",
+      "0",
+      "32767"
+    ],
+    [
+      "38",
+      "512",
+      "1114112000",
+      "4",
+      "0",
+      "32767"
+    ],
+    [
+      "39",
+      "512",
+      "1009254400",
+      "4",
+      "0",
+      "32767"
+    ],
+    [
+      "40",
+      "512",
+      "1192755200",
+      "4",
+      "0",
+      "32767"
+    ],
+    [
+      "41",
+      "512",
+      "1114112000",
+      "4",
+      "0",
+      "32767"
+    ],
+    [
+      "42",
+      "512",
+      "1114112000",
+      "4",
+      "0",
+      "32767"
+    ],
+    [
+      "43",
+      "512",
+      "1114112000",
+      "4",
+      "0",
+      "32767"
+    ],
+    [
+      "44",
+      "512",
+      "1192755200",
+      "4",
+      "0",
+      "32767"
+    ],
+    [
+      "45",
+      "512",
+      "1192755200",
+      "4",
+      "0",
+      "32767"
+    ],
+    [
+      "46",
+      "512",
+      "1114112000",
+      "4",
+      "0",
+      "32767"
+    ],
+    [
+      "47",
+      "512",
+      "1363148800",
+      "4",
+      "0",
+      "32767"
+    ]
+  ],
+  "normal_quit": {
+    "original_command": "QUIT",
+    "written": true,
+    "pipe_closed_after_write": true,
+    "fallback_signals": [],
+    "engine_exit": 0,
+    "reaped": true,
+    "session_empty": true
+  },
+  "boot_id": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+  "kernel_cursor": "s=9944479cfd1a45c28a589619cb8f2881;i=c16ff18;b=cfda0b6a7c134fe2bdf58f9202770840;m=36e6ee87e2;t=65db636685f90;x=a8d2718f9a69dba2",
+  "kernel_checks": {
+    "kernel-before": {
+      "filter": "page fault|fault response|timestamp stuck|wedg|engine reset|gt reset|guc.*(?:timeout|timed out|failed)|device.*lost|Timed out wait for G2H|Check job timeout|Timedout job|Schedule disable failed|trying reset|\\breset (?:queued|started|done)\\b",
+      "total_rows": 0,
+      "fault_entries": [],
+      "relevant_entries": [],
+      "dump_present": false
+    },
+    "kernel-after-prehealth": {
+      "filter": "page fault|fault response|timestamp stuck|wedg|engine reset|gt reset|guc.*(?:timeout|timed out|failed)|device.*lost|Timed out wait for G2H|Check job timeout|Timedout job|Schedule disable failed|trying reset|\\breset (?:queued|started|done)\\b",
+      "total_rows": 2,
+      "fault_entries": [],
+      "relevant_entries": [],
+      "dump_present": false
+    },
+    "kernel-after-model": {
+      "filter": "page fault|fault response|timestamp stuck|wedg|engine reset|gt reset|guc.*(?:timeout|timed out|failed)|device.*lost|Timed out wait for G2H|Check job timeout|Timedout job|Schedule disable failed|trying reset|\\breset (?:queued|started|done)\\b",
+      "total_rows": 14,
+      "fault_entries": [],
+      "relevant_entries": [],
+      "dump_present": false
+    },
+    "kernel-posthealth": {
+      "filter": "page fault|fault response|timestamp stuck|wedg|engine reset|gt reset|guc.*(?:timeout|timed out|failed)|device.*lost|Timed out wait for G2H|Check job timeout|Timedout job|Schedule disable failed|trying reset|\\breset (?:queued|started|done)\\b",
+      "total_rows": 14,
+      "fault_entries": [],
+      "relevant_entries": [],
+      "dump_present": false
+    }
+  },
+  "preserved_failures": [
+    "WERROR signedness",
+    "two new static findings",
+    "controller reserve-option preflight"
+  ],
+  "model_quality_qualified": false,
+  "full_physical262144_qualified": false,
+  "restore_qualified": false,
+  "stock_benchmark_executed": false,
+  "performance_samples": [],
+  "adopted": false,
+  "next_step": "Qualify actual full cache/head lease tiny VMM then paired numerical and full context boundaries; matched speed only unchanged upstream bench.sh --long --runs 3",
+  "skill_scope": {
+    "project": "/home/yayoi/orca/workspaces/Strata/sycl",
+    "installed_path": "/home/yayoi/orca/workspaces/Strata/sycl/.agents/skills/strata-upstream-sync",
+    "canonical_skill_revision": "97f8b40ca99ec298c24d7ecc7b270e530d43194d",
+    "user_global_paths_absent": true,
+    "dependency": "Keep canonical skill worktree while project discovery symlink targets it"
+  },
+  "research_completed": 967
+}
