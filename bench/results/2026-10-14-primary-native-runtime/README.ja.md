@@ -161,3 +161,8 @@ source/binary/envを起点にする。
 再検討する。最終の照合は [final-verification.json](final-verification.json)。
 `main` はまだ `beddab2f` のまま。native機能差の適合・状態検証、default更新、
 その後の新しいNiko更新の確認・評価は未完了であり、この整理をその成功とは報告しない。
+
+GitHub APIでもこのforkのparent/sourceはともに `Niko1221/Strata`、defaultは `main` と
+確認した。設定済みremoteはownforkのoriginだけ。残っていた未設定upstream remoteの古い
+tracking ref2件は、各tipの復元可能性を確認して削除した。本家の実remoteは変更せず、
+この古いsnapshotの整理を新しいNiko更新の確認とは数えない。
