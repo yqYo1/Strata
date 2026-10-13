@@ -39,6 +39,8 @@ A history-preservation merge is archival, not product-code integration or infere
 No GPU run or fresh upstream remote check occurred in this audit. Preservation/cleanup and deliberate main
 functional reconciliation precede default promotion and the next Niko update evaluation.
 Do not execute the known GPU-failure primary revision before correction and bounded checks.
+The [runtime contract notes](runtime-contract-notes.md) distinguish existing checked waits and normal
+stream drains from concrete failure/exit ownership questions; they do not claim a newly proven hang cause.
 
 R441–R448 are retained with exact text and hashes, distinguishing proposals from Main decisions.
 R448 read an older README; later completed quiet reference measurements are included here. Its prefill path
