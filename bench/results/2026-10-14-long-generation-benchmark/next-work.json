@@ -7,7 +7,7 @@
   "existing_evidence": "../2026-10-14-performance-regression-audit/session-decisions.json records the 2026-10-05 report of 453->646 t/s and merged own-fork PR #6. This is evidence to reconcile, not a new safety/performance qualification.",
   "safety_review": "Historical GPU faults motivate queue/dependency, allocation/graph/host/device lifetime, bounds and SYCL/LevelZero contract checks before replay. Fault timing alone does not establish a bug in PR #6.",
   "scope": "Personal Niko1221/Strata fork; retain existing accelerated own-fork paths per component, prefill/decode separately. Main owns serial tests/GPU; read-only Luna research and separate Sol implementation remain available.",
-  "benchmark_status": "v4 thinkingON/xhigh pilot closed PASS, both answer bodies and3346/8631 actual completion tokens. Full three-run suite active at d7128e42; native CPU soft309600/hard309601 verified, clients/engine/recipes pinned. Standard32K, thinking-agent6turnx3 and MTP pair3each remain pending.",
+  "benchmark_status": "Full v4 suite still active. ThinkingON agent3x6 completed with body/normal SSE/usage. Upstream nominal32K3 completed, actual32089 each, PP194.5/196.7/195.5 median195.5, reuse0 and engine clocks. Long-generation3each and MTP classification, source/native terminal/fresh-fault checks remain pending. Short24-token decode values are descriptive only.",
   "live_root": "main-primary-long-generation-suite-root-v4-evidence-v2",
   "closed_failures": [
     "screen-v1.json",
@@ -19,5 +19,7 @@
   "post_suite_display_fixes": [
     "tools/strata_bench.py --long-generation help still says8K though effectivecap16384",
     "generated report scenario prose uses non-thinking AGENT_MAX_TOKENS240 though --think actualagentcap8192; later explicit metadata is correct"
-  ]
+  ],
+  "completed_agent_observation": "suite-v4-agent-observation.json",
+  "subsequent_source_review": "Census R539/R540 and Main review: existing Zen3/AVX2 build, MTP work/emit/cache budget, Dm narrowing does not lower current max-region, count/carve xn+grs mismatch has unapplied source-pinned proposal. Sol prepares MTP joined ledger artifact only; Main tests after benchmark/PR6."
 }

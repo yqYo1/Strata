@@ -139,3 +139,16 @@ PID588232/start33319654、CPU soft309600/hard309601、thinking有効の実reques
 `strata_bench.py` helpの旧8K表記とREADME説明中のagent既定240表記はlive clientを変えず
 終了後の表示修正TODOにする。実request/resultの上限はlong16384/agent8192であり、表示文を
 実行設定と見なさない。
+
+## v4 full suiteの終了前の観測
+
+[元個別rows](suite-v4-agent-observation.json)にはthinkingON、各turn8192枠のagentを
+3sessions×6turn、全18要求の正常stop/DONE/実usageと回答本文を記録した。
+同じowned serverで上流標準32Kも3要求が終了。実入力は各32089で、上流のword校正による
+nominal32768と区別する。PPは194.5 / 196.7 / 195.5t/s（中央値195.5）、reuse0、engine clock。
+各24生成のTG10.2 / 8.5 / 9.9t/sは短い出力の元値であり、長いdecodeの性能には使わない。
+
+これは進行中suiteの既に終わった要求の観測で、native終端/全source/fresh-faultの合格や
+長い生成2種類各3回のMTP分類を認定しない。consumerはbenchmark実装のagent/history/clock確認。
+full suiteが閉じ、全元journal/resultsがcommitされた境界でこの重複snapshotをretireする。
+PR#6回復の順序は[next-work](next-work.json)のまま維持する。

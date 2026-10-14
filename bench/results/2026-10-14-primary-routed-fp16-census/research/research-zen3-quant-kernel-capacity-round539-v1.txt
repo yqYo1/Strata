@@ -1,0 +1,85 @@
+# R539 — Zen 3 mixed-format CPU kernel dispatch and capacity fixture
+
+Date: 2026-10-14 JST. Read-only source and external reference review for the primary mixed-format native expert
+path. The sole write is this report. I did not inspect live run files, models or packed weight blobs; run tests,
+builds, GPU/profiler/process/service/reset/cleanup work; invoke Git; or contact another agent. Main owns any
+adaptation and serial measurement after the benchmark and PR#6 boundaries. This report makes no performance claim
+for the current host.
+
+## Registry and corrections used
+
+I read the census registry, R537/R538 reports and `research-round537-538-review.ja.md`, then followed the named
+registry chain from long-generation to the primary compact-MoE recovery registry. Historical CPU-capacity data are
+read only from the compact retained evidence under `bench/results/2026-10-14-pre-Xe-model-compare/historical-hardware/`.
+The census corrections that matter here are: actual MTP dispatch `T` and per-expert `nt` are separate; fewer
+distinct experts than workers does not imply empty tasks because the pool partitions flattened rows; type42 Q2_0
+Down uses the AVX2 `q2_rows_any` path on this CPU class; and no candidate source or GPU validation is authorized
+before Main's benchmark/PR#6 boundaries. The current root CPU kernel files and root source resolver are the target.
+
+## Actual dispatch and ISA contract
+
+GGML type numbers in the requested primary scope map as follows: GU 18=IQ3_XXS, 21=IQ3_S, 22=IQ2_S,
+23=IQ4_XS; Down 20=IQ4_NL and 42=Q2_0. `expert_layout.cpp` selects AVX-512 when the runtime feature probe succeeds; otherwise `q2_rows_any` calls `q2_0_gguf_rows_multi_avx2`. On the Ryzen 5 5600X class (AVX2, no AVX-512), Q2_0 Down is therefore vectorized for each `nt=1..4`, not scalar-only. Its activation is the custom `ActQ`/Q8_1 representation produced by `act_quant_any`; the Down20 path instead quantizes `native_quant_h` through GGML's Down `vec_dot_type` (Q8_0 for IQ4_NL).
+
+For GU, `native_quant_act` uses the type's GGML `vec_dot_type` (Q8_K for these IQ types). With stock default `STRATA_IQ_MT_MIN=2`, actual CPU job `nt=2..4` uses `iq256_gu_rows` for types 18/21/22/23 on Zen 3 if `STRATA_NO_IQ256` is absent. Those functions live in `iq_avx2.cpp`; each supported type has an explicit switch case. A job with `nt=1` normally uses GGML `vec_dot`. `STRATA_IQ_SINGLE_EXACT=1` can opt into `iq256_single_gu_rows` only for 18/21/22, only at `nt=1`, only when AVX2 is allowed and the runtime AVX-512 probe is false. Its implementation is compiled as active code only for Clang with `__znver3__`; on other compile targets the function returns false. Type23 is not covered by the exact helper. `STRATA_IQ_MT_MIN=1` instead selects the existing multi-token kernels at nt1 (including type23), changing reduction order for those IQ kernels. These are already implemented options; R539 proposes measuring their coverage and contracts, not reimplementing them.
+
+Down20 uses `iq4nl256_down_rows` at `nt>=2` under the default threshold and when `STRATA_NO_IQ4NL` is absent; `nt=1` uses GGML dot. Its multi-token AVX2 kernel changes float-add order relative to GGML. Down42 uses AVX-512 or AVX2 Q2 rows for all `nt=1..4`; it has a separate arithmetic and activation-quantization contract. GU and Down selection are independent: the eight requested `(GU,Down)` format pairs do not collapse to one single kernel choice.
+
+The source selection alone is not proof of compiled or executed ISA. CMake attaches AVX2/FMA/F16C options to `iq_avx2.cpp`, `iq_single_avx2.cpp`, `kq_avx2.cpp`, and `q2_avx2.cpp`, while the normal dispatch TU is left baseline-safe; AVX-512 is compiled separately with VNNI and VBMI options. Optional `STRATA_CPU_ARCH` target flags can widen other CPU TUs and therefore must be recorded. For an exact GU NT1 comparison, confirm compiler identity, effective compile command and `__znver3__` macro for the exact TU, inspect the built object for YMM/AVX2 instructions, and record runtime AVX-512/AVX2 gating. `native_expert.cpp` calls and selected labels should be observed in the fixture; source presence does not prove a runtime branch ran. Keep the target and fallback caller/pool TUs free of accidental target-wide ISA assumptions unless the complete binary is intended to require them.
+
+## Existing fixture coverage and its limits
+
+The retained CPU capacity record [`CPU_CAPACITY.md`](../../2026-10-14-pre-Xe-model-compare/historical-hardware/CPU_CAPACITY.md) describes a meaningful earlier fixture: H=2560, FF=640, deterministic synthetic activations, 384 experts and NT1–4, direct and fixed five-worker-plus-host pool paths, separate GU/Down/full-chain service, hot and rotating expert sets, full-row/reference/guard checks, and three-process repeated timing. But it measures only GU22/IQ2_S plus Down20/IQ4_NL. The archived source index and retained artifact directory preserve compact measurements, not the fixture source or all raw samples. It cannot be used as a reusable source harness or as capacity for the other formats.
+
+`tests/core/iq_single_exact_test.cpp` is a useful exact NT1 parity reference for GU types18/21/22, padded row strides, boundaries and canaries, but it omits type23, all Down paths, activation quantization and timing. `src/kernels/native_expert_parity.cpp` contains synthetic and real-shard parity logic and links GPU kernels; its purpose is numerical comparison, not a small CPU-only MTP capacity measurement. `tests/core/expert_layout_test.cpp` verifies pack metadata, not kernel throughput. These are reusable test patterns only; this assignment did not run any harness.
+
+Coverage gaps for the present question are therefore concrete: no retained capacity cell for GU18/21/23; no Down42 capacity cell; no mixed GU/Down cross-pair; no actual nt1..4 dispatch selection report by role/type; no measured GU-input or Down-input activation-quantization split; no comparison of exact-GGML NT1, opt-in exact NT1 and the existing multi-token NT1 path under confirmed compiled ISA; no reusable pool result split by task row range for these formats; and no same-binary report of placement/affinity, task completion and timings with job count and row count denominators. The current mixed MTP run's actual per-layer types and job-nt populations still need Main's serial observer evidence before choosing which fixture arms are material.
+
+## Smallest meaningful existing-code fixture for Main to reuse
+
+Build one host-only fixture shaped like the existing native CPU service test, not the GPU-linked parity executable. Use synthetic, legal packed GGML blocks for the 8 requested `(GU type 18|21|22|23, Down type 20|42)` pairs; generate weights through GGML's quantizer or validated block constructors and deterministic finite inputs. Use H=2560 and FF=640, existing layouts/row offsets, output canaries, and the native activation encoders. No model path or expert blob is needed. Exercise `nt=1,2,3,4` exactly (a job with nt rows), and include the existing GGML/reference direct route for all arms. Keep the actual GU/Down integration path in addition to isolated GU and Down calls so activation quantization and the SiLU gate product are charged correctly.
+
+For each pair and `nt`, the fixture should provide four independently timed intervals: GU activation quantization per input row; GU rows plus SwiGLU; post-GU Down activation quantization per expert-token; Down rows; then complete native expert chain. Publish both total wall time and the explicit denominators: ns per quantized activation row, ns per output row, ns per routed expert-token (`nt`), ns per job, and actual bytes read only if counted from exact packed extents. Do not mix per-expert, per-token, per-row and per-layer units. Report GU and Down separately because their dimensions, activation types and kernels differ. For the pool arm, include planned/completed tasks, row intervals per task, jobs, job-nt histogram and both total worker CPU time and end-to-end phase wall time; flattened output rows, rather than distinct expert count, determine task fill.
+
+Carry forward the old active-set contrast with matched cohorts: a small repeatedly reused packed-weight set (e.g. 8 experts) and a rotating set large enough to exceed cache (e.g. 192 experts), with the exact bytes, order and number of jobs per cohort pinned. These contrast working-set regimes but cannot alone prove cache causality or physical DRAM traffic. Run the same direct single-caller and pool arms; pin the direct caller to one physical core and assign pool workers/host to distinct physical cores, recording affinity masks, SMT siblings, observed CPUs and any migrations. First reuse the historical five-worker-plus-host shape over six physical Zen3 cores, not as a worker-count sweep; a different worker count needs its own planned comparison.
+
+The build receipt should bind compiler/version, CMake options and per-TU compile commands for all selected kernel files. Prove AVX2/FMA/F16C instructions in the relevant objects, AVX512 is absent from selected dispatch path on this host, and exact-NT1 helper's Clang/`__znver3__` conditions if that arm is measured. Call the public dispatch functions with branch labels so the fixture can distinguish: `GGML_nt1`, `IQ_single_exact_nt1`, `IQ_multi_nt1`, `IQ_multi_nt2+`, `IQ4NL_nt1`, `IQ4NL_multi_nt2+`, and `Q2_rows_nt1..4`. Keep a default stock threshold `2` baseline; exercise alternate flags as explicit named arms and record their process-start values, because these toggles are read once into static state.
+
+Numerical gates: compare activation buffers to their GGML `from_float` references; compare each GU and Down output to the corresponding GGML vec-dot/SwiGLU reference; test finite/zero/subnormal/signed input, packed scale and code extrema, tail row partitions, padded strides and canaries. Exact helper claims need bitwise NT1 equality. Multi-token IQ/Down20 may use tolerance because its reduction order differs; separately check full expert outputs and downstream route/acceptance behavior before any production-mode request comparison. For Down42, use the intended Q2_0 custom arithmetic and match its established oracle rather than treating generic GGML fallback as the same numerical contract.
+
+This fixture fills local component-capacity gaps; it does not substitute for decode-level evidence. Main should first finish the existing serial suite/PR#6 boundary, then use actual per-layer `(type pair, job nt, task rows)` coverage to decide which arms merit timing. After fixture correctness and ISA-proof pass, collect clean alternating multi-process kernel samples, with instrumentation-free reference and individual samples preserved. Only if a particular format/role/nt component has enough routed share should Main run matched full MTP4 requests with emitted tokens, offered/accepted drafts and decode time reported separately; report prefill separately. Do not compare a profiler run as throughput or claim a kernel winner from a change smaller than run variation. Preserve the current queue, pool publication and fault behavior. Any production flag/dispatch change needs numerical, continuation-quality and complete-request gates owned by Main.
+
+## Candidate hypotheses to falsify, not implementation requests
+
+1. **GU type23 at nt1 may be a distinct opportunity.** It has no exact-GGML AVX2 helper. Compare GGML NT1 with current AVX2 multi-token kernel invoked at NT1 only as a separately gated numerical/quality experiment; do not generalize type18/21/22 exactness to IQ4_XS. First find actual jobs by type/nt and establish what current MTP `nt=1` spends.
+2. **GU18/21/22 NT1 may avoid some GGML dot overhead under an exact helper.** This path is opt-in and target-compiler-gated; the prior NT1 exact test provides a parity fixture, not evidence it improves packed mixed-format complete-chain service. Compare it against the exact currently selected baseline using identical compiled ISA and weight/activation sets.
+3. **NT2–4 GU multi-kernel advantage may differ by format and working set.** The existing per-token capacity result for GU22 cannot be extrapolated across types18/21/23. Test each only where Main's MTP job histogram shows meaningful mass.
+4. **Down42 AVX2 could have a different NT scaling profile from Down20 IQ4_NL.** The former is custom Q2 row arithmetic with Q8_1 activations and handles NT1 too; the latter uses GGML Q8_0 dot at NT1 then AVX2 multi-row at NT>=2. Measure per-role separately.
+5. **Pool scheduling versus direct service may vary with flattened rows/job counts.** Existing 18 tasks at five workers plus host can split rows even with a small number of experts. Report actual row ranges and completed tasks; do not infer underfill from unique experts and do not modify the task count without a specific measured imbalance.
+
+## Source identity and anchors
+
+Current local hashes (from file bytes; no Git operation):
+
+| File | SHA-256 |
+|---|---|
+| `CMakeLists.txt` | `74649dd55dc3eed4309cae3988642516c751070b5fc6e07aa639c653b08a10e6` |
+| `src/kernels/cpu/native_expert.cpp` | `fcb4a7c74ba45a13da162eed832860f9644f4544d3f269b9c8588f01b40fb106` |
+| `src/kernels/cpu/iq_avx2.cpp` | `80efab0bed11ddf3980c0d146101218efa061cf5304e39fc88d93e5e94a99136` |
+| `src/kernels/cpu/iq_single_avx2.cpp` | `8579db5f02086cc660d376a77e00a9285e038f6757a53e8b2a8ef6d79eb2074f` |
+| `src/kernels/cpu/q2_avx2.cpp` | `9d43e6314a75a1095953f935ed95583141afff67ba5e4da96b6e2520c5a95eee` |
+| `src/kernels/cpu/expert_layout.cpp` | `62a20856e50a955776cab30c293b2a5a03ad68cd08895fa1d984d14e791927d3` |
+| `src/kernels/cpu/pool.cpp` | `83c91704efeff4c88c25a9d1e69661f34ad76e556c154320ff6373edc7a168b8` |
+| `include/strata/kernels/cpu/iq_avx2.hpp` | `37c785fdd73a641cd925c395e44a53e88775613c0cb23c066393d0d7421cd90a` |
+| `src/kernels/native_expert_parity.cpp` | `145b0f301774f17e31b9393e01809393a944005ddcfda9ea4e21bb707a4b8f6c` |
+| `tests/core/iq_single_exact_test.cpp` | `b0041fcb2de4e067e59b710d1cdf74512f9e7d75c4a5db40a1ff39ddd436609a` |
+
+Relevant local anchors: `native_expert.cpp:71-163` (activation quant and dispatch); `iq_avx2.cpp:12,381-460` (type coverage and multi-row kernels); `iq_single_avx2.cpp:1-20,314-333` (compiler gate and exact formats); `expert_layout.cpp:111-119` (Q2/activation runtime selection); `q2_avx2.cpp:1-8,35-104` (AVX2 Q2 row math and activation quantizer); `pool.cpp:535-570,663-692` (flattened row chunks and multi-job phases); `CMakeLists.txt:830-841,858-919` (optional target-wide architecture and per-TU ISA flags); `tests/core/iq_single_exact_test.cpp` (existing exact parity controls); and the retained `CPU_CAPACITY.md` plus `historical-hardware/source-index.json` (older fixture scope and unavailable archived source).
+
+Primary external references:
+
+- AMD's [Software Optimization Guide for AMD Family 19h Processors](https://docs.amd.com/v/u/en-US/57228), the Zen 3 family guide; use it to verify the target's AVX2/FMA execution and ISA context, not to claim a Strata rate.
+- The actual upstream GGML CPU quantized dot implementations in [llama.cpp `quants.c`](https://github.com/ggml-org/llama.cpp/blob/3cf03257f219afbe7334045ff7c6a06ac68c627d/ggml/src/ggml-cpu/arch/x86/quants.c), matching the pinned GGML revision in CMake. They are the appropriate numerical/dispatch oracle for GGML's native format and vec-dot path, while Strata's specialized multi-row kernels have their own parity/tolerance contract.
+- AMD's [Family 19h Optimization Guide listing in the uProf documentation](https://docs.amd.com/r/en-US/57368-uProf-user-guide/Useful-URLs) points to AMD-hosted order 56665, the authoritative official guide archive.
+
+The local dispatch and existing capacity fixture are stronger evidence for what Strata executes than a generic AVX2 discussion. Neither the external references nor this report measure improvement on this host or qualify a production change.

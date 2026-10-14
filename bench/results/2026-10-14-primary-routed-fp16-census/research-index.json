@@ -126,6 +126,24 @@
       "sha256": "b38c6f8dd9e1a9545a135ad3426d8fa3586fec9dd4481d9e6948fbd9167e45a6",
       "status": "proposal-only; see Main review before reuse",
       "direct_canonical_write": true
+    },
+    {
+      "round": 539,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research/research-zen3-quant-kernel-capacity-round539-v1.txt",
+      "sha256": "bb3ce6b6f11738b216d4d44d378a1cb34d0f5fb9ba1aae1e205420c094cc1924",
+      "status": "source/literature-only; see Main review before reuse",
+      "direct_canonical_write": true
+    },
+    {
+      "round": 540,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research/research-prefill-intermediate-storage-round540-v1.txt",
+      "sha256": "59c9c399df4339035e0e042e910294daef1d46302f0df7af4ee0d0b36f661bca",
+      "status": "source/literature-only; see Main review before reuse",
+      "direct_canonical_write": true
     }
   ],
   "no_intervention_until_final": true,
@@ -154,9 +172,19 @@
     "R536 target no-MTP/actualNT1 assumption is false for canonical screen: engine args explicitly load --mtp rt, spec4, splitOFF, suffix0 and actual offered/accepted counters exist. Archived ledgers reject MTP and actualNT>1; they cannot directly qualify this run. Coverage must use observed verifier dispatch/windows/rows rather than layers times emitted. See research-round535-536-review.ja.md.",
     "v4 screen is now closed PASS with normal native/server/bench exit0 and fresh fault0; earlier live statements in source reports remain historical. Three-run full suite and thinking-agent runtime validation remain pending.",
     "R537 MTP W/R/D/A/C/E and per-layer coverage reviewed against current generate/dispatch source; no observer implemented or runtime qualified. See research-round537-538-review.ja.md.",
-    "R538 fewer distinct experts than workers does not imply empty tasks: current pool splits flattened output rows across18tasks; nb1 gives640GU/2560Downrows. Actual imbalance/overhead requires observation. Q2_0 Down routes via q2_rows_any to AVX2 on this Zen3, not scalar-only. See research-round537-538-review.ja.md."
+    "R538 fewer distinct experts than workers does not imply empty tasks: current pool splits flattened output rows across18tasks; nb1 gives640GU/2560Downrows. Actual imbalance/overhead requires observation. Q2_0 Down routes via q2_rows_any to AVX2 on this Zen3, not scalar-only. See research-round537-538-review.ja.md.",
+    "R539 primary metadata has seven actual format pairs; eighth GU23/Down42 is only a possible synthetic control. Existing current build metadata already requests znver3/AVX2; source/flags do not prove executed optional NT1 helper. See research-round539-540-review.ja.md.",
+    "R540 Dm halving alone does not lower primary max-region; y removal needs actual nullable/span API adaptation. bytes_needed counts unused xn but also omits grs: Main proposal reconciles both, preserving slack and actual carve. No memory-fit/speed adoption.",
+    "R54024prompt/1pp quality example is screening only: binary task resolution4.167pp and zero-discordance95% one-sided upper~11.73% under independent trials; >=299 zero harmful pairs needed for1% bound under that assumption. Do not claim negligible loss from24prompts or correlated token counts."
   ],
-  "pending_reports": [],
+  "pending_reports": [
+    {
+      "model": "gpt-6.1-sol",
+      "path": "mtp-decode-ledger-adaptation-v1/report.md",
+      "task": "/root/implement_stager_affinity_proposal_v1",
+      "scope": "Artifact-only adaptation of existing archived route+host service observers to actual MTP4; Main serial validation after benchmark/PR6"
+    }
+  ],
   "implementation_proposals": [
     {
       "model": "gpt-6.1-sol",
@@ -173,6 +201,14 @@
       "patch_sha256": "1d35ed9f8a52cccbf7ca5e3d1e0746f8cc7fb8ac4169b7bc690f5b4fa7a0b243",
       "main_owns_serial_tests": true,
       "status": "unapplied-uncompiled-unrun-unadopted; post-benchmark/PR6 review"
+    },
+    {
+      "model": "Main",
+      "path": "prefill-admission-accounting-proposal-v1/report.ja.md",
+      "artifact_only": true,
+      "patch_sha256": "5053c8e68992a8b87873cdb6bcf9d19beccb88e688d3e9901877ec2d6c03f8c5",
+      "main_owns_serial_tests": true,
+      "status": "unapplied-uncompiled-unrun-unmeasured-unadopted"
     }
   ]
 }
