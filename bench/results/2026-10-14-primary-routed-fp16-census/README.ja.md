@@ -78,3 +78,15 @@ phase evidence a8212928を検証後、成功全文・重複receipt/research11件
 元のstatus/route histogram/format/phase/owner/fault結果はbyte-identical archiveで保持し、
 比較中のfirst logitsとtoken IDsは残した。実空き容量差は未測定。phase raw recordは退去済み。
 R521が参照したsummaryの旧hashは、注釈3fieldを除くと同じbytesに復元できることを確認した。
+
+## 同一入力の無観測CLI比較
+
+実34561入力・34560 batched、同じ68da0262 binaryで無観測referenceを正常終了した。
+first logits全要素はphaseとbit一致、fresh fault0、dumpなし、boot不変、owned process全回収。
+prefillは無観測201618.3ms、phase207565.9ms（観測差+2.95%）。各1processなので
+安定した計測overheadや因果関係の証明ではなく、正式bench.shの速度値でもない。
+[照合結果](long-reference-comparison.json)に元receipt・入力・正常終了を記録した。
+
+R523/R524と別SolのQSA transpose案が完了した。kernel/headerの未適用patchであり、
+実装・build・GPU・採用の合格に数えない。ユーザー指定のagent sessionと長いMTP生成の
+benchmark追加を先に進め、QSA route countersとkernel評価はその後へ継続する。

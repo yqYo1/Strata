@@ -36,6 +36,24 @@
       "sha256": "79b1b1badf905ed02e00b8a7c9175850ba33fc7fd937ed291b9d1ba6455e753a",
       "original_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-qsa-observed-dispatch-round522-v1.txt",
       "status": "proposal-only"
+    },
+    {
+      "round": 523,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research/research-qsa-old-layout-safety-round523-v1.txt",
+      "original_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-qsa-old-layout-safety-round523-v1.txt",
+      "sha256": "9c6a7be9163498a252f25268fd1fa49c1f93134782fc2a8e2a1b67c11705a6b7",
+      "status": "proposal-only"
+    },
+    {
+      "round": 524,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research/research-shape-weighted-gemm-targets-round524-v1.txt",
+      "original_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-shape-weighted-gemm-targets-round524-v1.txt",
+      "sha256": "d1ed9fec36d3a683cd9524adae19ed80238f919981347858d328aa9e538a0970",
+      "status": "proposal-only"
     }
   ],
   "no_intervention_until_final": true,
@@ -55,6 +73,7 @@
     "R521 the one input outside batched34560 is the last real prompt token, consumed by nativeT1 before first output; not a dummy or generated extra input.",
     "R522 full262144 real input uses valid0-based positions0..262143; do not process position262144 as a valid cell. Additional outputs at capacity must be refused.",
     "Main checked actual markers: QSA gate/output projection is explicitly marked kPfQsa after attention, so it is separate from kPfQsaAttn. Actual attention matrix acceptance/decline remains unobserved.",
-    "R521 summary hash af6143de is the preannotation snapshot. Main later added timing-line/safety-policy/staging-scope annotations; stripping only these three fields reconstructs the exact cited hash. Original record77fce440 remains byte-identical archived. No original result changed."
+    "R521 summary hash af6143de is the preannotation snapshot. Main later added timing-line/safety-policy/staging-scope annotations; stripping only these three fields reconstructs the exact cited hash. Original record77fce440 remains byte-identical archived. No original result changed.",
+    "R524 reference-pending statement is superseded by the now completed matching fresh reference, with first-logit bit equality and fault-free normal completion; this does not qualify orientation or exclusive timing claims."
   ]
 }
