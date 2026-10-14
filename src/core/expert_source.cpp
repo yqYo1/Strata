@@ -2194,6 +2194,7 @@ void expert_pool_dispatch_multi(ExpertDispatch& d, const float* x_f, const int32
                 std::fprintf(stderr,"strata decode joined close complete=0 reason=pool_owner_collision fail_stop=1\n");
                 strata::core::release_gpu_waits(stderr); std::fflush(stderr); std::abort();
             }
+            decode_observer->format_service_begin(d.layers,lay.fmt[(size_t)d.layers]);
             decode_observer->service.actual_t=(int)n_tok;
             decode_observer->pool_bound=true;
             d.pool->service_budget(&decode_observer->service);
@@ -2211,6 +2212,7 @@ void expert_pool_dispatch_multi(ExpertDispatch& d, const float* x_f, const int32
             }
             d.pool->service_budget(nullptr);
             decode_observer->pool_bound=false;
+            decode_observer->format_service_end();
         }
     } else d.pool->run_split_multi(d.jobs_multi.data(), njobs);
     if (d.remote_count > 0) {

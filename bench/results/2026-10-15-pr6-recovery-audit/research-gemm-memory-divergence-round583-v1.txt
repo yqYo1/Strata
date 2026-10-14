@@ -1,0 +1,65 @@
+# R583 — oneMKL / SYCL GEMM・QSA dispatch・workspace 仮説の読み取り調査
+
+2026-10-15 JST。指定された一次資料、main review R576–579、MTP divergence report、R580、R581を読んだ。対象は現在のroot SYCL engineと、記録済み34,603 input / 34,602 batched、chunk 4,096のFP32比較。製品変更、build/test、runtime/GPU、Git/service、cleanupは実施せず、この報告だけ作成した。`bench/results/prefill-gemm-only-contract-root-v1/record.json`およびprivate Codex/home/envscanは読んでいない。
+
+## 結論
+
+調査対象のlibrary/dispatch経路は、次の理由で**仮説としては残るが、現在の証拠では原因に帰属できない**。
+
+* 実SYCL prefillの通常dense GEMMはoneMKL BLASのrow-major `gemm`。現在のsourceはFP16またはBF16入力・FP32出力を使い、戻りeventを`finish`している。MTP解放後の空き領域やFP32 residual placementでVRAM allocation/addressが変われば、oneMKL内部workspaceの確保・再利用条件や内部実装へ影響する可能性は排除できない。しかしIntelの公開資料は内部memory managerによるallocation/reuseを記すにとどまり、利用可能VRAMを見てGEMM algorithm/variantを切り替えるとは述べていない。今回それを示す実行ログ・kernel ID・workspace計測もない。従って「memory-pressureでvariantが切り替わった」は未確認仮説。
+* **TF32/FP32 compute-mode差は現行GEMM wrapperの型とは合わない。** 直接渡される型は`sycl::half`または`oneapi::mkl::bfloat16`で、FP32なのは出力とalpha/beta。oneMKL compute-mode docsの`FLOAT_TO_TF32`等はFP32 real GEMM向けalternate modeの話である。receiptの実行環境には`MKL_BLAS_COMPUTE_MODE`も`MKL_VERBOSE`も記録されていないため、global configやロード済みruntimeの実態は断定しない。ただし現呼び出しに対するTF32 overrideは証拠に基づく第一候補ではない。
+* **QSA native/tensor-core GEMM variantはこのSYCL経路では実行されない。** QSA block score/top-kは自前のSYCL kernel。`qsa_block_scores_tc()`は常にfalseを返し、callerは`qsa_block_scores()`へfallbackする。R581の別QSA score/indexer routesは原因証明ではない。CUDAのTF32 QSA scorerはこのSYCL実行経路の説明に使えない。
+* 永続workspace/alignmentも明白な破綻は見つからない。`Gemm::init_external`/`rebind`はcallerからworkspace pointerを受けてmemberへ保管するだけで、`size_t` workspace sizeは未使用、`multiply`はそれをoneMKLへ渡さない。よって当該workspaceはoneMKL scratchpadではなく、内部workspaceが別にあるかどうか・その寿命/再利用法はこのwrapperだけから分からない。FP16/BF16 matrix pointerの追加alignment preconditionもこのsourceにはない。address-sensitive selectionやlibrary内部bufferの問題がない、という証明にはならない。
+
+これは自然な丸め差や許容差の問題へFAILを移す根拠ではない。自動24,576-row armはFAILを維持し、同一binaryでGPU rowsを4,096へ固定した別runは、旧FP32 controlとのselected logits/metadata/first logitsで記録どおりbitwise PASS。前者の最初の差は未特定である。Mainのselected-row×48-layer source/store/next-input exact auditを優先し、library原因と決め打ちしない。
+
+## 実sourceと実行証跡
+
+1. `src/prefill/sycl/gemm.cpp:18-29`の`multiply<Input>`が`oneapi::mkl::blas::row_major::gemm(queue_for(stream), nontrans, trans, T,N,K, 1.f, X,K,W,K,beta,Y,ld)`を発行し、`finish(stream,event)`を呼ぶ。`:89-100`でBF16/FP16のinstantiateを選ぶ。`:102-126`のquantized native routeはweightをFP16 scratchへdequantして同じf16 GEMMへ渡す。
+2. `cmake/sycl_backend.cmake:100-106`はdynamic MKL、sequential threadingを設定し、`MKL::MKL_SYCL::BLAS`へlinkする。保存済みR580/581長文receiptの`MKLROOT`は`/opt/intel/oneapi/mkl/2026.1`、実行selectorは`ONEAPI_DEVICE_SELECTOR=level_zero:gpu`。これはpackage root/selectorの記録であり、ロード済みshared-library build IDやoneMKLのverbose version lineではない。recorded environmentに`MKL_VERBOSE`および`MKL_BLAS_COMPUTE_MODE`は現れず、callごとのoneMKL algorithm/mode情報も保存されていない。
+3. `src/prefill/prefill.cpp:2152-2160`の実QSA score dispatcherは`qsa_block_scores_tc()`を試し、falseなら`qsa_block_scores()`、続いて`qsa_block_topk()`を呼ぶ。`src/kernels/sycl/qsa_select.cpp:26-70`でscoreはcustom `parallel_for`内のFP32 dot/reduction、`qsa_block_scores_tc()`は常にfalse。top-kも`:72-142`のcustom SYCL integer-key threshold/reduce/scan path。score/top-kのどちらもoneMKL GEMMではない。`src/kernels/sycl/qsa_index.cpp:20-78`は別のcustom SYCL index score kernelでdouble accumulationしてからfloat出力する。実runでどのindexer/native optionが有効だったかはそのrunのroute evidenceが必要で、sourceにroute候補があるだけでは実routeを確定しない。
+4. allocator/capacity sideでは`src/prefill/sycl/gemm.cpp:42-88`がcaller workspace pointerを保持するがsizeを使わず、matrix multiplyにworkspaceを渡さない。IntelのoneMKL GPU initialization docsはprogram/kernel cacheと内部memory managerのallocation/free/reuseを説明する。これはworkspaceが隠れたresource conditionに反応し得る理由にはなるが、memory-pressure-driven algorithm switchの証拠ではない。
+5. R581記録とR580記録ではMTP expert 675 MiBを**prefill前にdetachし、prefill後にrestore**。GPU residual prefixはFAIL arm 24,576 rows (1,006,632,960 B) vs control/PASS arm 4,096 rows (167,772,160 B)。同一binary `44cafcc2...`の後者は数値gate通過。位置8192まで一致し16383以後のselected logitsに不一致という観測を「GEMMが原因」「GEMMは無関係」のどちらにも変換しない。両armでGEMMのoperands/addresses/internal selectionが同じだったかは未観測。
+
+## アルゴリズム変化が起き得る条件と実際に分かること
+
+oneMKL SYCL APIの`gemm`はdevice queue、shape、datatype、pointersを受ける公開契約で、compute modeもoptional argumentとして公開される。現wrapperはoptional modeを渡さずデフォルト`unset`を使う。資料上、GEMMの別実装・precision modeが選ばれる余地自体はある。ただし、今回の二つの実行で「available memory」「pointer alignment」「shape」のどれかが分岐を起こした事実はない。今回の標準chunkは同じ4096であり、長さの違いはchunk回数と最終partial chunkに現れる。residual GPU rowsの違いはallocation/address pressureを変える可能性があるが、GEMM `T,N,K`ごとの実呼出し表・pointer alignment・oneMKL variantを二armで比較した資料がなく、library固有の内部dispatchは未知。
+
+`MKL_BLAS_COMPUTE_MODE`は実在するoneMKL変数。公式Compute Modes説明ではenvironmentでapplication-wide default modeを指定でき、per-call/per-source-file modeが優先し、GPU `MKL_VERBOSE`でused modeを確認できる。だが現SYCL wrapperの入力はhalf/BF16であり、この変数を変えてTF32を抑止する介入は診断価値が不明で、今回は提案しない。`MKL_VERBOSE=1`は実在しGPU verboseをtimingなしで有効化する。値2は同期timingとなり今回の数値比較へ介入するので使用しない。verboseは各verbose-enabled callごとに出力し、大量呼出しで性能低下し得る。34K全実行で無制限に有効化する提案もしない。
+
+SYCL runtimeの`SYCL_UR_TRACE`はDPC++公式debug docsにある実在変数で、`1`=adapter/device discovery、`2`=UR call trace、`-1`=all。これはSYCL→Unified Runtime APIのtraceで、oneMKLの内部algorithm IDや浮動小数演算経路を示すものではない。開発用debug variableでsemantics subject to changeと明記される。`SYCL_PI_TRACE`はlegacy PI eraの別名で、現在のDPC++公式Environment Variablesページで推奨する変数ではないため、今回のIntel LLVM世代には`SYCL_UR_TRACE`を使う。
+
+Level Zero公式sampleは`ZE_ENABLE_VALIDATION_LAYER=1`と`ZE_ENABLE_PARAMETER_VALIDATION=1`をvalidation optionとして設定する。既存long receiptsにもこの2変数と`ZE_ENABLE_TRACING_LAYER`が記録されていた。これはAPI parameter/validation coverageの証拠であり、oneMKL内部kernelの数値再現性やGPU kernelの全memory accessを検査した意味ではない。Level Zero/SYCL runtime traceを追加してもlibrary-level selectionを直接説明しない。
+
+## 最小の次の観測案（最大3件）
+
+Mainのexact auditを最優先し、数値差が次layer input以前/以後どちらにあるか確定してから必要なときだけ以下を足す。
+
+1. **oneMKL呼出しのbounded fingerprint**: Main管理の同一binary/設定の有限診断で、発散を挟む対象chunk（例: batched row 12,288–16,383）のみに`mkl_verbose(1)`を有効化し、当該区間後すぐ0へ戻す。1回のGEMM diagnostic区間に限定してstdout上限を64 MiBにする。MKL docs上verbose stateはglobal・non-thread-localなので、単独診断processとsingle controlling threadに限る。保存するのはverbose version line、呼出しごとのdtype/shape/leading dimension、出力されたcompute mode。これはcall signature/mode確認であってvariant ID/workspace sizeの観測とは主張しない。環境設定だけで全34Kを回すのは大量行出力になるためしない。
+2. **memory/alignment仮説を exact auditへ一項目だけ追加**: 選択された数行について、直前GEMMの`T,N,K,dtype,ld`とX/W/Yのmod 64 address、queue/device identity、受け渡しworkspace pointer/実size（現wrapperはsizeを使わないと記録）を、4096/24576 armで比較可能な低頻度receiptに残す。oneMKL内部variantや内部scratchの値はpublic source/APIから取れないなら`unknown`のままとし、推測のkernel名を割当てない。
+3. **SYCL runtime traceは必要な場合の一短区間のみ**: source/store exact auditでcopy submission/queue経路に疑義が残る場合に限り、同じ短区間へ`SYCL_UR_TRACE=2`を設定しUR callsを有限収集する。これはruntime submit/copyの切り分けに使い、oneMKL numerical variant判定には流用しない。run receiptではLevel Zero validation variablesがすでに有効だったため、重複して追加しない。
+
+いずれのログも性能測定として使わず、元receiptのFAIL/PASS、frozen flags、保存済みraw comparisonを変更しない。ログ上限、全環境、binary hash、library version lineをrun receiptに記録する。まずの最小一手はMainのselected-row×48-layer source/store/nextinput exact auditであり、そこにGEMM call signatureとaddress tupleを一行/選択位置で関連付けられるなら新しいfull trace収集は不要。
+
+## 一次資料、版日付、実source pin
+
+Intel公開資料に関するページアクセス日はいずれも2026-10-15。Intel oneMKLは製品実装のため公開source commitは特定できない。oneMKLの版を付けた一次API docsは以下の通り。
+
+* GEMM API/type/compute-mode contract: `https://www.intel.com/content/www/us/en/docs/onemkl/developer-reference-dpcpp/2026-0/gemm.html` — oneMKL DPC++ Developer Reference 2026.0, **2026-04-28** (official Intel page; parameters/types and optional mode).
+* Compute modes and `MKL_BLAS_COMPUTE_MODE`, verbose mode lookup: `https://www.intel.com/content/www/us/en/docs/onemkl/developer-reference-dpcpp/2024-1/compute-modes.html` — 2024.1 docs, current indexed page. Versioned page is used because 2026.0 matching page was not returned by search; do not infer install behavior solely from this older doc.
+* Verbose semantics/serialization/per-call output: `https://www.intel.com/content/www/us/en/docs/onemkl/developer-guide-linux/2024-1/using-onemkl-verbose-mode.html` — 2024.1 official developer guide, accessed 2026-10-15; lines 469–485 describe per-call print, modes 0/1/2; lines 514–518 say global, non-thread-local and warn about high-call-count output/perf cost.
+* Internal allocation/cache context: `https://www.intel.com/content/www/us/en/docs/onemkl/developer-reference-dpcpp/2026-0/onemkl-initialization-on-gpu.html` — oneMKL 2026.0, published 2026-04-28; documents GEMM JIT/kernel cache work and internal memory manager allocation/reuse, not memory-based algorithm dispatch.
+* DPC++ runtime variables: `https://intel.github.io/llvm/EnvironmentVariables.html` and `https://intel.github.io/llvm/developer/Debugging.html` — official Intel LLVM docs, rolling pages accessed 2026-10-15, no immutable git revision claimed. Environment table documents `SYCL_UR_TRACE`; Debugging explains its tracing levels.
+* Level Zero validation source: `https://github.com/oneapi-src/level-zero/blob/master/samples/zello_world/zello_world.cpp` — official oneapi-src sample, moving `master` URL accessed 2026-10-15, no immutable commit SHA pinned. Sample sets the two validation environment variables before initialization.
+
+Reviewed local source SHA256 (file contents as audited; not a binary source-provenance claim):
+
+* `src/prefill/sycl/gemm.cpp` `0fe1904787462a4156185bc08b2076e047f9cf51d9517ede4c8f482fa76c5410`
+* `src/prefill/prefill.cpp` `cc2120dbfe4ba5d2c72f7ed2c6b59cadd7317a5605ba1f6bd5320ca08e87ad45`
+* `src/kernels/sycl/qsa_select.cpp` `45084756ca5e8e36085dae46581049c81366a45cdfde23e8c6f38defbba0c809`
+* `src/kernels/sycl/qsa_index.cpp` `5424b1489fb2dcabad0abf49ffa4c4501c8b89e8519f61649d8d53cb20dbdf8f`
+* `cmake/sycl_backend.cmake` `c013b31e0009ee51ccdbcf269247872d6af7bfc5f29dc1b9017335b608400899`
+* failed divergence receipt `mtp-expert-release-long-v1.json` `c4484d781ae18affdafa511f9b30660def5abcd033ed3ba9c4d1133cc2fc3428`
+* fixed-4096 comparison receipt `mtp-expert-release-long-fixed-v1.json` `1b7b17611ce8fe86f076fd5080822c8767f9f24186e971e904d30b2fe053ed1c`
+
+No performance, runtime correctness, adoption, or full-API qualification is claimed.

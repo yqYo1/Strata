@@ -1,0 +1,64 @@
+# R582 — native CPU GU kernel / nt 別サービス改善候補
+
+2026-10-15 JST。読み取り専用のコード・公開実装調査。製品source、build/test/GPU/service、Git、cleanupは実施していない。許可された報告ファイルのみ作成した。対象はroot SYCL/native expert routeとRyzen 5 5600X (AVX2, Zen 3)、先行R576–579 Main reviewとR581を参照した。性能値は既存記録の引用であり、本調査の測定値ではない。
+
+## 先行境界と結論
+
+`decode-ledger-final-summary-v1.json`の34,603-input / 128-output診断二件ではCPU route rowsは全route entriesの約97%、平均native expert job ntは1.469 / 1.510。CPU thread-timeはGU 25.533 / 22.740 s、Down 11.102 / 9.836 s、quant 0.099 / 0.089 s（GU約70%、Down約30%、quant約0.3%）。これはworker/issuerのCPU消費で、wall-critical pathやDRAM trafficとは同義でない。logical packed weight bytesをDRAM bytesとは扱わない。診断はclean performance、品質、full-256Kの採否ではない。
+
+候補は最大2つ。nt=1が多く平均ntが低いため、nt>=2で既にある「weight unpackを複数token間で一度にする」路線の再提案はしない。`STRATA_IQ_MT_MIN=1`は既存のopt-inで、IQ3_Sについてdraft groupingごとの丸め差を避ける一方、AVX-512でdecodeが測定上1–3%遅い既知tradeoffであり新候補ではない。AVX2 prefetchも既に既定2048 B/環境調整可能で、5700X3Dの既存測定を5600Xへ外挿しない。既存の`STRATA_IQ_SINGLE_EXACT` exact helperも候補として重複計上しない。
+
+現行routeの最も明瞭な未実装点は、nt=1のIQ GUでgate/up各行を別々にdotし、続けてSwiGLUするscalar single-token kernelへの依存と、IQ3_Sのコードブック復号をscalar lookupで行う点。ただし、公開資料から5600Xに有効な新形式の証拠は見つからず、以下はMainの小さいnative-kernel測定へ進める仮説である。
+
+## 実際の実装とnt分岐
+
+`native_fmt()`はGGML weight typeのCPU traitから`vec_dot`, `vec_dot_type`, activation quantizer、row bytesを引き、型・寸法が全quant blocksに合うことを確認する (`src/kernels/cpu/native_expert.cpp:32-68`, `include/strata/kernels/cpu/native_expert.hpp:22-46`)。従って各層のformatは実行時の`NativeFmt.gu_type/d_type`で決まり、モデル名だけから全層IQ3_Sとは断言しない。Qwen系のnative IQ GUで対象になる既知type IDsはIQ2_XXS=16, IQ2_XS=17, IQ3_XXS=18, IQ3_S=21, IQ2_S=22, IQ4_XS=23。各rowはn_embd=2560要素。downは別kernel/別formatで今回の主候補に含めない。
+
+`expert_source.cpp:2127-2133`はCPU native GU前に各token activationをGGML指定format（通常IQ GUではQ8_K）へ一度量子化する。CPU routeのunique expert groupを作り、`:2201-2205`から`ExpertPool::run_split_multi_native()`を呼ぶ。poolはexpert job単位でmulti-token groupを処理し、GU phaseが`mode_==5`で`native_gu_rows()`へ入り、続くphaseでhiddenをdown activationへ量子化しdown rowsを実行する (`src/kernels/cpu/pool.cpp:540-574,672-705`)。`nfmt_`は同期phase完了まで同じ`NativeFmt`への参照であり、今のcallerはreturn後に進む。提案kernelもこの同期所有期間内だけ入力weight/activation/output pointerを使い、pointerを保持しない。
+
+`native_gu_rows()`のdispatchはCPUがAVX-512対応ならAVX-512 multiを優先し、Zen 3/5600XではIQ2_XXS/XS, IQ3_XXS/S, IQ2_S, IQ4_XS等のAVX2 multi routeが候補になる。デフォルトでは`nt>=2`のみcustom multi、`nt==1`はGGML `vec_dot`へ落ちる (`native_expert.cpp:81-135`)。`STRATA_IQ_SINGLE_EXACT=1`かつAVX2/no-AVX512ではIQ3_XXS/S、IQ2_Sに既存のexact helperを選べる。multi kernelは`iq_avx2.cpp:324-360`で各output rowを順に処理し、gate row dot、up row dot、SwiGLUの順。`row_dot<TY,NT>()` (`:203-229`)は256-element GGML Q8_K blocksを進み、IQ3_Sの各block内で4 groups × 2 halvesをdecodeする。format 21のscalar `iq3s_grid[index]` lookupとsign/scale decodeは`:164-179`。NT=2..4ならweight codebook/sign/scaleを1回decodeして各token分のdotに再利用する。NT=1では、multi routeを強制しない限りこの再利用はない。
+
+## 最大2つの未測定候補
+
+### A. nt=1 IQ3_S GUに2-row software-pipeline kernel
+
+**候補内容:** 新しいAVX2-only IQ3_S kernelで、隣接する2 output rowsのblock復号とdotを交互に進める。routeは`native_gu_rows()`内の`f.gu_type==21 && nt==1`だけへ狭くdispatchし、GGML scalar routeおよび既存exact helperはcontrolとして残す。gate/upは各々独立したrow pairを処理し、g/u accumulatorを最後にSwiGLUへ渡す。`iq256_gu_rows()`のnt=1 specializationを置き換える案ではない。nt=2..4のexisting shared-unpack pathはそのままにする。
+
+**根拠/期待できる再利用:** 現行row loopは一rowの複数blockを直列処理し、その後に次のrowへ進むため、隣接rowは独立したweight、scale、dot accumulatorを持つ。二つのrowのload/codebook lookupを近接して発行すれば、scalar lookup / load latencyとinteger dotの待ちを重ねられる可能性がある。これはweightを再利用する方法ではなく、独立workのinstruction-level parallelismを増やす仮説である。nt=1 IQ3_Sの一rowは2560/256=10 superblocks、groupごとに8個のIQ3_S codebook valuesを復号し、gate/up両方で同形状を処理する。平均job ntが1.47–1.51なのでnt=1への限定は実routeに対応するが、exactなtype/nt割合はformat別service receiptから先に取る。
+
+**注意:** GGML exact helperのfloat reduction orderを保つ必要があれば、各rowの10 superblock partialを元の順で加算する。integer lane width/scale byte解釈、IQ3_S `qh`, packed 9-bit grid index、sign maskをupstream struct layoutと照合し、`int32` accumulationが全 valid quantized inputsでoverflowしないことを証明する。row bytesは110 bytes/block×10=1100 bytesで、隣接row pointerは16/32-byte alignedとは限らないため、AVX2 loaduまたは明示的な安全alignment前提を使う。最後のodd row range `[r0,r1)`を越えないscalar tailを持つ。各workerはoutput rows範囲を排他的に所有する。所有bufferは`run_split_multi_native()`の同期phase中のみ有効。
+
+**最小Main測定:** まずformat/service censusでGU type 21の`nt=1,2,3,4` job数/rows/thread-nsを報告し、候補が受け持つ仕事量を固定する。Ryzen5600Xのisolated CPU microkernel gateでIQ3_S 2560-element GGUF rows、valid Q8_K activations、`r0/r1` aligned/odd-tailケースを、baseline GGML `vec_dot`、existing `iq256_single_gu_rows`、2-row prototypeの3 armsで全gate+up+SwiGLU処理し、same data/hash/CPU affinity/repetition順、cache-hotとworking-set-beyond-LLCを分け、individual ns/row, CPU cycles, parity/error, guardsを取る。続いて既存parity/CPU oracle、同じserver/input/seedとrouteでservice accounting、最後にmatched clean service/end-to-end pairsをMainが行う。microkernel勝利だけで採用せず、GU wall/service、output tokens/sec、数値・greedy sequence、fault/counter gateで判断する。
+
+### B. AVX2 IQ3_S codebook `gather` decoderを限定probe
+
+**候補内容:** IQ3_S format 21の現行scalar 8-way `iq3s_grid[]` loadsを、AVX2 gatherで一度に8個の32-bit grid valuesを取得する小kernel/prototypeと比較する。まず単token GGML-compatible dotで試し、multi nt=2..4 kernelではcode decode部分のみ比較する。`iq_avx2.cpp:164-179`と`iq_single_avx2.cpp:226-295`が具体的なdecode sites。format 21は9-bit index（`qs` low byte + `qh` high bit）、512-entry codebookであり、8-index vectorを形成して`_mm256_i32gather_epi32`する形になる。適用はIQ3_S限定とし、IQ3_XXS/他formatへ一括適用しない。
+
+**条件と注意:** AVX2 gatherはtable accessが不連続で、L1/L2 hitでもmicro-op/latency costがscalar independent loadsより高い可能性がある。IQ3_S table bytes, actual table alignment, element type/scale, output lane orderをGGML `iq3s_grid`と確認する。indexは0..511にmask/bounds-proveし、signed/unsigned conversionとgather scale=4を正しく扱う。unaligned source weight loadsはloadu/memcpyベースで、vector index formationが末尾byteを越えないこと。gather版が遅ければ棄却し、dispatchに載せない。現行AVX-512 `STRATA_IQ_GATHER`の知見やZen 4測定をAVX2/Zen3へ転用しない。
+
+**最小Main測定:** まずIQ3_S-only microkernel A/Bで8 indices/group, 10 superblocks/row, gate+up full rowsを測り、gather latency/cyclesをhot-tableと通常 weight streamingの双方で比較。full output parityがexact helperとbitwise一致するか、意図した accumulation-order errorがあればmax abs/relative, relative norm, logits/top-ID changesで数値gate。次にformat 21、nt=1と2のみをservice census頻度に応じて測定し、nt=3/4はkernel scale確認の参考に分ける。AVX2 instruction supportをcompile targetで固定し、`_mm256_i32gather_epi32`のbase pointer/scale/index lifetimeをkernel内に閉じる。AVX2 5600Xの実測なしに高速と主張しない。
+
+## 公開実装の照合と適用限界
+
+- llama.cpp/ggml upstream `ggml-cpu/arch/x86/quants.c` とCPU type traits (`ggml-cpu.c`) の公開main snapshotを2026-10-15に参照。immutable commit idをこのweb source viewから確認できなかったためSHAは未固定。URL: https://github.com/ggml-org/llama.cpp/blob/master/ggml/src/ggml-cpu/arch/x86/quants.c と https://github.com/ggml-org/llama.cpp/blob/master/ggml/src/ggml-cpu/ggml-cpu.c 。type traitがIQ2_XXS/XS/…の`vec_dot_type=Q8_K`, `.nrows=1`を示し、Zen3 baseline scalar single-row contractを裏付ける。Strataのmulti-token decoderは既にこのper-token re-decodeを減らしている。upstream sourceを丸ごと再移植する候補はない。
+- vLLM official `docs/design/moe_kernel_features.md` main snapshot: commit `355553ac22dca4080929ea8f88a446f15df1f3ba`, dated 2026-10-14. URL: https://github.com/vllm-project/vllm/blob/355553ac22dca4080929ea8f88a446f15df1f3ba/docs/design/moe_kernel_features.md 。載るCPU expert backendはunquantized x86/ARMで、量子化expert群は主としてGPU kernel families。StrataのGGUF IQ3_S AVX2 CPU kernelへ直接 portできるコード・性能証拠ではない。
+- KTransformers official README/KT-Kernel status (`main`, 2026-10-15閲覧; page view did not expose immutable main SHA), https://github.com/kvcache-ai/ktransformers/blob/main/kt-kernel/README.md と repo https://github.com/kvcache-ai/ktransformers/ 。CPU MoEにAMX/AVX2、RAWINT4/FP8/BF16、llamafile GGUF backendがある。公式履歴はAVX2-only CPU backend追加を2026-03-26としている。別のAVX2 MXFP4 optimization commit `9481291` (search result short SHA; format and implementation not IQ3_S) はCPU vector format specializationの例に留まり、Q8_K activationとIQ3_S exact semanticsへ流用できない。
+- SGLang official fused MoE Triton kernel page, moving `main` accessed 2026-10-15, https://github.com/sgl-project/sglang/blob/main/python/sglang/kernels/ops/moe/fused_moe_triton_kernels.py 。grouped token/expert assignmentとbatched outputを示すがGPU/Triton形状であり、各CPU expert jobが平均約1.5 tokenというcurrent workloadの隣接output-row SIMD実装の証明ではない。対応するimmutable source SHAはpage viewから得られなかった。
+
+これら公開資料は現在のコードにない有望なCPU IQ3_S実装を直接立証しない。Aはcurrent loop structureからの適用可能性がある仮説、BはZen-family gather costを先に反証する低優先probe。主要な更なるCPU候補が未確定なら、MainはAだけをmicrobenchmark前段へ進め、BはAの結果とassembly/cycle profileがlookup-latency bottleneckを示した場合に限定する。source変更や測定、採用はこの報告では行っていない。
+
+## 参照した内部記録
+
+- `research-index.json`: 過去実装・報告一覧。PR6記録およびround580/581候補を重複回避に使用。
+- `main-review-round576-579.ja.md`: R579分母、10倍byte算術、CPU割合のMain訂正を保持。
+- `decode-ledger-final.ja.md` / `decode-ledger-final-summary-v1.json`: 実decode CPU route/nt/service証拠。
+- `.agents/skills/strata-upstream-sync/SKILL.md`: Strata専用の比較・調査原則。読み取り専用境界を維持。
+
+## 現source hashes
+
+この読取時点のsource hash。未変更を示す。
+
+- `src/kernels/cpu/native_expert.cpp`: `fcb4a7c74ba45a13da162eed832860f9644f4544d3f269b9c8588f01b40fb106`
+- `src/kernels/cpu/iq_avx2.cpp`: `80efab0bed11ddf3980c0d146101218efa061cf5304e39fc88d93e5e94a99136`
+- `src/kernels/cpu/iq_single_avx2.cpp`: `8579db5f02086cc660d376a77e00a9285e038f6757a53e8b2a8ef6d79eb2074f`
+- `src/kernels/cpu/pool.cpp`: `98bc5f421c3654bbc61472a89530664d00a1b2a513bf1c41724dcb1bd0050537`

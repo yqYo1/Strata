@@ -30,6 +30,7 @@
 #include "strata/prefill/kernels.hpp"
 #include "strata/prefill/draft_uploads.hpp"
 #include "strata/prefill/layer_major_plan.hpp"
+#include "strata/prefill/layer_major_boundary_audit.hpp"
 #include "strata/core/conversation_memory.hpp"
 
 #include <cuda_runtime.h>
@@ -453,6 +454,8 @@ struct Prefill::Impl {
     bool compact_moe_fp16 = false;
     // Opt-in layer-major lease; normal chunk-major execution leaves these empty.
     bool layer_major_active = false;
+    detail::LayerMajorBoundaryAudit* layer_major_audit = nullptr;
+    detail::LayerMajorBoundaryAudit::Copy layer_major_audit_copy;
     const void* layer_major_gpu_input = nullptr;
     const void* layer_major_host_input = nullptr;
     uint16_t* layer_major_fp16_stage = nullptr;
@@ -1680,6 +1683,10 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                 if (cudaMemcpyAsync(m.R, base + size_t(span.offset_bytes), size_t(span.bytes),
                     span.device ? cudaMemcpyDeviceToDevice : cudaMemcpyHostToDevice, m.cs) != cudaSuccess) {
                     err = "prefill layer-major: residual input copy failed"; return false;
+                }
+                if (m.layer_major_audit && !m.layer_major_audit->input(LB, c0, T, m.R, span.device,
+                                                                      m.layer_major_audit_copy)) {
+                    err = "prefill boundary audit: input copy/drain failed"; return false;
                 }
             } else if (cudaMemcpyAsync(m.R, hand_in_ + (size_t) c0 * D, (size_t) T * D * 4,
                                       cudaMemcpyHostToDevice, m.cs) != cudaSuccess) {

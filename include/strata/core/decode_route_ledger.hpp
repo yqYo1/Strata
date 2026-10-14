@@ -62,6 +62,79 @@ public:
     uint64_t job_nt[kT]{},job_nt_rows[kT]{};
     strata::kernels::cpu::NativeFmt fmt[kLayers]{};
     strata::kernels::cpu::NativeServiceBudget service;
+    // Issuer-only aggregation. No worker writer, clock or atomic is added.
+    struct CompactService { uint64_t calls=0,cpu_ns=0,wall_ns=0; };
+    struct FormatService { CompactService group[2][6]{}; int layer=-1; } format_service[16];
+    CompactService service_before[2][6]{};
+    int format_count=0,service_pair=-1;
+    uint64_t service_dispatches=0;
+    bool service_pending=false,format_invalid=false,format_overflow=false;
+    void format_add(uint64_t& dst,uint64_t n) {
+        if (n>UINT64_MAX-dst) { dst=UINT64_MAX; format_overflow=true; } else dst+=n;
+    }
+    bool service_snapshot(CompactService (&dst)[2][6]) {
+        if (workers<1 || workers>128 || service.invalid.load(std::memory_order_relaxed) || service.overflow) return false;
+        for (int g=0;g<2;++g) for (int r=0;r<6;++r) {
+            strata::kernels::cpu::ServiceCounter c;
+            for (int i=g?1:0;i<=(g?workers:0);++i) {
+                if (service.slots[i].overflow) return false;
+                c.merge(service.slots[i].call[r]);
+            }
+            if (!c.complete()) return false;
+            dst[g][r]={c.calls,c.cpu_ns,c.wall_ns};
+        }
+        return true;
+    }
+    // First binding owns fresh zero counters; later calls follow the previous
+    // native run's done + acquire wait_parked return and detached publication.
+    bool format_representatives_valid() const {
+        if (!envelope() || format_count<0 || format_count>16) return false;
+        for (int p=0;p<format_count;++p) {
+            const int l=format_service[p].layer;
+            if (l<0 || l>=layers || l>=kLayers || !valid_format(fmt[l])) return false;
+        }
+        return true;
+    }
+    void format_service_begin(int64_t l,const strata::kernels::cpu::NativeFmt& actual) {
+        if (!envelope() || !format_representatives_valid() || service_pending || l<0 || l>=layers || l>=kLayers || !valid_format(actual) || !same_format(fmt[l],actual)) { format_invalid=true; return; }
+        int p=0;
+        for (;p<format_count;++p) if (same_format(fmt[format_service[p].layer],actual)) break;
+        if (p==format_count) {
+            if (format_count==16) { format_invalid=true; return; }
+            format_service[p].layer=(int)l; ++format_count;
+        }
+        if (!service_snapshot(service_before)) { format_invalid=true; return; }
+        service_pair=p; service_pending=true;
+    }
+    // Caller invokes only after native return through existing final parked wait.
+    void format_service_end() {
+        if (!format_representatives_valid() || !service_pending || service_pair<0 || service_pair>=format_count) { format_invalid=true; return; }
+        CompactService now[2][6]{};
+        if (!service_snapshot(now)) { format_invalid=true; return; }
+        for (int g=0;g<2;++g) for (int r=0;r<6;++r) {
+            const auto& a=service_before[g][r]; const auto& b=now[g][r];
+            if (b.calls<a.calls || b.cpu_ns<a.cpu_ns || b.wall_ns<a.wall_ns) { format_invalid=true; continue; }
+            auto& c=format_service[service_pair].group[g][r];
+            format_add(c.calls,b.calls-a.calls); format_add(c.cpu_ns,b.cpu_ns-a.cpu_ns); format_add(c.wall_ns,b.wall_ns-a.wall_ns);
+        }
+        format_add(service_dispatches,1); service_pending=false; service_pair=-1;
+    }
+    bool format_service_complete() const {
+        if (!format_representatives_valid() || format_invalid || format_overflow || service_pending || service_dispatches!=dispatch_attempts || format_count<1) return false;
+        for (int g=0;g<2;++g) for (int r=0;r<6;++r) {
+            strata::kernels::cpu::ServiceCounter c;
+            for (int i=g?1:0;i<=(g?workers:0);++i) c.merge(service.slots[i].call[r]);
+            if (!c.complete()) return false;
+            uint64_t calls=0,cpu=0,wall=0;
+            for (int p=0;p<format_count;++p) {
+                const auto& b=format_service[p].group[g][r];
+                if (b.calls>UINT64_MAX-calls || b.cpu_ns>UINT64_MAX-cpu || b.wall_ns>UINT64_MAX-wall) return false;
+                calls+=b.calls; cpu+=b.cpu_ns; wall+=b.wall_ns;
+            }
+            if (calls!=c.calls || cpu!=c.cpu_ns || wall!=c.wall_ns) return false;
+        }
+        return true;
+    }
     struct Layer { uint64_t attempted[kT]{},completed[kT]{},verified_rows[kT]{},
                             cpu_jobs[kT]{},cpu_rows[kT]{},entries[kT]{},zero_jobs[kT]{}; } layer[kLayers];
     struct Window { uint64_t attempted=0,verified=0,W=0,R=0,D=0,A=0,C=0,E=0; } by_t[kT];
@@ -205,7 +278,7 @@ public:
             D!=(uint64_t)offered_done || A!=(uint64_t)accepted_done || W==0 || W!=attempted_windows || W!=verified_windows ||
             R!=verified_rows || R<W || D!=R-W || A>D || W>UINT64_MAX-A || C!=W+A || E>C ||
             !before.valid || !after.valid || after.count[0]<before.count[0] ||
-            (uint64_t)(after.count[0]-before.count[0])!=verified_windows || !service.complete(workers)) return false;
+            (uint64_t)(after.count[0]-before.count[0])!=verified_windows || !service.complete(workers) || !format_service_complete()) return false;
         uint64_t totals[8]{};
         for (int t=0;t<4;++t) {
             const auto& b=by_t[t];
@@ -258,7 +331,7 @@ public:
         const bool normal=status && (!std::strcmp(status,"length") || !std::strcmp(status,"stop"));
         const bool coverage=complete(normal,emitted_done,offered_done,accepted_done) &&
             (std::strcmp(status,"length")!=0 || (max_new>0 && E==(uint64_t)max_new));
-        out.append(false,"strata decode joined begin schema=mtp4-route-service-v2 request=%llu coupled=%d input_sha256=external_wrapper prompt=%lld max_new=%lld context=%lld layers=%lld k=%lld workers=%d host=%d status=%.32s decode_ms=%.6f\n",
+        out.append(false,"strata decode joined begin schema=mtp4-route-service-v2 service_format=1 request=%llu coupled=%d input_sha256=external_wrapper prompt=%lld max_new=%lld context=%lld layers=%lld k=%lld workers=%d host=%d status=%.32s decode_ms=%.6f\n",
             (unsigned long long)sequence,coupled,(long long)prompt_tokens,(long long)max_new,(long long)context,
             (long long)layers,(long long)k,workers,host_works,status?status:"unknown",decode_ms);
         out.append(false,"coverage attempted=%llu verified=%llu run_rows=%llu W=%llu R=%llu D=%llu A=%llu C=%llu E=%llu rejected=%llu commit_unemitted=%llu dispatch_attempts=%llu active_T=%d active_window=%d wait_commit=%d context_limit=%d cpu_jobs=%llu cpu_rows=%llu route_entries=%llu\n",
@@ -299,6 +372,21 @@ public:
                 (unsigned long long)c.wall_ns,(unsigned long long)c.reads,c.invalid,c.overflow);
             if (c.overflow || c.invalid) out.bounded=false; // aggregate overflow rejects, never hides slot failure
         }
+        if (!format_representatives_valid()) out.bounded=false;
+        for (int p=0;p<format_count && p<16;++p) {
+            const int representative=format_service[p].layer;
+            if (layers<1 || layers>kLayers || representative<0 || representative>=layers || representative>=kLayers) {
+                out.bounded=false; continue;
+            }
+            const auto& f=fmt[representative];
+            if (!valid_format(f)) { out.bounded=false; continue; }
+            out.append(false,"service_format pair=%d representative_layer=%d gu=%d down=%d gu_act=%d down_act=%d gu_row=%zu down_row=%zu act_bytes=%zu h_bytes=%zu\n",p,format_service[p].layer,f.gu_type,f.d_type,f.gu_act,f.d_act,f.gu_row,f.d_row,f.act_bytes,f.h_bytes);
+            for (int g=0;g<2;++g) for (int r=0;r<6;++r) {
+                const auto& c=format_service[p].group[g][r];
+                if (c.calls) out.append(false,"service_format_counter pair=%d group=%s role=%d calls=%llu cpu_ns=%llu wall_ns=%llu\n",p,g?"workers":"issuer",r,(unsigned long long)c.calls,(unsigned long long)c.cpu_ns,(unsigned long long)c.wall_ns);
+            }
+        }
+        out.append(false,"service_format_close complete=%d invalid=%d overflow=%d pending=%d dispatches=%llu pairs=%d\n",format_service_complete(),format_invalid,format_overflow,service_pending,(unsigned long long)service_dispatches,format_count);
         for (int ph=0;ph<2;++ph) {
             uint64_t claimed=0,finished=0,rows=0,finished_rows=0;
             auto sum=[&](uint64_t& dst,uint64_t n) { if (n>UINT64_MAX-dst) { out.bounded=false; return; } dst+=n; };

@@ -202,13 +202,29 @@
       "path": "research-qsa-order-divergence-round581-v1.txt",
       "sha256": "67c68c3a5bc979b9fd4c932c5d548628b8b2cad7562961cef9410c8b8a9091d0",
       "status": "FINAL received; Main review in mtp-expert-release-long-divergence.ja.md; automatic24576-row gate FAIL, same-binary fixed4096-row gate PASS. No broad correctness/performance adoption."
+    },
+    {
+      "round": 582,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-native-gu-service-round582-v1.txt",
+      "sha256": "8329e9690159acd4b9d9ad4b46022fd3501d1a4b50855a8956d35f65a9b8397b",
+      "status": "FINAL received; Main corrections in boundary-service-main-review.ja.md. No implementation or performance qualification from research."
+    },
+    {
+      "round": 583,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-gemm-memory-divergence-round583-v1.txt",
+      "sha256": "6028504c973bb9138b835bcddeebcf4b6c3242a3748071ba5d22d0d9b03959e2",
+      "status": "FINAL received; Main corrections in boundary-service-main-review.ja.md. No implementation or performance qualification from research."
     }
   ],
   "main_initial_findings": [
     "PR6 performance patch changes historic sycl/src/prefill/prefill.cpp, not current root src/prefill/prefill.cpp. Current root rg finds compact scratch but no layer-major selector. History preservation is not adoption.",
     "Original645.85 PP and later449.7 full-context/MTP measures need separate source/config reconciliation; different protocol does not justify discarding the old improvement."
   ],
-  "next": "Close Main small257/255chunk control/GPU-residual/host-residual numeric jobs; if qualified, compare same34603thinking input with retained natural0 fixtures, then bench.sh long/agent/long-generation with prefill/decode separate. Memory admission and full256K remain explicit gates.",
+  "next": "Main boundary-service CPU/build PASS. New diagnostic binary small OFF/ON model isolation then paired34K fixed4096/auto boundary localization; actual format service then clean official bench. Original automatic-prefix numerical FAIL unchanged; physical256K/RESTORE pending.",
   "main_review": "main-review-round559-560.ja.md",
   "subsequent_main_review": "main-review-round561-562.ja.md",
   "public_history_reverification": "public-history-reverification.json",
@@ -218,7 +234,7 @@
     "main_review": "qsa-layout-recovery-v1/main-review.ja.md",
     "status": "Build/host and20GPU parity/oracle cases PASS/fault0. Component40sample screen closedPASS; layout1 median4.09%slower in one int8case, no adoption. No whole-model/full256K/RESTORE/quality qualification."
   },
-  "latest_main_review": "main-review-round574-575.ja.md",
+  "latest_main_review": "boundary-service-main-review.ja.md",
   "component_summary": "qsa-layout-screen-summary.json",
   "gemm_orientation_probe": {
     "report": "gemm-orientation-probe-v1/implementation.txt",
@@ -304,7 +320,7 @@
     "application": "diagnostics-application-v1.json",
     "build": "current-diagnostics-build-v1.json",
     "main_review": "current-diagnostics-main-review.ja.md",
-    "state": "Actual root build and CPU contracts PASS; no GPU/model qualification for new c2e46 binary yet"
+    "state": "Actual MTP4 joined ledger collected normally2x34K128decode+short. Source expanded by boundary-service-build-v1.json; CPU and actual SYCL build PASS, new model gates pending."
   },
   "retention_v3": "closed-artifact-retention-v3.json",
   "parallel_research_next": [
@@ -334,6 +350,14 @@
     "original": "mtp-expert-prefill-release-v1/source.diff",
     "rebased": "mtp-expert-prefill-release-v2/source.diff",
     "rebase_receipt": "mtp-expert-prefill-release-v2/rebase-v3.json",
-    "state": "Main reviewed and rebased; immutable675MiB RAM restore source avoids repeated file IO/SHA. Capture-exception failstop and four actual VRAM boundaries added. Not yet applied/build/tested."
-  }
+    "state": "Integrated5fbcbb16; smallFP32/FP16 and34K fixed4096 PASS/fault0. Auto24576 numericalFAIL. Real2x34K128decode+short repeated detach/restore PASS; performance/quality/full256K/RESTORE unqualified."
+  },
+  "boundary_service_diagnostics": {
+    "build": "boundary-service-build-v1.json",
+    "recipe": "apply_build_boundary_service_v1.py",
+    "review": "boundary-service-main-review.ja.md",
+    "model_recipe": "check_boundary_audit_v1.py",
+    "state": "CPU fixtures including ASan/UBSan PASS, actual root SYCL build PASS. Model gates pending."
+  },
+  "retention_v4": "retention-v4-manifest.json"
 }

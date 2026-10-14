@@ -72,7 +72,9 @@ void window(DecodeRouteLedger& value,int T,int accepted,int emit,bool terminal,b
     for (int l=0;l<value.layers;++l) {
         if (l==omit_layer) continue;
         value.attempt_dispatch(l,T,2);
+        value.format_service_begin(l,value.fmt[l]);
         if (!all_gpu) pool_dispatch(value,value.fmt[l],T);
+        value.format_service_end();
         value.record(l,T,ids,kind,2*T,all_gpu?nullptr:&job,all_gpu?0:1,1,value.fmt[l],0);
         // Independent fake source counters, incremented at the fake successful call.
         value.after.count[1]+=all_gpu?0:1;
@@ -156,6 +158,7 @@ int main() {
     assert(value->job_nt[3]==6 && value->job_nt_rows[3]==24 && value->owner[0].groups==8 && value->owner[0].entries==26);
     assert(value->fmt[0].gu_type==21 && value->fmt[0].d_type==42 && value->fmt[1].gu_type==20);
     assert(complete(*value));
+    assert(value->format_service_complete() && value->service_dispatches==8 && value->format_count==2);
     auto variable=fresh();
     window(*variable,1,0,1,false); window(*variable,2,1,2,false); window(*variable,3,1,2,true);
     variable->final_wait_attempts=1; variable->final_wait_returns=1; variable->wait_commit_ok=true;
@@ -184,6 +187,7 @@ int main() {
     auto zero=fresh(); window(*zero,1,0,1,true,true); zero->final_wait_attempts=1; zero->final_wait_returns=1; zero->wait_commit_ok=true;
     assert(zero->layer[0].zero_jobs[0]==1 && zero->service.planned_tasks[0]==0);
     assert(zero->complete(true,1,0,0));
+    assert(zero->format_service_complete() && zero->service_dispatches==2);
     auto missing=fresh(); window(*missing,1,0,1,true,false,1); missing->final_wait_attempts=1; missing->final_wait_returns=1; missing->wait_commit_ok=true;
     assert(missing->invalid && !missing->complete(true,1,0,0));
     auto prefix=fresh(); window(*prefix,1,0,1,false); prefix->begin_window(4);

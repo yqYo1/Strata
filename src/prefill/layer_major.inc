@@ -151,6 +151,19 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     // H2D -> unpack -> model -> pack -> D2H, and the outer lease owns it all.
     std::unique_ptr<uint8_t, decltype(free_device)> fp16_stage(nullptr, free_device);
 
+    // Declare before Restore/lease: diagnostic DMA host owners survive checked retirement.
+    std::unique_ptr<detail::LayerMajorBoundaryAudit> audit;
+    const char* audit_switch = std::getenv("STRATA_PREFILL_BOUNDARY_AUDIT");
+    if (audit_switch && std::strcmp(audit_switch, "1") == 0) {
+        // Even the parser's maximum64 rows, metadata and scratch fit below4MiB.
+        // Account this optional host owner before allocation, retaining8GiB.
+        if (!core::conversation_memory_admit(core::conversation_available_memory(),
+                detail::layer_major_add(host_need, 4ull << 20), host_headroom)) {
+            err = "prefill boundary audit: diagnostic storage exceeds RAM headroom"; return false;
+        }
+        audit.reset(new detail::LayerMajorBoundaryAudit(n, pos0, D, g.n_layers, m.T,
+            plan.dtype == detail::LayerMajorResidualDtype::fp16));
+    }
     int64_t logical_chunks = 0, layer = 0;
     const int64_t final_chunk_row = ((n - 1) / m.T) * m.T;
     bool stage_delivered = false;
@@ -163,17 +176,21 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         Prefill& p; Impl& m;
         int64_t lb, le; const float* input;
         const core::ExpertCache* cache; const int32_t* residency;
+        detail::LayerMajorBoundaryAudit* audit;
+        detail::LayerMajorBoundaryAudit::Copy audit_copy;
         bool active; const void* gpu_input; const void* host_input; uint16_t* fp16_stage;
         detail::LayerMajorResidualPlan plan;
         decltype(on_chunk) chunk; decltype(on_stage_chunk) stage;
         ~Restore() noexcept {
             p.stage_lb_ = lb; p.stage_le_ = le; p.hand_in_ = input;
             m.cache = cache; m.host_res = residency; m.layer_major_active = active;
+            m.layer_major_audit = audit; m.layer_major_audit_copy = std::move(audit_copy);
             m.layer_major_gpu_input = gpu_input; m.layer_major_host_input = host_input;
             m.layer_major_fp16_stage = fp16_stage; m.layer_major_residual = plan;
             p.on_chunk = std::move(chunk); p.on_stage_chunk = std::move(stage);
         }
     } restore{*this, m, stage_lb_, stage_le_, hand_in_, m.cache, m.host_res,
+              m.layer_major_audit, m.layer_major_audit_copy,
               m.layer_major_active, m.layer_major_gpu_input, m.layer_major_host_input,
               m.layer_major_fp16_stage, m.layer_major_residual, on_chunk, on_stage_chunk};
     cudaError_t compute_drain = cudaSuccess, copy_drain = cudaSuccess;
@@ -189,6 +206,15 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     });
     lease.arm();
     if (!drain()) { err = "prefill layer-major: entry queue drain failed"; return false; }
+    if (audit) {
+        m.layer_major_audit = audit.get();
+        m.layer_major_audit_copy = [&](void* dst, const void* src, size_t bytes, bool device) {
+            if (!device) { std::memcpy(dst, src, bytes); return true; }
+            const auto status = cudaMemcpyAsync(dst, src, bytes, cudaMemcpyDeviceToHost, m.cs);
+            const bool retired = drain(); // check even when submission reported an error
+            return status == cudaSuccess && retired;
+        };
+    }
     // Allocation-only cache opening is essential: no memset may fail and free
     // its allocation before the outer checked lease has retired its readers.
     if (!layer_cache.open_uninitialized(NE, 1, NE, int64_t(stride), err)) return false;
@@ -275,6 +301,9 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
             }
             const int64_t row = position - pos0;
             cursor.accept(row, count);
+            if (audit && !audit->source(layer, row, count, residual, m.layer_major_audit_copy)) {
+                error = "prefill boundary audit: source copy/drain failed"; return false;
+            }
             if (layer + 1 == g.n_layers) {
                 ++logical_chunks;
                 return !restore.chunk || restore.chunk(residual, count, position, error);
@@ -300,6 +329,10 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
             if (status != cudaSuccess || !drain()) {
                 error = "prefill layer-major: residual store copy/drain failed"; return false;
             }
+            if (audit && !audit->stored(layer, row, count, destination, span.device,
+                                         m.layer_major_audit_copy)) {
+                error = "prefill boundary audit: stored copy/drain failed"; return false;
+            }
             return true;
         };
         if (!run_impl(tokens, n, pos0, err)) return false;
@@ -323,6 +356,7 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     stats_.chunks = old_stats.chunks + logical_chunks;
     stats_.ms_total = old_stats.ms_total + ms_since(started);
     // Field/callback restore and then cache/residual release follow this proof.
+    if (audit) audit->complete();
     lease.retire();
     return true;
 #endif
