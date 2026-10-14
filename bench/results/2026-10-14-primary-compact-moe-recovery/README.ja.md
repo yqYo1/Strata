@@ -164,3 +164,9 @@ gather案はXsだけgroup-localにし、GU/Hhはexpertごとのrow0再利用、D
 Mainのsource reviewとgit apply --checkは通ったが、未適用・未build・未実行。
 R517の過剰なqueue順序条件、K10で不可能なtest route、R518のroot/overlay・OFF/ON・24出力の
 誤記は原文を変えず[registry](research-index.json)に訂正した。GDN/WYやstate精度変更は候補に留める。
+
+evidence commit `b73d15a9` のbytes/hashを検証後、閉じたON成功ログ19件と完了researchの重複2件を
+退去した。合計271,890 logical bytesで、実空き容量差は測っていない。
+[削除manifest](stock1-deletion-manifest.jsonl)、[退去集計](stock1-retirement.json)。
+元の結果状態・全個別値・必要gate fixturesは維持し、source/model/buildや稼働runに触れていない。
+ONの元rawは退去済みなので、close_stock_evidence.pyを同じrunへ再実行しない。
