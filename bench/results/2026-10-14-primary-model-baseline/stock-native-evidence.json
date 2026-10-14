@@ -1,0 +1,321 @@
+{
+  "native_stderr_sha256": "a70bfba4f78b25f83581ab6ec7d5ee37b31556e20770e4e917a396401b766b77",
+  "startup_lines": [
+    "strata generate: this CPU has no AVX-512: the expert kernels run on AVX-2 (multi-token for the i-quant gate/up rows)",
+    "strata generate: native pack: /home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s experts (largest blob 2.66 MB), token embedding IQ4_XS in mapped host memory (322 MiB)",
+    "strata generate: 1466 MiB of weights loaded from /home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s (302 canonical tensors skipped: served natively)",
+    "strata generate: 300 native projection matrices, 2018.88 MiB of weights",
+    "strata generate: the SSD is kept awake while rows are read: one page of the table after 100 ms without a read, until 60 s after the last request (STRATA_SSD_KEEPALIVE=0 turns it off)",
+    "strata generate: profile /home/yayoi/orca/workspaces/Strata/sycl/data/expert-profile.bin: 24576 ranked pairs, built for 24576 slots",
+    "strata generate: KV streaming: 32768 of 262144 cells per QSA layer in VRAM, the K/V in 3.09 GiB of pinned RAM",
+    "strata generate: PLE on, table 320001536 rows of /home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00002-of-00002.gguf",
+    "strata mtp: draft layer loaded, 834 MiB of VRAM (experts 675, dense 111), files read in 0.96 s (814 MiB/s)",
+    "strata generate: GPU 0: Intel(R) Arc(TM) B570 Graphics (SYCL)",
+    "strata generate: expert arena read through the file cache (buffered (not Windows))",
+    "strata generate: expert arena: mlock failed (raise ulimit -l); SYCL ordinary host arena; MAP_HUGETLB unavailable (needed 23983 2 MiB pages, vm.nr_hugepages=0); using 4 KB pages",
+    "strata generate: loaded 46.84 GiB at 1.64 GiB/s",
+    "strata generate: experimental native Q5_K head, 521472000 bytes",
+    "strata generate: expert cache 128 slots, 0.26 GiB of VRAM; policy is",
+    "strata generate: SYCL cached experts use native Q8_1 arithmetic; logits can differ from CPU experts.",
+    "                 R4.2g PER-LAYER: each layer owns 2 slots (0..1).",
+    "strata generate: pre-filled 128 of 128 slots from the profile; slot 0 verified",
+    "strata generate: native GPU hit kernels captured at session setup",
+    "strata generate: R4 hit path ON - resident experts are computed on the GPU",
+    "strata generate: 5 expert-pool workers + the host thread",
+    "strata generate: session is up (engine 0.1.38)",
+    "strata generate: token graph hit path: 128 resident experts, decided on the device",
+    "strata serve: the prompt path allocates its own buffers (too few cache slots to borrow)",
+    "strata verify: window up to 4 tokens, 63.8 MiB of device buffers",
+    "strata mtp: draft head over 106299 tokens (212.9 MiB)",
+    "strata serve: 1669 MiB of VRAM free with everything loaded",
+    "strata verify: captured the 1-token window in 49 event-completed segments",
+    "strata verify: capture 1 tokens 3771.861 ms, free VRAM 1429.1 MiB",
+    "strata verify: 48 shared/hit graphs can overlap CPU experts",
+    "strata verify: captured the 4-token window in 49 event-completed segments",
+    "strata verify: capture 4 tokens 161.343 ms, free VRAM 1298.9 MiB",
+    "strata verify: 48 shared/hit graphs can overlap CPU experts"
+  ],
+  "per_request_native_summaries": [
+    {
+      "prompt_line": "strata serve: prompt 34 tokens = 0 reused + 34 read in 115452 ms (0.3 tok/s), 24 generated in 7936 ms (3.0 tok/s), drafts accepted 18 of 24, 0 checkpoints",
+      "expert_cache_line": "strata serve: decode expert cache hit rate: 1.4% (225 hits / 15840 lookups)",
+      "expert_hits": 225,
+      "expert_lookups": 15840,
+      "KV_streaming_line": "strata serve: KV streaming: 96.17% of 4704 block reads hit VRAM, 0.7 MiB read from RAM"
+    },
+    {
+      "prompt_line": "strata serve: prompt 260 tokens = 0 reused + 260 read in 8942 ms (29.1 tok/s), 1 generated in 148 ms (6.8 tok/s), drafts accepted 0 of 0, 0 checkpoints",
+      "expert_cache_line": "strata serve: decode expert cache hit rate: 2.3% (11 hits / 480 lookups)",
+      "expert_hits": 11,
+      "expert_lookups": 480,
+      "KV_streaming_line": "strata serve: KV streaming: 0.00% of 780 block reads hit VRAM, 3.1 MiB read from RAM"
+    },
+    {
+      "prompt_line": "strata serve: prompt 906 tokens = 0 reused + 906 read in 12781 ms (70.9 tok/s), 1 generated in 130 ms (7.7 tok/s), drafts accepted 0 of 0, 0 checkpoints",
+      "expert_cache_line": "strata serve: decode expert cache hit rate: 2.3% (11 hits / 480 lookups)",
+      "expert_hits": 11,
+      "expert_lookups": 480,
+      "KV_streaming_line": "strata serve: KV streaming: 0.00% of 2724 block reads hit VRAM, 11.0 MiB read from RAM"
+    },
+    {
+      "prompt_line": "strata serve: prompt 1028 tokens = 0 reused + 1028 read in 14237 ms (72.2 tok/s), 8 generated in 1457 ms (5.5 tok/s), drafts accepted 3 of 12, 0 checkpoints",
+      "expert_cache_line": "strata serve: decode expert cache hit rate: 2.3% (186 hits / 8160 lookups)",
+      "expert_hits": 186,
+      "expert_lookups": 8160,
+      "KV_streaming_line": "strata serve: KV streaming: 94.09% of 52776 block reads hit VRAM, 12.6 MiB read from RAM"
+    },
+    {
+      "prompt_line": "strata serve: prompt 51 tokens = 0 reused + 51 read in 5637 ms (9.0 tok/s), 100 generated in 9350 ms (10.7 tok/s), drafts accepted 72 of 87, 0 checkpoints",
+      "expert_cache_line": "strata serve: decode expert cache hit rate: 1.7% (928 hits / 56160 lookups)",
+      "expert_hits": 928,
+      "expert_lookups": 56160,
+      "KV_streaming_line": "strata serve: KV streaming: 98.73% of 36024 block reads hit VRAM, 1.8 MiB read from RAM"
+    },
+    {
+      "prompt_line": "strata serve: prompt 43 tokens = 0 reused + 43 read in 5724 ms (7.5 tok/s), 100 generated in 14858 ms (6.7 tok/s), drafts accepted 57 of 129, 0 checkpoints",
+      "expert_cache_line": "strata serve: decode expert cache hit rate: 0.8% (685 hits / 83040 lookups)",
+      "expert_hits": 685,
+      "expert_lookups": 83040,
+      "KV_streaming_line": "strata serve: KV streaming: 99.09% of 48888 block reads hit VRAM, 1.8 MiB read from RAM"
+    },
+    {
+      "prompt_line": "strata serve: prompt 46 tokens = 0 reused + 46 read in 5614 ms (8.2 tok/s), 100 generated in 13909 ms (7.2 tok/s), drafts accepted 58 of 126, 0 checkpoints",
+      "expert_cache_line": "strata serve: decode expert cache hit rate: 1.0% (826 hits / 81120 lookups)",
+      "expert_hits": 826,
+      "expert_lookups": 81120,
+      "KV_streaming_line": "strata serve: KV streaming: 99.08% of 48036 block reads hit VRAM, 1.8 MiB read from RAM"
+    },
+    {
+      "prompt_line": "strata serve: prompt 51 tokens = 0 reused + 51 read in 5736 ms (8.9 tok/s), 100 generated in 10142 ms (9.9 tok/s), drafts accepted 72 of 87, 0 checkpoints",
+      "expert_cache_line": "strata serve: decode expert cache hit rate: 1.6% (925 hits / 56160 lookups)",
+      "expert_hits": 925,
+      "expert_lookups": 56160,
+      "KV_streaming_line": "strata serve: KV streaming: 98.73% of 36024 block reads hit VRAM, 1.8 MiB read from RAM"
+    },
+    {
+      "prompt_line": "strata serve: prompt 43 tokens = 0 reused + 43 read in 4898 ms (8.8 tok/s), 100 generated in 14318 ms (7.0 tok/s), drafts accepted 56 of 129, 0 checkpoints",
+      "expert_cache_line": "strata serve: decode expert cache hit rate: 0.8% (672 hits / 83040 lookups)",
+      "expert_hits": 672,
+      "expert_lookups": 83040,
+      "KV_streaming_line": "strata serve: KV streaming: 99.13% of 50892 block reads hit VRAM, 1.8 MiB read from RAM"
+    },
+    {
+      "prompt_line": "strata serve: prompt 46 tokens = 0 reused + 46 read in 4992 ms (9.2 tok/s), 100 generated in 14965 ms (6.7 tok/s), drafts accepted 57 of 132, 0 checkpoints",
+      "expert_cache_line": "strata serve: decode expert cache hit rate: 1.0% (857 hits / 84960 lookups)",
+      "expert_hits": 857,
+      "expert_lookups": 84960,
+      "KV_streaming_line": "strata serve: KV streaming: 99.14% of 51480 block reads hit VRAM, 1.8 MiB read from RAM"
+    },
+    {
+      "prompt_line": "strata serve: prompt 51 tokens = 0 reused + 51 read in 5847 ms (8.7 tok/s), 100 generated in 9927 ms (10.1 tok/s), drafts accepted 72 of 87, 0 checkpoints",
+      "expert_cache_line": "strata serve: decode expert cache hit rate: 1.7% (930 hits / 56160 lookups)",
+      "expert_hits": 930,
+      "expert_lookups": 56160,
+      "KV_streaming_line": "strata serve: KV streaming: 98.73% of 36024 block reads hit VRAM, 1.8 MiB read from RAM"
+    },
+    {
+      "prompt_line": "strata serve: prompt 43 tokens = 0 reused + 43 read in 5457 ms (7.9 tok/s), 100 generated in 14678 ms (6.8 tok/s), drafts accepted 58 of 132, 0 checkpoints",
+      "expert_cache_line": "strata serve: decode expert cache hit rate: 0.8% (682 hits / 84960 lookups)",
+      "expert_hits": 682,
+      "expert_lookups": 84960,
+      "KV_streaming_line": "strata serve: KV streaming: 99.09% of 48792 block reads hit VRAM, 1.8 MiB read from RAM"
+    },
+    {
+      "prompt_line": "strata serve: prompt 46 tokens = 0 reused + 46 read in 5737 ms (8.0 tok/s), 100 generated in 15574 ms (6.4 tok/s), drafts accepted 56 of 135, 0 checkpoints",
+      "expert_cache_line": "strata serve: decode expert cache hit rate: 1.0% (885 hits / 86880 lookups)",
+      "expert_hits": 885,
+      "expert_lookups": 86880,
+      "KV_streaming_line": "strata serve: KV streaming: 99.15% of 52512 block reads hit VRAM, 1.8 MiB read from RAM"
+    },
+    {
+      "prompt_line": "strata serve: prompt 4019 tokens = 0 reused + 4019 read in 34988 ms (114.9 tok/s), 24 generated in 3922 ms (6.1 tok/s), drafts accepted 16 of 30, 0 checkpoints",
+      "expert_cache_line": "strata serve: decode expert cache hit rate: 2.0% (398 hits / 19680 lookups)",
+      "expert_hits": 398,
+      "expert_lookups": 19680,
+      "KV_streaming_line": "strata serve: KV streaming: 95.62% of 252636 block reads hit VRAM, 44.5 MiB read from RAM"
+    },
+    {
+      "prompt_line": "strata serve: prompt 4019 tokens = 0 reused + 4019 read in 34316 ms (117.1 tok/s), 24 generated in 4397 ms (5.5 tok/s), drafts accepted 12 of 33, 0 checkpoints",
+      "expert_cache_line": "strata serve: decode expert cache hit rate: 1.8% (393 hits / 21600 lookups)",
+      "expert_hits": 393,
+      "expert_lookups": 21600,
+      "KV_streaming_line": "strata serve: KV streaming: 95.94% of 277284 block reads hit VRAM, 45.3 MiB read from RAM"
+    },
+    {
+      "prompt_line": "strata serve: prompt 4019 tokens = 0 reused + 4019 read in 34344 ms (117.0 tok/s), 24 generated in 4056 ms (5.9 tok/s), drafts accepted 15 of 30, 0 checkpoints",
+      "expert_cache_line": "strata serve: decode expert cache hit rate: 1.9% (369 hits / 19680 lookups)",
+      "expert_hits": 369,
+      "expert_lookups": 19680,
+      "KV_streaming_line": "strata serve: KV streaming: 95.50% of 252636 block reads hit VRAM, 45.8 MiB read from RAM"
+    },
+    {
+      "prompt_line": "strata serve: prompt 16058 tokens = 0 reused + 16058 read in 134515 ms (119.4 tok/s), 24 generated in 4146 ms (5.8 tok/s), drafts accepted 14 of 33, 0 checkpoints",
+      "expert_cache_line": "strata serve: decode expert cache hit rate: 1.9% (409 hits / 21600 lookups)",
+      "expert_hits": 409,
+      "expert_lookups": 21600,
+      "KV_streaming_line": "strata serve: KV streaming: 91.73% of 277296 block reads hit VRAM, 92.3 MiB read from RAM"
+    },
+    {
+      "prompt_line": "strata serve: prompt 16058 tokens = 0 reused + 16058 read in 135067 ms (118.9 tok/s), 24 generated in 4558 ms (5.3 tok/s), drafts accepted 14 of 33, 0 checkpoints",
+      "expert_cache_line": "strata serve: decode expert cache hit rate: 1.9% (413 hits / 21600 lookups)",
+      "expert_hits": 413,
+      "expert_lookups": 21600,
+      "KV_streaming_line": "strata serve: KV streaming: 91.77% of 277296 block reads hit VRAM, 91.9 MiB read from RAM"
+    },
+    {
+      "prompt_line": "strata serve: prompt 16058 tokens = 0 reused + 16058 read in 134971 ms (119.0 tok/s), 24 generated in 4055 ms (5.9 tok/s), drafts accepted 14 of 33, 0 checkpoints",
+      "expert_cache_line": "strata serve: decode expert cache hit rate: 1.9% (416 hits / 21600 lookups)",
+      "expert_hits": 416,
+      "expert_lookups": 21600,
+      "KV_streaming_line": "strata serve: KV streaming: 91.78% of 277296 block reads hit VRAM, 91.8 MiB read from RAM"
+    },
+    {
+      "prompt_line": "strata serve: prompt 609 tokens = 0 reused + 609 read in 18986 ms (32.1 tok/s), 20 generated in 2692 ms (7.4 tok/s), drafts accepted 13 of 24, 0 checkpoints",
+      "expert_cache_line": "strata serve: decode expert cache hit rate: 2.0% (316 hits / 15840 lookups)",
+      "expert_hits": 316,
+      "expert_lookups": 15840,
+      "KV_streaming_line": "strata serve: KV streaming: 96.92% of 61464 block reads hit VRAM, 7.6 MiB read from RAM"
+    },
+    {
+      "prompt_line": "strata serve: prompt 3711 tokens = 0 reused + 3711 read in 40101 ms (92.5 tok/s), 64 generated in 8065 ms (7.9 tok/s), drafts accepted 44 of 60, 0 checkpoints",
+      "expert_cache_line": "strata serve: decode expert cache hit rate: 3.1% (1217 hits / 38880 lookups)",
+      "expert_hits": 1217,
+      "expert_lookups": 38880,
+      "KV_streaming_line": "strata serve: KV streaming: 97.78% of 499116 block reads hit VRAM, 44.7 MiB read from RAM"
+    },
+    {
+      "prompt_line": "strata serve: prompt 5244 tokens = 0 reused + 5244 read in 62467 ms (83.9 tok/s), 64 generated in 8708 ms (7.3 tok/s), drafts accepted 39 of 72, 0 checkpoints",
+      "expert_cache_line": "strata serve: decode expert cache hit rate: 3.1% (1461 hits / 46560 lookups)",
+      "expert_hits": 1461,
+      "expert_lookups": 46560,
+      "KV_streaming_line": "strata serve: KV streaming: 97.55% of 597708 block reads hit VRAM, 59.1 MiB read from RAM"
+    },
+    {
+      "prompt_line": "strata serve: prompt 8688 tokens = 0 reused + 8688 read in 98507 ms (88.2 tok/s), 21 generated in 3049 ms (6.9 tok/s), drafts accepted 12 of 24, 0 checkpoints",
+      "expert_cache_line": "strata serve: decode expert cache hit rate: 3.6% (575 hits / 15840 lookups)",
+      "expert_hits": 575,
+      "expert_lookups": 15840,
+      "KV_streaming_line": "strata serve: KV streaming: 91.45% of 203340 block reads hit VRAM, 70.1 MiB read from RAM"
+    },
+    {
+      "prompt_line": "strata serve: prompt 11568 tokens = 0 reused + 11568 read in 121372 ms (95.3 tok/s), 12 generated in 1466 ms (8.2 tok/s), drafts accepted 8 of 9, 0 checkpoints",
+      "expert_cache_line": "strata serve: decode expert cache hit rate: 3.4% (212 hits / 6240 lookups)",
+      "expert_hits": 212,
+      "expert_lookups": 6240,
+      "KV_streaming_line": "strata serve: KV streaming: 82.74% of 80100 block reads hit VRAM, 55.7 MiB read from RAM"
+    },
+    {
+      "prompt_line": "strata serve: prompt 14425 tokens = 0 reused + 14425 read in 153984 ms (93.7 tok/s), 31 generated in 4699 ms (6.6 tok/s), drafts accepted 18 of 36, 0 checkpoints",
+      "expert_cache_line": "strata serve: decode expert cache hit rate: 2.7% (646 hits / 23520 lookups)",
+      "expert_hits": 646,
+      "expert_lookups": 23520,
+      "KV_streaming_line": "strata serve: KV streaming: 92.15% of 301944 block reads hit VRAM, 95.5 MiB read from RAM"
+    },
+    {
+      "prompt_line": "strata serve: prompt 609 tokens = 0 reused + 609 read in 18401 ms (33.1 tok/s), 21 generated in 3373 ms (6.2 tok/s), drafts accepted 13 of 27, 0 checkpoints",
+      "expert_cache_line": "strata serve: decode expert cache hit rate: 2.2% (383 hits / 17760 lookups)",
+      "expert_hits": 383,
+      "expert_lookups": 17760,
+      "KV_streaming_line": "strata serve: KV streaming: 97.25% of 68892 block reads hit VRAM, 7.6 MiB read from RAM"
+    },
+    {
+      "prompt_line": "strata serve: prompt 3712 tokens = 0 reused + 3712 read in 38476 ms (96.5 tok/s), 64 generated in 11987 ms (5.3 tok/s), drafts accepted 43 of 60, 0 checkpoints",
+      "expert_cache_line": "strata serve: decode expert cache hit rate: 3.2% (1229 hits / 38880 lookups)",
+      "expert_hits": 1229,
+      "expert_lookups": 38880,
+      "KV_streaming_line": "strata serve: KV streaming: 97.78% of 499116 block reads hit VRAM, 44.7 MiB read from RAM"
+    },
+    {
+      "prompt_line": "strata serve: prompt 5245 tokens = 0 reused + 5245 read in 62258 ms (84.2 tok/s), 64 generated in 10268 ms (6.2 tok/s), drafts accepted 39 of 72, 0 checkpoints",
+      "expert_cache_line": "strata serve: decode expert cache hit rate: 3.3% (1525 hits / 46560 lookups)",
+      "expert_hits": 1525,
+      "expert_lookups": 46560,
+      "KV_streaming_line": "strata serve: KV streaming: 97.53% of 597720 block reads hit VRAM, 59.4 MiB read from RAM"
+    },
+    {
+      "prompt_line": "strata serve: prompt 8689 tokens = 0 reused + 8689 read in 98622 ms (88.1 tok/s), 38 generated in 11468 ms (3.3 tok/s), drafts accepted 19 of 54, 0 checkpoints",
+      "expert_cache_line": "strata serve: decode expert cache hit rate: 3.4% (1177 hits / 35040 lookups)",
+      "expert_hits": 1177,
+      "expert_lookups": 35040,
+      "KV_streaming_line": "strata serve: KV streaming: 95.42% of 449832 block reads hit VRAM, 83.0 MiB read from RAM"
+    },
+    {
+      "prompt_line": "strata serve: prompt 11586 tokens = 0 reused + 11586 read in 118142 ms (98.1 tok/s), 11 generated in 1761 ms (6.2 tok/s), drafts accepted 6 of 12, 0 checkpoints",
+      "expert_cache_line": "strata serve: decode expert cache hit rate: 3.1% (253 hits / 8160 lookups)",
+      "expert_hits": 253,
+      "expert_lookups": 8160,
+      "KV_streaming_line": "strata serve: KV streaming: 86.32% of 104760 block reads hit VRAM, 57.7 MiB read from RAM"
+    },
+    {
+      "prompt_line": "strata serve: prompt 14442 tokens = 0 reused + 14442 read in 153592 ms (94.0 tok/s), 12 generated in 2742 ms (4.4 tok/s), drafts accepted 4 of 21, 0 checkpoints",
+      "expert_cache_line": "strata serve: decode expert cache hit rate: 2.5% (353 hits / 13920 lookups)",
+      "expert_hits": 353,
+      "expert_lookups": 13920,
+      "KV_streaming_line": "strata serve: KV streaming: 89.95% of 178704 block reads hit VRAM, 72.3 MiB read from RAM"
+    },
+    {
+      "prompt_line": "strata serve: prompt 609 tokens = 0 reused + 609 read in 18478 ms (33.0 tok/s), 21 generated in 3339 ms (6.3 tok/s), drafts accepted 13 of 27, 0 checkpoints",
+      "expert_cache_line": "strata serve: decode expert cache hit rate: 2.2% (389 hits / 17760 lookups)",
+      "expert_hits": 389,
+      "expert_lookups": 17760,
+      "KV_streaming_line": "strata serve: KV streaming: 97.25% of 68892 block reads hit VRAM, 7.6 MiB read from RAM"
+    },
+    {
+      "prompt_line": "strata serve: prompt 3712 tokens = 0 reused + 3712 read in 38193 ms (97.2 tok/s), 64 generated in 6716 ms (9.5 tok/s), drafts accepted 45 of 54, 0 checkpoints",
+      "expert_cache_line": "strata serve: decode expert cache hit rate: 3.2% (1121 hits / 35040 lookups)",
+      "expert_hits": 1121,
+      "expert_lookups": 35040,
+      "KV_streaming_line": "strata serve: KV streaming: 97.54% of 449820 block reads hit VRAM, 44.6 MiB read from RAM"
+    },
+    {
+      "prompt_line": "strata serve: prompt 5245 tokens = 0 reused + 5245 read in 63381 ms (82.8 tok/s), 64 generated in 9947 ms (6.4 tok/s), drafts accepted 39 of 75, 0 checkpoints",
+      "expert_cache_line": "strata serve: decode expert cache hit rate: 3.1% (1524 hits / 48480 lookups)",
+      "expert_hits": 1524,
+      "expert_lookups": 48480,
+      "KV_streaming_line": "strata serve: KV streaming: 97.64% of 622368 block reads hit VRAM, 59.1 MiB read from RAM"
+    },
+    {
+      "prompt_line": "strata serve: prompt 8689 tokens = 0 reused + 8689 read in 98569 ms (88.2 tok/s), 51 generated in 8054 ms (6.3 tok/s), drafts accepted 31 of 57, 0 checkpoints",
+      "expert_cache_line": "strata serve: decode expert cache hit rate: 3.6% (1337 hits / 36960 lookups)",
+      "expert_hits": 1337,
+      "expert_lookups": 36960,
+      "KV_streaming_line": "strata serve: KV streaming: 95.41% of 474480 block reads hit VRAM, 87.7 MiB read from RAM"
+    },
+    {
+      "prompt_line": "strata serve: prompt 11599 tokens = 0 reused + 11599 read in 119632 ms (97.0 tok/s), 26 generated in 4309 ms (6.0 tok/s), drafts accepted 18 of 21, 0 checkpoints",
+      "expert_cache_line": "strata serve: decode expert cache hit rate: 3.0% (413 hits / 13920 lookups)",
+      "expert_hits": 413,
+      "expert_lookups": 13920,
+      "KV_streaming_line": "strata serve: KV streaming: 90.06% of 178692 block reads hit VRAM, 71.6 MiB read from RAM"
+    },
+    {
+      "prompt_line": "strata serve: prompt 14470 tokens = 0 reused + 14470 read in 154590 ms (93.6 tok/s), 60 generated in 14407 ms (4.2 tok/s), drafts accepted 36 of 69, 0 checkpoints",
+      "expert_cache_line": "strata serve: decode expert cache hit rate: 3.0% (1318 hits / 44640 lookups)",
+      "expert_hits": 1318,
+      "expert_lookups": 44640,
+      "KV_streaming_line": "strata serve: KV streaming: 95.06% of 573072 block reads hit VRAM, 114.1 MiB read from RAM"
+    },
+    {
+      "prompt_line": "strata serve: prompt 32049 tokens = 0 reused + 32049 read in 270484 ms (118.5 tok/s), 24 generated in 5744 ms (4.2 tok/s), drafts accepted 15 of 30, 0 checkpoints",
+      "expert_cache_line": "strata serve: decode expert cache hit rate: 2.1% (406 hits / 19680 lookups)",
+      "expert_hits": 406,
+      "expert_lookups": 19680,
+      "KV_streaming_line": "strata serve: KV streaming: 89.36% of 252648 block reads hit VRAM, 108.3 MiB read from RAM"
+    },
+    {
+      "prompt_line": "strata serve: prompt 32049 tokens = 0 reused + 32049 read in 270692 ms (118.4 tok/s), 24 generated in 8423 ms (2.8 tok/s), drafts accepted 10 of 45, 0 checkpoints",
+      "expert_cache_line": "strata serve: decode expert cache hit rate: 1.9% (555 hits / 29280 lookups)",
+      "expert_hits": 555,
+      "expert_lookups": 29280,
+      "KV_streaming_line": "strata serve: KV streaming: 92.10% of 375888 block reads hit VRAM, 119.6 MiB read from RAM"
+    },
+    {
+      "prompt_line": "strata serve: prompt 32049 tokens = 0 reused + 32049 read in 269512 ms (118.9 tok/s), 24 generated in 7125 ms (3.4 tok/s), drafts accepted 12 of 33, 0 checkpoints",
+      "expert_cache_line": "strata serve: decode expert cache hit rate: 2.1% (463 hits / 21600 lookups)",
+      "expert_hits": 463,
+      "expert_lookups": 21600,
+      "KV_streaming_line": "strata serve: KV streaming: 90.16% of 277296 block reads hit VRAM, 109.9 MiB read from RAM"
+    }
+  ],
+  "scope": "native source/placement/startup plus all40 request phase/cache/KV summaries; no API/poll trace"
+}
