@@ -1,0 +1,10 @@
+{
+  "requested_order": [
+    "Finish modified benchmark validation, including real output length and high/low MTP agreement",
+    "Audit Codex public session history and PR #6's reported >600 t/s prefill; inspect the actual code/settings and recover safe useful implementation"
+  ],
+  "PR6_status": "Pending the benchmark work boundary; do not dismiss the earlier result as a XeStrata benchmark or silently replace its meaning",
+  "existing_evidence": "../2026-10-14-performance-regression-audit/session-decisions.json records the 2026-10-05 report of 453->646 t/s and merged own-fork PR #6. This is evidence to reconcile, not a new safety/performance qualification.",
+  "safety_review": "Historical GPU faults motivate queue/dependency, allocation/graph/host/device lifetime, bounds and SYCL/LevelZero contract checks before replay. Fault timing alone does not establish a bug in PR #6.",
+  "scope": "Personal Niko1221/Strata fork; retain existing accelerated own-fork paths per component, prefill/decode separately. Main owns serial tests/GPU; read-only Luna research and separate Sol implementation remain available."
+}
