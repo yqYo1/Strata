@@ -1,5 +1,5 @@
 {
-  "observed_utc": "2026-10-14T17:47:35.119172+00:00",
+  "observed_utc": "2026-10-14T18:06:38.048282+00:00",
   "run_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-long-generation-suite-root-v4-upload-fix-v1",
   "source_revision": "16d9d2b993a56a874d63324bbe9b55782ab1b6b3",
   "binary_sha256": "6180b2bb535a4841385a4988de54ca405b6cdeccbb51fb62b134c5608830d1a6",
@@ -14,8 +14,8 @@
   "physical_262144_qualified": false,
   "restore_qualified": false,
   "journal_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-long-generation-suite-root-v4-upload-fix-v1/stock-results/2026-10-15-community-cpu-qwen3-8-flash-next-iq3-s-primary/requests.jsonl",
-  "observed_prefix_bytes": 61594,
-  "observed_prefix_sha256": "ec0646fd750b2eef4f90bf4be5da694b7fae45e8d8e1aeb33487722db95dcb29",
+  "observed_prefix_bytes": 63276,
+  "observed_prefix_sha256": "912ea7a9146ebe18636f41986aba4927277222390ef1fe1f3a2865c5a1bd3da4",
   "completed_long_samples": [
     {
       "index": 82,
@@ -151,7 +151,54 @@
       "request_start_index": 85,
       "thinking": true,
       "max_tokens": 16384
+    },
+    {
+      "index": 88,
+      "sha256": "9a3d96a8b8f4f2abdf5705e4a5c73f4fbdbb53a4a67e163e6ea46dd535048a06",
+      "phase": "long-generation/regular-code",
+      "run": 1,
+      "turn": null,
+      "sample": {
+        "acceptance_rate": 0.8197674418604651,
+        "agreement_eligible": true,
+        "completion_includes_thinking": true,
+        "decode_ms": 713009.9,
+        "decode_tps": 5.8,
+        "decode_tps_source": "engine",
+        "drafts_accepted": 2961,
+        "drafts_offered": 3612,
+        "eligible": true,
+        "err": null,
+        "finish_reason": "stop",
+        "generated_tokens": 4164,
+        "generated_tokens_source": "usage",
+        "ineligible_reasons": [],
+        "ok": true,
+        "output_chars": 5496,
+        "output_sha256": "5b7ae0f207d7804bc693ebde382f1a762c43f477fd01483939648d004cfaf971",
+        "prompt_ms": 183796.2,
+        "prompt_tokens": 33214,
+        "prompt_tps": 180.7,
+        "prompt_tps_source": "engine",
+        "read_tokens": 33214,
+        "reasoning_chars": 5512,
+        "reasoning_sha256": "57ce419ee3a89fb5792a9c2a22c1935b5e98de0a6498d06948724844f7a6cb29",
+        "request_sha256": "8320a2c699044afaa2afca1a4630f22cd0ad2118926f5a8e29bda2401ea56b4e",
+        "reused_tokens": 0,
+        "speed_eligible": true,
+        "speed_ineligible_reasons": [],
+        "stream_complete": true,
+        "total_s": 897.051,
+        "truncated": false,
+        "ttft_s": 184.29,
+        "usage_generated_tokens": 4164
+      },
+      "request_start_index": 87,
+      "thinking": true,
+      "max_tokens": 16384
     }
   ],
-  "scope": "Completed individual responses only; live suite has not reached final fault/exit/ownership checks. Per-response long input/output/body/agreement eligibility is not task-quality or speed-improvement qualification. Varied-prose run1 body3129chars does not satisfy its requested4000chars; this is recorded without relabeling the benchmark evidence. No live source/client/recipe changed; no testing/build/GPU/profiler/compression/cleanup performed."
+  "scope": "Completed individual responses only; live suite has not reached final fault/exit/ownership checks. Per-response long input/output/body/agreement eligibility is not task-quality or speed-improvement qualification. Varied-prose run1 body3129chars does not satisfy its requested4000chars; this is recorded without relabeling the benchmark evidence. No live source/client/recipe changed; no testing/build/GPU/profiler/compression/cleanup performed.",
+  "resource_observation": "suite-v4-upload-fix-current-resource-observation.json",
+  "variance_note": "Regular-code runs0/1 have similar draft agreement82.28/81.98percent but engine decode8.4/5.8tps. Agreement alone does not establish matching expert route/job mix, inference service or a cause. Current resource snapshot is instantaneous and cannot explain historical intervals."
 }
