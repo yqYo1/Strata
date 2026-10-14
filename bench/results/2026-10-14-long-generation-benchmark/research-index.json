@@ -16,12 +16,31 @@
       "path": "research/research-mtp-long-generation-round526-v1.txt",
       "original_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-mtp-long-generation-round526-v1.txt",
       "sha256": "2d45f8e8818d9cd4128f04c0b9c10ca2f553ebfddad64bb6b9e9383fd894d35c"
+    },
+    {
+      "round": 527,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research/research-server-mtp-counts-round527-v1.txt",
+      "original_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-server-mtp-counts-round527-v1.txt",
+      "sha256": "bfffecda8f747d18a6a8006f17123c6a0c51a86f4c38ccce431644207bb9bb11"
+    },
+    {
+      "round": 528,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research/research-benchmark-comparability-round528-v1.txt",
+      "original_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-benchmark-comparability-round528-v1.txt",
+      "sha256": "33359b572351413664106dafe73112b24b40efd43583c04ee0900b84d9ab8328"
     }
   ],
   "no_intervention_until_final": true,
   "main_owns_build_test_GPU": true,
   "main_corrections": [
     "Source entrypoint src/program/generate.cpp exists in this configured root. Historical overlays are not assumed active from the filename.",
-    "Main selects fixed 1024..1152 actual output gate and matched thinking-on pair, not the optional multi-request accumulation. Missing completion usage cannot be supplied by stream-piece counts."
+    "Main selects fixed 1024..1152 actual output gate and matched thinking-on pair, not the optional multi-request accumulation. Missing completion usage cannot be supplied by stream-piece counts.",
+    "The earlier fixed1024..1152 gate is historical v1. User requires thinking enabled: v2 OFF was withdrawn without execution. Current v3 accepts >=1024 up to8192 and requires actual body>=512 chars; no universal output identity or complete-task claim.",
+    "R527 suffix mixing is not active in this screen: actual launched arguments --suffix-draft0, --spec4, --no-spec-split are pinned. Boundary agreement counts may include <=3 un-emitted accepted positions; they are not emitted-token acceleration.",
+    "R528 executed-client claim is incorrect: extended mode invokes P/bench.sh and P clients, all pinned in benchmark_source. U client import is inside the unused diagnostic branch and does not execute in extended mode. No unpinned U benchmark client runs here; trimming unused diagnostic branches is optional simplification."
   ]
 }
