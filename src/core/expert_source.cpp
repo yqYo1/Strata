@@ -1,5 +1,6 @@
 // src/core/expert_source.cpp - the adapter.  See the header for the three clauses of the contract.
 #include "strata/core/expert_source.hpp"
+#include "strata/core/decode_service_budget.hpp"
 #include "strata/core/remote_experts.hpp"
 #include "strata/core/peer_experts.hpp"
 #include "strata/kernels/cpu/expert_layout.hpp"
@@ -31,6 +32,7 @@
 #include <limits>
 #include <map>
 #include <memory>
+#include <new>
 #include <mutex>
 #include <thread>
 #include <tuple>
@@ -60,6 +62,104 @@
 #endif
 
 namespace strata::core {
+// Combined close ownership adapts the archived DecodeServiceBudgetScope lifecycle.
+namespace {
+bool joined_decode_requested() {
+    static const bool on=decode_joined_requested(std::getenv("STRATA_DECODE_ROUTE_LEDGER"),
+                                                std::getenv("STRATA_DECODE_SERVICE_CPU"));
+    return on;
+}
+uint64_t joined_request_sequence=0; // serialized ordinary serve issuer; on-path only
+
+}
+DecodeLedgerSnapshot DecodeServiceBudgetScope::snapshot() {
+    DecodeLedgerSnapshot value;
+    if (!state_ || !dispatch_.pool) return value;
+    for (int i=0;i<14;++i) {
+        if (!sources_.real[i] || !std::isfinite(*sources_.real[i]) || *sources_.real[i]<0) return value;
+        value.real[i]=*sources_.real[i];
+    }
+    dispatch_.pool->phase_ms(value.real[14],value.real[15],value.real[16]);
+    for (int i=14;i<17;++i) if (!std::isfinite(value.real[i]) || value.real[i]<0) return value;
+    for (int i=0;i<6;++i) {
+        if (!sources_.count[i] || *sources_.count[i]<0) return value;
+        value.count[i]=*sources_.count[i];
+    }
+    value.valid=true; return value;
+}
+DecodeServiceBudgetScope::DecodeServiceBudgetScope(ExpertDispatch& d,int64_t layers,int64_t k,bool eligible,
+    int64_t prompt_n,int64_t max_new,int64_t context,bool coupled,const DecodeLedgerSources& sources)
+    :dispatch_(d),sources_(sources),requested_(joined_decode_requested()),coupled_(coupled) {
+    if (!requested_) return; // no clocks, allocation, prompt scan or output on the off path
+#if !defined(STRATA_ENABLE_SYCL) || !defined(__linux__)
+    refusal_="linux_sycl_only"; return;
+#endif
+    if (joined_request_sequence==UINT64_MAX) { refusal_="request_identity_overflow"; return; }
+    sequence_=++joined_request_sequence;
+    if (prompt_n<1 || context<1 || prompt_n>context || max_new<1) { refusal_="identity_envelope"; return; }
+    if (!eligible || !d.pool || d.remote_count || d.peer || d.decode_route_ledger || d.pool->service_budget() ||
+        layers<1 || layers>64 || k<1 || k>32 || d.n_expert<1 || d.n_expert>32767 ||
+        d.pool->workers()<1 || d.pool->workers()>128) return;
+    const auto& layout=strata::kernels::cpu::expert_layout();
+    if (!layout.native || layout.n_layers!=layers || layout.n_expert!=d.n_expert || layout.fmt.size()!=(size_t)layers) {
+        refusal_="native_format_table"; return;
+    }
+    for (int64_t l=0;l<layers;++l) if (!DecodeRouteLedger::valid_format(layout.fmt[(size_t)l])) {
+        refusal_="format_envelope"; return;
+    }
+    state_.reset(new(std::nothrow) DecodeRouteLedger);
+    if (!state_) { refusal_="state_allocation"; return; }
+    state_->layers=layers; state_->k=k; state_->experts=d.n_expert;
+    state_->workers=d.pool->workers(); state_->host_works=d.pool->host_works();
+    state_->service.worker_limit=state_->workers;
+    state_->sequence=sequence_; state_->coupled=coupled_; state_->prompt_tokens=prompt_n;
+    state_->max_new=max_new; state_->context=context;
+    for (int64_t l=0;l<layers;++l) state_->fmt[l]=layout.fmt[(size_t)l];
+    state_->before=snapshot(); if (!state_->before.valid) state_->invalid=true;
+    d.decode_route_ledger=state_.get(); // after prompt; one synchronous ordinary issuer
+}
+DecodeServiceBudgetScope::~DecodeServiceBudgetScope() { finish("error_or_early_exit",-1,-1,-1,0); }
+void DecodeServiceBudgetScope::finish(const char* status,int64_t emitted,int64_t offered,int64_t accepted,double decode_ms) {
+    if (finished_) return;
+    finished_=true;
+    if (!requested_) return;
+    if (!state_) {
+        std::fprintf(stderr,"strata decode joined close schema=mtp4-route-service-v2 request=%llu coupled=%d status=%.32s eligible=0 complete=0 reason=%s\n",
+            (unsigned long long)sequence_,coupled_,status?status:"unknown",refusal_);
+        return;
+    }
+    if (state_->pool_bound || (dispatch_.pool && dispatch_.pool->service_budget())) {
+        // No worker-slot reads, detach, destruction, or new waits. A leaked observer
+        // alone cannot preserve mjobs_/nfmt_/dispatch owners during unwinding.
+        std::fprintf(stderr,"strata decode joined close request=%llu coupled=%d complete=0 reason=pool_owner_completion_unproved fail_stop=1\n",
+            (unsigned long long)sequence_,coupled_);
+        strata::core::release_gpu_waits(stderr); std::fflush(stderr);
+        std::abort(); // keep every owner alive; matches the existing pool stall contract
+    }
+    // Each pool binding below ends only after run_split_multi_native returned through
+    // its existing final wait_parked. No new worker wait or asynchronous close is introduced.
+    state_->after=snapshot();
+    if (!state_->after.valid) state_->invalid=true;
+    if (state_->before.valid && state_->after.valid) {
+        for (int i=0;i<17;++i) if (state_->after.real[i]<state_->before.real[i]) state_->invalid=true;
+        for (int i=0;i<6;++i) if (state_->after.count[i]<state_->before.count[i]) state_->invalid=true;
+    }
+    if (dispatch_.decode_route_ledger==state_.get()) dispatch_.decode_route_ledger=nullptr;
+    else state_->invalid=true;
+    std::unique_ptr<char[]> bytes(new(std::nothrow) char[DecodeLedgerOutput::kCap]);
+    if (!bytes) {
+        std::fprintf(stderr,"strata decode joined close request=%llu coupled=%d status=%.32s complete=0 reason=output_allocation W=%llu R=%llu D=%llu A=%llu C=%llu E=%llu\n",
+            (unsigned long long)sequence_,coupled_,status?status:"unknown",
+            (unsigned long long)state_->W,(unsigned long long)state_->R,(unsigned long long)state_->D,
+            (unsigned long long)state_->A,(unsigned long long)state_->C,(unsigned long long)state_->E);
+        return;
+    }
+    DecodeLedgerOutput output{bytes.get(),DecodeLedgerOutput::kCap};
+    state_->receipt(output,status,emitted,offered,accepted,decode_ms);
+    state_->active=false;
+    std::fwrite(bytes.get(),1,output.used,stderr); // one bounded block, only on close
+}
+
 
 namespace detail {
 
@@ -1869,6 +1969,8 @@ static_assert(strata::kernels::cpu::MAXT * 10 <= kMaxWindowEntries, "a verify wi
 void expert_pool_dispatch_multi(ExpertDispatch& d, const float* x_f, const int32_t* ids, int64_t n_tok, int64_t k,
                                 float* out, const uint8_t* hit_mask) {
     using namespace strata::kernels::cpu;
+    auto* const decode_observer=d.decode_route_ledger;
+    if (decode_observer) decode_observer->attempt_dispatch(d.layers,n_tok,k);
     if (d.failed) return;
     if (hit_mask != nullptr && (n_tok != 1 || d.plan != nullptr || d.host_res != nullptr || d.remote_count > 0)) {
         d.failed = true;
@@ -2086,8 +2188,31 @@ void expert_pool_dispatch_multi(ExpertDispatch& d, const float* x_f, const int32
         }
     const auto c3 = std::chrono::steady_clock::now();
     pt("run", njobs);
-    if (native) d.pool->run_split_multi_native(lay.fmt[(size_t) d.layers], d.jobs_multi.data(), njobs);
-    else d.pool->run_split_multi(d.jobs_multi.data(), njobs);
+    if (native) {
+        if (decode_observer && decode_observer->active) {
+            if (d.pool->service_budget()) {
+                std::fprintf(stderr,"strata decode joined close complete=0 reason=pool_owner_collision fail_stop=1\n");
+                strata::core::release_gpu_waits(stderr); std::fflush(stderr); std::abort();
+            }
+            decode_observer->service.actual_t=(int)n_tok;
+            decode_observer->pool_bound=true;
+            d.pool->service_budget(&decode_observer->service);
+        }
+        if (decode_observer && decode_observer->active) {
+            decode_native_owner_call(*decode_observer,[&] {
+                d.pool->run_split_multi_native(lay.fmt[(size_t) d.layers], d.jobs_multi.data(), njobs);
+            });
+        } else d.pool->run_split_multi_native(lay.fmt[(size_t) d.layers], d.jobs_multi.data(), njobs);
+        // Native batches have completed and workers parked before this returns.
+        if (decode_observer && decode_observer->active) {
+            if (d.pool->service_budget()!=&decode_observer->service) {
+                std::fprintf(stderr,"strata decode joined close complete=0 reason=pool_owner_changed fail_stop=1\n");
+                strata::core::release_gpu_waits(stderr); std::fflush(stderr); std::abort();
+            }
+            d.pool->service_budget(nullptr);
+            decode_observer->pool_bound=false;
+        }
+    } else d.pool->run_split_multi(d.jobs_multi.data(), njobs);
     if (d.remote_count > 0) {
         static thread_local std::string remote_error;
         for (int r = 0; r < d.remote_count; ++r)
@@ -2107,6 +2232,13 @@ void expert_pool_dispatch_multi(ExpertDispatch& d, const float* x_f, const int32
     }
     const auto c4 = std::chrono::steady_clock::now();
     pt("ran");
+    if (decode_observer) {
+        if (decode_route_ledger_dispatch_eligible(native,n_tok,d.remote_count,d.peer!=nullptr) &&
+            d.layers>=0 && (size_t)d.layers<lay.fmt.size())
+            decode_observer->record(d.layers,n_tok,ids,kind,n,d.jobs_multi.data(),njobs,d.jobs_multi.size(),
+                                    lay.fmt[(size_t)d.layers],d.plan ? d.plan->pcie_mode : 0);
+        else decode_observer->invalid=true;
+    }
     auto ms = [](auto a, auto b) { return std::chrono::duration<double, std::milli>(b - a).count(); };
     d.ms_plan += ms(c0, c1);
     d.ms_actq += ms(c1, c2);

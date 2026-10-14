@@ -1,0 +1,223 @@
+2026-10-15 JST — selected native batched-prefill logits, proposal v1
+
+Status: UNAPPLIED / UNBUILT / UNTESTED / UNMEASURED / UNADOPTED.
+Main owns source review, integration, all builds/tests/GPU work and adoption.
+This directory is the only write destination. Product files, branches, commits,
+active runs, environment, service state, model blobs and existing artifacts were
+not changed. No build, test, GPU operation, cleanup or git mutation ran.
+The first artifact-generation command used unavailable `python`; it returned 127
+without running. It was rerun using python3. Python only generated/hash-recorded
+the proposed text files; it did not execute a contract or source test.
+
+Origin and boundary
+-------------------
+Based on current root src/program/generate.cpp at commit
+005c47b6f2c4a531a74cd1978f491580ed966279, SHA256
+e3ca2a964806270e1d72862f979b6e262fb17a925a6027e7534c81dc45418871.
+The working source, rather than an old report's implementation snapshot, is the
+base. The base hash was re-read unchanged when constructing source.diff.
+base-hashes.json records the base file, read-only source and review-input hashes.
+proposed-hashes.json records all three proposed source files and source.diff.
+
+Read AGENTS.md, project strata-upstream-sync skill, its integration reference,
+git-workflow skill, ARTIFACT_RETENTION.md, R573, main-review-round569-570.ja.md,
+the current research-index and its previous routed-FP16-census research-index.
+The explicit artifact-only/no-branch/no-test instruction controls this boundary.
+The separate mtp4-decode-observer-v1 candidate remains unapplied and is not used
+as a source baseline. Its generate.cpp changes concern decode observation;
+this patch adds diagnostic setup and the standalone prefill callback only.
+Apply source.diff incrementally to Main's reviewed source. Do not replace the
+whole product generate.cpp with this snapshot after integrating another patch.
+
+Files
+-----
+source.diff: incremental patch for one existing file and two new source files.
+files/src/program/generate.cpp: complete proposed snapshot for review/recovery.
+files/include/strata/program/prefill_logits.hpp: CPU-only position/streamed-file
+  contract; no GPU dependency, no hashing, one host vocabulary row.
+files/tests/cpu/prefill_logits.cpp: standalone CPU contract source, not run and
+  not added to CMake. Main may build/run it serially using the command below.
+No new kernels, GPU allocations, model arithmetic, token mutation, API, server,
+peer/stage path, snapshot format or decode logit-dump behavior is proposed.
+
+Configuration and accepted scope
+--------------------------------
+Both variables must be set together, and their empty values are invalid:
+  STRATA_PREFILL_LOGITS=/private/run-dir/prefill.bin
+  STRATA_PREFILL_LOGITS_POSITIONS=0,4095,4096,32766
+The path must be unused and on a filesystem supporting same-directory hard
+links. Main creates/owns the private run directory before launch. This proposal
+is enabled only under STRATA_ENABLE_SYCL. It requires explicit --native SHARD,
+--prefill CHUNK (including auto), at least two exact supplied token IDs, native
+expert-pack dispatch and standalone single GPU. It rejects serve, layer split,
+peer-device >=1, helper remote caches, gpu-stages, graph-only and gpu-only-full.
+The early validation is immediately after CLI parsing, before any GPU preflight
+or topology query. Native expert-layout identity is additionally checked once
+the existing CPU layout loader has run, before engine allocation.
+
+Positions are zero-based indices in the actual batched range [0,n_batched).
+n_batched follows existing --prefill-until behavior exactly:
+  last = tokens.size()-1
+  n_batched = (0 < prefill_until < last) ? prefill_until : last
+Each row at p predicts the unchanged tokens[p+1]. The final input token is not
+part of this batched range. No additional token is inserted, removed or sampled.
+The parser accepts 1..64 strictly rising unsigned decimal int64 fields; it
+rejects signs, whitespace, empty fields/trailing commas, overflow, duplicate,
+decreasing and out-of-range positions. It does not sort or silently truncate.
+The input list's byte length is bounded, with no prompt-wide scan/hash.
+
+When both variables are absent, the added code performs two getenv calls and
+constructs empty small containers. No added prompt/ID scan, allocation, file
+operation, callback, head execution, queue submission or wait occurs.
+Writer::begin allocates one FP32 host vocabulary row only when enabled.
+
+Actual source and state contract
+--------------------------------
+CMakeLists.txt includes cmake/sycl_backend.cmake when STRATA_ENABLE_SYCL=ON.
+That file's strata executable uses root src/program/generate.cpp; strata_engine
+uses root core/layer.cpp and native_head.cpp; strata_prefill uses root prefill
+sources; the GR implementation is src/kernels/sycl/gr.cpp. There is no historic
+sycl/src resolver in this path. No CUDA/HIP implementation was imported/tested.
+
+Prefill::init stores the supplied main_cs in m.cs (prefill.cpp:720). Its public
+on_chunk contract is device FP32 T x hc*n_embd residual rows, valid until next
+chunk, after a checked prefill stream synchronize. The regular dispatch invokes
+it after the final layer. layer_major.inc forwards restore.chunk only when
+layer+1 == g.n_layers, so its saved/restored intermediates are not sampled as
+final outputs. That forwarding preserves p0/T and FP32 final residuals for the
+FP16-storage candidate as well. This is source reasoning, not a runtime proof.
+
+For each selected row the proposed callback does:
+  BlockBuffers bb = ss.block;          // local struct, pointer/scratch copy
+  bb.R = R_rows + (p-p0)*hc*n_embd;     // const_cast only for existing API type
+  if native_head.loaded():
+      lm_head_mix(wt,g,bb,main_cs,e), native_head.run(bb.mixed,d_logits,main_cs,e)
+  else:
+      lm_head(wt,g,bb,d_logits,main_cs,e)
+  enqueue one row D2H from existing d_logits on main_stream; checked wait
+  append the host row and its position/target to files
+
+This deliberately follows generate.cpp run_head. R573's lm_head-only sketch is
+insufficient when native_head.loaded(): NativeHead::run selects the dedicated
+type==13 Q5_K head or its native MMVQ alternative. Metadata records native/pack
+choice and native GGML head type. No output.weight replacement is proposed.
+
+lm_head_mix (core/layer.cpp:1066) passes bb.R as const input to gr_read; it does
+not reassign ss.block.R. SYCL gr_read (gr.cpp:209..290) validates disjoint output
+spans and writes GR workspace and mixed, with no residual store. Here wi is
+null, so the inject projection is not issued. lm_head adds quantization scratch
+and logits writes. NativeHead::run reads const mixed and writes its activation
+scratch/logits. No KV/recurrent/PLE state is accessed by these head operations.
+The shared ss.block scratch is reused only on the same queue and fully retired
+before MTP forwarding or the next chunk. persistent ss.block.R is never changed.
+The normal subsequent token head recomputes d_logits; no sampler consumes a
+selected-position row as an inference decision.
+
+Callback composition and ownership
+----------------------------------
+The existing standalone MTP callback is installed unchanged first. When enabled,
+this patch moves that std::function into the observing callback's owning capture.
+For each successful final chunk it processes selected rows, retires each read,
+then forwards the original callback exactly once with unchanged R_rows/T/p0/e.
+Chunks containing no selected positions still forward MTP once. There is no
+duplicate mtp.bind/prefill/draft_kv call. The writer validates exact contiguous
+chunk coverage to reject repeated/skipped/out-of-order callback ranges.
+On a diagnostic failure the run returns false without continuing MTP work or
+publishing completion. On MTP false/exception the final manifest is unpublished.
+
+Every added head operation is protected by the existing DraftUploadGuard,
+armed before submission, with a checked cudaStreamSynchronize(main_stream)
+drain. A head or memcpy enqueue failure, or an exception after partial enqueue,
+cannot return through the callback until that guard proves retirement. A failed
+explicit readback wait invokes _Exit immediately. A failed guard drain also
+invokes _Exit, retaining the row vector, writer/file handles, residual/scratch,
+native-head buffers, stream and outer engine owners without stack unwinding.
+On success the lease retires only after checked wait; finite scan/file I/O occur
+after that boundary. No new host buffer can be freed while its copy is pending.
+SYCL compat cudaStreamSynchronize calls queue.wait_and_throw plus runtime check.
+
+Existing limitation, not repaired or newly certified here: MtpDrafter::prefill's
+fallback E-4 path has its own local rec vector followed by asynchronous upload
+and early failure returns in core/mtp.cpp:759..798. An outer observer cannot
+retain an already unwound internal rec owner. The regular E-9 draft_kv path has
+its own existing DraftHostUploads/checked guard. This candidate composes MTP
+without changing those internal implementations; Main must review/fault-test
+the actually selected MTP path and separately fix any pre-existing lifetime gap
+before claiming MTP failure-path safety. The new head/readback lease does not
+certify pre-existing engine cleanup. No observed fault is attributed here.
+
+File format, completion and bounds
+----------------------------------
+PATH is exclusively created with fopen("wbx"); an existing raw fixture is never
+overwritten. Its layout matches the existing logits reader on this little-endian
+Intel host: int32 vocab, int32 count, then count contiguous float32 vocab rows.
+The initial count is zero. Only after the entire Prefill::run succeeds and exact
+callback/selected-row coverage is proved does finish write the actual count,
+flush and close PATH. It writes a complete/count/expected-byte-size footer to
+PATH.meta.partial, flushes and closes that metadata, then publishes PATH.meta
+using create_hard_link(error_code). This publication is atomic and refuses to
+overwrite an existing final path. No file is marked complete before successful
+binary and metadata close. Partial outputs are retained for Main's run receipt.
+The tiny .meta.partial remains another link to the same metadata inode; no raw
+duplication, deletion or cleanup is hidden in completion. A filesystem refusing
+hard links causes failure and produces no published completion marker.
+
+The line metadata contains version/layout, vocabulary, requested count, actual
+batched extent, head choice/type, and each row index/position/next-token ID.
+All error branches latch the writer failed; a later finish cannot publish them.
+Consumer acceptance MUST require PATH.meta with the recognized complete footer,
+exact binary dimensions/size, matching position/target/vocab tables between arms,
+plus Main's successful process/fault receipt and source/config/model/input IDs.
+The stock compare_logits.py reader alone does not enforce this metadata/receipt
+contract and must not serve as the whole quality-collection gate.
+The marker certifies collection through Prefill::run, not later decode success.
+
+Only 64 selected rows are allowed. Geometry additionally bounds binary bytes plus
+an 8192-byte metadata allowance within 64 MiB. At current vocab=248320:
+  1 FP32 row: 993280 B
+  64 rows + 8-byte header: 63569928 B = approximately 60.625 MiB/arm
+The header/metadata is much smaller than its allowance. Host staging is one row,
+and additional GPU allocation is zero (the existing d_logits is reused).
+Counts/bounds are source-derived, not measured device memory or wall time.
+Main wrapper supplies full token-input SHA, source/config/model identity; the
+engine does not introduce a prompt-wide FNV/crypto pass or duplicate those IDs.
+KL(FP32||FP16), target teacher-forced NLL, margins and paired quality decisions
+belong in Main's comparison wrapper. This patch enables those inputs only.
+
+Required Main review and serial validation (not executed)
+---------------------------------------------------------
+First reconcile base hashes and review the incremental patch alongside observer
+and FP16-storage candidates. Build in Main's normal SYCL build. A CPU-only recipe
+after integration, using Main-owned paths, is:
+  c++ -std=c++17 -Iinclude tests/cpu/prefill_logits.cpp -o OWNED_BUILD/prefill_logits
+  OWNED_BUILD/prefill_logits NEW_EMPTY_OWNED_DIRECTORY
+The source checks strict parsing/64-bound, geometry budget, exact rows/metadata,
+incomplete publication, bad callback order, NaN refusal, exclusive files, racing
+final metadata no-clobber, and a guard early-exit drain with its owner live.
+It does not simulate GPU kernel math, runtime async exceptions or MTP internals.
+Existing DraftUploadGuard fatal tests and explicit queue fault injection remain
+Main obligations; no passing result is claimed from this unrun test source.
+
+Then Main serially checks invalid/short inputs terminate before GPU initialization,
+enabled/no-MTP and enabled/MTP final callback counts, chunk-boundary/first/last
+rows, and native Q5_K choice against normal run_head. Verify state/R fingerprints
+and produced IDs for diagnostic OFF versus ON under identical deterministic input,
+and compare enabled FP32/FP16 storage arms with positions spanning layers/chunks.
+Inject head enqueue, readback enqueue/drain, write/flush/close and MTP callback
+failures: no completion marker; pending-readback failure must fail-stop before
+owner destruction. A hard-link publication failure must preserve existing files.
+Use >=32K/64K exact token-ID Thinking-on fixtures for actual quality evaluation;
+this proposal supplies no numerical, quality, long-context, speed or adoption result.
+Obtain performance samples separately with both variables absent.
+
+Retention consumer and review point
+-----------------------------------
+The only generated files here are compact source proposals/hash records/report;
+there are no runtime tensors/logits/traces or deletion manifests to generate now.
+Future raw per-arm logit files are consumed by Main's current FP32/FP16 paired
+KL/NLL comparison, bounded at <=64 rows/64 MiB each. After validating positions,
+targets, complete receipt, aggregate results and hashes, Main records those
+results and a path/hash/reason deletion manifest, then retires raw files at an
+exclusive idle boundary. Retain a divergent row only with a named unresolved
+numerical question and next review point. Do not mix this diagnostic timing with
+clean prefill/decode performance or infer full-fit/capacity from row sizes.

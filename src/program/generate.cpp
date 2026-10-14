@@ -23,6 +23,7 @@
 #include "strata/core/conversation_memory.hpp"
 #include "strata/core/coupled_draft.hpp"
 #include "strata/core/expert_source.hpp"
+#include "strata/core/decode_service_budget.hpp"
 #include "strata/core/pinned.hpp"
 #include "strata/core/remote_experts.hpp"
 #include "strata/core/on_device.hpp"
@@ -55,6 +56,10 @@
 #include "strata/prefill/prefill.hpp"
 #include "strata/core/native_dense.hpp"
 #include "strata/program/logits_selection.hpp"
+#ifdef STRATA_ENABLE_SYCL
+#include "strata/program/prefill_logits.hpp"
+#include "strata/prefill/draft_uploads.hpp"
+#endif
 #include "strata/program/conv_cache.hpp"
 #include "strata/program/prompt_checkpoint.hpp"
 #include "strata/spec/draft_policy.hpp"
@@ -1388,6 +1393,34 @@ int main(int argc, char** argv) {
         }
         }
     }
+#ifdef STRATA_ENABLE_SYCL
+    // Normally off. Validate the small position list BEFORE any GPU preflight.
+    const char* prefill_logits_path = std::getenv("STRATA_PREFILL_LOGITS");
+    const char* prefill_logits_positions = std::getenv("STRATA_PREFILL_LOGITS_POSITIONS");
+    const bool collect_prefill_logits = prefill_logits_path || prefill_logits_positions;
+    std::vector<int64_t> selected_prefill_positions;
+    if (collect_prefill_logits) {
+        const bool remote = o.expert_cache_remote[0] > 0 || o.expert_cache_remote[1] > 0 ||
+                            o.expert_cache_remote[2] > 0;
+        if (!prefill_logits_path || !*prefill_logits_path || !prefill_logits_positions ||
+            !have_tokens || o.tokens.size() < 2 || o.prefill_chunk <= 0 || o.serve ||
+            !o.layer_split.empty() || o.peer_device >= 1 || remote || o.gpu_stages ||
+            o.graph_only || o.gpu_only_full || o.native_preset.empty()) {
+            std::fprintf(stderr, "strata generate: prefill logits needs both STRATA_PREFILL_LOGITS and "
+                                 "STRATA_PREFILL_LOGITS_POSITIONS, --native, --prefill and >=2 tokens; "
+                                 "standalone single GPU only\n");
+            return 2;
+        }
+        const int64_t last = int64_t(o.tokens.size()) - 1;
+        const int64_t batched = o.prefill_until > 0 && o.prefill_until < last ? o.prefill_until : last;
+        std::string why;
+        if (!strata::program::prefill_logits::parse_positions(prefill_logits_positions, batched,
+                                                            selected_prefill_positions, why)) {
+            std::fprintf(stderr, "strata generate: %s\n", why.c_str());
+            return 2;
+        }
+    }
+#endif
     strata::core::set_coupled_draft(o.coupled_draft);
     strata::core::set_peer_portable(o.peer_device >= 1);   // multi-GPU: the Portable flag on mapped host buffers only with a peer device (before any allocation)
     if (o.serve && o.conversation_cache_mib > 0 && (o.prompt_cache == 0 || o.conversation_cache_slots == 0))
@@ -1849,6 +1882,12 @@ int main(int argc, char** argv) {
         }
     }
     const bool native_pack = strata::kernels::cpu::expert_layout().native;
+#ifdef STRATA_ENABLE_SYCL
+    if (collect_prefill_logits && !native_pack) {
+        std::fprintf(stderr, "strata generate: prefill logits requires a native expert pack\n");
+        return 2;
+    }
+#endif
     // STRATA_EARLY_REMOTE_CONTEXTS=1: create EVERY secondary context here, like CUDA1's.  Under WSL2 the driver's
     // pinned/mapped host budget (dxg gpadl, ~1 GiB) is spent by CUDA0's weights and MTP before the later loop runs,
     // and a new context then fails with cudaErrorMemoryAllocation (CUDA2: "cudaSetDevice(2) failed: out of memory").
@@ -5893,6 +5932,16 @@ int main(int argc, char** argv) {
             const DecSnap ds0 = dec_snap();
             double dt_run = 0, dt_commit = 0, dt_draft = 0;
             int64_t dec_windows = 0, dec_T = 0;
+            const strata::core::DecodeLedgerSources decode_sources{
+                {&ver.ms_wait,&ver.ms_pool,&ver.ms_host,&ver.ms_commit,&drive.d.ms_plan,&drive.d.ms_actq,
+                 &drive.d.ms_jobs,&drive.d.ms_run,&pool.ms_multi_gu,&pool.ms_multi_q,&pool.ms_multi_down,
+                 &dt_run,&dt_commit,&dt_draft},
+                {&ver.windows,&drive.d.multi_misses,&drive.d.multi_entries,&drive.d.cache_hits,&drive.d.pcie_experts,&pool.multi_bytes}};
+            // This root ordinary serve loop has neither batch admission nor a lookup-chain mode.
+            strata::core::DecodeServiceBudgetScope decode_service(drive.d,g.n_layers,K,
+                strata::core::decode_route_ledger_eligible(!geni && native_pack && !multi_gpu && !o.no_pool &&
+                    o.spec_oracle.empty() && o.spec_corrupt==0,0,n_stages,!o.mtp.empty() && mtp.vram_bytes()>0,o.suffix_draft,0,S,o.spec_split),
+                n,max_new,o.max_context,mtp.coupled(),decode_sources);
             const int64_t decode_hits0 = drive.d.cache_hits;
             // CS-T: the RAM and file tiers of this request (the mmap source; 0 with the arena)
             const int64_t ram0 = src.ram_reads(), files0 = src.file_reads();
@@ -5920,7 +5969,7 @@ int main(int argc, char** argv) {
                 }
                 const bool timed_round = !first_window;
                 const Clock::time_point round0 = Clock::now();
-                if (p + T > o.max_context) break;
+                if (p + T > o.max_context) { decode_service.context_limit(); break; }
                 window[0] = x;
                 for (int i = 1; i < T; ++i) window[(size_t) i] = from_sfx ? sbuf[(size_t) i - 1] : drafts[(size_t) i - 1];
                 drive.d.layers = 0;
@@ -5943,10 +5992,12 @@ int main(int argc, char** argv) {
                 }
                 tr("window", p, T);
                 const Clock::time_point tw0 = Clock::now();
+                decode_service.begin_window(T);
                 if (!ver.run(T, window.data(), p, win_pool_fn, win_pool_user, outv.data(), err) || drive.d.failed) {
                     std::printf("ERR %s\n", drive.d.failed && drive.d.fail ? drive.d.fail : err.c_str());
                     return 1;
                 }
+                decode_service.verified(T);
                 int a = 0;
                 while (a < T - 1 && window[(size_t) a + 1] == outv[(size_t) a]) ++a;
                 if (from_sfx) { ++sfx_windows; sfx_drafts += T - 1; sfx_ok += a; }
@@ -5955,17 +6006,20 @@ int main(int argc, char** argv) {
                 bool adapt_ok = true;
                 if (!drive.d.usage.empty() && ((rounds + 1) % o.adapt_every) == 0)
                     adapt_thr = std::thread([&] { adapt_ok = adapt(); });
+                decode_service.commit_attempt();
                 if (!ver.commit(a + 1, err)) {
                     if (adapt_thr.joinable()) adapt_thr.join();
                     std::printf("ERR %s\n", err.c_str());
                     return 1;
                 }
+                decode_service.committed(a,a+1);
                 // the window's first a + 1 tokens are in the session now (the last output is not: it is next x)
                 for (int i = 0; i <= a; ++i) consumed.push_back(window[(size_t) i]);
                 draft_offered += T - 1;
                 draft_accepted += a;
                 first_window = false;
                 bool eos = false;
+                const int64_t decode_emit_start=produced_n;
                 for (int i = 0; i <= a && produced_n < max_new && !eos; ++i) {
                     std::printf("T %d\n", (int) outv[(size_t) i]);
                     strata::core::progress_beat();
@@ -5974,6 +6028,7 @@ int main(int argc, char** argv) {
                     eos = std::find(o.eos_ids.begin(), o.eos_ids.end(), (int64_t) outv[(size_t) i]) != o.eos_ids.end();
                 }
                 std::fflush(stdout);
+                decode_service.emitted(produced_n-decode_emit_start,eos || produced_n>=max_new);
                 ++rounds;
                 const Clock::time_point tw2 = Clock::now();
                 // coupled drafts with penalties: the next window's row-0 history (`consumed` holds this window's
@@ -6007,10 +6062,13 @@ int main(int argc, char** argv) {
             }
             const double decode_ms = std::chrono::duration<double, std::milli>(Clock::now() - d0).count();
             // the last commit (set_commit_async): the session is complete before anything reads or copies it
+            decode_service.final_wait_begin();
             if (!ver.wait_commit(err)) {
+                decode_service.wait_commit_finished(false);
                 std::printf("ERR %s\n", err.c_str());
                 return 1;
             }
+            decode_service.wait_commit_finished(true);
             if (dec_timing && dec_windows > 0) {
                 const DecSnap d1 = dec_snap();
                 const double w = (double) dec_windows, L = (double) g.n_layers;
@@ -6158,6 +6216,7 @@ int main(int argc, char** argv) {
                         (long long) (src.ram_reads() - ram0), (long long) (src.file_reads() - files0),
                         (double) (src.file_read_bytes() - file_bytes0) / 1e6, (long long) read_n);
             std::fflush(stdout);
+            decode_service.finish(finish,produced_n,draft_offered,draft_accepted,decode_ms);
             if (drive.routing != nullptr) std::fflush(drive.routing);   // the routing trace survives a crash and is watchable mid-session
             // "12288 of 98179" when cancelled mid-read (#471), the rate from what was read
             char read_txt[64];
@@ -6244,6 +6303,21 @@ int main(int argc, char** argv) {
     std::vector<float> final_r_host(final_r ? (size_t) (g.hc * g.n_embd) : 0);
     std::vector<std::pair<int32_t, int32_t>> lent;     // (residency index, slot) lent to the prompt path
     const int64_t n_batched = (o.prefill_until > 0 && o.prefill_until < n_prompt - 1) ? o.prefill_until : n_prompt - 1;
+#ifdef STRATA_ENABLE_SYCL
+    strata::program::prefill_logits::Writer prefill_logits;
+    if (collect_prefill_logits) {
+        try {
+            if (!prefill_logits.begin(prefill_logits_path, selected_prefill_positions, n_batched,
+                                      n_vocab, native_head.loaded(), native_head.type(), err)) {
+                std::fprintf(stderr, "strata generate: %s\n", err.c_str());
+                return 1;
+            }
+        } catch (const std::exception& exc) {
+            std::fprintf(stderr, "strata generate: prefill logits open: %s\n", exc.what());
+            return 1;
+        }
+    }
+#endif
     if (o.prefill_chunk > 0 && n_prompt > 1) {
         void* borrow = nullptr;
         uint64_t borrow_bytes = 0;
@@ -6301,11 +6375,69 @@ int main(int argc, char** argv) {
                 return e.empty() && mtp.prefill(R_rows, nxt.data(), T, p0, e);
             };
         }
+#ifdef STRATA_ENABLE_SYCL
+        if (collect_prefill_logits) {
+            // Compose with the already installed MTP callback. Both get each
+            // final chunk once; sampled head work retires before MTP can reuse
+            // scratch or the next chunk can overwrite the residuals.
+            auto previous = std::move(prefill.on_chunk);
+            prefill.on_chunk = [&, previous = std::move(previous)]
+                (const float* R_rows, int64_t T, int64_t p0, std::string& e) -> bool {
+                try {
+                    if (!R_rows || !prefill_logits.chunk(p0, T, e)) {
+                        if (e.empty()) e = "prefill logits: null residual callback";
+                        return false;
+                    }
+                    while (prefill_logits.next_position() >= 0 && prefill_logits.next_position() < p0 + T) {
+                        const int64_t p = prefill_logits.next_position();
+                        if (p < p0) { e = "prefill logits: selected position was skipped"; return false; }
+                        // LOCAL COPY: persistent ss.block.R and all KV/recurrent
+                        // state stay unchanged. GR/head only write their scratch
+                        // and the existing single-row d_logits allocation.
+                        strata::core::BlockBuffers bb = ss.block;
+                        bb.R = const_cast<float*>(R_rows + size_t(p - p0) * size_t(g.hc * g.n_embd));
+                        auto fatal = []() noexcept {
+                            std::fprintf(stderr, "strata generate: prefill logits queue retirement failed; "
+                                                 "retaining owners until process exit\n");
+                            std::fflush(stderr);
+                            std::_Exit(EXIT_FAILURE);
+                        };
+                        strata::prefill::detail::DraftUploadGuard lease(
+                            [&]() noexcept { return cudaStreamSynchronize(main_stream) == cudaSuccess; }, fatal);
+                        lease.arm(); // even a partially submitted head can still reference bb scratch/R
+                        const bool head_ok = native_head.loaded()
+                            ? strata::core::lm_head_mix(wt, g, bb, main_cs, e) &&
+                              native_head.run(bb.mixed, d_logits, main_cs, e)
+                            : strata::core::lm_head(wt, g, bb, d_logits, main_cs, e);
+                        if (!head_ok) return false; // guard drains before callback owners unwind
+                        if (cudaMemcpyAsync(prefill_logits.row(), d_logits, prefill_logits.row_bytes(),
+                                            cudaMemcpyDeviceToHost, main_stream) != cudaSuccess) {
+                            e = "prefill logits: row readback enqueue failed";
+                            return false;
+                        }
+                        if (cudaStreamSynchronize(main_stream) != cudaSuccess) fatal();
+                        lease.retire(); // host inspection/write happens only after this checked wait
+                        if (!prefill_logits.append(p, o.tokens[size_t(p + 1)], e)) return false;
+                    }
+                    return !previous || previous(R_rows, T, p0, e);
+                } catch (const std::exception& exc) {
+                    e = std::string("prefill logits: callback: ") + exc.what();
+                    return false;
+                }
+            };
+        }
+#endif
         const Clock::time_point tp0 = Clock::now();
         if (!prefill.run(o.tokens.data(), n_batched, 0, err)) {
             std::fprintf(stderr, "strata generate: %s\n", err.c_str());
             return 1;
         }
+#ifdef STRATA_ENABLE_SYCL
+        if (collect_prefill_logits && !prefill_logits.finish(err)) {
+            std::fprintf(stderr, "strata generate: %s\n", err.c_str());
+            return 1;
+        }
+#endif
         mem_mark("the standalone prompt execution");
         // refill the lent slots from the arena and give them back to the decode tier
         if (!lent.empty()) {

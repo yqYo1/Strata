@@ -214,7 +214,9 @@ struct GpuPlanSink {
 #ifdef STRATA_ENABLE_SYCL
 struct NativeHitGraphs;
 #endif
+class DecodeRouteLedger;
 struct ExpertDispatch {
+    DecodeRouteLedger* decode_route_ledger=nullptr; // joined request owner, ordinary synchronous MTP only
     strata::kernels::cpu::ExpertPool* pool = nullptr;
     ExpertSource* src = nullptr;
     RouterLookahead* lookahead = nullptr;   ///< CS-T: warms the next layer's predicted file-tier experts
