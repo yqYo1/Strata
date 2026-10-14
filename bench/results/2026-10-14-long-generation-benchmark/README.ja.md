@@ -41,3 +41,11 @@ v2はthinkingOFFのcodeと多様な日本語散文でworkloadを分け、同じg
 context262144には約33K入力と8K生成の余地があり、満杯になるまでの検証とは分ける。
 全量thinkingで終了した場合は未完了として保存し、有限の出力/context予算を再検討する。
 GPU nativeは同じ68da0262、greedy、MTP4。新しいsampling kernel/精度/queue経路は使わない。
+
+v3のCPU検査5件とskill validationを通し、source76e4bf7eをcommit/push後に
+`check_extended.py screen`を開始した。出力rootは
+`~/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-long-generation-screen-root-v3`。
+この境界では実モデル確認は進行中で、MTP分類・本文出力・正常終了/fault検査は未確定。
+Owner期限9300s、raw text64MiB、RSS88GiB、job1GiB、reset/service変更なし。
+閉じた後に全個別値と元receiptを抽出し、各3回のfull suiteを同じownerで直列に評価する。
+その検証完了後に[next-work](next-work.json)のPR #6・Codex元ログ・安全性点検へ戻る。
