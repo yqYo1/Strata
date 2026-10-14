@@ -1,0 +1,32 @@
+# layer-major具体化とGEMM融合候補のレビュー
+
+2026-10-15 JST。読み取り専用Luna2件を受領した。過去のregistryを両者へ共有し、
+Mainは調査中にGEMMの収集済みトレースを解析した。報告者への途中介入はしていない。
+以下は設計レビューであり、layer-majorや融合kernelのbuild/GPU合格ではない。
+
+R565は現在の`Prefill::run`のstage interval、host handoff、chunk callbackを
+使ったlayer-major orchestrationを具体化した。262144×10240×4=10GiBのhost残差、
+layer別GDN/QSA state、PLEのtoken history、streamed KVの全論理ページとresident枠の区別を
+現在sourceと照合した。旧unchecked Restoreを再使用しない点は必要な契約である。
+
+Mainの追加条件が二つある。第一に、順序だけ変えても重みのchunkごとの転送は残るため、
+一層の全expertを載せて全chunkで再利用する臨時cacheを合わせて設計する。
+第二に、最終層の途中でも他層のstateはprompt全体の末尾まで進んでいるため、
+checkpoint用`on_stage_chunk`を最終層の全chunkへ転送してはいけない。
+全層のstateが一致する最終chunkだけをcheckpoint-readyにする。
+MTP用`on_chunk`は最終層の各chunkについて一度、token順に実行する。
+callback/stateの違いを混同しない。raw残差の保存は数学上の再順序付けに対応するが、
+hostだけに置くと多数の往復が増えるため、有限のVRAM prefixとhost tailも候補にする。
+
+別の6.1 Solへ非適用patchの作成を依頼した。Mainのモデル比較中には製品sourceを変えず、
+専用proposalディレクトリだけへ保存する。decodeのcache/MTP/graphを解放しない初版とし、
+追加容量が入らなければGPU投入前に失敗させる。Mainが適用・build・全検証を直列管理する。
+これは旧全エンジンを戻す作業ではない。full256K/RESTOREは未認定のまま残す。
+
+R566は既報grouped GEMMと二queue案を再提案せず、FP32 accumulatorから
+FP16 hiddenへ直接書くGU GEMM+SwiGLU epilogueを次の文献候補とした。
+数学上のuseful仕事量はcensusのGU108.716TFLOP、Down54.358TFLOPであり、
+GPUの実発行量/peak/測定throughputとは別である。外部Xe-Fuseの型、可変expert形状、
+対象GPU、現在のsaturating FP16式が一致することは未検証。
+現時点では採用しない。実source/API適用条件の確認と独立component比較が先に必要。
+今回の主線は実モデルroute確認とlayer-major重み再利用の回復である。

@@ -10,7 +10,7 @@ from pathlib import Path
 from check_gemm_orientation import P, B, D, BUILD, OWNER, DEVICE, FAULT, sha
 
 VTUNE = Path('/opt/intel/oneapi/vtune/latest/bin64/vtune')
-O = B / 'main-primary-gemm-vtune-visibility-root-v1'
+O = B / 'main-primary-gemm-vtune-visibility-root-v2'
 
 
 def main():
@@ -37,7 +37,8 @@ def main():
             env.pop(k, None)
         assert not any('TOKEN' in k or 'API_KEY' in k for k in env)
         assert not any(k in env for k in ['UR_ENABLE_LAYERS', 'ZE_ENABLE_VALIDATION_LAYER', 'MKL_VERBOSE', 'LD_PRELOAD'])
-        O.mkdir()
+        O.mkdir(mode=0o700)
+        (O / 'profiler-user-data').mkdir(mode=0o700)
         env['XDG_CACHE_HOME'] = str(O / 'cache')
         record = dict(active=True, passed=False, complete=False, commands=[], environment=env,
             source_pins=build['source_pins'], source_revision=build['source_revision'],
@@ -50,6 +51,7 @@ def main():
             raw_profiler_consumer='Determine exact-runtime GPU kernel visibility and produce compact kernel/summary report',
             next_review='Retire raw timeline after report verification, or retain one diagnostic for a distinct unresolved visibility failure',
             performance_qualified=False, quality_qualified=False, adopted=False,
+            kernel_visibility_qualified=False,
             scope='First actual VTune collection on validated standalone synthetic probe. Profiling overhead; not model speed, RAM/PCIe limits, graph visibility or causal whole-model bottleneck.')
 
         def persist():
@@ -110,7 +112,7 @@ def main():
             finally:
                 record['active'] = False
                 persist()
-                (D / 'vtune-visibility-v1.json').write_text(json.dumps(record, indent=2) + '\n')
+                (D / 'vtune-visibility-v2.json').write_text(json.dumps(record, indent=2) + '\n')
         print(json.dumps(dict(passed=record['passed'], complete=record['complete'], fresh_faults=len(record['fresh_faults']))), flush=True)
 
 
