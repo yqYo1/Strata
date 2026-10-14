@@ -243,6 +243,24 @@
       "sha256": "e9c1d86ff2b685fb85ee8b92eeccd0fa4a8234af5016e4a5f8f69d0fc048a5f0",
       "status": "source/literature-only; Main review complete with thinking-OFF/BF16 external quality boundary; no runtime/adoption",
       "direct_canonical_write": true
+    },
+    {
+      "round": 553,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research/research-qsa-batch-state-ownership-round553-v1.txt",
+      "sha256": "f1d14be35ae184cabdd51593cbe55cce7ab0f83a4b72a99cda137e022f936bf8",
+      "status": "independent source-only batch audit; Main review complete; symbolic/device/numerical/runtime gates remain unrun",
+      "direct_canonical_write": true
+    },
+    {
+      "round": 554,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research/research-qsa-batch-numerical-contract-round554-v1.txt",
+      "sha256": "98c2333bb9c834c43ae8bb314fae54aeb116cebc43f411d60726c1ff4782cc71",
+      "status": "independent source-only batch audit; Main review complete; symbolic/device/numerical/runtime gates remain unrun",
+      "direct_canonical_write": true
     }
   ],
   "no_intervention_until_final": true,
@@ -288,7 +306,9 @@
     "R551 active_bound and grid group_count are distinct; device guard/score stride retain original capacity. Source mapping is not measured bottleneck/parity; candidate affects explicit-active prefill as well as captured decode.",
     "R552 vLLM54890 task scores compare BF16 versusFP8 with thinking=false. They are candidate evidence, not quality equivalence for current FP32 indexer/thinkingON/full256K Strata.",
     "Main current native_qsa_indexer_append_batch loops one queue submission per input row despite caller three-launch comment. Source-derived4096/layer/chunk and414720 for34560batched rows/12QSA; no runtime attribution or speed claim. Separate artifact proposal pending.",
-    "Main STRATA_VERIFY_PROFILE is forcibly disabled under SYCL; CUDA profile_report is not an available current-backend device breakdown. Host observer is distinct from device kernel profiling."
+    "Main STRATA_VERIFY_PROFILE is forcibly disabled under SYCL; CUDA profile_report is not an available current-backend device breakdown. Host observer is distinct from device kernel profiling.",
+    "R553 token0 writes dead/provisional pooled0 only, not spare row1. Completion atpos3first creates spare1. Fixture reflects correct branch; phrase initial spare must not imply row1write.",
+    "R554 integer/symbolic fixture does not compile or exercise normalize_rotate/SYCL floating math; shared-helper refactor also changes OFF/single/captured append source and needs original/OFF/ON regression gates, prefill/decode separately."
   ],
   "pending_reports": [],
   "implementation_proposals": [
@@ -337,15 +357,15 @@
       "report_sha256": "e596811e9721940042ac302d3ba339f950f3469644229ab8f4703c1100189902",
       "main_owns_serial_tests": true,
       "status": "FINAL artifact-only; Main initial source review complete; unapplied-uncompiled-unrun-unadopted; serial validation after benchmark/PR6"
+    },
+    {
+      "model": "gpt-6.1-sol",
+      "path": "qsa-indexer-batch-proposal-v1/report.md",
+      "artifact_only": true,
+      "main_owns_serial_tests": true,
+      "patch_sha256": "466e3a0cdef281de6cffab17a9bad7c674d91e0243e60fed7f4fb11a2c1850aa",
+      "report_sha256": "b3a28918a0aebf986248c4cb1069a5af48b5af54e64fe7536107d204bdd4ebaa",
+      "status": "FINAL artifact-only; Main and2Luna source reviews complete; unapplied-uncompiled-unrun-unadopted; benchmark thenPR6 priority"
     }
-  ],
-  "pending_implementation": {
-    "model": "gpt-6.1-sol",
-    "path": "qsa-indexer-batch-proposal-v1/report.md",
-    "task": "/root/implement_qsa_indexer_batch_proposal_v1",
-    "artifact_only": true,
-    "main_owns_serial_tests": true,
-    "scope": "Current root SYCL native indexer batch O(1) submissions with unchanged arithmetic/state, no product writes/build/test/GPU",
-    "no_intervention_until_final": true
-  }
+  ]
 }
