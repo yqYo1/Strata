@@ -2,7 +2,9 @@
 // helpers. This is orchestration only; run_impl owns GDN/QSA/PLE/expert math.
 bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& err) {
     const char* requested = std::getenv("STRATA_PREFILL_LAYER_MAJOR");
-    return requested && std::strcmp(requested, "1") == 0
+    // Reuse only pays across chunks. Keep short chat/agent turns on the
+    // original path even when long-prompt layer reuse is requested.
+    return requested && std::strcmp(requested, "1") == 0 && impl_ && n > impl_->T
                ? run_layer_major(tokens, n, pos0, err) : run_impl(tokens, n, pos0, err);
 }
 
@@ -202,6 +204,11 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     for (; layer < g.n_layers; ++layer) {
         if (should_stop && should_stop()) { err = "cancelled"; return false; }
         if (!drain()) { err = "prefill layer-major: layer boundary drain failed"; return false; }
+        if (std::getenv("STRATA_TRACE")) {
+            std::fprintf(stderr, "strata trace: layer-major layer %lld of %lld: loading %d experts\n",
+                         (long long)layer, (long long)g.n_layers, NE);
+            std::fflush(stderr);
+        }
         std::fill(residency.begin(), residency.end(), -1);
         const auto load_start = Clock::now();
         const uint64_t bytes = layout.blob_bytes(layer);
@@ -260,6 +267,11 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         if (!run_impl(tokens, n, pos0, err)) return false;
         if (!drain()) { err = "prefill layer-major: pass drain failed"; return false; }
         if (!cursor.complete()) { err = "prefill layer-major: incomplete layer callbacks"; return false; }
+        if (std::getenv("STRATA_TRACE")) {
+            std::fprintf(stderr, "strata trace: layer-major layer %lld of %lld: completed %lld chunks\n",
+                         (long long)layer, (long long)g.n_layers, (long long)cursor.calls);
+            std::fflush(stderr);
+        }
         // No callback retains the per-pass cursor/layer references past this
         // checked boundary. Owners and saved caller callbacks remain leased.
         on_chunk = {}; on_stage_chunk = {};

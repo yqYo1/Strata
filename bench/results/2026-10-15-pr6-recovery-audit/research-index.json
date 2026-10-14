@@ -98,6 +98,22 @@
       "path": "research-qsa-headtile-slm-round568-v1.txt",
       "sha256": "5201cc7899477d1f57793678f4033bc23180aedd94d5f0f2badab9ce3cb02358",
       "status": "FINAL received; Main review/corrections in main-review-round567-568.ja.md. No new candidate performance/adoption."
+    },
+    {
+      "round": 569,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-layer-major-residual-precision-round569-v1.txt",
+      "sha256": "50cb4e94704215a5068787ea7ab838e57f44389ef56f8f6b4b5bb78e54af7949",
+      "status": "FINAL received; Main review in main-review-round569-570.ja.md. Implementation candidates remain unqualified."
+    },
+    {
+      "round": 570,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-decode-ledger-current-gap-round570-v1.txt",
+      "sha256": "5dfa5164cb54e445d805aaab144c9c1397df362bd7a12b505b022308ca589256",
+      "status": "FINAL received; Main review in main-review-round569-570.ja.md. Implementation candidates remain unqualified."
     }
   ],
   "main_initial_findings": [
@@ -114,7 +130,7 @@
     "main_review": "qsa-layout-recovery-v1/main-review.ja.md",
     "status": "Build/host and20GPU parity/oracle cases PASS/fault0. Component40sample screen closedPASS; layout1 median4.09%slower in one int8case, no adoption. No whole-model/full256K/RESTORE/quality qualification."
   },
-  "latest_main_review": "main-review-round567-568.ja.md",
+  "latest_main_review": "main-review-round569-570.ja.md",
   "component_summary": "qsa-layout-screen-summary.json",
   "gemm_orientation_probe": {
     "report": "gemm-orientation-probe-v1/implementation.txt",
@@ -135,14 +151,46 @@
   "implementation_next": {
     "agent": "gpt-6.1-sol",
     "directory": "layer-major-candidate-v1",
-    "state": "Main applied reviewed patch+final-layer residual-dump diagnostic, build/CPU PASS per separate v2qualification. DefaultOFF; Main small two-chunk GPU numerical gate in progress.",
+    "state": "FP32 candidate build/CPU, three-arm small GPU/host, and matched34603-input long numerical comparison PASS/fault0. Not performance/full256K/RESTORE/quality qualified. Short-prompt guard/progress change awaits separate build.",
     "scope": "Per-layer full expert reuse plus bounded residual VRAM prefix/host tail; decode cache/graphs untouched",
     "main_review": "layer-major-candidate-v1/main-review.ja.md",
-    "build": "layer-major-build-v2.json"
+    "build": "layer-major-build-v2.json",
+    "small_gate": "layer-major-small-v1.json",
+    "long_gate": "layer-major-long-v1.json"
   },
   "natural_model_pair": {
     "result": "natural-layout-long-pair-v2.json",
     "summary": "natural-layout-long-pair-summary-v2.json",
     "status": "PASS/fault0,34603 input/34602 batched thinking-template tokens,248320firstlogits+541residual positions bitwise equal,108matrixcalls/415224queries/fallback0; not bench.sh performance/full256K/RESTORE/quality"
-  }
+  },
+  "residual_precision": {
+    "screen": "saved-residual-precision-screen-v1.json",
+    "scope": "CPU posthoc final-layer data only; no accumulated model quality/device-cast qualification",
+    "proposal": "layer-major-fp16-storage-v1/implementation.txt",
+    "state": "Sol FINAL received; Main review pending; product not applied"
+  },
+  "parallel_implementations": [
+    {
+      "model": "gpt-6.1-sol",
+      "directory": "matrix-direct-probe-v1",
+      "state": "FINAL received; Main review/build pending"
+    },
+    {
+      "model": "gpt-6.1-sol",
+      "directory": "layer-major-fp16-storage-v1",
+      "state": "FINAL received; Main review/build pending"
+    },
+    {
+      "model": "gpt-6.1-sol",
+      "directory": "mtp4-decode-observer-v1",
+      "state": "Running; non-applied candidate only, no build/test/GPU"
+    }
+  ],
+  "parallel_research": {
+    "round": 571,
+    "model": "gpt-6-luna",
+    "path": "research-layer-major-host-tail-schedule-round571-v1.txt",
+    "state": "Running, read-only except own report; previous report directory shared"
+  },
+  "retention_v2": "closed-artifact-retention-v2.json"
 }
