@@ -446,6 +446,7 @@ struct Prefill::Impl {
     float* attn_scratch = nullptr;
     int64_t attn_batch = 32, cap = 0;
     // MoE
+    bool compact_moe_fp16 = false;
     float *logits = nullptr, *w = nullptr, *GU = nullptr, *Dm = nullptr, *sgate = nullptr, *sup = nullptr,
           *shared = nullptr, *sg = nullptr;
     int32_t *ids = nullptr, *slot_dev = nullptr, *src_dev = nullptr;
@@ -622,6 +623,23 @@ const MmqPlan& mmq_plan() {
     }();
     return plan;
 }
+// Opt-in bounded FP16 scratch only: no attention/HC alias or quantized layout changes.
+bool compact_moe_fp16() {
+    static const bool requested = [] {
+        const char* value = std::getenv("STRATA_PREFILL_MOE_COMPACT_FP16");
+        return value && std::strcmp(value, "1") == 0;
+    }();
+    const auto& mp = mmq_plan();
+    if (!requested || mp.any || !mp.fallback || std::getenv("STRATA_DBG_NAN") != nullptr) return false;
+    const auto& lay = strata::kernels::cpu::expert_layout();
+    if (lay.native) {
+        if (lay.fmt.empty()) return false;
+        for (const auto& f : lay.fmt)
+            if (f.n_embd != N || f.n_ff != 640) return false;
+    }
+    return true;
+}
+size_t fp16_moe_rows(size_t T) { return T * (compact_moe_fp16() ? 1 : K); }
 // #136 P3: a layout whose chunks run the fused experts (STRATA_PF_FUSED=1, the Q2_0 pack, a streamed chunk of
 // stream_all_min() tokens or more).  Its GU, H and Xq hold only the fused path's grouping tables, int8 H and per-token
 // int8 activations, and Hq nothing: ~100 KB a token less than MMQ's FP32 GU / H and per-slot q8_1 rows, which is what
@@ -635,6 +653,7 @@ bool fused_layout(size_t T, bool src) {
 // default): MMQ's, for T tokens.
 struct MoeBufs { size_t gu, h, xq, hq; };
 MoeBufs moe_bufs(size_t T, int64_t n_expert, bool fused) {
+    if (compact_moe_fp16()) return {T * 1280, T * 640, 0, 0};
     if (!fused) return {T * K * 1280, T * K * 640, mmq::q8_bytes((int64_t) (T * K), N), mmq::q8_bytes((int64_t) (T * K), 640)};
     const size_t ts = (size_t) std::min<int64_t>((int64_t) T, stream_all_min() - 1);   // MMQ's last small chunk
     return {std::max(ts * K * 1280, (fused::group_bytes((int64_t) (T * K), (int) n_expert) + 3) / 4),
@@ -648,9 +667,9 @@ uint64_t moe_set_bytes(size_t T, int64_t n_expert, bool fused) {
     Alloc a; a.count_only = true; bool ok = true;
     a.take<float>(T * n_expert, ok); a.take<float>(T * K, ok); a.take<int32_t>(T * K, ok); a.take<int32_t>(T * K, ok);
     a.take<int32_t>(T * K, ok);
-    if (mp.fallback) a.take<uint16_t>(T * K * N, ok);
+    if (mp.fallback) a.take<uint16_t>(fp16_moe_rows(T) * N, ok);
     a.take<float>(mb.gu, ok);
-    if (mp.fallback) a.take<uint16_t>(T * K * 640, ok);
+    if (mp.fallback) a.take<uint16_t>(fp16_moe_rows(T) * 640, ok);
     a.take<float>(T * K * N, ok); a.take<float>(T * 640, ok);
     a.take<float>(T * 640, ok); a.take<uint16_t>(T * 640, ok); a.take<float>(T * N, ok); a.take<float>(T, ok);
     if (mp.any) {
@@ -832,9 +851,10 @@ bool Prefill::carve(size_t T, void* alloc) {
         m.logits = c.take<float>(T * m.g->n_expert, ok); m.w = c.take<float>(T * K, ok); m.ids = c.take<int32_t>(T * K, ok);
         m.slot_dev = c.take<int32_t>(T * K, ok); m.src_dev = c.take<int32_t>(T * K, ok);
         const MmqPlan& mp = mmq_plan();
-        m.Xs = mp.fallback ? c.take<uint16_t>(T * K * N, ok) : nullptr;
+        m.compact_moe_fp16 = compact_moe_fp16();
+        m.Xs = mp.fallback ? c.take<uint16_t>(fp16_moe_rows(T) * N, ok) : nullptr;
         m.GU = c.take<float>(mb.gu, ok);
-        m.Hh = mp.fallback ? c.take<uint16_t>(T * K * 640, ok) : nullptr;
+        m.Hh = mp.fallback ? c.take<uint16_t>(fp16_moe_rows(T) * 640, ok) : nullptr;
         m.Dm = c.take<float>(T * K * N, ok);
         m.sgate = c.take<float>(T * 640, ok); m.sup = c.take<float>(T * 640, ok); m.sh_h = c.take<uint16_t>(T * 640, ok);
         m.shared = c.take<float>(T * N, ok); m.sg = c.take<float>(T, ok);
@@ -866,6 +886,13 @@ bool Prefill::carve(size_t T, void* alloc) {
     m.ple_norm = o.take<float>((size_t) strata::kernels::NG_HC_DIM, ok);
     take_stage(o, ss, s, m.stage, ok);
     m.T = (int64_t) T;
+    if (mmq_plan().fallback || std::getenv("STRATA_PREFILL_MOE_COMPACT_FP16") != nullptr) {
+        std::fprintf(stderr, "strata prefill: FP16 MoE compact requested=%d effective=%d, chunk=%zu, "
+                             "scratch rows=%zu, accounted=%llu, shared region=%llu bytes\n",
+                     std::getenv("STRATA_PREFILL_MOE_COMPACT_FP16") != nullptr, m.compact_moe_fp16,
+                     T, fp16_moe_rows(T), (unsigned long long) o.used, (unsigned long long) m.region_bytes);
+        std::fflush(stderr);
+    }
     return ok;
 }
 
@@ -1612,6 +1639,13 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
             ~IssuerJoin() { if (t->joinable()) { stop->store(true); t->join(); } }
         } issuer_join{&a_stop, &issuer};
         const bool threaded_issue = stream_all && issuer_on;
+        size_t skipped_stream_entries = 0, skipped_after_group = 0;
+        if (std::getenv("STRATA_TRACE")) {
+            std::fprintf(stderr, "strata trace: prefill issuer threaded=%d stream_all=%d ring=%d "
+                                 "chunk=%lld entries=%zu\n", threaded_issue, stream_all, m.ring,
+                         (long long) T, seq.size());
+            std::fflush(stderr);
+        }
         if (threaded_issue) {
             issuer = std::thread([&] {
                 const core::OnDevice od(m.device);
@@ -2085,6 +2119,9 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
                         for (int64_t i = 0; i < T * K; ++i) {
                             const int32_t e = ids_h[(size_t) i];
                             if (e < 0 || e >= m.g->n_expert) { err = "prefill: routed id out of range"; return false; }
+                            if (m.compact_moe_fp16 && m.cnt[(size_t) e] >= T) {
+                                err = "prefill: compact FP16 expert rows exceed chunk bound"; return false;
+                            }
                             ++m.cnt[(size_t) e];
                         }
                         // multi-GPU: the rows of the experts the peer computes go last, as one block [rows_local, T*K)
@@ -2165,7 +2202,7 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
                                 cudaMemcpyAsync(m.bounds_dev, m.bounds_host.data(), m.bounds_host.size() * 4,
                                                 cudaMemcpyHostToDevice, m.cs);
                             }
-                        } else {
+                        } else if (!m.compact_moe_fp16) {
                             gather_rows16(m.mixed_h, m.src_dev, m.Xs, T * K, N, m.cs);
                         }
                         // multi-GPU: the peer's share, enqueued before the primary's own experts so both cards work at once
@@ -2508,11 +2545,19 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
                                 m.used_of[slot] = slot;
                             }
                             const int64_t o0 = m.off[(size_t) e], ne = m.cnt[(size_t) e];
+                            if (m.compact_moe_fp16) {
+                                if (T <= 0 || T > m.T || ne <= 0 || ne > T || o0 < 0 || o0 > T * K - ne) {
+                                    err = "prefill: compact FP16 expert bounds exceed workspace"; return false;
+                                }
+                                pt.mark(kPfGather, cs);
+                                gather_rows16(m.mixed_h, m.src_dev + o0, m.Xs, ne, N, m.cs);
+                            }
+                            const int64_t scratch_row = m.compact_moe_fp16 ? 0 : o0;
                             pt.mark(kPfGemmGU, cs);
-                            m.gemm.f16(m.Xs + o0 * N, m.dq_gu[q], m.GU + o0 * 1280, ne, 1280, N);
-                            swiglu_interleaved(m.GU + o0 * 1280, m.Hh + o0 * 640, ne, m.cs);
+                            m.gemm.f16(m.Xs + scratch_row * N, m.dq_gu[q], m.GU + scratch_row * 1280, ne, 1280, N);
+                            swiglu_interleaved(m.GU + scratch_row * 1280, m.Hh + scratch_row * 640, ne, m.cs);
                             pt.mark(kPfGemmD, cs);
-                            m.gemm.f16(m.Hh + o0 * 640, m.dq_d[q], m.Dm + o0 * N, ne, N, 640);
+                            m.gemm.f16(m.Hh + scratch_row * 640, m.dq_d[q], m.Dm + o0 * N, ne, N, 640);
                             return true;
                         };
                         if (!stream_all) {
@@ -2540,7 +2585,14 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
                             const size_t kend = seq_start[(size_t) l + 1];
                             auto release_to = [&](int32_t e_stop) {
                                 while (k < kend && seq[k].e < e_stop) {
+                                    ++skipped_stream_entries;
+                                    if (gg_nslots > 0) ++skipped_after_group;
                                     if (gg_nslots > 0) flush();   // the open group's slots get their event first
+                                    // Publish the flushed prefix before waiting, so an issuer at its capacity
+                                    // limit can advance. Its release of entry k then orders the previous slot-map
+                                    // read before this skip rewrites the map, even when the device queues alias.
+                                    if (threaded_issue) give_back(consumed);
+                                    wait_issued(k);
                                     const int sl = (int) (k % (size_t) m.ring);
                                     if (copy_events) cudaEventRecord(m.used[sl], m.cs);
                                     m.used_of[sl] = sl;
@@ -2630,6 +2682,11 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
             stats_.ms_experts_host += iss_ms;
             stats_.experts_streamed += iss_streamed;
             stats_.experts_dma += iss_dma;
+        }
+        if (std::getenv("STRATA_TRACE")) {
+            std::fprintf(stderr, "strata trace: prefill skip releases=%zu after-open-group=%zu\n",
+                         skipped_stream_entries, skipped_after_group);
+            std::fflush(stderr);
         }
         stats_.tokens += T;
         core::progress_at("reading the prompt (batched): finishing the chunk from token", p0);
