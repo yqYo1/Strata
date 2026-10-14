@@ -7,7 +7,7 @@
   "existing_evidence": "../2026-10-14-performance-regression-audit/session-decisions.json records the 2026-10-05 report of 453->646 t/s and merged own-fork PR #6. This is evidence to reconcile, not a new safety/performance qualification.",
   "safety_review": "Historical GPU faults motivate queue/dependency, allocation/graph/host/device lifetime, bounds and SYCL/LevelZero contract checks before replay. Fault timing alone does not establish a bug in PR #6.",
   "scope": "Personal Niko1221/Strata fork; retain existing accelerated own-fork paths per component, prefill/decode separately. Main owns serial tests/GPU; read-only Luna research and separate Sol implementation remain available.",
-  "benchmark_status": "Corrected source full suite active: same owned runner69843/native1031613/start34056195. ThinkingON, context262144, agent8192 and long16384; three repetitions requested. No final status/performance qualification yet.",
+  "benchmark_status": "Corrected-source suite remains active on runner69843/native1031613/start34056195. ThinkingON/context262144. All3x6agent turns and nominal32K3requests completed; long-generation regular/prose3each pending. No final suite/fault/ownership/performance qualification.",
   "live_root": "main-primary-long-generation-suite-root-v4-upload-fix-v1",
   "closed_failures": [
     "screen-v1.json",
@@ -16,9 +16,11 @@
   "live_launch_observation": "launch-suite-v4-upload-fix-v1.json",
   "closed_screen": "screen-v4.json",
   "next_run_root": "main-primary-long-generation-suite-root-v4-upload-fix-v1",
-  "post_suite_display_fixes": [],
-  "completed_agent_observation": "suite-v4-agent-observation.json",
-  "subsequent_source_review": "Census R539/R540 and Main review: existing Zen3/AVX2 build, MTP work/emit/cache budget, Dm narrowing does not lower current max-region, count/carve xn+grs mismatch has unapplied source-pinned proposal. Sol prepares MTP joined ledger artifact only; Main tests after benchmark/PR6.",
+  "post_suite_display_fixes": [
+    "tools/strata_bench.py module docstring still says long output up to8192; update to16384 after the live pinned client closes. CLI help and actual request cap already16384."
+  ],
+  "completed_agent_observation": "suite-v4-upload-fix-agent-and-32k-observation.json",
+  "subsequent_source_review": "Census R547/R548 Main review: MTP expert table unused by both prompt paths; SERVE prompt workspace persists and bind alone does not retire cached graph pointer leases. R549/R550 Main review: FP32-register storage-boundary narrowing is a distinct valid candidate from per-token rounding; exact-radix selector hypothesis with corrected query/reference byte accounting. All candidates remain unimplemented/unmeasured; benchmark then PR6 recovery retain priority.",
   "closed_suite": "suite-v4-summary.json",
   "source_lifetime_fix": "Immutable host token/bounds and early-exit SYCL drain guard built and CPU tested. Bounded validated GPU probe passed with real draft batches2304+1792, native0/owners absent/freshfault0/nodump/boot stable. New-source full thinking suite3each is next; no full context/quality/speed-improvement qualification.",
   "terminal_gate_fix": "R544: standard request terminal/usage and agent normal-stop gates strengthened; 19 CPU tests passed; 1/2run remains explicitly labeled unqualified pilot.",

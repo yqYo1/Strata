@@ -207,6 +207,24 @@
       "sha256": "277a415812367bfd3ea5c06295a7870bd903cf6e77d511ecc6ff5bb7583404f4",
       "status": "source-only; Main review includes SERVE workspace and cached MTP borrowed-pointer corrections; no runtime/adoption",
       "direct_canonical_write": true
+    },
+    {
+      "round": 549,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research/research-recurrent-storage-precision-evidence-round549-v1.txt",
+      "sha256": "daaf6f9e4a3d7753a22e13617fffcdb125d95ef2af16cf622b1fdc5b180231e1",
+      "status": "source/literature-only; Main corrections on storage boundaries, preprint status and query/reference bytes; no runtime/adoption",
+      "direct_canonical_write": true
+    },
+    {
+      "round": 550,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research/research-long-context-qsa-indexer-budget-round550-v1.txt",
+      "sha256": "1fb07ebcc328d988c1a34740eaf94f6b21854d9b4138b947d9750d5672b6b48a",
+      "status": "source/literature-only; Main corrections on storage boundaries, preprint status and query/reference bytes; no runtime/adoption",
+      "direct_canonical_write": true
     }
   ],
   "no_intervention_until_final": true,
@@ -245,26 +263,12 @@
     "R546 gate/up have different weight codes: their decoded weights cannot be shared merely because the expert is the same. NT2..4 already reuse each decoded block. Any cache needs weight-side/block/model identity and measured NT1 recurrence/physical traffic.",
     "R547 current prompt and fallback return before MTP experts/head; expert table is source-derived675MiB, not measured reclaimed VRAM. Mixed arena/dense and persistent draft KV must stay. See research-round547-548-review.ja.md.",
     "R548 normal SERVE retains sp across requests; only CLI releases prompt workspace after successful prefill. Proposed existing reset-after-request restoration boundary does not exist in SERVE.",
-    "R548 MtpDrafter.bind only assigns window_R_; cached round graph retains pointer captured by value. Rebinding/nulling does not detach old verifier R_. Target workspace rebuild requires checked retirement/recapture of MTP normal/coupled round graphs, not only Verifier graphs."
+    "R548 MtpDrafter.bind only assigns window_R_; cached round graph retains pointer captured by value. Rebinding/nulling does not detach old verifier R_. Target workspace rebuild requires checked retirement/recapture of MTP normal/coupled round graphs, not only Verifier graphs.",
+    "R549 primary arXiv paper does not establish peer review. FP16/BF16 storage-boundary-only casts and per-token round-trip are distinct valid experiments; current fused prefill holds FP32 registers inside chunk and verifier writes only accepted commit state. Do not require per-token rounding as the sole reduced-storage implementation.",
+    "R550 score query is4*128FP32=2048bytes, not512. Nominal operand references are4100bytes/candidate including4 repeated key reads and score write. Unique query/key extents and physical DRAM traffic are different. Original score-reference table column is invalid; see research-round549-550-review.ja.md.",
+    "R550 root SYCL top-k is32threshold+2final source passes despite4pass header description; radix is unimplemented/unmeasured. Before new implementation review existing own-fork fast path after benchmark/PR6 boundary to avoid duplication."
   ],
-  "pending_reports": [
-    {
-      "round": 549,
-      "model": "gpt-6-luna",
-      "read_only": true,
-      "path": "research/research-recurrent-storage-precision-evidence-round549-v1.txt",
-      "task": "/root/research_hardware_model_budget_r535",
-      "scope": "Empirical GDN/recurrent state storage precision quality evidence, distinct from intermediate carve accounting; no runtime work"
-    },
-    {
-      "round": 550,
-      "model": "gpt-6-luna",
-      "read_only": true,
-      "path": "research/research-long-context-qsa-indexer-budget-round550-v1.txt",
-      "task": "/root/research_existing_decode_ledgers_r536",
-      "scope": "Current long-context decode QSA full indexer versus selected sparse attention budget and nonduplicate architecture candidates; no runtime work"
-    }
-  ],
+  "pending_reports": [],
   "implementation_proposals": [
     {
       "model": "gpt-6.1-sol",
