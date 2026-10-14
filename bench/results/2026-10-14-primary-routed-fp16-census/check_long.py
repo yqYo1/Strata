@@ -77,7 +77,7 @@ def make_input(root):
 def main():
     mode = sys.argv[1]
     assert mode in ['census', 'phase', 'reference']
-    O = B / ('main-primary-long-routed-' + mode + '-root-v2')
+    O = B / ('main-primary-long-routed-' + mode + '-root-v3')
     build = json.loads((BUILD / 'record.json').read_text())
     gate = json.loads((B/'main-primary-routed-census129-pair-root-v1/record.json').read_text())
     assert build['passed'] and build['complete'] and not build['active']
@@ -116,7 +116,10 @@ def main():
         if mode == 'phase':
             env['STRATA_PREFILL_TIMING'] = '1'
         args = list(prior['engine_args'])
-        args.remove('--serve')
+        # The stock server launcher adds --serve itself; its saved configured
+        # engine_args excludes it. Accept either explicit representation.
+        if '--serve' in args:
+            args.remove('--serve')
         args += ['--tokens-file', str(token_file), '--max-new', '1']
         argv = ['/home/yayoi/.local/share/strata-sycl/venv/bin/python', str(D/'engine_wrapper_v3.py'), *args]
         record = dict(active=True, passed=False, complete=False, commands=[], mode=mode,
