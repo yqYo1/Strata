@@ -31,6 +31,8 @@
 一方、その差を理由に過去の速い測定を捨てない。元の設定と呼び出し経路を復元して比較する。
 今後の正式速度比較には、引き続き無変更の本家bench.sh/標準client、32K以上、各arm3回以上を使う。
 過去のGEN/CLI測定は元の意味で保持する。
+旧325 MiBはcacheの論理確保量で、当時のoccupied expert weightsは268.60 MiBだった。
+現在の報告268.60 MiBだけからcacheに保持する重みが減ったとは推定しない。
 
 ## 実ソースにあった差
 
@@ -91,3 +93,16 @@ verifier/CPU expert/prefillの選択ソースとbuild契約も異なる。
 まとめる。元のGit blob/commit/SHAは [historical-source-index.json](historical-source-index.json)。
 小さい結果・コマンド・数値だけを再掲し、成功API trace、raw tensors、profiler timelineや
 重複pollログは追加していない。
+
+## その後の復元・測定
+
+[旧ソースの復元と一要因比較](../2026-10-14-pre-Xe-replay/README.ja.md)へ進んだ。
+元セッションの上記351+13公開メッセージの位置/hashを再検証した。
+旧1ebをsource patchなしで595 files再ビルドし、compile databaseにより旧MoEは
+MMQ/fusedではなくFP16-dequant＋oneMKLと確認した。量子化、verify、QSA layout、
+KV streaming/ring restoreの対象検査も通った。対応外poolの拒否とverbose-log capの
+未完了試行は失敗のまま保持し、GPU障害と分類していない。
+
+現在の同じbinary・4096 chunk・stock32K clientでMMQだけ無効化した結果は、
+PP182.2/175.3/170.1、decode2.8/3.7/2.5 t/s。PP中央値+47.93%だがdecodeは悪化方向。
+製品既定へは未採用。旧450の回復、現在の実262144入力・RESTORE、品質の合格とは区別する。

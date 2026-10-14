@@ -107,6 +107,16 @@ def main():
                     raw = path.read_bytes()
                     manifest.append(dict(path=str(path), bytes=len(raw), sha256=sha(raw),
                         retained=[item['path'], 'stock-comparison.json'], reason='Duplicate successful stock console table'))
+        research = json.loads(committed(Q / 'research-index.json'))
+        for report in research['reports']:
+            source = Path(report['original_path'])
+            if not source.exists():
+                continue
+            data = committed(Q / report['path'])
+            assert source.read_bytes() == data and sha(data) == report['sha256']
+            manifest.append(dict(path=str(source), bytes=len(data), sha256=sha(data),
+                retained=[report['path'], 'research-index.json'],
+                reason='Finished read-only research report; use committed project registry for subsequent rounds'))
         output = Q / 'deletion-manifest.jsonl.gz'
         previous = [json.loads(x) for x in gzip.decompress(output.read_bytes()).decode().splitlines()] if output.exists() else []
         old_paths = {x['path'] for x in previous}
