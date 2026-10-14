@@ -1,0 +1,100 @@
+# R556 — root SYCL KV resolver and miss-copy source budget
+
+Date: 2026-10-15 JST. Read-only source-derived review of `kv_stream_resolve` under the current QSA geometry, INT8 K/V, page size 4, configured resident capacity 32,768 cells, verifier width 2,051 and `nq=1..4`. This is per resolver/per QSA layer unless stated otherwise. No live artifacts, model/private data, PR #6/history, excluded `B/prefill-gemm-only-contract-root-v1/record.json`, build/test, GPU/profiler, process/service, reset, cleanup or Git state was inspected. No code was changed. Main owns any implementation/validation after benchmark and PR #6 review. Counts and bytes below are source bounds, not measured traffic or time.
+
+## Finding
+
+At max context 32,768, all 8,192 four-cell pages fit the configured 8,192 resident slots; `kv_plan` stays fully resident, so it does not call the streamed resolver. At max contexts 65,536 and 262,144, the main QSA state has 16,384 and 65,536 logical pages but still 8,192 slots, so `kv_stream_resolve` runs before selected-cell attention.
+
+Each verifier query selects 2,051 cells, but that is not itself the number of pages fetched or misses. At 65K/262K endpoints, a full-block query selection touches 513 pages; for some partial-tail positions the selected tail page can add a 514th page while the threshold full block is partial. Across `nq=1..4`, the unique selected-page union ranges with overlap and query position; absent pages are the misses. Each absent INT8 page contributes 4,224 source bytes to the device-slot copy. The current SYCL implementation nevertheless submits a fixed 8,192-work-group copy grid (1,048,576 work-items) each resolver call. If `ctl[2]` is zero, every group returns before touching copy data, but that copy kernel is still submitted in the captured queue.
+
+A fixed, smaller grid with a device-side grid-stride loop can preserve dynamic `ctl[2]` and unique copy ownership as a source-level design: leave the map/clock `single_task` and its counters unchanged; let each fixed group process `k = group_id, group_id + G, ...` while `k < m.ctl[2]`. The existing CUDA backend already uses this fixed-grid/dynamic-count pattern with 96 groups. That supports design feasibility, not SYCL correctness or speed. A zero-miss call would still submit a small no-op copy kernel unless the graph/runtime gained a separately validated conditional node. No performance result follows from reducing the source launch extent.
+
+## Geometry and selected pages
+
+The current source geometry is `page_size=idx_block=4`, `idx_top_k=2048`, `n_head_kv=2`, `head_dim=256`; INT8 K/V stores 1,056 bytes per cell. The active resident extent is `ceil(max(32768, 20480)/4)=8192` pages. The context endpoint page counts are:
+
+| Max context | Logical pages | Resident pages | Main QSA storage mode |
+|---:|---:|---:|---|
+| 32,768 | 8,192 | 8,192 | Fully resident; no resolver |
+| 65,536 | 16,384 | 8,192 | Streamed |
+| 262,144 | 65,536 | 8,192 | Streamed |
+
+For `n_kv > 2,051`, selection width is 2,051. The selector emits ascending cell IDs by selected four-cell block; a page lookup is counted once per adjacent same-page run within each query. For a query with `n_kv mod 4 == 0` or 3, the selected set uses 513 pages. For remainders 1 or 2, a high-scoring partial tail candidate can be selected in addition to 513 pages drawn from full blocks, yielding 514 pages. If that tail candidate is not selected, it remains 513. These are selected-page counts, not cache misses.
+
+For windows ending at context endpoints divisible by four (65,536 or 262,144), the queries have remainders `0` for `nq=1`; `3,0` for `nq=2`; `2,3,0` for `nq=3`; and `1,2,3,0` for `nq=4`. Thus source-level page lookup occurrences are 513; 1,026; 1,539–1,540; and 2,052–2,054 respectively. Page-union size can be smaller because the selected pages can overlap across queries. For the four-row endpoint window the union can be as small as 513 pages if the query selections overlap, and is at most 2,054 pages under these endpoint remainders. For generic valid `nq<=4` positions, the conservative source bound is 514 pages/query, or `min(n_slots, 514*nq)` pages in the union. The API header's looser `(cap/page_size + 2)*nq` capacity rule also allows `514*nq` at cap 2,051.
+
+Logical selected-cell occurrences are `2,051*nq` (2,051 / 4,102 / 6,153 / 8,204); the unique selected-cell union is between the largest per-query selection and that occurrence total. A page union counts each page once, while selected-cell occurrences count repeated uses across queries. A miss is a page in the union that was not resident when the resolver marks hits. With valid non-overflowing map state:
+
+`D = unique selected pages; H = D pages already resident; M = D - H distinct absent pages; 0 <= H <= D <= n_slots.`
+
+All current selection bounds (`D<=2,056` generic, 2,054 for the specified full-block endpoint window) fit well below 8,192 slots. In a valid call every distinct absent page is placed, so `need=placed=M`; on malformed/over-capacity state, `ctl[3]` records the error and `ctl[2]` remains the successful `placed` count.
+
+## INT8 byte layout and miss-copy budget
+
+`runs()` lays out four independent array copies for each INT8 page. With two KV heads and four cells per page, K codes are `2*4*256 = 2,048 B`, V codes are another 2,048 B, K scales are `2*4*(256/64)*2 = 64 B`, and V scales are 64 B. Total is `4,224 B/page`, also `kv_block_bytes(s,kKvInt8)`. It is an address payload copied by the kernel; it is not a claim about DRAM transactions, PCIe bytes or physical traffic.
+
+| `nq` at endpoint | Selected-cell occurrences | Page lookup occurrences | Max distinct pages absent (cold, disjoint sets) | Source copy payload upper bound | Current copy groups active at upper bound | Current fixed groups inactive at upper bound |
+|---:|---:|---:|---:|---:|---:|---:|
+| 1 | 2,051 | 513 | 513 | 2,166,912 B | 513 | 7,679 |
+| 2 | 4,102 | 1,026 | 1,026 | 4,333,824 B | 1,026 | 7,166 |
+| 3 | 6,153 | 1,539–1,540 | 1,540 | 6,504,960 B | 1,540 | 6,652 |
+| 4 | 8,204 | 2,052–2,054 | 2,054 | 8,676,096 B | 2,054 | 6,138 |
+
+The upper payload is `M_max * 4,224`, assuming every union page is absent on entry and no pages overlap beyond the necessary per-query/page structure. For any call the actual source payload is `M*4,224`; a warm call can be zero. At each query's selected-cell level, `2,051*1,056 = 2,165,856 B` of logical K/V values are named. A full-page resolver copy can include unselected cells: at an aligned endpoint, 513 page copies contain 2,052 cell slots, one beyond the 2,051 selected cells; when a selected partial tail page and a partial full-block page are both present, copied-page overfetch can be larger. The resolver copies whole pages by design.
+
+The `single_task`'s `lookups` counter counts each distinct page run within each query, including repeated pages in another query. It increments before reading `page_table`; an absent page is changed from `-1` to `-2` on first encounter, and later queries see `-2` until placement. Consequently, `ctl[6:8]` lookups are not equal to hits plus successful misses if absent pages repeat across queries: subsequent `-2` lookups are neither a second miss nor a resident hit. `ctl[4:6]` counts successfully placed pages (`placed`), `ctl[2]` is the latest call's placed count, `ctl[8:10]` counts calls, and `ctl[3]` is the sticky overflow/map-error flag. The copy kernel itself changes none of these counters.
+
+## Clock scan amortization
+
+The resolver first walks all selected-page lookups and marks every resident selected slot with this call's `epoch` and reference bit. Only after all queries are classified does it place misses. Let `N=n_slots`, `P` be the number of distinct resident selected pages/slots protected by this epoch, and `M` the distinct absent pages. For valid capacity, `P+M=D<=N`. At miss `j` (zero-based), the `P+j` hit/previously placed slots remain protected, leaving at least `N-P-j >= M-j >= 1` slots available for the current victim. The loop does not scan all `N` slots for every miss by construction: it stops at the first free slot or unprotected slot with `slot_ref==0`; it clears an unprotected reference bit only as the hand encounters it.
+
+Amortized source-loop reasoning for a valid call:
+
+- Each initially unprotected `slot_ref==1` bit can be cleared at most once during this resolve. A newly selected victim is stamped with the current epoch and becomes protected, so its reference bit is not cleared again in this call.
+- A successful miss accounts for one eligible victim iteration. Between victims, the hand scans only until the next eligible slot; skipped protected slots are fixed by the current hit set plus the prior placed victims.
+- A search can make a complete ring pass only when every currently unprotected slot has `slot_ref==1` and is occupied. That pass clears those unprotected bits; a second partial pass then reaches a zero-reference candidate. Once that all-reference pass has happened, subsequent remaining unprotected slots are zero-reference/free unless selected and protected, so the extra second-pass episode can occur at most once in the call.
+
+One conservative bound on scalar scan-loop iterations for `M>0` is therefore `N + M*P + M*(M-1)/2 + 2*M - 1` (equivalently `N-P` initial reference clears, `M` victims, at most `sum(P+j)` protected skips over one pass per miss, plus at most `P+M-1` protected skips on the single extra partial pass). It is a loose source bound, not a predicted instruction count or time. A per-miss `2N` scan bound is the kernel's defensive limit, not the expected work and not an amortized estimate. If epoch is negative or reaches `INT_MAX`, the code separately clears all `N` slot stamps before starting epoch 1; treat that rare rollover as an additional O(N) operation, not an ordinary miss cost.
+
+For current geometry `D<=2,056`, far below `N=8,192`; the number of protected hits and misses depends on query-page overlap and the map state. This review does not infer the actual clock scan count, warm-hit ratio or cross-query overlap for a run.
+
+## Fixed bounded grid-stride candidate
+
+The current SYCL copy launch uses `nd_range(n_slots*128,128)`: exactly one group per possible slot, with 128 lanes. Each group reads `k=get_group_linear_id()` and returns when `k>=m.ctl[2]`; active groups copy one missing page. At `N=8192` this is 8,192 groups / 1,048,576 work-items. If `M=0`, all groups exit before reading a miss entry or any source/destination byte; the preceding mapping `single_task` still marks hits and updates per-call/cumulative counters, and the copy kernel remains a submitted no-op node. At the cold upper bounds above, 74.95%–93.74% of the launched groups still exit immediately. These are launch-grid counts, not measured wasted time.
+
+A capture-compatible candidate can keep a host-known, graph-fixed `G` with `1<=G<=N`, launch `G*128` work-items, and use an in-kernel page loop `for (k=group_id; k < size_t(m.ctl[2]); k += G)`. `m.ctl[2]` remains device-resident and is rewritten by the preceding resolver node each replay; the host must not choose a grid from the current miss count or capture a stale `placed` scalar. For example, `G=512` would use at most `ceil(2056/512)=5` sequential page copies per group at the current cap. A larger fixed G trades more active groups for fewer loop iterations. The source evidence does not choose an optimum.
+
+For this mapping to preserve behavior, keep the following contracts:
+
+- Leave the single-task mapping, epoch/current-use protection, victim assignment, slot/block maps, `ctl[2]` placed count, sticky `ctl[3]`, and cumulative miss/lookup/call counters unchanged. Preserve the map node before the copy node and copy before attention on the same in-order captured queue.
+- Launch each group `g` with disjoint page-index ownership `k=g+qG`. Since every `k` below dynamic `ctl[2]` has exactly one residue owner, no miss-list entry is omitted or processed twice. The existing resolver gives each successfully placed `miss_slot[k]` a unique slot by protecting each victim immediately. Keep each page destination `(slot, run)` unique.
+- Keep the four INT8 run bases/lengths and the full-page byte layout unchanged. Each 128-lane group must cover every byte `i` in every run exactly once, such as `i=lane; i<len; i+=128`; a group may process another page only after its first page's run loops finish. Preserve the source-relative address `host_run + block*len` and destination `device_run + slot*len`.
+- Read the current `ctl[2]` from the captured device pointer, never from a host snapshot. Use the same fixed grid bound for the graph lifetime and ensure the bound is positive even if a future shape has no expected misses. On an error/overflow call, copy only `placed` entries named by `ctl[2]`, not `need` entries in the miss list.
+- Retain the `KvHostPools` mapped host-USM pointers, same-context queue access, queue order, and lifetime through copy completion and every graph replay that uses them. No CPU read/write/free may race the queued device copy. Current `queue_for(stream)` requires an in-order queue; `finish(stream,event)` only synchronously waits for the null-stream case, so the non-null captured call relies on queue/graph ordering and long-lived state buffers.
+
+The existing CUDA `copy_kernel` is a useful mechanism reference: it launches 96 groups, reads device `m.ctl[2]`, and grid-strides `k` by `gridDim.x`. It uses a different resolver (parallel miss selection, different scan mechanics) and a CUDA 16-byte vector copy, so it does not validate this SYCL candidate or justify copying its grid size. The candidate would only reduce a fixed source launch bound; it cannot skip the map `single_task`, avoid the copy-node launch on a zero-miss replay, shrink the logical miss payload, or prove a latency improvement.
+
+## Host-USM and asynchronous ownership
+
+`qsa_state_init` allocates the authoritative streamed pools with the compatibility `cudaHostAlloc` API; this SYCL wrapper implements it with `sycl::malloc_host` and returns the same pointer as the device alias. The layer state retains those `KvHostPools` pointers; the device copy kernel reads them directly and writes the device slot arrays. The `KvHostPools` header says CPU access is permitted only after the producing queue/event completes and concurrent CPU/GPU mutation is unsupported. Khronos defines host USM as host memory directly accessible by a device, requires accesses to use the allocation's context, and calls for synchronization of host/device access ([USM basic concept](https://github.khronos.org/SYCL_Reference/iface/usm_basic_concept.html)); Intel likewise notes host allocations remain in host memory and are accessed remotely by the GPU ([oneAPI USM allocations](https://www.intel.com/content/www/us/en/docs/oneapi/optimization-guide-gpu/2024-2/unified-shared-memory-allocations.html)). This supports retaining the current host-USM input path but says nothing about measured link traffic.
+
+The captured graph and device pool pointers are session state, while `Runs` is copied into the submitted kernel closure as four source/destination pointers and lengths. A grid-stride change must keep those pointer values valid until the asynchronous node finishes. It should add neither a temporary host staging buffer nor a host synchronization around the miss count; either would alter current capture and memory-ownership behavior and require a separate design review.
+
+## Evidence and identity
+
+The current source resolver is `src/kernels/sycl/kv_stream.cpp`, selected by `cmake/sycl_backend.cmake`; `src/core/verify.cpp` calls it between `qsa_block_topk` and selected-cell attention. Main's corrected R550 review is respected: this report makes no use of R550's invalid original score-reference column and does not equate selected-cell logical payload with streamer copy bytes.
+
+| File | SHA-256 |
+|---|---|
+| `src/kernels/sycl/kv_stream.cpp` | `d935fcc1ba07f5e3982cd255e3ad53e0f375ec16425a92b049696f142575e76c` |
+| `include/strata/kernels/kv_stream.hpp` | `6cb4bdf1a1f522060dbd93a78c333955791aab7aedbd9cc2b63c1c2ed037fee6` |
+| `include/strata/kernels/kv_q8.hpp` | `8917232c10900e85a6193012d2cc56138c7ab000c01d964bc9d296cf2b2e4bb6` |
+| `include/strata/kernels/qsa.hpp` | `87c02222284f842fcecb46a422b119af769c72c3914edc8da5b2ee782456dc74` |
+| `src/core/layer.cpp` | `4273fc8c08bb0c58ad471d963f232a457dbc96ea6bd20fa1b45d27fee3428cfb` |
+| `src/core/verify.cpp` | `640e0270be833ddff0218331a7db18043605af3ced2682787f6b06abdcf6316c` |
+| `src/sycl/compat.cpp` | `225e2021b5ce67b3bb58f116a4a15cd5d592a33dbdf2c9837940a3e89155dca7` |
+| `include/strata/sycl/launch.hpp` | `9c5aaf14e4b92232d4dcd4e2e68071201d436d287a9615088a9428d88f53b1ce` |
+| `src/kernels/cuda/kv_stream.cu` (mechanism reference only) | `27aa7ed26365dc86aa68a8b64c3820dc0abb3fde0f1e892c3d3e0695b3a05c95` |
+
+No counter values, overlap, hit rate, miss count, bytes moved, hardware transaction count, PCIe throughput, kernel time, end-to-end latency or performance change was measured. This is a source budget and candidate mapping analysis only.

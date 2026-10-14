@@ -261,6 +261,42 @@
       "sha256": "98c2333bb9c834c43ae8bb314fae54aeb116cebc43f411d60726c1ff4782cc71",
       "status": "independent source-only batch audit; Main review complete; symbolic/device/numerical/runtime gates remain unrun",
       "direct_canonical_write": true
+    },
+    {
+      "round": 555,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research/research-sycl-verifier-device-attribution-round555-v1.txt",
+      "sha256": "eb253a43dc727ff15fe1c23fd1505a9f0743cd3533586d42573c3ef490346511",
+      "status": "source-only proposal; Main review complete; no runtime/performance qualification",
+      "direct_canonical_write": true
+    },
+    {
+      "round": 556,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research/research-kv-stream-map-copy-budget-round556-v1.txt",
+      "sha256": "1b15972063493101a07ee261e4222241fda3cf682c5f474ab2040f4fca288e3e",
+      "status": "source-only proposal; Main review complete; no runtime/performance qualification",
+      "direct_canonical_write": true
+    },
+    {
+      "round": 557,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research/research-closed-suite-evidence-round557-v1.txt",
+      "sha256": "892b5120de1bb56c54cf62dfa58b80c21c279bebc7f1c177a76f2ca4553f1fae",
+      "status": "FINAL source-only; Main review complete; collector fixes source-only/unrun; profiler candidate unimplemented/unrun",
+      "direct_canonical_write": true
+    },
+    {
+      "round": 558,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research/research-bounded-sycl-profiler-round558-v1.txt",
+      "sha256": "677f9e3ffb0b8b82983ec11da37c490f43d4cdd7b48bca89ad79a9a72fb10127",
+      "status": "FINAL source-only; Main review complete; collector fixes source-only/unrun; profiler candidate unimplemented/unrun",
+      "direct_canonical_write": true
     }
   ],
   "no_intervention_until_final": true,
@@ -308,7 +344,9 @@
     "Main current native_qsa_indexer_append_batch loops one queue submission per input row despite caller three-launch comment. Source-derived4096/layer/chunk and414720 for34560batched rows/12QSA; no runtime attribution or speed claim. Separate artifact proposal pending.",
     "Main STRATA_VERIFY_PROFILE is forcibly disabled under SYCL; CUDA profile_report is not an available current-backend device breakdown. Host observer is distinct from device kernel profiling.",
     "R553 token0 writes dead/provisional pooled0 only, not spare row1. Completion atpos3first creates spare1. Fixture reflects correct branch; phrase initial spare must not imply row1write.",
-    "R554 integer/symbolic fixture does not compile or exercise normalize_rotate/SYCL floating math; shared-helper refactor also changes OFF/single/captured append source and needs original/OFF/ON regression gates, prefill/decode separately."
+    "R554 integer/symbolic fixture does not compile or exercise normalize_rotate/SYCL floating math; shared-helper refactor also changes OFF/single/captured append source and needs original/OFF/ON regression gates, prefill/decode separately.",
+    "R555 graph envelope and per-kernel PTI intervals differ; enabling graph profiling changes optimizations. R556 selected page occurrences, unique-page union, placed misses and copied payload are distinct. Fixed-copy group counts and clock-loop bounds are source counts, not current critical-path times. See research-round555-556-review.ja.md.",
+    "R557 closure receipt hashes/embedded results now anchor collector inputs; nominal prompt actual32089 remains below32768, with separate informational strict-threshold field and usage-valid gate. Required long-generation inputs still >=32768. R558 documented process environment control does not by itself qualify concurrent environment access safety or actual graph-kernel visibility. See research-round557-558-review.ja.md."
   ],
   "pending_reports": [],
   "implementation_proposals": [

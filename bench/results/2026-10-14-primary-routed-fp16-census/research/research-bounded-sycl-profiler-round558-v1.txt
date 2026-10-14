@@ -1,0 +1,64 @@
+# R558 — bounded PTI collection control for one SYCL verifier window
+
+Date: 2026-10-15 JST. Read-only source and primary-source review. The sole write is this report. No source, test, build, runtime setting, GPU/profiler, process/service, cleanup, or Git state was changed. I did not inspect live process/environment state, PR #6/history, private Codex logs, model/session data, or the excluded `B/prefill-gemm-only-contract-root-v1/record.json`. Main owns implementation and all serial validation.
+
+## Result
+
+There is a concrete, in-process UnitRace control path. UnitRace's current README explicitly documents changing `PTI_ENABLE_COLLECTION` with `setenv(..., "1", 1)` and then `setenv(..., "0", 1)` inside the application; only events in that region are collected. This is not a launch-time-only variable. The profiler must be launched with `--start-paused` for these in-process changes to take effect. The documentation also says `__itt_pause()` / `__itt_resume()` are alternatives, and take precedence if both mechanisms are used. The project does not currently use ITT pause/resume. For the documented environment-toggle path, the verifier needs no PTI header, PTI library, or extra link dependency: the implementation hook calls the process environment API already provided by the C runtime. UnitRace itself supplies the observer.
+
+This resolves the command-only gap in R555: a command can start UnitRace paused, but a source hook must turn collection on and off around the selected verifier call. A suitable diagnostic command shape is:
+
+```sh
+PTI_ENABLE_COLLECTION=0 unitrace --device-timing --kernel-submission --device-timeline \
+  --start-paused --output-dir-path <private-bounded-dir> <compiled-verifier> <same-args>
+```
+
+The exact executable and arguments must come from Main's compiled verifier recipe; they are not established by this source review. Do not add graph profiling or new SYCL waits. Set collection off on every normal and error exit once the selected window's existing work has drained. A process-wide one-shot selector should match one configured window (for example, target T and position), and emit one compact begin/end label with that identity and outcome. The profiler's `--start-paused` option is essential; without it the README says the environment control has no effect and the whole process is traced.
+
+## Where the hook belongs
+
+`Verifier::run(T, ..., pos0, ...)` validates the window, captures the window and commit graphs, stages host inputs, then submits the first segment at `src/core/verify.cpp:1204–1272`. The selected collection interval should begin immediately before that first `graph_launch_with_completion()` call, after `capture(T)` / `capture_commit()` and host staging have finished. It should end after the existing `cs_` and `copy_` drains succeed at `:1390–1401`, before sampling and ordinary host post-processing. An RAII guard may turn collection off on early error returns without adding a synchronization; its destructor must only restore the environment control and label the failed/incomplete window. Keep all existing layer completion waits, copy drains, window drains, and commit ordering unchanged.
+
+One outermost-call guard is needed if a logical window recurses through `next_->run()` for layer-split verifier stages (`:1439–1444`). The collection state is process-wide: nested stages should not toggle it independently. A bounded first check should use a single-stage verifier when available, or explicitly define the selected logical window as the full nested stage chain. In the multi-stage case, the outer guard should remain enabled until all nested stage runs return; otherwise it would omit later stages. Existing commit is a separate graph launch (`:1630–1665`), so disabling at the completed run boundary excludes commit. If commit attribution is later required, it needs a separately named collection window and must preserve its existing asynchronous semantics.
+
+Before selecting the diagnostic replay, ensure the target T graph is already captured for every stage (or record capture as a separately labeled first-window condition). Window graph creation is lazy: `capture(T)` returns early only when `segments_[T]` is already populated (`:1044–1067`). The simplest clean diagnostic selector is one warmed, previously captured T=1 replay, bounded to a single `Verifier::run`; the source does not prove that every higher-level caller can issue an isolated T=1 call without additional surrounding work. The hook must not force a new barrier, drain, or device-wide wait to delimit collection.
+
+## What the current graph mode contains, and what UnitRace may see
+
+The supplied/counted configuration is `STRATA_SYCL_VERIFY_NATIVE_CAPTURE=0`. In source this selects ordinary `cudaStreamBeginCapture`, not native recording (`verify.cpp:59–70`). Compat constructs an experimental `command_graph` with an empty property list, records and finalizes it, and on the ordinary path retains its SYCL graph nodes via `get_nodes()` (`src/sycl/compat.cpp:20–45, 438–466`). Replay is submitted by `h.ext_oneapi_graph(graph->value)` (`:473–510`). Native recording uses `enable_native_recording` and does not expose those nodes through the compat node listing (`:542–552`).
+
+UnitRace documents Level Zero device/kernel timing, submission intervals, and timelines, and supports Intel GPU applications. This makes replayed kernels a plausible target for its Level Zero activity observer, but the UnitRace documentation does not promise per-node enumeration for this exact DPC++ experimental `command_graph` replay path. Source graph-node visibility inside Strata is not itself proof that UnitRace will report each node as an individual device kernel. The public PTI SDK separately documents graph support beginning with SDK 1.1.0, with Level Zero native graph support requiring icpx 2026.1.1 and runtime 1.15.39122+12; it describes SYCL graph support with additional environment settings for its legacy graph path. That is adjacent SDK evidence, not a guarantee about UnitRace's own adapters or this compat replay. Do not add those settings to this project configuration based on that note.
+
+The committed runtime hints are DPC++ 2026.1.1 and Level Zero driver `1.17.39395+14` in `docs/SYCL_STATUS_2026-10-03.md`, `docs/sycl/B570_OPERATIONS_PROBE.txt`, and R545. `docs/sycl/INSTALLED_HEADERS.tsv` pins the installed DPC++ command-graph header. These are committed environment/build clues, not proof of the binaries loaded by a later verifier process. There is no committed PTI/UnitRace version or adapter receipt in the reviewed census reports, so exact local UnitRace graph coverage remains unverified.
+
+Admit the eventual diagnostic only after a bounded smoke check confirms that this installed UnitRace/runtime reports device kernels from the normal (non-native) graph replay and that the selected window's events are present through its end. If the replay collapses to a graph/command-list envelope or no node kernels appear, report that result as a profiler limitation; do not infer per-node timing from Strata's `get_nodes()` output. PTI kernel events still need source-backed attribution, and their summed durations need not equal the graph/window wall interval.
+
+## Public control API and integration boundary
+
+For this UnitRace run, the applicable public control is the documented `PTI_ENABLE_COLLECTION` environment control coupled to `--start-paused`. It is an in-process mutable environment setting; the UnitRace tool owns the tracing callbacks. No `pti_view.h`, `libpti_view`, or ITT linkage is required for this route. The value should be explicitly initialized to `0` in the launch environment and toggled only around the selected interval.
+
+A different option is to embed Intel's PTI View SDK. Its public functions are `ptiViewEnable(pti_view_kind)` and `ptiViewDisable(pti_view_kind)`, declared in `pti/pti_view.h`; the SDK's CMake package example links `Pti::pti_view`. SDK README version 0.7.0 introduced local collection, whose documented runtime requirement is Level Zero 1.9.0 or newer. Before `ptiViewEnable`, the SDK requires callbacks to be defined and registered with `ptiViewSetCallbacks`. This is a separate linked-library integration, not the minimal UnitRace environment toggle; avoid combining it with UnitRace collection in this diagnostic unless a later design explicitly requires an embedded collector. Current SDK docs are marked draft/active development, and no local SDK version is pinned in the committed evidence.
+
+## Retention and interpretation
+
+Use one supervised diagnostic process, private output directory, finite deadline, and the artifact-retention default of 64 MiB aggregate raw text logs. Record the actual UnitRace version, DPC++/Level Zero runtime and driver versions, device, command, effective environment, binary/source identity, selector (T/position), warm/capture/replay state, begin/end outcome, and original correctness/fault result status. Keep only the compact device-timing, submission and timeline evidence needed to establish which kernels ran and the attribution limits. Preserve any raw timeline only until its summary and hash are verified; retain a path/hash/reason deletion manifest before later cleanup. Collection and phase labels can perturb host timing, so this diagnostic is not a clean performance sample and makes no performance or correctness claim.
+
+## Reviewed source identities
+
+```text
+640e0270be833ddff0218331a7db18043605af3ced2682787f6b06abdcf6316c  src/core/verify.cpp
+225e2021b5ce67b3bb58f116a4a15cd5d592a33dbdf2c9837940a3e89155dca7  src/sycl/compat.cpp
+d571ad74ebfafc2523e129fe29858d61058bf0c26ae686834ea294105acb5e2f  src/sycl/runtime.cpp
+1f8f43ed9f7278ce260a2681b70f3dbfa18b07ff87a90ddb520a60406fb92787  include/strata/core/verify.hpp
+e3ca2a964806270e1d72862f979b6e262fb17a925a6027e7534c81dc45418871  src/program/generate.cpp
+66c58b3f840f526ae251bcf2cb12f9424192148ccd594dcde800fd9c581fa3a4  R545 verifier submission review
+eb253a43dc727ff15fe1c23fd1505a9f0743cd3533586d42573c3ef490346511  R555 verifier device attribution review
+```
+
+## Primary references
+
+- Intel PTI GPU UnitRace README at reviewed `intel/pti-gpu` master SHA `6c0d6b0b80c6dbac4b5902d9d5ade1c75b9e9033`: https://github.com/intel/pti-gpu/blob/6c0d6b0b80c6dbac4b5902d9d5ade1c75b9e9033/tools/unitrace/README.md — `--start-paused`, in-process `PTI_ENABLE_COLLECTION` set/unset, option effects, Level Zero kernel timing/submission/timeline.
+- Intel PTI View API reference: https://intel.github.io/pti-gpu/view_api_ref.html — `ptiViewEnable`/`ptiViewDisable` public API.
+- Intel PTI SDK README at the same reviewed SHA: https://github.com/intel/pti-gpu/blob/6c0d6b0b80c6dbac4b5902d9d5ade1c75b9e9033/sdk/README.md — local collection introduced in 0.7.0, Level Zero 1.9 requirement, graph support notes, callback/API linkage (`Pti::pti_view`).
+- Intel oneAPI graph extension at reviewed `intel/llvm` sycl SHA `1b5ac851f44bf3cd81a91bbbe8b2540e0fe05a05`: https://github.com/intel/llvm/blob/1b5ac851f44bf3cd81a91bbbe8b2540e0fe05a05/sycl/doc/extensions/experimental/sycl_ext_oneapi_graph.asciidoc — graph record/replay API used by compat; experimental extension.
+- Committed project provenance and previous attribution analysis: `research-verifier-submission-budget-round545-v1.txt` and `research-sycl-verifier-device-attribution-round555-v1.txt`.
