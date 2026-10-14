@@ -35,7 +35,10 @@ def main():
     O = B/('main-primary-long-generation-' + mode + '-root-v' + str(WORKLOAD_VERSION))
     build = json.loads((BUILD/'record.json').read_text())
     gate = json.loads((B/'main-primary-routed-census129-pair-root-v1/record.json').read_text())
-    reference = json.loads((B/'main-primary-long-routed-reference-root-v3/record.json').read_text())
+    reference_archive=P/'bench/results/2026-10-14-primary-routed-fp16-census/receipts/main-primary-long-routed-reference-root-v3/record.json.gz'
+    reference_raw=gzip.decompress(reference_archive.read_bytes())
+    assert hashlib.sha256(reference_raw).hexdigest() == 'b3087c4d27d04f6a41de685c00fac7c5a271c05d3a525f8f479dde858b7d2d38'
+    reference = json.loads(reference_raw)
     stock = json.loads(gzip.decompress((P/'bench/results/2026-10-14-primary-compact-moe-recovery/stock-evidence/compact1/record.json.gz').read_bytes()))
     for record in [build, gate, reference]:
         assert record['passed'] and record['complete'] and not record['active']
