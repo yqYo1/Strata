@@ -25,6 +25,7 @@
 
 #include <cuda_runtime.h>
 
+#include <array>
 #include <cstdint>
 #include <string>
 #include <vector>
@@ -84,6 +85,14 @@ public:
     void set_draft_history(const int32_t* tail, int64_t n_tail, int32_t next);
     bool coupled() const { return coupled_active_; }
 
+    /// Prompt-only expert retirement. Caller must own the entire prompt/decode
+    /// boundary; no concurrent public calls are allowed. Both methods reject a
+    /// duplicate transition. KV-only prompt graphs, draft KV, dense weights and
+    /// the borrowed window_R_ remain untouched. Failed queue retirement is fatal.
+    bool detach_prefill_experts(std::string& err);
+    bool restore_prefill_experts(std::string& err);
+    double ms_expert_detach = 0, ms_expert_restore = 0, ms_expert_recapture = 0;
+
     double ms_draft = 0, ms_prefill = 0;
     int64_t rounds = 0;
 
@@ -101,6 +110,12 @@ public:
     }
 
 private:
+    bool upload_experts_checked(bool original, std::string& err);
+    bool experts_detached_ = false, expert_source_valid_ = false;
+    bool expert_recapture_timing_ = false;
+    uint64_t expert_bytes_ = 0;
+    std::array<uint8_t, 32> expert_source_sha256_{};
+    std::vector<uint8_t> expert_host_source_; // immutable opt-in RAM restore owner
     bool record_forward(int T, int step_row0, cudaStream_t cs, std::string& err);
     bool capture_prefill(int T, std::string& err);
     bool capture_prefill_dev(int T, std::string& err);   ///< E-4: without the mapped staging (inputs copied on device)
@@ -181,6 +196,20 @@ private:
     float* head_logits_ = nullptr;
     float* dummy_inj_ = nullptr;
     int64_t cap_ = 0, attn_scratch_floats_ = 0;
+};
+
+// Explicit close reports reload failure. An unclosed scope fails closed rather
+// than unwinding over a possibly live reader or returning to decode without
+// weights. The caller closes only AFTER Prefill::run has destroyed its locals.
+class MtpPrefillExpertScope {
+    MtpDrafter* owner_ = nullptr;
+public:
+    MtpPrefillExpertScope() = default;
+    MtpPrefillExpertScope(const MtpPrefillExpertScope&) = delete;
+    MtpPrefillExpertScope& operator=(const MtpPrefillExpertScope&) = delete;
+    ~MtpPrefillExpertScope() noexcept;
+    bool open(MtpDrafter& mtp, std::string& err);
+    bool close(std::string& err);
 };
 
 }  // namespace strata::core

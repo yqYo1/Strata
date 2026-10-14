@@ -111,6 +111,67 @@
 #include <vector>
 
 namespace {
+
+// The two real batched prompt call sites share this boundary. Prefill::run owns
+// layer-major residual/cache temporaries; its return (including cancel/error)
+// destroys them before the expert reload begins. Short segments/windows never
+// detach. No feature-specific allocation, scan, kernel or wait when default off.
+bool run_prompt_with_mtp_experts(strata::prefill::Prefill& prompt, strata::core::MtpDrafter& mtp,
+                                 bool supported, const int64_t* tokens, int64_t n, int64_t pos0,
+                                 std::string& err) {
+    const char* release = std::getenv("STRATA_PREFILL_RELEASE_MTP_EXPERTS");
+    if (!release || std::strcmp(release, "1") != 0)
+        return prompt.run(tokens, n, pos0, err);
+    const char* layer_major = std::getenv("STRATA_PREFILL_LAYER_MAJOR");
+    if (!layer_major || std::strcmp(layer_major, "1") != 0) {
+        err = "MTP expert release requires exact STRATA_PREFILL_LAYER_MAJOR=1"; return false;
+    }
+    if (prompt.chunk() <= 0 || n <= prompt.chunk()) return prompt.run(tokens, n, pos0, err);
+#if !defined(STRATA_ENABLE_SYCL)
+    (void) mtp; (void) supported;
+    err = "MTP expert release requires the SYCL engine"; return false;
+#else
+    if (!supported) {
+        err = "MTP expert release requires single-GPU native MTP4 without split/peer/remote experts"; return false;
+    }
+    auto memory_mark = [](const char* phase) {
+        size_t available = 0, total = 0;
+        const auto status = cudaMemGetInfo(&available, &total);
+        if (status != cudaSuccess || available > total) {
+            std::fprintf(stderr, "strata: MTP expert memory telemetry failed at %s; stopping with owners live\n", phase);
+            std::fflush(stderr); std::_Exit(EXIT_FAILURE);
+        }
+        std::fprintf(stderr, "strata mtp: prompt expert phase=%s free_bytes=%llu total_bytes=%llu\n", phase,
+                     (unsigned long long)available, (unsigned long long)total);
+    };
+    memory_mark("before-detach");
+    strata::core::MtpPrefillExpertScope release_scope;
+    if (!release_scope.open(mtp, err)) return false;
+    memory_mark("after-detach");
+    auto restore = [&]() {
+        memory_mark("after-prompt-before-restore");
+        std::string restore_error;
+        if (!release_scope.close(restore_error)) {
+            // Serve's cancellation path may otherwise swallow a false return
+            // and continue. Never return to a persistent owner without experts.
+            std::fprintf(stderr, "strata: MTP expert restore failed: %s; stopping with owners live\n",
+                         restore_error.c_str());
+            std::fflush(stderr); std::_Exit(EXIT_FAILURE);
+        }
+        memory_mark("after-restore");
+    };
+    bool ok = false;
+    try {
+        ok = prompt.run(tokens, n, pos0, err);
+    } catch (...) {
+        restore(); // the callee's checked lifetime guards have already run
+        throw;
+    }
+    restore(); // keep the original prompt failure/cancellation error unchanged
+    return ok;
+#endif
+}
+
 // Windows' WDDM driver model: native Windows, or WSL2 (its GPU goes through /dev/dxg to the Windows driver).  There,
 // pinning a large arena into two CUDA contexts leaves WDDM refusing every later allocation (the 5080 + 3090 rig);
 // a Linux driver has no such limit (#253: the 8 GiB cap cost a 4090 + 3060 split 3x of its prompt speed).
@@ -5862,7 +5923,11 @@ int main(int argc, char** argv) {
                     return 1;
                 }
                 const auto tsp = Clock::now();
-                const bool sp_ok = win ? read_windows(at, to, err) : sp.run(ids.data() + at, to - at, at, err);
+                const bool sp_ok = win ? read_windows(at, to, err) : run_prompt_with_mtp_experts(
+                    sp, mtp, native_pack && o.spec == 4 && !o.mtp.empty() && !multi_gpu &&
+                    o.layer_split.empty() && o.peer_device < 0 && !peer.valid() &&
+                    std::all_of(o.expert_cache_remote.begin(), o.expert_cache_remote.end(), [](auto slots) { return slots <= 0; }),
+                    ids.data() + at, to - at, at, err);
                 if (trace) {
                     std::fprintf(stderr, "strata trace: read %lld tokens (%s) in %.1f ms\n", (long long) (to - at),
                                  win ? "windows" : "batched",
@@ -6428,7 +6493,11 @@ int main(int argc, char** argv) {
         }
 #endif
         const Clock::time_point tp0 = Clock::now();
-        if (!prefill.run(o.tokens.data(), n_batched, 0, err)) {
+        if (!run_prompt_with_mtp_experts(prefill, mtp,
+                native_pack && o.spec == 4 && !o.mtp.empty() && !multi_gpu &&
+                o.layer_split.empty() && o.peer_device < 0 && !peer.valid() &&
+                std::all_of(o.expert_cache_remote.begin(), o.expert_cache_remote.end(), [](auto slots) { return slots <= 0; }),
+                o.tokens.data(), n_batched, 0, err)) {
             std::fprintf(stderr, "strata generate: %s\n", err.c_str());
             return 1;
         }
