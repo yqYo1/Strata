@@ -191,9 +191,11 @@
     "screen": "saved-residual-precision-screen-v1.json",
     "scope": "CPU posthoc final-layer data only; no accumulated model quality/device-cast qualification",
     "proposal": "layer-major-fp16-storage-v1/implementation.txt",
-    "state": "Main applied incremental proposal with trace-format and test-copy owner fixes. Build+CPU PASS. GPU conversion oracle PASS; small placement comparison running, not quality/performance adoption.",
+    "state": "Five-arm small numerical gate PASS/fault0; FP32 legacy bitwise equal, FP16 GPU/host/mixed bitwise equal. Cumulative residual relativeL2~9.73%, first-logit KL~0.027 nats on synthetic input; natural quality/performance unqualified.",
     "build": "layer-major-storage-build-v1.json",
-    "main_review": "layer-major-fp16-storage-v1/main-review.ja.md"
+    "main_review": "layer-major-fp16-storage-v1/main-review.ja.md",
+    "small_gate": "layer-major-storage-small-v1.json",
+    "summary": "layer-major-storage-small-summary-v1.json"
   },
   "parallel_implementations": [
     {
@@ -204,7 +206,7 @@
     {
       "model": "gpt-6.1-sol",
       "directory": "layer-major-fp16-storage-v1",
-      "state": "Main integrated/build+CPU PASS; GPU numerical gate running"
+      "state": "Integrated; build+CPU+GPU conversion+five-arm placement PASS; natural quality/performance adoption pending"
     },
     {
       "model": "gpt-6.1-sol",
@@ -214,12 +216,12 @@
     {
       "model": "gpt-6.1-sol",
       "directory": "prefill-selected-logits-v1",
-      "state": "Running; non-applied source proposal only, Main owns builds/tests/GPU"
+      "state": "FINAL received; Main review/application pending, no candidate build/test/GPU"
     },
     {
       "model": "gpt-6.1-sol",
       "directory": "mtp-prefill-record-lease-v1",
-      "state": "Running; non-applied source proposal only, Main owns builds/tests/GPU"
+      "state": "FINAL received; Main review/application pending, no candidate build/test/GPU"
     },
     {
       "model": "gpt-6.1-sol",
