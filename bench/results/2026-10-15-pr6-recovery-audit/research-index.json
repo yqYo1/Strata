@@ -266,6 +266,22 @@
       "path": "research-prefill-qsa-xmx-scores-round589-v1.txt",
       "sha256": "c5c8e03069b54e5010649f57033ab8dae699546b393e51c33f51ca8ea31548d9",
       "status": "FINAL reviewed as score-only GEMM feasibility; no implementation/speed/quality qualification. Currentf16 wrapper stride512 mismatch needs packing/API."
+    },
+    {
+      "round": 590,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-iq2s-cpu-kernel-round590-v1.txt",
+      "sha256": "12a7202e3206bddee9c63618b552fad18533b985cfab4695c5263fc16d09b322",
+      "status": "FINAL Main reviewed with corrections/next action in phase-audit-main-review.ja.md; no runtime qualification."
+    },
+    {
+      "round": 591,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-profile-safe-control-round591-v1.txt",
+      "sha256": "951ef9444746b3dad043fd6dc17da7afe06e830641f1ec9ad0fa1b7f19191134",
+      "status": "FINAL Main reviewed with corrections/next action in phase-audit-main-review.ja.md; no runtime qualification."
     }
   ],
   "main_initial_findings": [
@@ -459,6 +475,31 @@
       "round": 591,
       "scope": "Safe bounded actual profiler collection control",
       "agent": "/root/research_profile_safe_control_round591"
+    }
+  ],
+  "phase_audit": {
+    "build": "phase-audit-build-v1.json",
+    "host": "phase-audit-host-v1.json",
+    "order": "phase-order-v1.json",
+    "review": "phase-audit-main-review.ja.md",
+    "recipe": "check_phase_audit_v1.py",
+    "state": "DefaultOFF source integrated; CPU normal+ASan/UBSan and actualSYCLbuildPASS. Smallsamebinary3arm ownedGPUlive; pairedlongpending."
+  },
+  "parallel_implementations_current": [
+    {
+      "directory": "bounded-kv-copy-groups-v2",
+      "scope": "remove runtime env mutation and qualify lifetime",
+      "state": "Solproposal running"
+    },
+    {
+      "directory": "qsa-score-gemm-candidate-v1",
+      "scope": "FP16/BF16 score-only GEMM proposal",
+      "state": "Solproposal running"
+    },
+    {
+      "directory": "external-session-decode-profile-v2",
+      "scope": "official profiler session with bounded diagnostic handshake",
+      "state": "Solproposal running"
     }
   ]
 }

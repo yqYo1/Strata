@@ -2,6 +2,11 @@
 // helpers. This is orchestration only; run_impl owns GDN/QSA/PLE/expert math.
 bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& err) {
     const char* requested = std::getenv("STRATA_PREFILL_LAYER_MAJOR");
+    const char* phase_switch = std::getenv("STRATA_PREFILL_PHASE_AUDIT");
+    if (phase_switch && std::strcmp(phase_switch, "1") == 0 &&
+        (!requested || std::strcmp(requested, "1") || !impl_ || n <= impl_->T)) {
+        err = "prefill phase audit: requires the long-prompt layer-major path"; return false;
+    }
     // Reuse only pays across chunks. Keep short chat/agent turns on the
     // original path even when long-prompt layer reuse is requested.
     return requested && std::strcmp(requested, "1") == 0 && impl_ && n > impl_->T
@@ -23,6 +28,11 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     auto& ss = *m.ss;
     const auto residual_dtype = detail::layer_major_residual_dtype(
         std::getenv("STRATA_PREFILL_LAYER_MAJOR_R_DTYPE"));
+    const char* phase_switch = std::getenv("STRATA_PREFILL_PHASE_AUDIT");
+    const bool phase_requested = phase_switch && std::strcmp(phase_switch, "1") == 0;
+    if (phase_requested && residual_dtype != detail::LayerMajorResidualDtype::fp32) {
+        err = "prefill phase audit: FP16 saved residual storage is outside this diagnostic"; return false;
+    }
     const char* mmq = std::getenv("STRATA_PREFILL_MMQ");
     if (m.layer_major_active || stage_lb_ != 0 || stage_le_ != g.n_layers || next_ || hand_in_ ||
         m.pp || core::peer_portable() || embd_rows || !m.src || !m.compact_moe_fp16 ||
@@ -164,6 +174,17 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         audit.reset(new detail::LayerMajorBoundaryAudit(n, pos0, D, g.n_layers, m.T,
             plan.dtype == detail::LayerMajorResidualDtype::fp16));
     }
+    // This owner precedes Restore and the checked lease, just like boundary audit.
+    // Reserve BOTH optional owners cumulatively; no file/raw bytes are held in RAM.
+    std::unique_ptr<detail::Layer26PhaseAudit> phase_audit;
+    if (phase_requested) {
+        uint64_t need = detail::layer_major_add(host_need, audit ? 4ull << 20 : 0);
+        need = detail::layer_major_add(need, detail::Layer26PhaseAudit::host_reservation);
+        if (!core::conversation_memory_admit(core::conversation_available_memory(), need, host_headroom)) {
+            err = "prefill phase audit: additional diagnostic storage exceeds RAM headroom"; return false;
+        }
+        phase_audit.reset(new detail::Layer26PhaseAudit(n, pos0, m.T, m.mixed_bf_lo != nullptr));
+    }
     int64_t logical_chunks = 0, layer = 0;
     const int64_t final_chunk_row = ((n - 1) / m.T) * m.T;
     bool stage_delivered = false;
@@ -176,6 +197,7 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         Prefill& p; Impl& m;
         int64_t lb, le; const float* input;
         const core::ExpertCache* cache; const int32_t* residency;
+        detail::Layer26PhaseAudit* phase;
         detail::LayerMajorBoundaryAudit* audit;
         detail::LayerMajorBoundaryAudit::Copy audit_copy;
         bool active; const void* gpu_input; const void* host_input; uint16_t* fp16_stage;
@@ -184,13 +206,14 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         ~Restore() noexcept {
             p.stage_lb_ = lb; p.stage_le_ = le; p.hand_in_ = input;
             m.cache = cache; m.host_res = residency; m.layer_major_active = active;
+            m.layer26_phase_audit = phase;
             m.layer_major_audit = audit; m.layer_major_audit_copy = std::move(audit_copy);
             m.layer_major_gpu_input = gpu_input; m.layer_major_host_input = host_input;
             m.layer_major_fp16_stage = fp16_stage; m.layer_major_residual = plan;
             p.on_chunk = std::move(chunk); p.on_stage_chunk = std::move(stage);
         }
     } restore{*this, m, stage_lb_, stage_le_, hand_in_, m.cache, m.host_res,
-              m.layer_major_audit, m.layer_major_audit_copy,
+              m.layer26_phase_audit, m.layer_major_audit, m.layer_major_audit_copy,
               m.layer_major_active, m.layer_major_gpu_input, m.layer_major_host_input,
               m.layer_major_fp16_stage, m.layer_major_residual, on_chunk, on_stage_chunk};
     cudaError_t compute_drain = cudaSuccess, copy_drain = cudaSuccess;
@@ -206,7 +229,8 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     });
     lease.arm();
     if (!drain()) { err = "prefill layer-major: entry queue drain failed"; return false; }
-    if (audit) {
+    if (audit || phase_audit) {
+        m.layer26_phase_audit = phase_audit.get();
         m.layer_major_audit = audit.get();
         m.layer_major_audit_copy = [&](void* dst, const void* src, size_t bytes, bool device) {
             if (!device) { std::memcpy(dst, src, bytes); return true; }
@@ -357,6 +381,7 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     stats_.ms_total = old_stats.ms_total + ms_since(started);
     // Field/callback restore and then cache/residual release follow this proof.
     if (audit) audit->complete();
+    if (phase_audit) phase_audit->complete();
     lease.retire();
     return true;
 #endif

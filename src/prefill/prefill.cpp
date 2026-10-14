@@ -31,6 +31,7 @@
 #include "strata/prefill/draft_uploads.hpp"
 #include "strata/prefill/layer_major_plan.hpp"
 #include "strata/prefill/layer_major_boundary_audit.hpp"
+#include "strata/prefill/layer26_phase_audit.hpp"
 #include "strata/core/conversation_memory.hpp"
 
 #include <cuda_runtime.h>
@@ -454,6 +455,7 @@ struct Prefill::Impl {
     bool compact_moe_fp16 = false;
     // Opt-in layer-major lease; normal chunk-major execution leaves these empty.
     bool layer_major_active = false;
+    detail::Layer26PhaseAudit* layer26_phase_audit = nullptr;
     detail::LayerMajorBoundaryAudit* layer_major_audit = nullptr;
     detail::LayerMajorBoundaryAudit::Copy layer_major_audit_copy;
     const void* layer_major_gpu_input = nullptr;
@@ -2052,6 +2054,10 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                               m.mixed_bf_lo);
 
                 if (half == 0 && !core::is_qsa_layer(g, l)) {
+                    if (m.layer26_phase_audit && !m.layer26_phase_audit->capture(
+                            detail::Layer26PhaseAudit::gdn_input, l, c0, T, m.mixed_h, m.layer_major_audit_copy)) {
+                        err = "prefill phase audit: GDN input copy/drain failed"; return false;
+                    }
                     // ======================= GDN =======================
                     const core::WeightRef *wqkv = need(v, "attn_qkv.weight", err), *wg = need(v, "attn_gate.weight", err),
                                           *wo = need(v, "ssm_out.weight", err), *wa = need(v, "ssm_alpha.weight", err),
@@ -2073,6 +2079,10 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                     gdn_recurrence(state, m.hbuf, m.gate, m.beta, m.z, (const float*) wnm->data, EPS, m.y, m.y_h, T, m.cs);
                     pt.mark(kPfGdnOut, cs);
                     if (!native_proj(m.gemm, wo, m.y_h, m.bo, T, v.name("ssm_out.weight"), err)) return false;
+                    if (m.layer26_phase_audit && !m.layer26_phase_audit->capture(
+                            detail::Layer26PhaseAudit::gdn_out, l, c0, T, m.bo, m.layer_major_audit_copy)) {
+                        err = "prefill phase audit: GDN output copy/drain failed"; return false;
+                    }
                     ++gdn_index;
                 } else if (half == 0) {
                     // ======================= QSA =======================
@@ -2287,6 +2297,15 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                     if (!native_proj(m.gemm, wo, m.attn_h, m.bo, T, v.name("attn_output.weight"), err)) return false;
                     ++qsa_index;
                 } else {
+                    if (m.layer26_phase_audit) {
+                        auto* a = m.layer26_phase_audit;
+                        using A = detail::Layer26PhaseAudit;
+                        if (!a->capture(A::ffn_input_h, l, c0, T, m.mixed_h, m.layer_major_audit_copy) ||
+                            !a->capture(A::ffn_input_bf, l, c0, T, m.mixed_bf, m.layer_major_audit_copy) ||
+                            (m.mixed_bf_lo && !a->capture(A::ffn_input_low, l, c0, T, m.mixed_bf_lo, m.layer_major_audit_copy))) {
+                            err = "prefill phase audit: FFN mixed input copy/drain failed"; return false;
+                        }
+                    }
                     // ======================= MoE =======================
                     const core::WeightRef *wr = need(v, "ffn_gate_inp.weight", err),
                                           *wgi = need(v, "ffn_gate_inp_shexp.weight", err),
@@ -2297,6 +2316,15 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                     pt.mark(kPfRouter, cs);
                     if (!bf16_proj(m.gemm, wr, m.mixed_bf, m.logits, T, v.name("ffn_gate_inp.weight"), err, 0, m.mixed_bf_lo)) return false;
                     route(m.logits, m.ids, m.w, T, m.g->n_expert, m.cs);
+                    if (m.layer26_phase_audit) {
+                        auto* a = m.layer26_phase_audit;
+                        using A = detail::Layer26PhaseAudit;
+                        if (!a->capture(A::router_logits, l, c0, T, m.logits, m.layer_major_audit_copy) ||
+                            !a->capture(A::router_ids, l, c0, T, m.ids, m.layer_major_audit_copy) ||
+                            !a->capture(A::router_weights, l, c0, T, m.w, m.layer_major_audit_copy)) {
+                            err = "prefill phase audit: router copy/drain failed"; return false;
+                        }
+                    }
                     // the shared expert and its scalar gate
                     if (!native_proj(m.gemm, wsg, m.mixed_h, m.sgate, T, v.name("ffn_gate_shexp.weight"), err)) return false;
                     if (!native_proj(m.gemm, wsu, m.mixed_h, m.sup, T, v.name("ffn_up_shexp.weight"), err)) return false;
@@ -2469,6 +2497,10 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                         for (int32_t e = 0; e < m.g->n_expert && !on_peer.empty(); ++e)   // the peer-streamed ones last:
                             if (on_peer[(size_t) e] == 2) order_peer.push_back(e);        // their copies get the most time
                         n_order = order.size();
+                        if (m.layer26_phase_audit && !m.layer26_phase_audit->capture_grouping(
+                                l, c0, T, ids_h, slot_h, src_h, m.cnt, m.off, order)) {
+                            err = "prefill phase audit: grouping capture failed"; return false;
+                        }
                         const size_t mmq_gub = use_mmq ? mmq::matrix_bytes(mmq_gt, 1280, N) : 0;
                         const size_t mmq_db = use_mmq ? mmq::matrix_bytes(mmq_dt, N, 640) : 0;
                         pt.mark(kPfGather, cs);
@@ -2926,6 +2958,10 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                     pt.mark(kPfCombine, cs);
                     if (peer_now) cudaStreamWaitEvent(m.cs, m.pp->ev_done, 0);   // multi-GPU: the peer's rows are in Dm
                     moe_combine(m.Dm, m.slot_dev, m.w, m.shared, m.sg, m.bo, T, m.cs);
+                    if (m.layer26_phase_audit && !m.layer26_phase_audit->capture(
+                            detail::Layer26PhaseAudit::moe_out, l, c0, T, m.bo, m.layer_major_audit_copy)) {
+                        err = "prefill phase audit: MoE output copy/drain failed"; return false;
+                    }
                     // debug: STRATA_DBG_NAN=1 reports the first layer of a chunk whose MoE produced non-finite values
                     if (static const bool dbg = std::getenv("STRATA_DBG_NAN") != nullptr; dbg) {
                         cudaStreamSynchronize(m.cs);
@@ -2971,6 +3007,11 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                 }
                 if (half == 1 && strata::kernels::cvec().covers(l))   // --control-vector-scaled
                     strata::kernels::cvec_apply(m.R, l, T, D, nullptr, 0, nullptr, 0, false, m.cs);
+                if (m.layer26_phase_audit && !m.layer26_phase_audit->capture(
+                        half == 0 ? detail::Layer26PhaseAudit::attn_R : detail::Layer26PhaseAudit::final_R,
+                        l, c0, T, m.R, m.layer_major_audit_copy)) {
+                    err = "prefill phase audit: residual write copy/drain failed"; return false;
+                }
             }
         }
         if (!ple_land()) return false;   // a stage that ends before layer 1: the rows land anyway, the next gather starts
