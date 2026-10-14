@@ -113,3 +113,25 @@ PP182.2/175.3/170.1、decode2.8/3.7/2.5 t/s。PP中央値+47.93%だがdecodeは�
 正常終了・fault0。source/toolchainが異なるため部品単独の原因は未確定。
 過去のRAM36.87 GB/s、H2D6.447 GB/s、GPU shape別GEMM等も元のGit測定へ照合した。
 未選択の旧実装を比較へ戻し、ハードウェア測定済みの事項を未測定として繰り返さない。
+
+## 元ログの再確認と継続する指示
+
+今回も元sessionの351性能記述と13採否説明を、公開messageのbyte offsetから直接読み、
+全文hashと時刻を364件すべて照合した。873,883,929 bytesの監査対象prefixも同じSHAだった。
+関連するユーザー発言35件を直接再読し、システムの継続contextやtool/analysis内容を
+ユーザー指示として数えない。既存レポートの要約だけによる確認ではない。
+
+継続する判断基準は、Nikoだけを上流とし、Xeは任意の参考、非推論機能は全件適合、推論は
+prefill/decodeと部品ごとの実測で選ぶこと。本家は無改変と設定調整後の双方を評価する。
+本家bench.shの長文比較、decodeの独立反復、64Kでもよい1000 t/s目標、実262144入力/0出力、
+品質の評価、SYCL/Level Zeroの定義された使用、実モデルのボトルネックとhardware到達性能の
+照合を維持する。小規模kernelや設定しただけの値から採用を決めない。
+
+主はfeature/sycl、成果の実体を統合して区切りにfork defaultへ反映し、終了枝を削除する。
+履歴mergeを実コード統合と数えない。Lunaによる複数scopeの読み取り専用調査は反復し、
+過去report/registryを共有、FINALまで介入せずMainが作業を続け、build/test/GPUを直列に管理する。
+測定の全個別値と判断はGitへ残し、重複する成功全文を退去する。
+
+[現在の同binary比較](../2026-10-14-primary-compact-moe-recovery/stock-comparison.json)は
+PP中央値187.5→194.2、24出力decode中央値5.4→3.7。既定採用は保留で、過去性能の回復ではない。
+主の実装復元、最新Nikoの機能適合、fork defaultへの反映はいずれも完了していない。

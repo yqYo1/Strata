@@ -93,6 +93,26 @@
       "sha256": "54c7d358bc5bbe1981cc359bbd96a7007542564b1f07c6ca2c09a28dcbd46b15",
       "original_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-vtune-runtime-profiling-round516-v1.txt",
       "status": "proposal-only"
+    },
+    {
+      "round": 517,
+      "revision": 1,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research/research-compact-gather-batch-safety-round517-v1.txt",
+      "sha256": "847be778321bd88b7116f225f9442116305a3db0826967fe671dc3d8ef24d98d",
+      "original_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-compact-gather-batch-safety-round517-v1.txt",
+      "status": "proposal-only"
+    },
+    {
+      "round": 518,
+      "revision": 1,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research/research-gdn-prefill-parallel-recovery-round518-v1.txt",
+      "sha256": "6017c05f9167542b7c2cefbd92ce6d7d523e2f72df9c499b3b47d5b9808edb44",
+      "original_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-gdn-prefill-parallel-recovery-round518-v1.txt",
+      "status": "proposal-only"
     }
   ],
   "previous_registry": "../2026-10-14-pre-Xe-model-compare/research-index.json",
@@ -115,7 +135,16 @@
     "R516 PTI unitrace is source-built; installed VTune is an Intel vendor binary, not source-built. Toolavailability is not support/profiling success.",
     "R516 ptrace_scope1 restricts non-parent attachment, not every software profile of a launched child. Earlier recorded denial applies to the attempted collector/process ancestry; any distinct valid parent-child plan needs a bounded CPU-only smoke. perf_event_paranoid4 remains a separate PMU restriction.",
     "R516 64MiB full32K timeline budget may be too small for hundreds of thousands of routed BLAS/dequant/gather calls plus API rows. Estimate actual counts first or explicitly budget a named diagnostic capture; do not launch a predictably incomplete trace or conflate per-thread eventbuffer count with total bytecap.",
-    "Current pref-only STRATA_PROMPT_ATTN_OLD checks presence: even value0 forces fallback. Canonical quiet stock omits it. Before porting old query transpose, use explicit route evidence and a separate same-source prompt-kernel/fallback comparison; do not guess matrix_available or call the fallback-layout candidate active."
+    "Current pref-only STRATA_PROMPT_ATTN_OLD checks presence: even value0 forces fallback. Canonical quiet stock omits it. Before porting old query transpose, use explicit route evidence and a separate same-source prompt-kernel/fallback comparison; do not guess matrix_available or call the fallback-layout candidate active.",
+    "R516 health-probe safety flags differ from canonical stock. If model profiling requires those flags, collect an unprofiled matching-policy reference and label its scope; do not assign that timeline to canonical stock execution.",
+    "R517 local offsets in GU/Hh are optional. The separate Sol implementation offsets only the grouped Xs input and deliberately keeps GU/Hh at row0 per expert, preserving current in-order reuse and unchanged GEMM dimensions/global Dm outputs.",
+    "R517 gather need not precede weight dequantization; it must precede its first GU reader. Current proposal enqueues it after first expert dequantization on the same in-order queue, and the next group gather follows all preceding expert compute enqueues. No weight staging or lease change is proposed.",
+    "R517 one expert cannot carry all K*T routes when K10 and ne<=T. Valid adversarial routes require ten ne=T experts or one heavy expert plus all remaining routes assigned to other experts. Invalid dynamic source IDs must be rejected on host, not deliberately enqueued to the GPU.",
+    "R517 final-chat SHA had a duplicated substring; the canonical report SHA is computed from actual bytes:847be778321bd88b7116f225f9442116305a3db0826967fe671dc3d8ef24d98d. Original report bytes are unchanged.",
+    "R518 current selected prefill is root src plus cmake/sycl_backend, not the old sycl/src overlay. The old1eb comparison selects that separate overlay; current compile database is verified.",
+    "R518187.5/5.4 belongs to the completed compactOFF reference, not stockON. The24 count is generated output, not context. ON was still live at report completion; do not invent ON qualification.",
+    "R518 exact algorithmic final-state semantics do not imply bitwise FP32 state identity after chunkwise floating-point reassociation. A candidate needs numerical and model-quality criteria, full input and restore validation; no state-dtype or GDN optimization is adopted.",
+    "Grouped-gather Sol report could not find old source under the artifact directory. Actual frozen own-fork source exists at project .tools/pre-xe-1eb-source-v1. Proposal origin is fresh current-fork implementation, not copied Xe donor code."
   ],
   "implementation": {
     "model": "gpt-6.1-sol",
@@ -161,6 +190,15 @@
       "patch_sha256": "7160efc3a96560800d9d9ec960eb614dd16237bcadf6e70c31f22bac6882a20f",
       "adopted": false,
       "tested": false
+    },
+    {
+      "model": "gpt-6.1-sol",
+      "path": "compact-fp16-gather-batch-proposal/report.md",
+      "identity_sha256": "ca4792f647fa217b397e62d4232df889a76baec2508774c2f77a6a554aaf0641",
+      "patch_sha256": "9d631418de2e12b8368302723add86dacc9c8f73033508c61af6b687abca14f4",
+      "adopted": false,
+      "tested": false,
+      "status": "unapplied-unbuilt-untested-unmeasured"
     }
   ]
 }

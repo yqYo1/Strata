@@ -131,3 +131,36 @@ Mainの測定監視・source照合と並行した。完了後のsource誤り訂�
 四つの新しいunified patchはgit apply --checkを通った。Gitのouter-file whitespace検査は
 patch内の単一spaceのblank contextを警告したため、字句とhashを保持した。
 [形式の確認](proposal-format-check.json)は適用可能性だけで、build・モデル実行の合格ではない。
+
+## 同じ新binaryのOFF/ON比較完了
+
+ONも無変更本家bench.shの全項目とlong3を正常終了した。actual32049入力/24出力/reuse0、
+4096 chunk、262144 context、MTP4/split OFF。source、native、client、model、CLI引数が一致し、
+計算設定の差はMoE compactだけ。別processをOFF→ONで一つずつ起動し、各process内の3 requestsを
+測ったものなので、独立processによるpaired反復とは呼ばない。
+
+| run | ON prefill t/s | ON decode t/s | offered / accepted |
+| --- | ---: | ---: | --- |
+| 0 | 194.7 | 3.7 | 45 / 10 |
+| 1 | 194.2 | 3.1 | 45 / 11 |
+| 2 | 191.7 | 5.7 | 30 / 14 |
+
+PP中央値187.5→194.2（観測差+3.57%）、pooled187.526→193.554。
+decode中央値5.4→3.7、pooled5.134→3.871で悪化方向、draft acceptanceも異なる。
+24出力の3回から安定した退行率や『無害なばらつき』を確定しない。
+prefillの差でdecodeの採用を正当化せず、独立した長いdecode反復を必要とする。
+両armとも正常native/server/client/owner終了、全child回収、source/binary一致、fault0、dumpなし、
+同じboot。これは実行合格であり、品質・full-input・RESTORE・既定採用の合格ではない。
+[ONの全個別結果](stock-evidence/compact1/summary.json)、[比較と採否](stock-comparison.json)。
+
+旧同じstock clientの343.8 t/s、旧調整済み449.7 t/sを回復していない。
+次は実モデルのroute形状・転送要求量・phase区間を取得し、測定済みhardware性能と照合する。
+既存phase区間に含まれるhost/queue待ちをexclusive kernel時間とせず、critical pathに基づいて
+旧compact、attention、queue、chunk、spec splitの復元順序を決める。現時点で支配的原因は未確定。
+
+Luna R517/518と別Solの[grouped gather案](compact-fp16-gather-batch-proposal/report.md)は、
+測定監視と並行して完了し、FINALまで介入していない。いずれも未採用。
+gather案はXsだけgroup-localにし、GU/Hhはexpertごとのrow0再利用、Downはglobal CSR位置を維持する。
+Mainのsource reviewとgit apply --checkは通ったが、未適用・未build・未実行。
+R517の過剰なqueue順序条件、K10で不可能なtest route、R518のroot/overlay・OFF/ON・24出力の
+誤記は原文を変えず[registry](research-index.json)に訂正した。GDN/WYやstate精度変更は候補に留める。
