@@ -28,7 +28,8 @@ def main():
         'src/prefill/prefill.cpp', 'src/prefill/sycl/gemm.cpp',
         'src/prefill/sycl/moe_mmq.cpp', 'src/prefill/sycl/moe_fused.cpp',
         'src/kernels/cpu/native_expert.cpp', 'src/kernels/cpu/pool.cpp',
-        'src/kernels/sycl/native_mmq_xmx.cpp', 'src/program/generate.cpp']
+        'src/kernels/sycl/native_mmq_xmx.cpp', 'src/program/generate.cpp',
+        'include/strata/core/watchdog_lifecycle.hpp', 'tests/cpu/watchdog_lifecycle.cpp']
     revisions = dict(primary=head, primary_inference_base=BASE, fork_default=MAIN,
         retired_Xe_reference=Z, retired_wrong_base_skill=SKILL,
         Niko_base_v0138=git('rev-parse', 'v0.1.38'), Niko_main_v0139=git('rev-parse', 'v0.1.39'))
@@ -64,8 +65,9 @@ def main():
         working_source_sha256={path: sha(P / path) for path in paths},
         HEAD_inference_delta_from_base=git('diff', '--name-status', BASE, head, '--',
             'src', 'include', 'cmake', 'CMakeLists.txt').splitlines(),
-        required_function_gaps=['active-Arc dynamic VRAM lease/resize adaptation',
-            'shared Niko CLI/API functionality ledger and native capability contracts',
+        required_function_gaps=['single-GPU elastic VRAM config/CLI/capability/cache lease/POST v1/vram contract',
+            'single-GPU parallel request slots/BGEN protocol and prompt fairness contract',
+            'all applicable Niko non-inference functions through observed296b59d, including image-generation API; opt-in use is not optional integration',
             'install/update and model continuation/RESTORE/context boundary qualification'],
         optional_unadopted_Xe_candidates=['layer-major scheduler with owned bulk upload',
             'paired IQ3_S GU activation-load sharing', 'additional route/service diagnostics'],

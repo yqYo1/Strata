@@ -5,6 +5,7 @@ import fcntl
 import hashlib
 import json
 import re
+import sys
 from pathlib import Path
 
 D = Path(__file__).parent
@@ -16,8 +17,10 @@ def digest(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def main():
-    root = B / 'main-primary-cold-jit-short-root-v9'
+def main(root_name='main-primary-cold-jit-short-root-v9', output_name='cold-jit-evidence.json'):
+    assert root_name.startswith('main-primary-') and Path(root_name).name == root_name
+    assert Path(output_name).name == output_name
+    root = B / root_name
     record = json.loads((root / 'record.json').read_text())
     assert record['passed'] and record['complete'] and not record['active']
     pending, spans, progress = {}, [], []
@@ -58,18 +61,19 @@ def main():
             sha256=digest(sample_path), total=len(samples), in_longest_module_window=len(window),
             representative=[window[0], window[len(window)//2], window[-1]] if window else []),
         observations=[
-            'The observed host zeModuleCreate call lasted 89.276 seconds and returned success.',
-            'This exceeds the default60s watchdog; v9 used an explicit300s diagnostic limit.',
+            f"The observed host zeModuleCreate call lasted {spans[0]['elapsed_seconds']} seconds and returned success.",
+            'This exceeds the former60s SYCL watchdog.',
+            f"Watchdog override: {record['environment'].get('STRATA_WATCHDOG_S', 'absent; production default applies')}.",
             'This is host module creation, not GPU kernel execution or steady-state model speed.',
             'Logger thread IDs are not Linux TIDs; no identity mapping was established.',
-            'No canary abort occurred in v9. The v7 canary corruption origin remains unlocated.',
+            'No canary abort occurred in this run. The v7 canary corruption origin remains unlocated.',
             'v8 original quota-stop and failed fault query remain failed; a separate health receipt checked its cursor.'
         ])
-    (D/'cold-jit-evidence.json').write_text(json.dumps(evidence, indent=2)+'\n')
+    (D/output_name).write_text(json.dumps(evidence, indent=2)+'\n')
     print(json.dumps(dict(completed_module_calls=len(spans), longest_seconds=spans[0]['elapsed_seconds'], samples_in_window=len(window))))
 
 
 if __name__ == '__main__':
     with (B/'owned-v0141-measurement.lock').open('a') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        main()
+        main(*sys.argv[1:])

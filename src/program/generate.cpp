@@ -5196,7 +5196,15 @@ int main(int argc, char** argv) {
         strata::core::ScopedWatchdog serve_watchdog;
         {
             const char* ws = std::getenv("STRATA_WATCHDOG_S");
-            const int limit = ws ? std::atoi(ws) : 60;
+#ifdef STRATA_ENABLE_SYCL
+            // B570's first XMX module creation took 89.276 s with a successful
+            // Level Zero return. Keep cold compilation within the bounded
+            // request watchdog; an explicit STRATA_WATCHDOG_S still wins.
+            constexpr int default_watchdog_s = 300;
+#else
+            constexpr int default_watchdog_s = 60;
+#endif
+            const int limit = ws ? std::atoi(ws) : default_watchdog_s;
             if (limit > 0) {
                 auto& p = strata::core::progress();
                 uint64_t last = p.beats.load(), ticks_at = p.ticks.load();

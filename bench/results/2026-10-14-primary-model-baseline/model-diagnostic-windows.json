@@ -794,168 +794,6 @@
     "reason": "distinct CLI/startup/range mechanism and relevant request/phase evidence"
   },
   {
-    "version": 7,
-    "original_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-model-accepted-diagnostic-root-v7/owned/engine.stderr",
-    "original_bytes": 4605,
-    "original_sha256": "ea9cd15d925cf13681edd9e4707f070d9391a602eeeb15f2095accfbe21f5fd5",
-    "original_lines": 50,
-    "selected_lines": [
-      {
-        "line": 13,
-        "text": "strata generate: loaded 46.84 GiB at 1.72 GiB/s"
-      },
-      {
-        "line": 14,
-        "text": "strata trace: 4716 MiB free after the weights, the session and the drafter"
-      },
-      {
-        "line": 15,
-        "text": "strata generate: experimental native Q5_K head, 521472000 bytes"
-      },
-      {
-        "line": 16,
-        "text": "strata generate: expert cache 128 slots, 0.26 GiB of VRAM; policy is"
-      },
-      {
-        "line": 17,
-        "text": "strata trace: 3950 MiB free after opening the expert cache"
-      },
-      {
-        "line": 18,
-        "text": "strata generate: SYCL cached experts use native Q8_1 arithmetic; logits can differ from CPU experts."
-      },
-      {
-        "line": 19,
-        "text": "                 R4.2g PER-LAYER: each layer owns 2 slots (0..1)."
-      },
-      {
-        "line": 20,
-        "text": "strata trace: 3950 MiB free after the profile fill"
-      },
-      {
-        "line": 21,
-        "text": "strata generate: pre-filled 128 of 128 slots from the profile; slot 0 verified"
-      },
-      {
-        "line": 22,
-        "text": "strata generate: native GPU hit kernels captured at session setup"
-      },
-      {
-        "line": 23,
-        "text": "strata trace: 3936 MiB free after the R4 hit path"
-      },
-      {
-        "line": 24,
-        "text": "strata generate: R4 hit path ON - resident experts are computed on the GPU"
-      },
-      {
-        "line": 25,
-        "text": "strata generate: 5 expert-pool workers + the host thread"
-      },
-      {
-        "line": 26,
-        "text": "strata trace: 3936 MiB free after the expert cache and the graphs"
-      },
-      {
-        "line": 27,
-        "text": "strata generate: session is up (engine 0.1.38)"
-      },
-      {
-        "line": 28,
-        "text": "strata generate: token graph hit path: 128 resident experts, decided on the device"
-      },
-      {
-        "line": 29,
-        "text": "strata serve: the prompt path allocates its own buffers (too few cache slots to borrow)"
-      },
-      {
-        "line": 30,
-        "text": "strata trace: 1950 MiB free after the head and the prompt path"
-      },
-      {
-        "line": 31,
-        "text": "strata verify: window up to 4 tokens, 63.8 MiB of device buffers"
-      },
-      {
-        "line": 32,
-        "text": "strata mtp: draft head over 106299 tokens (212.9 MiB)"
-      },
-      {
-        "line": 33,
-        "text": "strata trace: 1669 MiB free after the verifier and the drafter's binding"
-      },
-      {
-        "line": 34,
-        "text": "strata serve: 1669 MiB of VRAM free with everything loaded"
-      },
-      {
-        "line": 35,
-        "text": "strata trace: request 28 0"
-      },
-      {
-        "line": 36,
-        "text": "strata trace: prompt start 27 -1"
-      },
-      {
-        "line": 37,
-        "text": "strata trace: prompt chunk 0 of 27"
-      },
-      {
-        "line": 38,
-        "text": "strata serve: no progress for 60 s during a request (reading the prompt (batched): layer 0 of the prompt chunk from token 0) - stopping the engine so the server starts it again (issue #29)"
-      },
-      {
-        "line": 39,
-        "text": "strata serve: stall report (engine 0.1.38): stage \"reading the prompt (batched): layer 0 of the prompt chunk from token 0\" for 60 s; 0 layers served since the last finished step (0 = stopped, more = slow)"
-      },
-      {
-        "line": 40,
-        "text": "  expert pool: epoch 0, batch epoch 0: 0 of 0 jobs claimed, 0 done; 5 of 5 workers parked, 5 sleeping; mode 0"
-      },
-      {
-        "line": 41,
-        "text": "  expert pool threads: w0=sleeping w1=sleeping w2=sleeping w3=sleeping w4=sleeping; host idle for 82813 ms"
-      },
-      {
-        "line": 42,
-        "text": "  verify window (last window, not the current stage): 0 tokens at position 0, host at layer step 1; the GPU rang 0; flags: served 0, plan (A) 0, copies (B) 0"
-      },
-      {
-        "line": 43,
-        "text": "  memory: 49074 MiB resident, 0 MiB in swap, 26755 MiB RAM available; 1895 major page faults so far"
-      },
-      {
-        "line": 44,
-        "text": "  2 s later:"
-      },
-      {
-        "line": 45,
-        "text": "  expert pool: epoch 0, batch epoch 0: 0 of 0 jobs claimed, 0 done; 5 of 5 workers parked, 5 sleeping; mode 0"
-      },
-      {
-        "line": 46,
-        "text": "  expert pool threads: w0=sleeping w1=sleeping w2=sleeping w3=sleeping w4=sleeping; host idle for 84814 ms"
-      },
-      {
-        "line": 47,
-        "text": "  verify window (last window, not the current stage): 0 tokens at position 0, host at layer step 1; the GPU rang 0; flags: served 0, plan (A) 0, copies (B) 0"
-      },
-      {
-        "line": 48,
-        "text": "  memory: 49670 MiB resident, 0 MiB in swap, 29195 MiB RAM available; 1895 major page faults so far"
-      },
-      {
-        "line": 49,
-        "text": "strata: released the verify window's GPU waits (#267): the GPU finished in 0 ms"
-      },
-      {
-        "line": 50,
-        "text": "*** stack smashing detected ***: terminated"
-      }
-    ],
-    "reason": "distinct CLI/startup/range mechanism and relevant request/phase evidence"
-  },
-  {
     "version": 8,
     "original_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-cold-jit-short-root-v8/owned/engine.stderr",
     "original_bytes": 67108864,
@@ -1627,6 +1465,756 @@
       {
         "line": 19348,
         "text": "[2026-10-14 09:20:36.921] [thread-id: 124799286225280] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)"
+      }
+    ],
+    "reason": "distinct CLI/startup/range mechanism and relevant request/phase evidence"
+  },
+  {
+    "version": 7,
+    "original_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-model-accepted-diagnostic-root-v7/owned/engine.stderr",
+    "original_bytes": 4605,
+    "original_sha256": "ea9cd15d925cf13681edd9e4707f070d9391a602eeeb15f2095accfbe21f5fd5",
+    "original_lines": 50,
+    "selected_lines": [
+      {
+        "line": 13,
+        "text": "strata generate: loaded 46.84 GiB at 1.72 GiB/s"
+      },
+      {
+        "line": 14,
+        "text": "strata trace: 4716 MiB free after the weights, the session and the drafter"
+      },
+      {
+        "line": 15,
+        "text": "strata generate: experimental native Q5_K head, 521472000 bytes"
+      },
+      {
+        "line": 16,
+        "text": "strata generate: expert cache 128 slots, 0.26 GiB of VRAM; policy is"
+      },
+      {
+        "line": 17,
+        "text": "strata trace: 3950 MiB free after opening the expert cache"
+      },
+      {
+        "line": 18,
+        "text": "strata generate: SYCL cached experts use native Q8_1 arithmetic; logits can differ from CPU experts."
+      },
+      {
+        "line": 19,
+        "text": "                 R4.2g PER-LAYER: each layer owns 2 slots (0..1)."
+      },
+      {
+        "line": 20,
+        "text": "strata trace: 3950 MiB free after the profile fill"
+      },
+      {
+        "line": 21,
+        "text": "strata generate: pre-filled 128 of 128 slots from the profile; slot 0 verified"
+      },
+      {
+        "line": 22,
+        "text": "strata generate: native GPU hit kernels captured at session setup"
+      },
+      {
+        "line": 23,
+        "text": "strata trace: 3936 MiB free after the R4 hit path"
+      },
+      {
+        "line": 24,
+        "text": "strata generate: R4 hit path ON - resident experts are computed on the GPU"
+      },
+      {
+        "line": 25,
+        "text": "strata generate: 5 expert-pool workers + the host thread"
+      },
+      {
+        "line": 26,
+        "text": "strata trace: 3936 MiB free after the expert cache and the graphs"
+      },
+      {
+        "line": 27,
+        "text": "strata generate: session is up (engine 0.1.38)"
+      },
+      {
+        "line": 28,
+        "text": "strata generate: token graph hit path: 128 resident experts, decided on the device"
+      },
+      {
+        "line": 29,
+        "text": "strata serve: the prompt path allocates its own buffers (too few cache slots to borrow)"
+      },
+      {
+        "line": 30,
+        "text": "strata trace: 1950 MiB free after the head and the prompt path"
+      },
+      {
+        "line": 31,
+        "text": "strata verify: window up to 4 tokens, 63.8 MiB of device buffers"
+      },
+      {
+        "line": 32,
+        "text": "strata mtp: draft head over 106299 tokens (212.9 MiB)"
+      },
+      {
+        "line": 33,
+        "text": "strata trace: 1669 MiB free after the verifier and the drafter's binding"
+      },
+      {
+        "line": 34,
+        "text": "strata serve: 1669 MiB of VRAM free with everything loaded"
+      },
+      {
+        "line": 35,
+        "text": "strata trace: request 28 0"
+      },
+      {
+        "line": 36,
+        "text": "strata trace: prompt start 27 -1"
+      },
+      {
+        "line": 37,
+        "text": "strata trace: prompt chunk 0 of 27"
+      },
+      {
+        "line": 38,
+        "text": "strata serve: no progress for 60 s during a request (reading the prompt (batched): layer 0 of the prompt chunk from token 0) - stopping the engine so the server starts it again (issue #29)"
+      },
+      {
+        "line": 39,
+        "text": "strata serve: stall report (engine 0.1.38): stage \"reading the prompt (batched): layer 0 of the prompt chunk from token 0\" for 60 s; 0 layers served since the last finished step (0 = stopped, more = slow)"
+      },
+      {
+        "line": 40,
+        "text": "  expert pool: epoch 0, batch epoch 0: 0 of 0 jobs claimed, 0 done; 5 of 5 workers parked, 5 sleeping; mode 0"
+      },
+      {
+        "line": 41,
+        "text": "  expert pool threads: w0=sleeping w1=sleeping w2=sleeping w3=sleeping w4=sleeping; host idle for 82813 ms"
+      },
+      {
+        "line": 42,
+        "text": "  verify window (last window, not the current stage): 0 tokens at position 0, host at layer step 1; the GPU rang 0; flags: served 0, plan (A) 0, copies (B) 0"
+      },
+      {
+        "line": 43,
+        "text": "  memory: 49074 MiB resident, 0 MiB in swap, 26755 MiB RAM available; 1895 major page faults so far"
+      },
+      {
+        "line": 44,
+        "text": "  2 s later:"
+      },
+      {
+        "line": 45,
+        "text": "  expert pool: epoch 0, batch epoch 0: 0 of 0 jobs claimed, 0 done; 5 of 5 workers parked, 5 sleeping; mode 0"
+      },
+      {
+        "line": 46,
+        "text": "  expert pool threads: w0=sleeping w1=sleeping w2=sleeping w3=sleeping w4=sleeping; host idle for 84814 ms"
+      },
+      {
+        "line": 47,
+        "text": "  verify window (last window, not the current stage): 0 tokens at position 0, host at layer step 1; the GPU rang 0; flags: served 0, plan (A) 0, copies (B) 0"
+      },
+      {
+        "line": 48,
+        "text": "  memory: 49670 MiB resident, 0 MiB in swap, 29195 MiB RAM available; 1895 major page faults so far"
+      },
+      {
+        "line": 49,
+        "text": "strata: released the verify window's GPU waits (#267): the GPU finished in 0 ms"
+      },
+      {
+        "line": 50,
+        "text": "*** stack smashing detected ***: terminated"
+      }
+    ],
+    "reason": "distinct CLI/startup/range mechanism and relevant request/phase evidence"
+  },
+  {
+    "version": 10,
+    "original_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-watchdog-short-root-v10/owned/engine.stderr",
+    "original_bytes": 2183133,
+    "original_sha256": "c3ccf25fbbf3ac6e80e3de64202fa88da4866ca992a3014d4c10a64f6bea67f5",
+    "original_lines": 19349,
+    "selected_lines": [
+      {
+        "line": 18774,
+        "text": "strata generate: loaded 46.84 GiB at 1.54 GiB/s"
+      },
+      {
+        "line": 18775,
+        "text": "strata trace: 4716 MiB free after the weights, the session and the drafter"
+      },
+      {
+        "line": 18776,
+        "text": "strata generate: experimental native Q5_K head, 521472000 bytes"
+      },
+      {
+        "line": 18777,
+        "text": "strata generate: expert cache 128 slots, 0.26 GiB of VRAM; policy is"
+      },
+      {
+        "line": 18778,
+        "text": "strata trace: 3950 MiB free after opening the expert cache"
+      },
+      {
+        "line": 18779,
+        "text": "strata generate: SYCL cached experts use native Q8_1 arithmetic; logits can differ from CPU experts."
+      },
+      {
+        "line": 18780,
+        "text": "strata trace: 3950 MiB free after the profile fill"
+      },
+      {
+        "line": 18781,
+        "text": "strata generate: pre-filled 128 of 128 slots from the profile; slot 0 verified"
+      },
+      {
+        "line": 18782,
+        "text": "   ---> urProgramBuildExp"
+      },
+      {
+        "line": 18783,
+        "text": "[2026-10-14 09:59:07.180] [thread-id: 124949047445888] [trace] zeModuleCreate(hContext, hDevice, desc, phModule, phBuildLog)"
+      },
+      {
+        "line": 18784,
+        "text": "[2026-10-14 09:59:07.201] [thread-id: 124949047445888] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleCreate(hContext=0x3c28cb28, hDevice=0x3c275858, desc={stype=0x7ffebe116f00, format=0x7ffebe116f10, inputSize=4680, pInputModule=3, pBuildFlags=\" -ze-opt-level=2\", pConstants={numConstants=0, pConstantIds=nullptr, pConstantValues=nullptr}}, phModule=0x3c5411f8, phBuildLog=0x3c43b9d8)"
+      },
+      {
+        "line": 18785,
+        "text": "   <--- urProgramBuildExp(.hProgram = 0x3c499de0, .numDevices = 1, .phDevices = 0x3c684e80 {0x3c28ab60}, .flags = 0, .pOptions = 0x3c684ed0 ( -ze-opt-level=2)) -> UR_RESULT_SUCCESS;"
+      },
+      {
+        "line": 18802,
+        "text": "strata generate: native GPU hit kernels captured at session setup"
+      },
+      {
+        "line": 18803,
+        "text": "strata trace: 3936 MiB free after the R4 hit path"
+      },
+      {
+        "line": 18804,
+        "text": "strata generate: R4 hit path ON - resident experts are computed on the GPU"
+      },
+      {
+        "line": 18805,
+        "text": "strata generate: 5 expert-pool workers + the host thread"
+      },
+      {
+        "line": 18806,
+        "text": "strata trace: 3936 MiB free after the expert cache and the graphs"
+      },
+      {
+        "line": 18807,
+        "text": "strata generate: session is up (engine 0.1.38)"
+      },
+      {
+        "line": 18808,
+        "text": "strata generate: token graph hit path: 128 resident experts, decided on the device"
+      },
+      {
+        "line": 18809,
+        "text": "strata serve: the prompt path allocates its own buffers (too few cache slots to borrow)"
+      },
+      {
+        "line": 18810,
+        "text": "strata trace: 1950 MiB free after the head and the prompt path"
+      },
+      {
+        "line": 18811,
+        "text": "strata verify: window up to 4 tokens, 63.8 MiB of device buffers"
+      },
+      {
+        "line": 18812,
+        "text": "   ---> urProgramBuildExp"
+      },
+      {
+        "line": 18813,
+        "text": "[2026-10-14 09:59:20.529] [thread-id: 124949047445888] [trace] zeModuleCreate(hContext, hDevice, desc, phModule, phBuildLog)"
+      },
+      {
+        "line": 18814,
+        "text": "[2026-10-14 09:59:20.710] [thread-id: 124949047445888] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleCreate(hContext=0x3c28cb28, hDevice=0x3c275858, desc={stype=0x7ffebe116af0, format=0x7ffebe116b00, inputSize=42368, pInputModule=3, pBuildFlags=\" -ze-opt-level=2\", pConstants={numConstants=0, pConstantIds=nullptr, pConstantValues=nullptr}}, phModule=0x47327f08, phBuildLog=0x3c63a918)"
+      },
+      {
+        "line": 18815,
+        "text": "   <--- urProgramBuildExp(.hProgram = 0x45ba17d0, .numDevices = 1, .phDevices = 0x3c75f2f0 {0x3c28ab60}, .flags = 0, .pOptions = 0x3c75f340 ( -ze-opt-level=2)) -> UR_RESULT_SUCCESS;"
+      },
+      {
+        "line": 18816,
+        "text": "strata mtp: draft head over 106299 tokens (212.9 MiB)"
+      },
+      {
+        "line": 18817,
+        "text": "strata trace: 1669 MiB free after the verifier and the drafter's binding"
+      },
+      {
+        "line": 18818,
+        "text": "strata serve: 1669 MiB of VRAM free with everything loaded"
+      },
+      {
+        "line": 18819,
+        "text": "strata trace: request 28 0"
+      },
+      {
+        "line": 18820,
+        "text": "strata trace: prompt start 27 -1"
+      },
+      {
+        "line": 18821,
+        "text": "   ---> urProgramBuildExp"
+      },
+      {
+        "line": 18822,
+        "text": "[2026-10-14 09:59:21.100] [thread-id: 124949047445888] [trace] zeModuleCreate(hContext, hDevice, desc, phModule, phBuildLog)"
+      },
+      {
+        "line": 18823,
+        "text": "[2026-10-14 09:59:21.202] [thread-id: 124949047445888] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleCreate(hContext=0x3c28cb28, hDevice=0x3c275858, desc={stype=0x7ffebe115f90, format=0x7ffebe115fa0, inputSize=20232, pInputModule=3, pBuildFlags=\" -ze-opt-level=2\", pConstants={numConstants=0, pConstantIds=nullptr, pConstantValues=nullptr}}, phModule=0x3edd3e88, phBuildLog=0x3d84b628)"
+      },
+      {
+        "line": 18824,
+        "text": "   <--- urProgramBuildExp(.hProgram = 0x3e973bf0, .numDevices = 1, .phDevices = 0x3e9a23f0 {0x3c28ab60}, .flags = 0, .pOptions = 0x3d104450 ( -ze-opt-level=2)) -> UR_RESULT_SUCCESS;"
+      },
+      {
+        "line": 18825,
+        "text": "strata trace: prompt chunk 0 of 27"
+      },
+      {
+        "line": 18826,
+        "text": "   ---> urProgramBuildExp"
+      },
+      {
+        "line": 18827,
+        "text": "[2026-10-14 09:59:21.206] [thread-id: 124949047445888] [trace] zeModuleCreate(hContext, hDevice, desc, phModule, phBuildLog)"
+      },
+      {
+        "line": 18828,
+        "text": "[2026-10-14 09:59:29.537] [thread-id: 124949047445888] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleCreate(hContext=0x3c28cb28, hDevice=0x3c275858, desc={stype=0x7ffebe115ec0, format=0x7ffebe115ed0, inputSize=176072, pInputModule=3, pBuildFlags=\" -ze-opt-level=2\", pConstants={numConstants=0, pConstantIds=nullptr, pConstantValues=nullptr}}, phModule=0x3e9938c8, phBuildLog=0x40cd0e78)"
+      },
+      {
+        "line": 18829,
+        "text": "   <--- urProgramBuildExp(.hProgram = 0x3c7c0360, .numDevices = 1, .phDevices = 0x43297170 {0x3c28ab60}, .flags = 0, .pOptions = 0x3c640150 ( -ze-opt-level=2)) -> UR_RESULT_SUCCESS;"
+      },
+      {
+        "line": 18830,
+        "text": "   ---> urProgramBuildExp"
+      },
+      {
+        "line": 18919,
+        "text": "   <--- urProgramBuildExp(.hProgram = 0x4506d950, .numDevices = 1, .phDevices = 0x3ef1f220 {0x3c28ab60}, .flags = 0, .pOptions = 0x45a15c70 ( -vc-codegen -disable-finalizer-msg)) -> UR_RESULT_SUCCESS;"
+      },
+      {
+        "line": 18920,
+        "text": "strata prefill timing: 27 tokens, GPU timeline 119085 ms, wall 119546 ms, host staging 1953 ms: embed+steps 8693 (7.3%) hc read 110 (0.1%) gdn 161 (0.1%) qsa proj 606 (0.5%) qsa indexer 107 (0.1%) qsa select 167 (0.1%) qsa attn 5973 (5.0%) router+shared 139 (0.1%) host grouping 1572 (1.3%) gather 584 (0.5%) wait copy 40 (0.0%) dequant 2462 (2.1%) gemm gate/up 97076 (81.5%) gemm down 665 (0.6%) combine 4 (0.0%) ple 423 (0.4%) kv stage 0 (0.0%) gdn conv+gates 224 (0.2%) gdn recurrence 8 (0.0%) gdn out proj 71 (0.1%)"
+      },
+      {
+        "line": 18921,
+        "text": "strata prefill timing: host: chunk setup (PLE rows, the expert stream plan) 8688 ms, waiting for each chunk 28 ms, after each chunk (the draft layer, progress) 328 ms, PLE 431 ms"
+      },
+      {
+        "line": 18922,
+        "text": "strata trace: read 27 tokens (batched) in 119548.3 ms"
+      },
+      {
+        "line": 18923,
+        "text": "strata trace: prompt done (slots refilled) -1 -1"
+      },
+      {
+        "line": 18924,
+        "text": "strata trace: window 27 1"
+      },
+      {
+        "line": 18925,
+        "text": "   ---> urProgramBuildExp"
+      },
+      {
+        "line": 18926,
+        "text": "[2026-10-14 10:01:20.653] [thread-id: 124949047445888] [trace] zeModuleCreate(hContext, hDevice, desc, phModule, phBuildLog)"
+      },
+      {
+        "line": 18981,
+        "text": "strata verify: captured the 1-token window in 49 event-completed segments"
+      },
+      {
+        "line": 18982,
+        "text": "strata verify: capture 1 tokens 4765.558 ms, free VRAM 1429.0 MiB"
+      },
+      {
+        "line": 18983,
+        "text": "strata verify: 48 shared/hit graphs can overlap CPU experts"
+      },
+      {
+        "line": 18984,
+        "text": "[2026-10-14 10:01:25.474] [thread-id: 124949047445888] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x3c781308, timeout=0)"
+      },
+      {
+        "line": 18985,
+        "text": "[2026-10-14 10:01:25.477] [thread-id: 124949047445888] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x4802ea78)"
+      },
+      {
+        "line": 18986,
+        "text": "[2026-10-14 10:01:25.487] [thread-id: 124949047445888] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x4802de68)"
+      },
+      {
+        "line": 18987,
+        "text": "[2026-10-14 10:01:25.492] [thread-id: 124949047445888] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x4802d258)"
+      },
+      {
+        "line": 19049,
+        "text": "strata verify: captured the 4-token window in 49 event-completed segments"
+      },
+      {
+        "line": 19050,
+        "text": "strata verify: capture 4 tokens 943.904 ms, free VRAM 1298.8 MiB"
+      },
+      {
+        "line": 19051,
+        "text": "strata verify: 48 shared/hit graphs can overlap CPU experts"
+      },
+      {
+        "line": 19052,
+        "text": "[2026-10-14 10:01:28.385] [thread-id: 124949047445888] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x3c781308, timeout=0)"
+      },
+      {
+        "line": 19053,
+        "text": "[2026-10-14 10:01:28.388] [thread-id: 124949047445888] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x42641b58)"
+      },
+      {
+        "line": 19054,
+        "text": "[2026-10-14 10:01:28.401] [thread-id: 124949047445888] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x42640f48)"
+      },
+      {
+        "line": 19055,
+        "text": "[2026-10-14 10:01:28.411] [thread-id: 124949047445888] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x4675a978)"
+      },
+      {
+        "line": 19253,
+        "text": "[2026-10-14 10:01:30.377] [thread-id: 124949047445888] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x4641d698)"
+      },
+      {
+        "line": 19254,
+        "text": "strata decode timing: 5 windows, avg T 3.40, 1.60 tokens/window, 1949.10 ms/window = verify 1585.86 (GPU-reach wait 135.83 + per-layer host 262.19 [plan 12.36 actq 0.80 jobs 0.11 CPU 239.97] + stage 5.09) + commit/emit 0.12 + draft 363.07; per layer-window: CPU experts 22.68 (33.15 entries), VRAM hits 0.85, PCIe 0.00"
+      },
+      {
+        "line": 19255,
+        "text": "strata serve: prompt 28 tokens = 0 reused + 28 read in 119553 ms (0.2 tok/s), 8 generated in 9746 ms (0.8 tok/s), drafts accepted 4 of 12, 0 checkpoints"
+      },
+      {
+        "line": 19256,
+        "text": "strata serve: decode expert cache hit rate: 2.5% (204 hits / 8160 lookups)"
+      },
+      {
+        "line": 19257,
+        "text": "strata serve: KV streaming: 93.33% of 1800 block reads hit VRAM, 0.5 MiB read from RAM"
+      },
+      {
+        "line": 19258,
+        "text": "[2026-10-14 10:01:34.129] [thread-id: 124949047445888] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)"
+      },
+      {
+        "line": 19259,
+        "text": "[2026-10-14 10:01:34.129] [thread-id: 124949047445888] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x42466808)"
+      },
+      {
+        "line": 19260,
+        "text": "[2026-10-14 10:01:34.129] [thread-id: 124949047445888] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)"
+      }
+    ],
+    "reason": "distinct CLI/startup/range mechanism and relevant request/phase evidence"
+  },
+  {
+    "version": 11,
+    "original_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-watchdog-default-short-root-v11/owned/engine.stderr",
+    "original_bytes": 2182998,
+    "original_sha256": "59e31bc281ff9ef3698613183208ff0a5ebd79510d128a392e62e62e15aa6b48",
+    "original_lines": 19348,
+    "selected_lines": [
+      {
+        "line": 18774,
+        "text": "strata generate: loaded 46.84 GiB at 1.50 GiB/s"
+      },
+      {
+        "line": 18775,
+        "text": "strata trace: 4716 MiB free after the weights, the session and the drafter"
+      },
+      {
+        "line": 18776,
+        "text": "strata generate: experimental native Q5_K head, 521472000 bytes"
+      },
+      {
+        "line": 18777,
+        "text": "strata generate: expert cache 128 slots, 0.26 GiB of VRAM; policy is"
+      },
+      {
+        "line": 18778,
+        "text": "strata trace: 3950 MiB free after opening the expert cache"
+      },
+      {
+        "line": 18779,
+        "text": "strata generate: SYCL cached experts use native Q8_1 arithmetic; logits can differ from CPU experts."
+      },
+      {
+        "line": 18780,
+        "text": "strata trace: 3950 MiB free after the profile fill"
+      },
+      {
+        "line": 18781,
+        "text": "strata generate: pre-filled 128 of 128 slots from the profile; slot 0 verified"
+      },
+      {
+        "line": 18782,
+        "text": "   ---> urProgramBuildExp"
+      },
+      {
+        "line": 18783,
+        "text": "[2026-10-14 10:08:26.967] [thread-id: 132377577802112] [trace] zeModuleCreate(hContext, hDevice, desc, phModule, phBuildLog)"
+      },
+      {
+        "line": 18784,
+        "text": "[2026-10-14 10:08:26.986] [thread-id: 132377577802112] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleCreate(hContext=0x224b5b18, hDevice=0x2249e848, desc={stype=0x7ffeeb968440, format=0x7ffeeb968450, inputSize=4680, pInputModule=3, pBuildFlags=\" -ze-opt-level=2\", pConstants={numConstants=0, pConstantIds=nullptr, pConstantValues=nullptr}}, phModule=0x227fceb8, phBuildLog=0x226e4038)"
+      },
+      {
+        "line": 18785,
+        "text": "   <--- urProgramBuildExp(.hProgram = 0x226fbd80, .numDevices = 1, .phDevices = 0x227a7090 {0x224b3b50}, .flags = 0, .pOptions = 0x226bf980 ( -ze-opt-level=2)) -> UR_RESULT_SUCCESS;"
+      },
+      {
+        "line": 18802,
+        "text": "strata generate: native GPU hit kernels captured at session setup"
+      },
+      {
+        "line": 18803,
+        "text": "strata trace: 3936 MiB free after the R4 hit path"
+      },
+      {
+        "line": 18804,
+        "text": "strata generate: R4 hit path ON - resident experts are computed on the GPU"
+      },
+      {
+        "line": 18805,
+        "text": "strata generate: 5 expert-pool workers + the host thread"
+      },
+      {
+        "line": 18806,
+        "text": "strata trace: 3936 MiB free after the expert cache and the graphs"
+      },
+      {
+        "line": 18807,
+        "text": "strata generate: session is up (engine 0.1.38)"
+      },
+      {
+        "line": 18808,
+        "text": "strata generate: token graph hit path: 128 resident experts, decided on the device"
+      },
+      {
+        "line": 18809,
+        "text": "strata serve: the prompt path allocates its own buffers (too few cache slots to borrow)"
+      },
+      {
+        "line": 18810,
+        "text": "strata trace: 1950 MiB free after the head and the prompt path"
+      },
+      {
+        "line": 18811,
+        "text": "strata verify: window up to 4 tokens, 63.8 MiB of device buffers"
+      },
+      {
+        "line": 18812,
+        "text": "   ---> urProgramBuildExp"
+      },
+      {
+        "line": 18813,
+        "text": "[2026-10-14 10:08:40.427] [thread-id: 132377577802112] [trace] zeModuleCreate(hContext, hDevice, desc, phModule, phBuildLog)"
+      },
+      {
+        "line": 18814,
+        "text": "[2026-10-14 10:08:40.595] [thread-id: 132377577802112] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleCreate(hContext=0x224b5b18, hDevice=0x2249e848, desc={stype=0x7ffeeb968030, format=0x7ffeeb968040, inputSize=42368, pInputModule=3, pBuildFlags=\" -ze-opt-level=2\", pConstants={numConstants=0, pConstantIds=nullptr, pConstantValues=nullptr}}, phModule=0x24e25438, phBuildLog=0x2f958298)"
+      },
+      {
+        "line": 18815,
+        "text": "   <--- urProgramBuildExp(.hProgram = 0x23ac5080, .numDevices = 1, .phDevices = 0x228508f0 {0x224b3b50}, .flags = 0, .pOptions = 0x22850940 ( -ze-opt-level=2)) -> UR_RESULT_SUCCESS;"
+      },
+      {
+        "line": 18816,
+        "text": "strata mtp: draft head over 106299 tokens (212.9 MiB)"
+      },
+      {
+        "line": 18817,
+        "text": "strata trace: 1669 MiB free after the verifier and the drafter's binding"
+      },
+      {
+        "line": 18818,
+        "text": "strata serve: 1669 MiB of VRAM free with everything loaded"
+      },
+      {
+        "line": 18819,
+        "text": "strata trace: request 28 0"
+      },
+      {
+        "line": 18820,
+        "text": "strata trace: prompt start 27 -1"
+      },
+      {
+        "line": 18821,
+        "text": "   ---> urProgramBuildExp"
+      },
+      {
+        "line": 18822,
+        "text": "[2026-10-14 10:08:41.227] [thread-id: 132377577802112] [trace] zeModuleCreate(hContext, hDevice, desc, phModule, phBuildLog)"
+      },
+      {
+        "line": 18823,
+        "text": "[2026-10-14 10:08:41.334] [thread-id: 132377577802112] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleCreate(hContext=0x224b5b18, hDevice=0x2249e848, desc={stype=0x7ffeeb9674d0, format=0x7ffeeb9674e0, inputSize=20232, pInputModule=3, pBuildFlags=\" -ze-opt-level=2\", pConstants={numConstants=0, pConstantIds=nullptr, pConstantValues=nullptr}}, phModule=0x2ef75a38, phBuildLog=0x239366a8)"
+      },
+      {
+        "line": 18824,
+        "text": "   <--- urProgramBuildExp(.hProgram = 0x22a769e0, .numDevices = 1, .phDevices = 0x25273aa0 {0x224b3b50}, .flags = 0, .pOptions = 0x25272d30 ( -ze-opt-level=2)) -> UR_RESULT_SUCCESS;"
+      },
+      {
+        "line": 18825,
+        "text": "strata trace: prompt chunk 0 of 27"
+      },
+      {
+        "line": 18826,
+        "text": "   ---> urProgramBuildExp"
+      },
+      {
+        "line": 18827,
+        "text": "[2026-10-14 10:08:41.340] [thread-id: 132377577802112] [trace] zeModuleCreate(hContext, hDevice, desc, phModule, phBuildLog)"
+      },
+      {
+        "line": 18828,
+        "text": "[2026-10-14 10:08:49.587] [thread-id: 132377577802112] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleCreate(hContext=0x224b5b18, hDevice=0x2249e848, desc={stype=0x7ffeeb967400, format=0x7ffeeb967410, inputSize=176072, pInputModule=3, pBuildFlags=\" -ze-opt-level=2\", pConstants={numConstants=0, pConstantIds=nullptr, pConstantValues=nullptr}}, phModule=0x25275d98, phBuildLog=0x23f00308)"
+      },
+      {
+        "line": 18829,
+        "text": "   <--- urProgramBuildExp(.hProgram = 0x2c28d480, .numDevices = 1, .phDevices = 0x2d494f40 {0x224b3b50}, .flags = 0, .pOptions = 0x24c40ad0 ( -ze-opt-level=2)) -> UR_RESULT_SUCCESS;"
+      },
+      {
+        "line": 18830,
+        "text": "   ---> urProgramBuildExp"
+      },
+      {
+        "line": 18919,
+        "text": "   <--- urProgramBuildExp(.hProgram = 0x245a8140, .numDevices = 1, .phDevices = 0x2f19b4b0 {0x224b3b50}, .flags = 0, .pOptions = 0x47d164f0 ( -vc-codegen -disable-finalizer-msg)) -> UR_RESULT_SUCCESS;"
+      },
+      {
+        "line": 18920,
+        "text": "strata prefill timing: 27 tokens, GPU timeline 116137 ms, wall 116584 ms, host staging 2328 ms: embed+steps 8566 (7.4%) hc read 89 (0.1%) gdn 158 (0.1%) qsa proj 600 (0.5%) qsa indexer 115 (0.1%) qsa select 188 (0.2%) qsa attn 5453 (4.7%) router+shared 137 (0.1%) host grouping 1337 (1.2%) gather 589 (0.5%) wait copy 31 (0.0%) dequant 2588 (2.2%) gemm gate/up 94865 (81.7%) gemm down 771 (0.7%) combine 2 (0.0%) ple 373 (0.3%) kv stage 0 (0.0%) gdn conv+gates 199 (0.2%) gdn recurrence 5 (0.0%) gdn out proj 71 (0.1%)"
+      },
+      {
+        "line": 18921,
+        "text": "strata prefill timing: host: chunk setup (PLE rows, the expert stream plan) 8563 ms, waiting for each chunk 13 ms, after each chunk (the draft layer, progress) 310 ms, PLE 388 ms"
+      },
+      {
+        "line": 18922,
+        "text": "strata trace: read 27 tokens (batched) in 116586.7 ms"
+      },
+      {
+        "line": 18923,
+        "text": "strata trace: prompt done (slots refilled) -1 -1"
+      },
+      {
+        "line": 18924,
+        "text": "strata trace: window 27 1"
+      },
+      {
+        "line": 18925,
+        "text": "   ---> urProgramBuildExp"
+      },
+      {
+        "line": 18926,
+        "text": "[2026-10-14 10:10:37.819] [thread-id: 132377577802112] [trace] zeModuleCreate(hContext, hDevice, desc, phModule, phBuildLog)"
+      },
+      {
+        "line": 18981,
+        "text": "strata verify: captured the 1-token window in 49 event-completed segments"
+      },
+      {
+        "line": 18982,
+        "text": "strata verify: capture 1 tokens 4255.216 ms, free VRAM 1429.0 MiB"
+      },
+      {
+        "line": 18983,
+        "text": "strata verify: 48 shared/hit graphs can overlap CPU experts"
+      },
+      {
+        "line": 18984,
+        "text": "[2026-10-14 10:10:42.104] [thread-id: 132377577802112] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x227d0628, timeout=0)"
+      },
+      {
+        "line": 18985,
+        "text": "[2026-10-14 10:10:42.107] [thread-id: 132377577802112] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x26fbb448)"
+      },
+      {
+        "line": 18986,
+        "text": "[2026-10-14 10:10:42.119] [thread-id: 132377577802112] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x26fba838)"
+      },
+      {
+        "line": 18987,
+        "text": "[2026-10-14 10:10:42.123] [thread-id: 132377577802112] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x26fb9c28)"
+      },
+      {
+        "line": 19051,
+        "text": "strata verify: captured the 4-token window in 49 event-completed segments"
+      },
+      {
+        "line": 19052,
+        "text": "strata verify: capture 4 tokens 686.827 ms, free VRAM 1298.8 MiB"
+      },
+      {
+        "line": 19053,
+        "text": "strata verify: 48 shared/hit graphs can overlap CPU experts"
+      },
+      {
+        "line": 19054,
+        "text": "[2026-10-14 10:10:44.585] [thread-id: 132377577802112] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0x227d0628, timeout=0)"
+      },
+      {
+        "line": 19055,
+        "text": "[2026-10-14 10:10:44.590] [thread-id: 132377577802112] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x47b90d58)"
+      },
+      {
+        "line": 19056,
+        "text": "[2026-10-14 10:10:44.600] [thread-id: 132377577802112] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x29b40548)"
+      },
+      {
+        "line": 19057,
+        "text": "[2026-10-14 10:10:44.608] [thread-id: 132377577802112] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x29b3f938)"
+      },
+      {
+        "line": 19252,
+        "text": "[2026-10-14 10:10:45.926] [thread-id: 132377577802112] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x273dc848)"
+      },
+      {
+        "line": 19253,
+        "text": "strata decode timing: 5 windows, avg T 3.40, 1.60 tokens/window, 1625.62 ms/window = verify 1275.53 (GPU-reach wait 108.25 + per-layer host 144.42 [plan 9.84 actq 0.63 jobs 0.11 CPU 128.69] + stage 4.11) + commit/emit 0.23 + draft 349.85; per layer-window: CPU experts 22.68 (33.15 entries), VRAM hits 0.85, PCIe 0.00"
+      },
+      {
+        "line": 19254,
+        "text": "strata serve: prompt 28 tokens = 0 reused + 28 read in 116593 ms (0.2 tok/s), 8 generated in 8128 ms (1.0 tok/s), drafts accepted 4 of 12, 0 checkpoints"
+      },
+      {
+        "line": 19255,
+        "text": "strata serve: decode expert cache hit rate: 2.5% (204 hits / 8160 lookups)"
+      },
+      {
+        "line": 19256,
+        "text": "strata serve: KV streaming: 93.33% of 1800 block reads hit VRAM, 0.5 MiB read from RAM"
+      },
+      {
+        "line": 19257,
+        "text": "[2026-10-14 10:10:50.001] [thread-id: 132377577802112] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)"
+      },
+      {
+        "line": 19258,
+        "text": "[2026-10-14 10:10:50.001] [thread-id: 132377577802112] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x2c3c1af8)"
+      },
+      {
+        "line": 19259,
+        "text": "[2026-10-14 10:10:50.001] [thread-id: 132377577802112] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)"
       }
     ],
     "reason": "distinct CLI/startup/range mechanism and relevant request/phase evidence"

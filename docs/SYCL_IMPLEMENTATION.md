@@ -3006,3 +3006,27 @@ conversion implementation were restored; the exhaustive half-read test remains.
 The [trial record](../bench/results/2026-10-04-sycl-native-f16-widen/run.json)
 contains all model samples, binary hashes and validation results. Its adjacent
 patch preserves the candidate against the recorded base commit.
+
+## Serve watchdog and verifier lifetime, 2026-10-14
+
+The Niko-based primary engine on B570/5600X now stops and joins its request
+watchdog before destroying the observed objects. Verifier diagnostics use a
+coherent window snapshot; callbacks hold a lifetime lease; only running verify
+stages receive spin-wait rescue. Host-written mapped flags use aligned,
+lock-free host atomics, retaining the existing device completion protocol.
+The production-helper CPU concurrency fixture and ASan/UBSan checks passed.
+
+With Intel LLVM v7.1.1 / UR Level Zero v2, cold XMX module creation returned
+success after 89.276 s in one run and 94.369 s in another. The former 60 s
+request watchdog could interrupt this legitimate initialization. The SYCL
+default is now 300 s; an explicit STRATA_WATCHDOG_S remains authoritative.
+This also increases the delay before detecting a truly stalled request.
+An actual 28-input/8-output model request using the new default, with no
+watchdog environment override, completed and both native engine and server
+exited normally. The fresh kernel fault scan found no GPU faults.
+
+These are short diagnostic and lifetime checks with tracing enabled, not
+long-prompt performance measurements or physical-256K qualification. The
+earlier stack-canary abort's corrupting write remains unlocated. Source,
+commands, individual results, API boundaries and limitations are recorded in
+the [primary re-audit](../bench/results/2026-10-14-primary-model-baseline/README.ja.md).

@@ -6,7 +6,7 @@
   "CUDA_HIP_inference_in_scope": false,
   "Xe_role": "optional benchmark and component reference",
   "revisions": {
-    "primary": "5fdf9a1517526085c9a2fef2eccfb24f87b4f241",
+    "primary": "0f4ce392cada6b84c7791257f668a6e76a72e686",
     "primary_inference_base": "4fa478f50f8da396e651e3ae862f8b1849d49b54",
     "fork_default": "beddab2fd6b61631d73b39b7484bc9a585ebe1de",
     "retired_Xe_reference": "28a7b9ae7ca5eba28eecd65f6453a7479c04fce8",
@@ -15,7 +15,7 @@
     "Niko_main_v0139": "6f32ec070f23ced9f50e704d854d775da52591ab"
   },
   "trees": {
-    "primary": "a4bfc5d1e363a20b7acc1f942d4c9a7d12f21f5e",
+    "primary": "478858eb57d83fbdb1621ec8aa8668e217de98b8",
     "primary_inference_base": "5a6ecb9aea834965c4efe6fae574c5354c07154b",
     "fork_default": "6007a70a8b8934c3b9f74977e141d1aa59bd2000",
     "retired_Xe_reference": "cdcfe368df5a39c20febc21e79053839859b989c",
@@ -25,12 +25,12 @@
   },
   "representative_blobs": {
     "primary": {
-      "CMakeLists.txt": "475dd5464d31e65aff34f39e025ad9e4c39e1914",
-      "cmake/sycl_backend.cmake": "2dfc5b09d20dc5429dd7dcca5cd7a74ece734e6c",
+      "CMakeLists.txt": "3cbefb557918f5ea24af493e8ae426b288a8be7b",
+      "cmake/sycl_backend.cmake": "312cf3ac929ff57e533bc488b2e98656d9722f6c",
       "src/core/session.cpp": "4703ca82f36434137e43d12d4a48bbe26588087f",
       "src/core/expert_cache.cpp": "5d7a40dcec352d6a4dace9fb5af100e9aaeb27e5",
       "src/core/expert_source.cpp": "56f58bce3be8a626a949c26f287c7c224b8408eb",
-      "src/core/verify.cpp": "d5638666f22cefede2f09e19d9b35ff65e2f62c1",
+      "src/core/verify.cpp": "8852de4250daaffcc9a5f734cc4980fd9a7f98e4",
       "src/prefill/prefill.cpp": "72cbcf3dd1ad81388274c1324a5369ae8ca9e3bd",
       "src/prefill/sycl/gemm.cpp": "38a1d9b4a1be8b763753effbe62264b002e8333a",
       "src/prefill/sycl/moe_mmq.cpp": "d917588b6c5378cbda7e90ae997d80aa99e36818",
@@ -38,7 +38,9 @@
       "src/kernels/cpu/native_expert.cpp": "df107d5c36c9021033f72704fe0c7246919dbde9",
       "src/kernels/cpu/pool.cpp": "45e4347037ed57eb22df9e5390bc6057260c85fe",
       "src/kernels/sycl/native_mmq_xmx.cpp": "0bfcb3a6bb6154795fcda86bbc3297acbe2b51fb",
-      "src/program/generate.cpp": "4adae5f3d724a75205be1342da1f2880b986245d"
+      "src/program/generate.cpp": "3c46473b74fbc6807e7c3dddf367c48c75a20aea",
+      "include/strata/core/watchdog_lifecycle.hpp": "db6f6fec9fd99797d755db87159076ca38ef1c76",
+      "tests/cpu/watchdog_lifecycle.cpp": "3857458ce7580c6c5d2aff73f8434ff7ae5ef948"
     },
     "primary_inference_base": {
       "CMakeLists.txt": "e42e76e04ceb32dd27d66023f241a981a9421ccb",
@@ -54,7 +56,9 @@
       "src/kernels/cpu/native_expert.cpp": "df107d5c36c9021033f72704fe0c7246919dbde9",
       "src/kernels/cpu/pool.cpp": "45e4347037ed57eb22df9e5390bc6057260c85fe",
       "src/kernels/sycl/native_mmq_xmx.cpp": "fe1113d1597c579a1a067fe070723d27a351cc63",
-      "src/program/generate.cpp": "5178a2105b88bd5a62b79edc04994a7a39800e0b"
+      "src/program/generate.cpp": "5178a2105b88bd5a62b79edc04994a7a39800e0b",
+      "include/strata/core/watchdog_lifecycle.hpp": null,
+      "tests/cpu/watchdog_lifecycle.cpp": null
     },
     "fork_default": {
       "CMakeLists.txt": "0121bb00973dc31ec156f2211a1942b9b4a8c81b",
@@ -70,7 +74,9 @@
       "src/kernels/cpu/native_expert.cpp": "0dc5d3aa84207066677490d19974ce96f520eeba",
       "src/kernels/cpu/pool.cpp": "c64462936ba863686951b5da1f26745d20fe6d0a",
       "src/kernels/sycl/native_mmq_xmx.cpp": null,
-      "src/program/generate.cpp": "d1882ea7f59014234821325e9d68bb9e0626bcc1"
+      "src/program/generate.cpp": "d1882ea7f59014234821325e9d68bb9e0626bcc1",
+      "include/strata/core/watchdog_lifecycle.hpp": null,
+      "tests/cpu/watchdog_lifecycle.cpp": null
     },
     "retired_Xe_reference": {
       "CMakeLists.txt": "baaadaae0f536ec3fa6ff908eb94a6343481f49f",
@@ -86,7 +92,9 @@
       "src/kernels/cpu/native_expert.cpp": "e32082d8c00c6509ed639d67bcc01d9a8d1db611",
       "src/kernels/cpu/pool.cpp": "d0c1a229dce80b402c4af020159bc01d5a6cf5f5",
       "src/kernels/sycl/native_mmq_xmx.cpp": null,
-      "src/program/generate.cpp": "db921619d6378a2d6325251d305c61e0469c9c55"
+      "src/program/generate.cpp": "db921619d6378a2d6325251d305c61e0469c9c55",
+      "include/strata/core/watchdog_lifecycle.hpp": null,
+      "tests/cpu/watchdog_lifecycle.cpp": null
     },
     "retired_wrong_base_skill": {
       "CMakeLists.txt": "9dee5ea3965a5d0b79e08cbc32c99f2196074504",
@@ -102,7 +110,9 @@
       "src/kernels/cpu/native_expert.cpp": "e32082d8c00c6509ed639d67bcc01d9a8d1db611",
       "src/kernels/cpu/pool.cpp": "d0c1a229dce80b402c4af020159bc01d5a6cf5f5",
       "src/kernels/sycl/native_mmq_xmx.cpp": null,
-      "src/program/generate.cpp": "a519887ad6ffc8c64bc12dd96eafc63e7f1c3d31"
+      "src/program/generate.cpp": "a519887ad6ffc8c64bc12dd96eafc63e7f1c3d31",
+      "include/strata/core/watchdog_lifecycle.hpp": null,
+      "tests/cpu/watchdog_lifecycle.cpp": null
     },
     "Niko_base_v0138": {
       "CMakeLists.txt": "ff8766b20d0e440908926532e6ef955330fa22ef",
@@ -118,7 +128,9 @@
       "src/kernels/cpu/native_expert.cpp": "0903761e619c844c48da41f9019688fa476673f9",
       "src/kernels/cpu/pool.cpp": "45e4347037ed57eb22df9e5390bc6057260c85fe",
       "src/kernels/sycl/native_mmq_xmx.cpp": null,
-      "src/program/generate.cpp": "a7c77d0efffcaa5ed36352c6389954893ae7c230"
+      "src/program/generate.cpp": "a7c77d0efffcaa5ed36352c6389954893ae7c230",
+      "include/strata/core/watchdog_lifecycle.hpp": null,
+      "tests/cpu/watchdog_lifecycle.cpp": null
     },
     "Niko_main_v0139": {
       "CMakeLists.txt": "0121bb00973dc31ec156f2211a1942b9b4a8c81b",
@@ -134,7 +146,9 @@
       "src/kernels/cpu/native_expert.cpp": "0dc5d3aa84207066677490d19974ce96f520eeba",
       "src/kernels/cpu/pool.cpp": "c64462936ba863686951b5da1f26745d20fe6d0a",
       "src/kernels/sycl/native_mmq_xmx.cpp": null,
-      "src/program/generate.cpp": "085c3d8ced649d53c47e32563a28aa4fcc4abbf0"
+      "src/program/generate.cpp": "085c3d8ced649d53c47e32563a28aa4fcc4abbf0",
+      "include/strata/core/watchdog_lifecycle.hpp": null,
+      "tests/cpu/watchdog_lifecycle.cpp": null
     }
   },
   "archive_merges": [
@@ -154,13 +168,13 @@
     }
   ],
   "local_refs": [
-    "refs/heads/feature/sycl 5fdf9a1517526085c9a2fef2eccfb24f87b4f241",
+    "refs/heads/feature/sycl 0f4ce392cada6b84c7791257f668a6e76a72e686",
     "refs/heads/main beddab2fd6b61631d73b39b7484bc9a585ebe1de",
     "refs/remotes/origin/HEAD beddab2fd6b61631d73b39b7484bc9a585ebe1de",
-    "refs/remotes/origin/feature/sycl 5fdf9a1517526085c9a2fef2eccfb24f87b4f241",
+    "refs/remotes/origin/feature/sycl 0f4ce392cada6b84c7791257f668a6e76a72e686",
     "refs/remotes/origin/main beddab2fd6b61631d73b39b7484bc9a585ebe1de"
   ],
-  "worktrees": "worktree /home/yayoi/ghq/github.com/yqYo1/Strata\nHEAD beddab2fd6b61631d73b39b7484bc9a585ebe1de\nbranch refs/heads/main\n\nworktree /home/yayoi/orca/workspaces/Strata/sycl\nHEAD 5fdf9a1517526085c9a2fef2eccfb24f87b4f241\nbranch refs/heads/feature/sycl",
+  "worktrees": "worktree /home/yayoi/ghq/github.com/yqYo1/Strata\nHEAD beddab2fd6b61631d73b39b7484bc9a585ebe1de\nbranch refs/heads/main\n\nworktree /home/yayoi/orca/workspaces/Strata/sycl\nHEAD 0f4ce392cada6b84c7791257f668a6e76a72e686\nbranch refs/heads/feature/sycl",
   "GitHub_identity": {
     "default_branch": "main",
     "full_name": "yqYo1/Strata",
@@ -170,21 +184,21 @@
   "GitHub_branches": [
     {
       "name": "feature/sycl",
-      "sha": "5fdf9a1517526085c9a2fef2eccfb24f87b4f241"
+      "sha": "0f4ce392cada6b84c7791257f668a6e76a72e686"
     },
     {
       "name": "main",
       "sha": "beddab2fd6b61631d73b39b7484bc9a585ebe1de"
     }
   ],
-  "HEAD_status": "## feature/sycl...origin/feature/sycl\n M cmake/sycl_backend.cmake\n?? bench/results/2026-10-14-primary-model-baseline/\n?? tests/sycl/range_contract.cpp",
+  "HEAD_status": "## feature/sycl...origin/feature/sycl\n M bench/results/2026-10-14-primary-model-baseline/audit_primary.py\n M bench/results/2026-10-14-primary-model-baseline/deletion-manifest.jsonl.gz\n M bench/results/2026-10-14-primary-model-baseline/model-diagnostic-windows.json\n M bench/results/2026-10-14-primary-model-baseline/publish_boundary.py\n M bench/results/2026-10-14-primary-model-baseline/receipts-index.json\n M bench/results/2026-10-14-primary-model-baseline/research-index.json\n M bench/results/2026-10-14-primary-model-baseline/retire_closed.py\n M bench/results/2026-10-14-primary-model-baseline/retirement.json\n?? bench/results/2026-10-14-primary-model-baseline/check_model_v10.py\n?? bench/results/2026-10-14-primary-model-baseline/receipts/main-primary-watchdog-short-root-v10/\n?? bench/results/2026-10-14-primary-model-baseline/research/research-primary-niko-new-functions-round479-v1.txt\n?? bench/results/2026-10-14-primary-model-baseline/research/research-primary-transfer-ceiling-measurement-round480-v1.txt",
   "working_source_sha256": {
-    "CMakeLists.txt": "312f3046586e6dd063aa360cadb4e9b2ef76e911c7f44e6ddbb85d0ac64c122e",
-    "cmake/sycl_backend.cmake": "a8c665a648f97cfd5b54262862324db5d75ac104706baf7ef2dac801bedfd259",
+    "CMakeLists.txt": "74649dd55dc3eed4309cae3988642516c751070b5fc6e07aa639c653b08a10e6",
+    "cmake/sycl_backend.cmake": "562a394fd5ad9357faa1509ae2d26aaba8d6b9f5ab6671120bf111d8a3ec9a51",
     "src/core/session.cpp": "f2ef0b5c115ba23bca711241fb720dd806bd505225c75c37fd8c11bbf531b5b2",
     "src/core/expert_cache.cpp": "c691d1147fea50f351a208b676efc4ceaaee9d4e8534cdbf5f7672c934db7e19",
     "src/core/expert_source.cpp": "daf174b8ded139073d0b16ff524892410bd8c74beb282878ff1afbbb4b27606b",
-    "src/core/verify.cpp": "7334ccf8bf602dbec17cf560ba93e57fc4823b8a458ef0194793cd7b7a29a816",
+    "src/core/verify.cpp": "640e0270be833ddff0218331a7db18043605af3ced2682787f6b06abdcf6316c",
     "src/prefill/prefill.cpp": "6913f3ab5e8c71af753796c73ad7e24f8578331d66f0df5e9d842c9a38a9bfdc",
     "src/prefill/sycl/gemm.cpp": "0fe1904787462a4156185bc08b2076e047f9cf51d9517ede4c8f482fa76c5410",
     "src/prefill/sycl/moe_mmq.cpp": "403dccf14f3a632f3cb5a6b7ecbaaf7dcfae5f0c3fbf875dae2789b6f85978f8",
@@ -192,12 +206,16 @@
     "src/kernels/cpu/native_expert.cpp": "fcb4a7c74ba45a13da162eed832860f9644f4544d3f269b9c8588f01b40fb106",
     "src/kernels/cpu/pool.cpp": "83c91704efeff4c88c25a9d1e69661f34ad76e556c154320ff6373edc7a168b8",
     "src/kernels/sycl/native_mmq_xmx.cpp": "f5f69d0920c694fc84eb912ff282ae96770428a93887689fb4177ac4bfffdaef",
-    "src/program/generate.cpp": "7b10f853be305c9479629818c4563c0235ebde6e4967dce25cda880230a2a3de"
+    "src/program/generate.cpp": "efa2d3fa5c20c142a4467024ca371013d2ccb7acf2e5902c8ecf1e604ccea092",
+    "include/strata/core/watchdog_lifecycle.hpp": "799a747cb5f10c59920e30ecfff258ec657638b51d2699c0bd4222088402ac4e",
+    "tests/cpu/watchdog_lifecycle.cpp": "f4993794a4015a1362fcbe7db4aaeee96149d0f1125714d3a2e2702334d81fb8"
   },
   "HEAD_inference_delta_from_base": [
     "M\tCMakeLists.txt",
     "M\tcmake/sycl_backend.cmake",
     "M\tinclude/strata/core/expert_source.hpp",
+    "M\tinclude/strata/core/verify.hpp",
+    "A\tinclude/strata/core/watchdog_lifecycle.hpp",
     "M\tinclude/strata/prefill/gemm.hpp",
     "M\tinclude/strata/prefill/moe_mmq.hpp",
     "A\tinclude/strata/program/prompt_checkpoint.hpp",
@@ -206,6 +224,7 @@
     "M\tsrc/core/layer.cpp",
     "M\tsrc/core/peer_experts.cpp",
     "M\tsrc/core/pinned.cu",
+    "M\tsrc/core/verify.cpp",
     "M\tsrc/core/weights.cpp",
     "M\tsrc/kernels/sycl/kv.cpp",
     "M\tsrc/kernels/sycl/native_mmq_xmx.cpp",
@@ -215,8 +234,9 @@
     "M\tsrc/sycl/runtime.cpp"
   ],
   "required_function_gaps": [
-    "active-Arc dynamic VRAM lease/resize adaptation",
-    "shared Niko CLI/API functionality ledger and native capability contracts",
+    "single-GPU elastic VRAM config/CLI/capability/cache lease/POST v1/vram contract",
+    "single-GPU parallel request slots/BGEN protocol and prompt fairness contract",
+    "all applicable Niko non-inference functions through observed296b59d, including image-generation API; opt-in use is not optional integration",
     "install/update and model continuation/RESTORE/context boundary qualification"
   ],
   "optional_unadopted_Xe_candidates": [

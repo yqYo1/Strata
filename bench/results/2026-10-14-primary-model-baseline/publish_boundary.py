@@ -42,7 +42,10 @@ def main():
                      'main-primary-post-trace-cap-gpu-root-v1',
                      'main-primary-watchdog-lifecycle-build-root-v1',
                      'main-primary-watchdog-lifecycle-build-root-v2',
-                     'main-primary-watchdog-lifecycle-build-root-v3']:
+                     'main-primary-watchdog-lifecycle-build-root-v3',
+                     'main-primary-watchdog-lifecycle-build-root-v4',
+                     'main-primary-watchdog-short-root-v10',
+                     'main-primary-watchdog-default-short-root-v11']:
         if original(B / optional / 'record.json') is not None:
             roots.append(optional)
     with (B / 'owned-v0141-measurement.lock').open('a') as lock:
@@ -100,10 +103,14 @@ def main():
                            no_intervention_until_final=True)
         (D / 'research-index.json').write_text(json.dumps(prior_research, indent=2, ensure_ascii=False) + '\n')
         windows = json.loads((D / 'model-diagnostic-windows.json').read_text()) if (D / 'model-diagnostic-windows.json').exists() else []
-        for version in (1, 2, 4, 5, 6, 7, 8, 9):
+        for version in (1, 2, 4, 5, 6, 7, 8, 9, 10, 11):
             root_name = f'main-primary-model-diagnostic-root-v{version}' if version != 7 else 'main-primary-model-accepted-diagnostic-root-v7'
             if version in (8, 9):
                 root_name = f'main-primary-cold-jit-short-root-v{version}'
+            if version == 10:
+                root_name = 'main-primary-watchdog-short-root-v10'
+            if version == 11:
+                root_name = 'main-primary-watchdog-default-short-root-v11'
             source = B / root_name / 'owned/engine.stderr'
             if not source.exists():
                 continue

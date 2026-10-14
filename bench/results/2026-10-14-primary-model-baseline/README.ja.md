@@ -359,3 +359,35 @@ ASan/UBSan/leak検査を通った。失敗2件の原record/command/errorも保�
 新native SHAはe0f0a0233392df6ea0861c30eca618a6675a376a62c33a1ec494811619caeec2。
 この境界ではGPU/modelは未実行。v7 canary書込み元の修正、GPU spin rescue、長文・速度・
 物理256Kの合格をCPU fixtureから主張しない。次は同条件の実モデルと正常終了を確認する。
+
+v10はe0f0a023の同じ復元設定で28入力/reuse0/8出力を完了した。
+prompt119552.5ms/decode9745.5ms、native/server/owner全てexit0、fresh fault0/dumpなし/同一boot。
+これはheavy logging下の短いモデル・通常終了の確認で、速度やcanary原因の確定ではない。
+
+製品のSYCL既定watchdogも60秒から300秒に変更した。89.276秒の正当な初回module creationを
+収めるためで、実際に停止したrequestの検出も最大300秒まで遅くなる。
+STRATA_WATCHDOG_Sで明示した値は引き続き優先する。default変更後のbuild v4もnativeと
+CPU concurrency/ASan/UBSan/leak検査を通り、native SHAは
+d3861dd547081928443f683501dd209c744712b2accffc80cd9f95bc7f5d0e9a。
+環境変数によるwatchdog延長なしのv11も28入力/reuse0/8出力を完了した。
+prompt116593.3ms/decode8128.1ms、native/server/owner全てexit0、新fault0/dumpなし/同一boot。
+[cold-jit-default-evidence.json](cold-jit-default-evidence.json) の最長module creationは94.369秒。
+環境変数STRATA_WATCHDOG_Sが無いことと、production defaultを使った正常終了を保存した。
+この短い診断からquiet長文速度や物理256Kの合格へは進めない。
+
+R479/R480のLuna調査も新しいscopeで反復し、返答までMainは介入せず実モデルを継続した。
+R479は新Niko API/setup差分、R480はprimary runtimeを使う現在の帯域上限の測り方。
+新しい帯域値はまだ測っていない。R479の画像生成APIを「optional adoption」とする提案は
+ユーザーの全非推論機能取り込み方針と合わないためMainが訂正した。利用のopt-inと
+必須機能の統合は別で、Arc backendの可用性を正直に報告する適合も必要となる。
+
+GitHubの新しいNiko default HEADは296b59d2f73c8f04a805df29c2fa97655adace78。
+前の固定評価先7695859a(v0.1.43)、shared service移植元beddab2f、推論基礎99f3dbd0(v0.1.38)
+とは分けて記録する。新しいHEADのfetch/単体測定/全機能対応/部品採否は未完了。
+R479の集計されたAPI/setup候補は、網羅的な機能対応表の完成には数えない。
+main/defaultはbeddab2fのままで、parallel/elastic等の既存機能を落とすpromotionは行わない。
+
+今回のclosed log整理では92ファイル/71815072 logical bytesを追加退役した。
+累計252ファイル/109794417 logical bytes。実空き容量やsnapshotの解放は推測しない。
+原failed/partial statusを変えず、v7 canaryの代表4605 bytesは引き続き保持する。
+現在のnative buildとmarker v2には次の長文/quiet baseline/host-failure調査consumerがある。

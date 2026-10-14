@@ -163,6 +163,22 @@
       "sha256": "1886e2d0c9b2b971ab119ee17208c343c6a3a55449e4ac06073e82c2c1c1272b",
       "model": "gpt-6-luna",
       "read_only": true
+    },
+    {
+      "round": 479,
+      "path": "research/research-primary-niko-new-functions-round479-v1.txt",
+      "original_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-primary-niko-new-functions-round479-v1.txt",
+      "sha256": "b8fb2c92fb9945063c35465147de2d66f98cd1eada850dee7a3182907801ccb8",
+      "model": "gpt-6-luna",
+      "read_only": true
+    },
+    {
+      "round": 480,
+      "path": "research/research-primary-transfer-ceiling-measurement-round480-v1.txt",
+      "original_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-primary-transfer-ceiling-measurement-round480-v1.txt",
+      "sha256": "242e22052f26157719b4e3297cede5f8866e5c9333a40e1b94e6bb7d4a455e80",
+      "model": "gpt-6-luna",
+      "read_only": true
     }
   ],
   "no_intervention_until_final": true,
@@ -185,6 +201,10 @@
     "Further Main correction from actual v6 engine.stderr: startup freeVRAM3936 after expert cache/graphs ->1686 after head/prompt workspace ->1405 after Verifier arena+MTP binding. Verifier reports63.8MiB arena; MTP head212.9MiB. Only after short request graph captures does free become1176.5(T1) and1046.7(T4). Thus R472/its supplied premise that1405->1047 are both upfront is false. Capture/runtime retained memory is live before subsequent long prompt, not first short prompt;357MiB is not Verifier arena size and graph destruction reclaim is unmeasured. Source conclusions owned4K scratch persists in --serve and verifier initialized before READY remain valid.",
     "R473/R474 concern failed v7, not v6 normal completion. Idle Verifier release completion proves no Prefill drain. Related fixture105s is whole process, not measured single zeModuleCreate or single layer time. Cold-JIT watchdog false positive and host-canary cause remain hypotheses. No unchanged retry or accepted-settings adoption.",
     "R474 compact tile count ceil270/8=34 is not the per-expert padded sum. Sum of up to16 ceil(rows_e/8) is safely bounded by ceil270/8+15=49 (a tighter maximum47); both remain small and do not change fixed prefix17 safety. Native flags cause same-queue event elision; SYCL m.copy=m.cs already holds in v6.",
-    "R475 phrase61,055-second normal run has wrong units: actual61055 input tokens,968.0212s prefill. New terminal-marker hook uses direct write and raw caller only, no unwinding/symbolization of a corrupt stack; host forwarding fixture is not proof for arbitrary corruption."
+    "R475 phrase61,055-second normal run has wrong units: actual61055 input tokens,968.0212s prefill. New terminal-marker hook uses direct write and raw caller only, no unwinding/symbolization of a corrupt stack; host forwarding fixture is not proof for arbitrary corruption.",
+    {
+      "round": 479,
+      "reason": "Image-generation route is a server/API function under mandatory non-inference integration, even when its user use/config is opt-in. Do not mark feature adoption optional; preserve truthful backend availability and track required Arc adaptation separately. Aggregate API/setup leads are incomplete per-feature attribution, not a complete updated Niko ledger."
+    }
   ]
 }
