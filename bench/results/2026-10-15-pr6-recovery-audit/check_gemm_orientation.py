@@ -13,7 +13,7 @@ from pathlib import Path
 P = Path('/home/yayoi/orca/workspaces/Strata/sycl')
 B = Path('/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007')
 D = Path(__file__).parent
-BUILD = B / 'main-primary-gemm-orientation-build-root-v1'
+BUILD = B / 'main-primary-gemm-orientation-build-root-v2'
 OWNER = P / 'bench/results/2026-10-14-niko-main-service-port/direct_owner.py'
 DEVICE = Path('/sys/bus/pci/devices/0000:05:00.0')
 ANCHORS = [1, 12, 428, 1490, 1792, 3245, 3855, 4096]
@@ -34,11 +34,11 @@ def main():
     spec = importlib.util.spec_from_file_location('owner', OWNER)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
-    O = B / ('main-primary-gemm-orientation-' + mode + '-root-v1')
+    O = B / ('main-primary-gemm-orientation-' + mode + '-root-v2')
     with (B / 'owned-v0141-measurement.lock').open('a') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         if mode == 'microbench':
-            gate = json.loads((B / 'main-primary-gemm-orientation-validation-root-v1/record.json').read_text())
+            gate = json.loads((B / 'main-primary-gemm-orientation-validation-root-v2/record.json').read_text())
             assert gate['passed'] and gate['complete'] and not gate['active']
             assert gate['binary_sha256'] == build['binary_sha256']
             assert not gate['fresh_faults'] and gate['boot_unchanged'] and not gate['driver_dump_exists']
@@ -111,17 +111,19 @@ def main():
                 success_mentions=diagnostic.count('UR_RESULT_SUCCESS'), warning_lines=len(warnings),
                 scope='Trace mention counts only; not GPU launch/service timing')
             record['input_hash_lines'] = [line for line in text.splitlines() if line.startswith('input_hash_fnv1a64 ')]
-            assert len(record['input_hash_lines']) == 16
+            assert len(record['input_hash_lines']) == (32 if mode == 'validation' else 16)
             if mode == 'validation':
-                pattern = r'^PASS role=(GU|Down) ne=(\d+) beta=' + NUMBER + r' compared_outputs=(\d+) orientation_max_abs=' + NUMBER + r' orientation_max_error_over_limit=' + NUMBER + r' wrapper_max_abs=' + NUMBER + r' wrapper_max_error_over_limit=' + NUMBER + '$'
+                pattern = r'^PASS role=(GU|Down) ne=(\d+) beta=' + NUMBER + r' ld=(\d+) compared_outputs=(\d+) orientation_max_abs=' + NUMBER + r' orientation_max_error_over_limit=' + NUMBER + r' wrapper_max_abs=' + NUMBER + r' wrapper_max_error_over_limit=' + NUMBER + '$'
                 cases = re.findall(pattern, text, re.M)
-                assert len(cases) == 32
-                assert [(r, int(n), float(b)) for r, n, b, *_ in cases] == [(r, n, b) for n in ANCHORS for r in ['GU', 'Down'] for b in [0., .25]]
-                record['cases'] = [dict(role=r, ne=int(n), beta=float(b), compared_outputs=int(c),
+                assert len(cases) == 64
+                assert [(r, int(n), float(b), int(ld)) for r, n, b, ld, *_ in cases] == [
+                    (r, n, b, ld) for n in ANCHORS for r in ['GU', 'Down']
+                    for ld in ([1280, 1297] if r == 'GU' else [2560, 2577]) for b in [0., .25]]
+                record['cases'] = [dict(role=r, ne=int(n), beta=float(b), ld=int(ld), compared_outputs=int(c),
                     orientation_max_abs=float(a), orientation_max_error_over_limit=float(al),
-                    wrapper_max_abs=float(w), wrapper_max_error_over_limit=float(wl)) for r, n, b, c, a, al, w, wl in cases]
+                    wrapper_max_abs=float(w), wrapper_max_error_over_limit=float(wl)) for r, n, b, ld, c, a, al, w, wl in cases]
                 record['oracle_lines'] = [line for line in text.splitlines() if line.startswith('oracle ')]
-                assert len(record['oracle_lines']) == 96
+                assert len(record['oracle_lines']) == 192
             else:
                 pattern = r'^sample role=(GU|Down) ne=(\d+) N=(\d+) K=(\d+) ld=(\d+) index=(\d+) arm=(\d+) repeats=(\d+) host_submit_ns=(\d+) drain_ns=(\d+) batch_wall_ns=(\d+) wall_ns_per_call=' + NUMBER
                 values = re.findall(pattern, text, re.M)
@@ -132,7 +134,7 @@ def main():
                     n, cols, inner, ld, i, a, repeats, submit, drain, wall = map(int, [n, cols, inner, ld, i, a, repeats, submit, drain, wall])
                     assert a == (0 if i % 4 in [0, 3] else 1) and repeats == (16 if n <= 12 else 4)
                     assert wall == submit + drain and wall > 0 and cols == (1280 if r == 'GU' else 2560)
-                    assert inner == (2560 if r == 'GU' else 640) and ld == cols + 17
+                    assert inner == (2560 if r == 'GU' else 640) and ld == cols
                     samples.append(dict(role=r, ne=n, N=cols, K=inner, ld=ld, index=i, arm=a, repeats=repeats,
                                         host_submit_ns=submit, drain_ns=drain, batch_wall_ns=wall,
                                         wall_ns_per_call_exact=wall / repeats))
@@ -160,7 +162,7 @@ def main():
             finally:
                 record['active'] = False
                 persist()
-                (D / ('gemm-orientation-' + mode + '-v1.json')).write_text(json.dumps(record, indent=2) + '\n')
+                (D / ('gemm-orientation-' + mode + '-v2.json')).write_text(json.dumps(record, indent=2) + '\n')
         assert record['passed'] and record['complete']
         print(json.dumps(dict(passed=True, mode=mode, fresh_faults=len(record['fresh_faults']),
                               count=len(record.get('cases', record.get('samples', []))))), flush=True)

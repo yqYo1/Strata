@@ -99,6 +99,9 @@ void host_contracts() {
   for (auto ne : Anchors)
     for (int role = 0; role < 2; ++role) {
       Shape s(ne, role ? 2560 : 1280, role ? 640 : 2560, (role ? 2560 : 1280) + 17);
+      Shape actual(ne, s.n, s.k, s.n);
+      require(descriptor(actual, 0).ldc == actual.n &&
+              descriptor(actual, 1).ldc == actual.n, "actual model output stride");
       const auto row = descriptor(s, 0), col = descriptor(s, 1);
       require(row.m == col.n && row.n == col.m && row.k == col.k &&
               row.lda == s.k && row.ldb == s.k && row.ldc == s.ld &&
@@ -230,8 +233,9 @@ OracleError oracle(const Shape &s, const std::vector<uint16_t> &x,
 int64_t nanos(Clock::time_point a, Clock::time_point b) {
   return std::chrono::duration_cast<std::chrono::nanoseconds>(b - a).count();
 }
-void run(std::shared_ptr<Runtime> rt, int64_t ne, bool down, Mode mode) {
-  Shape s(ne, down ? 2560 : 1280, down ? 640 : 2560, (down ? 2560 : 1280) + 17);
+void run(std::shared_ptr<Runtime> rt, int64_t ne, bool down, Mode mode, bool padded = false) {
+  const int64_t cols = down ? 2560 : 1280;
+  Shape s(ne, cols, down ? 640 : 2560, cols + (padded ? 17 : 0));
   const char *role = down ? "Down" : "GU";
   std::cout << "BEGIN role=" << role << " ne=" << s.t << " N=" << s.n << " K=" << s.k
             << " ld=" << s.ld << " input=deterministic_synthetic_fp16_hot" << std::endl;
@@ -273,7 +277,7 @@ void run(std::shared_ptr<Runtime> rt, int64_t ne, bool down, Mode mode) {
       const auto ab = compare(s, results[0], results[1], "row/column");
       const auto wrap = compare(s, results[0], results[2], "row/current_wrapper");
       std::cout << "PASS role=" << role << " ne=" << ne << " beta=" << beta
-                << " compared_outputs=" << s.t * s.n << " orientation_max_abs=" << ab.abs
+                << " ld=" << s.ld << " compared_outputs=" << s.t * s.n << " orientation_max_abs=" << ab.abs
                 << " orientation_max_error_over_limit=" << ab.scaled
                 << " wrapper_max_abs=" << wrap.abs << " wrapper_max_error_over_limit=" << wrap.scaled << std::endl;
     }
@@ -354,7 +358,12 @@ int main(int argc, char **argv) {
               << " oracle_tolerance=" << CpuFloor << "+gamma_K*sum_abs_products+4u*(abs_ref+abs_beta_C)"
               << " inputs=synthetic_hot_not_native_format_rotation" << std::endl;
     for (auto ne : Anchors)
-      for (bool down : {false, true}) run(rt, ne, down, mode);
+      for (bool down : {false, true}) {
+        if (mode == Mode::Validate)
+          for (bool padded : {false, true}) run(rt, ne, down, mode, padded);
+        else
+          run(rt, ne, down, mode);
+      }
     rt->wait();
     std::cout << "DONE mode=" << (mode == Mode::Validate ? "validate" : "benchmark") << std::endl;
   } catch (const std::exception &e) {

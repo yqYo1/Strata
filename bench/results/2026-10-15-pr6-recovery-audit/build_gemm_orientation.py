@@ -11,8 +11,8 @@ from pathlib import Path
 P = Path('/home/yayoi/orca/workspaces/Strata/sycl')
 B = Path('/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007')
 D = Path(__file__).parent
-SEED = B / 'main-primary-qsa-layout-build-root-v1/record.json'
-O = B / 'main-primary-gemm-orientation-build-root-v1'
+SEED = B / 'main-primary-gemm-orientation-build-root-v1/record.json'
+O = B / 'main-primary-gemm-orientation-build-root-v2'
 OWNER = P / 'bench/results/2026-10-14-niko-main-service-port/direct_owner.py'
 TOOL = 'tools/sycl/gemm_orientation_bench.cpp'
 
@@ -36,9 +36,9 @@ def main():
         closed = json.loads((D / 'qsa-layout-screen-summary.json').read_text())
         assert closed['passed'] and closed['all_fresh_fault_checks_zero']
         for name, pin in seed['source_pins'].items():
-            if name != 'cmake/sycl_backend.cmake':
+            if name != TOOL:
                 assert sha(P / name) == pin, name
-        assert sha(build / 'strata') == seed['binaries']['strata']
+        assert sha(build / 'strata') == seed['production_binary_sha256']
         assert not O.exists()
         O.mkdir()
         record = dict(active=True, passed=False, complete=False, commands=[], GPU_executed=False,
@@ -48,7 +48,7 @@ def main():
             production_binary_sha256=sha(build / 'strata'), control_binary=seed['control_binary'],
             build_byte_budget=4 << 30, performance_qualified=False, quality_qualified=False,
             physical_262144_qualified=False, adopted=False,
-            scope='Standalone row/column descriptor probe only; current product GEMM and native binary unchanged. Same configured compiler/library. No GPU in build/host-only mode.')
+            scope='V2 standalone descriptor probe: validation actual/padded strides; timing actual model ld=N. Product GEMM/native unchanged. Same compiler/library. No GPU in build/host-only mode.')
 
         def persist():
             (O / 'record.json').write_text(json.dumps(record, indent=2) + '\n')
@@ -83,7 +83,7 @@ def main():
         finally:
             record['active'] = False
             persist()
-            (D / 'gemm-orientation-build-v1.json').write_text(json.dumps(record, indent=2) + '\n')
+            (D / 'gemm-orientation-build-v2.json').write_text(json.dumps(record, indent=2) + '\n')
         print(json.dumps(dict(passed=True, GPU_executed=False, binary_sha256=record['binary_sha256'])), flush=True)
 
 
