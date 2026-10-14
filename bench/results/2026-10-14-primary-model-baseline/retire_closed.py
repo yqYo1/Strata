@@ -59,6 +59,10 @@ def main():
                 committed(D / 'cold-jit-evidence.json')
                 paths += [path for name in ('native-maps.txt', 'thread-samples.jsonl', 'engine-stderr-tail.txt')
                           if (path := root / 'owned' / name).exists()]
+            if root.name in {'main-primary-watchdog-short-root-v10', 'main-primary-watchdog-default-short-root-v11'}:
+                committed(D / 'cold-jit-default-evidence.json')
+                paths += [path for name in ('native-maps.txt', 'thread-samples.jsonl', 'engine-stderr-tail.txt')
+                          if (path := root / 'owned' / name).exists()]
             for path in paths:
                 assert path.is_file() and not path.is_symlink()
                 data = path.read_bytes()
@@ -70,7 +74,7 @@ def main():
                     assert len(data) <= 256 << 10
                     continue
                 manifest.append(dict(path=str(path), bytes=len(data), sha256=sha(data),
-                    retained=[entry['path'], 'model-diagnostic-windows.json', 'cold-jit-evidence.json'],
+                    retained=[entry['path'], 'model-diagnostic-windows.json', 'cold-jit-evidence.json', 'cold-jit-default-evidence.json'],
                     reason='closed duplicate full API/build/progress log; exact receipts and compact mechanism evidence committed'))
             for item in index:
                 source = Path(item['original_path'])

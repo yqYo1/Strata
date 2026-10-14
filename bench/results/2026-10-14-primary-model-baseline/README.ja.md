@@ -391,3 +391,14 @@ main/defaultはbeddab2fのままで、parallel/elastic等の既存機能を落�
 累計252ファイル/109794417 logical bytes。実空き容量やsnapshotの解放は推測しない。
 原failed/partial statusを変えず、v7 canaryの代表4605 bytesは引き続き保持する。
 現在のnative buildとmarker v2には次の長文/quiet baseline/host-failure調査consumerがある。
+
+続いてv10/v11のclosed traceと重複receiptも、commit e3616934の証拠を照合して退役した。
+追加53ファイル/5613013 logical bytes、累計305ファイル/115407430 logical bytes。
+v7代表ログは維持し、全原statusは変更しない。現在のsource/ref再監査はe3616934を基点とし、
+local/remote枝2本、worktree2つ、archive mergeのproduct差分なしを再確認した。
+
+[check_stock_accepted_v2.py](check_stock_accepted_v2.py) は、default v11正常終了と同一の
+MMQ fixture/binary/sourceをseedにする次のquiet測定recipe。構文とpinだけを検証し、まだ
+実行していない。旧v1の失敗v7 seedを合格へ変更しない。無変更Niko bench.sh/標準clientを
+使うlong3、全個別chat/prompt/agent成功、fresh read/reuse、両process正常終了とfaultを検査する。
+nominal32Kの実入力数を保存し、strict32768/64K/256Kや長いdecodeへ読み替えない。
