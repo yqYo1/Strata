@@ -131,3 +131,11 @@ context設定256Kと実入力256Kの満杯検証も別であり、後者は未�
 次は同じnativeとclientで標準32K3回、thinking有効agent6turn×3、長い生成2種類×3を
 一つのowned serverで測る。並行test/build/GPU/cleanupを行わず、全個別結果をdurable journalへ
 記録する。この検証境界後にPR#6/Codex元ログと実装の安全性・性能回復へ戻る。
+
+full suiteはsource d7128e42で起動した。[実起動の確認](launch-suite-v4.json)にはnative
+PID588232/start33319654、CPU soft309600/hard309601、thinking有効の実request開始を記録。
+このsnapshotは進行中の観測で、agent完走・3回のMTP分類・終了fault検査を認定しない。
+上流word-count calibrationの2要求だけは従来のthinkingOFF/1生成で、速度集計外。
+`strata_bench.py` helpの旧8K表記とREADME説明中のagent既定240表記はlive clientを変えず
+終了後の表示修正TODOにする。実request/resultの上限はlong16384/agent8192であり、表示文を
+実行設定と見なさない。

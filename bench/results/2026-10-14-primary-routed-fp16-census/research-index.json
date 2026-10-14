@@ -108,6 +108,24 @@
       "sha256": "556496f89bf6f93d6e70c6b4598068e0ce589cb45093a8216dc225729a20ffe1",
       "status": "proposal-only; see Main correction before reuse",
       "direct_canonical_write": true
+    },
+    {
+      "round": 537,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research/research-mtp-decode-ledger-coverage-round537-v1.txt",
+      "sha256": "c8b6e30543160f84a3ce892703a6a523ae2f590abcd9242c2eec9ae6d6f79351",
+      "status": "proposal-only; see Main review before reuse",
+      "direct_canonical_write": true
+    },
+    {
+      "round": 538,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research/research-native-moe-cpu-mtp-implementations-round538-v1.txt",
+      "sha256": "b38c6f8dd9e1a9545a135ad3426d8fa3586fec9dd4481d9e6948fbd9167e45a6",
+      "status": "proposal-only; see Main review before reuse",
+      "direct_canonical_write": true
     }
   ],
   "no_intervention_until_final": true,
@@ -134,7 +152,9 @@
     "R534 ignored-event-wait result can skip actual wait because compat attempt checks sticky Runtime errors before invoking body. This concrete failure path needs error propagation/lease review; no reproduced GPU hang or data race attribution. Affinity proposal leaves it unchanged and is held for review before any parallel-placement GPU test.",
     "R535 payload denominator is 5.320097778 MB/token, not GB/token: 183862579200 / 34560. At1000t/s the conditional requested-payload rate is5.320097778GB/s. Cache arena capacity fraction does not establish hit/byte saving without route coverage. See research-round535-536-review.ja.md.",
     "R536 target no-MTP/actualNT1 assumption is false for canonical screen: engine args explicitly load --mtp rt, spec4, splitOFF, suffix0 and actual offered/accepted counters exist. Archived ledgers reject MTP and actualNT>1; they cannot directly qualify this run. Coverage must use observed verifier dispatch/windows/rows rather than layers times emitted. See research-round535-536-review.ja.md.",
-    "v4 screen is now closed PASS with normal native/server/bench exit0 and fresh fault0; earlier live statements in source reports remain historical. Three-run full suite and thinking-agent runtime validation remain pending."
+    "v4 screen is now closed PASS with normal native/server/bench exit0 and fresh fault0; earlier live statements in source reports remain historical. Three-run full suite and thinking-agent runtime validation remain pending.",
+    "R537 MTP W/R/D/A/C/E and per-layer coverage reviewed against current generate/dispatch source; no observer implemented or runtime qualified. See research-round537-538-review.ja.md.",
+    "R538 fewer distinct experts than workers does not imply empty tasks: current pool splits flattened output rows across18tasks; nb1 gives640GU/2560Downrows. Actual imbalance/overhead requires observation. Q2_0 Down routes via q2_rows_any to AVX2 on this Zen3, not scalar-only. See research-round537-538-review.ja.md."
   ],
   "pending_reports": [],
   "implementation_proposals": [
