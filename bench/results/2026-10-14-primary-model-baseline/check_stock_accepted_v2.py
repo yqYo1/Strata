@@ -7,6 +7,7 @@ import importlib.util
 import json
 import math
 import statistics
+import subprocess
 import re
 from pathlib import Path
 
@@ -53,6 +54,9 @@ def main():
     assert diagnostic['binary_sha256'] == sha(engine)
     assert 'STRATA_WATCHDOG_S' not in diagnostic['environment']
     assert accepted['binaries']['sycl_prefill_mmq_test'] == final['binaries']['sycl_prefill_mmq_test']
+    subprocess.run(['git', '-C', str(U), 'diff', '--exit-code', 'HEAD', '--',
+                    'bench.sh', 'tools/strata_bench.py', 'tools/ab_engine.py',
+                    'tools/agent_turns_bench.py', 'tools/serve_load.py'], check=True)
     assert not O.exists()
     O.mkdir()
     env = dict(final['environment'])
@@ -93,6 +97,8 @@ def main():
     spec.loader.exec_module(module)
     boot = Path('/proc/sys/kernel/random/boot_id').read_text().strip()
     record = dict(active=True, passed=False, complete=False, commands=[], environment=env,
+                  source_revision=subprocess.check_output(['git', '-C', str(P), 'rev-parse', 'HEAD'], text=True).strip(),
+                  source_status_at_launch=subprocess.check_output(['git', '-C', str(P), 'status', '--porcelain'], text=True),
                   engine_args=args, source_pins=final['source_pins'], binary_sha256=sha(engine),
                   recipes={str(f.relative_to(P)): sha(f) for f in [D / 'engine_wrapper_v3.py', D / 'run_server_job_v4.py', D / 'check_stock_accepted_v2.py']},
                   standard_client_source={str(f.relative_to(U)): sha(f) for f in [U / 'bench.sh', U / 'tools/strata_bench.py',
