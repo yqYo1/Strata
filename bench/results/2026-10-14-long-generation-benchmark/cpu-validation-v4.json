@@ -1,0 +1,81 @@
+{
+  "scope": "CPU-only benchmark evidence tests; no native engine/build/GPU run",
+  "started_utc": "2026-10-14T12:09:37.757243+00:00",
+  "passed": true,
+  "commands": [
+    {
+      "argv": [
+        "python3",
+        "tools/test_strata_bench.py"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ".....\n----------------------------------------------------------------------\nRan 5 tests in 0.083s\n\nOK\n"
+    },
+    {
+      "argv": [
+        "python3",
+        "tools/test_benchmark_evidence.py"
+      ],
+      "exit_code": 0,
+      "stdout": "Using the Strata server already running at http://unused.\nRunning the suite (about 3-10 minutes) ...\nUsing the Strata server already running at http://unused.\nRunning the suite (about 3-10 minutes) ...\n",
+      "stderr": "...........\n----------------------------------------------------------------------\nRan 11 tests in 0.163s\n\nOK\n"
+    },
+    {
+      "argv": [
+        "python3",
+        "-m",
+        "py_compile",
+        "tools/strata_bench.py",
+        "tools/long_generation_bench.py",
+        "tools/test_benchmark_evidence.py",
+        "bench/results/2026-10-14-long-generation-benchmark/check_extended.py",
+        "bench/results/2026-10-14-long-generation-benchmark/run_server_job.py"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "sh",
+        "-n",
+        "bench.sh"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "python3",
+        "/home/yayoi/.codex/skills/.system/skill-creator/scripts/quick_validate.py",
+        ".claude/skills/strata-upstream-sync"
+      ],
+      "exit_code": 0,
+      "stdout": "Skill is valid!\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "source_sha256": {
+    "bench.sh": "dc46e2d14ac42fa11cadbfc187c48ee17360631530d3f15172baff60f1fd4cc8",
+    "tools/strata_bench.py": "890379afc3fe033fecc2382682ecb6c658259267e3f91f7eb0bf44fe385810d1",
+    "tools/long_generation_bench.py": "2563031efb923a6e8a937232f0b8f83ef09223a3f4e7aba99fc5b8780913d13a",
+    "tools/test_strata_bench.py": "811b591052ba630f8e2e54fe88631094d139d0f2786a99fd390f9f421f7da2d6",
+    "tools/test_benchmark_evidence.py": "3f7c4a38e99944872a1f5a915123c6992cb643fcf08866e5ec8f0e87c83ae97b",
+    "bench/results/2026-10-14-long-generation-benchmark/check_extended.py": "233ffc0358b35bb8498950325469e4809c12ce5d92a75d3d90349302f5e5d71f",
+    "bench/results/2026-10-14-long-generation-benchmark/run_server_job.py": "af67ae2da5e9d6543224b0fd13ea50b000435db3e014f9a2742c6210d03061ff",
+    ".claude/skills/strata-upstream-sync/references/evaluation.md": "7bdfd221e40678124e8a4a90f74b1c2afea136e5078728d875613ec70a42310d"
+  },
+  "tests_passed": 16
+}

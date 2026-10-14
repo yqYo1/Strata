@@ -5,6 +5,7 @@ import gzip
 import hashlib
 import importlib.util
 import json
+import os
 import re
 import subprocess
 import sys
@@ -29,10 +30,11 @@ def main():
     mode = sys.argv[1]
     assert mode in ['screen', 'suite']
     runs = 1 if mode == 'screen' else 3
-    options = ['--long-generation-only'] if mode == 'screen' else ['--long', '--long-generation']
+    options = ['--long-generation-only', '--think'] if mode == 'screen' else ['--long', '--long-generation', '--think']
     sys.path.insert(0,str(P/'tools'))
-    from long_generation_bench import WORKLOAD_VERSION
-    O = B/('main-primary-long-generation-' + mode + '-root-v' + str(WORKLOAD_VERSION))
+    from long_generation_bench import WORKLOAD_VERSION, TARGET_INPUT_TOKENS, MAX_OUTPUT_TOKENS
+    from strata_bench import verify_request_journal
+    O = B/('main-primary-long-generation-' + mode + '-root-v' + str(WORKLOAD_VERSION) + '-evidence-v2')
     build = json.loads((BUILD/'record.json').read_text())
     gate = json.loads((B/'main-primary-routed-census129-pair-root-v1/record.json').read_text())
     reference_archive=P/'bench/results/2026-10-14-primary-routed-fp16-census/receipts/main-primary-long-routed-reference-root-v3/record.json.gz'
@@ -73,6 +75,10 @@ def main():
                    STRATA_MEASUREMENT_ENGINE_EXIT=str(O/'engine-exit.json'))
         args = reference['engine_args'][:-4]  # remove --tokens-file PATH --max-new 1; server adds --serve
         assert reference['engine_args'][-4] == '--tokens-file' and reference['engine_args'][-2:] == ['--max-new','1']
+        assert int(args[args.index('--max-context')+1]) >= TARGET_INPUT_TOKENS + MAX_OUTPUT_TOKENS + 4096
+        available_cpus = len(os.sched_getaffinity(0))
+        wall_seconds = 9300 if mode == 'screen' else 25800
+        cpu_seconds = wall_seconds * available_cpus
         config = dict(exe=str(WRAPPER), args=args, cwd=str(P),
             tokenizer=str(Path(args[args.index('--pack')+1])/'tokenizer'), model_name='qwen3.8-flash-next-iq3_s-primary',
             aliases=['strata'], host='127.0.0.1', log=str(O/'owned/engine.stderr'),
@@ -91,7 +97,7 @@ def main():
             model_identity=stock['model_identity'],pack_metadata_sha256=stock['pack_metadata_sha256'],
             MTP_metadata_sha256=stock['MTP_metadata_sha256'],
             boot_id=Path('/proc/sys/kernel/random/boot_id').read_text().strip(),
-            limits=dict(wall_seconds=9300 if mode=='screen' else 25800,raw_text_bytes=64<<20,RSS_bytes=88<<30,job_bytes=1<<30),
+            limits=dict(wall_seconds=wall_seconds,cpu_seconds_per_process=cpu_seconds,cpu_affinity=sorted(os.sched_getaffinity(0)),cpu_budget_basis='wall seconds times available CPUs; RLIMIT_CPU aggregates all threads per process',raw_text_bytes=64<<20,RSS_bytes=88<<30,job_bytes=1<<30),
             performance_qualified=False,quality_qualified=False,physical_262144_qualified=False,restore_qualified=False,adopted=False,
             scope='Extended Niko community client; actual long output/MTP screening or full suite, warm server requests in one owned process. No inference change, profiler, reset or service change.')
         def persist():
@@ -109,8 +115,14 @@ def main():
                 ['journalctl','-k','-b','-n','0','--show-cursor','--no-pager'])).group(1)
             record['journal_before_cursor']=cursor
             entry,out,err=owner.run('extended-'+mode,[PY,str(D/'run_server_job.py'),str(O),'extended-bench'],env,P,
-                wall=record['limits']['wall_seconds'],cpu=record['limits']['wall_seconds'],
+                wall=record['limits']['wall_seconds'],cpu=record['limits']['cpu_seconds_per_process'],
                 text_cap=64<<20,rss_cap=88<<30,total_cap=1<<30,file_cap=64<<20)
+            journals = list((O/'stock-results').glob('*/requests.jsonl'))
+            record['request_journals'] = [{"path": str(p.relative_to(O)), "sha256": sha(p),
+                "bytes": p.stat().st_size, "verification": verify_request_journal(p.parent),
+                "state": json.loads((p.parent/'journal-state.json').read_text())
+                    if (p.parent/'journal-state.json').exists() else {"complete": False}}
+                for p in journals]
             paths=list((O/'stock-results').glob('*/results.json'))
             if len(paths)==1:
                 record.update(benchmark_result=json.loads(paths[0].read_text()),benchmark_result_sha256=sha(paths[0]))
@@ -121,6 +133,7 @@ def main():
             assert result['passed'] and result['real_engine_exit']['exit_code']==0
             assert result['real_engine_exit']['binary_sha256']==record['binary_sha256']
             assert len(paths)==1
+            assert len(journals)==1 and record['request_journals'][0]['verification']['valid'] and record['request_journals'][0]['verification']['complete']
             suite=json.loads(paths[0].read_text())
             record.update(benchmark_result=suite,benchmark_result_sha256=sha(paths[0]),result=result)
             gen=suite['results']['long_generation']

@@ -94,6 +94,11 @@ def main():
                 if time.monotonic() >= deadline:
                     raise TimeoutError('primary server readiness')
                 time.sleep(.5)
+        start = json.loads((root/'engine-start.json').read_text())
+        native = start['native']
+        now = identity(native['pid'])
+        assert now['start_ticks'] == native['start_ticks'] and now['sid'] == os.getsid(0)
+        result['native_limits_at_readiness'] = Path('/proc', str(native['pid']), 'limits').read_text()
         result['ready'] = True
         print('primary model: HTTP ready', flush=True)
         if mode == 'diagnostic':
@@ -150,7 +155,7 @@ def main():
             result['commands'].append(argv)
             print('primary model: extended Niko bench.sh ' + ' '.join(plan['benchmark_options']), flush=True)
             with (root / 'owned/bench.stdout').open('wb') as out, (root / 'owned/bench.stderr').open('wb') as err:
-                completed = subprocess.run(argv, cwd=U, stdout=out, stderr=err, timeout=plan['bench_timeout_seconds'])
+                completed = subprocess.run(argv, cwd=P, stdout=out, stderr=err, timeout=plan['bench_timeout_seconds'])
             result['bench_exit_code'] = completed.returncode
             assert completed.returncode == 0, completed.returncode
         else:

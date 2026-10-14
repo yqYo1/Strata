@@ -97,7 +97,7 @@ class BenchmarkTest(unittest.TestCase):
                 patch.object(bench, "chat", side_effect=chat):
             suite.run_agent()
         self.assertEqual(len(snapshots), 6)
-        self.assertEqual(snapshots[1][2], {"role": "assistant", "content": "actual answer 1"})
+        self.assertEqual(snapshots[1][2], {"role": "assistant", "content": "actual answer 1", "reasoning_content": "reasoning"})
         sample = suite.out["agent"]["session_samples"][0]
         self.assertTrue(sample["complete"])
         self.assertEqual(sample["generated_tokens"], 240)
@@ -118,8 +118,9 @@ class BenchmarkTest(unittest.TestCase):
         new = {"machine": {}, "results": {**common, "long_generation": {
             "workload_version": 2, "workloads": {"regular-code": {"decode_tps": metric}}}}}
         table = bench.compare_table(old, new)
-        self.assertNotIn("regular-code long decode", table)
-        self.assertIn("not compared", table)
+        self.assertIn("regular-code long decode", table)
+        self.assertNotIn("+0.0%", table)
+        self.assertIn("not comparable", table)
 
 
 if __name__ == "__main__":

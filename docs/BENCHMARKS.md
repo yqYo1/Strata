@@ -9,24 +9,30 @@ This fork extends `tools/strata_bench.py` and `bench.sh`.
 With a server already running on localhost:
 
 ```sh
-./bench.sh --url http://127.0.0.1:18096 --long --long-generation
+./bench.sh --url http://127.0.0.1:18096 --long --long-generation --think
 ```
 
 The default is three repetitions. This runs the upstream short chat, 4K/16K
 prompts, **agent session and 32K prompt**, then two long-output workloads. It
 takes longer than the original suite. The agent sends six requests per session,
 adding five public project-file excerpts and the model's actual earlier answers.
+With `--think`, each agent turn allows up to 8,192 output tokens and replays
+both actual answer and reasoning; a thinking-only turn remains incomplete.
+Context must allow the full history and output room (59,392 for this condition).
 It offers tool definitions but does not execute tools. Keep per-turn
 read/reused tokens, timings and MTP counters alongside session totals. Cache
 reuse depends on the server configuration; it is measured, not assumed.
 
-The new workloads request approximately 33K input tokens and up to 8,192 output
+The new workloads request approximately 33K input tokens and up to 16,384 output
 tokens. An eligible sample needs **at least 32,768 actual input tokens and
 at least 1,024 actual generated tokens including thinking**, no reused prefix,
-normal SSE completion, engine decode timings and at least 256 offered MTP
-drafts. **Thinking stays enabled**, as in actual use. The v1 pilot spent its
+normal SSE completion and engine decode timings. Agreement eligibility additionally
+requires at least 256 offered MTP drafts; a no-MTP baseline can provide throughput
+while its acceptance ratio stays undefined. **Thinking stays enabled**, as in actual use. The v1 pilot spent its
 entire 1,152-token budget on thought. The v2 thinking-off proposal was withdrawn
-before GPU execution at the user's correction. Workload v3 increases the cap
+before GPU execution at the user's correction. Workload v3 used an 8,192-token cap. Its Japanese request was interrupted
+by the measurement harness CPU limit before completion. Workload v4 allows
+16,384 tokens, explicitly keeps xhigh thinking with no separate thought cap,
 and requires at least 512 characters of actual answer body after thinking;
 this is a body-presence check, not a character-to-token conversion. The total
 completion count still includes thought. If thought again consumes the cap,
@@ -48,14 +54,16 @@ questions; speed attribution needs a matched no-MTP arm.
 For screening the new prompts alone:
 
 ```sh
-./bench.sh --url http://127.0.0.1:18096 --long-generation-only --runs 1
+./bench.sh --url http://127.0.0.1:18096 --long-generation-only --think --runs 1
 ```
 
 One run screens length/counters but cannot confirm the pair. Results contain
 every request, order and hashes, actual generated count, finish reason,
 offered/accepted counts and eligibility reasons. Pooled ratios use summed counts.
-Visible/reasoning stream chunks are not token counts. Full successful response
-traces are unnecessary after these facts are recorded.
+Visible/reasoning stream chunks are not token counts. Each request has a durable start/body hash and compact result in a verified
+JSONL hash chain; interrupted requests remain pending/incomplete. Agent
+statistics use complete six-turn sessions only, while all partial rows remain.
+Full successful response traces are unnecessary after these facts are recorded.
 
 Use the same pinned unmodified Niko client on both engines for existing standard
 results, and the same pinned extended client for added decode tests. Distinguish
@@ -66,6 +74,7 @@ Do not pool the original 24-token decode with this new workload.
 
 ```sh
 python3 tools/test_strata_bench.py
+python3 tools/test_benchmark_evidence.py
 ```
 
 These checks exercise SSE usage including reasoning, invalid/short responses,

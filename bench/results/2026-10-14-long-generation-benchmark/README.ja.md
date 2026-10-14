@@ -4,8 +4,9 @@
 7695859a、依存3clientsは無変更。mainがbench.sh/strata_bench.pyと新しいworkload helperを
 実装し、GPU不要のHTTP/usage/agent-history検査4件を通した。推論sourceは変更していない。
 
-標準suiteは従来どおりagent6turnと32K promptを含む。追加でthinking込みの実生成
-1024..1152 tokens、実入力32768以上のregular-code / constraint-reasoningを測る。
+標準suiteは従来どおりagent6turnと32K promptを含む。当初v1はthinking込みの実生成
+1024..1152 tokensを設定した。現行v4は1024..16384、実入力32768以上の
+regular-code / varied-proseを測る。
 MTP強/弱は仮説で、3回以上・各256以上offered・受理率各60%以上/40%以下の実測が必要。
 生成の数学・code品質やMTPそのものの速度効果はこのspeed suiteから認定しない。
 
@@ -49,3 +50,37 @@ v3のCPU検査5件とskill validationを通し、source76e4bf7eをcommit/push後
 Owner期限9300s、raw text64MiB、RSS88GiB、job1GiB、reset/service変更なし。
 閉じた後に全個別値と元receiptを抽出し、各3回のfull suiteを同じownerで直列に評価する。
 その検証完了後に[next-work](next-work.json)のPR #6・Codex元ログ・安全性点検へ戻る。
+
+## v3終了結果とCPU上限修正
+
+v3は失敗として閉じた。regular-codeは実33214入力/3025生成、PP172.9t/s、TG9.3t/s、
+受理2173/2559=84.916%、本文5578文字、思考3063文字、正常stop/usageあり。
+1回の候補結果でありMTP強弱の分類や速度効果を認定しない。
+varied-proseは思考27138文字、本文0、正常終了/usage/engine clocks/countersがなく失敗。
+client fallback4.9t/sとstream pieces7206は性能/実token数に採用しない。
+[全個別値](screen-v3.json)、[終了診断](screen-v3-stop-diagnostic.json)、元receipt gzipを保存した。
+
+nativeは2320秒程度でexit-24(SIGXCPU)、serverは終了0。owned children全回収/session空、
+fresh fault0、dumpなし、boot不変。原因はMainがRLIMIT_CPUをwallと同じ9300にしたことで、
+この上限は複数threadのCPU時間をprocess内で合計する。GPU障害とは分類しない。
+元FAILED/INCOMPLETEのstatusを変えず、今後はwall×CPU affinity countを有限のprocess上限にする。
+壁時計、RSS、log、artifact期限は維持し、nativeが実際に継承した/proc/PID/limitsも保存する。
+これはsession全体のCPU合計上限ではない。
+
+v4は同じ課題、thinkingON/xhighを明示、出力上限16384、最小実生成1024、本文512文字を使う。
+実際のtokenizer template12827f24のlines58..69で既定xhighを確認した。
+1Kを上限にせず、context262144と約33K入力には思考と本文の余地がある。
+v3と生成枠/明示requestが異なるため同一workloadのengine改善とは比較しない。
+agentの--thinkも各turn8192へ広げ、実際のanswer/reasoningを履歴へ戻し、完走6turnだけ集計する。
+
+Solの[元提案](evidence-proposal-v1/report.md)をMainが閉鎖確認後に適用・レビューし、
+並行pending map、開始時body hash、post-suite failureのterminal記録、journal検証を追加した。
+元提案は未適用だった時点のartifactとして変更せず残す。推論source/binary68daは変更していない。
+新recipeはroot末尾-evidence-v2で旧rootを上書きしない。追加LunaR529/R530の原文とMain判断は
+research-indexへ保存。GPUに介入せずMainは並行実装/検査を続けた。
+
+MainのCPU検査は既存5件+新11件=16件PASS。外部SIGKILLで後続要求を止めても先の測定と
+pending hashが残ること、8並行要求のchainとpending、改ざん拒否、suite後/出力時failureの
+complete=false、実際のthinking/answer履歴、部分sessionの除外、no-MTP speedの区別を確認。
+Python/shell syntaxもPASS。この境界ではv4実モデルscreen/full suiteは未実行。
+PR#6/Codex元ログの性能・安全性回復はbenchmark検証境界の後へ続ける。

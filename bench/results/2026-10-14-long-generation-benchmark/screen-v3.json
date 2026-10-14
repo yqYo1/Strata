@@ -1,0 +1,173 @@
+{
+  "schema": 1,
+  "original_record_sha256": "2c0b5c3a3a196f0305a6fe45d29556dfa2d8aa6104d9d4a6f599ea0f09004947",
+  "source_revision": "76e4bf7ea977533d06275396c4d8da444510c617",
+  "binary_sha256": "68da026294cb9f2e6f4faee0e7c90b276a5f7f1306499f3210fe6744c89294b6",
+  "active": false,
+  "passed": false,
+  "complete": false,
+  "fresh_faults": [],
+  "driver_dump_exists": false,
+  "boot_unchanged": true,
+  "native_exit": -24,
+  "native_signal": "SIGXCPU",
+  "server_exit": 0,
+  "benchmark_exit": 1,
+  "limits": {
+    "wall_seconds": 9300,
+    "raw_text_bytes": 67108864,
+    "RSS_bytes": 94489280512,
+    "job_bytes": 1073741824
+  },
+  "results": {
+    "workload_version": 3,
+    "minimum_generated_tokens": 1024,
+    "max_tokens": 8192,
+    "minimum_body_chars": 512,
+    "minimum_input_tokens": 32768,
+    "target_input_tokens": 33792,
+    "thinking": true,
+    "reasoning_budget_tokens": 0,
+    "temperature": 0,
+    "lifecycle": "warm server; alternating workload order; fresh request prefixes",
+    "order": [
+      {
+        "run": 0,
+        "workload": "regular-code"
+      },
+      {
+        "run": 0,
+        "workload": "varied-prose"
+      }
+    ],
+    "workloads": {
+      "regular-code": {
+        "expected_mtp": "strong",
+        "requests": [
+          {
+            "ok": true,
+            "err": null,
+            "ttft_s": 192.511,
+            "total_s": 517.078,
+            "prompt_tokens": 33214,
+            "reused_tokens": 0,
+            "read_tokens": 33214,
+            "generated_tokens": 3025,
+            "prompt_tps": 172.9,
+            "prompt_tps_source": "engine",
+            "decode_tps": 9.3,
+            "decode_tps_source": "engine",
+            "prompt_ms": 192130.2,
+            "decode_ms": 324713.0,
+            "drafts_offered": 2559,
+            "drafts_accepted": 2173,
+            "finish_reason": "stop",
+            "request_sha256": "cb9ffd14e5da8433503709f303f5e27c16dda36ccc7a6850639b8539ecb56045",
+            "stream_complete": true,
+            "generated_tokens_source": "usage",
+            "eligible": true,
+            "ineligible_reasons": [],
+            "acceptance_rate": 0.8491598280578351,
+            "usage_generated_tokens": 3025,
+            "completion_includes_thinking": true,
+            "run": 0,
+            "order": 0,
+            "output_sha256": "99ceca676fbc02b8d8ba5ba58310339f19d54d2898d5c3ed477eda65220515bf",
+            "reasoning_sha256": "8714490af02b9703714027437b44b8d485f8f834d4f2ec1727af97063d1c10da",
+            "output_chars": 5578,
+            "reasoning_chars": 3063,
+            "reasoning_tokens": null
+          }
+        ],
+        "eligible_runs": 1,
+        "decode_tps": {
+          "median": 9.3,
+          "min": 9.3,
+          "max": 9.3,
+          "n": 1
+        },
+        "generated_tokens": {
+          "median": 3025,
+          "min": 3025,
+          "max": 3025,
+          "n": 1
+        },
+        "acceptance_rate": {
+          "median": 0.849,
+          "min": 0.849,
+          "max": 0.849,
+          "n": 1
+        },
+        "pooled_drafts_offered": 2559,
+        "pooled_drafts_accepted": 2173,
+        "pooled_acceptance_rate": 0.8491598280578351
+      },
+      "varied-prose": {
+        "expected_mtp": "weak",
+        "requests": [
+          {
+            "ok": false,
+            "err": "{'type': 'server_error', 'message': 'the engine stopped unexpectedly (exit code 152); the next request restarts it'}",
+            "ttft_s": 225.087,
+            "total_s": 1685.01,
+            "prompt_tokens": null,
+            "reused_tokens": null,
+            "read_tokens": null,
+            "generated_tokens": 7206,
+            "prompt_tps": null,
+            "prompt_tps_source": null,
+            "decode_tps": 4.9,
+            "decode_tps_source": "client",
+            "prompt_ms": null,
+            "decode_ms": null,
+            "drafts_offered": null,
+            "drafts_accepted": null,
+            "finish_reason": null,
+            "request_sha256": "c922d4f74f72e9916808efd02e15175f4a7c7c094c876cc8247a3454b7ac9f9a",
+            "stream_complete": false,
+            "generated_tokens_source": "stream_pieces",
+            "eligible": false,
+            "ineligible_reasons": [
+              "response did not finish normally",
+              "actual completion usage is outside 1024..8192 tokens",
+              "thinking did not leave at least 512 characters of answer body",
+              "actual input is below 32768 tokens or unreported",
+              "fresh-prefix reuse is nonzero or unreported",
+              "decode_ms is absent or invalid",
+              "engine decode clock is missing",
+              "MTP counters are missing, invalid or below 256 offered drafts"
+            ],
+            "acceptance_rate": null,
+            "usage_generated_tokens": null,
+            "completion_includes_thinking": true,
+            "run": 0,
+            "order": 1,
+            "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "reasoning_sha256": "bc938d87472d477a334a3ae66a9d9495b0f03897a495d1f76af7f9638cfed5aa",
+            "output_chars": 0,
+            "reasoning_chars": 27138,
+            "reasoning_tokens": null
+          }
+        ],
+        "eligible_runs": 0,
+        "decode_tps": null,
+        "generated_tokens": null,
+        "acceptance_rate": null,
+        "pooled_drafts_offered": 0,
+        "pooled_drafts_accepted": 0,
+        "pooled_acceptance_rate": null
+      }
+    },
+    "classification": {
+      "qualified": false,
+      "strong_case_confirmed": false,
+      "weak_case_confirmed": false,
+      "minimum_runs": 3,
+      "strong_min_acceptance": 0.6,
+      "weak_max_acceptance": 0.4,
+      "scope": "Observed draft agreement only; prompts do not guarantee an MTP regime or prove speedup."
+    },
+    "quality_qualified": false
+  },
+  "decision": "Failed screen due inherited aggregate CPU limit. All raw samples retained; varied-prose client-fallback speed is not qualified. One regular-code sample is descriptive only; no pair/speedup/quality adoption."
+}

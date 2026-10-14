@@ -28,21 +28,25 @@ prefill と decode の最良構成が別ならその違いも記録し、両者�
 名前だけで選ばず、どのcheckoutのscript・依存clientを実行したかを固定する。
 両側へ同じ client SHA を使い、対応するサーバーを localhost に別々に起動する。
 上流の実際の help と現行のプロジェクト測定手順を確認する。
-この作業の標準例は `./bench.sh --url http://127.0.0.1:18095 --long --runs 3`。
+この作業の標準例は `./bench.sh --url http://127.0.0.1:18095 --long --think --runs 3`。
 32K項目に加え、標準suiteの **agent sessionも毎回評価する**。全turnの個別値とsession単位の
 完走、入力/read/reuse、生成数、TTFT、decode、draft offered/acceptedを保存し、報告にも含める。
 このagentはモデル自身の返答を次turnへ含めるfile-review会話であり、実際のtool実行ではない。
 
-ユーザー指定の長いdecode評価には、このforkの拡張 `./bench.sh --long --long-generation --runs 3`
+ユーザー指定の長いdecode評価には、このforkの拡張 `./bench.sh --long --long-generation --think --runs 3`
 も両側へ同じclientで使う。Nikoの無変更標準結果と、変更したbenchmarkの追加項目を識別する。
 追加項目は実入力32768以上、thinking込みの実生成1024以上、fresh prefixを確認する。
 regular-codeとvaried-proseはMTPが強い/弱い候補であり、名前だけで分類しない。
 **thinkingは有効にする**。1Kは出力の例で、上限ではない。v1は1152全部がthinkingとなり、
-v2のthinkingOFF案はユーザー意図に合わず未実行で撤回した。v3は規則的code/多様な日本語散文、
-上限8192を使い、thinking後の本文も512文字以上出たことを確認する（文字数をtoken数と呼ばない）。
+v2のthinkingOFF案はユーザー意図に合わず未実行で撤回した。v3は上限8192でscreeningし、計測harnessのCPU上限で日本語要求が中断した。
+v4は上限16384、thinkingON/xhigh、別の思考上限なし、context262144を使う。
+agentもthinkingONで各turn最大8192と実際の思考/回答の履歴を引き継ぐ。
+thinking後の本文も512文字以上出たことを確認する（文字数をtoken数と呼ばない）。
 全量thinkingなら上限/context/課題を見直す。入力と出力余地を確認し、workload版を混ぜない。
 3回以上の有効sample、各回256以上のoffered、受理率の各回60%以上/40%以下で確認する。
 分類が確認できなければ未完了と記録し、速度に基づいて都合の良いpromptを選び直さない。
+要求開始前のbody hashと各結果をdurable journalへ保存し、hash chain/stateを確認する。
+未完了sessionはagent集計へ入れず全個別値を保持する。
 全個別値・request/output hash・終了理由・実生成数・draft countsを残し、比率は合計countsから
 求める。欠けたusageやstream piece数、早期EOSの短文を1K tokenと扱わない。
 1Kは24-token decodeより長い観測窓を得る初期条件であり、安定性を保証する長さではない。

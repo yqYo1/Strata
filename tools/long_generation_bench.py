@@ -4,12 +4,12 @@ from __future__ import annotations
 import math
 
 MIN_OUTPUT_TOKENS = 1024
-MAX_OUTPUT_TOKENS = 8192
+MAX_OUTPUT_TOKENS = 16384
 MIN_BODY_CHARS = 512  # presence/substance check, deliberately not a token-count estimate
 MIN_INPUT_TOKENS = 32768
 TARGET_INPUT_TOKENS = 33792  # calibration is approximate; check actual usage afterwards
 MIN_DRAFTS = 256
-WORKLOAD_VERSION = 3
+WORKLOAD_VERSION = 4
 THINKING = True
 
 WORKLOADS = {
@@ -64,12 +64,14 @@ def sample_eligibility(raw, sample, minimum=MIN_OUTPUT_TOKENS):
             reasons.append(f"{field} is absent or invalid")
     if sample.get("decode_tps_source") != "engine":
         reasons.append("engine decode clock is missing")
+    speed_reasons = list(reasons)
     offered, accepted = sample.get("drafts_offered"), sample.get("drafts_accepted")
     counters_ok = (type(offered) is int and type(accepted) is int and 0 <= accepted <= offered)
     rate = accepted / offered if counters_ok and offered > 0 else None
     if not counters_ok or offered < MIN_DRAFTS:
         reasons.append("MTP counters are missing, invalid or below 256 offered drafts")
-    return {"eligible": not reasons, "ineligible_reasons": reasons, "acceptance_rate": rate,
+    return {"eligible": not reasons, "agreement_eligible": not reasons,
+            "speed_eligible": not speed_reasons, "speed_ineligible_reasons": speed_reasons, "ineligible_reasons": reasons, "acceptance_rate": rate,
             "usage_generated_tokens": generated, "completion_includes_thinking": True}
 
 

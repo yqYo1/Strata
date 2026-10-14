@@ -59,6 +59,7 @@ SCHEMA = 2
 CHAT_MAX_TOKENS = 100
 LONG_MAX_TOKENS = 24
 AGENT_MAX_TOKENS = 64
+AGENT_THINK_MAX_TOKENS = 8192
 AGENT_TURNS = 5
 AGENT_WORDS = 1500
 AGENT_MIN_CONTEXT = 10240      # the last turn of the session holds about 10K tokens
@@ -128,18 +129,27 @@ def try_json(base, path, key="", timeout=20):
         return None
 
 
-def chat(base: str, key: str, messages: list, max_tokens: int, think: bool = False, tools=None, timeout: float = 3600,
-         request_overrides=None) -> dict:
-    """One streamed chat request -> {first, total, text, usage, timings, err}.  `first` is the seconds to the first
-    non-empty content or reasoning piece (keep-alives and empty deltas ignored)."""
+def chat_body(messages, max_tokens, think=False, tools=None, request_overrides=None):
     body = {"model": "strata", "stream": True, "max_tokens": max_tokens, "temperature": 0, "messages": messages}
     if tools:
         body["tools"] = tools
+    if think:
+        body["chat_template_kwargs"] = {"enable_thinking": True, "preserve_thinking": True}
+        body["reasoning_budget_tokens"] = 0
+        body["reasoning_effort"] = "xhigh"
     if not think:
         body["reasoning_effort"] = "none"
         body["chat_template_kwargs"] = {"enable_thinking": False}
     if request_overrides:
         body.update(request_overrides)
+    return body
+
+
+def chat(base: str, key: str, messages: list, max_tokens: int, think: bool = False, tools=None, timeout: float = 3600,
+         request_overrides=None) -> dict:
+    """One streamed chat request -> {first, total, text, usage, timings, err}.  `first` is the seconds to the first
+    non-empty content or reasoning piece (keep-alives and empty deltas ignored)."""
+    body = chat_body(messages, max_tokens, think, tools, request_overrides)
     payload = json.dumps(body).encode()
     req = urllib.request.Request(base + "/v1/chat/completions", data=payload,
                                  headers={"Content-Type": "application/json",
@@ -147,6 +157,7 @@ def chat(base: str, key: str, messages: list, max_tokens: int, think: bool = Fal
     t0 = time.perf_counter()
     first, text, usage, timings, err, pieces = None, [], None, None, None, 0
     reasoning, finish_reason, done_received = [], None, False
+    interrupted = None
     try:
         with urllib.request.urlopen(req, timeout=timeout) as r:
             for raw in r:
@@ -178,6 +189,9 @@ def chat(base: str, key: str, messages: list, max_tokens: int, think: bool = Fal
                     usage = j["usage"]
                 if j.get("timings"):
                     timings = j["timings"]
+    except (KeyboardInterrupt, SystemExit) as e:
+        interrupted = e
+        err = repr(e)[:300]
     except urllib.error.HTTPError as e:
         err = f"HTTP {e.code}: {e.read()[:200]!r}"
     except Exception as e:                              # noqa: BLE001
@@ -185,13 +199,13 @@ def chat(base: str, key: str, messages: list, max_tokens: int, think: bool = Fal
     total = time.perf_counter() - t0
     return {"first": first, "total": total, "text": "".join(text), "usage": usage, "timings": timings, "err": err,
             "pieces": pieces, "reasoning_text": "".join(reasoning), "finish_reason": finish_reason,
-            "done_received": done_received, "request_sha256": hashlib.sha256(payload).hexdigest()}
+            "done_received": done_received, "_interrupted": interrupted, "request_sha256": hashlib.sha256(payload).hexdigest()}
 
 
 def digest(r: dict) -> dict:
     """The numbers of one request, the engine's own where it reported them."""
     u, t = r.get("usage") or {}, r.get("timings") or {}
-    gen = u.get("completion_tokens") or r.get("pieces") or 0
+    gen = u["completion_tokens"] if u.get("completion_tokens") is not None else (r.get("pieces") or 0)
     prompt_tokens = u.get("prompt_tokens")
     cached = (u.get("prompt_tokens_details") or {}).get("cached_tokens")
     if cached is None:
@@ -236,18 +250,153 @@ def pctl(values, p):
     return serve_load.pct(values, p)
 
 
+def agent_turn_complete(d):
+    return (d.get("ok") and d.get("stream_complete") and d.get("generated_tokens_source") == "usage"
+            and type(d.get("generated_tokens")) is int and d["generated_tokens"] > 0
+            and type(d.get("prompt_tokens")) is int and d["prompt_tokens"] > 0
+            and d.get("output_chars", 0) > 0)
+
+
+def agent_complete(turns):
+    return len(turns) == AGENT_TURNS + 1 and all(agent_turn_complete(d) for d in turns)
+
+
+class RequestJournal:
+    """Compact durable rows. An unfinished start/state is incomplete evidence even after SIGKILL."""
+    def __init__(self, directory, red):
+        self.directory, self.red = directory, red
+        self.index, self.previous = 0, None
+        self.lock = threading.RLock()
+        self.pending = {}
+        self.state(complete=False, terminal="running")
+
+    def state(self, **values):
+        with self.lock:
+            data = {"complete": False, "qualified": False, "last_index": self.index - 1,
+                    "last_sha256": self.previous, "pending": list(self.pending.values()), **values}
+            tmp = self.directory / "journal-state.tmp"
+            with tmp.open("w", encoding="utf-8") as f:
+                json.dump(redact_obj(data, self.red), f, ensure_ascii=False)
+                f.write("\n")
+                f.flush()
+                os.fsync(f.fileno())
+            os.replace(tmp, self.directory / "journal-state.json")
+            # Persist the rename and journal's initial directory entry on Linux.
+            if os.name == "posix":
+                fd = os.open(self.directory, os.O_RDONLY)
+                try:
+                    os.fsync(fd)
+                finally:
+                    os.close(fd)
+
+
+    def append(self, kind, phase, run=None, turn=None, **values):
+        with self.lock:
+            row = redact_obj({"index": self.index, "previous_sha256": self.previous,
+                "kind": kind, "phase": phase, "run": run, "turn": turn, **values}, self.red)
+            encoded = json.dumps(row, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+            row["sha256"] = hashlib.sha256(encoded.encode()).hexdigest()
+            with (self.directory / "requests.jsonl").open("a", encoding="utf-8") as f:
+                f.write(json.dumps(row, ensure_ascii=False, sort_keys=True) + "\n")
+                f.flush()
+                os.fsync(f.fileno())
+            self.previous = row["sha256"]
+            self.index += 1
+            if kind == "start":
+                self.pending[row["index"]] = {"request_index": row["index"], "phase": phase, "run": run, "turn": turn,
+                    "request_sha256": row.get("request_sha256")}
+            elif kind in ("result", "interrupted"):
+                self.pending.pop(values.get("request_index"), None)
+            self.state(terminal="running")
+            return row["index"]
+
+
+def verify_request_journal(directory):
+    """Verify the durable complete prefix and state. A truncated/stale journal is incomplete."""
+    directory = Path(directory)
+    previous, pending, rows, errors = None, {}, [], []
+    try:
+        for line in (directory / "requests.jsonl").read_text().splitlines():
+            row = json.loads(line)
+            digest = row.pop("sha256")
+            canonical = json.dumps(row, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+            if (row["index"] != len(rows) or row["previous_sha256"] != previous or
+                    hashlib.sha256(canonical.encode()).hexdigest() != digest):
+                raise ValueError("journal index/hash chain mismatch")
+            if row["kind"] == "start":
+                pending[row["index"]] = {"request_index": row["index"], "phase": row["phase"],
+                    "run": row["run"], "turn": row["turn"], "request_sha256": row.get("request_sha256")}
+            elif row["kind"] in ("result", "interrupted"):
+                request_index = row["request_index"]
+                if request_index not in pending:
+                    raise ValueError("terminal row has no pending request")
+                start = pending.pop(request_index)
+                if any(row[k] != start[k] for k in ("phase", "run", "turn")):
+                    raise ValueError("terminal request identity mismatch")
+            previous = digest
+            row["sha256"] = digest
+            rows.append(row)
+    except (OSError, ValueError, KeyError, TypeError) as error:
+        errors.append(repr(error))
+    state = {}
+    try:
+        state = json.loads((directory / "journal-state.json").read_text())
+        if (state["last_index"] != len(rows)-1 or state["last_sha256"] != previous or
+                state["pending"] != list(pending.values())):
+            raise ValueError("journal state/head/pending mismatch")
+        if state["complete"] and (pending or state["terminal"] != "complete"):
+            raise ValueError("complete state has unfinished work")
+    except (OSError, ValueError, KeyError, TypeError) as error:
+        errors.append(repr(error))
+    return {"valid": not errors, "complete": not errors and state.get("complete", False),
+            "complete_prefix_rows": len(rows), "last_sha256": previous,
+            "pending": list(pending.values()), "errors": errors}
+
+
+def client_fingerprint():
+    return {name: hashlib.sha256((ROOT / name).read_bytes()).hexdigest() for name in
+            ("tools/strata_bench.py", "tools/long_generation_bench.py", "tools/ab_engine.py",
+             "tools/agent_turns_bench.py", "tools/serve_load.py")}
+
+
 # ---------------------------------------------------------------------------------------------------- the suite
 class Suite:
     def __init__(self, base, key, ctx, runs, think, log=print, want_clients=0, want_long=False, quick=False,
-                 want_long_generation=False, long_generation_only=False):
+                 want_long_generation=False, long_generation_only=False, journal=None):
         self.base, self.key, self.ctx, self.runs, self.think, self.log = base, key, ctx, runs, think, log
         self.clients, self.want_long = want_clients, want_long
         self.quick = quick
         self.want_long_generation = want_long_generation
         self.long_generation_only = long_generation_only
+        self.journal = journal
         self.nonce = str(int(time.time()))
         self.tokens_per_word, self.overhead = 1.1, 40
         self.out: dict = {"chat": {}, "prompts": {}, "agent": {}, "clients": {}, "skipped": {}, "failures": []}
+
+    def request(self, phase, run, turn, messages, max_tokens, think=False, **kwargs):
+        request_index = None
+        if self.journal:
+            payload = json.dumps(chat_body(messages, max_tokens, think, kwargs.get("tools"),
+                                           kwargs.get("request_overrides"))).encode()
+            request_index = self.journal.append("start", phase, run, turn,
+                request_sha256=hashlib.sha256(payload).hexdigest(), max_tokens=max_tokens, thinking=think)
+        try:
+            raw = chat(self.base, self.key, messages, max_tokens, think, **kwargs)
+        except BaseException as error:
+            if self.journal:
+                self.journal.append("interrupted", phase, run, turn, request_index=request_index, error=repr(error)[:300])
+            raise
+        row = digest(raw)
+        row.update(output_chars=len(raw["text"]), reasoning_chars=len(raw["reasoning_text"]),
+                   output_sha256=hashlib.sha256(raw["text"].encode()).hexdigest(),
+                   reasoning_sha256=hashlib.sha256(raw["reasoning_text"].encode()).hexdigest())
+        if phase.startswith("long-generation/"):
+            row.update(long_generation.sample_eligibility(raw, row))
+        if self.journal:
+            self.journal.append("result", phase, run, turn, request_index=request_index, sample=row)
+        if raw.get("_interrupted") is not None:
+            raise raw["_interrupted"]
+        return raw
 
     def run_long_generation(self):
         lg = long_generation
@@ -271,7 +420,7 @@ class Suite:
                              "irrelevant reference data. Do not summarize it. Complete the task in detail."},
                             {"role": "user", "content": f"[long-generation-v{lg.WORKLOAD_VERSION} {name} run {run}]\n"
                              f"<background>\n{filler}\n</background>\n\nTask:\n{lg.WORKLOADS[name]['instruction']}"}]
-                raw = chat(self.base, self.key, messages, lg.MAX_OUTPUT_TOKENS, lg.THINKING,
+                raw = self.request("long-generation/" + name, run, None, messages, lg.MAX_OUTPUT_TOKENS, lg.THINKING,
                            request_overrides={"chat_template_kwargs": {"enable_thinking": lg.THINKING},
                                               "reasoning_budget_tokens": 0})
                 d = digest(raw)
@@ -290,9 +439,11 @@ class Suite:
                     self.out["failures"].append({"where": f"long-generation/{name}/{run}", "error": reason})
         for case in cases.values():
             good = [r for r in case["requests"] if r["eligible"]]
+            speed = [r for r in case["requests"] if r["speed_eligible"]]
             offered = sum(r["drafts_offered"] for r in good)
             accepted = sum(r["drafts_accepted"] for r in good)
-            case.update(eligible_runs=len(good), decode_tps=stat(r["decode_tps"] for r in good),
+            case.update(eligible_runs=len(good), speed_eligible_runs=len(speed),
+                        decode_tps=stat(r["decode_tps"] for r in speed),
                         generated_tokens=stat(r["usage_generated_tokens"] for r in good),
                         acceptance_rate=stat(r["acceptance_rate"] for r in good),
                         pooled_drafts_offered=offered, pooled_drafts_accepted=accepted,
@@ -318,7 +469,7 @@ class Suite:
         slope, so the template's fixed part does not skew it."""
         pts = []
         for words in (200, 800):
-            r = digest(chat(self.base, self.key, [{"role": "user", "content": f"[{self.tag('cal', words)}]\n" + long_prompt(words)}], 1))
+            r = digest(self.request("calibration", words, None, [{"role": "user", "content": f"[{self.tag('cal', words)}]\n" + long_prompt(words)}], 1))
             pts.append(r.get("prompt_tokens"))
         slope = (pts[1] - pts[0]) / 600 if all(pts) and pts[1] > pts[0] else None
         self.tokens_per_word = slope or 1.1
@@ -331,16 +482,16 @@ class Suite:
 
     def warm_up(self):
         self.log("warming up (not measured) ...")
-        chat(self.base, self.key, [{"role": "user", "content": PROMPTS[0]}], 24, self.think)
+        self.request("warm-up/chat", None, None, [{"role": "user", "content": PROMPTS[0]}], 24, self.think)
         self.calibrate()
-        chat(self.base, self.key, self.prompt_for(1024, -1), 8, self.think)
+        self.request("warm-up/prompt", None, None, self.prompt_for(1024, -1), 8, self.think)
 
     def run_chat(self):
         self.log(f"chat: {len(PROMPTS)} short questions x {self.runs} runs, up to {CHAT_MAX_TOKENS} new tokens")
         rows = []
         for run in range(self.runs):
             for i, p in enumerate(PROMPTS):
-                d = digest(chat(self.base, self.key, [{"role": "user", "content": f"[{self.tag(run, i, 'c')}] {p}"}],
+                d = digest(self.request("chat", run, i, [{"role": "user", "content": f"[{self.tag(run, i, 'c')}] {p}"}],
                                 CHAT_MAX_TOKENS, self.think))
                 d.update(run=run, prompt=i)
                 rows.append(d)
@@ -362,7 +513,7 @@ class Suite:
         self.log(f"{label} prompt: {self.runs} fresh prompts of about {tokens} tokens, {LONG_MAX_TOKENS} new tokens")
         rows = []
         for run in range(self.runs):
-            d = digest(chat(self.base, self.key, self.prompt_for(tokens, run), LONG_MAX_TOKENS, self.think))
+            d = digest(self.request("prompt/" + label, run, None, self.prompt_for(tokens, run), LONG_MAX_TOKENS, self.think))
             d["run"] = run
             rows.append(d)
             if not d["ok"]:
@@ -403,20 +554,26 @@ class Suite:
             if t > 0:
                 rel, body = files[t - 1]
                 msgs.append({"role": "user", "content": f"File {rel}:\n{body}\n\nWhat is this file for? Two sentences."})
-            r = chat(self.base, self.key, msgs, AGENT_MAX_TOKENS, self.think, tools=TOOLS)
+            r = self.request("agent", run, t, msgs,
+                             AGENT_THINK_MAX_TOKENS if self.think else AGENT_MAX_TOKENS,
+                             self.think, tools=TOOLS)
             d = digest(r)
-            d.update(run=run, turn=t)
+            d.update(run=run, turn=t, output_chars=len(r["text"]), reasoning_chars=len(r["reasoning_text"]),
+                     output_sha256=hashlib.sha256(r["text"].encode()).hexdigest(),
+                     reasoning_sha256=hashlib.sha256(r["reasoning_text"].encode()).hexdigest())
             turns.append(d)
-            if not d["ok"]:
+            if not agent_turn_complete(d):
+                d["err"] = d.get("err") or "incomplete turn or missing answer body/usage"
                 self.fail("agent", d)
                 break
-            msgs.append({"role": "assistant", "content": r["text"] or "Understood."})
+            msgs.append({"role": "assistant", "content": r["text"], "reasoning_content": r["reasoning_text"]})
         return turns
 
     def run_agent(self):
-        if self.ctx and self.ctx < AGENT_MIN_CONTEXT:
-            self.out["skipped"]["agent"] = f"context {self.ctx} is below ~10K"
-            self.log(f"agent: skipped: context {self.ctx} is below ~10K")
+        required = AGENT_MIN_CONTEXT + (AGENT_THINK_MAX_TOKENS * (AGENT_TURNS + 1) if self.think else 0)
+        if self.ctx and self.ctx < required:
+            self.out["skipped"]["agent"] = f"context {self.ctx} is below {required} including thinking/history/output room"
+            self.log(f"agent: skipped: context {self.ctx} is below {required}")
             return
         self.log(f"agent: a session of {AGENT_TURNS + 1} turns with four tools, x {self.runs} runs")
         sessions = []
@@ -427,13 +584,13 @@ class Suite:
                 if d["ok"]:
                     self.log(f"  run {run + 1} turn {d['turn']}: prompt {d['prompt_tokens']}, reused {d['reused_tokens']}, "
                              f"read {d['read_tokens']}, first token {d['ttft_s']} s")
-        follow = [[d for d in s if d["ok"] and d["turn"] > 0] for s in sessions]
+        complete_sessions = [s for s in sessions if agent_complete(s)]
+        follow = [[d for d in s if d["turn"] > 0] for s in complete_sessions]
         hit = [sum(d["reused_tokens"] or 0 for d in s) / max(1, sum(d["prompt_tokens"] or 0 for d in s)) * 100
                for s in follow if s]
         # earlier conversation read again: what the previous turn held (prompt + its reply) minus what this turn reused
         reread, fresh = [], []
-        for s in sessions:
-            s = [d for d in s if d["ok"]]
+        for s in complete_sessions:
             reread.append(sum(max(0, (p["prompt_tokens"] or 0) + (p["generated_tokens"] or 0) - (d["reused_tokens"] or 0))
                               for p, d in zip(s, s[1:])))
             fresh.append(sum(d["read_tokens"] or 0 for d in s[1:]) - reread[-1])
@@ -441,23 +598,28 @@ class Suite:
                              "turn_ttft_s": stat(d["ttft_s"] for s in follow for d in s),
                              "last_turn_prompt_tokens": stat(s[-1]["prompt_tokens"] for s in follow if s),
                              "turn_decode_tps": stat(d["decode_tps"] for s in follow for d in s),
-                             "first_turn_ttft_s": stat(s[0]["ttft_s"] for s in sessions if s and s[0]["ok"])}
+                             "first_turn_ttft_s": stat(s[0]["ttft_s"] for s in complete_sessions)}
         session_samples = []
         for run, turns in enumerate(sessions):
             offered = [d["drafts_offered"] for d in turns]
             accepted = [d["drafts_accepted"] for d in turns]
-            has_counts = all(type(x) is int for x in offered + accepted)
+            has_counts = all(type(o) is int and type(a) is int and 0 <= a <= o
+                             for o, a in zip(offered, accepted))
             offer_sum = sum(offered) if has_counts else None
             accept_sum = sum(accepted) if has_counts else None
             session_samples.append({"run": run, "completed_turns": len(turns),
-                "complete": len(turns) == AGENT_TURNS + 1 and all(d["ok"] and d["stream_complete"]
-                    and d["generated_tokens_source"] == "usage" for d in turns),
+                "complete": agent_complete(turns),
                 "generated_tokens": sum(d["generated_tokens"] for d in turns),
                 "read_tokens": sum(d["read_tokens"] or 0 for d in turns),
                 "reused_tokens": sum(d["reused_tokens"] or 0 for d in turns),
                 "drafts_offered": offer_sum, "drafts_accepted": accept_sum,
                 "acceptance_rate": accept_sum / offer_sum if offer_sum else None})
-        self.out["agent"]["session_samples"] = session_samples
+        self.out["agent"].update(session_samples=session_samples,
+            complete_sessions=len(complete_sessions),
+            partial_sessions=sum(bool(s) and not agent_complete(s) for s in sessions),
+            failed_sessions=sum(not s or any(not agent_turn_complete(d) for d in s) for s in sessions),
+            thinking=self.think, max_tokens=AGENT_THINK_MAX_TOKENS if self.think else AGENT_MAX_TOKENS,
+            scope="Six actual sequential turns; body and reasoning replayed; complete sessions only in summaries")
 
     def run_clients(self, n: int):
         self.log(f"concurrency: {n} requests at once x {self.runs} rounds, {BURST_MAX_TOKENS} new tokens each")
@@ -467,8 +629,23 @@ class Suite:
             th = []
             t0 = time.perf_counter()
             for i in range(n):
-                t = threading.Thread(target=serve_load.one, args=(self.base, self.key, "strata", i, 400, BURST_MAX_TOKENS, res, {},
-                                                                 self.think, f" {self.tag('b', n, rd)}"))
+                def worker(index=i):
+                    request_index = self.journal.append("start", "clients", rd, index) if self.journal else None
+                    try:
+                        serve_load.one(self.base, self.key, "strata", index, 400, BURST_MAX_TOKENS,
+                                       res, {"chat_template_kwargs": {"enable_thinking": True},
+                                             "reasoning_budget_tokens": 0} if self.think else {},
+                                       self.think, f" {self.tag('b', n, rd)}")
+                        r = res[index]
+                        sample = {k: v for k, v in r.items() if k != "text"}
+                        sample["output_sha256"] = hashlib.sha256(r["text"].encode()).hexdigest()
+                        if self.journal:
+                            self.journal.append("result", "clients", rd, index, request_index=request_index, sample=sample)
+                    except BaseException as error:
+                        if self.journal:
+                            self.journal.append("interrupted", "clients", rd, index, request_index=request_index, error=repr(error)[:300])
+                        res[index] = {"first": None, "tokens": 0, "total": 0, "text": "", "err": repr(error)[:300]}
+                t = threading.Thread(target=worker)
                 t.start()
                 th.append(t)
             for t in th:
@@ -810,9 +987,9 @@ def results_table(out: dict) -> list[str]:
                          (v.get("ttft_s") or {}).get("n", 0), fmt(v.get("prompt_tps")), "not measured", fmt(v.get("ttft_s"), 2)))
     a = out["agent"]
     if a:
-        n = len([s for s in a["sessions"] if len(s) > 1])
+        n = a.get("complete_sessions", sum(x.get("complete", False) for x in a.get("session_samples", [])))
         lines.append(row("agent session, follow-up turns", fmt(a.get("last_turn_prompt_tokens"), 0) + " at the last turn",
-                         "see below", f"up to {AGENT_MAX_TOKENS}", n, "see below", fmt(a.get("turn_decode_tps")),
+                         "see below", f"up to {a.get('max_tokens', AGENT_MAX_TOKENS)}", n, "see below", fmt(a.get("turn_decode_tps")),
                          fmt(a.get("turn_ttft_s"), 2)))
     return lines
 
@@ -863,6 +1040,9 @@ def render_readme(res: dict) -> str:
     ag = out["agent"]
     if ag and ag.get("sessions"):
         L += ["", "### Agent session (conversation cache)", "",
+              f"Complete sessions: {ag.get('complete_sessions', 0)}; partial: {ag.get('partial_sessions', 0)}; "
+              f"failed: {ag.get('failed_sessions', 0)}. Thinking: {ag.get('thinking')}; "
+              f"output cap: {ag.get('max_tokens', AGENT_MAX_TOKENS)}. Statistics use complete six-turn sessions. "
               f"Cache hit over the follow-up turns: {fmt(ag.get('hit_pct'), 1, ' %')}; earlier-turn tokens read again per session: "
               f"{fmt(ag.get('reread_tokens'), 0)} (earlier turns that the cache did not hold; the {fmt(ag.get('new_tokens'), 0)} new tokens of the files are read once); first turn (nothing cached) first token: {fmt(ag.get('first_turn_ttft_s'), 2, ' s')}.", "",
               "| Turn (run 1) | Prompt tokens | Reused | Read | Prompt tok/s | First token (s) | Decode tok/s |", "| ---: | ---: | ---: | ---: | ---: | ---: | ---: |"]
@@ -879,15 +1059,17 @@ def render_readme(res: dict) -> str:
               f"At least {gen.get('minimum_body_chars', 0)} characters of answer body must appear after thinking. "
               f"Thinking is explicitly {gen['thinking']}; reasoning_budget_tokens=0; temperature=0. "
               "Workloads alternate order in one warm server. Early stops, absent usage/engine clocks and insufficient "
-              "draft counts remain recorded and are ineligible.", "",
-              "| Workload | Run | Generated | Decode tok/s | Accepted / offered | Acceptance | Eligible |",
-              "| --- | ---: | ---: | ---: | --- | ---: | --- |"]
+              "draft counts remain recorded. Speed eligibility uses normal generation/usage/body/clock gates; "
+              "agreement eligibility additionally requires valid draft counts. Zero-offer generations can have "
+              "throughput but have undefined agreement.", "",
+              "| Workload | Run | Generated | Decode tok/s | Accepted / offered | Acceptance | Speed eligible | Agreement eligible |",
+              "| --- | ---: | ---: | ---: | --- | ---: | --- | --- |"]
         for name, case in gen["workloads"].items():
             for row in case["requests"]:
                 rate = row["acceptance_rate"]
                 rate_text = "unreported" if rate is None else f"{rate:.1%}"
                 L.append(f"| {name} | {row['run']} | {row['usage_generated_tokens']} | {row['decode_tps']} | "
-                         f"{row['drafts_accepted']} / {row['drafts_offered']} | {rate_text} | {row['eligible']} |")
+                         f"{row['drafts_accepted']} / {row['drafts_offered']} | {rate_text} | {row['speed_eligible']} | {row['eligible']} |")
         L += ["", f"Strong/weak MTP pair confirmed: {gen['classification']['qualified']}. "
               "Requires at least three eligible runs per workload, regular-code acceptance >=60% in each, "
               "varied-prose <=40% in each. Unconfirmed prompts remain candidates. "
@@ -912,25 +1094,30 @@ def render_readme(res: dict) -> str:
 def compare_table(old: dict, new: dict) -> str:
     a, b = summary_metrics(old["results"]), summary_metrics(new["results"])
     go, gn = old["results"].get("long_generation"), new["results"].get("long_generation")
-    different_workload = bool(go and gn and any(go.get(k) != gn.get(k) for k in
-        ("workload_version", "thinking", "temperature", "minimum_input_tokens", "max_tokens")))
-    if different_workload:
-        for table in (a, b):
-            for name in list(table):
-                if "long decode" in name or "MTP acceptance" in name:
-                    del table[name]
+    io, inn = old.get("comparison_identity"), new.get("comparison_identity")
+    differences = [k for k in set(io or {}) | set(inn or {}) if (io or {}).get(k) != (inn or {}).get(k)]
+    compatible = bool(io and inn and not differences and old.get("complete") and new.get("complete"))
+    if not io or not inn:
+        differences.append("missing client/workload identity")
+    if not old.get("complete") or not new.get("complete"):
+        differences.append("incomplete result")
+    different_workload = not compatible
     rows = [f"{'':32s} {'old':>12s} {'new':>12s} {'change':>9s}"]
     for k in dict.fromkeys([*a, *b]):
         x, y = (a.get(k) or {}).get("median"), (b.get(k) or {}).get("median")
         if x is None and y is None:
             continue
-        ch = f"{(y - x) / x * 100:+.1f}%" if x and y is not None else ""
+        metric_compatible = compatible
+        if "long decode" in k or "MTP acceptance" in k:
+            metric_compatible = compatible and bool(go and gn) and all(
+                c.get("eligible_runs", 0) >= 3 for g in (go, gn) for c in g["workloads"].values())
+        ch = f"{(y - x) / x * 100:+.1f}%" if metric_compatible and x and y is not None else ""
         rows.append(f"{k:32s} {('-' if x is None else format(x, '.2f')):>12s} {('-' if y is None else format(y, '.2f')):>12s} {ch:>9s}")
     ho, hn = old["machine"], new["machine"]
     notes = [f"  {n}: {ho.get(f)} -> {hn.get(f)}" for n, f in (("GPU", "gpu"), ("engine", "engine_version"), ("model", "model"), ("quant", "quant"),
                                                               ("context", "context")) if ho.get(f) != hn.get(f)]
     if different_workload:
-        notes.append("  long-generation workload/settings differ: those rates are not compared")
+        notes.append("  not comparable: " + ", ".join(sorted(differences)) + "; descriptive values only")
     return "\n".join(rows + (["", "differences:"] + notes if notes else []))
 
 
@@ -950,9 +1137,9 @@ def short_table(res: dict) -> str:
     return "\n".join(lines)
 
 
-def write_results(res: dict, parent: Path, red, log_lines: list[str]) -> Path:
-    d = unique_dir(parent, results_dir_name(res["machine"], res["date"]))
-    d.mkdir(parents=True)
+def write_results(res: dict, parent: Path, red, log_lines: list[str], directory=None) -> Path:
+    d = directory or unique_dir(parent, results_dir_name(res["machine"], res["date"]))
+    d.mkdir(parents=True, exist_ok=directory is not None)
     clean = redact_obj(res, red)
     (d / "results.json").write_text(json.dumps(clean, indent=1, ensure_ascii=False), encoding="utf-8")
     (d / "README.md").write_text(red(render_readme(res)), encoding="utf-8")
@@ -1034,29 +1221,52 @@ def main(argv=None) -> int:
                 return 1
         t0 = time.time()
         pre = collect_machine(base, key, cfg)
+        parent = Path(a.out) if a.out else ROOT / "bench" / "results"
+        directory = unique_dir(parent, results_dir_name(pre, datetime.date.today().isoformat()))
+        directory.mkdir(parents=True)
+        journal = RequestJournal(directory, red)
+        journal.append("identity", "suite", source=client_fingerprint(),
+                       model=pre.get("model"), quant=pre.get("quant"), context=pre.get("context"),
+                       thinking=a.think, long_generation_thinking=long_generation.THINKING,
+                       workload_version=long_generation.WORKLOAD_VERSION, requested_runs=max(1, a.runs))
         suite = Suite(base, key, pre.get("context"), max(1, a.runs), a.think, log=say, want_clients=a.clients, want_long=a.long,
                       want_long_generation=a.long_generation or a.long_generation_only,
-                      long_generation_only=a.long_generation_only)
+                      long_generation_only=a.long_generation_only, journal=journal)
         slots = pre.get("parallel_slots") or 1
         if a.clients and a.clients > slots:
             say(f"Note: the server runs {slots} request(s) at a time (--batch), so {a.clients} clients will partly wait their turn.")
         say("Running the suite (long generation may take much longer than the standard suite) ..."
             if suite.want_long_generation else "Running the suite (about 3-10 minutes) ...")
-        out = suite.run()
-        machine = collect_machine(base, key, cfg)             # again: VRAM and the cache after the work
-        if not machine.get("gpu"):
-            machine["gpu"] = pre.get("gpu")
-        res = {"schema": SCHEMA, "tool": "tools/strata_bench.py", "date": datetime.date.today().isoformat(),
-               "params": {"runs": suite.runs, "think": a.think, "clients": a.clients, "long": a.long, "started_server": started,
-                          "long_generation": suite.want_long_generation, "long_generation_only": a.long_generation_only,
-                          "command": "python tools/strata_bench.py" + "".join(
-                              f" {x}" for x in (f"--clients {a.clients}" if a.clients else "", "--long" if a.long else "",
-                                                "--think" if a.think else "", f"--runs {a.runs}" if a.runs != 3 else "",
-                                                "--long-generation-only" if a.long_generation_only else
-                                                "--long-generation" if a.long_generation else "") if x)},
-               "elapsed_s": time.time() - t0, "machine": machine, "results": out}
-        parent = Path(a.out) if a.out else ROOT / "bench" / "results"
-        d = write_results(res, parent, red, log_excerpt(log_path) if log_path else [])
+        try:
+            out = suite.run()
+            machine = collect_machine(base, key, cfg)             # again: VRAM and the cache after the work
+            if not machine.get("gpu"):
+                machine["gpu"] = pre.get("gpu")
+            res = {"schema": SCHEMA, "tool": "tools/strata_bench.py", "date": datetime.date.today().isoformat(),
+                   "params": {"runs": suite.runs, "think": a.think, "clients": a.clients, "long": a.long, "started_server": started,
+                              "long_generation": suite.want_long_generation, "long_generation_only": a.long_generation_only,
+                              "command": "python tools/strata_bench.py" + "".join(
+                                  f" {x}" for x in (f"--clients {a.clients}" if a.clients else "", "--long" if a.long else "",
+                                                    "--think" if a.think else "", f"--runs {a.runs}" if a.runs != 3 else "",
+                                                    "--long-generation-only" if a.long_generation_only else
+                                                    "--long-generation" if a.long_generation else "") if x)},
+                   "elapsed_s": time.time() - t0, "machine": machine, "results": out,
+                   "comparison_identity": {"client": client_fingerprint(), "thinking": a.think,
+                       "reasoning_budget_tokens": 0, "temperature": 0, "model": machine.get("model"),
+                       "quant": machine.get("quant"), "context": machine.get("context"),
+                       "long_generation_version": long_generation.WORKLOAD_VERSION,
+                       "long_generation_thinking": long_generation.THINKING,
+                       "long_generation_instructions": long_generation.WORKLOADS,
+                       "calibration": [suite.tokens_per_word, suite.overhead],
+                       "agent_files": [(n, hashlib.sha256(v.encode()).hexdigest()) for n, v in suite.agent_files()],
+                       "agent_max_tokens": AGENT_THINK_MAX_TOKENS if a.think else AGENT_MAX_TOKENS},
+                   "complete": True}
+            parent = Path(a.out) if a.out else ROOT / "bench" / "results"
+            d = write_results(res, parent, red, log_excerpt(log_path) if log_path else [], directory=directory)
+            journal.state(complete=True, terminal="complete", qualified=False)
+        except BaseException as error:
+            journal.state(terminal="interrupted", complete=False, error=repr(error)[:300])
+            raise
         say("\nResults (median, range over the runs):")
         say(red(short_table(res)))
         if out["failures"] or out["skipped"]:
