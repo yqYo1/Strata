@@ -150,3 +150,10 @@ GPU reset、unbind、service変更は行っていない。embed serviceは停止
 成功全文・poll・重複researchはcommit検証後にexclusive lockでretireし、path/hash/reasonを残す。
 旧source/buildと現gate receiptは[名前付きconsumer](retention-plan.json)が使うため保持する。
 再開はこのGitレポートから行い、外部checkpointを作らない。
+
+evidence commit `53823bb9` を検証後、closed成功ログ・重複JSON・完了research原文を
+42 files、427,017 logical bytes退去した。[削除manifest](deletion-manifest.jsonl)、
+[集計](retirement.json)。実空き容量の増加とは同一視しない。
+`close_evidence.py`はrun-close時の抽出recipeで、退去後のraw filesを要求して再実行しない。
+再開時はGit内のreceipt/index・個別値を使う。モデル実行のgateで使うshortのraw record、
+旧source/buildは保持し、元の成功/未完了/不採用の状態を変更していない。
