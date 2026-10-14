@@ -16,9 +16,9 @@ WORKLOADS = {
     "regular-code": {
         "expected_mtp": "strong",
         "instruction": (
-            "Write a complete Python module containing 180 small unit tests for an integer identity function. "
+            "Write a complete Python module containing 80 small unit tests for an integer identity function. "
             "Start with import unittest and def identity(value): return value. Then define class "
-            "TestIdentity(unittest.TestCase). Write a separate test_000 through test_179 method, in order, "
+            "TestIdentity(unittest.TestCase). Write a separate test_000 through test_079 method, in order, "
             "each with self.assertEqual(identity(N), N), where N is that method's index. "
             "Use the same formatting for every method. Include every method explicitly; do not use loops, "
             "ellipsis or a summary. Finish with the usual unittest.main guard. "
@@ -28,7 +28,7 @@ WORKLOADS = {
     "varied-prose": {
         "expected_mtp": "weak",
         "instruction": (
-            "日本語で6000字以上の独創的な短編小説を最初から最後まで詳しく書いてください。"
+            "日本語で4000字以上の独創的な短編小説を最初から最後まで詳しく書いてください。"
             "架空の港町『玻璃坂』では、住民の記憶が一日だけ潮汐で交換されます。"
             "時計師の澪、耳の聞こえない測量士の朔、移住してきた植物学者の凪の三人が、"
             "町の古い地図に存在しない防波堤をそれぞれ違う目的で探しています。"
