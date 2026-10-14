@@ -106,3 +106,10 @@ KV streaming/ring restoreの対象検査も通った。対応外poolの拒否と
 現在の同じbinary・4096 chunk・stock32K clientでMMQだけ無効化した結果は、
 PP182.2/175.3/170.1、decode2.8/3.7/2.5 t/s。PP中央値+47.93%だがdecodeは悪化方向。
 製品既定へは未採用。旧450の回復、現在の実262144入力・RESTORE、品質の合格とは区別する。
+
+[旧実装の本家client比較](../2026-10-14-pre-Xe-model-compare/README.ja.md)では、
+元公開メッセージ364件とprefix hashを再確認し、旧1ebも同じstock client・actual32049入力・
+24出力・chunk4096/split OFFで完走した。PP341.5/343.8/347.5、decode7.3/4.1/2.8 t/s、
+正常終了・fault0。source/toolchainが異なるため部品単独の原因は未確定。
+過去のRAM36.87 GB/s、H2D6.447 GB/s、GPU shape別GEMM等も元のGit測定へ照合した。
+未選択の旧実装を比較へ戻し、ハードウェア測定済みの事項を未測定として繰り返さない。
