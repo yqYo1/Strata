@@ -218,6 +218,14 @@
       "path": "research-gemm-memory-divergence-round583-v1.txt",
       "sha256": "6028504c973bb9138b835bcddeebcf4b6c3242a3748071ba5d22d0d9b03959e2",
       "status": "FINAL received; Main corrections in boundary-service-main-review.ja.md. No implementation or performance qualification from research."
+    },
+    {
+      "round": 584,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-decode-cache-profile-round584-v1.txt",
+      "sha256": "a172b0521f81f024914cde76cc37b3970f6a151948d3fc55691ea1d42e0f52cf",
+      "status": "FINAL received; Main corrected exact128-slot partition(47x2+34), one-byte ID claim, usage/observer budgets in boundary-service-main-review.ja.md. No implementation/performance qualification."
     }
   ],
   "main_initial_findings": [
@@ -357,7 +365,7 @@
     "recipe": "apply_build_boundary_service_v1.py",
     "review": "boundary-service-main-review.ja.md",
     "model_recipe": "check_boundary_audit_v1.py",
-    "state": "CPU fixtures including ASan/UBSan PASS, actual root SYCL build PASS. Model gates pending."
+    "state": "CPU/build and3arm small model gates PASS/fault0;34K FP32fixed4096 auditON output and source/store/input allPASS/fault0. Auto-prefix paired run pending."
   },
   "retention_v4": "retention-v4-manifest.json"
 }

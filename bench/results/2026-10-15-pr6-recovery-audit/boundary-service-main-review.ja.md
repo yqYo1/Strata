@@ -40,3 +40,25 @@ MKL verbose等はまず境界比較で差を特定した後の候補に留め、
 physical262144、RESTORE、coupled/cancel/全Tの条件を完了扱いにしない。
 成果はfeature/syclへ保存する。defaultへの機能整合は別途未完了で、古いengine rootへの
 置換で新しいdefaultのserver/CLI機能を失わない。
+
+## R584とcache配分のMain追加確認
+
+R584のprofile形状と頻度証拠の区別、128が総slot数である点はsourceと整合する。
+ただし「roughly two or three」は実装を正確に表さない。`expert_cache.cpp::layer_slot_range`は
+`q=slots/layers`として最後の層だけに全余りを渡す。128/48では最初47層が2、最後が34である。
+均等配分でhit率/速度が上がる証明はまだないが、native offsetと同じpartitionを使う
+opt-in候補を独立実装担当へ依頼した。既定配分のままの測定結果を変更しない。
+
+R584の「one-byte-per-route owner/ID stream」は512 expert IDだけでも9bit必要で成立しない。
+将来replay用streamが必要なら明示したbit layout・layer/window境界を含むbyte算術を行う。
+192/384KiB追加counter案は現在のobserver96KiB state/combined256KiB契約にはそのまま入らず、
+別owner/予算/入場条件のreviewが必要。既存usageはfloatでdecayされ、adapt-swaps0では
+allocateされないため、そのままstatic decodeのexact histogramに流用しない。
+追加測定の許可はユーザーの継続最適化依頼に含まれる。研究報告のpermission文言を
+新しい承認要件として扱わない。
+
+実formatは旧ledgerから7組確認でき、GU type18が17層、22が20層、21が10層、23が1層。
+これは層数でありtime割合やroute頻度ではない。IQ3_S(type21)候補だけでCPU GU全体を
+改善できると見積もらず、実format別serviceを次に取得する。
+旧service quant role1/4はpool内のhidden量子化であり、pool前の入力activation量子化を
+含む全量子化処理の合計ではない。約0.3%は計測したpool CPU service内の比率に限定する。
