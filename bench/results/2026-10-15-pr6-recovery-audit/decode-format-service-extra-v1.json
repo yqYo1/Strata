@@ -1,0 +1,30 @@
+{
+  "source_stderr_sha256": "4a2ceb9c643fe3c4f26f29f5a627e8aa62961e4d0392820d40169813e817c3d1",
+  "lines": [
+    "strata generate: SYCL cached experts use native Q8_1 arithmetic; logits can differ from CPU experts.",
+    "strata prefill: FP16 MoE compact requested=1 effective=1, chunk=4096, scratch rows=4096, accounted=1662831872, shared region=607128320 bytes",
+    "strata verify: window up to 4 tokens, 63.8 MiB of device buffers",
+    "strata prefill: layer-major candidate, tokens=34602 chunk=4096 residual_dtype=fp32 residual_element_bytes=4 residual_total=1417297920 residual_gpu_rows=4096 residual_gpu=167772160 residual_host=1249525760 residual_staging=0 layer_cache=1363148800; extra allocations, GPU headroom=536870912, RAM headroom=8589934592",
+    "strata verify: captured the 1-token window in 49 event-completed segments",
+    "strata verify: capture 1 tokens 4600.488 ms, free VRAM 1768.5 MiB",
+    "strata verify: 48 shared/hit graphs can overlap CPU experts",
+    "strata verify: captured the 4-token window in 49 event-completed segments",
+    "strata verify: capture 4 tokens 247.086 ms, free VRAM 1638.1 MiB",
+    "strata verify: 48 shared/hit graphs can overlap CPU experts",
+    "strata serve: decode expert cache hit rate: 3.0% (3124 hits / 104160 lookups)",
+    "strata serve: KV streaming: 95.85% of 1337148 block reads hit VRAM, 223.3 MiB read from RAM",
+    "strata prefill: layer-major candidate, tokens=34602 chunk=4096 residual_dtype=fp32 residual_element_bytes=4 residual_total=1417297920 residual_gpu_rows=4096 residual_gpu=167772160 residual_host=1249525760 residual_staging=0 layer_cache=1363148800; extra allocations, GPU headroom=536870912, RAM headroom=8589934592",
+    "strata serve: decode expert cache hit rate: 3.0% (3124 hits / 104160 lookups)",
+    "strata serve: KV streaming: 95.85% of 1337148 block reads hit VRAM, 223.3 MiB read from RAM",
+    "strata serve: decode expert cache hit rate: 0.7% (95 hits / 13920 lookups)",
+    "strata serve: KV streaming: 96.52% of 45228 block reads hit VRAM, 6.3 MiB read from RAM"
+  ],
+  "line_filter": [
+    "strata prefill:",
+    "strata verify:",
+    "strata serve: KV streaming:",
+    "strata serve: decode expert cache hit rate:",
+    "strata generate: SYCL cached experts"
+  ],
+  "complete": true
+}

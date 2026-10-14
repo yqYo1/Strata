@@ -1,0 +1,387 @@
+--- a/src/prefill/prefill.cpp
++++ b/src/prefill/prefill.cpp
+@@ -31,6 +31,7 @@
+ #include "strata/prefill/draft_uploads.hpp"
+ #include "strata/prefill/layer_major_plan.hpp"
+ #include "strata/prefill/layer_major_boundary_audit.hpp"
++#include "strata/prefill/layer26_phase_audit.hpp"
+ #include "strata/core/conversation_memory.hpp"
+ 
+ #include <cuda_runtime.h>
+@@ -454,6 +455,7 @@
+     bool compact_moe_fp16 = false;
+     // Opt-in layer-major lease; normal chunk-major execution leaves these empty.
+     bool layer_major_active = false;
++    detail::Layer26PhaseAudit* layer26_phase_audit = nullptr;
+     detail::LayerMajorBoundaryAudit* layer_major_audit = nullptr;
+     detail::LayerMajorBoundaryAudit::Copy layer_major_audit_copy;
+     const void* layer_major_gpu_input = nullptr;
+@@ -2052,6 +2054,10 @@
+                               m.mixed_bf_lo);
+ 
+                 if (half == 0 && !core::is_qsa_layer(g, l)) {
++                    if (m.layer26_phase_audit && !m.layer26_phase_audit->capture(
++                            detail::Layer26PhaseAudit::gdn_input, l, c0, T, m.mixed_h, m.layer_major_audit_copy)) {
++                        err = "prefill phase audit: GDN input copy/drain failed"; return false;
++                    }
+                     // ======================= GDN =======================
+                     const core::WeightRef *wqkv = need(v, "attn_qkv.weight", err), *wg = need(v, "attn_gate.weight", err),
+                                           *wo = need(v, "ssm_out.weight", err), *wa = need(v, "ssm_alpha.weight", err),
+@@ -2073,6 +2079,10 @@
+                     gdn_recurrence(state, m.hbuf, m.gate, m.beta, m.z, (const float*) wnm->data, EPS, m.y, m.y_h, T, m.cs);
+                     pt.mark(kPfGdnOut, cs);
+                     if (!native_proj(m.gemm, wo, m.y_h, m.bo, T, v.name("ssm_out.weight"), err)) return false;
++                    if (m.layer26_phase_audit && !m.layer26_phase_audit->capture(
++                            detail::Layer26PhaseAudit::gdn_out, l, c0, T, m.bo, m.layer_major_audit_copy)) {
++                        err = "prefill phase audit: GDN output copy/drain failed"; return false;
++                    }
+                     ++gdn_index;
+                 } else if (half == 0) {
+                     // ======================= QSA =======================
+@@ -2287,6 +2297,15 @@
+                     if (!native_proj(m.gemm, wo, m.attn_h, m.bo, T, v.name("attn_output.weight"), err)) return false;
+                     ++qsa_index;
+                 } else {
++                    if (m.layer26_phase_audit) {
++                        auto* a = m.layer26_phase_audit;
++                        using A = detail::Layer26PhaseAudit;
++                        if (!a->capture(A::ffn_input_h, l, c0, T, m.mixed_h, m.layer_major_audit_copy) ||
++                            !a->capture(A::ffn_input_bf, l, c0, T, m.mixed_bf, m.layer_major_audit_copy) ||
++                            (m.mixed_bf_lo && !a->capture(A::ffn_input_low, l, c0, T, m.mixed_bf_lo, m.layer_major_audit_copy))) {
++                            err = "prefill phase audit: FFN mixed input copy/drain failed"; return false;
++                        }
++                    }
+                     // ======================= MoE =======================
+                     const core::WeightRef *wr = need(v, "ffn_gate_inp.weight", err),
+                                           *wgi = need(v, "ffn_gate_inp_shexp.weight", err),
+@@ -2297,6 +2316,15 @@
+                     pt.mark(kPfRouter, cs);
+                     if (!bf16_proj(m.gemm, wr, m.mixed_bf, m.logits, T, v.name("ffn_gate_inp.weight"), err, 0, m.mixed_bf_lo)) return false;
+                     route(m.logits, m.ids, m.w, T, m.g->n_expert, m.cs);
++                    if (m.layer26_phase_audit) {
++                        auto* a = m.layer26_phase_audit;
++                        using A = detail::Layer26PhaseAudit;
++                        if (!a->capture(A::router_logits, l, c0, T, m.logits, m.layer_major_audit_copy) ||
++                            !a->capture(A::router_ids, l, c0, T, m.ids, m.layer_major_audit_copy) ||
++                            !a->capture(A::router_weights, l, c0, T, m.w, m.layer_major_audit_copy)) {
++                            err = "prefill phase audit: router copy/drain failed"; return false;
++                        }
++                    }
+                     // the shared expert and its scalar gate
+                     if (!native_proj(m.gemm, wsg, m.mixed_h, m.sgate, T, v.name("ffn_gate_shexp.weight"), err)) return false;
+                     if (!native_proj(m.gemm, wsu, m.mixed_h, m.sup, T, v.name("ffn_up_shexp.weight"), err)) return false;
+@@ -2469,6 +2497,10 @@
+                         for (int32_t e = 0; e < m.g->n_expert && !on_peer.empty(); ++e)   // the peer-streamed ones last:
+                             if (on_peer[(size_t) e] == 2) order_peer.push_back(e);        // their copies get the most time
+                         n_order = order.size();
++                        if (m.layer26_phase_audit && !m.layer26_phase_audit->capture_grouping(
++                                l, c0, T, ids_h, slot_h, src_h, m.cnt, m.off, order)) {
++                            err = "prefill phase audit: grouping capture failed"; return false;
++                        }
+                         const size_t mmq_gub = use_mmq ? mmq::matrix_bytes(mmq_gt, 1280, N) : 0;
+                         const size_t mmq_db = use_mmq ? mmq::matrix_bytes(mmq_dt, N, 640) : 0;
+                         pt.mark(kPfGather, cs);
+@@ -2926,6 +2958,10 @@
+                     pt.mark(kPfCombine, cs);
+                     if (peer_now) cudaStreamWaitEvent(m.cs, m.pp->ev_done, 0);   // multi-GPU: the peer's rows are in Dm
+                     moe_combine(m.Dm, m.slot_dev, m.w, m.shared, m.sg, m.bo, T, m.cs);
++                    if (m.layer26_phase_audit && !m.layer26_phase_audit->capture(
++                            detail::Layer26PhaseAudit::moe_out, l, c0, T, m.bo, m.layer_major_audit_copy)) {
++                        err = "prefill phase audit: MoE output copy/drain failed"; return false;
++                    }
+                     // debug: STRATA_DBG_NAN=1 reports the first layer of a chunk whose MoE produced non-finite values
+                     if (static const bool dbg = std::getenv("STRATA_DBG_NAN") != nullptr; dbg) {
+                         cudaStreamSynchronize(m.cs);
+@@ -2971,6 +3007,11 @@
+                 }
+                 if (half == 1 && strata::kernels::cvec().covers(l))   // --control-vector-scaled
+                     strata::kernels::cvec_apply(m.R, l, T, D, nullptr, 0, nullptr, 0, false, m.cs);
++                if (m.layer26_phase_audit && !m.layer26_phase_audit->capture(
++                        half == 0 ? detail::Layer26PhaseAudit::attn_R : detail::Layer26PhaseAudit::final_R,
++                        l, c0, T, m.R, m.layer_major_audit_copy)) {
++                    err = "prefill phase audit: residual write copy/drain failed"; return false;
++                }
+             }
+         }
+         if (!ple_land()) return false;   // a stage that ends before layer 1: the rows land anyway, the next gather starts
+--- a/src/prefill/layer_major.inc
++++ b/src/prefill/layer_major.inc
+@@ -2,6 +2,11 @@
+ // helpers. This is orchestration only; run_impl owns GDN/QSA/PLE/expert math.
+ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& err) {
+     const char* requested = std::getenv("STRATA_PREFILL_LAYER_MAJOR");
++    const char* phase_switch = std::getenv("STRATA_PREFILL_PHASE_AUDIT");
++    if (phase_switch && std::strcmp(phase_switch, "1") == 0 &&
++        (!requested || std::strcmp(requested, "1") || !impl_ || n <= impl_->T)) {
++        err = "prefill phase audit: requires the long-prompt layer-major path"; return false;
++    }
+     // Reuse only pays across chunks. Keep short chat/agent turns on the
+     // original path even when long-prompt layer reuse is requested.
+     return requested && std::strcmp(requested, "1") == 0 && impl_ && n > impl_->T
+@@ -23,6 +28,11 @@
+     auto& ss = *m.ss;
+     const auto residual_dtype = detail::layer_major_residual_dtype(
+         std::getenv("STRATA_PREFILL_LAYER_MAJOR_R_DTYPE"));
++    const char* phase_switch = std::getenv("STRATA_PREFILL_PHASE_AUDIT");
++    const bool phase_requested = phase_switch && std::strcmp(phase_switch, "1") == 0;
++    if (phase_requested && residual_dtype != detail::LayerMajorResidualDtype::fp32) {
++        err = "prefill phase audit: FP16 saved residual storage is outside this diagnostic"; return false;
++    }
+     const char* mmq = std::getenv("STRATA_PREFILL_MMQ");
+     if (m.layer_major_active || stage_lb_ != 0 || stage_le_ != g.n_layers || next_ || hand_in_ ||
+         m.pp || core::peer_portable() || embd_rows || !m.src || !m.compact_moe_fp16 ||
+@@ -164,6 +174,17 @@
+         audit.reset(new detail::LayerMajorBoundaryAudit(n, pos0, D, g.n_layers, m.T,
+             plan.dtype == detail::LayerMajorResidualDtype::fp16));
+     }
++    // This owner precedes Restore and the checked lease, just like boundary audit.
++    // Reserve BOTH optional owners cumulatively; no file/raw bytes are held in RAM.
++    std::unique_ptr<detail::Layer26PhaseAudit> phase_audit;
++    if (phase_requested) {
++        uint64_t need = detail::layer_major_add(host_need, audit ? 4ull << 20 : 0);
++        need = detail::layer_major_add(need, detail::Layer26PhaseAudit::host_reservation);
++        if (!core::conversation_memory_admit(core::conversation_available_memory(), need, host_headroom)) {
++            err = "prefill phase audit: additional diagnostic storage exceeds RAM headroom"; return false;
++        }
++        phase_audit.reset(new detail::Layer26PhaseAudit(n, pos0, m.T, m.mixed_bf_lo != nullptr));
++    }
+     int64_t logical_chunks = 0, layer = 0;
+     const int64_t final_chunk_row = ((n - 1) / m.T) * m.T;
+     bool stage_delivered = false;
+@@ -176,6 +197,7 @@
+         Prefill& p; Impl& m;
+         int64_t lb, le; const float* input;
+         const core::ExpertCache* cache; const int32_t* residency;
++        detail::Layer26PhaseAudit* phase;
+         detail::LayerMajorBoundaryAudit* audit;
+         detail::LayerMajorBoundaryAudit::Copy audit_copy;
+         bool active; const void* gpu_input; const void* host_input; uint16_t* fp16_stage;
+@@ -184,13 +206,14 @@
+         ~Restore() noexcept {
+             p.stage_lb_ = lb; p.stage_le_ = le; p.hand_in_ = input;
+             m.cache = cache; m.host_res = residency; m.layer_major_active = active;
++            m.layer26_phase_audit = phase;
+             m.layer_major_audit = audit; m.layer_major_audit_copy = std::move(audit_copy);
+             m.layer_major_gpu_input = gpu_input; m.layer_major_host_input = host_input;
+             m.layer_major_fp16_stage = fp16_stage; m.layer_major_residual = plan;
+             p.on_chunk = std::move(chunk); p.on_stage_chunk = std::move(stage);
+         }
+     } restore{*this, m, stage_lb_, stage_le_, hand_in_, m.cache, m.host_res,
+-              m.layer_major_audit, m.layer_major_audit_copy,
++              m.layer26_phase_audit, m.layer_major_audit, m.layer_major_audit_copy,
+               m.layer_major_active, m.layer_major_gpu_input, m.layer_major_host_input,
+               m.layer_major_fp16_stage, m.layer_major_residual, on_chunk, on_stage_chunk};
+     cudaError_t compute_drain = cudaSuccess, copy_drain = cudaSuccess;
+@@ -206,7 +229,8 @@
+     });
+     lease.arm();
+     if (!drain()) { err = "prefill layer-major: entry queue drain failed"; return false; }
+-    if (audit) {
++    if (audit || phase_audit) {
++        m.layer26_phase_audit = phase_audit.get();
+         m.layer_major_audit = audit.get();
+         m.layer_major_audit_copy = [&](void* dst, const void* src, size_t bytes, bool device) {
+             if (!device) { std::memcpy(dst, src, bytes); return true; }
+@@ -357,6 +381,7 @@
+     stats_.ms_total = old_stats.ms_total + ms_since(started);
+     // Field/callback restore and then cache/residual release follow this proof.
+     if (audit) audit->complete();
++    if (phase_audit) phase_audit->complete();
+     lease.retire();
+     return true;
+ #endif
+--- /dev/null
++++ b/include/strata/prefill/layer26_phase_audit.hpp
+@@ -0,0 +1,192 @@
++#pragma once
++// Finite diagnostic only. The outer checked queue lease owns our D2H destinations.
++#include <algorithm>
++#include <array>
++#include <charconv>
++#include <cstdint>
++#include <cstdio>
++#include <cstdlib>
++#include <cstring>
++#include <fcntl.h>
++#include <functional>
++#include <memory>
++#include <stdexcept>
++#include <string>
++#include <unistd.h>
++#include <vector>
++namespace strata::prefill::detail {
++class Layer26PhaseAudit {
++    using File = std::unique_ptr<FILE, int(*)(FILE*)>;
++    File log_{nullptr, std::fclose}, raw_{nullptr, std::fclose};
++    std::array<int64_t, 6> rows_{};
++    std::array<unsigned, 6> next_{};
++    // No per-copy local/vector destination: this storage survives failed drains.
++    alignas(64) std::array<unsigned char, 40960> scratch_{};
++    std::array<int32_t, 70> grouping_{};
++    size_t selected_ = 0;
++    int64_t n_, pos_, chunk_;
++    bool low_, completed_ = false;
++    uint64_t text_bytes_ = 0, raw_bytes_ = 0, records_ = 0;
++    static File exclusive(const std::string& path) {
++        const int fd = ::open(path.c_str(), O_WRONLY | O_CREAT | O_EXCL | O_CLOEXEC, 0600);
++        if (fd < 0) throw std::runtime_error("phase audit exclusive create failed: " + path);
++        FILE* f = ::fdopen(fd, "wb");
++        if (!f) { ::close(fd); throw std::runtime_error("phase audit fdopen failed"); }
++        return File(f, std::fclose);
++    }
++    void line(const char* s) {
++        const size_t bytes = std::strlen(s);
++        if (bytes > text_limit - text_bytes_) throw std::runtime_error("phase audit text budget: incomplete");
++        if (std::fwrite(s, 1, bytes, log_.get()) != bytes || std::fflush(log_.get()))
++            throw std::runtime_error("phase audit text I/O: incomplete");
++        text_bytes_ += bytes;
++    }
++public:
++    using Copy = std::function<bool(void*, const void*, size_t, bool)>;
++    enum Tensor : unsigned { gdn_input, gdn_out, attn_R, ffn_input_h, ffn_input_bf, ffn_input_low,
++                             router_logits, router_ids, router_weights, grouping, moe_out, final_R, tensor_count };
++    static constexpr uint64_t raw_limit = 8ull << 20, text_limit = 1ull << 20;
++    // Separate reservation, not part of boundary audit's4MiB/48MiB/8MiB contract.
++    static constexpr uint64_t host_reservation = 1ull << 20;
++    static const char* name(Tensor t) {
++        static constexpr const char* names[] = {"gdn_input_mixed_h", "gdn_out_bo", "attn_write_R",
++            "ffn_mixed_h", "ffn_mixed_bf", "ffn_mixed_bf_low", "router_logits", "router_ids",
++            "router_weights", "host_grouping", "moe_combine_bo", "final_R"};
++        if (unsigned(t) >= tensor_count) throw std::invalid_argument("phase audit tensor");
++        return names[unsigned(t)];
++    }
++    static size_t elements(Tensor t) {
++        switch (t) {
++        case attn_R: case final_R: return 10240;
++        case router_logits: return 512;
++        case router_ids: case router_weights: return 10;
++        case grouping: return 70; //10 entries x {expert,slot,src,cnt,off,order_index,group_local}
++        default: (void)name(t); return 2560;
++        }
++    }
++    static size_t item_bytes(Tensor t) {
++        return t == gdn_input || t == ffn_input_h || t == ffn_input_bf || t == ffn_input_low ? 2 : 4;
++    }
++    static const char* dtype(Tensor t) {
++        if (t == gdn_input || t == ffn_input_h) return "fp16";
++        if (t == ffn_input_bf || t == ffn_input_low) return "bf16";
++        if (t == router_ids || t == grouping) return "int32";
++        return "fp32";
++    }
++private:
++    void shape(int64_t start, int64_t count) const {
++        if (start < 0 || start % chunk_ || count <= 0 || count > chunk_ || start > n_ - count ||
++            count != std::min(chunk_, n_-start)) throw std::invalid_argument("phase audit chunk");
++    }
++    void emit(Tensor t, size_t s, int64_t start, int64_t count, uint64_t source_offset, bool device) {
++        if (next_[s] != unsigned(t)) throw std::runtime_error("phase audit duplicate/out-of-order tensor");
++        const size_t bytes = elements(t) * item_bytes(t);
++        if (bytes > raw_limit - raw_bytes_ || std::fwrite(scratch_.data(), 1, bytes, raw_.get()) != bytes)
++            throw std::runtime_error("phase audit raw budget/I/O: incomplete");
++        char buf[768];
++        const int len = std::snprintf(buf, sizeof(buf),
++            "record=%llu tensor=%s layer=26 row=%lld absolute=%lld chunk=%lld start=%lld count=%lld "
++            "dtype=%s elements=%zu bytes=%zu offset=%llu source_offset=%llu source=%s memcmp=NA\n",
++            (unsigned long long)records_, name(t), (long long)rows_[s], (long long)(pos_+rows_[s]),
++            (long long)(start/chunk_), (long long)start, (long long)count, dtype(t), elements(t), bytes,
++            (unsigned long long)raw_bytes_, (unsigned long long)source_offset, device ? "GPU" : "host_selected");
++        if (len < 0 || size_t(len) >= sizeof(buf)) throw std::runtime_error("phase audit metadata overflow");
++        line(buf);
++        raw_bytes_ += bytes; ++records_; ++next_[s];
++        if (!low_ && next_[s] == ffn_input_low) ++next_[s];
++    }
++public:
++    Layer26PhaseAudit(int64_t n, int64_t pos, int64_t chunk, bool low):
++        n_(n), pos_(pos), chunk_(chunk), low_(low) {
++        static_assert(sizeof(int32_t) == 4 && sizeof(float) == 4);
++        if (n <= 0 || n > 262144 || pos < 0 || pos > 262144 || n > 262144-pos || chunk <= 0 || chunk > 8192)
++            throw std::invalid_argument("phase audit unsupported shape");
++        const char* csv = std::getenv("STRATA_PREFILL_PHASE_ROWS");
++        if (!csv) csv = "16384,24575,24576,32767,32768,34601";
++        const char* p = csv;
++        while (*p) {
++            if (selected_ == rows_.size()) throw std::invalid_argument("phase audit max6 rows");
++            const char* end = std::strchr(p, ','); if (!end) end = p + std::strlen(p);
++            int64_t row = -1;
++            const auto parsed = std::from_chars(p, end, row);
++            if (parsed.ec != std::errc{} || parsed.ptr != end || row < 0 || row >= n ||
++                std::find(rows_.begin(), rows_.begin()+selected_, row) != rows_.begin()+selected_)
++                throw std::invalid_argument("phase audit invalid/duplicate/out-of-range row");
++            rows_[selected_++] = row;
++            if (!*end) break;
++            p = end+1; if (!*p) throw std::invalid_argument("phase audit trailing comma");
++        }
++        if (!selected_) throw std::invalid_argument("phase audit empty rows");
++        const char* path = std::getenv("STRATA_PREFILL_PHASE_PATH");
++        if (!path || !*path || std::strlen(path)>4095) throw std::invalid_argument("phase audit requires bounded output path");
++        log_ = exclusive(path); raw_ = exclusive(std::string(path)+".raw");
++        char buf[512];
++        std::snprintf(buf, sizeof(buf),
++            "phase_audit_v1 status=incomplete layer=26 tokens=%lld pos0=%lld chunk=%lld selected=%zu low=%d "
++            "raw_limit=8388608 text_limit=1048576 host_reservation=1048576 byteorder=%s "
++            "grouping_fields=expert,slot,src,cnt,off,order_index,group_local\n",
++            (long long)n_, (long long)pos_, (long long)chunk_, selected_, int(low_),
++            [] { const uint16_t one=1; return *reinterpret_cast<const unsigned char*>(&one) ? "little" : "big"; }());
++        line(buf);
++        for (size_t s = 0; s < selected_; ++s) {
++            std::snprintf(buf, sizeof(buf), "selection=%zu row=%lld\n", s, (long long)rows_[s]); line(buf);
++        }
++    }
++    // Called immediately after each producer, before any shared-region overwrite.
++    // copy must checked-drain the SAME compute queue, including submission errors.
++    bool capture(Tensor t, int64_t layer, int64_t start, int64_t count, const void* base, const Copy& copy) {
++        if (layer != 26) return true;
++        shape(start, count); (void)name(t);
++        if (t == grouping || (t == ffn_input_low && !low_)) throw std::invalid_argument("phase audit capture kind");
++        const size_t bytes = elements(t)*item_bytes(t);
++        for (size_t s = 0; s < selected_; ++s) {
++            if (rows_[s] < start || rows_[s] >= start+count) continue;
++            if (!base || !copy || next_[s] != unsigned(t)) throw std::runtime_error("phase audit source/sequence");
++            const uint64_t offset = uint64_t(rows_[s]-start)*bytes;
++            if (!copy(scratch_.data(), static_cast<const unsigned char*>(base)+offset, bytes, true)) return false;
++            emit(t, s, start, count, offset, true);
++        }
++        return true;
++    }
++    // Existing host grouping remains untouched. Only selected ten-entry ledgers are serialized.
++    bool capture_grouping(int64_t layer, int64_t start, int64_t count,
++                          const int32_t* ids, const int32_t* slots, const int32_t* src,
++                          const std::vector<int32_t>& cnt, const std::vector<int32_t>& off,
++                          const std::vector<int32_t>& order) {
++        if (layer != 26) return true;
++        shape(start, count);
++        if (!ids || !slots || !src || cnt.size()!=512 || off.size()!=513 || order.size()>512)
++            throw std::invalid_argument("phase audit host grouping shape");
++        for (size_t s = 0; s < selected_; ++s) {
++            const int64_t row = rows_[s]-start; if (row < 0 || row >= count) continue;
++            for (int k=0; k<10; ++k) {
++                const size_t i = size_t(row)*10+size_t(k);
++                const int32_t e=ids[i], slot=slots[i];
++                if (e<0 || e>=512 || slot<0 || slot>=count*10 || cnt[size_t(e)]<=0 || cnt[size_t(e)]>count ||
++                    off[size_t(e)]<0 || slot<off[size_t(e)] || slot-off[size_t(e)]>=cnt[size_t(e)] || src[slot]!=row)
++                    throw std::runtime_error("phase audit host grouping bounds");
++                for (int j=0; j<k; ++j) if (grouping_[size_t(j)*7]==e)
++                    throw std::runtime_error("phase audit duplicate top10 ID");
++                const auto it=std::find(order.begin(), order.end(), e);
++                if (it==order.end()) throw std::runtime_error("phase audit expert absent from order");
++                const int32_t fields[] = {e,slot,src[slot],cnt[size_t(e)],off[size_t(e)],
++                    int32_t(it-order.begin()),slot-off[size_t(e)]};
++                std::copy(fields, fields+7, grouping_.begin()+size_t(k)*7);
++            }
++            std::memcpy(scratch_.data(), grouping_.data(), elements(grouping)*4);
++            emit(grouping, s, start, count, uint64_t(row)*10*4, false);
++        }
++        return true;
++    }
++    void complete() {
++        const uint64_t expected = selected_*(tensor_count-(low_ ? 0 : 1));
++        if (completed_ || records_!=expected || std::find_if(next_.begin(), next_.begin()+selected_,
++                [](unsigned t){ return t!=tensor_count; })!=next_.begin()+selected_ || std::fflush(raw_.get()))
++            throw std::runtime_error("phase audit incomplete coverage/raw flush");
++        char buf[256];
++        std::snprintf(buf, sizeof(buf), "status=complete coverage=complete records=%llu raw_bytes=%llu "
++            "memcmp=not_compared adoption=unqualified\n", (unsigned long long)records_, (unsigned long long)raw_bytes_);
++        line(buf); completed_ = true;
++    }
++};
++} // namespace strata::prefill::detail

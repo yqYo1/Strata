@@ -1,0 +1,831 @@
+--- a/include/strata/core/expert_slot_sizes.hpp
++++ b/include/strata/core/expert_slot_sizes.hpp
+@@ -1,20 +1,83 @@
+ #pragma once
+ #include <algorithm>
++#include <cstddef>
+ #include <cstdint>
+ #include <limits>
+ #include <stdexcept>
+ #include <vector>
+ 
+ namespace strata::core {
+-// Match ExpertCache::layer_slot_range: equal counts, remainder on the last
+-// layer. Every adaptive replacement therefore fits its layer's slot.
++enum class ExpertSlotPartition { last_layer_remainder, balanced };
++
++// Single partition definition for admission, capacity planning and owner lookup.
++// Multiplications stay <= slots; do not use layer*slots/layers (can overflow).
++inline void expert_layer_slot_range(int64_t slots, int64_t layers, int64_t layer,
++                                   int64_t& lo, int64_t& hi,
++                                   ExpertSlotPartition partition = ExpertSlotPartition::last_layer_remainder) {
++    lo = hi = 0;
++    if (slots <= 0 || layers <= 0 || layer < 0 || layer >= layers) return;
++    const int64_t q = slots / layers, r = slots % layers;
++    if (partition == ExpertSlotPartition::balanced) {
++        lo = layer * q + std::min(layer, r);
++        hi = lo + q + (layer < r ? 1 : 0);
++    } else {
++        lo = layer * q;
++        hi = layer == layers - 1 ? slots : (layer + 1) * q;
++    }
++}
++
++inline int64_t expert_slot_layer(int64_t slots, int64_t layers, int64_t slot,
++                                ExpertSlotPartition partition = ExpertSlotPartition::last_layer_remainder) {
++    if (slot < 0 || slot >= slots || layers <= 0) return -1;
++    int64_t a = 0, b = layers;
++    // First range with hi > slot, including empty ranges when slots < layers.
++    while (a < b) {
++        const int64_t m = a + (b - a) / 2;
++        int64_t lo = 0, hi = 0;
++        expert_layer_slot_range(slots, layers, m, lo, hi, partition);
++        if (hi <= slot) a = m + 1; else b = m;
++    }
++    return a < layers ? a : -1;
++}
++
+ inline uint64_t expert_slot_aligned_bytes(int64_t bytes) {
+     if (bytes <= 0) throw std::invalid_argument("nonpositive expert slot size");
+     return (uint64_t(bytes) + 255) / 256 * 256;
+ }
++
++inline bool expert_balanced_slot_count_valid(int64_t slots, int64_t layers, int64_t experts) {
++    if (slots < 0 || layers <= 0 || experts <= 0) return false;
++    // ceil(slots/layers) <= experts, without multiplying layers*experts.
++    const int64_t q = slots / layers, r = slots % layers;
++    return q <= experts && (r == 0 || q < experts);
++}
++
++inline std::vector<uint64_t> expert_slot_offsets(const std::vector<int64_t>& bytes) {
++    const uint64_t limit = std::min<uint64_t>(std::numeric_limits<std::ptrdiff_t>::max(),
++                                             std::numeric_limits<int64_t>::max());
++    std::vector<uint64_t> result(bytes.size() + 1, 0);
++    for (size_t i = 0; i < bytes.size(); ++i) {
++        const uint64_t aligned = expert_slot_aligned_bytes(bytes[i]);
++        if (aligned > limit - result[i])
++            throw std::overflow_error("expert slot arena exceeds addressable storage");
++        result[i + 1] = result[i] + aligned;
++    }
++    return result;
++}
++
++// Raw capacity excludes alignment padding. A zero request means THIS slot's
++// blob, never the largest blob of a heterogeneous cache.
++inline bool expert_slot_transfer_size(int64_t capacity, int64_t request, uint64_t& bytes) {
++    bytes = 0;
++    if (capacity <= 0 || request < 0 || request > capacity) return false;
++    bytes = uint64_t(request == 0 ? capacity : request);
++    return true;
++}
++
+ inline int64_t per_layer_slots_that_fit(const std::vector<int64_t>& bytes,
+-                                      uint64_t budget, int64_t maximum) {
+-    if (bytes.empty() || maximum < 0)
++                                      uint64_t budget, int64_t maximum,
++                                      ExpertSlotPartition partition = ExpertSlotPartition::last_layer_remainder) {
++    if (bytes.empty() || maximum < 0 || bytes.size() > uint64_t(std::numeric_limits<int64_t>::max()))
+         throw std::invalid_argument("invalid per-layer expert slot plan");
+     uint64_t round = 0;
+     for (const auto b : bytes) {
+@@ -26,24 +89,35 @@
+     const int64_t layers = int64_t(bytes.size());
+     const uint64_t q = std::min<uint64_t>(budget / round, maximum / layers);
+     const int64_t full = int64_t(q) * layers;
++    uint64_t left = budget - q * round;
++    const int64_t tail_max = std::min(layers - 1, maximum - full);
++    if (partition == ExpertSlotPartition::balanced) {
++        int64_t tail = 0;
++        while (tail < tail_max) {
++            const uint64_t next = expert_slot_aligned_bytes(bytes[size_t(tail)]);
++            if (next > left) break;
++            left -= next;
++            ++tail;
++        }
++        return full + tail;
++    }
+     const uint64_t last = expert_slot_aligned_bytes(bytes.back());
+-    const int64_t tail = int64_t(std::min<uint64_t>(
+-        (budget - q * round) / last,
+-        uint64_t(std::min(layers - 1, maximum - full))));
+-    return full + tail;
++    return full + int64_t(std::min<uint64_t>(left / last, uint64_t(tail_max)));
+ }
++
+ inline std::vector<int64_t> per_layer_slot_sizes(
+-    const std::vector<int64_t>& bytes, int64_t slots) {
+-    if (bytes.empty() || slots < 0)
++    const std::vector<int64_t>& bytes, int64_t slots,
++    ExpertSlotPartition partition = ExpertSlotPartition::last_layer_remainder) {
++    if (bytes.empty() || slots < 0 || bytes.size() > uint64_t(std::numeric_limits<int64_t>::max()))
+         throw std::invalid_argument("invalid per-layer expert slot plan");
+     for (const auto b : bytes) expert_slot_aligned_bytes(b);
+     std::vector<int64_t> result;
++    if (uint64_t(slots) > result.max_size()) throw std::length_error("expert slot count too large");
+     result.reserve(size_t(slots));
+-    const int64_t q = slots / int64_t(bytes.size());
+     for (size_t layer = 0; layer < bytes.size(); ++layer) {
+-        const int64_t count = layer + 1 == bytes.size()
+-            ? slots - q * int64_t(layer) : q;
+-        result.insert(result.end(), size_t(count), bytes[layer]);
++        int64_t lo = 0, hi = 0;
++        expert_layer_slot_range(slots, int64_t(bytes.size()), int64_t(layer), lo, hi, partition);
++        result.insert(result.end(), size_t(hi - lo), bytes[layer]);
+     }
+     return result;
+ }
+--- a/include/strata/core/expert_cache.hpp
++++ b/include/strata/core/expert_cache.hpp
+@@ -25,6 +25,8 @@
+ // The order of work is `Memory/R4-design-note.md` §7: slots and residency first, then the split, then the
+ // kernel. This is that first step, and the step it unblocks is the one that can be measured.
+ #pragma once
++
++#include "strata/core/expert_slot_sizes.hpp"
+ 
+ #include <cstddef>
+ #include <cstdint>
+@@ -125,10 +127,30 @@
+     /// was never short of capacity - it was handing all of it to two layers.
+     ///
+     /// With this on, layer `l` may only use slots `[l*q, (l+1)*q)` where `q = slots()/n_layers`, the last
+-    /// layer taking the remainder.  **EVICTION IS STILL ABSENT** - the property the comment above calls
++    /// layer taking the remainder unless balanced partition was explicitly selected.  **EVICTION IS STILL ABSENT** - the property the comment above calls
+     /// deliberate is preserved exactly; only WHICH slot a layer may take changes.  Default off, so every
+     /// caller that predates this flag is bit-for-bit unaffected.
+-    void set_per_layer_admission(bool on) { per_layer_ = on; }
++    // Reject policy changes after admission: two admission cursors may alias slots.
++    bool set_per_layer_admission(bool on) {
++        if (on != per_layer_ && (next_free_ != 0 || admitted_ != 0)) return false;
++        per_layer_ = on;
++        return true;
++    }
++    // Choose before open/open_sized. close() keeps this policy for auto retries.
++    bool set_slot_partition(ExpertSlotPartition partition) {
++        if (valid()) return false;
++        partition_ = partition;
++        return true;
++    }
++    ExpertSlotPartition slot_partition() const { return partition_; }
++    // Partition owner; meaningful as an ownership contract with per-layer admission.
++    int64_t slot_layer(int32_t slot) const {
++        return expert_slot_layer(slots_, n_layers_, slot, partition_);
++    }
++    int64_t slot_capacity(int32_t slot) const {
++        if (slot < 0 || slot >= slots_) return 0;
++        return slot_bytes_.empty() ? blob_ : slot_bytes_[size_t(slot)];
++    }
+     bool per_layer_admission() const { return per_layer_; }
+     /// The slot range layer `l` may admit into under per-layer admission.  Exposed so a test can check it.
+     void layer_slot_range(int64_t layer, int64_t& lo, int64_t& hi) const;
+@@ -164,7 +186,8 @@
+ 
+ private:
+     bool open_impl(int64_t n_slots, int64_t n_layers, int64_t n_expert, int64_t blob_bytes,
+-                   std::string& err, bool initialize);
++                   std::string& err, bool initialize, uint64_t arena_bytes = 0);
++    bool transfer_size(int32_t slot, int64_t request, uint64_t& bytes, std::string& err) const;
+ #if defined(STRATA_USE_HIP) || defined(STRATA_ENABLE_SYCL)
+     bool ensure_blocking_staging(std::size_t bytes, std::string& err);
+     uint8_t* blocking_staging_ = nullptr;
+@@ -181,6 +204,8 @@
+     /// R4.2g.  `per_layer_` off (the default) leaves `next_free_` as the only admission counter, so the
+     /// pre-existing path is untouched.
+     bool per_layer_ = false;
++    ExpertSlotPartition partition_ = ExpertSlotPartition::last_layer_remainder;
++    std::vector<int64_t> slot_bytes_; // raw capacities, without alignment padding
+     std::vector<int32_t> layer_next_;   ///< [n_layers] -> that layer's next free slot
+     std::vector<uint64_t> off_;         ///< plan v0.3 P6: slot offsets (slots + 1 entries) when sized
+     int64_t admitted_ = 0;
+--- a/src/core/expert_cache.cpp
++++ b/src/core/expert_cache.cpp
+@@ -178,7 +178,7 @@
+ }
+ 
+ bool ExpertCache::open_impl(int64_t n_slots, int64_t n_layers, int64_t n_expert, int64_t blob_bytes,
+-                            std::string& err, bool initialize) {
++                            std::string& err, bool initialize, uint64_t arena_bytes) {
+     close();
+     if (n_slots <= 0) {
+         err = "ExpertCache: n_slots must be positive";
+@@ -189,7 +189,21 @@
+         return false;
+     }
+ 
+-    const uint64_t want = (uint64_t) n_slots * (uint64_t) blob_bytes;
++    const uint64_t limit = std::min<uint64_t>(std::numeric_limits<std::ptrdiff_t>::max(),
++                                             std::numeric_limits<int64_t>::max());
++    if (n_slots > std::numeric_limits<int32_t>::max() ||
++        uint64_t(n_layers) > limit / sizeof(int32_t) / uint64_t(n_expert) ||
++        (arena_bytes == 0 && uint64_t(n_slots) > limit / uint64_t(blob_bytes)) ||
++        arena_bytes > limit) {
++        err = "ExpertCache: geometry exceeds addressable storage";
++        return false;
++    }
++    if (partition_ == ExpertSlotPartition::balanced &&
++        !expert_balanced_slot_count_valid(n_slots, n_layers, n_expert)) {
++        err = "ExpertCache: balanced partition exceeds experts per layer";
++        return false;
++    }
++    const uint64_t want = arena_bytes ? arena_bytes : uint64_t(n_slots) * uint64_t(blob_bytes);
+ 
+     // ---- **THE ALLOCATION IS CHECKED AGAINST THE CARD, NOT AGAINST THE REQUEST.**
+     //
+@@ -202,7 +216,7 @@
+         if ((uint64_t) free_b < want) {
+             char buf[320];
+             std::snprintf(buf, sizeof buf,
+-                          "ExpertCache: %lld slots x %lld B = %.2f GiB, but only %.2f GiB of VRAM is free "
++                          "ExpertCache: %lld slots (max blob %lld B), %.2f GiB total, but only %.2f GiB of VRAM is free "
+                           "(%.2f GiB of %.2f GiB total). Lower --expert-cache.",
+                           (long long) n_slots, (long long) blob_bytes, (double) want / 1073741824.0,
+                           (double) free_b / 1073741824.0, (double) (total_b - free_b) / 1073741824.0,
+@@ -256,32 +270,19 @@
+ bool ExpertCache::open_sized(const std::vector<int64_t>& slot_bytes, int64_t n_layers, int64_t n_expert,
+                              std::string& err) {
+     if (slot_bytes.empty()) { err = "ExpertCache: no slots"; return false; }
+-    int64_t mx = 0;
+-    std::vector<uint64_t> off(slot_bytes.size() + 1, 0);
+-    for (size_t i = 0; i < slot_bytes.size(); ++i) {
+-        // 256-byte aligned slots, so every blob starts where the kernels' vector loads expect it
+-        off[i + 1] = off[i] + ((uint64_t) slot_bytes[i] + 255) / 256 * 256;
+-        mx = slot_bytes[i] > mx ? slot_bytes[i] : mx;
+-    }
+-    // one allocation of the summed size, through the uniform path's checks: n "slots" of 1 byte
+-    if (!open((int64_t) off.back(), n_layers, n_expert, 1, err)) return false;
+-    slots_ = (int64_t) slot_bytes.size();
+-    blob_ = mx;
++    if (slot_bytes.size() > uint64_t(std::numeric_limits<int32_t>::max())) {
++        err = "ExpertCache: too many sized slots";
++        return false;
++    }
++    std::vector<uint64_t> off;
++    try { off = expert_slot_offsets(slot_bytes); }
++    catch (const std::exception& e) { err = e.what(); return false; }
++    const int64_t mx = *std::max_element(slot_bytes.begin(), slot_bytes.end());
++    // Use the actual slot count throughout open_impl. The old byte-sized pseudo
++    // slots would overflow int32 cursors and cannot carry a balanced partition.
++    if (!open_impl(int64_t(slot_bytes.size()), n_layers, n_expert, mx, err, true, off.back())) return false;
+     off_ = std::move(off);
+-#if defined(STRATA_USE_HIP) || defined(STRATA_ENABLE_SYCL)
+-    if (!ensure_blocking_staging((std::size_t) blob_, err)) {
+-        close();
+-        return false;
+-    }
+-#endif
+-    // #369: each layer's cursor at the bottom of its own range, as open() seeds it - open() above ran on byte-sized
+-    // "slots", so its seeds are not slot indices
+-    layer_next_.assign((size_t) (n_layers > 0 ? n_layers : 0), 0);
+-    for (int64_t l = 0; l < n_layers; ++l) {
+-        int64_t lo = 0, hi = 0;
+-        layer_slot_range(l, lo, hi);
+-        layer_next_[(size_t) l] = (int32_t) lo;
+-    }
++    slot_bytes_ = slot_bytes;
+     return true;
+ }
+ 
+@@ -292,6 +293,7 @@
+     blocking_staging_bytes_ = 0;
+ #endif
+     off_.clear();
++    slot_bytes_.clear();
+     if (base_ != nullptr) {
+         cudaFree(base_);
+         base_ = nullptr;
+@@ -307,15 +309,17 @@
+     layer_next_.clear();
+ }
+ 
+-/// R4.2g.  Layer `l` owns `[l*q, (l+1)*q)` with `q = slots_ / n_layers_`; the LAST layer takes whatever is
+-/// left over, so the ranges always cover `0..slots_` exactly and no slot is orphaned by the division.
++// Both allocation planning and admission consume the same shared partition.
+ void ExpertCache::layer_slot_range(int64_t layer, int64_t& lo, int64_t& hi) const {
+-    lo = 0;
+-    hi = 0;
+-    if (n_layers_ <= 0 || slots_ <= 0 || layer < 0 || layer >= n_layers_) return;
+-    const int64_t q = slots_ / n_layers_;
+-    lo = layer * q;
+-    hi = (layer == n_layers_ - 1) ? slots_ : (layer + 1) * q;
++    expert_layer_slot_range(slots_, n_layers_, layer, lo, hi, partition_);
++}
++
++bool ExpertCache::transfer_size(int32_t slot, int64_t request, uint64_t& bytes, std::string& err) const {
++    if (!expert_slot_transfer_size(slot_capacity(slot), request, bytes)) {
++        err = "ExpertCache: transfer exceeds slot raw capacity or has invalid slot/size";
++        return false;
++    }
++    return true;
+ }
+ 
+ int32_t ExpertCache::slot_of(int64_t layer, int64_t expert) const {
+@@ -356,7 +360,8 @@
+ }
+ 
+ bool ExpertCache::fill_slot(int32_t slot, const uint8_t* host_blob, void* stream, std::string& err, int64_t bytes) {
+-    const size_t n = (size_t) (bytes > 0 && bytes <= blob_ ? bytes : blob_);
++    uint64_t n = 0;
++    if (!transfer_size(slot, bytes, n, err)) return false;
+     uint8_t* dst = device_slot(slot);
+     if (dst == nullptr) {
+         err = "ExpertCache::fill_slot: slot " + std::to_string(slot) + " is outside 0.." +
+@@ -378,7 +383,8 @@
+ }
+ 
+ bool ExpertCache::fill_slot_blocking(int32_t slot, const uint8_t* host_blob, std::string& err, int64_t bytes) {
+-    const size_t n = (size_t) (bytes > 0 && bytes <= blob_ ? bytes : blob_);
++    uint64_t n = 0;
++    if (!transfer_size(slot, bytes, n, err)) return false;
+     uint8_t* dst = device_slot(slot);
+     if (dst == nullptr) {
+         err = "ExpertCache::fill_slot_blocking: slot outside the arena";
+@@ -409,7 +415,8 @@
+ }
+ 
+ bool ExpertCache::fill_slot_queued(int32_t slot, const uint8_t* host_blob, std::string& err, int64_t bytes) {
+-    const size_t n = (size_t) (bytes > 0 && bytes <= blob_ ? bytes : blob_);
++    uint64_t n = 0;
++    if (!transfer_size(slot, bytes, n, err)) return false;
+     uint8_t* dst = device_slot(slot);
+     if (dst == nullptr || host_blob == nullptr) {
+         err = dst == nullptr ? "ExpertCache::fill_slot_queued: slot outside the arena"
+@@ -435,10 +442,11 @@
+ }
+ 
+ bool ExpertCache::verify_slot(int32_t slot, const uint8_t* host_blob, std::string& err, int64_t bytes) {
+-    const int64_t nb = bytes > 0 && bytes <= blob_ ? bytes : blob_;
++    uint64_t nb = 0;
++    if (!transfer_size(slot, bytes, nb, err)) return false;
+     const uint8_t* src = device_slot(slot);
+-    if (src == nullptr) {
+-        err = "ExpertCache::verify_slot: slot outside the arena";
++    if (src == nullptr || host_blob == nullptr) {
++        err = "ExpertCache::verify_slot: invalid slot or null host blob";
+         return false;
+     }
+     // `cudaMemcpy` and not `cudaMemcpyAsync`: this is a startup check, and a check that can be read before it
+--- a/src/program/generate.cpp
++++ b/src/program/generate.cpp
+@@ -214,6 +214,9 @@
+         if (q >= src.exchange_capacity()) continue;
+         const int32_t slot = host_res[(size_t) s.layer * (size_t) n_expert + (size_t) s.out];
+         if (slot < 0) continue;
++        if (cache.slot_partition() == strata::core::ExpertSlotPartition::balanced &&
++            (cache.slot_layer(slot) != s.layer || uint64_t(cache.slot_capacity(slot)) <
++                strata::kernels::cpu::expert_layout().blob_bytes(s.layer))) return false;
+         if (cudaMemcpyAsync(src.exchange_buffer(q), cache.device_slot(slot),
+                             (size_t) strata::kernels::cpu::expert_layout().blob_bytes(s.layer), cudaMemcpyDeviceToHost,
+                             stream) != cudaSuccess)
+@@ -369,6 +372,7 @@
+     /// to them.  Measured at 256 slots: **1781 of 60000 = 2.97%**, against **21.4%** for 8 slots per layer and
+     /// **70.4%** for 64, from `Memory/cache_allocation.py` on the same run's routing.  Off by default.
+     bool expert_cache_per_layer = false;
++    bool expert_cache_balanced = false; // experimental SYCL opt-in; legacy default remains
+     /// Multi-GPU: a second expert tier on CUDA device `peer_device` (-1 = off), `peer_reserve_mib` left free
+     /// there, `peer_slots` caps its size (0 = as many as fit), `peer_adapt_swaps` per adaptive round
+     /// (-1 = adapt_swaps).
+@@ -655,6 +659,8 @@
+                  "  --peer-adapt-swaps N  peer cache swaps per adaptation step (default: --adapt-swaps)\n"
+                  "  --peer-prefill-rows N  prompt rows per layer the peer computes (default half of chunk x top-k;\n"
+                  "                       0 = the prompt path stays on the primary)\n"
++                 "  --expert-cache-balanced  SYCL native experiment: balance total slots over layers; requires\n"
++                 "                       --expert-cache-per-layer, one GPU, no peer/remote cache. Default off.\n"
+                  "  --expert-cache-per-layer  R4.2g: give each layer its OWN slots instead of letting the first\n"
+                  "                       position take all of them.  The default policy fills in arrival order\n"
+                  "                       from one shared counter, so 256 slots went to ~26 layers of position 0\n"
+@@ -1401,6 +1407,7 @@
+         else if (a == "--adapt-swaps") o.adapt_swaps = std::atoi(next("--adapt-swaps"));
+         else if (a == "--expert-cache-cpu-order") o.expert_cache_cpu_order = true;
+         else if (a == "--expert-cache-per-layer") o.expert_cache_per_layer = true;
++        else if (a == "--expert-cache-balanced") o.expert_cache_balanced = true;
+         else if (a == "--peer-device") o.peer_device = std::atoi(next("--peer-device"));
+         else if (a == "--peer-reserve-mib") o.peer_reserve_mib = std::atoi(next("--peer-reserve-mib"));
+         else if (a == "--peer-slots") o.peer_slots = std::atoll(next("--peer-slots"));
+@@ -1482,6 +1489,20 @@
+         }
+     }
+ #endif
++    if (o.expert_cache_balanced) {
++#ifndef STRATA_ENABLE_SYCL
++        std::fprintf(stderr, "strata generate: --expert-cache-balanced requires SYCL\n");
++        return 2;
++#else
++        if (!o.expert_cache_per_layer || o.expert_cache == 0 || !o.layer_split.empty() ||
++            o.peer_device >= 0 || o.expert_cache_remote[0] > 0 ||
++            o.expert_cache_remote[1] > 0 || o.expert_cache_remote[2] > 0) {
++            std::fprintf(stderr, "strata generate: balanced cache needs --expert-cache-per-layer, "
++                                 "a positive/auto cache, one GPU and no peer/remote cache\n");
++            return 2;
++        }
++#endif
++    }
+     strata::core::set_coupled_draft(o.coupled_draft);
+     strata::core::set_peer_portable(o.peer_device >= 1);   // multi-GPU: the Portable flag on mapped host buffers only with a peer device (before any allocation)
+     if (o.serve && o.conversation_cache_mib > 0 && (o.prompt_cache == 0 || o.conversation_cache_slots == 0))
+@@ -3118,11 +3139,32 @@
+     // same VRAM holds ~30% more IQ3_XXS experts than slots of the largest blob would
+     // #369: profile-ranked sizes cannot be used with per-layer admission: its slot ranges ignore profile rank.
+     // SYCL instead sizes every slot for its owning layer; other backends retain uniform per-layer slots.
++    const auto cache_partition = o.expert_cache_balanced
++        ? strata::core::ExpertSlotPartition::balanced
++        : strata::core::ExpertSlotPartition::last_layer_remainder;
++    if (!xcache.set_slot_partition(cache_partition)) {
++        std::fprintf(stderr, "strata generate: cache partition must be set before open\n");
++        return 2;
++    }
++    if (o.expert_cache_balanced && !native_pack) {
++        std::fprintf(stderr, "strata generate: balanced cache experiment requires a native expert pack\n");
++        return 2;
++    }
++    if (o.expert_cache_balanced && !auto_cache && o.expert_cache > 0 &&
++        !strata::core::expert_balanced_slot_count_valid(o.expert_cache, g.n_layers, g.n_expert)) {
++        std::fprintf(stderr, "strata generate: balanced cache exceeds total model expert count\n");
++        return 2;
++    }
+     std::vector<int64_t> sized_slots;
+ #ifdef STRATA_ENABLE_SYCL
+     std::vector<int64_t> per_layer_bytes;
+     if (native_pack && o.expert_cache > 0 && o.expert_cache_per_layer) {
+         const auto& lay = strata::kernels::cpu::expert_layout();
++        if (o.expert_cache_balanced && (lay.max_blob > uint64_t(INT64_MAX) ||
++            lay.max_blob > UINT64_MAX / uint64_t(o.expert_cache))) {
++            std::fprintf(stderr, "strata generate: balanced cache byte budget overflows\n");
++            return 2;
++        }
+         for (int64_t layer = 0; layer < g.n_layers; ++layer)
+             per_layer_bytes.push_back((int64_t) lay.blob_bytes(layer));
+         // Keep the uniform plan's byte budget and reserve. Slots in each
+@@ -3131,8 +3173,8 @@
+         const uint64_t budget = uint64_t(o.expert_cache) * lay.max_blob;
+         if (auto_cache)
+             o.expert_cache = (int) strata::core::per_layer_slots_that_fit(
+-                per_layer_bytes, budget, g.n_layers * g.n_expert);
+-        sized_slots = strata::core::per_layer_slot_sizes(per_layer_bytes, o.expert_cache);
++                per_layer_bytes, budget, g.n_layers * g.n_expert, cache_partition);
++        sized_slots = strata::core::per_layer_slot_sizes(per_layer_bytes, o.expert_cache, cache_partition);
+     }
+ #endif
+     if (native_pack && o.expert_cache > 0 && !profile.empty() && !o.expert_cache_per_layer) {
+@@ -3158,8 +3200,8 @@
+             if (!per_layer_bytes.empty()) {
+                 o.expert_cache = (int) strata::core::per_layer_slots_that_fit(
+                     per_layer_bytes, uint64_t(std::max<int64_t>(keep_bytes, 0)),
+-                    o.expert_cache);
+-                sized_slots = strata::core::per_layer_slot_sizes(per_layer_bytes, o.expert_cache);
++                    o.expert_cache, cache_partition);
++                sized_slots = strata::core::per_layer_slot_sizes(per_layer_bytes, o.expert_cache, cache_partition);
+                 return o.expert_cache > 0;
+             }
+ #endif
+@@ -3255,7 +3297,10 @@
+         std::fprintf(stderr, "strata generate: expert cache %lld slots, %.2f GiB of VRAM; policy is\n",
+                      (long long) xcache.slots(), xcache.gib());
+         mem_mark("opening the expert cache");
+-        xcache.set_per_layer_admission(o.expert_cache_per_layer);
++        if (!xcache.set_per_layer_admission(o.expert_cache_per_layer)) {
++            std::fprintf(stderr, "strata generate: cannot change cache admission after fills\n");
++            return 2;
++        }
+ #ifdef STRATA_ENABLE_SYCL
+         std::fprintf(stderr, "strata generate: SYCL cached experts use %s arithmetic; "
+                              "logits can differ from CPU experts.\n",
+@@ -3273,10 +3318,16 @@
+                      "                 bench/results/2026-09-27-cache-parity).\n");
+ #endif
+         if (o.expert_cache_per_layer) {
+-            int64_t lo = 0, hi = 0;
+-            xcache.layer_slot_range(0, lo, hi);
+-            std::fprintf(stderr, "                 R4.2g PER-LAYER: each layer owns %lld slots (%lld..%lld).\n",
+-                         (long long) (hi - lo), (long long) lo, (long long) (hi - 1));
++            int64_t least = xcache.slots(), most = 0;
++            for (int64_t layer = 0; layer < g.n_layers; ++layer) {
++                int64_t lo = 0, hi = 0;
++                xcache.layer_slot_range(layer, lo, hi);
++                least = std::min(least, hi - lo);
++                most = std::max(most, hi - lo);
++            }
++            std::fprintf(stderr, "                 PER-LAYER %s: %lld..%lld slots/layer, %lld allocation bytes.\n",
++                         o.expert_cache_balanced ? "balanced" : "legacy-last-remainder",
++                         (long long) least, (long long) most, (long long) xcache.bytes());
+         } else if (profile.empty()) {
+             std::fprintf(stderr, "                 compulsory-miss (fills with whatever the run routes first).\n");
+         } else {
+@@ -3288,6 +3339,8 @@
+     // admission finds no room and every non-profiled expert stays a CPU miss.  That is what makes the profile
+     // the policy rather than a hint.
+     int64_t prefilled = 0;
++    int32_t first_filled_slot = strata::core::kNotResident;
++    std::pair<int32_t, int32_t> first_filled_pair{};
+     if (!profile.empty() && srcp != nullptr) {
+         // #369 (dag08): per layer, a full layer skips only its own pairs - each layer takes its hottest experts until
+         // its range is full (one full layer used to end the whole fill, leaving most layers empty)
+@@ -3315,20 +3368,24 @@
+                              (long long) i, err.c_str());
+                 return 1;
+             }
++            if (first_filled_slot == strata::core::kNotResident) {
++                first_filled_slot = slot;
++                first_filled_pair = profile[size_t(i)];
++            }
+             ++prefilled;
+         }
+         // **AND ONE SLOT IS READ BACK AND COMPARED.**  A residency table that is right about indices and wrong
+         // about bytes produces a plausible token, which is this project's most expensive failure mode; the
+         // cache's own `verify_slot` is the check and it costs one 1.38 MB D2H at startup.
+-        if (prefilled > 0 && !xcache.verify_slot(xcache.slot_of(profile[0].first, profile[0].second),
+-                                srcp->blob(profile[0].first, profile[0].second), err,
+-                                (int64_t) strata::kernels::cpu::expert_layout().blob_bytes(profile[0].first))) {
++        if (prefilled > 0 && !xcache.verify_slot(first_filled_slot,
++                                srcp->blob(first_filled_pair.first, first_filled_pair.second), err,
++                                (int64_t) strata::kernels::cpu::expert_layout().blob_bytes(first_filled_pair.first))) {
+             std::fprintf(stderr, "strata generate: %s\n", err.c_str());
+             return 1;
+         }
+         mem_mark("the profile fill");
+-        std::fprintf(stderr, "strata generate: pre-filled %lld of %lld slots from the profile; slot 0 verified\n",
+-                     (long long) prefilled, (long long) (per_layer ? xcache.slots() : want));
++        std::fprintf(stderr, "strata generate: pre-filled %lld of %lld slots from the profile; verified slot %d\n",
++                     (long long) prefilled, (long long) (per_layer ? xcache.slots() : want), first_filled_slot);
+     }
+ 
+     for (auto& stp : stages) {
+@@ -5114,6 +5171,10 @@
+                 const int stn = multi_gpu ? stage_of(s.layer) : 0;   // the swap stays in the layer's own cache
+                 GpuStage* gs = stn > 0 ? stages[(size_t) stn - 1].get() : nullptr;
+                 const strata::core::OnDevice on(gs ? gs->dev : -1);
++                const auto& target_cache = gs ? gs->cache : xcache;
++                if (o.expert_cache_balanced && (target_cache.slot_layer(slot) != s.layer ||
++                    uint64_t(target_cache.slot_capacity(slot)) < strata::kernels::cpu::expert_layout().blob_bytes(s.layer)))
++                    return false;
+                 if (slot < 0 || b == nullptr ||
+                     cudaMemcpyAsync(gs ? gs->cache.device_slot(slot) : xcache.device_slot(slot), b,
+                                     (size_t) strata::kernels::cpu::expert_layout().blob_bytes(s.layer),
+@@ -6913,6 +6974,9 @@
+                 const int32_t slot = host_res[out];
+                 const uint8_t* b = srcp->blob(s.layer, s.in);
+                 // asynchronous: the copies run while the MTP drafts; the next window waits for them
++                if (o.expert_cache_balanced && (xcache.slot_layer(slot) != s.layer ||
++                    uint64_t(xcache.slot_capacity(slot)) < strata::kernels::cpu::expert_layout().blob_bytes(s.layer)))
++                    return false;
+                 if (slot < 0 || b == nullptr ||
+                     cudaMemcpyAsync(xcache.device_slot(slot), b, (size_t) strata::kernels::cpu::expert_layout().blob_bytes(s.layer),
+                                     cudaMemcpyHostToDevice, adapt_stream) != cudaSuccess) {
+--- a/tests/sycl/host_engine.cpp
++++ b/tests/sycl/host_engine.cpp
+@@ -1,4 +1,5 @@
+ #include "strata/core/expert_cache.hpp"
++#include "../cpu/expert_slot_partition_fixture.hpp"
+ #include "strata/core/expert_slot_sizes.hpp"
+ #include "strata/core/graph.hpp"
+ #include "strata/core/pinned.hpp"
+@@ -221,6 +222,7 @@
+ }
+ int main() {
+   try {
++    check_expert_slot_partition_fixture();
+     std::string err;
+     {
+       strata::core::PinnedArena arena(65536,
+@@ -263,10 +265,12 @@
+       using namespace strata::core;
+       const std::vector<int64_t> sizes{5001, 2057, 9000};
+       constexpr int slots = 8;
+-      auto plan = per_layer_slot_sizes(sizes, slots);
++      for (const auto partition : {ExpertSlotPartition::last_layer_remainder, ExpertSlotPartition::balanced}) {
++      require(cache.set_slot_partition(partition), "set partition before allocation");
++      auto plan = per_layer_slot_sizes(sizes, slots, partition);
+       uint64_t budget = 0;
+       for (auto b : plan) budget += expert_slot_aligned_bytes(b);
+-      require(per_layer_slots_that_fit(sizes, budget, slots) == slots,
++      require(per_layer_slots_that_fit(sizes, budget, slots, partition) == slots,
+               "per-layer plan fits its exact byte budget");
+       // Compare the planner with all legal counts, including last-layer
+       // remainders whose sizes can be larger than an entire previous round.
+@@ -274,11 +278,11 @@
+         int64_t expected = 0;
+         for (int64_t n = 1; n <= slots; ++n) {
+           uint64_t bytes = 0;
+-          for (auto b : per_layer_slot_sizes(sizes, n))
++          for (auto b : per_layer_slot_sizes(sizes, n, partition))
+             bytes += expert_slot_aligned_bytes(b);
+           if (bytes <= cap) expected = n;
+         }
+-        require(per_layer_slots_that_fit(sizes, cap, slots) == expected,
++        require(per_layer_slots_that_fit(sizes, cap, slots, partition) == expected,
+                 "per-layer plan keeps the largest count within budget");
+       }
+       require(cache.open_sized(plan, 3, 8, err), err);
+@@ -286,10 +290,14 @@
+       for (int layer = 0; layer < 3; ++layer) {
+         int64_t lo = 0, hi = 0;
+         cache.layer_slot_range(layer, lo, hi);
+-        require(hi - lo == (layer == 2 ? 4 : 2), "per-layer remainder range");
++        require(hi - lo == (partition == ExpertSlotPartition::balanced ? (layer < 2 ? 3 : 2)
++                                                                         : (layer == 2 ? 4 : 2)),
++                "per-layer partition range");
+         for (int64_t s = lo; s < hi; ++s) {
+           require(plan[size_t(s)] == sizes[size_t(layer)],
+                   "slot capacity follows actual layer admission range");
++          require(cache.slot_layer(int32_t(s)) == layer && cache.slot_capacity(int32_t(s)) == sizes[size_t(layer)],
++                  "owner and raw capacity");
+           require(cache.admit(layer, s - lo) == s,
+                   "per-layer expert admission uses planned slot");
+           std::vector<uint8_t> payload(size_t(sizes[size_t(layer)]),
+@@ -301,8 +309,8 @@
+         }
+       }
+       cache.close();
+-      const int64_t shrunk = per_layer_slots_that_fit(sizes, budget * 3 / 4, slots);
+-      const auto smaller = per_layer_slot_sizes(sizes, shrunk);
++      const int64_t shrunk = per_layer_slots_that_fit(sizes, budget * 3 / 4, slots, partition);
++      const auto smaller = per_layer_slot_sizes(sizes, shrunk, partition);
+       require(cache.open_sized(smaller, 3, 8, err), err);
+       for (int layer = 0; layer < 3; ++layer) {
+         int64_t lo = 0, hi = 0;
+@@ -312,6 +320,11 @@
+                   "shrinking regenerates layer ranges and capacities");
+       }
+       cache.close();
++      }
++      require(cache.set_slot_partition(ExpertSlotPartition::balanced), "set balanced");
++      require(!cache.open(24577, 48, 512, 1, err), "reject more slots than model experts before allocation");
++      require(!cache.open(INT64_MAX, 48, 512, 1, err), "reject cursor overflow before allocation");
++      require(cache.set_slot_partition(ExpertSlotPartition::last_layer_remainder), "restore legacy");
+     }
+     for (int reopen = 0; reopen < 2; ++reopen) {
+       require(cache.open_sized({4096, 8192, 16384}, 1, 3, err), err);
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1121,6 +1121,11 @@
+ 
+ if(STRATA_BUILD_TESTS)
+   enable_testing()
++  add_executable(expert_slot_partition_host_test tests/cpu/expert_slot_partition.cpp)
++  target_include_directories(expert_slot_partition_host_test PRIVATE include)
++  target_link_libraries(expert_slot_partition_host_test PRIVATE strata_warnings)
++  add_test(NAME expert_slot_partition_host COMMAND expert_slot_partition_host_test)
++  set_tests_properties(expert_slot_partition_host PROPERTIES TIMEOUT 30)
+   if(NOT TARGET watchdog_lifecycle_host_test)
+     add_executable(watchdog_lifecycle_host_test tests/cpu/watchdog_lifecycle.cpp)
+     target_include_directories(watchdog_lifecycle_host_test PRIVATE include)
+--- a/tests/cpu/decode_joined_mtp4.cpp
++++ b/tests/cpu/decode_joined_mtp4.cpp
+@@ -4,6 +4,7 @@
+ // UNCOMPILED/UNRUN. Adaptation of archived route/service fixtures using actual helpers.
+ // Main after application: c++ -std=c++17 -pthread -Iinclude PATH/cpu_fixture.cpp -o PRIVATE/fixture
+ #include "strata/core/decode_service_budget.hpp"
++#include "expert_slot_partition_fixture.hpp"
+ #include <cassert>
+ #include <memory>
+ #include <string>
+@@ -119,6 +120,7 @@
+     assert(WIFEXITED(result) && WEXITSTATUS(result)==0);
+ }
+ int main() {
++    check_expert_slot_partition_fixture();
+     assert(decode_joined_requested("1","1"));
+     const char* no_values[]={nullptr,"","0","01","true","1 "};
+     for (const char* no:no_values) {
+--- /dev/null
++++ b/tests/cpu/expert_slot_partition_fixture.hpp
+@@ -0,0 +1,131 @@
++#pragma once
++#include "strata/core/expert_slot_sizes.hpp"
++#include <stdexcept>
++
++inline void check_expert_slot_partition_fixture() {
++    using namespace strata::core;
++    using P = ExpertSlotPartition;
++    auto check = [](bool ok) { if (!ok) throw std::runtime_error("expert slot partition fixture"); };
++    auto throws = [&](auto operation) {
++        bool caught = false;
++        try { operation(); } catch (const std::exception&) { caught = true; }
++        check(caught);
++    };
++    // Explicit independent expected quotas; 128/48 is NOT 2 or 3 in legacy.
++    for (const auto partition : {P::last_layer_remainder, P::balanced}) {
++        for (const int64_t slots : {int64_t(0), int64_t(1), int64_t(47), int64_t(48),
++                                   int64_t(49), int64_t(128), int64_t(512), int64_t(24576)}) {
++            int64_t prior = 0, total = 0;
++            for (int64_t layer = 0; layer < 48; ++layer) {
++                int64_t lo = -1, hi = -1;
++                expert_layer_slot_range(slots, 48, layer, lo, hi, partition);
++                check(lo == prior && lo <= hi && hi <= slots);
++                if (slots == 128) check(hi - lo == (partition == P::balanced ? (layer < 32 ? 3 : 2)
++                                                                                           : (layer == 47 ? 34 : 2)));
++                if (slots == 1) check(hi - lo == (partition == P::balanced ? (layer == 0 ? 1 : 0)
++                                                                                         : (layer == 47 ? 1 : 0)));
++                if (slots == 24576) check(hi - lo == 512);
++                if (slots == 512 && partition == P::balanced) check(hi - lo == (layer < 32 ? 11 : 10));
++                for (int64_t slot = lo; slot < hi; ++slot) check(expert_slot_layer(slots, 48, slot, partition) == layer);
++                prior = hi; total += hi - lo;
++            }
++            check(total == slots && expert_slot_layer(slots, 48, -1, partition) == -1);
++            check(expert_slot_layer(slots, 48, slots, partition) == -1);
++        }
++        int64_t lo = -1, hi = -1;
++        expert_layer_slot_range(128, 48, -1, lo, hi, partition); check(lo == 0 && hi == 0);
++        expert_layer_slot_range(128, 48, 48, lo, hi, partition); check(lo == 0 && hi == 0);
++        expert_layer_slot_range(INT64_MAX, 48, 47, lo, hi, partition); check(hi == INT64_MAX && lo <= hi);
++        check(expert_slot_layer(INT64_MAX, 48, INT64_MAX - 1, partition) == 47);
++        expert_layer_slot_range(INT64_MAX, 1, 0, lo, hi, partition); check(lo == 0 && hi == INT64_MAX);
++    }
++    check(expert_slot_layer(3, 0, 0) == -1);
++    check(expert_balanced_slot_count_valid(0, 48, 512));
++    check(expert_balanced_slot_count_valid(24576, 48, 512));
++    check(!expert_balanced_slot_count_valid(24577, 48, 512));
++    check(!expert_balanced_slot_count_valid(49, 48, 1));
++    check(!expert_balanced_slot_count_valid(-1, 48, 512));
++    check(expert_balanced_slot_count_valid(INT64_MAX, INT64_MAX, INT64_MAX));
++    check(!expert_balanced_slot_count_valid(INT64_MAX, 1, 512));
++
++    // Pinned IQ3_S native_experts.txt metadata, 48 layers / 512 experts.
++    // All seven real raw blob sizes are already 256-byte aligned.
++    const std::vector<int64_t> actual_blobs{2176000,1510400,1971200,1971200,1971200,1971200,1971200,2176000,1510400,1971200,1510400,1971200,1715200,1510400,2176000,1971200,2176000,2329600,2176000,1971200,1715200,1868800,2176000,1971200,1971200,2329600,1971200,2329600,2329600,2329600,1715200,2176000,1971200,2176000,1971200,2329600,1510400,2176000,2176000,1971200,2329600,2176000,2176000,2176000,2329600,2329600,2176000,2662400};
++    for (const int64_t b : actual_blobs) {
++        check(expert_slot_aligned_bytes(b - 1) == uint64_t(b));
++        check(expert_slot_aligned_bytes(b) == uint64_t(b));
++        check(expert_slot_aligned_bytes(b + 1) == uint64_t(b + 256));
++        uint64_t count = 0;
++        check(expert_slot_transfer_size(b, b - 1, count) && count == uint64_t(b - 1));
++        check(!expert_slot_transfer_size(b, b + 1, count));
++    }
++    check(expert_slot_offsets(per_layer_slot_sizes(actual_blobs, 128)).back() == 281651200);
++    check(expert_slot_offsets(per_layer_slot_sizes(actual_blobs, 128, P::balanced)).back() == 260044800);
++    check(per_layer_slots_that_fit(actual_blobs, 281651200, 24576, P::balanced) == 138);
++    check(expert_slot_offsets(per_layer_slot_sizes(actual_blobs, 138, P::balanced)).back() == 280832000);
++    check(expert_slot_offsets(per_layer_slot_sizes(actual_blobs, 139, P::balanced)).back() == 283008000);
++
++    // Heterogeneous raw blobs straddle 256-byte boundaries. Check exact offsets
++    // and transfers, including the first byte beyond raw size and beyond padding.
++    const std::vector<int64_t> raw{1, 255, 256, 257, 5001, 2057, 9000};
++    check(expert_slot_offsets(raw) == std::vector<uint64_t>({0,256,512,768,1280,6400,8704,17920}));
++    for (int64_t b : raw) {
++        uint64_t n = 123;
++        check(expert_slot_transfer_size(b, 0, n) && n == uint64_t(b));
++        check(expert_slot_transfer_size(b, b, n) && n == uint64_t(b));
++        check(!expert_slot_transfer_size(b, b + 1, n) && n == 0);
++        check(!expert_slot_transfer_size(b, -1, n));
++    }
++    uint64_t n = 1;
++    check(!expert_slot_transfer_size(0, 0, n));
++    throws([] { expert_slot_offsets({1, 0}); });
++    throws([] { expert_slot_offsets({1, -1}); });
++    throws([] { expert_slot_offsets({INT64_MAX}); });
++    throws([] { per_layer_slot_sizes({}, 1); });
++    throws([] { per_layer_slot_sizes({256}, -1); });
++    throws([] { per_layer_slots_that_fit({INT64_MAX, INT64_MAX}, UINT64_MAX, 1); });
++
++    // Independent known costs show that same count is not same bytes.
++    const std::vector<int64_t> blobs{5001,2057,9000}; // aligned: 5120,2304,9216
++    check(per_layer_slot_sizes(blobs, 8) == std::vector<int64_t>({5001,5001,2057,2057,9000,9000,9000,9000}));
++    check(per_layer_slot_sizes(blobs, 8, P::balanced) == std::vector<int64_t>({5001,5001,5001,2057,2057,2057,9000,9000}));
++    check(expert_slot_offsets(per_layer_slot_sizes(blobs, 8)).back() == 51712);
++    check(expert_slot_offsets(per_layer_slot_sizes(blobs, 8, P::balanced)).back() == 40704);
++    for (const auto partition : {P::last_layer_remainder, P::balanced}) {
++        // Exhaust legal count/budget pairs; cost can drop at legacy round
++        // transitions. An ordinary monotonic binary search is invalid there.
++        std::vector<uint64_t> costs;
++        for (int64_t slots = 0; slots <= 20; ++slots)
++            costs.push_back(expert_slot_offsets(per_layer_slot_sizes(blobs, slots, partition)).back());
++        for (uint64_t cap = 0; cap <= 120000; cap += 127) {
++            int64_t expected = 0;
++            for (int64_t slots = 0; slots <= 20; ++slots)
++                if (costs[size_t(slots)] <= cap) expected = slots;
++            check(per_layer_slots_that_fit(blobs, cap, 20, partition) == expected);
++        }
++        for (int64_t slots = 1; slots <= 20; ++slots) {
++            const uint64_t exact = costs[size_t(slots)];
++            int64_t expected_before = 0, expected_exact = 0;
++            for (int64_t k = 0; k <= slots; ++k) {
++                if (costs[size_t(k)] < exact) expected_before = k;
++                if (costs[size_t(k)] <= exact) expected_exact = k;
++            }
++            check(per_layer_slots_that_fit(blobs, exact - 1, slots, partition) == expected_before);
++            check(per_layer_slots_that_fit(blobs, exact, slots, partition) == expected_exact);
++        }
++        // Each slot in a real-shaped plan must have the owner's raw capacity,
++        // across all quota boundaries, including zero-slot layers and >512/layer.
++        std::vector<int64_t> sizes48;
++        for (int i = 0; i < 48; ++i) sizes48.push_back(raw[size_t(i) % raw.size()]);
++        for (const int64_t slots : {int64_t(1), int64_t(47), int64_t(49), int64_t(128),
++                                   int64_t(512), int64_t(24576), int64_t(24577)}) {
++            const auto plan = per_layer_slot_sizes(sizes48, slots, partition);
++            const auto offsets = expert_slot_offsets(plan);
++            for (int64_t slot = 0; slot < slots; ++slot) {
++                const int64_t layer = expert_slot_layer(slots, 48, slot, partition);
++                check(layer >= 0 && layer < 48 && plan[size_t(slot)] == sizes48[size_t(layer)]);
++                check(offsets[size_t(slot + 1)] - offsets[size_t(slot)] >= uint64_t(plan[size_t(slot)]));
++            }
++        }
++    }
++}
+--- /dev/null
++++ b/tests/cpu/expert_slot_partition.cpp
+@@ -0,0 +1,6 @@
++#include "expert_slot_partition_fixture.hpp"
++#include <cstdio>
++int main() {
++    check_expert_slot_partition_fixture();
++    std::puts("expert slot partition CPU fixture passed");
++}

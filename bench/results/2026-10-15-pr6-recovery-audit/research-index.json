@@ -242,13 +242,29 @@
       "path": "research-layer26-moe-divergence-round586-v1.txt",
       "sha256": "5420e513bf9270f4fc85c7a815d76e7bc449483b3b47f7c3cf150868b39dbae2",
       "status": "FINAL received; source hypotheses only, actual newlayer26 boundary result and Main decisions in boundary-audit-long-pair.ja.md. No concrete UB found; no cause/fix/performance qualification."
+    },
+    {
+      "round": 587,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-decode-kv-residency-round587-v1.txt",
+      "sha256": "36a1069ee40862eeff6255419b7369f66c270822a606043520dd49d276e83672",
+      "status": "FINAL received; Main reviewed in decode-format-service.ja.md. R5888GiB/300s rejected, allGPUworkserialized; R587 page bound conditional on selector. No runtime/performance qualification from research."
+    },
+    {
+      "round": 588,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-decode-gpu-boundary-round588-v1.txt",
+      "sha256": "296f02391e3523fc627b5f55c9d6e4c77d88471df839f8f42991bf0943f1645f",
+      "status": "FINAL received; Main reviewed in decode-format-service.ja.md. R5888GiB/300s rejected, allGPUworkserialized; R587 page bound conditional on selector. No runtime/performance qualification from research."
     }
   ],
   "main_initial_findings": [
     "PR6 performance patch changes historic sycl/src/prefill/prefill.cpp, not current root src/prefill/prefill.cpp. Current root rg finds compact scratch but no layer-major selector. History preservation is not adoption.",
     "Original645.85 PP and later449.7 full-context/MTP measures need separate source/config reconciliation; different protocol does not justify discarding the old improvement."
   ],
-  "next": "Actual format service and layer26 phase proposal review; CPU rowpair candidate rejected, balanced cache proposal pending. Then settings/clean official benchmarks with prefill/decode separate. Original auto numericalFAIL and physical256K/RESTORE remain open.",
+  "next": "Existing exact-helper setting actual format screen; review layer26phase diagnostic and balanced cache proposals. No new product inference candidate adopted. Automatic-prefix numericalFAIL, physical256K/RESTORE and clean official benchmark pending.",
   "main_review": "main-review-round559-560.ja.md",
   "subsequent_main_review": "main-review-round561-562.ja.md",
   "public_history_reverification": "public-history-reverification.json",
@@ -258,7 +274,7 @@
     "main_review": "qsa-layout-recovery-v1/main-review.ja.md",
     "status": "Build/host and20GPU parity/oracle cases PASS/fault0. Component40sample screen closedPASS; layout1 median4.09%slower in one int8case, no adoption. No whole-model/full256K/RESTORE/quality qualification."
   },
-  "latest_main_review": "boundary-audit-long-pair.ja.md",
+  "latest_main_review": "decode-format-service.ja.md",
   "component_summary": "qsa-layout-screen-summary.json",
   "gemm_orientation_probe": {
     "report": "gemm-orientation-probe-v1/implementation.txt",
@@ -390,5 +406,25 @@
     "receipt": "iq3s-rowpair-probe-v2.json",
     "original_failure": "iq3s-rowpair-probe-v1.json",
     "state": "Main353case normal+ASan/UBSan bitwisePASS;288clean samples. Candidate slower, not applied. Existingexact promising within syntheticIQ3Snt1 only."
+  },
+  "actual_format_service": {
+    "receipt": "decode-format-service-normal-v1.json",
+    "summary": "decode-format-service-summary-v1.json",
+    "extra": "decode-format-service-extra-v1.json",
+    "state": "2x34K128decode+short actual format conservationPASS/fault0. Same long128IDs/work; GUtypes18/22/21 all significant. Cleanbench unchanged."
+  },
+  "pending_proposals": [
+    {
+      "directory": "balanced-layer-cache-v1",
+      "state": "FINAL received, source/CPU/Mainreview pending; not applied/built/tested"
+    },
+    {
+      "directory": "layer26-phase-audit-v1",
+      "state": "FINAL received, Mainreview pending; not applied/built/tested"
+    }
+  ],
+  "existing_exact_setting": {
+    "CPU_gate": "existing-iq-single-exact-v1.json",
+    "state": "Existing384CPU paritycasesPASS; product binary unchanged. Nextactual setting screen with same b6838d28."
   }
 }
