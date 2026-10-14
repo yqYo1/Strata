@@ -1,0 +1,77 @@
+# R589 — prefill QSA block-score oneMKL GEMM候補
+
+2026-10-15 JST。読み取り専用のsource/evidence/public-primary-source調査。指定されたPR6 recovery auditのR563/564/566/568/581/583、R576–579 Main review、R589開始時のresearch-index、boundary-audit-long-pairを先に確認した。指定された唯一の書き込みは本報告。製品変更、build/test、GPU/profiler、Git/service、cleanupは行っていない。実行中のMain actual-existing-exact GPUログ、禁止された`B/prefill-gemm-only-contract-root-v1/record.json`、private Codex/envscanは読んでいない。
+
+## 結論
+
+QSA prefillの`qsa_block_scores_tc()`は現在常に`false`で、実際のscoreは`qsa_block_scores()`がFP32のquery/key値を直接読み、query・blockごとに4 headのdotを各32 laneへ分配してshuffle reductionし、head順にReLUして加算する。bounded oneMKL GEMM案は、最大256 queryごとにpooled keyと4 head queryをFP16へ変換し、headごとに`[Tbatch,128] × [128,active_blocks]`のFP32出力GEMMを行い、各headのReLU後に順番に足す形なら構成できる。これは既存のQSA attention matrix candidateやMoE GEMM layout/selector thresholdの案とは別のscore-only候補である。
+
+採るなら最初のprecision armは**FP16**を優先する。B570のXMXはFP16/BF16の両形式をサポートし、既存oneMKL wrapperにも両型/FP32出力の実例がある。一方、score比較はtop-k routing境界を直接動かすため、FP16はBF16より仮数bitが多く、BF16の広い指数範囲は通常このnorm済み・rotatedなindex query/keyで主な利点になりにくい、というsource形状からの判断である。実測のQ/K値範囲、underflow/overflow率、score marginが未取得なので、これは有望候補の順位であり採用判断ではない。FP16/BF16は別armとしてroute差・選択ID差を評価する。
+
+過去に同一scopeのscore-only FP16/BF16 GEMMが棄却された記録は見つからなかった。R564は別kernelのprompt-attention XMX経路、R568はattention head tiling/SLM、R581はscore精度差を含む発散箇所のsource観察、R583はoneMKL内部dispatch仮説を扱う。`qsa_block_scores_tc=false`のコメントはその経路の精度・性能契約未確立を示すが、本候補のA/Bを試して棄却した結果ではない。従ってここでは再提案ではなく、Main判断待ちの新しいbounded score-only候補とする。QSA phase 49.455秒は207.576秒診断run内の非exclusive phase intervalである。候補の時間改善率や全prefill利得へ外挿しない。
+
+## 現行callsiteと行列形状
+
+`src/prefill/prefill.cpp`の通常prefill QSA layerで、chunk `T`のindex queryを`m.q_idx`へ作った後、`m.sel_batch=256`でselection loopを回す。各callについて:
+
+* `nq=Tbatch=min(256,T-t0)`。従って1..256と最後のpartial batchがある。
+* `blocks=m.max_blocks=state.max_cells / idx_block + 2`。実モデルの`idx_block=4`なので`max_cells=262,144`なら`blocks=65,538`。
+* `active=steps[last query].n_bid+1`。各query自身の`n=n_kv=position+1`、`n_bid=floor(n/4)`、`width=min(n,2048+4-1)=min(n,2051)`はchunk内で異なる。最大256K位置の例で、queryごとのcompleted-block数は最大65,536、activeは65,537。実運用でどのcontext上限/shapeを選ぶかはrun receiptで固定する。
+* pooled keysは`st.idx_pooled[b*128 ...]`、blockあたり128 FP32、row stride 128。queryは`m.q_idx[t*512 + h*128 ...]`、tokenあたり4 head×128 FP32、head-row間128、token-row間512。
+* completed block `b<n_bid`はpooled keyを読む。`b==n_bid`では共有`st.idx_dead[128]`を読む。`n%4!=0`なら現kernelはこのtail scoreへ`+1e9`を加え、top-kはtail blockのscoreを`n%4`個へ展開する。`n%4==0`のdead slotはtop-k weight 0。block `b>n_bid`のscoreは現kernelでは書かず、top-kも読まない。
+* `qsa_block_scores()`は`[nq, blocks]`を`qi*blocks+b`で書き、selection bufferは`m.sel_scores[sel_batch,max_blocks]`。現実装のgridは`nq*active` workgroup、workgroupごとに32 lane、各laneは128 dimensionの4要素を順次積和し、xor shuffle offset 16,8,4,2,1でreduceする。4 head dotをFP32で順にReLU、sumする。`qsa_block_topk()`は各queryについて`n_bid+1` blockまでのscoreと`steps`を読み、幅`width`個のcell IDを選ぶ。
+
+GEMM案は各headについて`M=nq, N=active, K=128`、queryはA、pooled key rowsはB、結果`C[nq,active]`はFP32となる。head dotのFP32出力にReLUを適用して4 headを現在と同じ順で合計する。queryごとに因果境界がずれ、tailのkeyも共通pool行ではなく`dead`で置換されるので、GEMM後kernelが各queryの`n_bid`を用いてdead列の値をtail位置へ写し、future列をtop-kから確実に見えない値/validityでmaskする必要がある。partial tailには既存の`+1e9f`とweight semanticsを明示的に維持する。単純にgeneric GEMMを`N=max_blocks`で置くと、将来位置・死んだblock・部分blockを混同し、現行と同じscore行列にはならない。
+
+## 既存Gemm APIに必要な変更とbounded scratch
+
+oneMKL `row_major::gemm`自体は`lda/ldb/ldc`を受けられるが、現`Gemm::bf16/f16` wrapperはXとWのleading dimensionをともにKへ固定し、出力`ld`のみ受ける。したがって既存`f16()`へ`m.q_idx+h*128`をそのまま渡せない。query token間の実strideは512 half elementsであり、head固定の行列は`lda=512`。選択肢は(1) `f16_strided`のように`lda/ldb/ldc`を明示するscore専用wrapperを足す、または(2) query headごとにcontiguous `[Tbatch,128]` scratchへpackすること。pooled keyは連続row (`ldb=128`)、GEMM outputを`m.sel_scores`の既存row strideで出すなら`ldc=m.max_blocks`。dead行をpooled行列末尾へ追加する設計ではNとoutput temporaryのstrideも合わせて拡張する。現wrapperの`workspace_`はoneMKLへ渡されておらず、Gemm APIが指定のleading dimensionを使えることとscratchpad管理は別課題である。
+
+最大geometryの追加scratch概算（FP16/BF16で同じ2-byte要素数）:
+
+```
+converted pooled + dead keys: (65,538 + 1) * 128 * 2 = 16,777,984 B
+converted interleaved queries: 256 * 4 * 128 * 2 = 262,144 B
+reusable per-head FP32 output: 256 * (65,538 + 1) * 4 = 67,111,936 B
+total new candidate scratch: 84,152,064 B = 80.25 MiB
+```
+
+これはcandidateを単純に作るときの最大追加bufferの保守値で、`m.sel_scores`の現行score matrix（256×65,538×4 =67,110,912 B）は既に確保済みとして加えていない。deadを別GEMMにする案や既存bufferへのreuseでtemporaryを小さくできるが、実際のpeakとqueue上の生存期間をMainが確定する。QSA/GDN/MoEは`region=max(gdn_set_bytes,qsa_set_bytes,moe_set_bytes)`の共有arenaを使うため、GPU arenaの実増加は新旧regionの差であり80.25 MiBそのものとは限らない。run前後の実allocation bytesとarena peakを計上する。
+
+既存512 MiB GPU headroom/reserveが効く設定では、80.25 MiBはその15.7%に相当する。`generate.cpp`のauto expert cacheはfree bytesからreserveとprefill budgetを引いてblob単位でslot数を決めるため、候補scratchが新しくpeakを増す場合は自動resident prefixを縮め得る。slot境界は`floor((free-reserve-prefill_bytes)/expert_blob_bytes)`で離散的であり、実free、実blob、現在のprefix余裕なしに何slot失うかは断言できない。shared arenaに収まれば追加VRAMは少ない可能性があるが、それもsourceの算術だけで確定しない。scratch bytes、512 MiB headroom、同じ起動で選ばれたauto prefix/resident countを同じreceiptへ記録する。
+
+## 数値と採否gate
+
+FP16/BF16 XMX GEMMは、半精度へ丸めたQ/K入力とFP32 accumulator/outputを使うため、旧FP32 dot/shuffle経路とのbitwise gateを緩める話ではなく、別のscore precision algorithmである。`indexer_ids`はattentionの入力を変えるexact contractなので、自然な同点・near-threshold差を数値許容誤差で無視せず、routing結果として別に評価する。最低限の独立gateは:
+
+* **math/shape safety**: Tbatch=1、非multiples、1..256各境界、`active` 1/partial/full、`n%4` 0/1/2/3、widthのidentityから2051まで、最大256K文脈。zero Q/K、有限値、NaN/Inf、FP16 overflow/underflow/subnormal、無効future score、tie、zero scale/guardを含み、全scoreとIDsのsentinel/範囲を検査する。選択IDが異なるときはthreshold付近のscore marginと全候補を保存する。
+* **routing/quality**: 同一binary/config/inputで旧FP32 scoreをreferenceとしてroute count/selected-ID agreement/flip位置と層を測る。first/final logitsのKL・target NLLまたは適切なPPL/task metricを独立に比較し、既存retrieval/long-context品質およびRESTORE checksも通す。token ID一致だけやscore toleranceだけで採用しない。
+* **performance**: same queue/source/toolchain/modelで各score-only armをclean samples比較し、変換、4 head GEMM、post-mask/relu-add、既存top-kまでを含むQSA selection subtotalとfull prefillを別々に計る。warmup/first callも分離、shapeとper-context呼出数を記録。R564の49.455秒非exclusive phaseはspeedup推定に用いない。
+
+## Mainが次に検討できる最大3つのcomponent gate
+
+1. **API/幾何gate**: 実shape 1/partial/256 query、blocks 1/partial/65,538 storage stride、activeごとの因果mask、tail dead置換、width/partial semanticsを小fixtureで確認し、既存FP32とcandidateのscore matrix・top-k ID差を記録。max-contextはlogical 256Kとphysical residency検証を分ける。
+2. **precision/math gate**: 同一入力のFP32/FP16/BF16 armを通し、Q/K値域と変換例外、score margin/ID flips、residual・selected logits KL/NLL/routing品質を測る。FP16を第一比較候補、BF16をrange controlとするが、いずれも品質gate通過まで未採用。
+3. **cost/headroom gate**: `lda=512, ldb=128, ldc=max_blocks`等の実descriptor、追加buffer live bytes、512 MiB reserve後のauto resident prefixを記録し、変換/post kernel込みQSA選択timeとend-to-end prefillを独立armで測る。全prefill性能をpassしても別のdecode/quality/full-context/RESTORE条件を飛ばさない。
+
+## 一次資料と過去差分
+
+IntelのoneMKL DPC++ GEMM primary APIはFP16×FP16→FP32とBF16×BF16→FP32を定義する: https://www.intel.com/content/www/us/en/docs/onemkl/developer-reference-dpcpp/2024-2/gemm.html 。oneMKL GEMMのlayout/leading dimensionを参照する公開APIであり、ここでは開いた現sourceのrow-major GEMM実装とも整合する。
+
+IntelのB570仕様はXe2/144 XMX enginesを記載する: https://www.intel.com/content/www/us/en/products/sku/241676/intel-arc-b570-graphics/specifications.html 。IntelのAI datatype表はArc B-series XMXにFP16/BF16/INT8等を明記する: https://www.intel.com/content/www/us/en/support/articles/000098346/graphics.html 。これは両型のhardware capabilityであり、oneMKLの当該shape選択や性能を保証しない。
+
+Intel形式解説はFP16の5-bit exponent/10-bit mantissaとBF16の8-bit exponent/7-bit mantissaを比較し、BF16のrangeとFP16の細かいprecisionを説明する: https://www.intel.com/content/www/us/en/developer/articles/technical/intel-deep-learning-boost-new-instruction-bfloat16.html 。本候補でFP16を先に評価するのはこの形式差とnorm済みscore入力に基づく推論で、実データの安全/品質測定は未実施。
+
+過去記録とのscope境界: R564の`prompt_attention.cpp` joint-matrix kernel (CH32/CH64)はQSA attention score/value計算で、block-indexerの`qsa_block_scores`とは異なる。R568のheadtile/SLM提案もattention routeであり本kernelではない。R581はFP64 indexer scoreとFP32 block scoreの違いを記すが新しいGEMM案を評価していない。R583はQSA block scorerがoneMKLを呼ばないことと`qsa_block_scores_tc()`常時falseを確認し、oneMKL internal algorithm/workspace selectionを未確認とした。本提案はそれらの結論を変えない。
+
+## ローカルsource hash
+
+* `src/prefill/prefill.cpp`: `ce7ca301b286001b2a1bb76b7aababb1ceb1ac014d9422261a124edee01ca68b`
+* `src/kernels/sycl/qsa_select.cpp`: `45084756ca5e8e36085dae46581049c81366a45cdfde23e8c6f38defbba0c809`
+* `include/strata/kernels/qsa.hpp`: `87c02222284f842fcecb46a422b119af769c72c3914edc8da5b2ee782456dc74`
+* `include/strata/prefill/gemm.hpp`: `921a5aeea69a4b5a94c3fdf983eca10fca79c2e1cd2e3d6c83c05de95aad335d`
+* `src/prefill/sycl/gemm.cpp`: `0fe1904787462a4156185bc08b2076e047f9cf51d9517ede4c8f482fa76c5410`
+* R564 report: `28f2e1360f5292b3217589fb9fd66d85815fd2ad1f9a291e5dfdc8b3daf88591`
+* R581 report: `67c68c3a5bc979b9fd4c932c5d548628b8b2cad7562961cef9410c8b8a9091d0`
+
+外部資料アクセス日: 2026-10-15。ここに示したのはsource-based candidate feasibilityと公的API/hardware supportであり、runtime correctness、speedup、品質、adoptionの証拠ではない。

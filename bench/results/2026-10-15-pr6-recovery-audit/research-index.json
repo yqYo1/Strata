@@ -258,6 +258,14 @@
       "path": "research-decode-gpu-boundary-round588-v1.txt",
       "sha256": "296f02391e3523fc627b5f55c9d6e4c77d88471df839f8f42991bf0943f1645f",
       "status": "FINAL received; Main reviewed in decode-format-service.ja.md. R5888GiB/300s rejected, allGPUworkserialized; R587 page bound conditional on selector. No runtime/performance qualification from research."
+    },
+    {
+      "round": 589,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-prefill-qsa-xmx-scores-round589-v1.txt",
+      "sha256": "c5c8e03069b54e5010649f57033ab8dae699546b393e51c33f51ca8ea31548d9",
+      "status": "FINAL reviewed as score-only GEMM feasibility; no implementation/speed/quality qualification. Currentf16 wrapper stride512 mismatch needs packing/API."
     }
   ],
   "main_initial_findings": [
@@ -397,7 +405,7 @@
     "recipe": "apply_build_boundary_service_v1.py",
     "review": "boundary-service-main-review.ja.md",
     "model_recipe": "check_boundary_audit_v1.py",
-    "state": "Small3arm+34K fixed PASS/fault0. Auto numericalFAIL/fault0; copyequal at selectedrows; exact pair firstselecteddiff layer26/row24575. Actual format-service normalserve pending.",
+    "state": "Small3arm+34Kfixed PASS/fault0;auto numericalFAIL/fault0; selected copyequal; first selected outputdiff layer26/24575. Actual format-service closed PASS.",
     "paired": "boundary-audit-long-pair-v1.json"
   },
   "retention_v4": "retention-v4-manifest.json",
@@ -420,14 +428,37 @@
     },
     {
       "directory": "layer26-phase-audit-v1",
-      "state": "FINAL received, Mainreview pending; not applied/built/tested"
+      "state": "Main normal+ASan/UBSan CPU fixture and13 comparator cases PASS; not product-applied or GPU-built. phase-audit-host-v1.json."
+    },
+    {
+      "directory": "bounded-kv-copy-groups-v1",
+      "state": "FINAL received; Main review/CPU/GPU pending; unapplied"
+    },
+    {
+      "directory": "owned-decode-profile-window-v1",
+      "state": "FINAL received; no source.diff dueITT absent/dynamicenviron unresolved; no collector execution"
     }
   ],
   "existing_exact_setting": {
     "CPU_gate": "existing-iq-single-exact-v1.json",
-    "state": "CPU384paritycasesPASS with unchanged b6838binary; actual same-binary STRATA_IQ_SINGLE_EXACT=1 setting screen started, result pending. Source frozen while owned GPU run is live.",
+    "state": "Closed3requestsPASS/fault0. Firstlong IDs/workmatch and0.9%wall difference only; second workdiffers. DefaultOFF, not performance/quality adopted.",
     "actual_recipe": "check_decode_format_existing_exact_v1.py",
-    "actual_output_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-decode-format-existing-exact-normal-root-v1"
+    "actual_output_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-decode-format-existing-exact-normal-root-v1",
+    "actual_receipt": "decode-format-existing-exact-normal-v1.json",
+    "summary": "existing-exact-setting-summary-v1.json",
+    "report": "existing-exact-setting.ja.md"
   },
-  "retention_v5": "retention-v5-manifest.json"
+  "retention_v5": "retention-v5-manifest.json",
+  "parallel_research_current": [
+    {
+      "round": 590,
+      "scope": "CPU IQ2_S kernels and alternatives",
+      "agent": "/root/research_iq2s_cpu_kernel_round590"
+    },
+    {
+      "round": 591,
+      "scope": "Safe bounded actual profiler collection control",
+      "agent": "/root/research_profile_safe_control_round591"
+    }
+  ]
 }
