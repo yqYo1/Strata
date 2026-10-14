@@ -45,7 +45,8 @@ def main():
                      'main-primary-watchdog-lifecycle-build-root-v3',
                      'main-primary-watchdog-lifecycle-build-root-v4',
                      'main-primary-watchdog-short-root-v10',
-                     'main-primary-watchdog-default-short-root-v11']:
+                     'main-primary-watchdog-default-short-root-v11',
+                     'main-primary-stock-bench-accepted-root-v2']:
         if original(B / optional / 'record.json') is not None:
             roots.append(optional)
     with (B / 'owned-v0141-measurement.lock').open('a') as lock:
@@ -85,6 +86,12 @@ def main():
             (463, 'research-primary-large-range-contract-round463-v1.txt'),
             (464, 'research-primary-prior-cpu-rejections-round464-v1.txt'),
             (465, 'research-primary-native-function-provenance-round465-v1.txt'),
+            (481, 'research-primary-decode-work-and-ceiling-round481-v1.txt'),
+            (482, 'research-primary-layer-major-splice-contract-round482-v1.txt'),
+            (483, 'research-primary-cache-auto-borrow-contract-round483-v1.txt'),
+            (484, 'research-primary-vtune-safe-collector-contract-round484-v1.txt'),
+            (485, 'research-primary-actual-sycl-cache-path-round485-v1.txt'),
+            (486, 'research-primary-current-integration-ledger-round486-v1.txt'),
         ]
         known_rounds = {number for number, _ in known_reports}
         known_reports += [(entry['round'], Path(entry['path']).name) for entry in prior_research.get('reports', []) if entry['round'] not in known_rounds]
@@ -101,6 +108,17 @@ def main():
         prior_research.update(prior_indexes=['../2026-10-14-primary-native-runtime/research-index.json',
                            '../2026-10-14-niko-main-service-port/research-index.json'], reports=reports,
                            no_intervention_until_final=True)
+        corrections = prior_research.setdefault('main_corrections', [])
+        new_corrections = [
+            dict(round=481, correction='Selected-byte quantities were divided by10 in much of the report. Main metadata arithmetic in decode-work-model.json is authoritative: T1=982272000B, T4 unique=982272000..3929088000B. Each GU projection is640x2560, combined1280x2560; useful4.718592GFLOP per proposed token is correct. These are logical weights/work, not measured traffic.'),
+            dict(round=483, correction='161 per-layer slots is the auto-budget path, not the explicit128 path used by the model run. Actual explicit128=281651200B/268.60MiB. See R485 actual branch audit. No change to cache auto or borrow has been measured.'),
+            dict(round=484, correction='The proposed180s marked32K/128 request deadline is insufficient: quiet nominal32K prefill alone is about271s. Main will set a separate finite budget of at least1200s before any model collection. No profiler capability or model profile has been measured.'),
+            dict(round=485, correction='The explicit128-slot and borrow predicates are confirmed. Its strong auto/no-borrow cache0 prediction uses free memory measured after Prefill and MTP allocation. Auto sizing happens earlier at generate.cpp2929, explicitly reserving those later allocations; the1669MiB everything-loaded value cannot establish that earlier free budget or justify rejecting an auto arm. The report also reads a historical build-sycl cache; current production build identity is the canonical native build-v4 receipt.'),
+            dict(round=486, correction='The nine-line generator update after0f4ce392 changes the SYCL default watchdog from60 to300s; it is not a range-contract update. This report remains a source disposition ledger, not a complete upstream delta/adoption ledger. Default promotion is outstanding, not contingent on reaching performance targets.'),
+        ]
+        for correction in new_corrections:
+            corrections[:] = [x for x in corrections if not isinstance(x, dict) or x.get('round') != correction['round']]
+            corrections.append(correction)
         (D / 'research-index.json').write_text(json.dumps(prior_research, indent=2, ensure_ascii=False) + '\n')
         windows = json.loads((D / 'model-diagnostic-windows.json').read_text()) if (D / 'model-diagnostic-windows.json').exists() else []
         for version in (1, 2, 4, 5, 6, 7, 8, 9, 10, 11):

@@ -61,6 +61,54 @@
       "read_only": true
     },
     {
+      "round": 481,
+      "path": "research/research-primary-decode-work-and-ceiling-round481-v1.txt",
+      "original_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-primary-decode-work-and-ceiling-round481-v1.txt",
+      "sha256": "34bfa1954caa5678f6d221064e01466d713067e6291a63627ff00c35fb734d65",
+      "model": "gpt-6-luna",
+      "read_only": true
+    },
+    {
+      "round": 482,
+      "path": "research/research-primary-layer-major-splice-contract-round482-v1.txt",
+      "original_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-primary-layer-major-splice-contract-round482-v1.txt",
+      "sha256": "194684e9dffa76db5db236e070383d574d6d8d65ff3adccdfddbd7e05a2882fc",
+      "model": "gpt-6-luna",
+      "read_only": true
+    },
+    {
+      "round": 483,
+      "path": "research/research-primary-cache-auto-borrow-contract-round483-v1.txt",
+      "original_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-primary-cache-auto-borrow-contract-round483-v1.txt",
+      "sha256": "0299bf83cfb011ac40eecb8bee08db68b1ea203e9e7c547eaf6bcf588342e233",
+      "model": "gpt-6-luna",
+      "read_only": true
+    },
+    {
+      "round": 484,
+      "path": "research/research-primary-vtune-safe-collector-contract-round484-v1.txt",
+      "original_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-primary-vtune-safe-collector-contract-round484-v1.txt",
+      "sha256": "af9ca985cdd3415caf0b6e972134e74c9433fc65f90d6403e23480fd9a321d07",
+      "model": "gpt-6-luna",
+      "read_only": true
+    },
+    {
+      "round": 485,
+      "path": "research/research-primary-actual-sycl-cache-path-round485-v1.txt",
+      "original_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-primary-actual-sycl-cache-path-round485-v1.txt",
+      "sha256": "906e61b1a3d29782a60b8f9264a52abbf935e2fce1fbd5e74514dccc13ea0268",
+      "model": "gpt-6-luna",
+      "read_only": true
+    },
+    {
+      "round": 486,
+      "path": "research/research-primary-current-integration-ledger-round486-v1.txt",
+      "original_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-primary-current-integration-ledger-round486-v1.txt",
+      "sha256": "c4d5c71331ca08daa89e48e2f2af0443b9f3d5f99cfcd14649f2c990782f6e04",
+      "model": "gpt-6-luna",
+      "read_only": true
+    },
+    {
       "round": 466,
       "path": "research/research-primary-best-settings-reconciliation-round466-v1.txt",
       "original_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-primary-best-settings-reconciliation-round466-v1.txt",
@@ -205,6 +253,26 @@
     {
       "round": 479,
       "reason": "Image-generation route is a server/API function under mandatory non-inference integration, even when its user use/config is opt-in. Do not mark feature adoption optional; preserve truthful backend availability and track required Arc adaptation separately. Aggregate API/setup leads are incomplete per-feature attribution, not a complete updated Niko ledger."
+    },
+    {
+      "round": 481,
+      "correction": "Selected-byte quantities were divided by10 in much of the report. Main metadata arithmetic in decode-work-model.json is authoritative: T1=982272000B, T4 unique=982272000..3929088000B. Each GU projection is640x2560, combined1280x2560; useful4.718592GFLOP per proposed token is correct. These are logical weights/work, not measured traffic."
+    },
+    {
+      "round": 483,
+      "correction": "161 per-layer slots is the auto-budget path, not the explicit128 path used by the model run. Actual explicit128=281651200B/268.60MiB. See R485 actual branch audit. No change to cache auto or borrow has been measured."
+    },
+    {
+      "round": 484,
+      "correction": "The proposed180s marked32K/128 request deadline is insufficient: quiet nominal32K prefill alone is about271s. Main will set a separate finite budget of at least1200s before any model collection. No profiler capability or model profile has been measured."
+    },
+    {
+      "round": 485,
+      "correction": "The explicit128-slot and borrow predicates are confirmed. Its strong auto/no-borrow cache0 prediction uses free memory measured after Prefill and MTP allocation. Auto sizing happens earlier at generate.cpp2929, explicitly reserving those later allocations; the1669MiB everything-loaded value cannot establish that earlier free budget or justify rejecting an auto arm. The report also reads a historical build-sycl cache; current production build identity is the canonical native build-v4 receipt."
+    },
+    {
+      "round": 486,
+      "correction": "The nine-line generator update after0f4ce392 changes the SYCL default watchdog from60 to300s; it is not a range-contract update. This report remains a source disposition ledger, not a complete upstream delta/adoption ledger. Default promotion is outstanding, not contingent on reaching performance targets."
     }
   ]
 }

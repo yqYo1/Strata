@@ -1470,168 +1470,6 @@
     "reason": "distinct CLI/startup/range mechanism and relevant request/phase evidence"
   },
   {
-    "version": 7,
-    "original_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-model-accepted-diagnostic-root-v7/owned/engine.stderr",
-    "original_bytes": 4605,
-    "original_sha256": "ea9cd15d925cf13681edd9e4707f070d9391a602eeeb15f2095accfbe21f5fd5",
-    "original_lines": 50,
-    "selected_lines": [
-      {
-        "line": 13,
-        "text": "strata generate: loaded 46.84 GiB at 1.72 GiB/s"
-      },
-      {
-        "line": 14,
-        "text": "strata trace: 4716 MiB free after the weights, the session and the drafter"
-      },
-      {
-        "line": 15,
-        "text": "strata generate: experimental native Q5_K head, 521472000 bytes"
-      },
-      {
-        "line": 16,
-        "text": "strata generate: expert cache 128 slots, 0.26 GiB of VRAM; policy is"
-      },
-      {
-        "line": 17,
-        "text": "strata trace: 3950 MiB free after opening the expert cache"
-      },
-      {
-        "line": 18,
-        "text": "strata generate: SYCL cached experts use native Q8_1 arithmetic; logits can differ from CPU experts."
-      },
-      {
-        "line": 19,
-        "text": "                 R4.2g PER-LAYER: each layer owns 2 slots (0..1)."
-      },
-      {
-        "line": 20,
-        "text": "strata trace: 3950 MiB free after the profile fill"
-      },
-      {
-        "line": 21,
-        "text": "strata generate: pre-filled 128 of 128 slots from the profile; slot 0 verified"
-      },
-      {
-        "line": 22,
-        "text": "strata generate: native GPU hit kernels captured at session setup"
-      },
-      {
-        "line": 23,
-        "text": "strata trace: 3936 MiB free after the R4 hit path"
-      },
-      {
-        "line": 24,
-        "text": "strata generate: R4 hit path ON - resident experts are computed on the GPU"
-      },
-      {
-        "line": 25,
-        "text": "strata generate: 5 expert-pool workers + the host thread"
-      },
-      {
-        "line": 26,
-        "text": "strata trace: 3936 MiB free after the expert cache and the graphs"
-      },
-      {
-        "line": 27,
-        "text": "strata generate: session is up (engine 0.1.38)"
-      },
-      {
-        "line": 28,
-        "text": "strata generate: token graph hit path: 128 resident experts, decided on the device"
-      },
-      {
-        "line": 29,
-        "text": "strata serve: the prompt path allocates its own buffers (too few cache slots to borrow)"
-      },
-      {
-        "line": 30,
-        "text": "strata trace: 1950 MiB free after the head and the prompt path"
-      },
-      {
-        "line": 31,
-        "text": "strata verify: window up to 4 tokens, 63.8 MiB of device buffers"
-      },
-      {
-        "line": 32,
-        "text": "strata mtp: draft head over 106299 tokens (212.9 MiB)"
-      },
-      {
-        "line": 33,
-        "text": "strata trace: 1669 MiB free after the verifier and the drafter's binding"
-      },
-      {
-        "line": 34,
-        "text": "strata serve: 1669 MiB of VRAM free with everything loaded"
-      },
-      {
-        "line": 35,
-        "text": "strata trace: request 28 0"
-      },
-      {
-        "line": 36,
-        "text": "strata trace: prompt start 27 -1"
-      },
-      {
-        "line": 37,
-        "text": "strata trace: prompt chunk 0 of 27"
-      },
-      {
-        "line": 38,
-        "text": "strata serve: no progress for 60 s during a request (reading the prompt (batched): layer 0 of the prompt chunk from token 0) - stopping the engine so the server starts it again (issue #29)"
-      },
-      {
-        "line": 39,
-        "text": "strata serve: stall report (engine 0.1.38): stage \"reading the prompt (batched): layer 0 of the prompt chunk from token 0\" for 60 s; 0 layers served since the last finished step (0 = stopped, more = slow)"
-      },
-      {
-        "line": 40,
-        "text": "  expert pool: epoch 0, batch epoch 0: 0 of 0 jobs claimed, 0 done; 5 of 5 workers parked, 5 sleeping; mode 0"
-      },
-      {
-        "line": 41,
-        "text": "  expert pool threads: w0=sleeping w1=sleeping w2=sleeping w3=sleeping w4=sleeping; host idle for 82813 ms"
-      },
-      {
-        "line": 42,
-        "text": "  verify window (last window, not the current stage): 0 tokens at position 0, host at layer step 1; the GPU rang 0; flags: served 0, plan (A) 0, copies (B) 0"
-      },
-      {
-        "line": 43,
-        "text": "  memory: 49074 MiB resident, 0 MiB in swap, 26755 MiB RAM available; 1895 major page faults so far"
-      },
-      {
-        "line": 44,
-        "text": "  2 s later:"
-      },
-      {
-        "line": 45,
-        "text": "  expert pool: epoch 0, batch epoch 0: 0 of 0 jobs claimed, 0 done; 5 of 5 workers parked, 5 sleeping; mode 0"
-      },
-      {
-        "line": 46,
-        "text": "  expert pool threads: w0=sleeping w1=sleeping w2=sleeping w3=sleeping w4=sleeping; host idle for 84814 ms"
-      },
-      {
-        "line": 47,
-        "text": "  verify window (last window, not the current stage): 0 tokens at position 0, host at layer step 1; the GPU rang 0; flags: served 0, plan (A) 0, copies (B) 0"
-      },
-      {
-        "line": 48,
-        "text": "  memory: 49670 MiB resident, 0 MiB in swap, 29195 MiB RAM available; 1895 major page faults so far"
-      },
-      {
-        "line": 49,
-        "text": "strata: released the verify window's GPU waits (#267): the GPU finished in 0 ms"
-      },
-      {
-        "line": 50,
-        "text": "*** stack smashing detected ***: terminated"
-      }
-    ],
-    "reason": "distinct CLI/startup/range mechanism and relevant request/phase evidence"
-  },
-  {
     "version": 10,
     "original_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-watchdog-short-root-v10/owned/engine.stderr",
     "original_bytes": 2183133,
@@ -2215,6 +2053,168 @@
       {
         "line": 19259,
         "text": "[2026-10-14 10:10:50.001] [thread-id: 132377577802112] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)"
+      }
+    ],
+    "reason": "distinct CLI/startup/range mechanism and relevant request/phase evidence"
+  },
+  {
+    "version": 7,
+    "original_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-model-accepted-diagnostic-root-v7/owned/engine.stderr",
+    "original_bytes": 4605,
+    "original_sha256": "ea9cd15d925cf13681edd9e4707f070d9391a602eeeb15f2095accfbe21f5fd5",
+    "original_lines": 50,
+    "selected_lines": [
+      {
+        "line": 13,
+        "text": "strata generate: loaded 46.84 GiB at 1.72 GiB/s"
+      },
+      {
+        "line": 14,
+        "text": "strata trace: 4716 MiB free after the weights, the session and the drafter"
+      },
+      {
+        "line": 15,
+        "text": "strata generate: experimental native Q5_K head, 521472000 bytes"
+      },
+      {
+        "line": 16,
+        "text": "strata generate: expert cache 128 slots, 0.26 GiB of VRAM; policy is"
+      },
+      {
+        "line": 17,
+        "text": "strata trace: 3950 MiB free after opening the expert cache"
+      },
+      {
+        "line": 18,
+        "text": "strata generate: SYCL cached experts use native Q8_1 arithmetic; logits can differ from CPU experts."
+      },
+      {
+        "line": 19,
+        "text": "                 R4.2g PER-LAYER: each layer owns 2 slots (0..1)."
+      },
+      {
+        "line": 20,
+        "text": "strata trace: 3950 MiB free after the profile fill"
+      },
+      {
+        "line": 21,
+        "text": "strata generate: pre-filled 128 of 128 slots from the profile; slot 0 verified"
+      },
+      {
+        "line": 22,
+        "text": "strata generate: native GPU hit kernels captured at session setup"
+      },
+      {
+        "line": 23,
+        "text": "strata trace: 3936 MiB free after the R4 hit path"
+      },
+      {
+        "line": 24,
+        "text": "strata generate: R4 hit path ON - resident experts are computed on the GPU"
+      },
+      {
+        "line": 25,
+        "text": "strata generate: 5 expert-pool workers + the host thread"
+      },
+      {
+        "line": 26,
+        "text": "strata trace: 3936 MiB free after the expert cache and the graphs"
+      },
+      {
+        "line": 27,
+        "text": "strata generate: session is up (engine 0.1.38)"
+      },
+      {
+        "line": 28,
+        "text": "strata generate: token graph hit path: 128 resident experts, decided on the device"
+      },
+      {
+        "line": 29,
+        "text": "strata serve: the prompt path allocates its own buffers (too few cache slots to borrow)"
+      },
+      {
+        "line": 30,
+        "text": "strata trace: 1950 MiB free after the head and the prompt path"
+      },
+      {
+        "line": 31,
+        "text": "strata verify: window up to 4 tokens, 63.8 MiB of device buffers"
+      },
+      {
+        "line": 32,
+        "text": "strata mtp: draft head over 106299 tokens (212.9 MiB)"
+      },
+      {
+        "line": 33,
+        "text": "strata trace: 1669 MiB free after the verifier and the drafter's binding"
+      },
+      {
+        "line": 34,
+        "text": "strata serve: 1669 MiB of VRAM free with everything loaded"
+      },
+      {
+        "line": 35,
+        "text": "strata trace: request 28 0"
+      },
+      {
+        "line": 36,
+        "text": "strata trace: prompt start 27 -1"
+      },
+      {
+        "line": 37,
+        "text": "strata trace: prompt chunk 0 of 27"
+      },
+      {
+        "line": 38,
+        "text": "strata serve: no progress for 60 s during a request (reading the prompt (batched): layer 0 of the prompt chunk from token 0) - stopping the engine so the server starts it again (issue #29)"
+      },
+      {
+        "line": 39,
+        "text": "strata serve: stall report (engine 0.1.38): stage \"reading the prompt (batched): layer 0 of the prompt chunk from token 0\" for 60 s; 0 layers served since the last finished step (0 = stopped, more = slow)"
+      },
+      {
+        "line": 40,
+        "text": "  expert pool: epoch 0, batch epoch 0: 0 of 0 jobs claimed, 0 done; 5 of 5 workers parked, 5 sleeping; mode 0"
+      },
+      {
+        "line": 41,
+        "text": "  expert pool threads: w0=sleeping w1=sleeping w2=sleeping w3=sleeping w4=sleeping; host idle for 82813 ms"
+      },
+      {
+        "line": 42,
+        "text": "  verify window (last window, not the current stage): 0 tokens at position 0, host at layer step 1; the GPU rang 0; flags: served 0, plan (A) 0, copies (B) 0"
+      },
+      {
+        "line": 43,
+        "text": "  memory: 49074 MiB resident, 0 MiB in swap, 26755 MiB RAM available; 1895 major page faults so far"
+      },
+      {
+        "line": 44,
+        "text": "  2 s later:"
+      },
+      {
+        "line": 45,
+        "text": "  expert pool: epoch 0, batch epoch 0: 0 of 0 jobs claimed, 0 done; 5 of 5 workers parked, 5 sleeping; mode 0"
+      },
+      {
+        "line": 46,
+        "text": "  expert pool threads: w0=sleeping w1=sleeping w2=sleeping w3=sleeping w4=sleeping; host idle for 84814 ms"
+      },
+      {
+        "line": 47,
+        "text": "  verify window (last window, not the current stage): 0 tokens at position 0, host at layer step 1; the GPU rang 0; flags: served 0, plan (A) 0, copies (B) 0"
+      },
+      {
+        "line": 48,
+        "text": "  memory: 49670 MiB resident, 0 MiB in swap, 29195 MiB RAM available; 1895 major page faults so far"
+      },
+      {
+        "line": 49,
+        "text": "strata: released the verify window's GPU waits (#267): the GPU finished in 0 ms"
+      },
+      {
+        "line": 50,
+        "text": "*** stack smashing detected ***: terminated"
       }
     ],
     "reason": "distinct CLI/startup/range mechanism and relevant request/phase evidence"

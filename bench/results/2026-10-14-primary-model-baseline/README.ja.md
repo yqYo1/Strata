@@ -1,5 +1,20 @@
 # 主ブランチの再監査と実モデル診断
 
+最新の機能対応状況は [docs/UPSTREAM_INTEGRATION.md](../../../docs/UPSTREAM_INTEGRATION.md)
+に集約した。履歴保存と実コードの統合は別で、fork defaultへの反映、単一GPU並列要求、
+動的VRAM等の必要な機能の適合は未完了。R481–486の原報告とMainの訂正は
+[research-index.json](research-index.json) に保存している。
+
+2026-10-14の主ブランチ `5bf07429` / native `d3861dd5` を、未変更のNiko 0.1.43
+`bench.sh --long --runs 3` で測定した。32K級は実入力32,049、reuse0、生成24 tokens。
+prefill **118.5 / 118.4 / 118.9 t/s**、decode **4.2 / 2.8 / 3.4 t/s**。
+prefill中央値118.5、decode中央値3.4。全通常ケースを完了し、native/server/clientはexit0、
+fresh GPU fault0、dumpなし、237 source pinsとnative binaryは実行後も同一だった。
+全個別測定は [stock-baseline.json](stock-baseline.json) と元のbyte同一receiptに保存。
+24-token decodeは長時間の定常decode評価ではない。cache128・no-borrowの保守的設定であり、
+最適化後の最良構成、無改変Nikoエンジンの測定、64K/物理262144検証ではない。
+標準clientのレポート名はcommunity-cpuだが、実nativeログはArc B570/SYCLを確認している。
+
 2026-10-14。唯一の上流は **Niko1221/Strata**。`yqYo1/Strata` は
 Arc B570 10 GiB、Ryzen 5 5600X、128 GB RAMを使う個人用fork。
 現時点で上流への貢献は予定しない。CUDA/HIP推論の移植・測定は対象外。
