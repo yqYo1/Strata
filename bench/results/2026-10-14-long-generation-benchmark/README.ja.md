@@ -25,7 +25,7 @@ exclusive lock、owned process、期限/RSS/log budget、正常終了とfresh fa
 各fresh rootは一度だけ作成し、閉じた結果を上書き・自動再試行しない。
 
 現在68da0262 native、MMQ0/R8、compact1、chunk4096、context262144、MTP4/splitOFF。
-初回screeningとfull suiteはこの記述時点では未実行。旧636の正式標準suiteに含まれる
+v4 screeningは正常終了、full suiteは次の検証境界。旧636の正式標準suiteに含まれる
 agent結果も保存済みで、これまで報告が32K値へ偏っていたため今後は必ず並記する。
 
 ## v1実測
@@ -110,3 +110,24 @@ Stager::initの既定worker3本は親affinityを継承し、SessionLoopScratch.i
 ソースと配置が一致する具体的なprefill候補。累積CPU ticksをdecode専用serviceや原因証明にしない。
 R533は実起動順/配置、R534は既存Stagerの並行event/source/buffer契約を調査し、別Solは
 原allowed maskを渡す未適用案を準備する。全実行はMainで直列管理し、live sourceは固定。
+
+## v4 thinking有効screenの終了確認
+
+[全個別値](screen-v4.json)と元structured receipts、13行のrequest journal/stateを
+byte-identical gzipで保存した。journalのchainとpendingなしを検証し、native/server/benchは
+全てexit0、全owned process不在、source/client/recipe pin不変、fresh fault0、dumpなし、boot不変。
+実nativeのCPU soft111600/hard111601秒も記録した。
+
+| workload | 実入力 | 実生成（thinking込み） | PP t/s | TG t/s | MTP受理 | 本文/思考の文字数 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| regular-code | 33214 | 3346 | 156.1 | 5.3 | 2382/2895 = 82.280% | 5499 / 4055 |
+| varied-prose | 33288 | 8631 | 161.0 | 3.9 | 4551/12243 = 37.172% | 6189 / 17484 |
+
+両方thinkingON/xhigh、max_tokens16384、context262144、stop/DONE/usageあり。
+1Kは下限の目安であり上限ではない。日本語要求の8631生成は旧8192枠を超えた。
+本文まで出ることを確認できたが、各1回なので強弱分類、速度改善、品質は認定しない。
+context設定256Kと実入力256Kの満杯検証も別であり、後者は未達。
+
+次は同じnativeとclientで標準32K3回、thinking有効agent6turn×3、長い生成2種類×3を
+一つのowned serverで測る。並行test/build/GPU/cleanupを行わず、全個別結果をdurable journalへ
+記録する。この検証境界後にPR#6/Codex元ログと実装の安全性・性能回復へ戻る。

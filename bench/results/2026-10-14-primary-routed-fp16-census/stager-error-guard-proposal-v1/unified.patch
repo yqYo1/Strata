@@ -1,0 +1,264 @@
+--- a/src/prefill/prefill.cpp
++++ b/src/prefill/prefill.cpp
+@@ -1,5 +1,6 @@
+ // src/prefill/prefill.cpp - see include/strata/prefill/prefill.hpp.
+ #include "strata/prefill/prefill.hpp"
++#include "strata/prefill/stage_ownership.hpp"
+ #include "strata/core/mtp.hpp"
+ #include "strata/core/progress.hpp"
+ #include "strata/core/on_device.hpp"
+@@ -249,7 +250,7 @@
+             }
+             if (cudaEventCreateWithFlags(&dma_done[i], cudaEventDisableTiming) != cudaSuccess) return false;
+         }
+-        cudaGetDevice(&device);
++        STRATA_PREFILL_STAGE_CHECK(cudaGetDevice(&device), "Stager::init device");
+         for (int t = 0; t < nthreads; ++t) threads.emplace_back([this] { work(); });
+         return true;
+     }
+@@ -264,7 +265,7 @@
+         }
+     }
+     void work() {
+-        cudaSetDevice(device);
++        STRATA_PREFILL_STAGE_CHECK(cudaSetDevice(device), "Stager::work device");
+         uint32_t seen = 0;
+         for (;;) {
+             {
+@@ -283,7 +284,7 @@
+                 // and done - for a generation's first kRing jobs that is the previous generation's last DMA from
+                 // the buffer, which nothing else waits for when a chunk ends without a sync (no MTP) or the DMA
+                 // was a ring entry the routing skipped (an event never recorded returns at once)
+-                cudaEventSynchronize(dma_done[b]);
++                STRATA_PREFILL_STAGE_CHECK(cudaEventSynchronize(dma_done[b]), "Stager::work host-slot reuse");
+                 const Job& jb = jobs[(size_t) j];
+                 if (jb.from == nullptr) std::memcpy(buf[b], jb.src, jb.bytes);
+                 else if (!jb.from->copy_blob(jb.l, jb.e, buf[b])) {
+@@ -326,7 +327,7 @@
+     }
+     /// The launching thread queued job j's DMA on `copy`: its buffer is free once that is done.
+     void issued_one(int j, cudaStream_t copy) {
+-        cudaEventRecord(dma_done[j % kRing], copy);
++        STRATA_PREFILL_STAGE_CHECK(cudaEventRecord(dma_done[j % kRing], copy), "Stager::issued_one host-slot DMA");
+         issued.store(j + 1, std::memory_order_release);
+     }
+     /// No job is running after this (the end of a layer, or an early return in the middle of one).
+@@ -547,8 +548,8 @@
+ 
+ void Prefill::release() {
+     if (!impl_) return;
+-    if (impl_->cs) cudaStreamSynchronize(impl_->cs);
+-    if (impl_->copy) cudaStreamSynchronize(impl_->copy);
++    if (impl_->cs) STRATA_PREFILL_STAGE_CHECK(cudaStreamSynchronize(impl_->cs), "Prefill::release compute drain");
++    if (impl_->copy) STRATA_PREFILL_STAGE_CHECK(cudaStreamSynchronize(impl_->copy), "Prefill::release copy drain");
+     for (int i = 0; i < RING_MAX; ++i) {
+         if (impl_->copied[i]) cudaEventDestroy(impl_->copied[i]);
+         if (impl_->used[i]) cudaEventDestroy(impl_->used[i]);
+@@ -1785,17 +1786,17 @@
+                 const int sl = (int) (issued % (size_t) m.ring);
+                 const auto th = Clock::now();
+                 const size_t bytes = (size_t) lay0.blob_bytes(en.l);
+-                if (copy_events && m.stage_live[sl]) cudaStreamWaitEvent(m.copy, m.used[m.used_of[sl]], 0);
++                if (copy_events && m.stage_live[sl]) STRATA_PREFILL_STAGE_CHECK(cudaStreamWaitEvent(m.copy, m.used[m.used_of[sl]], 0), "inline issuer stage copy");
+                 if (ro.on) ro.payload.add(bytes, en.job < 0, m.stage_live[sl]);
+                 if (en.job < 0) {
+-                    cudaMemcpyAsync(m.stage_dev[sl], en.blob, bytes, cudaMemcpyHostToDevice, m.copy);
++                    STRATA_PREFILL_STAGE_CHECK(cudaMemcpyAsync(m.stage_dev[sl], en.blob, bytes, cudaMemcpyHostToDevice, m.copy), "inline issuer stage copy");
+                     ++stats_.experts_dma;
+                 } else {
+                     const uint8_t* hb = m.stager->wait(en.job);
+-                    cudaMemcpyAsync(m.stage_dev[sl], hb, bytes, cudaMemcpyHostToDevice, m.copy);
++                    STRATA_PREFILL_STAGE_CHECK(cudaMemcpyAsync(m.stage_dev[sl], hb, bytes, cudaMemcpyHostToDevice, m.copy), "inline issuer stage copy");
+                     m.stager->issued_one(en.job, m.copy);
+                 }
+-                if (copy_events) cudaEventRecord(m.copied[sl], m.copy);
++                if (copy_events) STRATA_PREFILL_STAGE_CHECK(cudaEventRecord(m.copied[sl], m.copy), "inline issuer stage copy");
+                 m.stage_live[sl] = true;
+                 stats_.ms_experts_host += ms_since(th);
+                 ++stats_.experts_streamed;
+@@ -1832,7 +1833,11 @@
+         }
+         if (threaded_issue) {
+             issuer = std::thread([&] {
++#if defined(STRATA_ENABLE_SYCL)
++                STRATA_PREFILL_STAGE_CHECK(cudaSetDevice(m.device), "threaded issuer device");
++#else
+                 const core::OnDevice od(m.device);
++#endif
+                 for (size_t idx = 0; idx < seq.size(); ++idx) {
+                     while (idx >= a_consumed.load(std::memory_order_acquire) + (size_t) m.ring) {
+                         if (a_stop.load(std::memory_order_acquire)) return;
+@@ -1842,17 +1847,17 @@
+                     const int sl = (int) (idx % (size_t) m.ring);
+                     const auto th = Clock::now();
+                     const size_t bytes = (size_t) lay0.blob_bytes(en.l);
+-                    if (copy_events && m.stage_live[sl]) cudaStreamWaitEvent(m.copy, m.used[m.used_of[sl]], 0);
++                    if (copy_events && m.stage_live[sl]) STRATA_PREFILL_STAGE_CHECK(cudaStreamWaitEvent(m.copy, m.used[m.used_of[sl]], 0), "threaded issuer stage copy");
+                     if (observe_issuer_payload) issuer_payload.add(bytes, en.job < 0, m.stage_live[sl]);
+                     if (en.job < 0) {
+-                        cudaMemcpyAsync(m.stage_dev[sl], en.blob, bytes, cudaMemcpyHostToDevice, m.copy);
++                        STRATA_PREFILL_STAGE_CHECK(cudaMemcpyAsync(m.stage_dev[sl], en.blob, bytes, cudaMemcpyHostToDevice, m.copy), "threaded issuer stage copy");
+                         ++iss_dma;
+                     } else {
+                         const uint8_t* hb = m.stager->wait(en.job);
+-                        cudaMemcpyAsync(m.stage_dev[sl], hb, bytes, cudaMemcpyHostToDevice, m.copy);
++                        STRATA_PREFILL_STAGE_CHECK(cudaMemcpyAsync(m.stage_dev[sl], hb, bytes, cudaMemcpyHostToDevice, m.copy), "threaded issuer stage copy");
+                         m.stager->issued_one(en.job, m.copy);
+                     }
+-                    if (copy_events) cudaEventRecord(m.copied[sl], m.copy);
++                    if (copy_events) STRATA_PREFILL_STAGE_CHECK(cudaEventRecord(m.copied[sl], m.copy), "threaded issuer stage copy");
+                     m.stage_live[sl] = true;
+                     iss_ms += ms_since(th);
+                     ++iss_streamed;
+@@ -2256,7 +2261,7 @@
+                                 // one copy stream, in order: the batch's last blob covers the others
+                                 pt.mark(kPfWaitCopy, cs);
+                                 wait_issued(k - 1);
+-                                if (copy_events) cudaStreamWaitEvent(m.cs, m.copied[(k - 1) % (size_t) m.ring], 0);
++                                if (copy_events) STRATA_PREFILL_STAGE_CHECK(cudaStreamWaitEvent(m.cs, m.copied[(k - 1) % (size_t) m.ring], 0), "fused streamed consumer lease");
+                             }
+                             pt.mark(kPfGemmGU, cs);
+                             if (fused_nat) {
+@@ -2268,7 +2273,7 @@
+                                 fused::experts(b, (int) m.g->n_expert, T * K, m.GU, m.Xq, m.src_dev, m.H, m.Dm, m.cs);
+                             }
+                             for (size_t kk = k0; kk < k; ++kk) {
+-                                if (copy_events) cudaEventRecord(m.used[kk % (size_t) m.ring], m.cs);
++                                if (copy_events) STRATA_PREFILL_STAGE_CHECK(cudaEventRecord(m.used[kk % (size_t) m.ring], m.cs), "fused streamed consumer lease");
+                                 m.used_of[kk % (size_t) m.ring] = (int) (kk % (size_t) m.ring);
+                             }
+                             if (k > k0) {
+@@ -2603,17 +2608,17 @@
+                             if (ro.on) ro.payload.add((size_t) lay.blob_bytes(l), pinned, m.stage_live[sl]);
+                             if (pinned) {
+                                 // DMA straight from the page-locked arena: the copy stream only waits for the slot
+-                                if (copy_events && m.stage_live[sl]) cudaStreamWaitEvent(m.copy, m.used[m.used_of[sl]], 0);
+-                                cudaMemcpyAsync(m.stage_dev[sl], b, (size_t) lay.blob_bytes(l), cudaMemcpyHostToDevice, m.copy);
++                                if (copy_events && m.stage_live[sl]) STRATA_PREFILL_STAGE_CHECK(cudaStreamWaitEvent(m.copy, m.used[m.used_of[sl]], 0), "stage_one pinned copy");
++                                STRATA_PREFILL_STAGE_CHECK(cudaMemcpyAsync(m.stage_dev[sl], b, (size_t) lay.blob_bytes(l), cudaMemcpyHostToDevice, m.copy), "stage_one pinned copy");
+                                 ++stats_.experts_dma;
+                             } else {
+                                 // copied to a pinned buffer by the stager (waits only if it is behind), then DMA
+                                 const uint8_t* hb = m.stager->wait(job_of[j]);
+-                                if (copy_events && m.stage_live[sl]) cudaStreamWaitEvent(m.copy, m.used[m.used_of[sl]], 0);
+-                                cudaMemcpyAsync(m.stage_dev[sl], hb, (size_t) lay.blob_bytes(l), cudaMemcpyHostToDevice, m.copy);
++                                if (copy_events && m.stage_live[sl]) STRATA_PREFILL_STAGE_CHECK(cudaStreamWaitEvent(m.copy, m.used[m.used_of[sl]], 0), "stage_one stager/copy publication");
++                                STRATA_PREFILL_STAGE_CHECK(cudaMemcpyAsync(m.stage_dev[sl], hb, (size_t) lay.blob_bytes(l), cudaMemcpyHostToDevice, m.copy), "stage_one stager/copy publication");
+                                 m.stager->issued_one(job_of[j], m.copy);
+                             }
+-                            if (copy_events) cudaEventRecord(m.copied[sl], m.copy);
++                            if (copy_events) STRATA_PREFILL_STAGE_CHECK(cudaEventRecord(m.copied[sl], m.copy), "stage_one stager/copy publication");
+                             m.stage_live[sl] = true;
+                             stage_of[j] = sl;
+                             stats_.ms_experts_host += ms_since(th);
+@@ -2641,7 +2646,7 @@
+                             const auto& f = lay.fmt[(size_t) l];
+                             if (gg_nslots > 0) {   // the copies land in order: the last one covers the others
+                                 pt.mark(kPfWaitCopy, cs);
+-                                if (copy_events) cudaStreamWaitEvent(m.cs, m.copied[gg_slots[gg_nslots - 1]], 0);
++                                if (copy_events) STRATA_PREFILL_STAGE_CHECK(cudaStreamWaitEvent(m.cs, m.copied[gg_slots[gg_nslots - 1]], 0), "group gather consumer lease");
+                                 pt.mark(kPfDequant, cs);
+                             }
+                             if (!mmq::gather_native_group(gg, f.up_off, mmq_gub / 2, f.down_off, mmq_db, m.grp_gu, mmq_gub,
+@@ -2654,7 +2659,7 @@
+                             }
+                             if (gg_nslots > 0) {
+                                 const int rel = gg_slots[gg_nslots - 1];
+-                                if (copy_events) cudaEventRecord(m.used[rel], m.cs);
++                                if (copy_events) STRATA_PREFILL_STAGE_CHECK(cudaEventRecord(m.used[rel], m.cs), "group gather consumer lease");
+                                 for (int i = 0; i < gg_nslots; ++i) m.used_of[gg_slots[i]] = rel;
+                             }
+                             gg_nslots = 0;
+@@ -2683,7 +2688,7 @@
+                                     mmq::gather_strata_q2(blob_dev, m.grp_gu + q * mmq_gub, m.grp_d + q * mmq_db, m.cs);
+                                 }
+                                 if (slot >= 0 && !group_gather) {
+-                                    if (copy_events) cudaEventRecord(m.used[slot], m.cs);
++                                    if (copy_events) STRATA_PREFILL_STAGE_CHECK(cudaEventRecord(m.used[slot], m.cs), "MMQ individual slot release");
+                                     m.used_of[slot] = slot;
+                                 }
+                                 if (q + 1 < MMQ_GROUP && j + 1 < order.size()) return true;
+@@ -2728,7 +2733,7 @@
+                                 blob_dequant_f16(blob_dev, m.dq_gu[q], m.dq_d[q], m.cs);
+                             }
+                             if (slot >= 0) {
+-                                if (copy_events) cudaEventRecord(m.used[slot], m.cs);
++                                if (copy_events) STRATA_PREFILL_STAGE_CHECK(cudaEventRecord(m.used[slot], m.cs), "FP16 dequant slot release");
+                                 m.used_of[slot] = slot;
+                             }
+                             const int64_t o0 = m.off[(size_t) e], ne = m.cnt[(size_t) e];
+@@ -2763,7 +2768,7 @@
+                                     if (!compute(j, m.cache->device_slot(m.host_res[(size_t) l * m.g->n_expert + e]), -1)) return false;
+                                 } else {
+                                     pt.mark(kPfWaitCopy, cs);
+-                                    if (copy_events) cudaStreamWaitEvent(m.cs, m.copied[stage_of[j]], 0);
++                                    if (copy_events) STRATA_PREFILL_STAGE_CHECK(cudaStreamWaitEvent(m.cs, m.copied[stage_of[j]], 0), "nonstreamed consumer copy wait");
+                                     if (!compute(j, m.stage_dev[stage_of[j]], stage_of[j])) return false;
+                                 }
+                             }
+@@ -2783,7 +2788,7 @@
+                                     if (threaded_issue) give_back(consumed);
+                                     wait_issued(k);
+                                     const int sl = (int) (k % (size_t) m.ring);
+-                                    if (copy_events) cudaEventRecord(m.used[sl], m.cs);
++                                    if (copy_events) STRATA_PREFILL_STAGE_CHECK(cudaEventRecord(m.used[sl], m.cs), "streamed skipped slot release");
+                                     m.used_of[sl] = sl;
+                                     consumed = ++k;
+                                     give_back(consumed);
+@@ -2797,7 +2802,7 @@
+                                     wait_issued(k);
+                                     if (!group_gather) {
+                                         pt.mark(kPfWaitCopy, cs);
+-                                        if (copy_events) cudaStreamWaitEvent(m.cs, m.copied[sl], 0);
++                                        if (copy_events) STRATA_PREFILL_STAGE_CHECK(cudaStreamWaitEvent(m.cs, m.copied[sl], 0), "streamed consumer copy wait");
+                                     }
+                                     if (!compute(j, m.stage_dev[sl], sl)) return false;
+                                     consumed = ++k;
+@@ -2946,12 +2951,12 @@
+         bad(ss.gdn_state, 64 * 1024);
+         std::fprintf(stderr, "\n");
+     }
+-    if (cudaStreamSynchronize(m.cs) != cudaSuccess) {
++    if (STRATA_PREFILL_STAGE_CHECK(cudaStreamSynchronize(m.cs), "Prefill::run final compute drain") != cudaSuccess) {
+         err = std::string("prefill: ") + cudaGetErrorString(cudaGetLastError());
+         return false;
+     }
+     // (PR #121) an expert copy that failed on the copy stream surfaces here, not in the next request
+-    if (const cudaError_t cst = cudaStreamSynchronize(m.copy); cst != cudaSuccess) {
++    if (const cudaError_t cst = STRATA_PREFILL_STAGE_CHECK(cudaStreamSynchronize(m.copy), "Prefill::run final copy drain"); cst != cudaSuccess) {
+         err = std::string("prefill: expert copy stream: ") + cudaGetErrorString(cst);
+         return false;
+     }
+--- /dev/null
++++ b/include/strata/prefill/stage_ownership.hpp
+@@ -0,0 +1,30 @@
++// Successful adapter results establish the primary Stager's ownership transitions.
++// Failure stops the native process; it does not establish completion or GPU recovery.
++#pragma once
++#include <cstdio>
++#include <cstdlib>
++
++namespace strata::prefill::stage_ownership {
++template <class Status>
++inline Status checked(Status status, Status success, const char* operation,
++                      const char* site, const char* file, int line,
++                      const char* (*describe)(Status)) {
++    if (status != success) {
++        std::fprintf(stderr,
++                     "prefill: stage ownership failure site=%s operation=%s error=%d (%.512s) at %s:%d; aborting native\n",
++                     site, operation, (int) status, describe(status), file, line);
++        std::fflush(stderr);
++        std::abort();
++    }
++    return status;
++}
++} // namespace strata::prefill::stage_ownership
++
++#if defined(STRATA_ENABLE_SYCL)
++// Evaluate each API call once. Keep its thread-local error detail intact.
++#define STRATA_PREFILL_STAGE_CHECK(call, site) \
++    ::strata::prefill::stage_ownership::checked( \
++        (call), cudaSuccess, #call, (site), __FILE__, __LINE__, &cudaGetErrorString)
++#else
++#define STRATA_PREFILL_STAGE_CHECK(call, site) (call)
++#endif
