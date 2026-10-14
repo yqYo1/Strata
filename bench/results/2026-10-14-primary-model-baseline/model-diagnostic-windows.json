@@ -954,5 +954,681 @@
       }
     ],
     "reason": "distinct CLI/startup/range mechanism and relevant request/phase evidence"
+  },
+  {
+    "version": 8,
+    "original_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-cold-jit-short-root-v8/owned/engine.stderr",
+    "original_bytes": 67108864,
+    "original_sha256": "9fd2f5b3288f7ec1b5a1bfc8016b8a26826ecf283a4014bd9c58b6ca5d0dcd76",
+    "original_lines": 539364,
+    "selected_lines": [
+      {
+        "line": 21340,
+        "text": "   <--- urDeviceGetInfo(.hDevice = 0x2b9f7da0, .propName = UR_DEVICE_INFO_GLOBAL_MEM_SIZE, .propSize = 8, .pPropValue = 0x7ffda8e5a310 (10666115072), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;"
+      },
+      {
+        "line": 21341,
+        "text": "strata trace: 4716 MiB free after the weights, the session and the drafter"
+      },
+      {
+        "line": 21342,
+        "text": "   ---> urDeviceGetInfo"
+      },
+      {
+        "line": 21343,
+        "text": "   <--- urDeviceGetInfo(.hDevice = 0x2b9f7da0, .propName = UR_DEVICE_INFO_MAX_MEM_ALLOC_SIZE, .propSize = 8, .pPropValue = 0x7ffda8e5a1a0 (10132807680), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;"
+      },
+      {
+        "line": 21344,
+        "text": "   ---> urUSMDeviceAlloc"
+      },
+      {
+        "line": 21345,
+        "text": "[2026-10-14 09:06:48.025] [thread-id: 129702799530368] [trace] zeMemAllocDevice(hContext, device_desc, size, alignment, hDevice, pptr)"
+      },
+      {
+        "line": 21346,
+        "text": "[2026-10-14 09:06:48.026] [thread-id: 129702799530368] [trace] zeContextMakeMemoryResident(hContext, hDevice, ptr, size)"
+      },
+      {
+        "line": 21452,
+        "text": "   <--- urDeviceGetInfo(.hDevice = 0x2b9f7da0, .propName = UR_DEVICE_INFO_GLOBAL_MEM_SIZE, .propSize = 8, .pPropValue = 0x7ffda8e5a310 (10666115072), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;"
+      },
+      {
+        "line": 21453,
+        "text": "strata trace: 3950 MiB free after opening the expert cache"
+      },
+      {
+        "line": 21454,
+        "text": "strata generate: SYCL cached experts use native Q8_1 arithmetic; logits can differ from CPU experts."
+      },
+      {
+        "line": 21455,
+        "text": "                 R4.2g PER-LAYER: each layer owns 2 slots (0..1)."
+      },
+      {
+        "line": 21456,
+        "text": "   ---> urQueueFinish"
+      },
+      {
+        "line": 21457,
+        "text": "[2026-10-14 09:06:48.226] [thread-id: 129702799530368] [trace] zeCommandListHostSynchronize(hCommandList, timeout)"
+      },
+      {
+        "line": 21458,
+        "text": "   <--- urQueueFinish(.hQueue = 0x2ba61c80) -> UR_RESULT_SUCCESS;"
+      },
+      {
+        "line": 24301,
+        "text": "   <--- urDeviceGetInfo(.hDevice = 0x2b9f7da0, .propName = UR_DEVICE_INFO_GLOBAL_MEM_SIZE, .propSize = 8, .pPropValue = 0x7ffda8e5a310 (10666115072), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;"
+      },
+      {
+        "line": 24302,
+        "text": "strata trace: 3950 MiB free after the profile fill"
+      },
+      {
+        "line": 24303,
+        "text": "strata generate: pre-filled 128 of 128 slots from the profile; slot 0 verified"
+      },
+      {
+        "line": 24304,
+        "text": "   ---> urDeviceGetInfo"
+      },
+      {
+        "line": 24305,
+        "text": "   <--- urDeviceGetInfo(.hDevice = 0x2b9f7da0, .propName = UR_DEVICE_INFO_MAX_MEM_ALLOC_SIZE, .propSize = 8, .pPropValue = 0x7ffda8e5a2a0 (10132807680), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;"
+      },
+      {
+        "line": 24306,
+        "text": "   ---> urUSMDeviceAlloc"
+      },
+      {
+        "line": 24307,
+        "text": "[2026-10-14 09:06:48.328] [thread-id: 129702799530368] [trace] zeMemAllocDevice(hContext, device_desc, size, alignment, hDevice, pptr)"
+      },
+      {
+        "line": 26466,
+        "text": "   <--- urDeviceGetInfo(.hDevice = 0x2b9f7da0, .propName = UR_DEVICE_INFO_GLOBAL_MEM_SIZE, .propSize = 8, .pPropValue = 0x7ffda8e5a310 (10666115072), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;"
+      },
+      {
+        "line": 26467,
+        "text": "strata trace: 3936 MiB free after the R4 hit path"
+      },
+      {
+        "line": 26468,
+        "text": "strata generate: R4 hit path ON - resident experts are computed on the GPU"
+      },
+      {
+        "line": 26469,
+        "text": "strata generate: 5 expert-pool workers + the host thread"
+      },
+      {
+        "line": 26470,
+        "text": "   ---> urDeviceGetInfo"
+      },
+      {
+        "line": 26471,
+        "text": "[2026-10-14 09:07:01.278] [thread-id: 129702799530368] [trace] zesDeviceEnumMemoryModules(hDevice, pCount, phMemory)"
+      },
+      {
+        "line": 26472,
+        "text": "[2026-10-14 09:07:01.278] [thread-id: 129702799530368] [trace] zesDeviceEnumMemoryModules(hDevice, pCount, phMemory)"
+      },
+      {
+        "line": 26477,
+        "text": "   <--- urDeviceGetInfo(.hDevice = 0x2b9f7da0, .propName = UR_DEVICE_INFO_GLOBAL_MEM_SIZE, .propSize = 8, .pPropValue = 0x7ffda8e5a310 (10666115072), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;"
+      },
+      {
+        "line": 26478,
+        "text": "strata trace: 3936 MiB free after the expert cache and the graphs"
+      },
+      {
+        "line": 26479,
+        "text": "strata generate: session is up (engine 0.1.38)"
+      },
+      {
+        "line": 26480,
+        "text": "   ---> urDeviceGetInfo"
+      },
+      {
+        "line": 26481,
+        "text": "   <--- urDeviceGetInfo(.hDevice = 0x2b9f7da0, .propName = UR_DEVICE_INFO_MAX_MEM_ALLOC_SIZE, .propSize = 8, .pPropValue = 0x7ffda8e5a2a0 (10132807680), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;"
+      },
+      {
+        "line": 26482,
+        "text": "   ---> urUSMDeviceAlloc"
+      },
+      {
+        "line": 26483,
+        "text": "   <--- urUSMDeviceAlloc(.hContext = 0x2b9f9dd0, .hDevice = 0x2b9f7da0, .pUSMDesc = 0x7ffda8e5a060 ((struct ur_usm_desc_t){.stype = UR_STRUCTURE_TYPE_CONTEXT_PROPERTIES, .pNext = nullptr, .hints = 0, .align = 0}), .pool = nullptr, .size = 10240, .ppMem = 0x7ffda8e5a038 (0xffffffffff613000)) -> UR_RESULT_SUCCESS;"
+      },
+      {
+        "line": 30014,
+        "text": "   <--- urDeviceGetInfo(.hDevice = 0x2b9f7da0, .propName = UR_DEVICE_INFO_GLOBAL_MEM_SIZE, .propSize = 8, .pPropValue = 0x7ffda8e5a310 (10666115072), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;"
+      },
+      {
+        "line": 30015,
+        "text": "strata trace: 1950 MiB free after the head and the prompt path"
+      },
+      {
+        "line": 30016,
+        "text": "   ---> urDeviceGetInfo"
+      },
+      {
+        "line": 30017,
+        "text": "   <--- urDeviceGetInfo(.hDevice = 0x2b9f7da0, .propName = UR_DEVICE_INFO_MAX_MEM_ALLOC_SIZE, .propSize = 8, .pPropValue = 0x7ffda8e5a2a0 (10132807680), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;"
+      },
+      {
+        "line": 30018,
+        "text": "   ---> urUSMDeviceAlloc"
+      },
+      {
+        "line": 30019,
+        "text": "[2026-10-14 09:07:01.358] [thread-id: 129702799530368] [trace] zeMemAllocDevice(hContext, device_desc, size, alignment, hDevice, pptr)"
+      },
+      {
+        "line": 30020,
+        "text": "[2026-10-14 09:07:01.358] [thread-id: 129702799530368] [trace] zeContextMakeMemoryResident(hContext, hDevice, ptr, size)"
+      },
+      {
+        "line": 30139,
+        "text": "   <--- urQueueCreate(.hContext = 0x2b9f9dd0, .hDevice = 0x2b9f7da0, .pProperties = 0x7ffda8e59f40 ((struct ur_queue_properties_t){.stype = UR_STRUCTURE_TYPE_QUEUE_PROPERTIES, .pNext = nullptr, .flags = UR_QUEUE_FLAG_PROFILING_ENABLE}), .phQueue = 0x7ffda8e59f38 (0x2d815080)) -> UR_RESULT_SUCCESS;"
+      },
+      {
+        "line": 30140,
+        "text": "strata verify: window up to 4 tokens, 63.8 MiB of device buffers"
+      },
+      {
+        "line": 30141,
+        "text": "   ---> urDeviceGetInfo"
+      },
+      {
+        "line": 30142,
+        "text": "   <--- urDeviceGetInfo(.hDevice = 0x2b9f7da0, .propName = UR_DEVICE_INFO_MAX_MEM_ALLOC_SIZE, .propSize = 8, .pPropValue = 0x7ffda8e5a220 (10132807680), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;"
+      },
+      {
+        "line": 30143,
+        "text": "   ---> urUSMDeviceAlloc"
+      },
+      {
+        "line": 30144,
+        "text": "[2026-10-14 09:07:01.362] [thread-id: 129702799530368] [trace] zeMemAllocDevice(hContext, device_desc, size, alignment, hDevice, pptr)"
+      },
+      {
+        "line": 30145,
+        "text": "[2026-10-14 09:07:01.362] [thread-id: 129702799530368] [trace] zeContextMakeMemoryResident(hContext, hDevice, ptr, size)"
+      },
+      {
+        "line": 30251,
+        "text": "   <--- urQueueFinish(.hQueue = 0x2ba0d600) -> UR_RESULT_SUCCESS;"
+      },
+      {
+        "line": 30252,
+        "text": "strata mtp: draft head over 106299 tokens (212.9 MiB)"
+      },
+      {
+        "line": 30253,
+        "text": "   ---> urDeviceGetInfo"
+      },
+      {
+        "line": 30254,
+        "text": "[2026-10-14 09:07:01.615] [thread-id: 129702799530368] [trace] zesDeviceEnumMemoryModules(hDevice, pCount, phMemory)"
+      },
+      {
+        "line": 30255,
+        "text": "[2026-10-14 09:07:01.615] [thread-id: 129702799530368] [trace] zesDeviceEnumMemoryModules(hDevice, pCount, phMemory)"
+      },
+      {
+        "line": 30256,
+        "text": "[2026-10-14 09:07:01.615] [thread-id: 129702799530368] [trace] zesMemoryGetProperties(hMemory, pProperties)"
+      },
+      {
+        "line": 30257,
+        "text": "[2026-10-14 09:07:01.615] [thread-id: 129702799530368] [trace] zesMemoryGetState(hMemory, pState)"
+      },
+      {
+        "line": 30260,
+        "text": "   <--- urDeviceGetInfo(.hDevice = 0x2b9f7da0, .propName = UR_DEVICE_INFO_GLOBAL_MEM_SIZE, .propSize = 8, .pPropValue = 0x7ffda8e5a310 (10666115072), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;"
+      },
+      {
+        "line": 30261,
+        "text": "strata trace: 1669 MiB free after the verifier and the drafter's binding"
+      },
+      {
+        "line": 30262,
+        "text": "   ---> urDeviceGetInfo"
+      },
+      {
+        "line": 30263,
+        "text": "   <--- urDeviceGetInfo(.hDevice = 0x2b9f7da0, .propName = UR_DEVICE_INFO_QUEUE_PROPERTIES, .propSize = 4, .pPropValue = 0x7ffda8e5a130 (UR_QUEUE_FLAG_OUT_OF_ORDER_EXEC_MODE_ENABLE | UR_QUEUE_FLAG_PROFILING_ENABLE), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;"
+      },
+      {
+        "line": 30264,
+        "text": "   ---> urQueueCreate"
+      },
+      {
+        "line": 30265,
+        "text": "[2026-10-14 09:07:01.615] [thread-id: 129702799530368] [trace] zeDriverGetExtensionFunctionAddress(hDriver, name, ppFunctionAddress)"
+      },
+      {
+        "line": 30266,
+        "text": "   <--- urQueueCreate(.hContext = 0x2b9f9dd0, .hDevice = 0x2b9f7da0, .pProperties = 0x7ffda8e5a180 ((struct ur_queue_properties_t){.stype = UR_STRUCTURE_TYPE_QUEUE_PROPERTIES, .pNext = nullptr, .flags = UR_QUEUE_FLAG_PROFILING_ENABLE}), .phQueue = 0x7ffda8e5a178 (0x2ccf6f40)) -> UR_RESULT_SUCCESS;"
+      },
+      {
+        "line": 30274,
+        "text": "   <--- urDeviceGetInfo(.hDevice = 0x2b9f7da0, .propName = UR_DEVICE_INFO_GLOBAL_MEM_SIZE, .propSize = 8, .pPropValue = 0x7ffda8e5a330 (10666115072), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;"
+      },
+      {
+        "line": 30275,
+        "text": "strata serve: 1669 MiB of VRAM free with everything loaded"
+      },
+      {
+        "line": 30276,
+        "text": "   ---> urDeviceGetInfo"
+      },
+      {
+        "line": 30277,
+        "text": "[2026-10-14 09:07:01.616] [thread-id: 129702799530368] [trace] zesDeviceEnumMemoryModules(hDevice, pCount, phMemory)"
+      },
+      {
+        "line": 30278,
+        "text": "[2026-10-14 09:07:01.616] [thread-id: 129702799530368] [trace] zesDeviceEnumMemoryModules(hDevice, pCount, phMemory)"
+      },
+      {
+        "line": 30279,
+        "text": "[2026-10-14 09:07:01.616] [thread-id: 129702799530368] [trace] zesMemoryGetProperties(hMemory, pProperties)"
+      },
+      {
+        "line": 30280,
+        "text": "[2026-10-14 09:07:01.616] [thread-id: 129702799530368] [trace] zesMemoryGetState(hMemory, pState)"
+      },
+      {
+        "line": 31051,
+        "text": "   <--- urQueueFinish(.hQueue = 0x2ba61c80) -> UR_RESULT_SUCCESS;"
+      },
+      {
+        "line": 31052,
+        "text": "strata trace: request 28 0"
+      },
+      {
+        "line": 31053,
+        "text": "strata trace: prompt start 27 -1"
+      },
+      {
+        "line": 31054,
+        "text": "   ---> urDeviceGetInfo"
+      },
+      {
+        "line": 31055,
+        "text": "   <--- urDeviceGetInfo(.hDevice = 0x2b9f7da0, .propName = UR_DEVICE_INFO_MAX_WORK_GROUPS_3D, .propSize = 24, .pPropValue = {4294967295, 4294967295, 4294967295}, .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;"
+      },
+      {
+        "line": 31056,
+        "text": "   ---> urDeviceGetGlobalTimestamps"
+      },
+      {
+        "line": 31057,
+        "text": "   <--- urDeviceGetGlobalTimestamps(.hDevice = 0x2b9f7da0, .pDeviceTimestamp = nullptr, .pHostTimestamp = 0x7ffda8e58e78 (285183386068586)) -> UR_RESULT_SUCCESS;"
+      },
+      {
+        "line": 31058,
+        "text": "   ---> urDeviceSelectBinary"
+      },
+      {
+        "line": 31097,
+        "text": "   <--- urEventRelease(.hEvent = 0x2bc31fe0) -> UR_RESULT_SUCCESS;"
+      },
+      {
+        "line": 31098,
+        "text": "strata trace: prompt chunk 0 of 27"
+      },
+      {
+        "line": 31099,
+        "text": "   ---> urDeviceGetGlobalTimestamps"
+      },
+      {
+        "line": 31100,
+        "text": "   <--- urDeviceGetGlobalTimestamps(.hDevice = 0x2b9f7da0, .pDeviceTimestamp = nullptr, .pHostTimestamp = 0x7ffda8e58818 (285183508881838)) -> UR_RESULT_SUCCESS;"
+      },
+      {
+        "line": 31101,
+        "text": "   ---> urEnqueueEventsWaitWithBarrierExt"
+      },
+      {
+        "line": 31102,
+        "text": "[2026-10-14 09:07:01.966] [thread-id: 129702799530368] [trace] zeCommandListAppendBarrier(hCommandList, hSignalEvent, numWaitEvents, phWaitEventsLocal)"
+      },
+      {
+        "line": 31103,
+        "text": "   <--- urEnqueueEventsWaitWithBarrierExt(.hQueue = 0x2ba61c80, .pProperties = 0x7ffda8e584b0 ((struct ur_exp_enqueue_ext_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_ENQUEUE_EXT_PROPERTIES, .pNext = nullptr, .flags = 0}), .numEventsInWaitList = 0, .phEventWaitList = nullptr, .phEvent = 0x7ffda8e58378 (0x2bc31fe0)) -> UR_RESULT_SUCCESS;"
+      },
+      {
+        "line": 490198,
+        "text": "   <--- urEventGetProfilingInfo(.hEvent = 0x2e8c6640, .propName = UR_PROFILING_INFO_COMMAND_END, .propSize = 8, .pPropValue = 0x7ffda8e59648 (285315488393437), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;"
+      },
+      {
+        "line": 490199,
+        "text": "strata prefill timing: 27 tokens, GPU timeline 116659 ms, wall 117145 ms, host staging 1612 ms: embed+steps 7615 (6.5%) hc read 97 (0.1%) gdn 157 (0.1%) qsa proj 576 (0.5%) qsa indexer 123 (0.1%) qsa select 165 (0.1%) qsa attn 5637 (4.8%) router+shared 158 (0.1%) host grouping 2295 (2.0%) gather 620 (0.5%) wait copy 83 (0.1%) dequant 3043 (2.6%) gemm gate/up 94694 (81.2%) gemm down 753 (0.6%) combine 3 (0.0%) ple 356 (0.3%) kv stage 0 (0.0%) gdn conv+gates 209 (0.2%) gdn recurrence 5 (0.0%) gdn out proj 71 (0.1%)"
+      },
+      {
+        "line": 490200,
+        "text": "strata prefill timing: host: chunk setup (PLE rows, the expert stream plan) 7615 ms, waiting for each chunk 4 ms, after each chunk (the draft layer, progress) 302 ms, PLE 358 ms"
+      },
+      {
+        "line": 490201,
+        "text": "   ---> urEventRelease"
+      },
+      {
+        "line": 490202,
+        "text": "   <--- urEventRelease(.hEvent = 0x2e8c6640) -> UR_RESULT_SUCCESS;"
+      },
+      {
+        "line": 490203,
+        "text": "   ---> urEventRelease"
+      },
+      {
+        "line": 490204,
+        "text": "   <--- urEventRelease(.hEvent = 0x2d000270) -> UR_RESULT_SUCCESS;"
+      },
+      {
+        "line": 490205,
+        "text": "   ---> urEventRelease"
+      }
+    ],
+    "reason": "distinct CLI/startup/range mechanism and relevant request/phase evidence"
+  },
+  {
+    "version": 9,
+    "original_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-cold-jit-short-root-v9/owned/engine.stderr",
+    "original_bytes": 2182454,
+    "original_sha256": "5747d75fcf46c16a4cae0c7197782090d7da870233c81645dadd183c9102d943",
+    "original_lines": 19437,
+    "selected_lines": [
+      {
+        "line": 18865,
+        "text": "strata generate: loaded 46.84 GiB at 1.55 GiB/s"
+      },
+      {
+        "line": 18866,
+        "text": "strata trace: 4716 MiB free after the weights, the session and the drafter"
+      },
+      {
+        "line": 18867,
+        "text": "strata generate: experimental native Q5_K head, 521472000 bytes"
+      },
+      {
+        "line": 18868,
+        "text": "strata generate: expert cache 128 slots, 0.26 GiB of VRAM; policy is"
+      },
+      {
+        "line": 18869,
+        "text": "strata trace: 3950 MiB free after opening the expert cache"
+      },
+      {
+        "line": 18870,
+        "text": "strata generate: SYCL cached experts use native Q8_1 arithmetic; logits can differ from CPU experts."
+      },
+      {
+        "line": 18871,
+        "text": "strata trace: 3950 MiB free after the profile fill"
+      },
+      {
+        "line": 18872,
+        "text": "strata generate: pre-filled 128 of 128 slots from the profile; slot 0 verified"
+      },
+      {
+        "line": 18873,
+        "text": "   ---> urProgramBuildExp"
+      },
+      {
+        "line": 18874,
+        "text": "[2026-10-14 09:18:21.395] [thread-id: 124799286225280] [trace] zeModuleCreate(hContext, hDevice, desc, phModule, phBuildLog)"
+      },
+      {
+        "line": 18875,
+        "text": "[2026-10-14 09:18:21.424] [thread-id: 124799286225280] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleCreate(hContext=0xdf239a8, hDevice=0xdf0c818, desc={stype=0x7ffcc3994800, format=0x7ffcc3994810, inputSize=4680, pInputModule=3, pBuildFlags=\" -ze-opt-level=2\", pConstants={numConstants=0, pConstantIds=nullptr, pConstantValues=nullptr}}, phModule=0xe2b8ee8, phBuildLog=0xe1d09d8)"
+      },
+      {
+        "line": 18876,
+        "text": "   <--- urProgramBuildExp(.hProgram = 0xe15af30, .numDevices = 1, .phDevices = 0xe1decb0 {0xdf21b20}, .flags = 0, .pOptions = 0xe1ded00 ( -ze-opt-level=2)) -> UR_RESULT_SUCCESS;"
+      },
+      {
+        "line": 18893,
+        "text": "strata generate: native GPU hit kernels captured at session setup"
+      },
+      {
+        "line": 18894,
+        "text": "strata trace: 3936 MiB free after the R4 hit path"
+      },
+      {
+        "line": 18895,
+        "text": "strata generate: R4 hit path ON - resident experts are computed on the GPU"
+      },
+      {
+        "line": 18896,
+        "text": "strata generate: 5 expert-pool workers + the host thread"
+      },
+      {
+        "line": 18897,
+        "text": "strata trace: 3936 MiB free after the expert cache and the graphs"
+      },
+      {
+        "line": 18898,
+        "text": "strata generate: session is up (engine 0.1.38)"
+      },
+      {
+        "line": 18899,
+        "text": "strata generate: token graph hit path: 128 resident experts, decided on the device"
+      },
+      {
+        "line": 18900,
+        "text": "strata serve: the prompt path allocates its own buffers (too few cache slots to borrow)"
+      },
+      {
+        "line": 18901,
+        "text": "strata trace: 1950 MiB free after the head and the prompt path"
+      },
+      {
+        "line": 18902,
+        "text": "strata verify: window up to 4 tokens, 63.8 MiB of device buffers"
+      },
+      {
+        "line": 18903,
+        "text": "   ---> urProgramBuildExp"
+      },
+      {
+        "line": 18904,
+        "text": "[2026-10-14 09:18:34.762] [thread-id: 124799286225280] [trace] zeModuleCreate(hContext, hDevice, desc, phModule, phBuildLog)"
+      },
+      {
+        "line": 18905,
+        "text": "[2026-10-14 09:18:34.947] [thread-id: 124799286225280] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleCreate(hContext=0xdf239a8, hDevice=0xdf0c818, desc={stype=0x7ffcc39943f0, format=0x7ffcc3994400, inputSize=42368, pInputModule=3, pBuildFlags=\" -ze-opt-level=2\", pConstants={numConstants=0, pConstantIds=nullptr, pConstantValues=nullptr}}, phModule=0x15534bb8, phBuildLog=0x1b399308)"
+      },
+      {
+        "line": 18906,
+        "text": "   <--- urProgramBuildExp(.hProgram = 0x1919b490, .numDevices = 1, .phDevices = 0x161f7fd0 {0xdf21b20}, .flags = 0, .pOptions = 0x161f8020 ( -ze-opt-level=2)) -> UR_RESULT_SUCCESS;"
+      },
+      {
+        "line": 18907,
+        "text": "strata mtp: draft head over 106299 tokens (212.9 MiB)"
+      },
+      {
+        "line": 18908,
+        "text": "strata trace: 1669 MiB free after the verifier and the drafter's binding"
+      },
+      {
+        "line": 18909,
+        "text": "strata serve: 1669 MiB of VRAM free with everything loaded"
+      },
+      {
+        "line": 18910,
+        "text": "strata trace: request 28 0"
+      },
+      {
+        "line": 18911,
+        "text": "strata trace: prompt start 27 -1"
+      },
+      {
+        "line": 18912,
+        "text": "   ---> urProgramBuildExp"
+      },
+      {
+        "line": 18913,
+        "text": "[2026-10-14 09:18:35.467] [thread-id: 124799286225280] [trace] zeModuleCreate(hContext, hDevice, desc, phModule, phBuildLog)"
+      },
+      {
+        "line": 18914,
+        "text": "[2026-10-14 09:18:35.570] [thread-id: 124799286225280] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleCreate(hContext=0xdf239a8, hDevice=0xdf0c818, desc={stype=0x7ffcc3993890, format=0x7ffcc39938a0, inputSize=20232, pInputModule=3, pBuildFlags=\" -ze-opt-level=2\", pConstants={numConstants=0, pConstantIds=nullptr, pConstantValues=nullptr}}, phModule=0xf53bc18, phBuildLog=0x10af64f8)"
+      },
+      {
+        "line": 18915,
+        "text": "   <--- urProgramBuildExp(.hProgram = 0x1623d030, .numDevices = 1, .phDevices = 0x10d7e240 {0xdf21b20}, .flags = 0, .pOptions = 0x17cf19d0 ( -ze-opt-level=2)) -> UR_RESULT_SUCCESS;"
+      },
+      {
+        "line": 18916,
+        "text": "strata trace: prompt chunk 0 of 27"
+      },
+      {
+        "line": 18917,
+        "text": "   ---> urProgramBuildExp"
+      },
+      {
+        "line": 18918,
+        "text": "[2026-10-14 09:18:35.570] [thread-id: 124799286225280] [trace] zeModuleCreate(hContext, hDevice, desc, phModule, phBuildLog)"
+      },
+      {
+        "line": 18919,
+        "text": "[2026-10-14 09:18:43.138] [thread-id: 124799286225280] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleCreate(hContext=0xdf239a8, hDevice=0xdf0c818, desc={stype=0x7ffcc39937c0, format=0x7ffcc39937d0, inputSize=176072, pInputModule=3, pBuildFlags=\" -ze-opt-level=2\", pConstants={numConstants=0, pConstantIds=nullptr, pConstantValues=nullptr}}, phModule=0x1063c778, phBuildLog=0x1b0e5dd8)"
+      },
+      {
+        "line": 18920,
+        "text": "   <--- urProgramBuildExp(.hProgram = 0xf555050, .numDevices = 1, .phDevices = 0x106f1840 {0xdf21b20}, .flags = 0, .pOptions = 0x10c5d170 ( -ze-opt-level=2)) -> UR_RESULT_SUCCESS;"
+      },
+      {
+        "line": 18921,
+        "text": "   ---> urProgramBuildExp"
+      },
+      {
+        "line": 19010,
+        "text": "   <--- urProgramBuildExp(.hProgram = 0x1515bbf0, .numDevices = 1, .phDevices = 0x10cc06e0 {0xdf21b20}, .flags = 0, .pOptions = 0xf97fe80 ( -vc-codegen -disable-finalizer-msg)) -> UR_RESULT_SUCCESS;"
+      },
+      {
+        "line": 19011,
+        "text": "strata prefill timing: 27 tokens, GPU timeline 109400 ms, wall 109797 ms, host staging 1934 ms: embed+steps 7864 (7.2%) hc read 92 (0.1%) gdn 159 (0.1%) qsa proj 534 (0.5%) qsa indexer 101 (0.1%) qsa select 169 (0.2%) qsa attn 5334 (4.9%) router+shared 124 (0.1%) host grouping 1205 (1.1%) gather 522 (0.5%) wait copy 30 (0.0%) dequant 2238 (2.0%) gemm gate/up 89756 (82.0%) gemm down 624 (0.6%) combine 2 (0.0%) ple 378 (0.3%) kv stage 0 (0.0%) gdn conv+gates 192 (0.2%) gdn recurrence 5 (0.0%) gdn out proj 71 (0.1%)"
+      },
+      {
+        "line": 19012,
+        "text": "strata prefill timing: host: chunk setup (PLE rows, the expert stream plan) 7865 ms, waiting for each chunk 9 ms, after each chunk (the draft layer, progress) 267 ms, PLE 384 ms"
+      },
+      {
+        "line": 19013,
+        "text": "strata trace: read 27 tokens (batched) in 109797.8 ms"
+      },
+      {
+        "line": 19014,
+        "text": "strata trace: prompt done (slots refilled) -1 -1"
+      },
+      {
+        "line": 19015,
+        "text": "strata trace: window 27 1"
+      },
+      {
+        "line": 19016,
+        "text": "   ---> urProgramBuildExp"
+      },
+      {
+        "line": 19017,
+        "text": "[2026-10-14 09:20:25.266] [thread-id: 124799286225280] [trace] zeModuleCreate(hContext, hDevice, desc, phModule, phBuildLog)"
+      },
+      {
+        "line": 19072,
+        "text": "strata verify: captured the 1-token window in 49 event-completed segments"
+      },
+      {
+        "line": 19073,
+        "text": "strata verify: capture 1 tokens 4096.122 ms, free VRAM 1429.0 MiB"
+      },
+      {
+        "line": 19074,
+        "text": "strata verify: 48 shared/hit graphs can overlap CPU experts"
+      },
+      {
+        "line": 19075,
+        "text": "[2026-10-14 09:20:29.398] [thread-id: 124799286225280] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0xe254f18, timeout=0)"
+      },
+      {
+        "line": 19076,
+        "text": "[2026-10-14 09:20:29.403] [thread-id: 124799286225280] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x153fe628)"
+      },
+      {
+        "line": 19077,
+        "text": "[2026-10-14 09:20:29.409] [thread-id: 124799286225280] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x153fda18)"
+      },
+      {
+        "line": 19078,
+        "text": "[2026-10-14 09:20:29.412] [thread-id: 124799286225280] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x153fce08)"
+      },
+      {
+        "line": 19140,
+        "text": "strata verify: captured the 4-token window in 49 event-completed segments"
+      },
+      {
+        "line": 19141,
+        "text": "strata verify: capture 4 tokens 749.732 ms, free VRAM 1298.8 MiB"
+      },
+      {
+        "line": 19142,
+        "text": "strata verify: 48 shared/hit graphs can overlap CPU experts"
+      },
+      {
+        "line": 19143,
+        "text": "[2026-10-14 09:20:31.862] [thread-id: 124799286225280] [trace] ERROR (ZE_RESULT_NOT_READY) in zeCommandListHostSynchronize(hCommandList=0xe254f18, timeout=0)"
+      },
+      {
+        "line": 19144,
+        "text": "[2026-10-14 09:20:31.866] [thread-id: 124799286225280] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x17b05648)"
+      },
+      {
+        "line": 19145,
+        "text": "[2026-10-14 09:20:31.875] [thread-id: 124799286225280] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x15caf1a8)"
+      },
+      {
+        "line": 19146,
+        "text": "[2026-10-14 09:20:31.882] [thread-id: 124799286225280] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x15cae598)"
+      },
+      {
+        "line": 19341,
+        "text": "[2026-10-14 09:20:33.216] [thread-id: 124799286225280] [trace] ERROR (ZE_RESULT_NOT_READY) in zeEventQueryStatus(hEvent=0x103244a8)"
+      },
+      {
+        "line": 19342,
+        "text": "strata decode timing: 5 windows, avg T 3.40, 1.60 tokens/window, 1593.04 ms/window = verify 1263.54 (GPU-reach wait 108.72 + per-layer host 148.84 [plan 12.62 actq 0.48 jobs 0.12 CPU 128.89] + stage 3.90) + commit/emit 0.23 + draft 329.27; per layer-window: CPU experts 22.68 (33.15 entries), VRAM hits 0.85, PCIe 0.00"
+      },
+      {
+        "line": 19343,
+        "text": "strata serve: prompt 28 tokens = 0 reused + 28 read in 109802 ms (0.3 tok/s), 8 generated in 7965 ms (1.0 tok/s), drafts accepted 4 of 12, 0 checkpoints"
+      },
+      {
+        "line": 19344,
+        "text": "strata serve: decode expert cache hit rate: 2.5% (204 hits / 8160 lookups)"
+      },
+      {
+        "line": 19345,
+        "text": "strata serve: KV streaming: 93.33% of 1800 block reads hit VRAM, 0.5 MiB read from RAM"
+      },
+      {
+        "line": 19346,
+        "text": "[2026-10-14 09:20:36.921] [thread-id: 124799286225280] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)"
+      },
+      {
+        "line": 19347,
+        "text": "[2026-10-14 09:20:36.921] [thread-id: 124799286225280] [trace] SUCCESS (ZE_RESULT_SUCCESS) in zeModuleBuildLogDestroy(hModuleBuildLog=0x1153f128)"
+      },
+      {
+        "line": 19348,
+        "text": "[2026-10-14 09:20:36.921] [thread-id: 124799286225280] [trace] zeModuleBuildLogDestroy(hModuleBuildLog)"
+      }
+    ],
+    "reason": "distinct CLI/startup/range mechanism and relevant request/phase evidence"
   }
 ]

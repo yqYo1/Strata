@@ -1,0 +1,45 @@
+# R477 — Primary ownership and required-feature re-audit
+
+Date: 2026-10-14 (Asia/Tokyo)
+Scope: read-only Git/ref, committed ledger, CMake resolver, and source contract audit at `feature/sycl` HEAD `e780e41229cb1777fc17d49c8c3b80f2056aa312`. No fetch, build, test, GPU, profiler, or Git/source mutation. This report was the only file written.
+
+## Finding
+
+Current ownership matches the clarified policy: `feature/sycl` is primary, the only configured remote is `origin` at `yqYo1/Strata`, and there is no Xe branch or worktree. The ghq mirror is on `main` at `beddab2fd6b61631d73b39b7484bc9a585ebe1de`; it is not the primary worktree. The committed primary audit records Niko1221/Strata as sole upstream and says no upstream contributions are planned (`bench/results/2026-10-14-primary-model-baseline/primary-audit.json:2-5,167-168`). No evidence in current refs or ledgers makes XeStrata a second upstream or requires importing its engine. CUDA/HIP is not a required port target.
+
+The concrete live policy mismatch is in the required-feature ledger's granularity and order, not in branch ownership. At HEAD, `primary-audit.json:217-225` still groups remaining work as active-Arc dynamic VRAM adaptation, a broad shared Niko CLI/API ledger, and install/update plus continuation/RESTORE/context qualification. It does not state the immediately actionable single-GPU server feature and its failure path. The committed service-port index and its R449/R450 reports, plus the primary runtime index and R465/R468 reports, provide the supporting context.
+
+## Required next Niko feature
+
+Prioritize the shared Niko single-GPU elastic VRAM control contract as the next discrete port: saved `vram_elastic`/`vram_segment_mib` config -> engine CLI parse and capability negotiation -> segmented expert-cache reserve/release -> between-request engine control -> truthful `POST /v1/vram` response. This is the first item in the committed required-gap ledger and directly matches a one-GPU user operation. It is a native Arc/SYCL adaptation; no CUDA engine import is implied. Keep the device extension capability/runtime gate explicit: the G fork's active SYCL implementation uses `ext_oneapi_virtual_mem`, but a source-level candidate is not proof that B570 supports or successfully resizes it (R465).
+
+Evidence at P HEAD:
+
+- The active build target includes root `src/program/generate.cpp` and `src/core/expert_cache.cpp`, plus the primary SYCL prefill path (`cmake/sycl_backend.cmake:90-103`).
+- The committed parser accepts static `--vram-reserve-mib` (`src/program/generate.cpp:1242`) but has no `--vram-elastic` or `--vram-segment-mib` parser branch; its strict unknown-argument path exits 2 (`:1381-1386`).
+- The shared server continues to append those opt-in flags from config and routes `parallel` to `--batch` (`serve/server.py:1471-1503`). Its `/v1/vram` handler requires an engine `vram` method and otherwise raises “this engine cannot resize its VRAM use” (`serve/server.py:1815-1821`).
+- The committed primary audit already lists dynamic VRAM as a required gap. R465 documents G's active-SYCL implementation and the P mismatch; R469 documents why extension availability and successful allocation must remain runtime questions. R477 adds the confirmation that P's current committed parser still rejects the server's forwarded elastic flags.
+
+A second separate applicable shared-service gap is Niko's opt-in `parallel` single-GPU request-slot protocol: server `parallel_args()` forwards `--batch N`, but P's parser does not accept it and P's serve loop only accepts `GEN`/`GENI` (R465 and R468). It should follow as its own CLI/server protocol feature, including honest capability negotiation; speculative verifier windows are not independent request slots. Multi-stage `batch-groups`, remote helper placement, peer tier, and stage trimming remain outside this one-GPU requirement. This distinction prevents the generic ledger from becoming a demand to import all engine inference code.
+
+## Current refs and ledger state
+
+`git branch -avv` and `git worktree list --porcelain` show only local `feature/sycl` and `main`, with their corresponding origin refs; origin/HEAD points to main. No Xe branch/worktree or Niko upstream remote is configured. `origin` is `git@github.com:yqYo1/Strata.git`. This is consistent with a sole upstream in policy, though the remote name itself is the personal fork, not Niko.
+
+The committed primary audit says `fresh_Niko_update_evaluation_complete: false` and `default_promotion_complete: false`; these remain explicit open boundaries, not evidence of an ownership defect. It records optional Xe candidates separately (`primary-audit.json:217-238`). The Niko service-port completed boundary records that its source commit was `51ad49e...`, that GPU performance and physical 262144 KV/RESTORE were not qualified, and that default promotion and a newer Niko update check were incomplete (`bench/results/2026-10-14-niko-main-service-port/completed-boundary.json`). No new upstream fetch/version assertion is made here.
+
+## New findings versus prior reports
+
+- Rechecked at the later committed HEAD `e780e412`; the only configured remote is the personal fork, and the branch/worktree inventory remains the two expected worktrees. This is a current-state confirmation, not a new origin/ancestry theory.
+- Narrowed the current committed ledger's broad Niko obligation to a discrete next operation: elastic VRAM reserve/release and its engine capability contract, with `parallel` slot service clearly a separate subsequent obligation.
+- Confirmed directly in the current committed P parser that static VRAM reserve exists while elastic flags are absent and would hit the strict unknown-argument exit. Prior R465 described that gap; this is the fresh HEAD recheck.
+
+## Confidence and limits
+
+High confidence for current local refs, HEAD, committed ledger fields, CMake target list, parser acceptance/rejection, and shared server config/API behavior: these are direct Git/source observations at the stated commit. Medium-high confidence that elastic VRAM is the best next discrete required feature: it is first in the committed gap ledger and is a concrete single-device service contract, but prioritization is a policy judgment. No claim is made about extension availability, runtime resize correctness, feature adoption desirability beyond the stated required-function policy, latest Niko HEAD, or performance. Working tree was dirty during inspection; conclusions use `git show HEAD:<path>` for committed source and do not characterize uncommitted edits.
+
+## Evidence read
+
+- `git status --short --branch`, `git rev-parse HEAD`, `git branch -avv`, `git worktree list --porcelain`, `git remote -v`, committed `primary-audit.json`, `bench/results/2026-10-14-primary-native-runtime/research-index.json`, `bench/results/2026-10-14-niko-main-service-port/research-index.json`, and `bench/results/2026-10-14-niko-main-service-port/completed-boundary.json`.
+- R461, R462, R465, R468, R469, and the corrections in `bench/results/2026-10-14-primary-model-baseline/research-index.json`.
+- Committed P source at HEAD: `cmake/sycl_backend.cmake:90-103`, `src/program/generate.cpp:1242,1381-1386`, and `serve/server.py:1471-1503,1815-1821`.

@@ -36,7 +36,10 @@ def main():
     for optional in ['main-primary-size-t-range-gpu-root-v1', 'main-primary-model-diagnostic-root-v5',
                      'main-primary-post-deadline-gpu-root-v1', 'main-primary-model-diagnostic-root-v6',
                      'main-primary-accepted-mmq-gpu-root-v1', 'main-primary-model-accepted-diagnostic-root-v7',
-                     'main-primary-stock-bench-accepted-root-v1', 'main-primary-post-abort-gpu-root-v1']:
+                     'main-primary-stock-bench-accepted-root-v1', 'main-primary-post-abort-gpu-root-v1',
+                     'main-primary-host-abort-observer-root-v1', 'main-primary-host-abort-observer-root-v2',
+                     'main-primary-cold-jit-short-root-v8', 'main-primary-cold-jit-short-root-v9',
+                     'main-primary-post-trace-cap-gpu-root-v1']:
         if original(B / optional / 'record.json') is not None:
             roots.append(optional)
     with (B / 'owned-v0141-measurement.lock').open('a') as lock:
@@ -51,7 +54,7 @@ def main():
                     and not command.get('survivors')), (root, command['label'])
                 # Failed deadlines keep observation_complete=false. Publishing
                 # their original evidence is not a successful lifecycle proof.
-            for name in ['record.json', 'result.json', 'engine-exit.json', 'engine-start.json', 'control-action.json', 'config.json', 'plan.json']:
+            for name in ['record.json', 'result.json', 'engine-exit.json', 'engine-start.json', 'control-action.json', 'config.json', 'plan.json', 'sampler-summary.json', 'stderr-relay-summary.json']:
                 source = output / name
                 data = original(source)
                 if data is None:
@@ -94,8 +97,10 @@ def main():
                            no_intervention_until_final=True)
         (D / 'research-index.json').write_text(json.dumps(prior_research, indent=2, ensure_ascii=False) + '\n')
         windows = json.loads((D / 'model-diagnostic-windows.json').read_text()) if (D / 'model-diagnostic-windows.json').exists() else []
-        for version in (1, 2, 4, 5, 6, 7):
+        for version in (1, 2, 4, 5, 6, 7, 8, 9):
             root_name = f'main-primary-model-diagnostic-root-v{version}' if version != 7 else 'main-primary-model-accepted-diagnostic-root-v7'
+            if version in (8, 9):
+                root_name = f'main-primary-cold-jit-short-root-v{version}'
             source = B / root_name / 'owned/engine.stderr'
             if not source.exists():
                 continue
@@ -122,7 +127,7 @@ def main():
         (D / 'model-diagnostic-windows.json').write_text(json.dumps(windows, indent=2) + '\n')
         gpu = B / 'main-primary-size-t-range-gpu-root-v1'
         summaries = json.loads((D / 'gpu-diagnostic-summary.json').read_text()) if (D / 'gpu-diagnostic-summary.json').exists() else []
-        for gpu in [gpu, B / 'main-primary-post-deadline-gpu-root-v1', B / 'main-primary-accepted-mmq-gpu-root-v1', B / 'main-primary-post-abort-gpu-root-v1']:
+        for gpu in [gpu, B / 'main-primary-post-deadline-gpu-root-v1', B / 'main-primary-accepted-mmq-gpu-root-v1', B / 'main-primary-post-abort-gpu-root-v1', B / 'main-primary-post-trace-cap-gpu-root-v1']:
             for source in sorted((gpu / 'owned').glob('*debug.stderr')):
                 summaries = [item for item in summaries if item['path'] != str(source)]
                 data = source.read_bytes()

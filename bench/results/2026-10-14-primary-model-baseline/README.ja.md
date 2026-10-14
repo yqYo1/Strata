@@ -302,3 +302,38 @@ MainのGPU/server/ownerは全て終了、常設serviceとGPU bindingに変更な
 主branchはfeature/sycl、remote/local枝とworktreeは引き続き2つ。
 mainはbeddab2fのまま、必要なnative非推論機能の適合とdefault反映、fresh Niko評価は未完了。
 Xeの比較値をprimaryへ移さず、source由来・APIの義務・採用した計算部品を今後も分ける。
+
+## 初回JITの実時間と監視処理の再点検
+
+同じ3fa2375eのnative binaryと復元したXMX/same-queue/ring8設定を使い、v8/v9では
+watchdogを診断限定で300秒にした。v8の27入力prefillは117149.9msで完了したが、
+詳細ログが64MiBに達してownerが終了させた。原結果はfailed/complete=false、元の
+journal-afterもaggregate capで失敗したまま保持する。別rootのpost-trace-cap確認が
+v8の元cursor以後のfault0とdumpなしを確認し、小runtimeもexit0で通った。
+これをv8の正常終了や元fault-query成功へ書き換えない。
+
+v9はstderrを最後まで排出し、上限付きprefix、JIT境界、警告・エラー、全streamの
+API集計/hashを保存した。全API履歴を保持したとは主張しない。126351371 bytesの
+streamを排出し、prefix2097152 bytes/selected85302 bytes、oversized/error0。
+28入力/reuse0/8出力が成功し、prompt109801.9ms/decode7965.2ms、native/server/ownerは
+全てexit0、fresh fault0/dumpなし/同一boot。短い診断であり速度採用・長文合格ではない。
+
+[cold-jit-evidence.json](cold-jit-evidence.json) は54件の完了zeModuleCreate境界を保存する。
+最長は09:18:43.993→09:20:13.269 JSTの**89.276秒**、inputSize7743644、戻りはSUCCESS。
+既定60秒を超える正当なhost module creationを実測した。GPU kernelの実行時間とは別。
+この呼び出し中の89点の受動CPU thread sampleから代表点も保存した。logger thread IDを
+Linux TIDと対応付けておらず、compiler threadとの直接同定はしない。
+v7のwatchdog発火にはcold JITとの衝突を示す証拠が増えたが、host canary破壊の書込み元は
+未特定。v9で再発しなかったことだけでcanary原因の修正を認定しない。
+
+R475–R478のLuna原文と訂正はregistryへ追加した。R477の独立再点検でも、主sourceは
+Nikoベースで枝は2本、Xe全置換は無い。一方、必須のelastic VRAM CLI/API contractと
+parallel request-slot protocolは別々の未完了項目。default反映とfresh Niko評価も残る。
+R478でqueue-emptyの受信は1-byte ur_bool_t、URの返却も1-byte boolと確認したため、
+出力サイズ違いによるcanary破壊仮説にはsource上の根拠がない。
+
+別のSol実装担当から[監視寿命の提案](proposed-watchdog-lifecycle.patch)と
+[報告](research/implementation-primary-watchdog-lifecycle-v1.txt)を受け取った。
+coherent snapshot、callback lease、scopeでjoinするwatchdog、実行中Verifierだけのrescue、
+host flag atomic化とhost concurrency fixtureを含む。現時点では**未適用・未テスト**。
+調査担当には実装させず、Mainがbuild/CPU/GPU/model検証を直列に管理する。
