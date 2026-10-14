@@ -95,3 +95,18 @@ long-generation/regular-codeの実送信開始rowはthinking=true/max_tokens1638
 全測定workloadとagent条件は--thinkでON。終了後にjournal chain、正常native/server exit、
 全個別結果、fresh faultを検査し、3回の標準32K/agent/追加生成suiteへ進む。
 active jobのclient/engine/recipe sourceを変えず、同時test/build/cleanupはしない。
+
+
+v4最初のregular-code要求は正常stop/DONE/usageで実33214入力/3346生成、PP156.1t/s
+(212804.9ms)、TG5.3t/s(637080ms)、受理2382/2895=82.280%、本文5499文字、思考4055文字。
+[元durable row](screen-v4-first-request.json)をそのまま保持。現在owned screenはまだactiveで、
+日本語要求の終了、native正常終了/fault、強弱各3回は未確認。v3高側の9.3t/sと大きく異なるが、
+各1回・出力履歴/request/生成枠が異なるためengine退行の因果判定をしていない。
+
+[1回のthread配置観測](thread-placement-v4.json)では主threadがcore0、CPU pool5threadが
+core1..5（物理core6つ、SMT sibling6..11）で、後発3threadが全てcore0だった。
+Stager::initの既定worker3本は親affinityを継承し、SessionLoopScratch.initはserveのprompt
+初期化より前に主をcore0へ固定する。後発threadの役割はruntime名/stackで未確定だが、
+ソースと配置が一致する具体的なprefill候補。累積CPU ticksをdecode専用serviceや原因証明にしない。
+R533は実起動順/配置、R534は既存Stagerの並行event/source/buffer契約を調査し、別Solは
+原allowed maskを渡す未適用案を準備する。全実行はMainで直列管理し、live sourceは固定。

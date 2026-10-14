@@ -54,6 +54,24 @@
       "original_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-shape-weighted-gemm-targets-round524-v1.txt",
       "sha256": "d1ed9fec36d3a683cd9524adae19ed80238f919981347858d328aa9e538a0970",
       "status": "proposal-only"
+    },
+    {
+      "round": 531,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research/research-qsa-route-observation-round531-v1.txt",
+      "sha256": "7d9b3019fe31deeb3dc03e800f14b68eb233a9d75a0ff959b2130540e568a13a",
+      "status": "proposal-only",
+      "direct_canonical_write": true
+    },
+    {
+      "round": 532,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research/research-decode-host-pipeline-round532-v1.txt",
+      "sha256": "64eea3116bad7b5e8effd2b19545b021e2c0f3737066f26375c84ba3b194482f",
+      "status": "proposal-only",
+      "direct_canonical_write": true
     }
   ],
   "no_intervention_until_final": true,
@@ -74,6 +92,28 @@
     "R522 full262144 real input uses valid0-based positions0..262143; do not process position262144 as a valid cell. Additional outputs at capacity must be refused.",
     "Main checked actual markers: QSA gate/output projection is explicitly marked kPfQsa after attention, so it is separate from kPfQsaAttn. Actual attention matrix acceptance/decline remains unobserved.",
     "R521 summary hash af6143de is the preannotation snapshot. Main later added timing-line/safety-policy/staging-scope annotations; stripping only these three fields reconstructs the exact cited hash. Original record77fce440 remains byte-identical archived. No original result changed.",
-    "R524 reference-pending statement is superseded by the now completed matching fresh reference, with first-logit bit equality and fault-free normal completion; this does not qualify orientation or exclusive timing claims."
-  ]
+    "R524 reference-pending statement is superseded by the now completed matching fresh reference, with first-logit bit equality and fault-free normal completion; this does not qualify orientation or exclusive timing claims.",
+    "R531 optional detailed decline reason/exception ledger is deferred: Main caller-only proposal records returned host decisions using the original single short-circuit call, emits only after existing successful drain and labels reasons/selected occupancy unobserved. Failed native runs cannot be inferred from missing ledger.",
+    "R532 v3 is already closed and failed by CPU limit; current v4 is live. Native decode packed IQ3/mixed-format CPU work and prefill FP16/stager data are separate. Existing host/decode ledger proposals must be reviewed before new instrumentation; no joined current decode bottleneck attribution is claimed."
+  ],
+  "pending_reports": [
+    {
+      "round": 533,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research/research-stager-affinity-inheritance-round533-v1.txt"
+    },
+    {
+      "round": 534,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research/research-stager-parallel-runtime-contract-round534-v1.txt"
+    }
+  ],
+  "pending_implementation": {
+    "model": "gpt-6.1-sol",
+    "artifact_only": true,
+    "path": "stager-affinity-proposal-v1",
+    "main_owns_serial_tests": true
+  }
 }

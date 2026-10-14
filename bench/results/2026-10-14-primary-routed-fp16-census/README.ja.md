@@ -90,3 +90,11 @@ prefillは無観測201618.3ms、phase207565.9ms（観測差+2.95%）。各1proce
 R523/R524と別SolのQSA transpose案が完了した。kernel/headerの未適用patchであり、
 実装・build・GPU・採用の合格に数えない。ユーザー指定のagent sessionと長いMTP生成の
 benchmark追加を先に進め、QSA route countersとkernel評価はその後へ継続する。
+
+
+R531/R532の読み取り専用Luna反復調査が完了した。Mainは返答まで介入せず、live v4測定と
+独立したcaller-only QSA route censusの[未適用実装案](qsa-route-observation-proposal-v1/report.md)を
+準備した。元の一度だけのbool呼び出しとfallback loopを保持し、host返却結果/shape/query数を
+数える。追加queue/event/copy/wait/math/能力再問い合わせはない。kernelの実行時間や選択cellの
+占有を測ったことにはしない。decline理由は未観測と明記する。build/test/GPUは全て未実行。
+benchmark→PR#6点検の順を保ち、その後にsource baseを再確認して観測案を直列検証する。
