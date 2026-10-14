@@ -98,3 +98,14 @@ R531/R532の読み取り専用Luna反復調査が完了した。Mainは返答ま
 数える。追加queue/event/copy/wait/math/能力再問い合わせはない。kernelの実行時間や選択cellの
 占有を測ったことにはしない。decline理由は未観測と明記する。build/test/GPUは全て未実行。
 benchmark→PR#6点検の順を保ち、その後にsource baseを再確認して観測案を直列検証する。
+
+
+R533はspec4/serveのhost pin→Stager作成順と、Linux親affinity継承を確認した。
+R534は正常generation/event/sourceの並行契約と、wait/copy/eventRecordのreturn無視を指摘。
+Mainもadapterがbody前にsticky errorをcheckするため、失敗waitが実event waitなしで返り得る経路を
+[確認](stager-error-ownership-review.ja.md)した。hangやraceの実再現ではない。
+別Solの[affinity案](stager-affinity-proposal-v1/report.md)は原allowed maskをvalueで渡し、workerの
+配置を読戻し確認するdefaultOFF案。CPU0..62のLinux/SYCL限定、他maskは明示refuse、
+issuer/pool/event/math/queueは変えない。全fixture/build/GPUは未実行。失敗伝達/lease問題は
+この案に含まれず、Mainは追加レビュー・CPU error fixtureを行ってから並列配置GPUを検証する。
+source/code hash付きでGitに保持し、benchmark→PR#6の順を保つ。
