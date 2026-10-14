@@ -226,13 +226,29 @@
       "path": "research-decode-cache-profile-round584-v1.txt",
       "sha256": "a172b0521f81f024914cde76cc37b3970f6a151948d3fc55691ea1d42e0f52cf",
       "status": "FINAL received; Main corrected exact128-slot partition(47x2+34), one-byte ID claim, usage/observer budgets in boundary-service-main-review.ja.md. No implementation/performance qualification."
+    },
+    {
+      "round": 585,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-layer26-gdn-divergence-round585-v1.txt",
+      "sha256": "34efc1551a8842c132a911c6f2ea3f8e8fd39858a17afdbb3e2a3c87936e91b9",
+      "status": "FINAL received; source hypotheses only, actual newlayer26 boundary result and Main decisions in boundary-audit-long-pair.ja.md. No concrete UB found; no cause/fix/performance qualification."
+    },
+    {
+      "round": 586,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-layer26-moe-divergence-round586-v1.txt",
+      "sha256": "5420e513bf9270f4fc85c7a815d76e7bc449483b3b47f7c3cf150868b39dbae2",
+      "status": "FINAL received; source hypotheses only, actual newlayer26 boundary result and Main decisions in boundary-audit-long-pair.ja.md. No concrete UB found; no cause/fix/performance qualification."
     }
   ],
   "main_initial_findings": [
     "PR6 performance patch changes historic sycl/src/prefill/prefill.cpp, not current root src/prefill/prefill.cpp. Current root rg finds compact scratch but no layer-major selector. History preservation is not adoption.",
     "Original645.85 PP and later449.7 full-context/MTP measures need separate source/config reconciliation; different protocol does not justify discarding the old improvement."
   ],
-  "next": "Main boundary-service CPU/build PASS. New diagnostic binary small OFF/ON model isolation then paired34K fixed4096/auto boundary localization; actual format service then clean official bench. Original automatic-prefix numerical FAIL unchanged; physical256K/RESTORE pending.",
+  "next": "Actual format service and layer26 phase proposal review; CPU rowpair candidate rejected, balanced cache proposal pending. Then settings/clean official benchmarks with prefill/decode separate. Original auto numericalFAIL and physical256K/RESTORE remain open.",
   "main_review": "main-review-round559-560.ja.md",
   "subsequent_main_review": "main-review-round561-562.ja.md",
   "public_history_reverification": "public-history-reverification.json",
@@ -242,7 +258,7 @@
     "main_review": "qsa-layout-recovery-v1/main-review.ja.md",
     "status": "Build/host and20GPU parity/oracle cases PASS/fault0. Component40sample screen closedPASS; layout1 median4.09%slower in one int8case, no adoption. No whole-model/full256K/RESTORE/quality qualification."
   },
-  "latest_main_review": "boundary-service-main-review.ja.md",
+  "latest_main_review": "boundary-audit-long-pair.ja.md",
   "component_summary": "qsa-layout-screen-summary.json",
   "gemm_orientation_probe": {
     "report": "gemm-orientation-probe-v1/implementation.txt",
@@ -365,7 +381,14 @@
     "recipe": "apply_build_boundary_service_v1.py",
     "review": "boundary-service-main-review.ja.md",
     "model_recipe": "check_boundary_audit_v1.py",
-    "state": "CPU/build and3arm small model gates PASS/fault0;34K FP32fixed4096 auditON output and source/store/input allPASS/fault0. Auto-prefix paired run pending."
+    "state": "Small3arm+34K fixed PASS/fault0. Auto numericalFAIL/fault0; copyequal at selectedrows; exact pair firstselecteddiff layer26/row24575. Actual format-service normalserve pending.",
+    "paired": "boundary-audit-long-pair-v1.json"
   },
-  "retention_v4": "retention-v4-manifest.json"
+  "retention_v4": "retention-v4-manifest.json",
+  "cpu_rowpair_probe": {
+    "report": "iq3s-rowpair-probe.ja.md",
+    "receipt": "iq3s-rowpair-probe-v2.json",
+    "original_failure": "iq3s-rowpair-probe-v1.json",
+    "state": "Main353case normal+ASan/UBSan bitwisePASS;288clean samples. Candidate slower, not applied. Existingexact promising within syntheticIQ3Snt1 only."
+  }
 }

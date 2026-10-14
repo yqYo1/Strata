@@ -1,0 +1,70 @@
+# R586 — layer 26 HC / router / expert arithmetic の読み取り調査
+
+2026-10-15 JST。指定された境界比較、Main review、R580/581/583、MTP divergence資料を読んだうえで、現root SYCL sourceのlayer 26についてHC・MoE router/grouping・native expert dequant/GEMM/SwiGLU/down/combine・expert uploadを追跡した。製品変更、build/test、GPU/service、Git、cleanupは行っていない。許可された本報告だけを書いた。
+
+## 測定境界と結論
+
+新しい比較のbinaryは`b6838d286a6ec00b0d92c7ce8f8480c81511c4ab823e400273c52b2585c55aa6`。34,603 actual input / 34,602 batched tokens、chunk 4,096、FP32 residual、MTP expert release ONで、GPU residual rows 4,096のfixed armと24,576のauto armを各々境界診断付きで実行した。auto armは通常終了し、receipt上process/faultは正常だがnumerical FAIL。これは以前の別binary `44cafcc2...` のauto FAILを再実行した証拠ではない。
+
+`boundary-audit-long-pair-v1.json`は、各run内部でselected boundary rowのsource→store→次層inputのraw copyが全て一致したと記録する。二arm間ではlayer 0–25の19 selected rowsは全て一致し、最初のselected差はlayer 26 / relative row 24,575 / byte 0、max absolute `1.6435980796813965e-5`。ただし観測は19 selected rowsであり、全tokenのresidual、router logits、expert IDs/weights、MoE中間値が両armで一致したことは示さない。auto armのselected outputは旧非診断auto FAILともfixed controlとも一致しない。従って同一run内のcopy/store不一致はこの観測範囲で支持されないが、layer 26のGDN、HC/FFN、routing、expert計算、library dispatchのどれが最初に差を作るかは未確定。layer26 GDNの詳細原因は別担当scopeであり、ここではHC/MoEを調べた。
+
+`synthetic739events`のprofile情報はこの調査の実MoE実行証拠に使わない。特に以前の「actual Down 61 s」を説明する根拠として扱わない。今回の境界receiptにexpertごとの実oneMKL call shape/algorithm ID、全行route、層26のMoE中間tensorは記録されていない。
+
+## 実行receiptから確定するMoE経路
+
+Auto arm receiptの実環境は`STRATA_PREFILL_MMQ=0`、`STRATA_PREFILL_MOE_COMPACT_FP16=1`で、stdoutは`FP16 MoE compact requested=1 effective=1`を記録する。従って本runのrouted expert pathはnative-FP16 compact routeであり、MMQ/XMX pathではない。`m.compact_moe_fp16`は各expertの選択行を一時領域の先頭へ詰める。layer-major candidateは各層で512 expertsをGPU cacheへuploadし、各層9 chunksを処理したとreceiptにある。MTP expert source 675 MiBはprefill前にdetach、prefill後にrestoreしている。これはrouter/MoE route変更が起きた証拠ではない。
+
+## HCからrouterへの入力
+
+`run_impl`の各層はまずHC attention halfを読み、GDN/QSA出力とinjectを作って`gr_write`でresidual `m.R`へ戻し、次にHC FFN halfを実行する。HCのFFN halfは`gr_norm_rs`（設定次第でunfused `gr_norm`）→BF16 GEMM `hc_ffn_down`→SiLU→BF16 GEMM `hc_ffn_up`とinject projection→`gr_mix_r`の順で、そこでMoEへ渡す`m.mixed`、`m.mixed_bf`、構成時には`m.mixed_bf_lo`を作る。layer26の境界rawはこの一連の層処理の後に採られるため、現境界データだけではGDN出力と後段HC FFN、MoEのどこでarm差が最初に発生したか分からない。
+
+MoE router logitsは`bf16_proj(m.mixed_bf, ffn_gate_inp.weight, m.logits)`で作る。BF16x2経路ならlow-partを同じ出力へbeta=1で加える。E=512では`route()`が`native_router_top10_multi`を常に呼ぶ（`native_router_enabled()`フラグで別routeへ切り替える条件はここにない）。SYCL kernelはtokenごとに512 logitsのsoftmaxを取り、10回max選択し、同点ならexpert IDの小さい方を選ぶ。出力IDsはrank orderで全10件を書き、weightsはその選択10件内で正規化する。source上は決定的なtie ruleがあるが、今回二armのlogits/IDs/weightsが同じとは測られていない。
+
+## Expert grouping、upload/ring、offsetと初期化
+
+Routerの直後に`m.ids`をhostへcopyしてqueueを同期する。hostで全`T*10` routingを数え、expertごとの`cnt`とprefix `off`をexpert ID順に作る。元route配列をtoken-major/rank-major順に再走査して、各route entryに`slot`、expert-grouped位置にsource token rowを格納する。従ってexpert内token行順は元route entry順、`order`はpositive-count expertをID昇順に列挙する。`slot[t*10+k]`がcombine先を指す。run receiptはこのmappingをarm間比較していない。
+
+このlayer-major runのexpert uploadは一般のstaging ringではない。`layer_major.inc`は最大blob strideを持つhost upload slabを用意し、層ごとに`copy_blob`で512 blobsを各stride位置へ集め、続けて512 `fill_slot`を同じcopy queueへ発行、drain完了後にresidency mapを公開してからその層を実行する。通常の`STAGE`/Stager/ringはlayer-majorで使われない。各blobの実byte lengthがslotへ転送され、native dequantの読取範囲はlayoutのGU/up/down offsetsとmatrix rowsに基づく。MMQ用zero-tail初期化はこのrunのpathでは関係しない。
+
+compact pathでは`iq_dequant_gu_f16`がnative GUとUPをFP16 scratchへ、`iq_dequant_f16`がDOWNを別FP16 scratchへ展開する。scratchは2-slot ringでexpert index mod 2に振られる。次に各expertのtoken rowsを`gather_rows16`で`m.mixed_h`からcompact `m.Xs[0..ne)`へ集め、GU GEMMは`m.Xs`から`m.GU[0..ne)`へfloat output、interleaved SwiGLUは`m.GU`からFP16 `m.Hh[0..ne)`へ、DOWN GEMMは`m.Hh`からgrouped destination `m.Dm[off[e]..off[e]+ne)`へfloat outputを出す。MMQのgroup boundsやzero tailは使わない。
+
+valid top-10 geometryでは各tokenに10 route entriesがあり、host groupingは各entryへ一意のslotを割当てる。compact gather/GU/SwiGLUは有効`ne` rowsのみを読む/書き、GEMMは有効出力rowsをbeta=0で書く。DOWNも各expertの全`ne` destination rowsを書き、合計route rowsは`T*10`。従ってsource inspection上、compact scratchの未使用末尾を読まない契約なら、X/GU/Hhの余剰scratch rowをzero-initしなくてもよい。router ID/weight全件とgroup mappingも各runで上書きされる。これはsource geometryの確認で、実GPU実行のbounds/route対応を独立検査した意味ではない。
+
+## Native projections、oneMKL call shape、combine
+
+`native_proj()`はGGUF native weightsを`Gemm::native`へ渡す。SYCL wrapperはnative weightをFP16 scratchへchunk dequantし、FP16 `row_major::gemm(nontrans, trans)`を出す。shared expertではgate/upは形状`T x 640 x 2560`、SwiGLU pairのFP16出力は`T x 640`、downは`T x 2560 x 640`。shared gateはBF16 projection `T x 1 x 2560`。R583と同じく、oneMKL入力はFP16/BF16で出力はFP32。wrapperはinternal algorithm IDやscratchpad sizeを報告せず、memory pressureに応じてvariantが変わる証拠もこのreceiptにはない。
+
+Routed expertsでは各expertの実呼出しは概ねGU `ne x 1280 x 2560` とDOWN `ne x 2560 x 640`。`ne`はそのchunk内に当該expertへ割り当てられたtoken数で、1..T。weight matrixは前段でnative formatからFP16へdequant済み。oneMKL callごとの実`ne`、pointer/alignment、実library variantは未記録なので、memory-dependent dispatchを原因と結論づけない。shared pathは全T行をprojectする一方、routed pathはexpertごとのne行でcall shapeが分かれる。residual prefix変更に伴うVRAM/layout変化がlibrary側の違いを誘発した可能性自体は否定できないが、今回のsource/evidenceだけでは支持も反証もできない。
+
+最後の`moe_combine`はtokenごとにrank 0..9を順に走査し、各`w[t,k] * D[slot[t,k]]`を`sycl::fma`で累積、最後に`shared * sigmoid(shared_gate)`を足して`bo`を書き切る。ここは全出力token rowsを上書きする。combine直前の`Dm`全route-row coverage、slot map、weights、shared outputが二arm間で等しいかは未観測。
+
+## 次にMainが捕るとよい有限checkpoint（最大3つ）
+
+各armの通常経路のまま、layer 26、relative row 24,575（4096 chunkではchunk index 5の最終row）と、必要なら同じ選択tokenの1行を同時に記録する。run内copy/store/next-input memcmpは既存であり、次はarm間の計算入力/中間値比較を狙う。
+
+1. **HC境界／MoE入口** — first halfのattention/GDN `bo`とinject、`gr_write`直後の`m.R[row, 10240]`、second HC FFNの`m.mixed[row,2560]`、BF16 high/low inputsをGPUから一度だけ取得し、arm別raw SHA/finite/rangeを保存する。これはGDN担当のcheckpointとHC FFN入口を同じtokenで接続し、差がMoE routerより前かを分ける。pointer、byte extent、dtype、layer/chunk/relative row、capture phaseをreceiptへ残す。
+2. **Routerとhost grouping** — `m.logits[row,512]`、`m.ids[row,10]`、`m.w[row,10]`に加え、その10 route entriesの`slot`、`src`、各該当expertの`cnt/off`、expert-ID順`order`を保存する。ids/logitsはdevice値、cnt/off/orderはhost値と明記する。これでrouter投影差、top-10選択/weight差、host compaction/offset差を分ける。19 selected rowsだけではこのtokenのroute一致を補えない。
+3. **Ten routed expertsのarithmetic ledger** — 上記ID順でtoken rowのgathered `Xs[10,2560]` FP16、各expertの`ne`とoneMKL GU/DOWN call signature `(ne,1280,2560)`/`(ne,2560,640)`、入力/weight/output pointers+byte spans+alignment、`GU[10,1280]` FP32、`Hh[10,640]` FP16、`Dm[10,2560]` FP32を一組のbounded captureとして記録する。併せてshared `sgate/sup/sh_h/shared/sg`、combine inputs `slot/w`と`bo[row,2560]`を保存する。各phaseで実valid rowだけを読出し、余剰scratchをdumpしない。oneMKL variant IDがpublicに得られなければ`unknown`とし、shape/addressをalgorithm identityと取り違えない。
+
+この順なら、最初に変わるものを一tokenのHC output、router input/logits/IDs、group map、またはexpert math/combineへ絞れる。captureの存在やbitwise一致だけで全モデル正しさ/性能PASSを主張しない。識別できない場合も、一度に全tensorを保存せずこの3境界に留める。
+
+## Evidence/source pins
+
+比較receipt SHA256:
+
+- `boundary-audit-long-pair-v1.json`: `e76819004e0611c2288a54e9f4d8520105658224c1fd02c28aba3a1a387ca3a1`
+- `boundary-audit-long-fixed-v1.json`: `fee51810f1fc8843ffe2a69d30cb3e8f28b4144cc05d13b95d0f2211ead9c7eb`
+- `boundary-audit-long-auto-v1.json`: `3d8ef47422a135f22ffa0049b96fae9bce993faec07e884a683bf0735e6fa469`
+- pair recipe SHA256 `31ecce5ea07e73d1667dc314ae29d206523d47e5265a36c0c12310d62f6b943d`; binary/input IDs are above and receipt contains exact command/environment.
+
+Current audited source SHA256:
+
+- `src/prefill/prefill.cpp` `ce7ca301b286001b2a1bb76b7aababb1ceb1ac014d9422261a124edee01ca68b`
+- `src/prefill/layer_major.inc` `8f828a90ce41e7a118e16e2d4660251fec8d2fa57c5bce73d2f92f80a0384a92`
+- `src/prefill/sycl/postops.cpp` `c090363d1d0362f0f4ed462fdd57d95c55c96e947d36afa30da11998aa0b5445`
+- `src/prefill/sycl/gemm.cpp` `0fe1904787462a4156185bc08b2076e047f9cf51d9517ede4c8f482fa76c5410`
+- `src/kernels/sycl/native_router.cpp` `1494eeff9c64ab77a692394e9366ee189fa8ed52f9f6a3088538d86acd901119`
+- `src/kernels/sycl/iq.cpp` `4571f9903e7cc0890fca0b33c1464c8f5d0eb5501e4663b0f863f0c51daa9494`
+- `src/kernels/sycl/native_mmvq.cpp` `09b34a547c57ef6fbe84c66f58b685096381f9d6a6ad9a3c74830da20a2152d2`
+
+Existing source/evidence context reviewed: `research-index.json`, `boundary-service-main-review.ja.md`, `mtp-expert-release-long-divergence.ja.md`, R580/R581/R583 and their listed receipts. Source hashes identify current files inspected; they do not prove provenance of older binary `44cafcc2...`. No oneMKL algorithm/variant, full-row route parity, runtime correctness, model quality, or performance conclusion is claimed. No official web source was needed for this source trace.
