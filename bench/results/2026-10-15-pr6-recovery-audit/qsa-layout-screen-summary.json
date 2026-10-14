@@ -1,0 +1,129 @@
+{
+  "passed": true,
+  "build_passed": true,
+  "host_contracts_passed": true,
+  "validation_cases": 20,
+  "worst_absolute_oracle_error": 1.816e-07,
+  "all_output_and_partial_bitwise_equal": true,
+  "numerical_scope": "synthetic fallback formats0..3, mapped logical262143, not full model",
+  "microbench_scope": "one process, int8,nq32,cap2051,dense resident KV,20samples/arm,8repeats/sample,ABBA; event envelope including submission gaps, not exclusive kernel/service or end-to-end model speed",
+  "arms": {
+    "0": {
+      "samples": 20,
+      "median_ms": 1.0478059375000002,
+      "mean_ms": 1.070048175,
+      "min_ms": 1.04113275,
+      "max_ms": 1.41859375,
+      "standard_deviation_ms": 0.08305586683793818
+    },
+    "1": {
+      "samples": 20,
+      "median_ms": 1.0906640625000001,
+      "mean_ms": 1.11793230625,
+      "min_ms": 1.08453125,
+      "max_ms": 1.484257875,
+      "standard_deviation_ms": 0.08893058560085858
+    }
+  },
+  "paired_samples": [
+    {
+      "pair": 0,
+      "layout1_time_increase_percent": -16.857583434298927
+    },
+    {
+      "pair": 1,
+      "layout1_time_increase_percent": 4.206357158928964
+    },
+    {
+      "pair": 2,
+      "layout1_time_increase_percent": 7.366983817136652
+    },
+    {
+      "pair": 3,
+      "layout1_time_increase_percent": 4.528149746432053
+    },
+    {
+      "pair": 4,
+      "layout1_time_increase_percent": 7.094952439756463
+    },
+    {
+      "pair": 5,
+      "layout1_time_increase_percent": 4.078685096466739
+    },
+    {
+      "pair": 6,
+      "layout1_time_increase_percent": 2.4054268306706206
+    },
+    {
+      "pair": 7,
+      "layout1_time_increase_percent": 4.843907215426357
+    },
+    {
+      "pair": 8,
+      "layout1_time_increase_percent": 4.061077469960961
+    },
+    {
+      "pair": 9,
+      "layout1_time_increase_percent": 4.82975882949197
+    },
+    {
+      "pair": 10,
+      "layout1_time_increase_percent": 4.215262530797026
+    },
+    {
+      "pair": 11,
+      "layout1_time_increase_percent": 3.3871527040187033
+    },
+    {
+      "pair": 12,
+      "layout1_time_increase_percent": 4.5873592968812105
+    },
+    {
+      "pair": 13,
+      "layout1_time_increase_percent": 3.7277188820520335
+    },
+    {
+      "pair": 14,
+      "layout1_time_increase_percent": 3.859248677317084
+    },
+    {
+      "pair": 15,
+      "layout1_time_increase_percent": -0.8140604472283375
+    },
+    {
+      "pair": 16,
+      "layout1_time_increase_percent": 3.3519609995506183
+    },
+    {
+      "pair": 17,
+      "layout1_time_increase_percent": 41.63892809697527
+    },
+    {
+      "pair": 18,
+      "layout1_time_increase_percent": 3.240072175460451
+    },
+    {
+      "pair": 19,
+      "layout1_time_increase_percent": 3.6240380969561503
+    }
+  ],
+  "median_layout1_time_increase_percent": 4.0902731570940265,
+  "all_fresh_fault_checks_zero": true,
+  "both_boot_stable": true,
+  "both_no_driver_dump": true,
+  "source_revision": "84374f68448bf83d4e80ac13eea229539f6f19ed",
+  "binaries": {
+    "strata": "2be104401442b37fd57d5d6dfa86a2085128589b315eabca97ecfaef3c866d6d",
+    "sycl_qsa_fallback_layout_test": "cd8cede947e62c8fbd9b2c0cd873303163eb913ec6626fa04a3f581295bbe263"
+  },
+  "receipt_sha256": {
+    "qsa-layout-build-v1.json": "4560235ff22be26cfc8d450c03e1c6d0cd36624de394e8d65e0d29559161d4c3",
+    "qsa-layout-validation-v1.json": "2b0a3730eba5118cf1412316db0ace91ac184edeb9a8eaa5818aff63c56738b2",
+    "qsa-layout-microbench-v1.json": "31f7c1408b3849214308deb25946603c67c205353a7bd47a22195ef7744784c4"
+  },
+  "adopted": false,
+  "quality_qualified": false,
+  "physical_262144_qualified": false,
+  "restore_qualified": false,
+  "decision": "No gain in this component screen; keep natural/default layout. Do not claim universal slowdown or model improvement. Next donor/root GEMM orientation diagnostic before further source adoption."
+}

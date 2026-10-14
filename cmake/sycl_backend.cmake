@@ -104,6 +104,10 @@ add_library(strata_prefill STATIC src/prefill/prefill.cpp src/prefill/sycl/gemm.
 target_link_libraries(strata_prefill PUBLIC strata_engine MKL::MKL_SYCL::BLAS)
 target_compile_definitions(strata_prefill PRIVATE STRATA_PREFILL_MMQ=1 STRATA_PREFILL_FUSED=1)
 target_compile_options(strata_prefill PRIVATE -fno-fast-math -ffp-contract=off)
+# Standalone synthetic hot-operand row/column oneMKL descriptor diagnostic.
+add_executable(sycl_gemm_orientation_bench EXCLUDE_FROM_ALL tools/sycl/gemm_orientation_bench.cpp)
+target_link_libraries(sycl_gemm_orientation_bench PRIVATE strata_prefill)
+target_compile_options(sycl_gemm_orientation_bench PRIVATE -fno-fast-math -ffp-contract=off)
 add_executable(strata src/program/generate.cpp)
 target_link_libraries(strata PRIVATE strata_prefill strata_spec)
 

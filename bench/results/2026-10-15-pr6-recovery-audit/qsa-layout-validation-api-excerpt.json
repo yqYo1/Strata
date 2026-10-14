@@ -1,0 +1,81 @@
+{
+  "source_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-qsa-layout-validation-root-v1/owned/qsa-layout-validation.stderr",
+  "source_bytes": 4008952,
+  "source_sha256": "738abe6e62e705c32a6b143c74c66be90d2f24b4e6782002c3624bf9dd239a65",
+  "trace_summary": {
+    "lines": 17234,
+    "kernel_launch_mentions": 1968,
+    "success_mentions": 8617,
+    "warning_lines": 0,
+    "source_bytes": 4008952,
+    "source_sha256": "738abe6e62e705c32a6b143c74c66be90d2f24b4e6782002c3624bf9dd239a65",
+    "scope": "Host API trace mentions only; not physical launches or device time"
+  },
+  "lines": [
+    {
+      "line": 118,
+      "text": "   <--- urDeviceGetGlobalTimestamps(.hDevice = 0x114db460, .pDeviceTimestamp = 0x114dbd78 (354613212696250), .pHostTimestamp = 0x114dbd80 (354600485070352)) -> UR_RESULT_SUCCESS;"
+    },
+    {
+      "line": 119,
+      "text": "   ---> urEnqueueUSMMemcpy"
+    },
+    {
+      "line": 120,
+      "text": "   <--- urEnqueueUSMMemcpy(.hQueue = 0x114e2b10, .blocking = 0, .pDst = 0xffffffffff600000, .pSrc = 0x114f9610, .size = 20480, .numEventsInWaitList = 0, .phEventWaitList = nullptr, .phEvent = 0x7ffcf7b72800 (0x1152c2e0)) -> UR_RESULT_SUCCESS;"
+    },
+    {
+      "line": 121,
+      "text": "   ---> urEventWait"
+    },
+    {
+      "line": 282,
+      "text": "   <--- urKernelRetain(.hKernel = 0x12145b20) -> UR_RESULT_SUCCESS;"
+    },
+    {
+      "line": 283,
+      "text": "   ---> urEnqueueKernelLaunchWithArgsExp"
+    },
+    {
+      "line": 284,
+      "text": "   <--- urEnqueueKernelLaunchWithArgsExp(.hQueue = 0x114e2b10, .hKernel = 0x12145b20, .workDim = 1, .pGlobalWorkOffset = nullptr, .pGlobalWorkSize = 0x7ffcf7b72480 (512), .pLocalWorkSize = 0x7ffcf7b72498 (256), .numArgs = 13, .pArgs = 0x115f3990 {(struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 0, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.value = 0x1151d6f8}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 1, .size = 72, .value = (union ur_exp_kernel_arg_value_t){.value = 0x1151d700}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 2, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffffffff610600}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 3, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.value = 0x1151d750}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 4, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffffffff650000}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 5, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.value = 0x1151d760}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 6, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.value = 0x1151d768}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 7, .size = 12288, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 8, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffffffff640000}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 9, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffffffff610400}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 10, .size = 72, .value = (union ur_exp_kernel_arg_value_t){.value = 0x1151d7a0}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 11, .size = 512, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 12, .size = 3072, .value = (union ur_exp_kernel_arg_value_t){<unknown>}}, .launchPropList = nullptr, .numEventsInWaitList = 0, .phEventWaitList = nullptr, .phEvent = 0x7ffcf7b716b0 (0x1152c2e0)) -> UR_RESULT_SUCCESS;"
+    },
+    {
+      "line": 285,
+      "text": "   ---> urEventRelease"
+    },
+    {
+      "line": 688,
+      "text": "   <--- urEventRelease(.hEvent = 0x1152c2e0) -> UR_RESULT_SUCCESS;"
+    },
+    {
+      "line": 689,
+      "text": "   ---> urQueueFinish"
+    },
+    {
+      "line": 690,
+      "text": "   <--- urQueueFinish(.hQueue = 0x114e2b10) -> UR_RESULT_SUCCESS;"
+    },
+    {
+      "line": 691,
+      "text": "   ---> urQueueFinish"
+    },
+    {
+      "line": 17128,
+      "text": "   <--- urQueueRelease(.hQueue = 0x114e2b10) -> UR_RESULT_SUCCESS;"
+    },
+    {
+      "line": 17129,
+      "text": "   ---> urContextRelease"
+    },
+    {
+      "line": 17130,
+      "text": "   <--- urContextRelease(.hContext = 0x114dd490) -> UR_RESULT_SUCCESS;"
+    },
+    {
+      "line": 17131,
+      "text": "   ---> urProgramRelease"
+    }
+  ],
+  "scope": "Representative successful API entries/results; full trace question closed by20case parity/oracle/exit/fault validation. No device timing claim."
+}
