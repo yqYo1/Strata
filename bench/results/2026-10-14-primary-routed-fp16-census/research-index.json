@@ -1,0 +1,32 @@
+{
+  "previous_registry": "../2026-10-14-primary-compact-moe-recovery/research-index.json",
+  "reports": [
+    {
+      "round": 519,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research/research-selected-gdn-old-current-round519-v1.txt",
+      "original_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-selected-gdn-old-current-round519-v1.txt",
+      "sha256": "be16fd5b1129d9d134297db045f697e72c9da0bca446a79830c84667dd706c40",
+      "status": "proposal-only"
+    },
+    {
+      "round": 520,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research/research-stock-long-decode-repetition-round520-v1.txt",
+      "original_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-stock-long-decode-repetition-round520-v1.txt",
+      "sha256": "2da88763db80cb341b9d6f24d9bc501b96ad97f1a31af61ff6246dc509611b2c",
+      "status": "proposal-only"
+    }
+  ],
+  "no_intervention_until_final": true,
+  "main_owns_build_test_GPU": true,
+  "main_corrections": [
+    "R51948 refers to value heads per GDN layer or total model layers; actual48-layer geometry has36GDN and12QSA layers (include/strata/core/session.hpp and layout.hpp). Do not multiply GDN state or work by48GDN layers.",
+    "R519 four independent column groups cannot use the current within-one-head-group output normalization unchanged without a cross-group completion mechanism. A candidate needs an ordered normalization pass or a different mapping; preserve normalization math/state contracts and account for additional launches. No kernel is adopted.",
+    "R520 prefix reuse depends on engine configuration. Current canonical stock disables conversation/prompt caches; do not claim its agent prefixes are restored or cached without observed counters. Also prompt_n is newly-read tokens, not always total context; preserve actual usage/context and reused counts separately.",
+    "R520 supporting tools are distinct from unchanged bench.sh formal results. Agent histories here are predefined source-backed tool results; they do not include actual model completions in later histories, unlike the formal suite agent scenario. Request hashes remain necessary for matched comparisons.",
+    "Phase intervals use existing compatibility barriers and can perturb queue scheduling. Counts/payload semantics and first-logit correctness do not qualify exclusive service times or a canonical quiet critical path. Match unprofiled reference and assess observer overhead before causal performance conclusions."
+  ]
+}
