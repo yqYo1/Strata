@@ -1,0 +1,14 @@
+{
+  "status": "FAILED",
+  "complete": false,
+  "GPU_executed": false,
+  "owned_model_process_started": false,
+  "failed_stage": "make_input imports",
+  "original_command": "python3 bench/results/2026-10-14-primary-routed-fp16-census/check_long.py phase",
+  "exit_code": 1,
+  "error": "ModuleNotFoundError: No module named 'regex'",
+  "original_controller_commit": "0e7ae85c",
+  "original_output_directory": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-long-routed-phase-root-v1",
+  "diagnosis": "Management Python lacks installed tokenizer dependency. Existing model venv has it. No inference/driver fault occurred.",
+  "remedy": "Re-exec existing venv before output creation; persist input-preparation status inside owned recipe try/finally. Use fresh v2 output; original failure remains failed."
+}

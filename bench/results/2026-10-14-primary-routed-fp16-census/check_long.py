@@ -6,6 +6,7 @@ import hashlib
 import importlib.util
 import json
 import math
+import os
 import re
 import subprocess
 import sys
@@ -76,7 +77,7 @@ def make_input(root):
 def main():
     mode = sys.argv[1]
     assert mode in ['census', 'phase', 'reference']
-    O = B / ('main-primary-long-routed-' + mode + '-root-v1')
+    O = B / ('main-primary-long-routed-' + mode + '-root-v2')
     build = json.loads((BUILD / 'record.json').read_text())
     gate = json.loads((B/'main-primary-routed-census129-pair-root-v1/record.json').read_text())
     assert build['passed'] and build['complete'] and not build['active']
@@ -98,7 +99,7 @@ def main():
         engine = Path(build['build_path'])/'strata'
         assert sha(engine) == build['binaries']['strata']
         O.mkdir()
-        token_file, identity = make_input(O)
+        token_file = O / 'tokens.txt'
         env = dict(prior['environment'])
         # Identical runtime policy to the completed stock arm. Keep detailed API
         # tracing, parameter-validation layers, sampler and preload absent. The
@@ -119,7 +120,7 @@ def main():
         args += ['--tokens-file', str(token_file), '--max-new', '1']
         argv = ['/home/yayoi/.local/share/strata-sycl/venv/bin/python', str(D/'engine_wrapper_v3.py'), *args]
         record = dict(active=True, passed=False, complete=False, commands=[], mode=mode,
-            environment=env, engine_args=args, input=identity, source_pins=build['source_pins'],
+            environment=env, engine_args=args, input=dict(preparation_complete=False), source_pins=build['source_pins'],
             binary_sha256=sha(engine), build_receipt_sha256=sha(BUILD/'record.json'),
             source_revision=subprocess.check_output(['git','-C',str(P),'rev-parse','HEAD'],text=True).strip(),
             source_diff_sha256=build['source_diff_sha256'], recipe_sha256=sha(Path(__file__)),
@@ -142,6 +143,10 @@ def main():
             return out.read_text()
         cursor = None
         try:
+            actual_path, identity = make_input(O)
+            assert actual_path == token_file
+            record['input'] = dict(identity, preparation_complete=True)
+            persist()
             cursor = re.search(r'-- cursor: (\S+)',utility('journal-before',
                 ['journalctl','-k','-b','-n','0','--show-cursor','--no-pager'])).group(1)
             record['journal_before_cursor'] = cursor
@@ -204,4 +209,9 @@ def main():
 
 
 if __name__=='__main__':
+    # Tokenizer/Jinja dependencies are already installed in the model's venv.
+    # Re-exec before creating an output directory; no new packages are installed.
+    interpreter = '/home/yayoi/.local/share/strata-sycl/venv/bin/python'
+    if sys.executable != interpreter:
+        os.execv(interpreter, [interpreter, str(Path(__file__).resolve()), *sys.argv[1:]])
     main()
