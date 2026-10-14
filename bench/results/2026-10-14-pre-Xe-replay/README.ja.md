@@ -127,6 +127,10 @@ build v1の失敗は再現手順の履歴であり、修復済み実行にはv2�
 成功API/build/poll全文は証拠抽出・commit後に閉じたrunだけretireし、path/hash/reasonを記録する。
 snapshotは64 MiB、旧buildは4 GiB以内で、現consumerは旧版parityと同一clientの32K比較。
 source/component採否が確定したら両方を再評価してretireする。
+閉じたrunの重複API/build/pollログ、Git archive tar、重複stock tableと完了research原文を
+99 files、109,924,828 bytes（約104.8 MiB）retireした。元のbyte hash・置き換え・理由は
+deletion-manifest.jsonl.gz、集計はretirement.json。snapshot等で実空き容量が増えた量とは
+同一視しない。旧source/buildと今使うgate receiptだけを名前付きconsumer/budget付きで残す。
 
 次は旧選択経路の小規模検査を経て、同じ本家clientで旧版/現在版の形状・設定を揃えた比較。
 compact処理を主へ戻す場合もcurrentのrange/lifetime/graph退行対策を保持し、prefill/decodeを別に採否する。
