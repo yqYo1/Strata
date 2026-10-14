@@ -23,8 +23,9 @@ def output_ids(path):
 
 
 def main():
-    mode = sys.argv[1]
-    assert mode in ['small', 'long']
+    job = sys.argv[1]
+    assert job in ['small', 'long', 'long-fixed']
+    mode = 'small' if job == 'small' else 'long'
     build = json.loads(BUILD.read_text())
     assert build['passed'] and build['complete'] and not build['active']
     assert build['host_contracts_passed']
@@ -37,7 +38,7 @@ def main():
     spec = importlib.util.spec_from_file_location('owner', OWNER)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
-    O = B / ('main-primary-mtp-expert-release-' + mode + '-root-v1')
+    O = B / ('main-primary-mtp-expert-release-' + job + '-root-v1')
     with (B / 'owned-v0141-measurement.lock').open('a') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         if mode == 'long':
@@ -71,7 +72,7 @@ def main():
                                STRATA_SYCL_PREFILL_SAME_QUEUE='1', STRATA_SYCL_VERIFY_NATIVE_CAPTURE='0').items():
             assert env[key] == value
         O.mkdir(mode=0o700)
-        r = dict(active=True, passed=False, complete=False, mode=mode, commands=[], arms=[],
+        r = dict(active=True, passed=False, complete=False, mode=mode, configuration=job, commands=[], arms=[],
                  environment=env, engine_args=args, build_receipt_sha256=sha(BUILD),
                  reference_receipt_sha256=sha(reference_path), binary_sha256=sha(exe),
                  source_pins=build['source_pins'], recipe_sha256=sha(Path(__file__)),
@@ -106,15 +107,16 @@ def main():
             cursor = re.search(r'-- cursor: (\S+)', utility('journal-before',
                 ['journalctl', '-k', '-b', '-n', '0', '--show-cursor', '--no-pager'])).group(1)
             r['journal_before_cursor'] = cursor
-            for dtype in ['fp32', 'fp16']:
+            for dtype in (['fp32'] if job == 'long-fixed' else ['fp32', 'fp16']):
                 folder = O / dtype
                 folder.mkdir()
                 selected = folder / 'selected-logits.bin'
                 runenv = dict(env, STRATA_PREFILL_LAYER_MAJOR='1', STRATA_PREFILL_LAYER_MAJOR_R_DTYPE=dtype,
-                    STRATA_PREFILL_LAYER_MAJOR_R_GPU='auto', STRATA_PREFILL_RELEASE_MTP_EXPERTS='1',
+                    STRATA_PREFILL_LAYER_MAJOR_R_GPU='4096' if job == 'long-fixed' else 'auto',
+                    STRATA_PREFILL_RELEASE_MTP_EXPERTS='1',
                     STRATA_PREFILL_LOGITS=str(selected), STRATA_PREFILL_LOGITS_POSITIONS=','.join(map(str, positions)),
                     STRATA_DUMP_FIRST_LOGITS=str(folder / 'first-logits.bin'), XDG_CACHE_HOME=str(folder / 'cache'))
-                print('MTP release ' + mode + ': starting ' + dtype, flush=True)
+                print('MTP release ' + job + ': starting ' + dtype, flush=True)
                 entry, out, err = owner.run(dtype, [str(exe), *args], runenv, P, wall=1800,
                     cpu=1800*len(os.sched_getaffinity(0)), text_cap=64 << 20, rss_cap=88 << 30,
                     total_cap=512 << 20, file_cap=64 << 20)
@@ -169,7 +171,7 @@ def main():
                 faults = [v for v in journals('journal-after-' + dtype, cursor) if FAULT.search(str(v.get('MESSAGE', '')))]
                 assert not faults and not (DEVICE / 'devcoredump').exists()
                 persist()
-                print('MTP release ' + mode + ': closed ' + dtype + ' restore_ms=' + str(result['restore_ms']) +
+                print('MTP release ' + job + ': closed ' + dtype + ' restore_ms=' + str(result['restore_ms']) +
                       ' residual_host_bytes=' + str(result['residual_plan']['host_bytes']), flush=True)
             assert all(sha(P / n) == pin for n, pin in r['source_pins'].items())
             assert sha(exe) == r['binary_sha256']
@@ -188,8 +190,8 @@ def main():
             finally:
                 r['active'] = False
                 persist()
-                (D / ('mtp-expert-release-' + mode + '-v1.json')).write_text(json.dumps(r, indent=2) + '\n')
-        print(json.dumps(dict(passed=r['passed'], mode=mode, fresh_faults=len(r['fresh_faults']))), flush=True)
+                (D / ('mtp-expert-release-' + job + '-v1.json')).write_text(json.dumps(r, indent=2) + '\n')
+        print(json.dumps(dict(passed=r['passed'], mode=mode, configuration=job, fresh_faults=len(r['fresh_faults']))), flush=True)
 
 
 if __name__ == '__main__':

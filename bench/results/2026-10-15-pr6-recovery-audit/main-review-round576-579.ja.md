@@ -70,6 +70,24 @@ R579本文のTG70時全expert619.3 GFLOP/sは`rho=1.875`という過去短出力
 CPU分は訂正した`q`を掛ける。0.818 TFLOP/s FMA controlや36.87 GB/s RAM controlは
 packed IQ expertの実能力でも同一workloadのceilingでもなく、70 t/s可否を判定できない。
 
+**R579のT4 weight-byte範囲にも10倍の訂正が必要。** 98,227,200 Bは各層からexpertを一つずつ
+選んだ総和であり、top-k=10の一token分ではない。これはR481にもあった誤りで、既に
+`2026-10-14-primary-model-baseline/decode-work-model.json`と同indexに訂正されている。
+そのauthoritative metadata算術を再確認した。
+
+| 論理payload | 訂正後 B |
+| --- | ---: |
+| T1の48層×top10 | 982,272,000 |
+| T4で完全にexpert IDが重複する場合のunique weights | 982,272,000 |
+| T4で全IDが異なる場合のunique weights | 3,929,088,000 |
+| T4の一Verifier row当たり | 245,568,000–982,272,000 |
+
+`rho=1.875`、TG70、全CPU担当という条件付きで、unique logical weight bytesの単純rateは
+**32.2308–128.9232 GB/s**となる。原本の3.22–12.88 GB/sは10倍過小であり使用しない。
+低い方も過去RAM read control 36.87 GB/sに近く、CPU所有率、job.nt、実ID重複、cacheline/LLC、
+他のRAM trafficを無視して「余裕がある」と判断できない。一方でlogical selected bytesを
+DRAM bytesと同一視して「不可能」とも判断できない。現ledgerの実unique CPU blob bytesが必要。
+
 一回の実際の32K以上serveでW/R/D/A/C/E、CPU unique jobs/nt、logical bytes、issuer/worker
 thread CPU時間、既存caller spanを得ることが次の優先事項。worker CPU nsの合計をdecode wall
 から引いて待機時間にしない。service wallも並列部分のunionではない。
