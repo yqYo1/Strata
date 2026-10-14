@@ -8,7 +8,8 @@ MAX_OUTPUT_TOKENS = 1152
 MIN_INPUT_TOKENS = 32768
 TARGET_INPUT_TOKENS = 33792  # calibration is approximate; check actual usage afterwards
 MIN_DRAFTS = 256
-WORKLOAD_VERSION = 1
+WORKLOAD_VERSION = 2
+THINKING = False
 
 WORKLOADS = {
     "regular-code": {
@@ -23,21 +24,18 @@ WORKLOADS = {
             "Give the full module rather than a short example."
         ),
     },
-    "constraint-reasoning": {
+    "varied-prose": {
         "expected_mtp": "weak",
         "instruction": (
-            "Solve and explain this finite scheduling problem from first principles. Jobs A through H have "
-            "durations 3, 5, 2, 7, 4, 6, 3, 5 respectively. There are two identical workers. "
-            "A precedes D and E; B precedes E and F; C precedes F; D and E precede G; F precedes H. "
-            "Jobs cannot be interrupted and a worker can execute only one job at a time. "
-            "Exactly one unit of setup time is required when a worker switches between even-duration and "
-            "odd-duration jobs; there is no initial setup. A and C cannot overlap because they share an "
-            "external resource. Find a schedule minimizing completion time, derive useful lower bounds, "
-            "and explain a reproducible exact enumeration algorithm that proves optimality. "
-            "Evaluate several tempting but suboptimal schedules, give explicit start/end/setup times, "
-            "and provide executable Python for the solver and its verification tests. "
-            "Work through the constraints carefully and write a detailed complete solution of at least "
-            "2500 words plus code. Do not give only a final schedule or a brief outline."
+            "日本語で6000字以上の独創的な短編小説を最初から最後まで詳しく書いてください。"
+            "架空の港町『玻璃坂』では、住民の記憶が一日だけ潮汐で交換されます。"
+            "時計師の澪、耳の聞こえない測量士の朔、移住してきた植物学者の凪の三人が、"
+            "町の古い地図に存在しない防波堤をそれぞれ違う目的で探しています。"
+            "最初は三人の別々の視点と異なる文体で情景と会話を描き、途中で同じ出来事の"
+            "解釈が食い違う理由を具体的に示し、最後に矛盾を解消してください。"
+            "潮の匂い、楽器の振動、植物の生態、測量記録など異なる感覚や知識を織り込み、"
+            "ありきたりな表現や同じ言葉の繰り返しを避けてください。箇条書き、構想、要約、"
+            "執筆方針の説明ではなく、小説の本文だけを十分な長さで出力してください。"
         ),
     },
 }
@@ -75,7 +73,7 @@ def sample_eligibility(raw, sample, minimum=MIN_OUTPUT_TOKENS):
 def classify_pair(workloads, runs):
     """Predeclared conservative bands, independent of the candidate's measured speed."""
     regular = workloads["regular-code"]["requests"]
-    reasoning = workloads["constraint-reasoning"]["requests"]
+    reasoning = workloads["varied-prose"]["requests"]
     enough = runs >= 3 and all(len(rows) == runs and all(r["eligible"] for r in rows)
                               for rows in (regular, reasoning))
     strong = enough and all(r["acceptance_rate"] >= .60 for r in regular)

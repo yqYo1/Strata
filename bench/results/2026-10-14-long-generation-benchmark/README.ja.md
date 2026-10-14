@@ -26,3 +26,12 @@ exclusive lock、owned process、期限/RSS/log budget、正常終了とfresh fa
 現在68da0262 native、MMQ0/R8、compact1、chunk4096、context262144、MTP4/splitOFF。
 初回screeningとfull suiteはこの記述時点では未実行。旧636の正式標準suiteに含まれる
 agent結果も保存済みで、これまで報告が32K値へ偏っていたため今後は必ず並記する。
+
+## v1実測
+
+各1回は正常終了、全owned child回収、fresh fault0、dumpなし、boot不変。
+regular-code実33215入力/1152生成、7.7t/s、739/1239（59.64%）。
+constraint-reasoning実33322入力/1152生成、7.1t/s、717/1311（54.69%）。
+両方content0文字で全量thinkingだった。**MTP強/弱は未確認**で元結果を保持する。
+v2はthinkingOFFのcodeと多様な日本語散文でworkloadを分け、同じgreedy/受理率基準で
+測る。数学的品質・MTP速度効果・推論採用には数えない。[全個別値](screen-v1.json)。

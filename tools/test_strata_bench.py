@@ -62,7 +62,7 @@ class BenchmarkTest(unittest.TestCase):
             background = task.split("<background>\n")[1].split("\n</background>")[0]
             self.assertGreater(len(background.split()), 30000)
             self.assertNotIn("Summarize what kinds", task)
-            self.assertTrue(think)
+            self.assertEqual(think, lg.THINKING)
             self.assertEqual(cap, lg.MAX_OUTPUT_TOKENS)
             return response(accepted=1200 if "regular-code" in task else 320)
 
@@ -72,14 +72,14 @@ class BenchmarkTest(unittest.TestCase):
             suite.run_long_generation()
         out = suite.out["long_generation"]
         self.assertEqual([x["workload"] for x in out["order"]],
-                         ["regular-code", "constraint-reasoning", "constraint-reasoning", "regular-code",
-                          "regular-code", "constraint-reasoning"])
+                         ["regular-code", "varied-prose", "varied-prose", "regular-code",
+                          "regular-code", "varied-prose"])
         self.assertTrue(out["classification"]["qualified"])
         self.assertEqual(out["workloads"]["regular-code"]["pooled_acceptance_rate"], .75)
         self.assertEqual(len(set(calls)), 6)
         # Neither a one-run screening nor uniformly high agreement qualifies as a strong/weak pair.
         self.assertFalse(lg.classify_pair(out["workloads"], 1)["qualified"])
-        for row in out["workloads"]["constraint-reasoning"]["requests"]:
+        for row in out["workloads"]["varied-prose"]["requests"]:
             row["acceptance_rate"] = .75
         self.assertFalse(lg.classify_pair(out["workloads"], 3)["qualified"])
 
@@ -102,6 +102,24 @@ class BenchmarkTest(unittest.TestCase):
         self.assertTrue(sample["complete"])
         self.assertEqual(sample["generated_tokens"], 240)
         self.assertEqual(sample["acceptance_rate"], .75)
+
+    def test_agent_truncation_and_changed_workload_cannot_qualify(self):
+        suite = bench.Suite("http://localhost", "", 262144, 1, False, log=lambda _: None)
+        raw = response(generated=40)
+        raw["done_received"] = False
+        with patch.object(suite, "agent_files", return_value=[("public.txt", "file")]*bench.AGENT_TURNS), \
+                patch.object(bench, "chat", return_value=raw):
+            suite.run_agent()
+        self.assertFalse(suite.out["agent"]["session_samples"][0]["complete"])
+        metric = {"median": 10, "min": 10, "max": 10, "n": 3}
+        common = {"chat": {}, "prompts": {}, "agent": {}, "clients": {}}
+        old = {"machine": {}, "results": {**common, "long_generation": {
+            "workload_version": 1, "workloads": {"regular-code": {"decode_tps": metric}}}}}
+        new = {"machine": {}, "results": {**common, "long_generation": {
+            "workload_version": 2, "workloads": {"regular-code": {"decode_tps": metric}}}}}
+        table = bench.compare_table(old, new)
+        self.assertNotIn("regular-code long decode", table)
+        self.assertIn("not compared", table)
 
 
 if __name__ == "__main__":

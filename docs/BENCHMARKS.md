@@ -24,16 +24,18 @@ The new workloads request approximately 33K input tokens and 1,152 output
 tokens. An eligible sample needs **at least 32,768 actual input tokens and
 1,024..1,152 actual generated tokens including thinking**, no reused prefix,
 normal SSE completion, engine decode timings and at least 256 offered MTP
-drafts. Thinking is explicitly enabled with no separate reasoning budget;
-the total output cap still applies. This tests sustained generation, including
-thinking; it does not require a complete visible answer at the cap.
+drafts. The count includes thinking if present. **Workload v2 disables thinking
+for both cases**, so it measures the requested code/prose directly. The v1
+thinking-on pilot used its whole output budget on thought and failed to separate
+MTP regimes. Keep its result; do not compare different workload versions as an
+engine optimization. This suite does not require a complete answer at the cap.
 
 - `regular-code`: a long Python module with regularly formatted individual tests.
-- `constraint-reasoning`: a detailed scheduling proof and an enumeration solver.
+- `varied-prose`: an original Japanese story with distinct viewpoints and vocabulary.
 
 These are hypotheses about draft predictability. The pair is confirmed only
 after at least three eligible runs per workload, with regular-code acceptance
-at least 60% in every run and constraint-reasoning at most 40%. The report
+at least 60% in every run and varied-prose at most 40%. The report
 retains unconfirmed, short and failed samples; three-run commands exit nonzero
 if the requested pair is not confirmed. Never relabel an unconfirmed case as
 strong or weak. Task correctness and MTP speedup are separate, unqualified

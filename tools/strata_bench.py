@@ -15,7 +15,7 @@ real HTTP API, three runs each, medians reported:
                 tokens the conversation cache reused, how many had to be read again, time to first token per turn
   5. --clients N   N requests at once (the server needs --batch for them to run together): total tok/s, p50/p95 latency
   6. --long 32K    the same prompt test at about 32,768 tokens
-  7. --long-generation  two >=32K-input, 1024..1152-output MTP workloads, thinking explicitly on
+  7. --long-generation  two >=32K-input, 1024..1152-output MTP workloads (v2 thinking off)
 
 Speeds are the engine's own timings (the `timings` of the answer: prompt_per_second, predicted_per_second); time to first
 token and latency are measured by this client.  Thinking is off for the suite (--think turns it on), so the answers are
@@ -213,6 +213,7 @@ def digest(r: dict) -> dict:
             "prompt_ms": t.get("prompt_ms"), "decode_ms": t.get("predicted_ms"),
             "drafts_offered": t.get("draft_n"), "drafts_accepted": t.get("draft_n_accepted"),
             "finish_reason": r.get("finish_reason"), "request_sha256": r.get("request_sha256"),
+            "stream_complete": bool(r.get("done_received") and r.get("finish_reason") in ("stop", "length")),
             "generated_tokens_source": "usage" if u.get("completion_tokens") is not None else "stream_pieces"}
 
 
@@ -270,8 +271,8 @@ class Suite:
                              "irrelevant reference data. Do not summarize it. Complete the task in detail."},
                             {"role": "user", "content": f"[long-generation-v{lg.WORKLOAD_VERSION} {name} run {run}]\n"
                              f"<background>\n{filler}\n</background>\n\nTask:\n{lg.WORKLOADS[name]['instruction']}"}]
-                raw = chat(self.base, self.key, messages, lg.MAX_OUTPUT_TOKENS, True,
-                           request_overrides={"chat_template_kwargs": {"enable_thinking": True},
+                raw = chat(self.base, self.key, messages, lg.MAX_OUTPUT_TOKENS, lg.THINKING,
+                           request_overrides={"chat_template_kwargs": {"enable_thinking": lg.THINKING},
                                               "reasoning_budget_tokens": 0})
                 d = digest(raw)
                 d.update(lg.sample_eligibility(raw, d), run=run, order=len(order),
@@ -299,7 +300,7 @@ class Suite:
         self.out["long_generation"] = {"workload_version": lg.WORKLOAD_VERSION,
             "minimum_generated_tokens": lg.MIN_OUTPUT_TOKENS, "max_tokens": lg.MAX_OUTPUT_TOKENS,
             "minimum_input_tokens": lg.MIN_INPUT_TOKENS, "target_input_tokens": lg.TARGET_INPUT_TOKENS,
-            "thinking": True, "reasoning_budget_tokens": 0, "temperature": 0,
+            "thinking": lg.THINKING, "reasoning_budget_tokens": 0, "temperature": 0,
             "lifecycle": "warm server; alternating workload order; fresh request prefixes",
             "order": order, "workloads": cases, "classification": lg.classify_pair(cases, self.runs),
             "quality_qualified": False}
@@ -448,7 +449,8 @@ class Suite:
             offer_sum = sum(offered) if has_counts else None
             accept_sum = sum(accepted) if has_counts else None
             session_samples.append({"run": run, "completed_turns": len(turns),
-                "complete": len(turns) == AGENT_TURNS + 1 and all(d["ok"] for d in turns),
+                "complete": len(turns) == AGENT_TURNS + 1 and all(d["ok"] and d["stream_complete"]
+                    and d["generated_tokens_source"] == "usage" for d in turns),
                 "generated_tokens": sum(d["generated_tokens"] for d in turns),
                 "read_tokens": sum(d["read_tokens"] or 0 for d in turns),
                 "reused_tokens": sum(d["reused_tokens"] or 0 for d in turns),
@@ -847,7 +849,7 @@ def render_readme(res: dict) -> str:
           f"timed. One warm-up chat and a 1K prompt are discarded first. Every prompt starts with a unique tag, so the conversation "
           f"cache cannot help the fresh-prompt tests.", "",
           f"- short chat: the three questions of `tools/ab_engine.py`, up to {CHAT_MAX_TOKENS} new tokens, {p['runs']} runs",
-          f"- 4K / 16K{' / 32K' if 'prompt' in res['results'] and '32K' in res['results']['prompts'] else ''} prompts: generated word lists sized by a calibration request, "
+          f"- 4K / 16K{' / 32K' if '32K' in res['results']['prompts'] else ''} prompts: generated word lists sized by a calibration request, "
           f"{LONG_MAX_TOKENS} new tokens, {p['runs']} fresh prompts each",
           f"- agent session: system prompt and four tools, then {AGENT_TURNS} turns that each add about {AGENT_WORDS} words of a project file "
           f"and continue from the model's own earlier answers (the way agent clients resend a conversation), {AGENT_MAX_TOKENS} new tokens per turn, "
@@ -873,7 +875,7 @@ def render_readme(res: dict) -> str:
               f"Modified upstream benchmark, workload v{gen['workload_version']}. Each response must report at least "
               f"{gen['minimum_input_tokens']} input tokens, no prefix reuse, and "
               f"{gen['minimum_generated_tokens']}..{gen['max_tokens']} actual completion tokens including thinking. "
-              "Thinking is explicitly enabled; reasoning_budget_tokens=0; temperature=0. "
+              f"Thinking is explicitly {gen['thinking']}; reasoning_budget_tokens=0; temperature=0. "
               "Workloads alternate order in one warm server. Early stops, absent usage/engine clocks and insufficient "
               "draft counts remain recorded and are ineligible.", "",
               "| Workload | Run | Generated | Decode tok/s | Accepted / offered | Acceptance | Eligible |",
@@ -886,7 +888,7 @@ def render_readme(res: dict) -> str:
                          f"{row['drafts_accepted']} / {row['drafts_offered']} | {rate_text} | {row['eligible']} |")
         L += ["", f"Strong/weak MTP pair confirmed: {gen['classification']['qualified']}. "
               "Requires at least three eligible runs per workload, regular-code acceptance >=60% in each, "
-              "constraint-reasoning <=40% in each. Unconfirmed prompts remain candidates. "
+              "varied-prose <=40% in each. Unconfirmed prompts remain candidates. "
               "This measures draft agreement; it does not prove MTP speedup or task correctness."]
     if cl:
         L += ["", f"### Concurrency: {cl['clients']} clients", "",
@@ -907,6 +909,14 @@ def render_readme(res: dict) -> str:
 
 def compare_table(old: dict, new: dict) -> str:
     a, b = summary_metrics(old["results"]), summary_metrics(new["results"])
+    go, gn = old["results"].get("long_generation"), new["results"].get("long_generation")
+    different_workload = bool(go and gn and any(go.get(k) != gn.get(k) for k in
+        ("workload_version", "thinking", "temperature", "minimum_input_tokens", "max_tokens")))
+    if different_workload:
+        for table in (a, b):
+            for name in list(table):
+                if "long decode" in name or "MTP acceptance" in name:
+                    del table[name]
     rows = [f"{'':32s} {'old':>12s} {'new':>12s} {'change':>9s}"]
     for k in dict.fromkeys([*a, *b]):
         x, y = (a.get(k) or {}).get("median"), (b.get(k) or {}).get("median")
@@ -917,6 +927,8 @@ def compare_table(old: dict, new: dict) -> str:
     ho, hn = old["machine"], new["machine"]
     notes = [f"  {n}: {ho.get(f)} -> {hn.get(f)}" for n, f in (("GPU", "gpu"), ("engine", "engine_version"), ("model", "model"), ("quant", "quant"),
                                                               ("context", "context")) if ho.get(f) != hn.get(f)]
+    if different_workload:
+        notes.append("  long-generation workload/settings differ: those rates are not compared")
     return "\n".join(rows + (["", "differences:"] + notes if notes else []))
 
 
@@ -1026,7 +1038,8 @@ def main(argv=None) -> int:
         slots = pre.get("parallel_slots") or 1
         if a.clients and a.clients > slots:
             say(f"Note: the server runs {slots} request(s) at a time (--batch), so {a.clients} clients will partly wait their turn.")
-        say("Running the suite (about 3-10 minutes) ...")
+        say("Running the suite (long generation may take much longer than the standard suite) ..."
+            if suite.want_long_generation else "Running the suite (about 3-10 minutes) ...")
         out = suite.run()
         machine = collect_machine(base, key, cfg)             # again: VRAM and the cache after the work
         if not machine.get("gpu"):
@@ -1053,9 +1066,7 @@ def main(argv=None) -> int:
             shown = d.relative_to(ROOT)
         except ValueError:
             shown = d
-        say(f"\nReport: {shown / 'README.md'}\nShare it: open a pull request that adds the folder {shown} (see docs/COMMUNITY_BENCHMARKS.md), "
-            f"or paste README.md into a GitHub issue. Home folders, user and host names and IP addresses are already replaced; "
-            f"read it once before you share it.")
+        say(f"\nReport: {shown / 'README.md'}")
         if suite.want_long_generation and (out["failures"] or "long-generation" in out["skipped"]):
             return 1
         if suite.want_long_generation and suite.runs >= 3 and not out["long_generation"]["classification"]["qualified"]:

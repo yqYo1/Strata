@@ -1,0 +1,161 @@
+{
+  "status": "normal execution and output-length pass; MTP regimes unconfirmed",
+  "native_sha256": "68da026294cb9f2e6f4faee0e7c90b276a5f7f1306499f3210fe6744c89294b6",
+  "workload_version": 1,
+  "results": {
+    "workload_version": 1,
+    "minimum_generated_tokens": 1024,
+    "max_tokens": 1152,
+    "minimum_input_tokens": 32768,
+    "target_input_tokens": 33792,
+    "thinking": true,
+    "reasoning_budget_tokens": 0,
+    "temperature": 0,
+    "lifecycle": "warm server; alternating workload order; fresh request prefixes",
+    "order": [
+      {
+        "run": 0,
+        "workload": "regular-code"
+      },
+      {
+        "run": 0,
+        "workload": "constraint-reasoning"
+      }
+    ],
+    "workloads": {
+      "regular-code": {
+        "expected_mtp": "strong",
+        "requests": [
+          {
+            "ok": true,
+            "err": null,
+            "ttft_s": 194.969,
+            "total_s": 345.369,
+            "prompt_tokens": 33215,
+            "reused_tokens": 0,
+            "read_tokens": 33215,
+            "generated_tokens": 1152,
+            "prompt_tps": 170.7,
+            "prompt_tps_source": "engine",
+            "decode_tps": 7.7,
+            "decode_tps_source": "engine",
+            "prompt_ms": 194635.2,
+            "decode_ms": 150534.1,
+            "drafts_offered": 1239,
+            "drafts_accepted": 739,
+            "finish_reason": "length",
+            "request_sha256": "f947809ab78339dbd85f4212d821a24dd95f263178a827d93675cb97c3df9042",
+            "generated_tokens_source": "usage",
+            "eligible": true,
+            "ineligible_reasons": [],
+            "acceptance_rate": 0.5964487489911219,
+            "usage_generated_tokens": 1152,
+            "completion_includes_thinking": true,
+            "run": 0,
+            "order": 0,
+            "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "reasoning_sha256": "5450278355c653bffe501b4de4ef00fd2e1aa12fd69cc9a7aa8b1ee48c87faf7",
+            "output_chars": 0,
+            "reasoning_chars": 3634,
+            "reasoning_tokens": null
+          }
+        ],
+        "eligible_runs": 1,
+        "decode_tps": {
+          "median": 7.7,
+          "min": 7.7,
+          "max": 7.7,
+          "n": 1
+        },
+        "generated_tokens": {
+          "median": 1152,
+          "min": 1152,
+          "max": 1152,
+          "n": 1
+        },
+        "acceptance_rate": {
+          "median": 0.596,
+          "min": 0.596,
+          "max": 0.596,
+          "n": 1
+        },
+        "pooled_drafts_offered": 1239,
+        "pooled_drafts_accepted": 739,
+        "pooled_acceptance_rate": 0.5964487489911219
+      },
+      "constraint-reasoning": {
+        "expected_mtp": "weak",
+        "requests": [
+          {
+            "ok": true,
+            "err": null,
+            "ttft_s": 196.949,
+            "total_s": 359.414,
+            "prompt_tokens": 33322,
+            "reused_tokens": 0,
+            "read_tokens": 33322,
+            "generated_tokens": 1152,
+            "prompt_tps": 169.5,
+            "prompt_tps_source": "engine",
+            "decode_tps": 7.1,
+            "decode_tps_source": "engine",
+            "prompt_ms": 196630.2,
+            "decode_ms": 162602.7,
+            "drafts_offered": 1311,
+            "drafts_accepted": 717,
+            "finish_reason": "length",
+            "request_sha256": "e052275c40a728071b058ee70572307276532722bdb4f62346c6914eef57e7da",
+            "generated_tokens_source": "usage",
+            "eligible": true,
+            "ineligible_reasons": [],
+            "acceptance_rate": 0.5469107551487414,
+            "usage_generated_tokens": 1152,
+            "completion_includes_thinking": true,
+            "run": 0,
+            "order": 1,
+            "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "reasoning_sha256": "a0436fba148824636cae45f580889599ca6d31c9eb2ec17b8d0566c6a2ed3209",
+            "output_chars": 0,
+            "reasoning_chars": 3750,
+            "reasoning_tokens": null
+          }
+        ],
+        "eligible_runs": 1,
+        "decode_tps": {
+          "median": 7.1,
+          "min": 7.1,
+          "max": 7.1,
+          "n": 1
+        },
+        "generated_tokens": {
+          "median": 1152,
+          "min": 1152,
+          "max": 1152,
+          "n": 1
+        },
+        "acceptance_rate": {
+          "median": 0.547,
+          "min": 0.547,
+          "max": 0.547,
+          "n": 1
+        },
+        "pooled_drafts_offered": 1311,
+        "pooled_drafts_accepted": 717,
+        "pooled_acceptance_rate": 0.5469107551487414
+      }
+    },
+    "classification": {
+      "qualified": false,
+      "strong_case_confirmed": false,
+      "weak_case_confirmed": false,
+      "minimum_runs": 3,
+      "strong_min_acceptance": 0.6,
+      "weak_max_acceptance": 0.4,
+      "scope": "Observed draft agreement only; prompts do not guarantee an MTP regime or prove speedup."
+    },
+    "quality_qualified": false
+  },
+  "fresh_faults": 0,
+  "owner_closed": true,
+  "decision": "Both outputs contain only thinking (content chars0). Keep original unqualified result; v2 uses thinking-off code vs varied Japanese prose with unchanged greedy arithmetic and predeclared acceptance bands."
+}

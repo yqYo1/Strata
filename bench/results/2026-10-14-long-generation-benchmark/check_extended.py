@@ -30,7 +30,9 @@ def main():
     assert mode in ['screen', 'suite']
     runs = 1 if mode == 'screen' else 3
     options = ['--long-generation-only'] if mode == 'screen' else ['--long', '--long-generation']
-    O = B/('main-primary-long-generation-' + mode + '-root-v1')
+    sys.path.insert(0,str(P/'tools'))
+    from long_generation_bench import WORKLOAD_VERSION
+    O = B/('main-primary-long-generation-' + mode + '-root-v' + str(WORKLOAD_VERSION))
     build = json.loads((BUILD/'record.json').read_text())
     gate = json.loads((B/'main-primary-routed-census129-pair-root-v1/record.json').read_text())
     reference = json.loads((B/'main-primary-long-routed-reference-root-v3/record.json').read_text())
