@@ -34,3 +34,8 @@ R519は実選択の旧kernelに4つのcolumn分割と先読みがあり、curren
 48 value headsと36 GDN layersを混同せず、分割kernelに必要なnorm completionも考慮する。
 R520は本家32Kの24出力capをCLIで増やせないことと、補助clientの条件を記録した。
 いずれもsource候補で、原因・速度・採用の確定ではない。[原文とMain訂正](research-index.json)。
+
+evidence commit7bb5b19aをbyte/hash検証後、閉じた成功ログ・重複tensor・research原文を34件、
+2,626,725 logical bytes退去した。[manifest](deletion-manifest.jsonl)、[集計](retirement.json)。
+実空き容量差は未測定。長文controllerが使うraw build/numeric gate recordsとcanonical compact1
+tensor fixtureは保持し、元結果の状態を変更していない。再開はGitのレポートから行う。
