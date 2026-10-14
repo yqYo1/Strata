@@ -119,28 +119,31 @@ bool native_of(const WeightRef* w, const std::string& name, std::string& err) {
 }  // namespace
 
 namespace {
-std::atomic<const Verifier*> g_diag_verifier{nullptr};
+// Both watchdog and pool timeout callbacks hold leases through the device calls.
+CallbackRegistry<Verifier, 16> g_verifiers;
 void diag_active_verifier(std::FILE* f) {
-    if (const Verifier* v = g_diag_verifier.load()) v->diag(f);
+    g_verifiers.visit([&](Verifier& v) { v.diag(f); });
 }
-// #267: every live verifier (a layer split has one per stage), for the release before the engine ends
-constexpr int kLiveMax = 16;
-std::atomic<Verifier*> g_live[kLiveMax];
 void release_live_verifiers(std::FILE* f) {
-    for (auto& slot : g_live)
-        if (Verifier* v = slot.load()) {
-            const Clock::time_point t0 = Clock::now();
-            const bool done = v->release_gpu_waits(5000);
-            if (f != nullptr)
-                std::fprintf(f, "strata: released the verify window's GPU waits (#267): the GPU %s\n",
-                             done ? ("finished in " + std::to_string((long long) ms_since(t0)) + " ms").c_str()
-                                  : "did not finish within 5 s");
-        }
-    if (f != nullptr) std::fflush(f);
+    bool any = false;
+    g_verifiers.visit([&](Verifier& v) {
+        const Clock::time_point t0 = Clock::now();
+        bool active = false;
+        const bool done = v.release_active_gpu_waits(5000, active);
+        if (!active) return;
+        any = true;
+        if (f) std::fprintf(f, "strata: released active verify stage GPU waits (#267): its verify/copy streams %s\n",
+                           done ? ("finished in " + std::to_string((long long) ms_since(t0)) + " ms").c_str()
+                                : "did not finish within 5 s");
+    });
+    if (f) {
+        if (!any) std::fprintf(f, "strata: no active verify spin waits to release; prefill/device drain not assessed\n");
+        std::fflush(f);
+    }
 }
 std::string released_note(bool drained) {
-    return drained ? "; its GPU waits were released and the GPU finished (#267)"
-                   : "; its GPU waits were released but the GPU did not finish within 5 s (#267)";
+    return drained ? "; its GPU waits were released and its verify/copy streams finished (#267)"
+                   : "; its GPU waits were released but its verify/copy streams did not finish within 5 s (#267)";
 }
 // #267 test hook: STRATA_TEST_VERIFY_STALL=N withholds the last layer's flag in the N-th window (1-based), so the
 // GPU spins on a flag nobody raises - the bounded window wait and the release are then what ends it.  Unset: never.
@@ -150,15 +153,18 @@ const int64_t g_test_stall = [] {
 }();
 }  // namespace
 
-bool Verifier::release_gpu_waits(int timeout_ms) {
+void Verifier::signal_gpu_waits() {
     released_.store(true);
     // the words the spin kernels read (wait_flag_ge, wait_flag_ge_or) are mapped host memory, so a store here
     // reaches them with no API call; UINT32_MAX is past every ring.  (E-6's skip words are device memory, but
     // wait_flag_ge_or also returns on its flag.)  A host function raising flag B later only raises.
     for (uint32_t* p : {h_flag_, h_flagA_, h_flagB_})
-        if (p != nullptr) *(volatile uint32_t*) p = UINT32_MAX;
+        if (p != nullptr) host_flag_raise(p, UINT32_MAX);
     std::atomic_thread_fence(std::memory_order_seq_cst);
     _mm_sfence();
+}
+
+bool Verifier::drain_gpu_waits(int timeout_ms) {
     const OnDevice on_device(device_);
     const Clock::time_point t0 = Clock::now();
     for (cudaStream_t s : {cs_, copy_}) {
@@ -171,30 +177,43 @@ bool Verifier::release_gpu_waits(int timeout_ms) {
     return true;
 }
 
+bool Verifier::release_gpu_waits(int timeout_ms) {
+    signal_gpu_waits();
+    return drain_gpu_waits(timeout_ms);
+}
+
+bool Verifier::release_active_gpu_waits(int timeout_ms, bool& active) {
+    active = diag_window_.if_running([this] { signal_gpu_waits(); });
+    return active && drain_gpu_waits(timeout_ms);
+}
+
 void Verifier::diag(std::FILE* f) const {
-    auto rd = [](const uint32_t* p) { return p ? *(const volatile uint32_t*) p : 0u; };
+    const VerifyWindowView window = diag_window_.read();
+    const char* phase = "inactive";
+    switch (window.phase) {
+        case VerifyPhase::preparing: phase = "preparing (no spin rescue yet)"; break;
+        case VerifyPhase::running: phase = "active"; break;
+        case VerifyPhase::finishing: phase = "finishing (spin streams completed)"; break;
+        case VerifyPhase::completed: phase = "completed (historical)"; break;
+        case VerifyPhase::failed: phase = "failed (not completed)"; break;
+        default: break;
+    }
+    auto flag = [](uint32_t* p) { return p ? host_flag_load(p) : 0u; };
 #ifdef STRATA_ENABLE_SYCL
-    // h_seq_ can still be written by a running device segment. Report only
-    // the sequence whose producing event the host has already completed.
     const uint32_t reached = reached_.load();
 #else
-    const uint32_t reached = rd(h_seq_);
+    // Do not read a device-written mapped word concurrently with staging.
+    // This backend has no completed-event host mirror of the sequence.
+    const uint32_t reached = 0;
 #endif
-    // #251: outside a verify stage these are the LAST window's numbers (it finished), not the stalled work's
-    const char* where = progress().where.load();
-    const bool current = where != nullptr && std::strncmp(where, "verify window", 13) == 0;
-    std::fprintf(f, "  verify window%s: %d tokens at position %lld, host at layer step %u; the GPU rang %u; flags: "
-                    "served %u, plan (A) %u, copies (B) %u\n", current ? "" : " (last window, not the current stage)",
-                 last_t_, (long long) last_pos0_, cur_layer_.load() + 1, reached, rd(h_flag_), rd(h_flagA_), rd(h_flagB_));
+    std::fprintf(f, "  verify window %llu (%s): %d tokens at position %lld; host layer step %u; "
+                    "GPU sequence host mirror %u (0 if unavailable); host flags served %u, plan (A) %u, copies (B) %u\n",
+                 (unsigned long long) window.generation, phase, window.tokens, (long long) window.position,
+                 cur_layer_.load() + 1, reached, flag(h_flag_), flag(h_flagA_), flag(h_flagB_));
 }
 
 Verifier::~Verifier() {
-    const Verifier* self = this;
-    g_diag_verifier.compare_exchange_strong(self, nullptr);
-    for (auto& slot : g_live) {
-        Verifier* me = this;
-        slot.compare_exchange_strong(me, nullptr);
-    }
+    g_verifiers.remove(this); // Wait for acquired callbacks before freeing any member.
     if (cs_) cudaStreamSynchronize(cs_);
     for (auto& e : exec_)
         if (e) cudaGraphExecDestroy(e);
@@ -219,13 +238,6 @@ Verifier::~Verifier() {
 
 bool Verifier::init(const WeightTable& wt, const ModelGeometry& g, SessionState& ss, const VerifyHits& hits,
                     const NativeHead* head, int max_t, std::string& err) {
-    g_diag_verifier.store(this);
-    diag_verify_fn().store(&diag_active_verifier);
-    for (auto& slot : g_live) {
-        Verifier* none = nullptr;
-        if (slot.load() == this || slot.compare_exchange_strong(none, this)) break;
-    }
-    release_gpu_fn().store(&release_live_verifiers);
     cudaGetDevice(&device_);   // a layer split's stage on another GPU: its streams, graphs and buffers live there
     strata::kernels::fused_gr_check();   // once per card: which bitwise-equal hyper-connection read runs there
     wt_ = &wt;
@@ -297,6 +309,12 @@ bool Verifier::init(const WeightTable& wt, const ModelGeometry& g, SessionState&
               mapped(64, (void**) &h_flagB_, (void**) &m_flagB_) &&
               mapped(T * K * N * 4, (void**) &h_ymiss_, (void**) &m_ymiss_);
     if (!ok) { err = "verify: mapped staging allocation failed"; return false; }
+    for (uint32_t* flag : {h_flag_, h_flagA_, h_flagB_}) {
+        if (reinterpret_cast<std::uintptr_t>(flag) % std::atomic_ref<uint32_t>::required_alignment != 0) {
+            err = "verify: mapped host flag does not meet atomic_ref alignment";
+            return false;
+        }
+    }
     // the GPU plan: counts(4) | start(cap+1) | dst(cap) | tok(cap) | pad | ptr(cap u64) | ptr2(cap u64) | start2(cap+1)
     {
         const int64_t cap = (int64_t) (T * K);
@@ -417,6 +435,12 @@ bool Verifier::init(const WeightTable& wt, const ModelGeometry& g, SessionState&
         }
         if (!ok2) { cudaGetLastError(); device_plan_ = false; }
     }
+    if (!g_verifiers.add(this)) {
+        err = "verify: watchdog callback registry capacity (16) exhausted";
+        return false;
+    }
+    diag_verify_fn().store(&diag_active_verifier);
+    release_gpu_fn().store(&release_live_verifiers);
     std::fprintf(stderr, "strata verify: window up to %d tokens, %.1f MiB of device buffers\n", max_t,
                  (double) count.used / 1048576.0);
     return true;
@@ -1186,6 +1210,25 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
     const ModelGeometry& g = *g_;
     SessionState& ss = *ss_;
     if (pos0 + T > ss.qsa_states[ss.qsa_primary()].max_cells) { err = "verify: the window runs past the context"; return false; }
+    // Publish the participating chain before capture. Later stages are preparing,
+    // not rescue targets until their own flags have been staged and work can spin.
+    for (Verifier* v = this; v; v = v->next_) {
+        const auto prior = v->diag_window_.read();
+        if (prior.phase != VerifyPhase::preparing || prior.tokens != T || prior.position != pos0)
+            v->diag_window_.begin(T, pos0);
+    }
+    struct WindowScope {
+        Verifier* first;
+        ~WindowScope() {
+            for (Verifier* v = first; v; v = v->next_) {
+                const auto phase = v->diag_window_.read().phase;
+                if (phase == VerifyPhase::preparing || phase == VerifyPhase::running || phase == VerifyPhase::finishing)
+                    v->diag_window_.phase(VerifyPhase::failed);
+            }
+        }
+        void drained() { first->diag_window_.phase(VerifyPhase::finishing); }
+        void finish() { first->diag_window_.phase(VerifyPhase::completed); }
+    } window_scope{this};
     if (!capture(T, err) || !capture_commit(err)) return false;
     VDBG("captured; staging\n");
     const Clock::time_point t0 = Clock::now();
@@ -1210,9 +1253,9 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
         if (!ss.ple.table->gather_batch(rows, (size_t) T, h_ple_, err)) return false;
     }
     *(volatile uint32_t*) h_seq_ = 0;
-    *(volatile uint32_t*) h_flag_ = 0;
-    *(volatile uint32_t*) h_flagA_ = 0;
-    *(volatile uint32_t*) h_flagB_ = 0;
+    host_flag_store(h_flag_, 0);
+    host_flag_store(h_flagA_, 0);
+    host_flag_store(h_flagB_, 0);
 #ifdef STRATA_ENABLE_SYCL
     reached_.store(0);
 #endif
@@ -1222,6 +1265,7 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
     for (int t = 0; t < T; ++t) last_tokens_[t] = tokens[t];
     ms_host += ms_since(t0);
     VDBG("staged; launching\n");
+    diag_window_.phase(VerifyPhase::running); // Rescuable before the potentially blocking launch.
 #ifdef STRATA_ENABLE_SYCL
     const cudaError_t le = strata::sycl_backend::compat::graph_launch_with_completion(
         segments_[T][0], cs_, layer_done_);
@@ -1234,7 +1278,7 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
 #ifndef STRATA_ENABLE_SYCL
     volatile uint32_t* const seq = h_seq_;
 #endif
-    volatile uint32_t* const flag = h_flag_;
+    uint32_t* const flag = h_flag_;
     const int G = groups_[T] > 0 ? groups_[T] : 1;
     const int gtb[2] = {0, (T + 1) / 2}, gte[2] = {G == 2 ? (T + 1) / 2 : T, T};
     const int64_t steps = (le_ - lb_) * G;
@@ -1303,14 +1347,14 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
         progress_tick();
         std::atomic_thread_fence(std::memory_order_seq_cst);
         _mm_sfence();
-        if (*(volatile uint32_t*) h_flagA_ != want) {        // the pool did not publish a plan: an empty one
+        if (host_flag_load(h_flagA_) != want) {        // the pool did not publish a plan: an empty one
             sink_.counts[0] = 0;
             sink_.counts[1] = 0;
             sink_.counts[2] = 0;
             sink_.start[0] = 0;
             sink_.start2[0] = 0;
             std::atomic_thread_fence(std::memory_order_seq_cst);
-            *(volatile uint32_t*) h_flagA_ = want;
+            host_flag_raise(h_flagA_, want);
             raise_flag(h_flagB_, want);
         }
 #ifdef STRATA_ENABLE_SYCL
@@ -1323,7 +1367,7 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
             return false;
         }
 #endif
-        if (!(test_stall && k + 1 == steps)) *flag = want;
+        if (!(test_stall && k + 1 == steps)) host_flag_raise(flag, want);
         ms_wait += std::chrono::duration<double, std::milli>(b - a).count();
         ms_pool += ms_since(b);
 #ifdef STRATA_ENABLE_SYCL
@@ -1355,7 +1399,9 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
     const cudaError_t se = cudaStreamSynchronize(cs_);
     if (se != cudaSuccess) { err = std::string("verify: ") + cudaGetErrorString(se); return false; }
     progress_at("verify window: waiting for the expert copies", (int64_t) T);
-    cudaStreamSynchronize(copy_);   // no host function of this window may raise flag B in the next one
+    const cudaError_t copy_status = cudaStreamSynchronize(copy_); // Host callbacks cannot reach the next window.
+    if (copy_status != cudaSuccess) { err = std::string("verify: copies: ") + cudaGetErrorString(copy_status); return false; }
+    window_scope.drained(); // Both stage streams completed; sampling below has no mapped spin waits.
     if (prof_on_ && G == 1) {       // the window's GPU stage stamps
         cudaMemcpy(prof_h_.data(), prof_, prof_h_.size() * 8, cudaMemcpyDeviceToHost);
         const int64_t L = g.n_layers;
@@ -1394,7 +1440,9 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
     // the drafts were. Exact: a rejected row's draw is discarded, and no kept decision depends on a reused draw.
     if (le_ < g.n_layers) {   // a layer split's earlier stage: the hand-off is written (synced above)
         ++windows;
-        return next_ == nullptr || next_->run(T, tokens, pos0, pool, next_user_, out, err);
+        const bool ok = next_ == nullptr || next_->run(T, tokens, pos0, pool, next_user_, out, err);
+        if (ok) window_scope.finish();
+        return ok;
     }
     const bool sampled = !sampling_.greedy && sampling_.temperature > 0.0f;
     if (head_sampling_ && (sampled || hist_d_ != nullptr)) {
@@ -1445,6 +1493,7 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
             }
         }
     }
+    window_scope.finish();
     VDBG("window done\n");
     ++windows;
     progress_at("decode");
@@ -1472,18 +1521,7 @@ void Verifier::set_plan_slot(int grp) {
 
 // Flag B only rises: a host function of an earlier layer may run after a later layer already raised it directly.
 void Verifier::raise_flag(uint32_t* flag, uint32_t value) {
-#if defined(_WIN32)
-    volatile long* f = (volatile long*) flag;
-    long cur = *f;
-    while ((uint32_t) cur < value) {
-        const long prev = _InterlockedCompareExchange(f, (long) value, cur);
-        if (prev == cur) break;
-        cur = prev;
-    }
-#else
-    uint32_t cur = __atomic_load_n((uint32_t*) flag, __ATOMIC_SEQ_CST);
-    while (cur < value && !__atomic_compare_exchange_n((uint32_t*) flag, &cur, value, false, __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST)) {}
-#endif
+    host_flag_raise(flag, value);
 }
 
 // Plan v0.3 P6: the PCIe share by DMA.  The copy engine moves the blobs while the CPU computes its own share and the
@@ -1504,7 +1542,7 @@ void Verifier::fetch_dma(void* ctx, const uint8_t* const* src, int n, size_t byt
 void Verifier::publish_plan(void* ctx) {
     Verifier* v = (Verifier*) ctx;
     _mm_sfence();
-    *(volatile uint32_t*) v->h_flagA_ = v->cur_layer_ + 1;
+    host_flag_raise(v->h_flagA_, v->cur_layer_ + 1);
 #ifdef STRATA_ENABLE_SYCL
     if (v->overlap_gpu_) v->launch_work();
 #endif

@@ -337,3 +337,25 @@ R478でqueue-emptyの受信は1-byte ur_bool_t、URの返却も1-byte boolと確
 coherent snapshot、callback lease、scopeでjoinするwatchdog、実行中Verifierだけのrescue、
 host flag atomic化とhost concurrency fixtureを含む。現時点では**未適用・未テスト**。
 調査担当には実装させず、Mainがbuild/CPU/GPU/model検証を直列に管理する。
+
+## 監視寿命の主実装への適用とCPU検証
+
+Mainは上の提案を部品として適用した。callback登録はinit成功後、破棄はcallback leaseの
+終了後に行う。diagnosticのwindow情報をmutexで一組として読み、idle/prefill/preparingに
+verifyのdrainを呼ばない。serve watchdogは通常終了時にstop/joinしてから観測対象を壊す。
+host-written mapped flagsのhostアクセスをatomic_refへ統一し、実allocationのalignmentを
+確認する。先行rescueのUINT32_MAXを後着のhost callbackが下げない。GPU/device visibilityは
+既存のfence/event完了契約を維持し、host atomic化だけでdevice同期を成立させたとしない。
+
+Mainのレビューで、closing中の同じobjectを別の空slotへ再登録できる提案の穴を修正し、
+2-slot fixtureで確認した。null登録とwatchdogの多重startも拒否する。lease testはclosingを
+観測してから待機を確認し、threadの開始通知だけで待機を証明しない。
+
+build v1は現buildのSTRATA_BUILD_TESTS=OFFでhost targetが未生成だったため失敗。
+実際のSTRATA_SYCL_TESTS側にも登録した。v2は提案のconst captureへの代入でcompile失敗。
+mutable captureを修正したv3がnative全体とhost fixtureをbuildし、通常CPU concurrencyと
+ASan/UBSan/leak検査を通った。失敗2件の原record/command/errorも保存する。
+237個のsource pinとcompile flagを保存し、size_t range契約は110個のSYCL consumerへ維持。
+新native SHAはe0f0a0233392df6ea0861c30eca618a6675a376a62c33a1ec494811619caeec2。
+この境界ではGPU/modelは未実行。v7 canary書込み元の修正、GPU spin rescue、長文・速度・
+物理256Kの合格をCPU fixtureから主張しない。次は同条件の実モデルと正常終了を確認する。

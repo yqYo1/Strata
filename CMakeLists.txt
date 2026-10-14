@@ -1113,6 +1113,13 @@ endif()
 
 if(STRATA_BUILD_TESTS)
   enable_testing()
+  if(NOT TARGET watchdog_lifecycle_host_test)
+    add_executable(watchdog_lifecycle_host_test tests/cpu/watchdog_lifecycle.cpp)
+    target_include_directories(watchdog_lifecycle_host_test PRIVATE include)
+    target_link_libraries(watchdog_lifecycle_host_test PRIVATE Threads::Threads strata_warnings)
+    add_test(NAME watchdog_lifecycle_host COMMAND watchdog_lifecycle_host_test)
+    set_tests_properties(watchdog_lifecycle_host PROPERTIES TIMEOUT 30)
+  endif()
   if(UNIX)
     # Teardown's control flow and fail-stop ownership, without SYCL or a GPU.
     add_executable(sycl_checked_cleanup_host_test tests/sycl/checked_cleanup_host.cpp)

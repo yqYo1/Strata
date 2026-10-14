@@ -24,6 +24,7 @@
 #pragma once
 
 #include <cstdio>
+#include "strata/core/watchdog_lifecycle.hpp"
 
 #include "strata/core/expert_source.hpp"
 #include "strata/core/layer.hpp"
@@ -62,6 +63,7 @@ public:
 
     /// The watchdog's view of the window in flight (issue #31): the layer, the GPU's sequence, the flags.
     void diag(std::FILE* f) const;
+    bool release_active_gpu_waits(int timeout_ms, bool& active);
 
     /// #267: raise every flag the window's spin kernels wait on past any ring (UINT32_MAX), so a window the GPU
     /// cannot finish drains instead of staying resident, then wait up to `timeout_ms` for its streams.  For the
@@ -173,6 +175,8 @@ public:
     std::string profile_report();
 
 private:
+    void signal_gpu_waits();
+    bool drain_gpu_waits(int timeout_ms);
     bool capture(int T, std::string& err);
     strata::kernels::SamplerParams sampling_ = [] {
         strata::kernels::SamplerParams s;
@@ -210,6 +214,7 @@ private:
     VerifyHits hits_;
     const NativeHead* head_ = nullptr;
     int max_t_ = 0;
+    VerifyWindowSnapshot diag_window_;
     int last_t_ = 0;
     int64_t last_pos0_ = 0;
     int32_t last_tokens_[8] = {};

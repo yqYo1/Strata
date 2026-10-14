@@ -61,6 +61,7 @@
 #include "strata/spec/suffix_drafter.hpp"
 #include "strata/kernels/cvec.hpp"
 #include "strata/core/progress.hpp"
+#include "strata/core/watchdog_lifecycle.hpp"
 #include "strata/core/device.hpp"
 #include "strata/core/emulate.hpp"
 #ifndef NOMINMAX
@@ -5190,29 +5191,31 @@ int main(int argc, char** argv) {
         // a flag nobody will raise - end the engine with where it was, so the server starts it again instead of the
         // GPU spinning forever.  STRATA_WATCHDOG_S=0 turns it off.  Issue #31: before it does, it reports what every
         // part was doing (stall_report), so one occurrence says where the wait is.
+        // Declared after verifiers and the pool: ordinary returns/QUIT/EOF stop
+        // and join the observer before any observed engine object is torn down.
+        strata::core::ScopedWatchdog serve_watchdog;
         {
             const char* ws = std::getenv("STRATA_WATCHDOG_S");
-            const int limit = ws ? std::atoi(ws) : 60;   // one step (a prompt layer, a verify window) takes seconds
-            if (limit > 0)
-                std::thread([limit] {
-                    strata::core::Progress& p = strata::core::progress();
-                    uint64_t last = p.beats.load(), ticks_at = p.ticks.load();
-                    auto since = std::chrono::steady_clock::now();
-                    for (;;) {
-                        std::this_thread::sleep_for(std::chrono::seconds(1));
-                        const auto now = std::chrono::steady_clock::now();
-                        const uint64_t b = p.beats.load();
-                        if (!p.busy.load() || b != last) { last = b; ticks_at = p.ticks.load(); since = now; continue; }
-                        if (now - since < std::chrono::seconds(limit)) continue;
-                        std::fprintf(stderr, "strata serve: no progress for %d s during a request (%s) - stopping "
-                                             "the engine so the server starts it again (issue #29)\n",
-                                     limit, stage_text().c_str());
-                        stall_report(stderr, p.ticks.load() - ticks_at);
-                        strata::core::release_gpu_waits(stderr);   // #267: no spin kernel outlives the process
-                        std::fflush(stderr);
-                        std::abort();
-                    }
-                }).detach();
+            const int limit = ws ? std::atoi(ws) : 60;
+            if (limit > 0) {
+                auto& p = strata::core::progress();
+                uint64_t last = p.beats.load(), ticks_at = p.ticks.load();
+                auto since = std::chrono::steady_clock::now();
+                serve_watchdog.start([limit, last, ticks_at, since]() mutable {
+                    auto& p = strata::core::progress();
+                    const auto now = std::chrono::steady_clock::now();
+                    const uint64_t b = p.beats.load();
+                    if (!p.busy.load() || b != last) { last = b; ticks_at = p.ticks.load(); since = now; return; }
+                    if (now - since < std::chrono::seconds(limit)) return;
+                    std::fprintf(stderr, "strata serve: no progress for %d s during a request (%s) - stopping "
+                                         "the engine so the server starts it again (issue #29)\n",
+                                 limit, stage_text().c_str());
+                    stall_report(stderr, p.ticks.load() - ticks_at);
+                    strata::core::release_gpu_waits(stderr);
+                    std::fflush(stderr);
+                    std::abort();
+                });
+            }
         }
         std::printf("READY %lld stop\n", (long long) o.max_context);   // "stop": this engine honours STOP
         std::fflush(stdout);

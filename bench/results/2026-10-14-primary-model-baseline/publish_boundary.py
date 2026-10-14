@@ -39,7 +39,10 @@ def main():
                      'main-primary-stock-bench-accepted-root-v1', 'main-primary-post-abort-gpu-root-v1',
                      'main-primary-host-abort-observer-root-v1', 'main-primary-host-abort-observer-root-v2',
                      'main-primary-cold-jit-short-root-v8', 'main-primary-cold-jit-short-root-v9',
-                     'main-primary-post-trace-cap-gpu-root-v1']:
+                     'main-primary-post-trace-cap-gpu-root-v1',
+                     'main-primary-watchdog-lifecycle-build-root-v1',
+                     'main-primary-watchdog-lifecycle-build-root-v2',
+                     'main-primary-watchdog-lifecycle-build-root-v3']:
         if original(B / optional / 'record.json') is not None:
             roots.append(optional)
     with (B / 'owned-v0141-measurement.lock').open('a') as lock:
