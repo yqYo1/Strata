@@ -29,6 +29,11 @@ if(NOT STRATA_SYCL_HAS_INTEL_HA_EXP)
 endif()
 
 add_library(strata_sycl_runtime STATIC src/sycl/runtime.cpp src/sycl/compat.cpp)
+add_executable(sycl_transfer_ceiling EXCLUDE_FROM_ALL
+  ${PROJECT_SOURCE_DIR}/bench/results/2026-10-14-primary-transfer-ceiling/transfer_ceiling.cpp)
+target_link_libraries(sycl_transfer_ceiling PRIVATE strata_sycl_runtime)
+target_compile_features(sycl_transfer_ceiling PRIVATE cxx_std_17)
+
 target_include_directories(strata_sycl_runtime PUBLIC ${PROJECT_SOURCE_DIR}/include ${PROJECT_SOURCE_DIR}/include/strata/sycl/compat)
 # The compiler's default asserts every global range fits in signed int. Large
 # context/USM operations cannot make that promise. Keep the same index contract
