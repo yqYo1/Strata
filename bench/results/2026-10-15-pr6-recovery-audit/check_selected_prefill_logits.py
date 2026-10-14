@@ -125,7 +125,8 @@ def main():
                     maximum=max(values)
                     return maximum+math.log(math.fsum(math.exp(float(v)-maximum) for v in values))-float(values[target])
                 comparison.update(position=p,target_token_id=target,reference_target_NLL_nats=nll(reference),
-                    candidate_target_NLL_nats=nll(candidate))
+                    candidate_target_NLL_nats=nll(candidate),
+                    scope='Selected teacher-forced prediction at a registered '+mode+' history position; not independent task quality or full-token PPL.')
                 comparison['target_NLL_delta_nats']=comparison['candidate_target_NLL_nats']-comparison['reference_target_NLL_nats']
                 r['position_comparisons'].append(comparison)
             assert all(sha(P/n)==pin for n,pin in r['source_pins'].items())
