@@ -84,3 +84,14 @@ pending hashが残ること、8並行要求のchainとpending、改ざん拒否�
 complete=false、実際のthinking/answer履歴、部分sessionの除外、no-MTP speedの区別を確認。
 Python/shell syntaxもPASS。この境界ではv4実モデルscreen/full suiteは未実行。
 PR#6/Codex元ログの性能・安全性回復はbenchmark検証境界の後へ続ける。
+
+
+v4 screenはsource605b80f8で開始した。rootは
+`~/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-long-generation-screen-root-v4-evidence-v2`。
+Mainは実native PID334431/start32864521の/proc/limitsからCPU soft111600/hard111601秒を確認。
+long-generation/regular-codeの実送信開始rowはthinking=true/max_tokens16384、入力実33214。
+[起動時観測](launch-v4.json)はlive確認のみで終了/fault/性能合格ではない。
+元の標準word-count校正2要求は1生成・thinkingOFFで、速度結果には数えない。
+全測定workloadとagent条件は--thinkでON。終了後にjournal chain、正常native/server exit、
+全個別結果、fresh faultを検査し、3回の標準32K/agent/追加生成suiteへ進む。
+active jobのclient/engine/recipe sourceを変えず、同時test/build/cleanupはしない。
