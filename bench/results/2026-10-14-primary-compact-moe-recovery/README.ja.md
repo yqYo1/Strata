@@ -90,3 +90,44 @@ mixedを別配置にするが、R510の『later MoEだからmixed/bo aliasがuns
 同じ新nativeのFP16経路、MoE compactだけOFF/ON、無変更Niko bench.sh long3、quiet、
 actual32049入力/24出力を使う。先の175.3 t/sの旧binary結果を新OFFの代わりにしない。
 性能・品質・actual262144入力/0出力・RESTORE・borrowed relayoutの採用条件は未完了。
+
+## 新しいOFF基準の正式測定
+
+2026-10-14、native6361e706、同じFP16経路・compact=0の本家bench.sh一式を完走した。
+long項目の実32049入力・24出力・reuse0、context262144、chunk4096、MTP4/split OFF。
+本家の32K項目名と実token数を区別する。diagnostic/profiler/validationは速度測定に入れていない。
+
+| run | prefill t/s | decode t/s | offered / accepted |
+| --- | ---: | ---: | --- |
+| 0 | 186.8 | 6.0 | 30 / 14 |
+| 1 | 188.3 | 4.3 | 42 / 11 |
+| 2 | 187.5 | 5.4 | 36 / 13 |
+
+PP中央値187.5、pooled187.526、decode中央値5.4、pooled5.134 t/s。
+native、server/client、ownerの正常終了、全child回収、source/binary一致、同じboot、
+fresh fault0、dumpなしを確認した。[個別値と終了状態](stock-evidence/compact0/summary.json)。
+元receipt/client結果/native identityはbyte-identical gzipで保持し、元状態を変更していない。
+新binaryのON比較はこの境界では未実行。旧d386の175.3を新OFFの代用にしていない。
+この差をthreaded修正、compact、単一kernelの効果に帰属させない。R8は修正対象を通らない。
+24出力のdecodeは4.3–6.0で、採用や旧16.635の回復を確定する結果ではない。
+
+Mainは元公開発言364件の本文hash・時刻を元session offsetで再確認した。
+古い1ebの実compile databaseも確認し、generate/verify/expert_sourceはSYCL overlay、
+native CPU/poolはroot TUと記録した。[実選択の証拠](selected-old-decode-source-proof.json)。
+R514v1のold root参照をv2で訂正し、過去の速い自分のforkの結果を取り消していない。
+
+Luna R511/512、続くR513/514、R515/516を異なるscopeで反復し、FINALまで介入していない。
+Mainの測定監視・source照合と並行した。完了後のsource誤り訂正も原文とregistryへ残した。
+[原文・訂正](research-index.json)。GEMM orientation、QSA fallback transpose、profilerの
+支持・効果はいずれも未測定。既存PfTimerはqueue/host gapを含む区間で、exclusive GEMM時間ではない。
+
+別Solの[full-input v2案](full-input-proposal-v2/report.md)は、実262144入力/0出力を既存の
+262143 batched + 最後の実入力のnative T1 verifier/commitで処理する。設定しただけのMTPと
+実bindを分け、最後のno-successor draftを処理したとは数えない。v1からv2の修正はsource reviewで、
+未実行の不具合が起きたと主張しない。両案とも製品sourceへ未適用・未build・未test。
+[exact ne/転送要求量のv2案](routed-fp16-observation-proposal-v2/report.md)も未適用であり、
+成功した実モデル観測に代用しない。Mainが次のsource適用・build/test/GPUを直列に管理する。
+
+四つの新しいunified patchはgit apply --checkを通った。Gitのouter-file whitespace検査は
+patch内の単一spaceのblank contextを警告したため、字句とhashを保持した。
+[形式の確認](proposal-format-check.json)は適用可能性だけで、build・モデル実行の合格ではない。
