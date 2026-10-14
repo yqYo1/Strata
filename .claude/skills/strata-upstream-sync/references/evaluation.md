@@ -29,6 +29,21 @@ prefill と decode の最良構成が別ならその違いも記録し、両者�
 両側へ同じ client SHA を使い、対応するサーバーを localhost に別々に起動する。
 上流の実際の help と現行のプロジェクト測定手順を確認する。
 この作業の標準例は `./bench.sh --url http://127.0.0.1:18095 --long --runs 3`。
+32K項目に加え、標準suiteの **agent sessionも毎回評価する**。全turnの個別値とsession単位の
+完走、入力/read/reuse、生成数、TTFT、decode、draft offered/acceptedを保存し、報告にも含める。
+このagentはモデル自身の返答を次turnへ含めるfile-review会話であり、実際のtool実行ではない。
+
+ユーザー指定の長いdecode評価には、このforkの拡張 `./bench.sh --long --long-generation --runs 3`
+も両側へ同じclientで使う。Nikoの無変更標準結果と、変更したbenchmarkの追加項目を識別する。
+追加項目は実入力32768以上、thinking込みの実生成1024..1152 tokens、fresh prefixを確認する。
+regular-codeとconstraint-reasoningはMTPが強い/弱い候補であり、名前だけで分類しない。
+3回以上の有効sample、各回256以上のoffered、受理率の各回60%以上/40%以下で確認する。
+分類が確認できなければ未完了と記録し、速度に基づいて都合の良いpromptを選び直さない。
+全個別値・request/output hash・終了理由・実生成数・draft countsを残し、比率は合計countsから
+求める。欠けたusageやstream piece数、早期EOSの短文を1K tokenと扱わない。
+1Kは24-token decodeより長い観測窓を得る初期条件であり、安定性を保証する長さではない。
+ばらつきが残れば独立process反復や生成長を増やし、MTP有効/無効の比較なしに速度向上を
+MTPの効果と断定しない。[実装と計測手順](../../../../docs/BENCHMARKS.md)を参照する。
 独自 GEN、kernel/帯域測定、デバッグの所要時間を、この速度比較へ代入しない。
 独自 GEN は品質・同期・lifetime 等の診断に使い、過去の速度記録は元の意味で保持する。
 

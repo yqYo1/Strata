@@ -1,0 +1,27 @@
+{
+  "previous_registry": "../2026-10-14-primary-routed-fp16-census/research-index.json",
+  "reports": [
+    {
+      "round": 525,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research/research-benchmark-agent-session-round525-v1.txt",
+      "original_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-benchmark-agent-session-round525-v1.txt",
+      "sha256": "64cd9f0bcf03aac06bd194212697d3a55acb0cfd4d1705e8f0795e007374f502"
+    },
+    {
+      "round": 526,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research/research-mtp-long-generation-round526-v1.txt",
+      "original_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-mtp-long-generation-round526-v1.txt",
+      "sha256": "2d45f8e8818d9cd4128f04c0b9c10ca2f553ebfddad64bb6b9e9383fd894d35c"
+    }
+  ],
+  "no_intervention_until_final": true,
+  "main_owns_build_test_GPU": true,
+  "main_corrections": [
+    "Source entrypoint src/program/generate.cpp exists in this configured root. Historical overlays are not assumed active from the filename.",
+    "Main selects fixed 1024..1152 actual output gate and matched thinking-on pair, not the optional multi-request accumulation. Missing completion usage cannot be supplied by stream-piece counts."
+  ]
+}
