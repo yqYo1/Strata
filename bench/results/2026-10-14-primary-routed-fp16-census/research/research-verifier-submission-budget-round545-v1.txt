@@ -1,0 +1,69 @@
+# R545 — verifier graph submission and completion budget
+
+Date: 2026-10-15 JST. Read-only source and primary-document review of the SYCL MTP verifier's command submission/completion path. Scope is host submit/wait structure and safe candidate screening; this is not a timing study, bottleneck attribution, runtime trace, or implementation proposal. I did not inspect current run artifacts, read the excluded `B/prefill-gemm-only-contract-root-v1/record.json`, inspect model/private session/environment blobs, run Git, tests, builds, benchmarks, GPU/profiler/process/service/reset/cleanup actions, or contact agents. Main owns the active suite and all validation.
+
+## Conclusion
+
+One narrowly scoped source candidate survives the lifetime and error-semantics screen: `launch_graph()` always attaches `GraphExec::last` as an explicit dependency, including when the same executable graph is replayed to the same in-order queue. The verifier consistently passes `cs_` for its window segments, work graphs, and commit. For that repeated same-queue case, the in-order queue already orders graph submissions. A future optimization could omit the explicit event dependency only when the graph's previous launch used that same queue object and the queue is in-order; retain it for different queues or uncertain identity. Continue to create and return the graph submission event, update `last`, rebind completion/event states, and preserve the graph mutex. This removes a redundant dependency edge from the submission descriptor, not a queue submit, graph launch, event, host wait, or device operation. It is unmeasured and may have no material effect.
+
+No candidate here removes the verifier's per-layer host completion wait. Each wait makes the preceding graph's mapped outputs safe for the CPU pool and its route decisions; dropping or deferring it without an equivalent completion boundary would change host/device access ordering. Likewise, the existing segmented graphs, reused completion events, shared-work overlap, and compiler flags are already present and are not new proposals. The source gives API counts, not how much wall time each call consumes.
+
+## Selected path and source-derived budget
+
+The task's supplied serving configuration is MTP spec 4, split off, suffix off, PCIe mode 0, normal graph recording (`STRATA_SYCL_VERIFY_NATIVE_CAPTURE=0`), and prefill same-queue 1. The prefill option does not control the verifier's `cs_` and `copy_` queues. Explicit native capture `0` goes through normal capture; an unset verifier-capture option defaults to `small`, which selects native recording only for widths below 4 (`verify.cpp:56–70`). The relevant serving windows can be T=1 or T=4; counts below are symbolic for `L = le_ - lb_` verifier layers in one stage, not a claim that every request/window has the same T.
+
+For the unsplit path (`G=1`), capture constructs `L+1` window segment executables and, when overlap is enabled, up to `L` shared/hit work executables (`verify.cpp:461–480, 920–940, 1025–1040`). For one completed `run()` window, source shows:
+
+| Operation | Source-derived count/condition | Meaning and limit |
+|---|---:|---|
+| Window graph submissions (`q.submit` + `h.ext_oneapi_graph`) | `L+1` | One initial segment and one next-segment submission after each layer handoff. Each has a fresh SYCL submission event. |
+| Layer completion waits | `L` calls to `cudaEventSynchronize(layer_done_)` | Each waits the event rebound to the latest segment submission before host reads/routs that layer's output. This is a blocking host completion boundary. |
+| Per-layer copy-stream drains | `L` calls to `cudaStreamSynchronize(copy_)`, plus one final drain | Retires HtoD copies and host-task callbacks before continuing/reusing transient staging and flag storage. The final drain covers callbacks that cannot reach the next window. |
+| Final verifier-stream drain | One `cudaStreamSynchronize(cs_)` | Retires the final graph segment and reports asynchronous failure before the window is consumed as complete. |
+| Shared/hit graph submission | Up to `L` | Conditional on `overlap_gpu_` and successful work-graph launch path. `launch_work()` additionally performs an event query immediately after a launch; a second query may occur after the CPU pool returns. |
+| Commit graph submission | One per `commit()` | Uses the same `cs_` and a completion event. SYCL takes the synchronous branch and drains `cs_` before commit returns (`verify.cpp:1630–1674`). |
+
+These counts do not imply that the layer waits consume `L` times a fixed latency. Event completion may already have occurred while other host work runs; copy queues can make progress while CPU experts or shared work execute. Conversely, a blocking sync can expose remaining device or copy service time. Source timers (`ms_wait`, `ms_pool`, `ms_commit`) are broad stage intervals and do not separate driver submission, queue service, device wait, callback service, or cross-queue retirement. The optional profiling stamps are not invoked here as a measurement, and prior Main correction says compatibility barriers/profile instrumentation can perturb queue scheduling.
+
+## Why the same-queue dependency candidate preserves the proven ordering
+
+`GraphExec` stores a mutex and its last submission event. Under that mutex, `launch_graph()` submits `h.ext_oneapi_graph(graph->value)` and unconditionally calls `h.depends_on(*graph->last)` if `last` exists; then it stores the new submission event and rebinds captured event states and any requested completion event to it (`compat.cpp:30–46, 473–510`). The graph mutex prevents concurrent host submissions to one executable graph. All verifier launches use `cs_`: the initial and next window segments, `launch_work()`, and commit (`verify.cpp:1268–1272, 1385–1390, 1560–1565, 1638–1644`). `Runtime::make_queue()` and `queue_for()` enforce in-order queues (`runtime.cpp:56–68`, `launch.hpp:45–54`); the SYCL runtime also creates its compute queue in-order (`runtime.cpp:36–48`).
+
+Khronos documents an in-order queue as executing submitted commands in submission order, with the effect of an implicit dependency on the prior command from that queue. Intel's graph extension likewise says a submitted graph on an in-order queue is ordered with other command groups submitted to that queue, and returns an event representing the graph command. These contracts support omitting only the duplicate explicit edge for a repeated launch on the same verified in-order queue. They do not order different queues. So an implementation must keep the explicit dependency whenever queue identity differs or is not provably the same. It must still store the new event, preserve the mutex, update event handles, and propagate submit/wait failures through the existing path. This candidate does not address the separate sticky-error teardown concern described by R542, and it must not weaken that error path.
+
+The option to coalesce separate per-layer segments into a single graph is rejected for this scope. Between segments, host code reads verifier outputs, dispatches the synchronous CPU expert pool, writes plan/flags, and may enqueue copies/callbacks. Existing waits and mapped-flag protocols are coupled to those host handoffs. A larger graph would require a redesigned handoff protocol and a fresh lifetime/error proof; it is not a safe submit-count shortcut supported by this review. Also rejected: removing per-layer waits, moving copy-stream retirement without proving transient staging and `FlagSet` callback leases, or bypassing `Runtime::check()` around event completion; those changes alter currently checked host-visible completion/error semantics.
+
+## Version and option boundary
+
+This review does not read the running process environment or closed/current run receipts. Current source explicitly reads `STRATA_SYCL_VERIFY_NATIVE_CAPTURE`, whose unset default is `small` and whose value `0` chooses the ordinary graph recording path. Source also contains a separate `STRATA_SYCL_PREFILL_SAME_QUEUE` control in prefill code; it does not set verifier queue topology. The task supplied the actual configuration above. `cmake/sycl_backend.cmake` has notes tied to oneAPI DPC++ 2026.1/2026.1.1, and dated repository operation notes identify DPC++ 2026.1.1 and Level Zero driver `1.17.39395+14`; these are provenance clues, not proof that this exact serving process loaded those binaries. Intel graph docs on the moving `sycl` branch are current primary references, not an environment pin. Graph is an experimental oneAPI extension, and exact backend/driver behavior still needs the pinned installed compiler/runtime and a separately authorized validation. No legacy `SYCL_PI_*`/`SYCL_PI_LEVEL_ZERO_*` environment option was assumed, and no instrumentation/environment option is proposed.
+
+## Prior scope and disposition
+
+R542 already established the per-layer graph segmentation, completion-event rebinding/reuse, graph mutex/last-event ordering, copy queue, and healthy-path host/storage leases; R542 also recorded conditional sticky-error teardown limits. This report reuses those corrections rather than recasting them as new improvements. The sole candidate is same-queue elision of an already redundant explicit graph dependency; it is source/literature only, unimplemented, uncompiled, untested, unmeasured, and unadopted. If pursued after Main's suite, compare the same-queue path against unchanged behavior, exercise different-queue replay and injected submission/async failures, preserve the returned completion event and all host leases, and measure unprofiled matched decode plus submit-side observations. Until then, no performance or bottleneck claim follows.
+
+## Reviewed source identity
+
+SHA-256 of the source bytes reviewed:
+
+```text
+640e0270be833ddff0218331a7db18043605af3ced2682787f6b06abdcf6316c  src/core/verify.cpp
+225e2021b5ce67b3bb58f116a4a15cd5d592a33dbdf2c9837940a3e89155dca7  src/sycl/compat.cpp
+d571ad74ebfafc2523e129fe29858d61058bf0c26ae686834ea294105acb5e2f  src/sycl/runtime.cpp
+e3ca2a964806270e1d72862f979b6e262fb17a925a6027e7534c81dc45418871  src/program/generate.cpp
+9c5aaf14e4b92232d4dcd4e2e68071201d436d287a9615088a9428d88f53b1ce  include/strata/sycl/launch.hpp
+1f8f43ed9f7278ce260a2681b70f3dbfa18b07ff87a90ddb520a60406fb92787  include/strata/core/verify.hpp
+39b71df35e317851bd16b383027f088be159be2e0d602c592e8ddab30fe7e26a  include/strata/sycl/compat/cuda_runtime.h
+9d18df97b0bf3cf20f0b45245ce214d018bc9c98e10f85898cdc6d6df7adf945  cmake/sycl_backend.cmake
+d71a540ace194225e9037602977192338a2ee74d983bf88ce4a34177dcb2506a  docs/SYCL_STATUS_2026-10-03.md
+a17b5a8018298497ec516023f7a895c6adb8030222375c91db6c91b9ab298935  docs/sycl/B570_OPERATIONS_PROBE.txt
+```
+
+## Primary references
+
+- Khronos [SYCL queue reference](https://github.khronos.org/SYCL_Reference/iface/queue.html): in-order queue submission order and implicit ordering with prior commands on that queue.
+- Khronos [SYCL event reference](https://github.khronos.org/SYCL_Reference/iface/event.html): `wait_and_throw()` completion and asynchronous-error delivery through the associated handler.
+- Intel LLVM [oneAPI Command Graph extension specification](https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/experimental/sycl_ext_oneapi_graph.asciidoc): graph submission ordering on queues, returned submission event, extension behavior and backend caveats.
+- Intel oneAPI DPC++ [SYCL Graph Usage Guide](https://intel.github.io/llvm/syclgraph/SYCLGraphUsageGuide.html): recommended graph usage and replay context.
+- Local prior correction: `research/research-sycl-graph-callback-lifetimes-round542-v1.txt` and `research-index.json` in this census.
+
+No source was changed, no API count was timed, and no runtime or performance result was produced.

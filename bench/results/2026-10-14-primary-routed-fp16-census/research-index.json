@@ -171,6 +171,24 @@
       "sha256": "054863403bab86f9d810067cac16b13926c1d619005ce8c9bf015df0347da0bd",
       "status": "source-only fix review; CPU tests are separately recorded; GPU validation pending",
       "direct_canonical_write": true
+    },
+    {
+      "round": 545,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research/research-verifier-submission-budget-round545-v1.txt",
+      "sha256": "66c58b3f840f526ae251bcf2cb12f9424192148ccd594dcde800fd9c581fa3a4",
+      "status": "source/literature-only; Main review pending measurement; no performance adoption",
+      "direct_canonical_write": true
+    },
+    {
+      "round": 546,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research/research-zen3-lossless-weight-layout-round546-v1.txt",
+      "sha256": "9274ceeeb0df0815a65035ed15b71ea3eab9271a02e3a3d4b8176cbfa3021569",
+      "status": "source/literature-only; Main review pending measurement; no performance adoption",
+      "direct_canonical_write": true
     }
   ],
   "no_intervention_until_final": true,
@@ -204,9 +222,28 @@
     "R540 Dm halving alone does not lower primary max-region; y removal needs actual nullable/span API adaptation. bytes_needed counts unused xn but also omits grs: Main proposal reconciles both, preserving slack and actual carve. No memory-fit/speed adoption.",
     "R54024prompt/1pp quality example is screening only: binary task resolution4.167pp and zero-discordance95% one-sided upper~11.73% under independent trials; >=299 zero harmful pairs needed for1% bound under that assumption. Do not claim negligible loss from24prompts or correlated token counts.",
     "R541 draft upload lifetime gap independently traced through non-null stream SYCL GEMM/MMQ/KV; no implicit completion before host reuse. Main safety-interrupted suite; native/server0/fault0, original incomplete receipts retained. Immutable-source fix and validation now required before GPU replay.",
-    "R542 native_capture=0 selects normal graph recording, not disabled graphs; prefill samequeue does not define Verifier queue topology. Sticky-error callback teardown hazard is conditional and is not an initial/historical GPU-fault attribution. Draft upload guard does not qualify all Verifier cleanup."
+    "R542 native_capture=0 selects normal graph recording, not disabled graphs; prefill samequeue does not define Verifier queue topology. Sticky-error callback teardown hazard is conditional and is not an initial/historical GPU-fault attribution. Draft upload guard does not qualify all Verifier cleanup.",
+    "R545 same-queue dependency elision removes only a descriptor dependency, not graph launches/events/waits. Stable queue identity must be preserved; static API counts are not host submission timing or bottleneck proof.",
+    "R546 gate/up have different weight codes: their decoded weights cannot be shared merely because the expert is the same. NT2..4 already reuse each decoded block. Any cache needs weight-side/block/model identity and measured NT1 recurrence/physical traffic."
   ],
-  "pending_reports": [],
+  "pending_reports": [
+    {
+      "round": 547,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research/research-mtp-prefill-vram-lifetimes-round547-v1.txt",
+      "task": "/root/research_hardware_model_budget_r535",
+      "scope": "Current MTP prefill+fallback versus decode-only weights/head/arena/graphs; immutable-source and retire/rebuild obligations; no runtime work"
+    },
+    {
+      "round": 548,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research/research-target-decode-vram-retirement-round548-v1.txt",
+      "task": "/root/research_existing_decode_ledgers_r536",
+      "scope": "Current target decode-only Verifier/SessionLoopScratch/NativeHitGraphs resources and safe partial retirement; excludes MtpDrafter; no runtime work"
+    }
+  ],
   "implementation_proposals": [
     {
       "model": "gpt-6.1-sol",
