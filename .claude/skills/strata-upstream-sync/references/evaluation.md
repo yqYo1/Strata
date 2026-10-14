@@ -35,10 +35,12 @@ prefill と decode の最良構成が別ならその違いも記録し、両者�
 
 ユーザー指定の長いdecode評価には、このforkの拡張 `./bench.sh --long --long-generation --runs 3`
 も両側へ同じclientで使う。Nikoの無変更標準結果と、変更したbenchmarkの追加項目を識別する。
-追加項目は実入力32768以上、thinking込みの実生成1024..1152 tokens、fresh prefixを確認する。
+追加項目は実入力32768以上、thinking込みの実生成1024以上、fresh prefixを確認する。
 regular-codeとvaried-proseはMTPが強い/弱い候補であり、名前だけで分類しない。
-v1ではどちらも全量thinkingとなり分類できなかったため、v2は両方thinkingOFFの
-規則的code/多様な日本語散文を使う。workload版とthinking条件を混ぜて比較しない。
+**thinkingは有効にする**。1Kは出力の例で、上限ではない。v1は1152全部がthinkingとなり、
+v2のthinkingOFF案はユーザー意図に合わず未実行で撤回した。v3は規則的code/多様な日本語散文、
+上限8192を使い、thinking後の本文も512文字以上出たことを確認する（文字数をtoken数と呼ばない）。
+全量thinkingなら上限/context/課題を見直す。入力と出力余地を確認し、workload版を混ぜない。
 3回以上の有効sample、各回256以上のoffered、受理率の各回60%以上/40%以下で確認する。
 分類が確認できなければ未完了と記録し、速度に基づいて都合の良いpromptを選び直さない。
 全個別値・request/output hash・終了理由・実生成数・draft countsを残し、比率は合計countsから

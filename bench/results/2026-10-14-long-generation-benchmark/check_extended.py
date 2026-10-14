@@ -76,7 +76,7 @@ def main():
             engine_silence_s=480, parallel=1, open_browser=False)
         (O/'config.json').write_text(json.dumps(config,indent=2)+'\n')
         (O/'plan.json').write_text(json.dumps(dict(port=18096,url='http://127.0.0.1:18096',runs=runs,
-            benchmark_options=options,bench_timeout_seconds=3600 if mode=='screen' else 10800),indent=2)+'\n')
+            benchmark_options=options,bench_timeout_seconds=9000 if mode=='screen' else 25200),indent=2)+'\n')
         clients = ['bench.sh','tools/strata_bench.py','tools/long_generation_bench.py','tools/ab_engine.py',
                    'tools/agent_turns_bench.py','tools/serve_load.py']
         recipes = [Path(__file__),D/'run_server_job.py',WRAPPER]
@@ -88,7 +88,7 @@ def main():
             model_identity=stock['model_identity'],pack_metadata_sha256=stock['pack_metadata_sha256'],
             MTP_metadata_sha256=stock['MTP_metadata_sha256'],
             boot_id=Path('/proc/sys/kernel/random/boot_id').read_text().strip(),
-            limits=dict(wall_seconds=3900 if mode=='screen' else 11400,raw_text_bytes=64<<20,RSS_bytes=88<<30,job_bytes=1<<30),
+            limits=dict(wall_seconds=9300 if mode=='screen' else 25800,raw_text_bytes=64<<20,RSS_bytes=88<<30,job_bytes=1<<30),
             performance_qualified=False,quality_qualified=False,physical_262144_qualified=False,restore_qualified=False,adopted=False,
             scope='Extended Niko community client; actual long output/MTP screening or full suite, warm server requests in one owned process. No inference change, profiler, reset or service change.')
         def persist():

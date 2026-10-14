@@ -15,7 +15,7 @@ real HTTP API, three runs each, medians reported:
                 tokens the conversation cache reused, how many had to be read again, time to first token per turn
   5. --clients N   N requests at once (the server needs --batch for them to run together): total tok/s, p50/p95 latency
   6. --long 32K    the same prompt test at about 32,768 tokens
-  7. --long-generation  two >=32K-input, 1024..1152-output MTP workloads (v2 thinking off)
+  7. --long-generation  two >=32K-input, >=1024-output MTP workloads (up to 8192, thinking on)
 
 Speeds are the engine's own timings (the `timings` of the answer: prompt_per_second, predicted_per_second); time to first
 token and latency are measured by this client.  Thinking is off for the suite (--think turns it on), so the answers are
@@ -299,6 +299,7 @@ class Suite:
                         pooled_acceptance_rate=accepted / offered if offered else None)
         self.out["long_generation"] = {"workload_version": lg.WORKLOAD_VERSION,
             "minimum_generated_tokens": lg.MIN_OUTPUT_TOKENS, "max_tokens": lg.MAX_OUTPUT_TOKENS,
+            "minimum_body_chars": lg.MIN_BODY_CHARS,
             "minimum_input_tokens": lg.MIN_INPUT_TOKENS, "target_input_tokens": lg.TARGET_INPUT_TOKENS,
             "thinking": lg.THINKING, "reasoning_budget_tokens": 0, "temperature": 0,
             "lifecycle": "warm server; alternating workload order; fresh request prefixes",
@@ -875,6 +876,7 @@ def render_readme(res: dict) -> str:
               f"Modified upstream benchmark, workload v{gen['workload_version']}. Each response must report at least "
               f"{gen['minimum_input_tokens']} input tokens, no prefix reuse, and "
               f"{gen['minimum_generated_tokens']}..{gen['max_tokens']} actual completion tokens including thinking. "
+              f"At least {gen.get('minimum_body_chars', 0)} characters of answer body must appear after thinking. "
               f"Thinking is explicitly {gen['thinking']}; reasoning_budget_tokens=0; temperature=0. "
               "Workloads alternate order in one warm server. Early stops, absent usage/engine clocks and insufficient "
               "draft counts remain recorded and are ineligible.", "",
@@ -970,7 +972,7 @@ def main(argv=None) -> int:
     ap.add_argument("--runs", type=int, default=3, help="runs per test (default 3)")
     ap.add_argument("--clients", type=int, default=0, metavar="N", help="also send N requests at once")
     ap.add_argument("--long", action="store_true", help="also a prompt of about 32,768 tokens")
-    ap.add_argument("--long-generation", action="store_true", help="also two 32K-input, 1024..1152-output MTP workloads (thinking included)")
+    ap.add_argument("--long-generation", action="store_true", help="also two 32K-input, >=1K-output MTP workloads (thinking on, up to 8K output)")
     ap.add_argument("--long-generation-only", action="store_true", help="run only the new long-generation workloads and warm-up")
     ap.add_argument("--think", action="store_true", help="leave thinking on (the default suite turns it off)")
     ap.add_argument("--out", help="where to write the results folder (default: bench/results)")

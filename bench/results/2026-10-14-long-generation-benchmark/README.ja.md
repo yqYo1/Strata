@@ -35,3 +35,9 @@ constraint-reasoning実33322入力/1152生成、7.1t/s、717/1311（54.69%）。
 両方content0文字で全量thinkingだった。**MTP強/弱は未確認**で元結果を保持する。
 v2はthinkingOFFのcodeと多様な日本語散文でworkloadを分け、同じgreedy/受理率基準で
 測る。数学的品質・MTP速度効果・推論採用には数えない。[全個別値](screen-v1.json)。
+
+ユーザー修正により**v2のthinkingOFF案は未実行で撤回**した。現行v3はthinkingONを
+維持し、max output8192、実生成1024以上、本文512文字以上を確認する。1Kは上限ではない。
+context262144には約33K入力と8K生成の余地があり、満杯になるまでの検証とは分ける。
+全量thinkingで終了した場合は未完了として保存し、有限の出力/context予算を再検討する。
+GPU nativeは同じ68da0262、greedy、MTP4。新しいsampling kernel/精度/queue経路は使わない。

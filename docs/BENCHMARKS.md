@@ -20,15 +20,19 @@ It offers tool definitions but does not execute tools. Keep per-turn
 read/reused tokens, timings and MTP counters alongside session totals. Cache
 reuse depends on the server configuration; it is measured, not assumed.
 
-The new workloads request approximately 33K input tokens and 1,152 output
+The new workloads request approximately 33K input tokens and up to 8,192 output
 tokens. An eligible sample needs **at least 32,768 actual input tokens and
-1,024..1,152 actual generated tokens including thinking**, no reused prefix,
+at least 1,024 actual generated tokens including thinking**, no reused prefix,
 normal SSE completion, engine decode timings and at least 256 offered MTP
-drafts. The count includes thinking if present. **Workload v2 disables thinking
-for both cases**, so it measures the requested code/prose directly. The v1
-thinking-on pilot used its whole output budget on thought and failed to separate
-MTP regimes. Keep its result; do not compare different workload versions as an
-engine optimization. This suite does not require a complete answer at the cap.
+drafts. **Thinking stays enabled**, as in actual use. The v1 pilot spent its
+entire 1,152-token budget on thought. The v2 thinking-off proposal was withdrawn
+before GPU execution at the user's correction. Workload v3 increases the cap
+and requires at least 512 characters of actual answer body after thinking;
+this is a body-presence check, not a character-to-token conversion. The total
+completion count still includes thought. If thought again consumes the cap,
+increase the finite output/context budget or revise the task. Do not compare
+different workload versions as an engine optimization. A complete answer at
+the cap is not required by this speed test.
 
 - `regular-code`: a long Python module with regularly formatted individual tests.
 - `varied-prose`: an original Japanese story with distinct viewpoints and vocabulary.

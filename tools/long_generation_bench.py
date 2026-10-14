@@ -4,12 +4,13 @@ from __future__ import annotations
 import math
 
 MIN_OUTPUT_TOKENS = 1024
-MAX_OUTPUT_TOKENS = 1152
+MAX_OUTPUT_TOKENS = 8192
+MIN_BODY_CHARS = 512  # presence/substance check, deliberately not a token-count estimate
 MIN_INPUT_TOKENS = 32768
 TARGET_INPUT_TOKENS = 33792  # calibration is approximate; check actual usage afterwards
 MIN_DRAFTS = 256
-WORKLOAD_VERSION = 2
-THINKING = False
+WORKLOAD_VERSION = 3
+THINKING = True
 
 WORKLOADS = {
     "regular-code": {
@@ -49,7 +50,9 @@ def sample_eligibility(raw, sample, minimum=MIN_OUTPUT_TOKENS):
     if not sample.get("ok") or not raw.get("done_received") or raw.get("finish_reason") not in ("stop", "length"):
         reasons.append("response did not finish normally")
     if type(generated) is not int or not minimum <= generated <= MAX_OUTPUT_TOKENS:
-        reasons.append("actual completion usage is outside the 1024..1152 token band")
+        reasons.append(f"actual completion usage is outside {minimum}..{MAX_OUTPUT_TOKENS} tokens")
+    if len(raw.get("text") or "") < MIN_BODY_CHARS:
+        reasons.append("thinking did not leave at least 512 characters of answer body")
     prompt = usage.get("prompt_tokens")
     if type(prompt) is not int or prompt < MIN_INPUT_TOKENS:
         reasons.append("actual input is below 32768 tokens or unreported")

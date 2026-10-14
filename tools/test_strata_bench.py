@@ -9,7 +9,7 @@ import strata_bench as bench
 
 
 def response(offered=1600, accepted=1200, generated=1152):
-    return {"first": .1, "total": 2, "text": "print(1)", "reasoning_text": "reasoning",
+    return {"first": .1, "total": 2, "text": "print(1)\n"*100, "reasoning_text": "reasoning",
             "pieces": 2, "finish_reason": "length", "done_received": True,
             "request_sha256": "fixture", "err": None,
             "usage": {"prompt_tokens": 33000, "completion_tokens": generated,
@@ -22,28 +22,28 @@ def response(offered=1600, accepted=1200, generated=1152):
 class BenchmarkTest(unittest.TestCase):
     def test_streamed_reasoning_uses_completion_usage(self):
         events = [{"choices": [{"delta": {"reasoning_content": "thinking"}}]},
-                  {"choices": [{"delta": {"content": "answer"}}]},
+                  {"choices": [{"delta": {"content": "answer "*100}}]},
                   {"choices": [{"delta": {}, "finish_reason": "length"}],
                    "usage": response()["usage"], "timings": response()["timings"]}]
         wire = b"".join(b"data: " + json.dumps(e).encode() + b"\n\n" for e in events) + b"data: [DONE]\n\n"
         with patch.object(bench.urllib.request, "urlopen", return_value=io.BytesIO(wire)) as request:
-            raw = bench.chat("http://localhost", "", [{"role": "user", "content": "task"}], 1152, True,
+            raw = bench.chat("http://localhost", "", [{"role": "user", "content": "task"}], lg.MAX_OUTPUT_TOKENS, True,
                              request_overrides={"chat_template_kwargs": {"enable_thinking": True},
                                                 "reasoning_budget_tokens": 0})
         body = json.loads(request.call_args.args[0].data)
-        self.assertEqual(body["max_tokens"], 1152)
+        self.assertEqual(body["max_tokens"], lg.MAX_OUTPUT_TOKENS)
         self.assertTrue(body["chat_template_kwargs"]["enable_thinking"])
-        self.assertEqual(raw["text"], "answer")
+        self.assertEqual(raw["text"], "answer "*100)
         self.assertEqual(raw["reasoning_text"], "thinking")
         self.assertEqual(bench.digest(raw)["generated_tokens"], 1152)
         self.assertTrue(lg.sample_eligibility(raw, bench.digest(raw))["eligible"])
 
     def test_short_missing_usage_counters_and_truncated_stream_are_ineligible(self):
-        for change in ({"usage": {}}, {"done_received": False}, {"finish_reason": "tool_calls"}):
+        for change in ({"usage": {}}, {"done_received": False}, {"finish_reason": "tool_calls"}, {"text": ""}):
             raw = response()
             raw.update(change)
             self.assertFalse(lg.sample_eligibility(raw, bench.digest(raw))["eligible"])
-        for generated in (0, 128, 1023, 1153):
+        for generated in (0, 128, 1023, lg.MAX_OUTPUT_TOKENS+1):
             raw = response(generated=generated)
             self.assertFalse(lg.sample_eligibility(raw, bench.digest(raw))["eligible"])
         for offered, accepted in ((0, 0), (200, 100), (1000, 1001), (None, None)):
