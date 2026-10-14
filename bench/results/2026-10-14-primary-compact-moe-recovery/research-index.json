@@ -1,0 +1,44 @@
+{
+  "reports": [
+    {
+      "round": 508,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research/research-compact-moe-runtime-validation-round508-v1.txt",
+      "sha256": "40a67d08765cc8d6d725028b4ef4a6715bb63b10dc512a1deb6c5bb1fa4744f7",
+      "original_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-compact-moe-runtime-validation-round508-v1.txt"
+    },
+    {
+      "round": 509,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research/research-prefill-skip-fix-review-round509-v1.txt",
+      "sha256": "46dd88ee8183866d898c0f1947c2f8dccfbaac09216c12f616fe2085b889fd11",
+      "original_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-prefill-skip-fix-review-round509-v1.txt"
+    },
+    {
+      "round": 510,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research/research-fused-hc-compact-restoration-round510-v1.txt",
+      "sha256": "7d18a1b51d0a02dbd850defd025969249a8c11631b6832c2afa47b7bd982a1e9",
+      "original_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-fused-hc-compact-restoration-round510-v1.txt"
+    }
+  ],
+  "previous_registry": "../2026-10-14-pre-Xe-model-compare/research-index.json",
+  "no_intervention_until_final": true,
+  "main_owns_build_test_GPU": true,
+  "main_corrections": [
+    "R508 global copy old/current bothalias is false:oldprivate,currentalias.",
+    "R508 alternative262143+1 cannot replace userrequiredactual262144input+0output.",
+    "R509 additionalcopiedwait for everyprivate-queue skip notproved:skiphasnodevicereader andorderedcopy queuealreadyserializes writes. Privatequeue unadopted.",
+    "R510 unsafe mixed/bo alias rationale lacksactualtwo-HC-half proof;implementationproposal keepsmixeddistinct anddoesnotclaimthatcausalhazard.",
+    "R508 originalreportEOFblank retainedbyte-identical despitegitdiff whitespace warning;source changespassedcodechecks."
+  ],
+  "implementation": {
+    "model": "gpt-6.1-sol",
+    "scope": "fused-HC artifactonly,no product edits/build/test/GPU",
+    "path": "fused-hc-proposal/report.md",
+    "adopted": false
+  }
+}

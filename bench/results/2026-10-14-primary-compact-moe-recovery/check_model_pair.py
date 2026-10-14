@@ -67,7 +67,7 @@ def main():
     assert mode in ['compact4096', 'compact-tail64', 'threaded-mmq64']
     chunk = 4096 if mode == 'compact4096' else 64
     threaded = mode == 'threaded-mmq64'
-    O = B / ('main-primary-' + mode + '-pair-root-v1')
+    O = B / ('main-primary-' + mode + '-pair-root-v2')
     build = json.loads((BUILD / 'record.json').read_text())
     assert build['passed'] and build['complete'] and not build['active']
     assert sha(OWNER) == 'a29d8257eecc77c4ad9ae6671d092b56f4c09a35c4247c125fed3a8c8bc1f95f'
@@ -168,7 +168,10 @@ def main():
                 assert relay['passed'] and not relay['error_counts'] and not relay['oversized_lines'] and not relay.get('selected_cap_reached')
                 assert sampler['passed'] and sampler['samples'] > 0
                 text = err.read_text()
-                assert 'strata SYCL shutdown: all queues completed' in text
+                # Standalone CLI does not emit the old server shutdown marker.
+                # Its compat frees wait_all(), and Allocation checked_cleanup fail-stops
+                # if completion fails; native normal0 and the complete relay remain gates.
+                assert 'Strata SYCL cleanup:' not in text, 'checked allocation completion failed'
                 residual(arm / 'prefill-R.bin')
                 floats(arm / 'first-logits.bin')
                 effective = re.findall(r'FP16 MoE compact requested=(\d+) effective=(\d+), chunk=(\d+), scratch rows=(\d+), accounted=(\d+), shared region=(\d+) bytes', text)

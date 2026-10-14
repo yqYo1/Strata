@@ -51,3 +51,42 @@ fresh outputが必要で、閉じたrunを上書きしない。成功raw全文�
 commit後にretireする。現在のresidual/logit capturesはoff/on comparator consumer、16 MiB/pair、
 次reviewはpair比較完了。変更前nativeは128 MiB以内、consumerは同条件regression control、
 比較確定後にretireする。新buildの予算4 GiB、旧1eb fixture/buildは変更していない。
+
+## 実行済みの数値・skip確認
+
+元のv1失敗を保持したまま、検証器を修正し、fresh v2でOFF/ONを両方再実行した。
+全armでnative/owner正常0、API/checked-cleanup errorなし、fault0、dumpなし、同じboot。
+129 batched inputと1 output、context262144の合成token診断であり、言語品質・長文速度の測定ではない。
+
+| 確認 | 実chunk | 結果 |
+| --- | --- | --- |
+| FP16 compact OFF/ON、capacity4096 | 129 | residual30720要素、first logits248320要素、finite・bit一致 |
+| FP16 compact OFF/ON、capacity64 | 64/64/1 | 同じ比較がfinite・bit一致、末尾1行を処理 |
+| MMQ inline/threaded、ring16、stream-min16 | 64/64/1 | 同じ比較がfinite・bit一致、修正対象を実行 |
+
+threadedの2大chunkで実seq各24448、skip19764/20747、open group直後のskip3449/2815を観測。
+inline/threadedで同じcountsだった。event-enabled、group-gatherを含み、R8の未実行経路を
+通った証拠になった。source HB proofと機能確認であり、TSanや全contextの合格ではない。
+小さいstream-min overrideによる大量転送・診断時間は標準速度に使わない。
+
+capacity4096のaccounted bytesは2024214528→1662831872、361382656 bytes
+（344.641 MiB）減った。shared regionは968510976→607128320。
+MoE payload405 MiBの縮小より小さいのは、他phaseとのmaxが必要量を決めるため。
+capacity64では他phaseが最大でaccounted/sharedは変わらない。allocator accountingであり、
+driver内部cacheを含むruntime peak VRAMの差とは区別する。
+
+OFF/ON間のlogit範囲とargmaxも一致。chunk4096のargmax409、chunk64のargmax1385であり、
+**異なるchunk構成の出力一致を主張していない**。現在の各chunk referenceに対するlayout-only比較。
+初回生成1tokenなのでCLIのMTP表示には0draft rounds由来の`-nan ms/round`があったが、
+保存した全logit/residualはfinite。モデルのNaNとは分類しない。
+[全個別確認](numerical-results.json)、[元receipt](receipts-index.json)。
+
+R510と別Solの[fused HC scratch案](fused-hc-proposal/report.md)は未適用・未build・未実行。
+normal fused GRを維持し、carried xn16/grs/inj等を残したままlo/lo16/gatedをphase regionへ移す。
+mixedを別配置にするが、R510の『later MoEだからmixed/bo aliasがunsafe』は証明されていない。
+既存unfused限定のHC案を無理に有効にして、遅い演算経路へ変えることはしていない。
+
+正式比較のrecipeは`check_stock.py 0` / `check_stock.py 1`。
+同じ新nativeのFP16経路、MoE compactだけOFF/ON、無変更Niko bench.sh long3、quiet、
+actual32049入力/24出力を使う。先の175.3 t/sの旧binary結果を新OFFの代わりにしない。
+性能・品質・actual262144入力/0出力・RESTORE・borrowed relayoutの採用条件は未完了。
