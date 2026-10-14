@@ -31,6 +31,22 @@
       "path": "research-pr6-measurement-provenance-round560-v1.txt",
       "status": "FINAL received; Main initial source/provenance review complete with corrections; full contract/PUBLIC log audit pending",
       "sha256": "7848c740127b741d23dfabd306f1852513fa2ab959af5f0a1925aadbbdc07807"
+    },
+    {
+      "round": 561,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-qsa-layout-port-round561-v1.txt",
+      "status": "FINAL received; Main source review with corrections recorded; GPU/build unqualified",
+      "sha256": "dbca761a2b7f98e2a498ffa286e8d2f71fbfd7f150d1a7b6021515a75bcaaae4"
+    },
+    {
+      "round": 562,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-layer-major-streamed-kv-contract-round562-v1.txt",
+      "status": "FINAL received; Main source review with corrections recorded; GPU/build unqualified",
+      "sha256": "aa74852889338cc7d12919e88827230f28c83ea32e7fb71e5cb0de4fc26a2914"
     }
   ],
   "main_initial_findings": [
@@ -38,5 +54,27 @@
     "Original645.85 PP and later449.7 full-context/MTP measures need separate source/config reconciliation; different protocol does not justify discarding the old improvement."
   ],
   "next": "Main detailed source/PUBLIC log audit, safe component adaptation, serial CPU/build/GPU gates and matched >=32K/agent/long thinking measurements. No old GPU replay before safety review.",
-  "main_review": "main-review-round559-560.ja.md"
+  "main_review": "main-review-round559-560.ja.md",
+  "subsequent_main_review": "main-review-round561-562.ja.md",
+  "public_history_reverification": "public-history-reverification.json",
+  "implementation_candidate": {
+    "agent": "gpt-6.1-sol",
+    "report": "qsa-layout-recovery-v1/implementation.txt",
+    "main_review": "qsa-layout-recovery-v1/main-review.ja.md",
+    "status": "Received and Main reviewed; default OFF; Main added host-only mode, dense/ABBA microbench and opt-in host route counts; build/tests/GPU not yet run"
+  },
+  "parallel_research_in_progress": [
+    {
+      "round": 563,
+      "model": "gpt-6-luna",
+      "scope": "old/current FP16 MoE GEMM Down source differences",
+      "report": "research-own-prefill-gemm-down-gap-round563-v1.txt"
+    },
+    {
+      "round": 564,
+      "model": "gpt-6-luna",
+      "scope": "current matrix prompt attention geometry/work vs own donor",
+      "report": "research-current-qsa-matrix-work-round564-v1.txt"
+    }
+  ]
 }

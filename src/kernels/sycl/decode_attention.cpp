@@ -46,7 +46,7 @@ float load(const QsaAttnPools &p, bool value, size_t row, int dim) {
   }
   return 0;
 }
-template <int Format>
+template <int Format, bool TransposeQ>
 void launch(const float *query, QsaAttnPools p, const int32_t *ids,
             const int32_t *steps, int64_t cap, QsaShapes s, float *scratch,
             float *attn, int64_t nq, void *stream) {
@@ -84,8 +84,14 @@ void launch(const float *query, QsaAttnPools p, const int32_t *ids,
               pa[(slot + h) * HD + t] = 0;
             return;
           }
-          for (int i = t; i < G * HD; i += WG)
-            sq[i] = query[(batch * s.n_head + kvh * G) * HD + i];
+          for (int i = t; i < G * HD; i += WG) {
+            const int dim = i % HD;
+            // Invert this permutation at scoring without changing K lane ownership.
+            const int local = TransposeQ
+                                  ? (i / HD) * HD + (dim % 8) * 32 + dim / 8
+                                  : i;
+            sq[local] = query[(batch * s.n_head + kvh * G) * HD + i];
+          }
           if (t < CHUNK) {
             int64_t row = -1;
             if (t < here) {
@@ -109,9 +115,10 @@ void launch(const float *query, QsaAttnPools p, const int32_t *ids,
             for (int j = 0; j < 8; ++j)
               k[j] = load<Format>(p, false, size_t(rows[cell]), lane * 8 + j);
             for (int h = 0; h < G; ++h) {
-              float dot = k[0] * sq[h * HD + lane * 8];
+              float dot = k[0] * sq[h * HD + (TransposeQ ? lane : lane * 8)];
               for (int j = 1; j < 8; ++j)
-                dot = sycl::fma(k[j], sq[h * HD + lane * 8 + j], dot);
+                dot = sycl::fma(
+                    k[j], sq[h * HD + (TransposeQ ? lane + j * 32 : lane * 8 + j)], dot);
               dot = sum32(sg, dot);
               if (!lane)
                 sp[h * CHUNK + cell] = dot * .0625f;
@@ -179,10 +186,12 @@ uint64_t qsa_decode_attn_scratch_floats(int64_t cap, const QsaShapes &s) {
     throw std::invalid_argument("split attention scratch overflow");
   return n * (HD + 2) + 64;
 }
-void qsa_decode_attn_batch(const float *q, const QsaAttnPools &p,
+void qsa_decode_attn_batch_layout(const float *q, const QsaAttnPools &p,
                            const int32_t *ids, const int32_t *steps,
                            int64_t cap, const QsaShapes &s, float *scratch,
-                           float *attn, int64_t nq, void *stream) {
+                           float *attn, int64_t nq, int layout, void *stream) {
+  if (layout != 0 && layout != 1)
+    throw std::invalid_argument("unsupported SYCL split attention Q layout");
   geometry(cap, s);
   if (nq < 0 || nq > 65535)
     throw std::invalid_argument("invalid split attention batch");
@@ -224,18 +233,36 @@ void qsa_decode_attn_batch(const float *q, const QsaAttnPools &p,
     input(p.v_q4);
   switch (mode) {
   case 0:
-    launch<0>(q, p, ids, steps, cap, s, scratch, attn, nq, stream);
+    if (layout == 1)
+      launch<0, true>(q, p, ids, steps, cap, s, scratch, attn, nq, stream);
+    else
+      launch<0, false>(q, p, ids, steps, cap, s, scratch, attn, nq, stream);
     break;
   case 1:
-    launch<1>(q, p, ids, steps, cap, s, scratch, attn, nq, stream);
+    if (layout == 1)
+      launch<1, true>(q, p, ids, steps, cap, s, scratch, attn, nq, stream);
+    else
+      launch<1, false>(q, p, ids, steps, cap, s, scratch, attn, nq, stream);
     break;
   case 2:
-    launch<2>(q, p, ids, steps, cap, s, scratch, attn, nq, stream);
+    if (layout == 1)
+      launch<2, true>(q, p, ids, steps, cap, s, scratch, attn, nq, stream);
+    else
+      launch<2, false>(q, p, ids, steps, cap, s, scratch, attn, nq, stream);
     break;
   case 3:
-    launch<3>(q, p, ids, steps, cap, s, scratch, attn, nq, stream);
+    if (layout == 1)
+      launch<3, true>(q, p, ids, steps, cap, s, scratch, attn, nq, stream);
+    else
+      launch<3, false>(q, p, ids, steps, cap, s, scratch, attn, nq, stream);
     break;
   }
+}
+void qsa_decode_attn_batch(const float *q, const QsaAttnPools &p,
+                           const int32_t *ids, const int32_t *steps,
+                           int64_t cap, const QsaShapes &s, float *scratch,
+                           float *attn, int64_t nq, void *stream) {
+  qsa_decode_attn_batch_layout(q, p, ids, steps, cap, s, scratch, attn, nq, 0, stream);
 }
 void qsa_decode_attn_step(const float *q, const QsaAttnPools &p,
                           const int32_t *ids, const int32_t *step, int64_t cap,

@@ -682,9 +682,30 @@ uint64_t moe_set_bytes(size_t T, int64_t n_expert, bool fused) {
 }
 }
 
+namespace {
+int prefill_fallback_attn_layout() {
+    static const int layout = [] {
+        const char* value = std::getenv("STRATA_PREFILL_ATTN_LAYOUT");
+        if (!value) return 0;
+#if defined(STRATA_ENABLE_SYCL)
+        const int effective = value[0] == '1' && value[1] == '\0' ? 1 : 0;
+#else
+        const int effective = 0;
+#endif
+        std::fprintf(stderr, "prefill: STRATA_PREFILL_ATTN_LAYOUT request=%s effective=%d; "
+                             "only split fallback attention is affected; prompt matrix dispatch is unchanged\n",
+                     value, effective);
+        std::fflush(stderr);
+        return effective;
+    }();
+    return layout;
+}
+}
+
 bool Prefill::init(const core::WeightTable& wt, const core::ModelGeometry& g, core::SessionState& ss,
                    core::ExpertSource* src, const core::ExpertCache* cache, const int32_t* host_res, int64_t chunk,
                    void* stream, std::string& err, void* borrow, uint64_t borrow_bytes) {
+    (void) prefill_fallback_attn_layout();
     Impl& m = *impl_;
     m.wt = &wt; m.g = &g; m.ss = &ss; m.src = src; m.cache = cache; m.host_res = host_res;
     m.T = chunk; m.cs = (cudaStream_t) stream; m.stats = &stats_;
@@ -1510,6 +1531,11 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
 #endif
     const auto t_start = Clock::now();
     const int64_t LB = stage_lb_, LE = stage_le_;
+    // Observe the route only when an explicit layout comparison is requested.
+    // These are host call/row counts; no device timers, waits or kernel changes.
+    const bool observe_attn_dispatch = std::getenv("STRATA_PREFILL_ATTN_LAYOUT") != nullptr;
+    uint64_t matrix_chunks = 0, matrix_queries = 0, fallback_chunks = 0,
+             fallback_queries = 0, fallback_batches = 0;
     // the next stage reads chunk c on a thread while this one reads chunk c + 1 (declared first: an early return
     // waits for it before anything it reads goes away)
     std::string next_err;
@@ -2187,13 +2213,27 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
                     // decode kernel, 32 queries at a time (K8V4 runs the tensor kernel's mode 3: INT8 K,
                     // V dequantized from its q4_0 blocks to fp16 at gather)
                     static const bool old_attn = std::getenv("STRATA_PROMPT_ATTN_OLD") != nullptr;
-                    if (old_attn || !strata::kernels::qsa_prompt_attn_batch(m.q, pools, m.sel_ids, m.steps_dev, m.cap, s,
-                                                                            m.attn, T, m.cs))
+                    const bool matrix_used = !old_attn && strata::kernels::qsa_prompt_attn_batch(
+                        m.q, pools, m.sel_ids, m.steps_dev, m.cap, s, m.attn, T, m.cs);
+                    if (observe_attn_dispatch) {
+                        if (matrix_used) { ++matrix_chunks; matrix_queries += (uint64_t) T; }
+                        else { ++fallback_chunks; fallback_queries += (uint64_t) T; }
+                    }
+                    if (!matrix_used)
                         for (int64_t t0 = 0; t0 < T; t0 += m.attn_batch) {
                             const int64_t nb = std::min(m.attn_batch, T - t0);
-                            strata::kernels::qsa_decode_attn_batch(m.q + t0 * ZV, pools, m.sel_ids + t0 * m.cap,
-                                                                   m.steps_dev + t0 * strata::kernels::kStepCount, m.cap,
-                                                                   s, m.attn_scratch, m.attn + t0 * ZV, nb, m.cs);
+                            if (observe_attn_dispatch) ++fallback_batches;
+#if defined(STRATA_ENABLE_SYCL)
+                            if (prefill_fallback_attn_layout() == 1)
+                                strata::kernels::qsa_decode_attn_batch_layout(
+                                    m.q + t0 * ZV, pools, m.sel_ids + t0 * m.cap,
+                                    m.steps_dev + t0 * strata::kernels::kStepCount, m.cap,
+                                    s, m.attn_scratch, m.attn + t0 * ZV, nb, 1, m.cs);
+                            else
+#endif
+                                strata::kernels::qsa_decode_attn_batch(m.q + t0 * ZV, pools, m.sel_ids + t0 * m.cap,
+                                                                       m.steps_dev + t0 * strata::kernels::kStepCount, m.cap,
+                                                                       s, m.attn_scratch, m.attn + t0 * ZV, nb, m.cs);
                         }
                     if (st.kv_rot || st.kv_hybrid) strata::kernels::fwht256_inplace_cuda(m.attn, T * 24, m.cs);
                     pt.mark(kPfQsa, cs);
@@ -3024,6 +3064,15 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
     if (ro.requested)
         ro.emit(m.compact_moe_fp16, pt.on, pt.ms, ms_since(t_start), stats_.experts_streamed,
                 stats_.experts_dma, stats_.experts_resident, stats_.ms_experts_host);
+    if (observe_attn_dispatch) {
+        std::fprintf(stderr, "strata prefill qsa dispatch: layout=%d matrix_chunks=%llu matrix_queries=%llu "
+                             "fallback_chunks=%llu fallback_queries=%llu fallback_batches=%llu; "
+                             "host route counts, no device timing\n",
+                     prefill_fallback_attn_layout(), (unsigned long long) matrix_chunks,
+                     (unsigned long long) matrix_queries, (unsigned long long) fallback_chunks,
+                     (unsigned long long) fallback_queries, (unsigned long long) fallback_batches);
+        std::fflush(stderr);
+    }
     return true;
 }
 
