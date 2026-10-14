@@ -1,5 +1,13 @@
 # 主ブランチの再監査と実モデル診断
 
+2026-10-14追記: [同一セッションの再照合](../2026-10-14-performance-regression-audit/README.ja.md)
+で、Xe評価前にNiko由来の別SYCL系統が32Kで449.7 t/s、別の64K-context/非MTP
+layer-major条件で645.8 t/sを測定していたことを元データで確認した。
+以下の「主の最適化を保持」は10月4日root-native系統についての説明で、後の速い実装を
+保持した証明ではない。現在の118.5 t/sを最良構成の維持と扱った説明を訂正する。
+旧0.1.41のphysical-cell/RESTORE合格と262144-input/0-outputの検証も区別する。
+元の診断・失敗・測定結果は変更せず、この追記から訂正先へ辿れるようにした。
+
 最新の機能対応状況は [docs/UPSTREAM_INTEGRATION.md](../../../docs/UPSTREAM_INTEGRATION.md)
 に集約した。履歴保存と実コードの統合は別で、fork defaultへの反映、単一GPU並列要求、
 動的VRAM等の必要な機能の適合は未完了。R481–486の原報告とMainの訂正は

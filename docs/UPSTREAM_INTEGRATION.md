@@ -21,6 +21,19 @@ boundaries, then pull the root mirror. No PR to Niko or XeStrata is intended.
 
 ## Current implementation and outstanding work
 
+The [exact-session regression audit](../bench/results/2026-10-14-performance-regression-audit/README.ja.md)
+corrects the earlier inference-preservation claim. Before Xe evaluation, this
+fork's Niko-derived SYCL overlay delivered 449.7 t/s on fresh actual32K inputs
+with context262144/MTP4, and an earlier layer-major CLI experiment delivered
+645.8 t/s with a different65538 context and no MTP. These are not Xe results.
+The selected primary implementation does not contain the later measured
+overlay's compact workspace or attention-layout selector. Old code/report
+commits remain reachable, but preservation merges did not integrate them.
+Current118.5 t/s is a conservative stock baseline, not preservation of the
+previous best configuration. Restore and compare the prior source components
+and effective settings before treating this older source family as the tuning
+reference. Method/configuration differences leave causal attribution open.
+
 The audited primary source is `5bf0742913584a343975ea7f792c97cefac488fe`.
 Its engine lineage is this fork's Niko 0.1.38-based SYCL/CPU implementation,
 with selected fixes and shared service changes. The configured root CMake
@@ -40,7 +53,7 @@ not a completed evaluation or integration.
 | Elastic VRAM | Server/API configuration exists, but the active primary engine lacks elastic CLI/cache protocol and ownership adaptation. Static VRAM reserve does not provide elasticity. |
 | Responses effort and setup reruns | Configured effort propagation and preservation of an installed model/configuration require focused source adaptations and tests. |
 | Latest images, frontend and recovery changes | Image generation differs from existing vision input. Applicable service/config/runner behavior and subsequent frontend/recovery changes still require an exact delta ledger and hardware/backend qualification. |
-| Primary prefill and decode | Existing chunk/ring/stager, format-specific SYCL dispatch, AVX2 expert pool and session/cache paths are retained. Their current model speed requires measurements with actual long input and settings. |
+| Primary prefill and decode | The Oct4 root-native components are present, but the later pre-Xe measured overlay is not selected. Stock actual32049-input median PP118.5/24-output decode3.4 is slower than historical configurations. Reconcile and restore qualified components/settings, then compare matched long-input runs; do not count ancestry as adoption. |
 | XeStrata layer-major/bulk and paired IQ3_S GU | Optional, unadopted inference candidates. Reference-fork measurements do not establish a benefit in the primary implementation. |
 | Maximum context | Configured 262144 capacity and shorter successful runs do not prove full physical-input consumption, near-boundary generation or RESTORE. Relevant state/scheduling changes need those checks. |
 
