@@ -138,6 +138,22 @@
       "path": "research-fp16-model-quality-gate-round573-v1.txt",
       "sha256": "059bf0ccd472d5201004527ee7cb9a92b168f1e0ba71ffce8857b6cc2118df61",
       "status": "FINAL received; Main review in main-review-round571-573.ja.md; hypotheses only, no measurements by researcher."
+    },
+    {
+      "round": 574,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-decode-cache-prefill-release-round574-v1.txt",
+      "sha256": "6edb9791ff09f77d89715797ce2709e59f6ea13686b0029310028e9823ddd862",
+      "status": "FINAL received; Main corrections in main-review-round574-575.ja.md, no runtime/speed qualification."
+    },
+    {
+      "round": 575,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-actual-down-gemm-gap-round575-v1.txt",
+      "sha256": "e83911d2a588225554069488c4f036e62b263e93f0f1535e2f62e3d9c46c7a61",
+      "status": "FINAL received; Main corrections in main-review-round574-575.ja.md, no runtime/speed qualification."
     }
   ],
   "main_initial_findings": [
@@ -154,7 +170,7 @@
     "main_review": "qsa-layout-recovery-v1/main-review.ja.md",
     "status": "Build/host and20GPU parity/oracle cases PASS/fault0. Component40sample screen closedPASS; layout1 median4.09%slower in one int8case, no adoption. No whole-model/full256K/RESTORE/quality qualification."
   },
-  "latest_main_review": "main-review-round571-573.ja.md",
+  "latest_main_review": "main-review-round574-575.ja.md",
   "component_summary": "qsa-layout-screen-summary.json",
   "gemm_orientation_probe": {
     "report": "gemm-orientation-probe-v1/implementation.txt",
@@ -248,13 +264,18 @@
       "round": 574,
       "model": "gpt-6-luna",
       "path": "research-decode-cache-prefill-release-round574-v1.txt",
-      "state": "Running; prior reports shared; read-only except own report"
+      "state": "FINAL received; Main reviewed and corrected free-memory/phase accounting claims"
     },
     {
       "round": 575,
       "model": "gpt-6-luna",
       "path": "research-actual-down-gemm-gap-round575-v1.txt",
-      "state": "Running; prior reports shared; read-only except own report"
+      "state": "FINAL received; Main reviewed and corrected free-memory/phase accounting claims"
     }
-  ]
+  ],
+  "selected_head_diagnostic": {
+    "recipe": "check_selected_prefill_logits.py",
+    "state": "Main small GPU regression currently running, 513 IDs and9 sampled predictions, current c2e46 binary; not yet passed",
+    "output_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-selected-prefill-small-root-v1"
+  }
 }
