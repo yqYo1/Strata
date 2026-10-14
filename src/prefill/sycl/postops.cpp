@@ -129,6 +129,12 @@ void to_f16(const float *x, uint16_t *y, int64_t n, void *stream) {
   validate_spans({{y, z * 2}}, {{x, z * 4}});
   for_each(n, stream, [=](size_t i) { y[i] = hf(x[i]); });
 }
+void from_f16(const uint16_t *x, float *y, int64_t n, void *stream) {
+  auto z = count(n, 1);
+  validate_spans({{y, z * 4}}, {{x, z * 2}});
+  for_each(n, stream,
+           [=](size_t i) { y[i] = strata::kernels::f32_from_f16(x[i]); });
+}
 void to_bf16(const float *x, uint16_t *y, int64_t n, void *stream,
              uint16_t *lo) {
   auto z = count(n, 1);

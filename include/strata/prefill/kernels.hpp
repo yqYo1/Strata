@@ -88,6 +88,10 @@ void kv_append(const float* K, const float* V, int64_t T, int64_t pos0, const in
 
 /// fp32 -> fp16 bits and fp32 -> bf16, n elements (the two activation images of the prompt GEMMs).
 void to_f16(const float* x, uint16_t* y, int64_t n, void* stream);
+#if defined(STRATA_ENABLE_SYCL)
+/// Exact FP16 bits -> FP32, including subnormals/Inf/NaN. Layer-major storage restore only.
+void from_f16(const uint16_t* x, float* y, int64_t n, void* stream);
+#endif
 void to_bf16(const float* x, uint16_t* y, int64_t n, void* stream, uint16_t* ylo = nullptr);
 /// y = fp32(fp16(x)): what an FP16 store of x would read back (the FP16 indexer-key experiment)
 void round_f16(const float* x, float* y, int64_t n, void* stream);

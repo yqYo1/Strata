@@ -1,5 +1,6 @@
 #include "strata/kernels/f16_bits.hpp"
 #include "strata/prefill/kernels.hpp"
+#include "strata/sycl/checked_cleanup.hpp"
 #include "strata/sycl/runtime.hpp"
 #include <bit>
 #include <cmath>
@@ -9,6 +10,15 @@
 using namespace strata;
 namespace p = strata::prefill;
 std::shared_ptr<sycl_backend::Runtime> rt;
+// Keep host DMA operands alive if submission/completion cannot be proved.
+// An Allocation destructor drains too late for a local readback vector.
+void copy_checked(void* destination, const void* source, size_t bytes) {
+  try {
+    rt->wait(rt->compute().memcpy(destination, source, bytes));
+  } catch (...) {
+    sycl_backend::cleanup_fail_stop("prefill postops copy failed with host owners live");
+  }
+}
 template <class T> struct Buffer {
   sycl_backend::Allocation a;
   size_t n;
@@ -18,11 +28,11 @@ template <class T> struct Buffer {
   void set(const std::vector<T> &v) {
     if (v.size() != n)
       throw std::runtime_error("upload size");
-    rt->wait(rt->compute().memcpy(data(), v.data(), n * sizeof(T)));
+    copy_checked(data(), v.data(), n * sizeof(T));
   }
   std::vector<T> get() {
     std::vector<T> v(n);
-    rt->wait(rt->compute().memcpy(v.data(), data(), n * sizeof(T)));
+    copy_checked(v.data(), data(), n * sizeof(T));
     return v;
   }
 };
@@ -40,10 +50,67 @@ uint16_t bf(float x) {
 }
 float unbf(uint16_t u) { return std::bit_cast<float>(uint32_t(u) << 16); }
 float sig(float x) { return 1.f / (1.f + std::exp(-x)); }
+// Conversion oracle is the host's IEEE binary16 type, independent of the
+// shared bit converter used by the device implementation. This checks storage
+// math only, never FP16-vs-FP32 whole-model bit identity or model quality.
+void residual_storage_conversion(void* stream) {
+  std::vector<uint16_t> codes(65536);
+  for (size_t i = 0; i < codes.size(); ++i) codes[i] = uint16_t(i);
+  Buffer<uint16_t> packed(codes.size());
+  Buffer<float> restored(codes.size());
+  packed.set(codes);
+  p::from_f16(packed.data(), restored.data(), codes.size(), stream);
+  const auto decoded = restored.get();
+  for (size_t i = 0; i < codes.size(); ++i) {
+    const float expected = float(std::bit_cast<_Float16>(codes[i]));
+    need(std::isnan(expected) ? std::isnan(decoded[i])
+         : std::bit_cast<uint32_t>(expected) == std::bit_cast<uint32_t>(decoded[i]),
+         "exhaustive FP16 decode including signed zeros/subnormals/Inf/NaN");
+  }
+  std::vector<float> values = {0.f, -0.f, 1.f, -1.f, 65504.f, -65504.f,
+      65519.f, 65520.f, -65520.f, 65536.f, -65536.f, 1e30f, -1e30f,
+      0x1p-24f, 0x1p-25f, 0x1.8p-24f, 0x1p-14f,
+      1.f + 0x1p-11f, 1.f + 3 * 0x1p-11f,
+      std::bit_cast<float>(0x7f800000u), std::bit_cast<float>(0xff800000u),
+      std::bit_cast<float>(0x7fc12345u)};
+  // Odd conversion count and ordinary residual-like values in addition to ties.
+  for (int i = 0; i < 491; ++i) values.push_back(std::sin(float(i) * .17f) * 17.f);
+  Buffer<float> input(values.size()), output(values.size());
+  Buffer<uint16_t> storage(values.size()), stage(values.size());
+  input.set(values);
+  p::to_f16(input.data(), storage.data(), values.size(), stream);
+  p::from_f16(storage.data(), output.data(), values.size(), stream);
+  const auto saved = storage.get();
+  const auto direct = output.get();
+  // Model the host-tail DMA sequence with owners live through checked waits.
+  std::vector<uint16_t> host(values.size());
+  copy_checked(host.data(), storage.data(), host.size() * 2);
+  copy_checked(stage.data(), host.data(), host.size() * 2);
+  p::from_f16(stage.data(), output.data(), values.size(), stream);
+  const auto tail = output.get();
+  bool saw_rounding = false, saw_overflow = false;
+  for (size_t i = 0; i < values.size(); ++i) {
+    const auto half = _Float16(values[i]);
+    const auto code = std::bit_cast<uint16_t>(half);
+    const float expected = float(half);
+    if (std::isnan(expected)) {
+      need(std::isnan(direct[i]) && std::isnan(tail[i]) &&
+           (saved[i] & 0x7c00u) == 0x7c00u && (saved[i] & 0x03ffu), "NaN remains NaN");
+    } else {
+      need(saved[i] == code && std::bit_cast<uint32_t>(direct[i]) == std::bit_cast<uint32_t>(expected) &&
+           std::bit_cast<uint32_t>(tail[i]) == std::bit_cast<uint32_t>(expected),
+           "direct and staged storage match independent FP16 round-trip oracle");
+      saw_rounding |= std::isfinite(expected) && expected != values[i];
+      saw_overflow |= std::isfinite(values[i]) && std::isinf(expected);
+    }
+  }
+  need(saw_rounding && saw_overflow, "FP16 storage changes values and exposes overflow");
+}
 int main() {
   try {
     rt = sycl_backend::runtime_for();
     auto *s = &rt->compute();
+    residual_storage_conversion(s);
     constexpr int T = 3, N = 2560, D = N * 4;
     std::vector<float> r(T * D), w(D), g(T * D), bo(T * N), inj(T * 7);
     for (size_t i = 0; i < r.size(); ++i) {

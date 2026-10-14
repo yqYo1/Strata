@@ -56,6 +56,67 @@ int main() {
     for (const char* s : {"", "-1", "+1", " 1", "1 ", "1.0", "1x", "AUTO", "18446744073709551616"})
         rejected([&] { layer_major_requested_rows(s); }, "invalid row option fails");
 
+    check(layer_major_residual_dtype(nullptr) == LayerMajorResidualDtype::fp32 &&
+          layer_major_residual_dtype("fp32") == LayerMajorResidualDtype::fp32 &&
+          layer_major_residual_dtype("fp16") == LayerMajorResidualDtype::fp16,
+          "dtype defaults to FP32 and accepts only explicit FP32/FP16");
+    for (const char* value : {"", "FP16", "bf16", "fp8", " fp16", "fp16 "})
+        rejected([&] { layer_major_residual_dtype(value); }, "invalid storage dtype rejected");
+    rejected([&] { layer_major_storage_bytes(static_cast<LayerMajorResidualDtype>(99)); },
+             "invalid typed format rejected");
+    for (const auto dtype : {LayerMajorResidualDtype::fp32, LayerMajorResidualDtype::fp16}) {
+        const bool half = dtype == LayerMajorResidualDtype::fp16;
+        const uint64_t rb = 10240 * layer_major_storage_bytes(dtype);
+        const uint64_t reserve = half ? 8192 * rb : 0;
+        const uint64_t full_bytes = half ? 5368709120ull : 10737418240ull;
+        const auto host = LayerMajorResidualPlan::make(262144, 8192, 10240, reserve, 0, dtype);
+        check(host.total_bytes == full_bytes && host.host_bytes == full_bytes &&
+              host.staging_bytes == reserve, "262144 physical rows: 10/5 GiB plus exact staging");
+        const auto exact = LayerMajorResidualPlan::make(262144, 8192, 10240, full_bytes, -1, dtype);
+        check(exact.gpu_rows == 262144 && !exact.host_bytes && !exact.staging_bytes,
+              "exact full-store budget needs no host staging");
+        const auto below = LayerMajorResidualPlan::make(262144, 8192, 10240, full_bytes - 1, -1, dtype);
+        check(below.gpu_rows == (half ? 245760 : 253952) &&
+              below.gpu_bytes + below.staging_bytes <= full_bytes - 1,
+              "one byte below physical boundary reserves staging before auto prefix");
+        const auto prefix = LayerMajorResidualPlan::make(262144, 8192, 10240,
+            2 * 8192 * rb + reserve, -1, dtype);
+        check(prefix.gpu_rows == 16384 && prefix.span(16384, 8192).offset_bytes == 0 &&
+              prefix.span(253952, 8192).bytes == 8192 * rb,
+              "physical boundary mixed store has exact first/last host spans");
+        const uint64_t odd_stage = half ? 257 * rb : 0;
+        const auto odd = LayerMajorResidualPlan::make(513, 257, 10240,
+            257 * rb + odd_stage, 257, dtype);
+        check(odd.gpu_rows == 257 && odd.host_bytes == 256 * rb &&
+              odd.span(257, 256).offset_bytes == 0 && odd.span(257, 256).bytes == 256 * rb &&
+              odd.staging_bytes == (half ? 256 * rb : 0), "257/256 split uses exact partial-tail staging");
+        const auto main_fixture = LayerMajorResidualPlan::make(512, 257, 10240,
+            512 * rb, 257, dtype);
+        check(main_fixture.gpu_rows == 257 && main_fixture.host_bytes == 255 * rb &&
+              main_fixture.span(257, 255).offset_bytes == 0 &&
+              main_fixture.staging_bytes == (half ? 255 * rb : 0),
+              "Main's 512 batched rows use exact 257/255 prefix/tail spans");
+        const auto final_gpu = LayerMajorResidualPlan::make(19, 4, 10240, 19 * rb, 19, dtype);
+        check(final_gpu.span(16, 3).device && final_gpu.span(16, 3).bytes == 3 * rb &&
+              !final_gpu.host_bytes && !final_gpu.staging_bytes,
+              "explicit all-GPU odd tail has no staging in either format");
+        const uint64_t odd_budget = 4 * rb + (half ? 4 * rb : 0);
+        const auto tail = LayerMajorResidualPlan::make(19, 4, 10240, odd_budget, 4, dtype);
+        check(!tail.span(16, 3).device && tail.span(16, 3).offset_bytes == 12 * rb &&
+              tail.span(16, 3).bytes == 3 * rb, "odd chunk count preserves host-relative final offset");
+        rejected([&] { LayerMajorResidualPlan::make(19, 4, 10240, odd_budget - 1, 4, dtype); },
+                 "explicit prefix budget includes full staging extent");
+        rejected([&] { LayerMajorResidualPlan::make(INT64_MAX, 4, 10240, 0, 0, dtype); },
+                 "total multiplication checked for either format");
+    }
+    rejected([&] { LayerMajorResidualPlan::make(19, 4, 10240, 4 * 10240 * 2 - 1, -1,
+                                              LayerMajorResidualDtype::fp16); },
+             "host-only FP16 still needs one complete conversion staging chunk");
+    const auto partial = LayerMajorResidualPlan::make(19, 4, 10240, 19 * 10240 * 2, 16,
+                                                     LayerMajorResidualDtype::fp16);
+    check(partial.gpu_rows == 16 && partial.staging_bytes == 3 * 10240 * 2,
+          "explicit final partial host chunk fits prefix plus exact small staging");
+
     LayerMajorChunkCursor cursor{19, 4};
     int64_t delivered = 0;
     for (int layer = 0; layer < 48; ++layer) {

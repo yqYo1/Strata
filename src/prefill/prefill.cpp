@@ -453,7 +453,9 @@ struct Prefill::Impl {
     bool compact_moe_fp16 = false;
     // Opt-in layer-major lease; normal chunk-major execution leaves these empty.
     bool layer_major_active = false;
-    const float* layer_major_gpu_input = nullptr;
+    const void* layer_major_gpu_input = nullptr;
+    const void* layer_major_host_input = nullptr;
+    uint16_t* layer_major_fp16_stage = nullptr;
     detail::LayerMajorResidualPlan layer_major_residual;
     float *logits = nullptr, *w = nullptr, *GU = nullptr, *Dm = nullptr, *sgate = nullptr, *sup = nullptr,
           *shared = nullptr, *sg = nullptr;
@@ -1650,12 +1652,32 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
         const auto tsetup = Clock::now();
         // ---- embeddings, broadcast to the four streams - or, in a later stage of a layer split, the rows the
         // previous stage handed on
-        const bool residual_input = hand_in_ != nullptr || m.layer_major_gpu_input != nullptr;
+        const bool residual_input = m.layer_major_active
+            ? m.layer_major_host_input != nullptr || m.layer_major_gpu_input != nullptr
+            : hand_in_ != nullptr;
         if (residual_input) {
             if (m.layer_major_active) {
                 const auto span = m.layer_major_residual.span(c0, T);
-                const auto* base = reinterpret_cast<const uint8_t*>(span.device ? m.layer_major_gpu_input : hand_in_);
-                if (!base || cudaMemcpyAsync(m.R, base + size_t(span.offset_bytes), size_t(span.bytes),
+                const auto* base = static_cast<const uint8_t*>(span.device
+                    ? m.layer_major_gpu_input : m.layer_major_host_input);
+                if (!base) { err = "prefill layer-major: missing residual input store"; return false; }
+#if defined(STRATA_ENABLE_SYCL)
+                if (m.layer_major_residual.dtype == detail::LayerMajorResidualDtype::fp16) {
+                    const uint16_t* packed = reinterpret_cast<const uint16_t*>(base + size_t(span.offset_bytes));
+                    if (!span.device) {
+                        if (!m.layer_major_fp16_stage || span.bytes > m.layer_major_residual.staging_bytes ||
+                            cudaMemcpyAsync(m.layer_major_fp16_stage, packed, size_t(span.bytes),
+                                            cudaMemcpyHostToDevice, m.cs) != cudaSuccess) {
+                            err = "prefill layer-major: FP16 residual staging upload failed"; return false;
+                        }
+                        packed = m.layer_major_fp16_stage;
+                    }
+                    // Same in-order queue as H2D and the unchanged FP32 model.
+                    // Exactly one restoration, with no intermediate F32 store.
+                    from_f16(packed, m.R, int64_t(span.bytes / 2), m.cs);
+                } else
+#endif
+                if (cudaMemcpyAsync(m.R, base + size_t(span.offset_bytes), size_t(span.bytes),
                     span.device ? cudaMemcpyDeviceToDevice : cudaMemcpyHostToDevice, m.cs) != cudaSuccess) {
                     err = "prefill layer-major: residual input copy failed"; return false;
                 }

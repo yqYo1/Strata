@@ -1,0 +1,248 @@
+Layer-major FP16 residual storage v1 — NON-APPLIED IMPLEMENTATION CANDIDATE
+Date: 2026-10-15 JST
+Owner/consumer: Main implementation review, then Main's serialized build/numeric/
+performance/quality gates. Review point: before product application and after each
+Main gate. Status: source proposal only; build/test/GPU/quality NOT RUN.
+
+Scope and authorization
+-----------------------
+Only this layer-major-fp16-storage-v1/ artifact directory was written. Product
+src/include/cmake/tests, branches, commits, services, GPU and previous probe
+artifacts were not modified. No builds, tests, GPU/profiler runs, cleanup, private
+record reads, environment/private Codex log discovery or other-process discovery
+were performed. python was absent; python3 ran only this patch generator.
+
+Read the user-supplied AGENTS instructions, project-only strata-upstream-sync
+SKILL.md and integration reference, git-workflow SKILL.md, ARTIFACT_RETENTION,
+the current research-index, R540 and its Main correction, R569, R567, and Main's
+round567-568 review. No new literature or quality claim is made here.
+
+Source identity / review artifacts
+---------------------------------
+The base is the ACTUAL CURRENT ROOT BYTES, including Main's n > chunk dispatch
+guard and per-layer STRATA_TRACE additions. No old 99a314e0 file was restored or
+used to replace the root. All seven original source byte hashes are recorded in
+source-base-sha256.json. In particular:
+
+  src/prefill/prefill.cpp
+    566336802bdc62a9a147568aeed7e09c40b58474d66fe232a4ae350bd8218aff
+  src/prefill/layer_major.inc
+    15733e1e78982404621663108ab7cd4375f8e4f2f1c7a03054d778266b386597
+  include/strata/prefill/layer_major_plan.hpp
+    be4dd2f908c5cec742a675bad48d07690321e13e10d868c5bd24e4d8edd32b95
+
+source.diff is the incremental unified diff for EXISTING files. files/ contains
+the complete proposed post-patch bytes for convenient review, including those
+same existing files; there are no new product files. Apply source.diff after
+checking the base hashes; do not copy entire files over a newer root. The
+artifact-sha256.json manifest pins the diff, generated copies, generator, base
+hash manifests and this report. Dependencies/resolver bytes are separately
+pinned in dependency-base-sha256.json.
+
+Regeneration, from the repository root:
+  python3 bench/results/2026-10-15-pr6-recovery-audit/layer-major-fp16-storage-v1/make_patch.py
+
+This reads the current root, requires one exact anchor per replacement, checks
+the recorded original source/dependency hashes before materializing the diff,
+and writes only this artifact directory. A changed root fails rather than
+silently rebasing or overwriting Main's changes. Regeneration is not a build,
+test, numerical check or proof that the candidate compiles.
+
+Actual resolver and reuse
+-------------------------
+cmake/sycl_backend.cmake selects root src/prefill/prefill.cpp and existing root
+src/prefill/sycl/postops.cpp into strata_prefill; the engine entrypoint is root
+src/program/generate.cpp. No historical sycl/src or root CUDA generator feature
+is substituted for this path. No CMake/resolver change is needed.
+
+The existing prefill to_f16() is suitable for saving. It uses hf(), which calls
+strata::kernels::f16_from_f32 in include/strata/kernels/f16_bits.hpp. It does NOT
+use the nearby hsat() saturating/clamping helper. Existing round_f16() performs
+pack/unpack into a full FP32 output and cannot represent a two-byte storage
+buffer, so it is not used. No existing prefill unpack API was found. The only
+new kernel entrypoint is from_f16(), six lines added to the existing SYCL
+postops TU, using its count/validate_spans/for_each/queue_for helpers and the
+existing exact f32_from_f16 bit converter. Its declaration and call are SYCL-
+guarded; CUDA/HIP source/implementation/validation are outside this candidate.
+
+Configuration and numerical contract
+------------------------------------
+The single new flag is:
+  STRATA_PREFILL_LAYER_MAJOR_R_DTYPE=fp32|fp16
+
+Unset means fp32. Parsing is exact/case-sensitive; empty, BF16, FP8, numeric and
+whitespace variants are errors when the layer-major route is selected. The
+existing STRATA_PREFILL_LAYER_MAJOR=1 and n > impl_->T dispatch guard remains
+byte-identical, so setting the dtype alone or using n <= chunk keeps the old
+run_impl route. Existing supported geometry and route guards remain in force.
+
+LayerMajorResidualDtype is a typed storage selector with checked byte helpers.
+Only fp32/fp16 exist; BF16/FP8 have no selector or hidden implementation. Live
+m.R and model operators/state retain their existing precisions. GR/GDN/QSA/MoE,
+GEMMs, KV/indexer state, snapshots, MTP weights/cache, decode cache and graphs
+are unchanged. Existing FP16 activation/GEMM pathways remain as before; the
+candidate does not claim all existing operator internals are FP32.
+
+FP16 saving rounds once per each of the 47 interlayer boundaries, per chunk:
+  - round to nearest, ties to even;
+  - representable binary16 subnormals are preserved;
+  - tiny values underflow to signed zero according to that same RNE converter;
+  - finite binary16 overflow becomes signed Inf (no clamp to +/-65504);
+  - Inf remains Inf; an input NaN becomes a signed quiet NaN (payload canonicalized).
+Restoring binary16 bits to FP32 is exact, including signed zero, subnormals and
+Inf; this is a storage restore, not a second quantization. Final-layer residual
+callbacks/checkpoints/dumps still receive m.R in FP32 with no final pack.
+
+The plan log adds dtype, element bytes, total/prefix/tail/staging bytes. FP16
+also logs RNE, Inf overflow, subnormal/underflow and NaN contracts and explicitly
+labels the mode experimental/unqualified. NaN/Inf is not silently saturated or
+interpreted as quality equivalence. The inherited STRATA_DBG_NAN observer guard
+is retained; this patch does not authorize that previously unsupported observer.
+Overflow remains observable as Inf to external residual/finite checks, and the
+proposed conversion test requires a finite-to-Inf example to remain Inf.
+
+Storage, offsets and budget
+---------------------------
+All row/total/prefix/tail/span calculations use the selected 2/4-byte storage
+width and existing checked multiplication/addition, including PTRDIFF_MAX and
+INT64_MAX limits. n * width is never used for an unchecked narrowed byte count.
+The cast count is span.bytes / 2 after checked geometry/span validation.
+Host offsets remain relative to gpu_rows; full/partial chunks cannot cross the
+two stores. Typed conversion inputs have the existing four-byte validation
+alignment: actual width D=10240 guarantees this for every prefix/tail offset.
+
+GPU budget passed to the plan is still free_gpu - extra expert cache - 512 MiB.
+The plan now treats FP16 staging as part of that same remaining GPU budget:
+
+  - If automatic planning can fit the entire store, it selects all n rows with
+    staging_bytes=0. There is no host tail and no redundant staging allocation.
+  - Otherwise it first reserves min(chunk,n) * storage_row_bytes, then selects
+    the largest complete-chunk prefix from the remaining budget. For FP32 this
+    reserve is zero, reproducing the original prefix calculation.
+  - An explicit maximum row request is rounded as before. If its host tail is
+    only a partial final chunk, staging uses exactly that tail's extent;
+    otherwise it uses one full chunk. Prefix + staging is checked against budget.
+  - A host-only FP16 plan still needs one device conversion chunk; insufficient
+    staging budget fails before allocating or starting a model pass.
+
+For auto planning with total_bytes > budget, any prefix leaving only a partial
+final chunk would require prefix + staging == total_bytes and cannot fit; the
+full-chunk reservation therefore does not exclude a larger feasible prefix.
+
+The original host admission now sees plan.host_bytes in the selected format;
+cache/upload slab/stride/two-map accounting and 8 GiB RAM headroom remain. The
+conversion staging is device memory only and is not double-counted as host RAM.
+Its allocation occurs only for FP16 + nonempty host tail, before first model
+submission and after the same entry-drain lease as the other temporary owners.
+
+Byte projections, NOT measured free-memory fit or speed:
+
+  geometry                     FP32 store       FP16 store
+  262144 rows, D=10240          10737418240 B    5368709120 B (10 -> 5 GiB)
+  34602 rows, D=10240            1417297920 B     708648960 B
+  4096-row device prefix         167772160 B      83886080 B
+  30506-row host tail           1249525760 B     624762880 B
+  47 host-only round trips    133226004480 B   66613002240 B
+
+Additional FP16 host-tail staging is 83886080 B for chunk4096 or 167772160 B for
+chunk8192, with a smaller final-only tail charged at its actual size. Thus a
+one-chunk device prefix plus one staging chunk can consume the same residual-
+related GPU bytes as the old one-chunk FP32 prefix. Halving the saved residual
+does not guarantee halving total VRAM, doubling auto prefix rows, or halving
+prefill time. Expert-cache bytes and all existing workspace remain additional.
+
+Submission/lifetime and default behavior
+----------------------------------------
+GPU-prefix FP16:
+  save:    m.R FP32 -> existing to_f16 -> prefix storage
+  restore: prefix FP16 -> from_f16 -> existing m.R FP32
+
+Host-tail FP16:
+  save:    m.R FP32 -> to_f16 -> device staging -> D2H -> owned host bytes
+  restore: owned host bytes -> H2D -> same device staging -> from_f16 -> m.R
+
+There is no extra host/device round trip, FP32 host slab, pre-round plus pack,
+or change in rounding count between placements. The route already requires
+m.copy==m.cs. The compatibility memcpy calls and both converters enqueue on
+that same in-order SYCL queue, so the staging buffer cannot be overwritten
+before its previous conversion/copy readers finish. The existing callback store
+drain remains after pack/D2H; input conversion adds no explicit wait. Subsequent
+model kernels are ordered after restore. All host storage, inputs, outputs,
+staging and maps remain owned before the existing DraftUploadGuard/Restore
+objects, so cancellation, callback exceptions and submission errors drain before
+restoration/free. A failed checked drain still aborts with owners live.
+
+Impl's raw storage input pointers are type-neutral and separate from the legacy
+FP32 split-stage hand_in_. The existing Restore also restores the new host/stage
+pointers; the existing cache/residency/stat/callback order is preserved. No new
+state recovery, temporary MTP/cache retirement or graph mechanism was added.
+
+For default/explicit FP32 the plan has staging_bytes=0. Source trace: exactly
+the same byte extents, CUDA-compatible D2D/H2D/D2H memcpy operations, callback/
+layer/pass drains and final callback order remain. No conversion kernel,
+staging cudaMalloc or extra synchronization is issued. Host/device residual
+owners are now byte-addressed (same exact allocation byte count) so FP16 storage
+does not masquerade as a float array. This source argument still requires Main's
+FP32 default-vs-explicit/old-control bitwise regression check after build.
+
+Proposed validation additions — NOT EXECUTED
+-------------------------------------------
+src/prefill/layer_major_plan_test.cpp extends the existing CPU-only test with:
+  * strict dtype parsing/default, invalid enum and per-format overflow;
+  * physical 262144-row 10/5 GiB full and host-only boundaries;
+  * one-byte-below-full auto budgets (FP16 reserve costs another prefix chunk);
+  * exact full-device allocation with zero staging;
+  * explicit prefix budget rejection including staging;
+  * host-relative first/last offsets and 19-row odd chunk counts;
+  * 513 rows at chunk257 (257+256 tail), Main's 512 batched-row 257+255 split,
+    exact partial-tail staging, and both-format all-GPU odd partial tails.
+
+tests/sycl/prefill_postops.cpp extends its existing SYCL target with:
+  * all 65536 half bit patterns decoded against host _Float16, with NaN checked
+    by classification rather than payload equality;
+  * independent host _Float16 RNE pack/unpack values (ties, signs, max finite,
+    finite overflow, subnormal/underflow, Inf and NaN), odd conversion count513;
+  * direct device and D2H/H2D staged round trips against that narrowed oracle;
+  * explicit evidence that finite rounding differences and finite overflow exist.
+
+No new tests were run; even patch application/syntax compilation is left to Main.
+No assertion was added requiring FP16 output to equal FP32 whole-model output.
+
+Suggested Main review/run order (all serialized under existing measurement
+ownership/retention rules; exact build directory is Main's existing configured
+one, not inferred here):
+  1. Verify source/dependency hashes, review source.diff, apply it to the current
+     root; preserve/rebase any newer Main work instead of full-file replacement.
+  2. Build existing prefill_layer_major_plan_test, sycl_prefill_postops_test and
+     strata targets. Run the CPU arithmetic/lease test, then the GPU postops test
+     with the existing supervised health/fault wrapper.
+  3. Repeat unset vs explicit fp32 and previous FP32 control on Main's existing
+     two-chunk fixtures, device prefix, host-only and mixed prefix/tail; demand
+     the old FP32 bitwise result, unchanged logical callbacks/stats, fault0.
+  4. FP16 must use a separate expected pack/unpack math oracle. Compare FP16
+     device-only/host-only/mixed placements for the same rounded row sequence,
+     odd/partial chunks and cancellation/exception ownership. Check every saved
+     boundary for finite overflow, NaN/Inf, underflow and correct byte extents.
+  5. Run Main's fixed 34603-input / 34602-batched thinking history. Reuse the
+     serialization/templates, measure KL/logprob/top-margin and residual error
+     separately from the FP32 bitwise gate. Do not label ordinary rounding as a
+     wiring failure, or matching tokens as a quality pass.
+  6. Retain R569's natural-history, retrieval/task/PPL and full physical256K
+     qualification requirements before any quality/support/adoption claim;
+     performance/decode/RESTORE/bench.sh gates remain separate Main work.
+
+R540's Dm proposal is a different buffer; its estimates do not qualify this
+residual format. R540's 24-question screen does not prove a 1pp bound (the Main
+299 independent zero-harm-pair correction applies). R569's cited Qwen residual-
+FP8 experiment motivates investigation but does not establish this IQ3 fork's
+FP16 quality or conversion safety. This candidate is not inference adoption.
+
+Retention
+---------
+Keep this compact source diff, generated review bytes, hashes, commands and
+unqualified decision in Git when Main closes the implementation boundary. No
+measurement/tensor/API traces were collected, no raw captures are retained and
+no deletion manifest is needed because this agent deleted nothing. Consumer is
+Main's immediate review/build/numeric gate. Retire superseded generated review
+copies only after an integrated source/commit plus Main evidence preserves the
+needed candidate origin and decisions; never treat that as a test pass.

@@ -21,6 +21,8 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     const core::OnDevice on_device(m.device);
     const auto& g = *m.g;
     auto& ss = *m.ss;
+    const auto residual_dtype = detail::layer_major_residual_dtype(
+        std::getenv("STRATA_PREFILL_LAYER_MAJOR_R_DTYPE"));
     const char* mmq = std::getenv("STRATA_PREFILL_MMQ");
     if (m.layer_major_active || stage_lb_ != 0 || stage_le_ != g.n_layers || next_ || hand_in_ ||
         m.pp || core::peer_portable() || embd_rows || !m.src || !m.compact_moe_fp16 ||
@@ -128,7 +130,7 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     }
     const auto plan = detail::LayerMajorResidualPlan::make(n, m.T, D,
         free_gpu - cache_bytes - gpu_headroom,
-        detail::layer_major_requested_rows(std::getenv("STRATA_PREFILL_LAYER_MAJOR_R_GPU")));
+        detail::layer_major_requested_rows(std::getenv("STRATA_PREFILL_LAYER_MAJOR_R_GPU")), residual_dtype);
     // One owned host upload slab removes every source pointer lease before DMA.
     // Also count the cache's small blocking staging allocation and two maps.
     uint64_t host_need = detail::layer_major_add(plan.host_bytes, cache_bytes);
@@ -141,10 +143,13 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     if (should_stop && should_stop()) { err = "cancelled"; return false; }
     core::ExpertCache layer_cache;
     std::unique_ptr<uint8_t[]> upload(new uint8_t[size_t(cache_bytes)]);
-    std::unique_ptr<float[]> rows(plan.host_bytes ? new float[size_t(plan.host_bytes / sizeof(float))] : nullptr);
+    std::unique_ptr<uint8_t[]> rows(plan.host_bytes ? new uint8_t[size_t(plan.host_bytes)] : nullptr);
     std::vector<int32_t> residency(size_t(g.n_layers * NE), -1);
-    auto free_device = [](float* p) { if (p) (void) cudaFree(p); };
-    std::unique_ptr<float, decltype(free_device)> device_rows(nullptr, free_device);
+    auto free_device = [](uint8_t* p) { if (p) (void) cudaFree(p); };
+    std::unique_ptr<uint8_t, decltype(free_device)> device_rows(nullptr, free_device);
+    // Allocated only for an FP16 host tail. One in-order queue serializes
+    // H2D -> unpack -> model -> pack -> D2H, and the outer lease owns it all.
+    std::unique_ptr<uint8_t, decltype(free_device)> fp16_stage(nullptr, free_device);
 
     int64_t logical_chunks = 0, layer = 0;
     const int64_t final_chunk_row = ((n - 1) / m.T) * m.T;
@@ -158,16 +163,19 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         Prefill& p; Impl& m;
         int64_t lb, le; const float* input;
         const core::ExpertCache* cache; const int32_t* residency;
-        bool active; const float* gpu_input; detail::LayerMajorResidualPlan plan;
+        bool active; const void* gpu_input; const void* host_input; uint16_t* fp16_stage;
+        detail::LayerMajorResidualPlan plan;
         decltype(on_chunk) chunk; decltype(on_stage_chunk) stage;
         ~Restore() noexcept {
             p.stage_lb_ = lb; p.stage_le_ = le; p.hand_in_ = input;
             m.cache = cache; m.host_res = residency; m.layer_major_active = active;
-            m.layer_major_gpu_input = gpu_input; m.layer_major_residual = plan;
+            m.layer_major_gpu_input = gpu_input; m.layer_major_host_input = host_input;
+            m.layer_major_fp16_stage = fp16_stage; m.layer_major_residual = plan;
             p.on_chunk = std::move(chunk); p.on_stage_chunk = std::move(stage);
         }
     } restore{*this, m, stage_lb_, stage_le_, hand_in_, m.cache, m.host_res,
-              m.layer_major_active, m.layer_major_gpu_input, m.layer_major_residual, on_chunk, on_stage_chunk};
+              m.layer_major_active, m.layer_major_gpu_input, m.layer_major_host_input,
+              m.layer_major_fp16_stage, m.layer_major_residual, on_chunk, on_stage_chunk};
     cudaError_t compute_drain = cudaSuccess, copy_drain = cudaSuccess;
     auto drain = [&]() noexcept {
         compute_drain = cudaStreamSynchronize(m.cs);
@@ -185,28 +193,45 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     // its allocation before the outer checked lease has retired its readers.
     if (!layer_cache.open_uninitialized(NE, 1, NE, int64_t(stride), err)) return false;
     if (plan.gpu_bytes) {
-        float* p = nullptr;
+        uint8_t* p = nullptr;
         if (cudaMalloc(reinterpret_cast<void**>(&p), size_t(plan.gpu_bytes)) != cudaSuccess) {
             err = "prefill layer-major: extra GPU residual allocation failed"; return false;
         }
         device_rows.reset(p);
     }
+    if (plan.staging_bytes) {
+        uint8_t* p = nullptr;
+        if (cudaMalloc(reinterpret_cast<void**>(&p), size_t(plan.staging_bytes)) != cudaSuccess) {
+            err = "prefill layer-major: FP16 residual staging allocation failed"; return false;
+        }
+        fp16_stage.reset(p);
+    }
+    m.layer_major_fp16_stage = reinterpret_cast<uint16_t*>(fp16_stage.get());
     m.layer_major_active = true;
     m.layer_major_residual = plan;
     m.cache = &layer_cache;
     m.host_res = residency.data();
-    std::fprintf(stderr, "strata prefill: layer-major candidate, tokens=%lld chunk=%lld residual_total=%llu "
-                         "residual_gpu_rows=%lld residual_gpu=%llu residual_host=%llu layer_cache=%llu; "
+    std::fprintf(stderr, "strata prefill: layer-major candidate, tokens=%lld chunk=%lld residual_dtype=%s "
+                         "residual_element_bytes=%llu residual_total=%llu residual_gpu_rows=%lld "
+                         "residual_gpu=%llu residual_host=%llu residual_staging=%llu layer_cache=%llu; "
                          "extra allocations, GPU headroom=536870912, RAM headroom=8589934592\n",
-                 (long long)n, (long long)m.T, (unsigned long long)plan.total_bytes, (long long)plan.gpu_rows,
+                 (long long)n, (long long)m.T, detail::layer_major_dtype_name(plan.dtype),
+                 (unsigned long long)detail::layer_major_storage_bytes(plan.dtype),
+                 (unsigned long long)plan.total_bytes, (long long)plan.gpu_rows,
                  (unsigned long long)plan.gpu_bytes, (unsigned long long)plan.host_bytes,
-                 (unsigned long long)cache_bytes);
+                 (unsigned long long)plan.staging_bytes, (unsigned long long)cache_bytes);
+    if (plan.dtype == detail::LayerMajorResidualDtype::fp16)
+        std::fprintf(stderr, "strata prefill: FP16 residual storage is experimental/unqualified; "
+                             "RNE, finite overflow -> signed Inf, FP16 subnormals preserved, "
+                             "underflow -> signed zero, NaN -> quiet NaN; "
+                             "one pack/unpack per interlayer boundary, live residual FP32, "
+                             "operator/state precision unchanged\n");
     for (; layer < g.n_layers; ++layer) {
         if (should_stop && should_stop()) { err = "cancelled"; return false; }
         if (!drain()) { err = "prefill layer-major: layer boundary drain failed"; return false; }
         if (std::getenv("STRATA_TRACE")) {
-            std::fprintf(stderr, "strata trace: layer-major layer %lld of %lld: loading %d experts\n",
-                         (long long)layer, (long long)g.n_layers, NE);
+            std::fprintf(stderr, "strata trace: layer-major layer %lld of %lld: loading %lld experts\n",
+                         (long long)layer, (long long)g.n_layers, (long long)NE);
             std::fflush(stderr);
         }
         std::fill(residency.begin(), residency.end(), -1);
@@ -231,7 +256,7 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         // job can reference upload, rows, this map, or this temporary cache.
         for (int32_t e = 0; e < NE; ++e) residency[size_t(layer * NE + e)] = e;
         stage_lb_ = layer; stage_le_ = layer + 1;
-        hand_in_ = layer == 0 ? nullptr : rows.get();
+        m.layer_major_host_input = layer == 0 ? nullptr : rows.get();
         m.layer_major_gpu_input = layer == 0 ? nullptr : device_rows.get();
         ss.ple_prev[0] = initial_prev[0]; ss.ple_prev[1] = initial_prev[1];
         cursor = {n, m.T};
@@ -255,10 +280,23 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
                 return !restore.chunk || restore.chunk(residual, count, position, error);
             }
             const auto span = plan.span(row, count);
-            uint8_t* destination = span.device ? reinterpret_cast<uint8_t*>(device_rows.get())
-                                             : reinterpret_cast<uint8_t*>(rows.get());
-            const auto status = cudaMemcpyAsync(destination + size_t(span.offset_bytes), residual,
-                size_t(span.bytes), span.device ? cudaMemcpyDeviceToDevice : cudaMemcpyDeviceToHost, m.cs);
+            uint8_t* destination = (span.device ? device_rows.get() : rows.get()) + size_t(span.offset_bytes);
+            cudaError_t status = cudaSuccess;
+            if (plan.dtype == detail::LayerMajorResidualDtype::fp16) {
+                uint16_t* packed = span.device ? reinterpret_cast<uint16_t*>(destination)
+                                              : m.layer_major_fp16_stage;
+                if (!packed || (!span.device && span.bytes > plan.staging_bytes)) {
+                    error = "prefill layer-major: FP16 residual staging bounds exceeded"; return false;
+                }
+                // to_f16 uses shared RNE bits, without hsat/clamping. Neither
+                // placement rounds twice; final-layer callbacks stay FP32.
+                to_f16(residual, packed, int64_t(span.bytes / 2), m.cs);
+                if (!span.device)
+                    status = cudaMemcpyAsync(destination, packed, size_t(span.bytes), cudaMemcpyDeviceToHost, m.cs);
+            } else {
+                status = cudaMemcpyAsync(destination, residual, size_t(span.bytes),
+                    span.device ? cudaMemcpyDeviceToDevice : cudaMemcpyDeviceToHost, m.cs);
+            }
             if (status != cudaSuccess || !drain()) {
                 error = "prefill layer-major: residual store copy/drain failed"; return false;
             }

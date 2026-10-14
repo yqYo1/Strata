@@ -114,6 +114,30 @@
       "path": "research-decode-ledger-current-gap-round570-v1.txt",
       "sha256": "5dfa5164cb54e445d805aaab144c9c1397df362bd7a12b505b022308ca589256",
       "status": "FINAL received; Main review in main-review-round569-570.ja.md. Implementation candidates remain unqualified."
+    },
+    {
+      "round": 571,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-layer-major-host-tail-schedule-round571-v1.txt",
+      "sha256": "873e3d4f6546b067a0eb58b70bc4f7d1202976a184299979975cf23bfb5d2d8a",
+      "status": "FINAL received; Main review in main-review-round571-573.ja.md; hypotheses only, no measurements by researcher."
+    },
+    {
+      "round": 572,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-layer-upload-batch-round572-v1.txt",
+      "sha256": "9b2f082b970bf4a3582c47a8fb8db84f0fa171562c539b45c72088c3905cb8a8",
+      "status": "FINAL received; Main review in main-review-round571-573.ja.md; hypotheses only, no measurements by researcher."
+    },
+    {
+      "round": 573,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-fp16-model-quality-gate-round573-v1.txt",
+      "sha256": "059bf0ccd472d5201004527ee7cb9a92b168f1e0ba71ffce8857b6cc2118df61",
+      "status": "FINAL received; Main review in main-review-round571-573.ja.md; hypotheses only, no measurements by researcher."
     }
   ],
   "main_initial_findings": [
@@ -130,7 +154,7 @@
     "main_review": "qsa-layout-recovery-v1/main-review.ja.md",
     "status": "Build/host and20GPU parity/oracle cases PASS/fault0. Component40sample screen closedPASS; layout1 median4.09%slower in one int8case, no adoption. No whole-model/full256K/RESTORE/quality qualification."
   },
-  "latest_main_review": "main-review-round569-570.ja.md",
+  "latest_main_review": "main-review-round571-573.ja.md",
   "component_summary": "qsa-layout-screen-summary.json",
   "gemm_orientation_probe": {
     "report": "gemm-orientation-probe-v1/implementation.txt",
@@ -167,7 +191,9 @@
     "screen": "saved-residual-precision-screen-v1.json",
     "scope": "CPU posthoc final-layer data only; no accumulated model quality/device-cast qualification",
     "proposal": "layer-major-fp16-storage-v1/implementation.txt",
-    "state": "Sol FINAL received; Main review pending; product not applied"
+    "state": "Main applied incremental proposal with trace-format and test-copy owner fixes. Build+CPU PASS. GPU conversion oracle PASS; small placement comparison running, not quality/performance adoption.",
+    "build": "layer-major-storage-build-v1.json",
+    "main_review": "layer-major-fp16-storage-v1/main-review.ja.md"
   },
   "parallel_implementations": [
     {
@@ -178,19 +204,34 @@
     {
       "model": "gpt-6.1-sol",
       "directory": "layer-major-fp16-storage-v1",
-      "state": "FINAL received; Main review/build pending"
+      "state": "Main integrated/build+CPU PASS; GPU numerical gate running"
     },
     {
       "model": "gpt-6.1-sol",
       "directory": "mtp4-decode-observer-v1",
-      "state": "Running; non-applied candidate only, no build/test/GPU"
+      "state": "FINAL received; Main source review in progress; unbuilt/nonapplied"
+    },
+    {
+      "model": "gpt-6.1-sol",
+      "directory": "prefill-selected-logits-v1",
+      "state": "Running; non-applied source proposal only, Main owns builds/tests/GPU"
+    },
+    {
+      "model": "gpt-6.1-sol",
+      "directory": "mtp-prefill-record-lease-v1",
+      "state": "Running; non-applied source proposal only, Main owns builds/tests/GPU"
+    },
+    {
+      "model": "gpt-6.1-sol",
+      "directory": "mtp-expert-prefill-release-v1",
+      "state": "Running; non-applied source proposal only, Main owns builds/tests/GPU"
     }
   ],
   "parallel_research": {
     "round": 571,
     "model": "gpt-6-luna",
     "path": "research-layer-major-host-tail-schedule-round571-v1.txt",
-    "state": "Running, read-only except own report; previous report directory shared"
+    "state": "R571 FINAL received, followed by parallel R572/R573 FINAL. Source hypotheses reviewed separately from Main GPU evidence."
   },
   "retention_v2": "closed-artifact-retention-v2.json"
 }
