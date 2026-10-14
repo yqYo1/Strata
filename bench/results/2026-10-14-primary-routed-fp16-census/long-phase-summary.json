@@ -1,0 +1,166 @@
+{
+  "passed": true,
+  "active": false,
+  "scope": "One fresh CLI diagnostic with existing phase barriers; not stock speed or exclusive kernel/critical-path proof.",
+  "actual_input_tokens": 34561,
+  "batched_input_tokens": 34560,
+  "input_hashes": {
+    "token_ids_sha256": "10f2c31dbd7282fa7ff18436cf5e11413e87577b4080396b80c7af4448962d31",
+    "canonical_body_sha256": "64d60334c07718b1b841621ad21d8bdc77d419b4a07b46c179909afd6276520b",
+    "rendered_sha256": "a3dd759a6efe782ce4e8987a3368f97155b387c9bb011252142a9acd9cec488b"
+  },
+  "binary_sha256": "68da026294cb9f2e6f4faee0e7c90b276a5f7f1306499f3210fe6744c89294b6",
+  "first_logits_sha256": "840fb857ffd632322d637643726489db93b7486694e5a8aa4c4e65ab7bf0bbe5",
+  "first_logits_finite": true,
+  "fresh_faults": [],
+  "driver_dump_exists": false,
+  "boot_unchanged": true,
+  "wall_ms": 207576.356,
+  "phase_coverage_fraction": 0.9987725480641928,
+  "nonexclusive_phase_intervals": [
+    {
+      "name": "embed+steps",
+      "ms": 12410.036,
+      "fraction": 0.05985887642774221
+    },
+    {
+      "name": "hc read",
+      "ms": 3147.851,
+      "fraction": 0.015183422837930909
+    },
+    {
+      "name": "gdn",
+      "ms": 3462.81,
+      "fraction": 0.016702603915310962
+    },
+    {
+      "name": "qsa proj",
+      "ms": 5003.124,
+      "fraction": 0.02413219278885825
+    },
+    {
+      "name": "qsa indexer",
+      "ms": 7375.37,
+      "fraction": 0.035574543171258896
+    },
+    {
+      "name": "qsa select",
+      "ms": 3229.376,
+      "fraction": 0.01557665255142825
+    },
+    {
+      "name": "qsa attn",
+      "ms": 49455.134,
+      "fraction": 0.2385431238735675
+    },
+    {
+      "name": "router+shared",
+      "ms": 836.432,
+      "fraction": 0.004034466920821928
+    },
+    {
+      "name": "host grouping",
+      "ms": 6758.848,
+      "fraction": 0.032600795616216795
+    },
+    {
+      "name": "gather",
+      "ms": 5273.07,
+      "fraction": 0.025434257042029097
+    },
+    {
+      "name": "wait copy",
+      "ms": 412.701,
+      "fraction": 0.0019906322721872554
+    },
+    {
+      "name": "dequant",
+      "ms": 32529.395,
+      "fraction": 0.15690309323633028
+    },
+    {
+      "name": "gemm gate/up",
+      "ms": 6003.808,
+      "fraction": 0.02895891689338291
+    },
+    {
+      "name": "gemm down",
+      "ms": 61535.196,
+      "fraction": 0.29681039549932786
+    },
+    {
+      "name": "combine",
+      "ms": 2867.834,
+      "fraction": 0.013832781872774393
+    },
+    {
+      "name": "ple",
+      "ms": 456.222,
+      "fraction": 0.0022005525464726615
+    },
+    {
+      "name": "kv stage",
+      "ms": 433.428,
+      "fraction": 0.0020906073997145093
+    },
+    {
+      "name": "gdn conv+gates",
+      "ms": 609.737,
+      "fraction": 0.0029410206172183744
+    },
+    {
+      "name": "gdn recurrence",
+      "ms": 3542.932,
+      "fraction": 0.017089066363698988
+    },
+    {
+      "name": "gdn out proj",
+      "ms": 1978.262,
+      "fraction": 0.00954199815372801
+    }
+  ],
+  "requested_payload_bytes": 183862579200,
+  "stager_copy_attempts": 89743,
+  "direct_pinned_attempts": 0,
+  "host_staging_ms": 75519.297,
+  "gu_calls": 90297,
+  "down_calls": 90297,
+  "gu_rows": 16588800,
+  "down_rows": 16588800,
+  "active_experts": 90297,
+  "layer_chunks": 432,
+  "actual_chunks": 9,
+  "actual_last_chunk": 1792,
+  "active_call_ne_percentiles": {
+    "0.5": 12,
+    "0.9": 428,
+    "0.99": 3245
+  },
+  "row_weighted_ne_percentiles": {
+    "0.5": 1490,
+    "0.9": 3855,
+    "0.99": 4074
+  },
+  "call_fraction_ne_le16": 0.5513472208379016,
+  "row_fraction_ne_le16": 0.013855613425925926,
+  "conditional_payload_seconds_at_attained_6_447GBps": 28.519090926012097,
+  "bandwidth_scope": "Conditional requested-payload budget at earlier attained host-USM bandwidth, not successful DMA/link traffic or absolute hardware lower bound.",
+  "priority": "First isolate QSA attention and copy/stager/dequant/small-shape dispatch around Down. Current observed GDN recurrence only3.54s; defer GDN kernel port until matched unprofiled/collector evidence makes it material.",
+  "pending": [
+    "Unprofiled matching fresh-CLI reference and observation overhead",
+    "Actual QSA dispatch and per-command timing",
+    "Formal unchanged bench.sh candidate speed",
+    "Quality/full-input/RESTORE",
+    "Independent longer decode repetitions"
+  ],
+  "native_timing_lines": [
+    "strata prefill timing: 34560 tokens, GPU timeline 207322 ms, wall 207576 ms, host staging 75519 ms: embed+steps 12410 (6.0%) hc read 3148 (1.5%) gdn 3463 (1.7%) qsa proj 5003 (2.4%) qsa indexer 7375 (3.6%) qsa select 3229 (1.6%) qsa attn 49455 (23.9%) router+shared 836 (0.4%) host grouping 6759 (3.3%) gather 5273 (2.5%) wait copy 413 (0.2%) dequant 32529 (15.7%) gemm gate/up 6004 (2.9%) gemm down 61535 (29.7%) combine 2868 (1.4%) ple 456 (0.2%) kv stage 433 (0.2%) gdn conv+gates 610 (0.3%) gdn recurrence 3543 (1.7%) gdn out proj 1978 (1.0%)",
+    "strata prefill timing: host: chunk setup (PLE rows, the expert stream plan) 7939 ms, waiting for each chunk 313 ms, after each chunk (the draft layer, progress) 4689 ms, PLE 1700 ms"
+  ],
+  "host_staging_scope": "Consumer stage_one elapsed interval for Stager wait and H2D submission; not worker memcpy sum or successful DMA service; overlaps GPU timeline.",
+  "effective_safety_policy": {
+    "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+    "EnableDirectSubmission": "0",
+    "NEOReadDebugKeys": "1"
+  }
+}

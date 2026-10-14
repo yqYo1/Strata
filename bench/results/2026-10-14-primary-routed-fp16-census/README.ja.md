@@ -39,3 +39,36 @@ evidence commit7bb5b19aをbyte/hash検証後、閉じた成功ログ・重複ten
 2,626,725 logical bytes退去した。[manifest](deletion-manifest.jsonl)、[集計](retirement.json)。
 実空き容量差は未測定。長文controllerが使うraw build/numeric gate recordsとcanonical compact1
 tensor fixtureは保持し、元結果の状態を変更していない。再開はGitのレポートから行う。
+
+## 実34Kの観測完了
+
+long phase v3は実入力34561、batched34560、8*4096+1792の9chunks、ctx262144で正常終了した。
+全first logitsはfinite、native/owner正常0、全child回収、source/binary一致、fault0、dumpなし、同じboot。
+v1/v2はそれぞれ管理Pythonのregex不足、保存argsにない--serveの削除でGPU起動前に失敗した。
+元FAILED状態を別JSONへ保持し、既存venvへのre-execと実argsの確認をしてfresh v3を実行した。
+
+| 非exclusive区間 | 秒 | timeline比率 |
+| --- | ---: | ---: |
+| gemm down | 61.535 | 29.68% |
+| qsa attn | 49.455 | 23.85% |
+| dequant | 32.529 | 15.69% |
+| gdn recurrence | 3.543 | 1.71% |
+
+wall207.576秒、記録区間はwallの99.88%。cold JIT、host/queue待ち、既存timing barrierの負荷を含む。
+Down区間をDown GEMMだけのservice時間にしない。QSAの実matrix/fallback選択も未観測。
+GDN移植を先行せず、QSAとcopy/stager/dequant・small-shape dispatchを先に切り分ける。
+標準quiet194.2 t/sとの直接比較や支配的原因の確定に使わない。
+
+routed expertの要求payload183,862,579,200 bytes、89,743コピー試行すべてstager経由、
+direct-pinned試行0。legacy『0 by DMA』はdirect-pinned統計で、stagerのH2Dがない意味ではない。
+host staging75.519秒は上の区間と重なるので加算しない。
+以前のhost-USM到達6.447 GB/sへ単純に割ると28.519秒だが、実DMA/物理trafficや絶対下限の測定ではない。
+
+GU/Down各90,297calls、各16,588,800rows。active callのne中央値12、90%点428、99%点3245。
+ne<=16はcallsの55.13%だがrowsの1.39%。一律80行の合成GEMMを実分布として扱わない。
+exact histogram/format/payloadは元receiptに保持した。[観測概要](long-phase-summary.json)。
+
+次は同じinput/body/hash・native68da0262・fresh CLI/runtime policyの`check_long.py reference`。
+観測OFFの全first logitsとwallを照合し、必要ならcensusのみを分離する。正式bench.sh比較は別。
+phaseのfirst logits/token IDsはそのconsumer用、16MiB以内、比較終了時に見直す。
+[保持計画](long-phase-retention.json)。

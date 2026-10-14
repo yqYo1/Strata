@@ -18,6 +18,24 @@
       "original_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-stock-long-decode-repetition-round520-v1.txt",
       "sha256": "2da88763db80cb341b9d6f24d9bc501b96ad97f1a31af61ff6246dc509611b2c",
       "status": "proposal-only"
+    },
+    {
+      "round": 521,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research/research-down-stager-phase-attribution-round521-v1.txt",
+      "sha256": "eaee6b2ff343fb415c76cc197e804b6ca364c73c0b35d39286f2ce0de97a8f94",
+      "original_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-down-stager-phase-attribution-round521-v1.txt",
+      "status": "proposal-only"
+    },
+    {
+      "round": 522,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research/research-qsa-observed-dispatch-round522-v1.txt",
+      "sha256": "79b1b1badf905ed02e00b8a7c9175850ba33fc7fd937ed291b9d1ba6455e753a",
+      "original_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-20261009/research-qsa-observed-dispatch-round522-v1.txt",
+      "status": "proposal-only"
     }
   ],
   "no_intervention_until_final": true,
@@ -27,6 +45,15 @@
     "R519 four independent column groups cannot use the current within-one-head-group output normalization unchanged without a cross-group completion mechanism. A candidate needs an ordered normalization pass or a different mapping; preserve normalization math/state contracts and account for additional launches. No kernel is adopted.",
     "R520 prefix reuse depends on engine configuration. Current canonical stock disables conversation/prompt caches; do not claim its agent prefixes are restored or cached without observed counters. Also prompt_n is newly-read tokens, not always total context; preserve actual usage/context and reused counts separately.",
     "R520 supporting tools are distinct from unchanged bench.sh formal results. Agent histories here are predefined source-backed tool results; they do not include actual model completions in later histories, unlike the formal suite agent scenario. Request hashes remain necessary for matched comparisons.",
-    "Phase intervals use existing compatibility barriers and can perturb queue scheduling. Counts/payload semantics and first-logit correctness do not qualify exclusive service times or a canonical quiet critical path. Match unprofiled reference and assess observer overhead before causal performance conclusions."
+    "Phase intervals use existing compatibility barriers and can perturb queue scheduling. Counts/payload semantics and first-logit correctness do not qualify exclusive service times or a canonical quiet critical path. Match unprofiled reference and assess observer overhead before causal performance conclusions.",
+    "Main verified actual stock/census environment: UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD=1, EnableDirectSubmission=0, NEOReadDebugKeys=1 already match the safety policy used by the small probe. Earlier generic assumption that these named flags differ from canonical stock was incorrect. Validation/tracing flags still differ; compare actual whitelists instead of memory.",
+    "R521 ms_experts_host75.519s in this R8 nonstreamed run is accumulated consumer stage_one elapsed time (starts before Stager wait and H2D submission, source lines2599-2619), not a sum of worker memcpy durations. Stager worker service and DMA waits are not separately measured. It overlaps the GPU phase timeline.",
+    "R521 copies enqueued before a marker on the same in-order queue must finish before that marker timestamp. Down interval can include later lookahead copies queued after its marker and before the next marker, plus host/queue idle; do not put earlier completed copies after the marker.",
+    "R521 grouped-gather Sol proposal offsets Xs only and deliberately keeps GU/Hh row0 per-expert; local GU/Hh offsets are optional, not the proposal behavior.",
+    "R521 blanket copied-wait requirement for skipped private-queue entries is not proved; a skipped payload has no device reader and same copy queue orders subsequent writes. Preserve issuer acknowledgment/used_of HB and actual read/write dependencies; current R8 has no threaded skip walk.",
+    "R521 do not blanket-ban every VTune launched-child software collector. Existing PMU/Xe restrictions and previous failed collector ancestry are specific; qualify a distinct bounded supported plan before treating it unavailable.",
+    "R521 the one input outside batched34560 is the last real prompt token, consumed by nativeT1 before first output; not a dummy or generated extra input.",
+    "R522 full262144 real input uses valid0-based positions0..262143; do not process position262144 as a valid cell. Additional outputs at capacity must be refused.",
+    "Main checked actual markers: QSA gate/output projection is explicitly marked kPfQsa after attention, so it is separate from kPfQsaAttn. Actual attention matrix acceptance/decline remains unobserved."
   ]
 }

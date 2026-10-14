@@ -207,8 +207,13 @@ def main():
                 record['active']=False
                 persist()
         assert record['passed'] and record['complete']
-        print(json.dumps(dict(passed=True,mode=mode,input=identity,
-            routed_observation=record.get('routed_observation'),fresh_faults=0)),flush=True)
+        observed = record.get('routed_observation', {})
+        print(json.dumps(dict(passed=True,mode=mode,
+            actual_input_tokens=identity['actual_input_tokens'],
+            batched_input_tokens=identity['batched_input_tokens'],
+            requested_payload_bytes=observed.get('blob_h2d_requested_submission_payload_bytes'),
+            gu_calls=observed.get('gu_calls'), wall_ms=observed.get('wall_ms'),
+            first_logits_sha256=record['first_logits_sha256'], fresh_faults=0)),flush=True)
 
 
 if __name__=='__main__':
