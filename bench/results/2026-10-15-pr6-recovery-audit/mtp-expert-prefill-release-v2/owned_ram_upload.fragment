@@ -1,0 +1,101 @@
+// The opt-in loader retains immutable original bytes in RAM. Restoration never
+// reads model files or saves a VRAM copy; each bounded H2D view stays owned.
+bool MtpDrafter::upload_experts_checked(bool original, std::string& err) try {
+    if (!g_ || g_->n_expert <= 0 ||
+        uint64_t(g_->n_expert) > std::numeric_limits<uint64_t>::max() / strata::kernels::cpu::BLOB) {
+        err = "mtp: expert source byte count overflow"; return false;
+    }
+    const uint64_t bytes = uint64_t(g_->n_expert) * strata::kernels::cpu::BLOB;
+    if (!bytes || bytes > std::numeric_limits<size_t>::max() ||
+        bytes > std::numeric_limits<uint64_t>::max()/8 ||
+        vram_ > std::numeric_limits<uint64_t>::max() - bytes || experts_ ||
+        (original && (expert_source_valid_ || !expert_host_source_.empty())) ||
+        (!original && (!expert_source_valid_ || bytes != expert_bytes_ || expert_host_source_.size() != bytes))) {
+        err = "mtp: invalid expert upload state or byte count"; return false;
+    }
+    constexpr uint64_t chunk_limit = 64ull << 20, host_floor = 8ull << 30;
+    std::vector<uint8_t> original_source;
+    std::array<uint8_t,32> digest = expert_source_sha256_;
+    if (original) {
+        if (!conversation_memory_admit(conversation_available_memory(), bytes + (1ull << 20), host_floor)) {
+            err = "mtp: original expert RAM source exceeds available memory minus 8 GiB"; return false;
+        }
+        const std::string path = rt_dir_ + "/experts.bin";
+        FILE* raw = std::fopen(path.c_str(), "rb");
+        if (!raw) { err = "mtp: cannot open expert source " + path; return false; }
+        auto close_file = [](FILE* f) { if (f) std::fclose(f); };
+        std::unique_ptr<FILE, decltype(close_file)> file(raw, close_file);
+        if (STRATA_FILE_SEEK64(raw, 0, SEEK_END) != 0) {
+            err = "mtp: cannot seek expert source"; return false;
+        }
+        const auto length = STRATA_FILE_TELL64(raw);
+        if (length < 0 || uint64_t(length) != bytes || STRATA_FILE_SEEK64(raw, 0, SEEK_SET) != 0) {
+            err = "mtp: expert source must have exactly " + std::to_string(bytes) + " bytes"; return false;
+        }
+        original_source.resize(size_t(bytes));
+        detail::MtpExpertSha256 hash;
+        for (uint64_t off = 0; off < bytes;) {
+            const size_t count = size_t(std::min(chunk_limit, bytes - off));
+            if (std::fread(original_source.data() + off, 1, count, raw) != count) {
+                err = "mtp: expert source short read or read error"; return false;
+            }
+            hash.update(original_source.data() + off, count);
+            off += count;
+        }
+        if (std::fgetc(raw) != EOF || std::ferror(raw)) {
+            err = "mtp: expert source changed length or failed while reading"; return false;
+        }
+        digest = hash.finish();
+    }
+    const auto& source = original ? original_source : expert_host_source_;
+    auto free_checked = [](uint8_t* p) noexcept {
+        if (p) {
+            const auto status = cudaFree(p);
+            if (status != cudaSuccess) expert_failstop("unpublished expert free failed", status);
+        }
+    };
+    uint8_t* allocation = nullptr;
+    const auto alloc_status = cudaMalloc(reinterpret_cast<void**>(&allocation), size_t(bytes));
+    if (alloc_status != cudaSuccess) {
+        if (allocation) expert_failstop("failed expert allocation returned ownership", alloc_status);
+        err = "mtp: expert restore allocation failed: " + std::string(cudaGetErrorString(alloc_status));
+        return false;
+    }
+    // Declared after the local source: pending always retires/frees before the
+    // initial host snapshot can unwind. Compat calls return errors, not throws.
+    std::unique_ptr<uint8_t, decltype(free_checked)> pending(allocation, free_checked);
+    for (uint64_t off = 0; off < bytes;) {
+        const size_t count = size_t(std::min(chunk_limit, bytes - off));
+        const auto copied = cs_ ? cudaMemcpyAsync(allocation + off, source.data() + off, count, cudaMemcpyHostToDevice, cs_)
+                                : cudaMemcpy(allocation + off, source.data() + off, count, cudaMemcpyHostToDevice);
+        const auto completed = cs_ ? cudaStreamSynchronize(cs_) : cudaDeviceSynchronize();
+        if (completed != cudaSuccess) expert_failstop("expert upload retirement is ambiguous", completed);
+        if (copied != cudaSuccess) {
+            err = "mtp: expert source upload failed: " + std::string(cudaGetErrorString(copied)); return false;
+        }
+        off += count;
+    }
+    // The private RAM source is never modified or exposed to writers after this
+    // move. Restore needs no full-file read, host copy, SHA scan or new host slab.
+    if (original) expert_host_source_ = std::move(original_source);
+    experts_ = pending.release();
+    vram_ += bytes;
+    expert_bytes_ = bytes;
+    if (original) { expert_source_sha256_ = digest; expert_source_valid_ = true; }
+    if (original) {
+        char digest_text[65];
+        static constexpr char hex[] = "0123456789abcdef";
+        for (size_t i = 0; i < digest.size(); ++i) {
+            digest_text[2*i] = hex[digest[i] >> 4]; digest_text[2*i+1] = hex[digest[i] & 15];
+        }
+        digest_text[64] = '\0';
+        std::fprintf(stderr, "strata mtp: expert source original=1 bytes=%llu source=owned-RAM sha256=%s\n",
+                     (unsigned long long)bytes, digest_text);
+    } else {
+        std::fprintf(stderr, "strata mtp: expert source original=0 bytes=%llu source=owned-RAM\n",
+                     (unsigned long long)bytes);
+    }
+    return true;
+} catch (const std::exception& e) {
+    err = std::string("mtp: expert source upload: ") + e.what(); return false;
+}

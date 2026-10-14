@@ -275,9 +275,17 @@
   ],
   "selected_head_diagnostic": {
     "recipe": "check_selected_prefill_logits.py",
-    "state": "Small actual c2e46 GPU regression PASS/fault0, both FP32/FP16 end logits bitwise match their prior source;9 selected distributions finite. Natural34K next, quality/performance still unqualified.",
+    "state": "Small and34603-input long paired distributions PASS/fault0; long19 positions KL median~0.000994 nats, sample mean targetNLL delta~-0.0822 nats. Not independent task quality/PPL/performance adoption.",
     "output_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-selected-prefill-small-root-v1",
     "small_gate": "selected-prefill-small-v1.json",
-    "summary": "selected-prefill-small-summary-v1.json"
+    "summary": "selected-prefill-small-summary-v1.json",
+    "long_gate": "selected-prefill-long-v1.json",
+    "long_summary": "selected-prefill-long-summary-v1.json"
+  },
+  "mtp_expert_release_next": {
+    "original": "mtp-expert-prefill-release-v1/source.diff",
+    "rebased": "mtp-expert-prefill-release-v2/source.diff",
+    "rebase_receipt": "mtp-expert-prefill-release-v2/rebase-v3.json",
+    "state": "Main reviewed and rebased; immutable675MiB RAM restore source avoids repeated file IO/SHA. Capture-exception failstop and four actual VRAM boundaries added. Not yet applied/build/tested."
   }
 }
