@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """CPU-only evidence regression tests; no real server or GPU."""
 import copy
+import io
 import hashlib
 import json
 from pathlib import Path
@@ -25,6 +26,32 @@ def raw(body="answer", offered=300):
 
 
 class EvidenceTests(unittest.TestCase):
+    def test_incomplete_standard_response_cannot_enter_speed_summary(self):
+        for change in ({"usage": {}}, {"done_received": False}, {"finish_reason": None}):
+            r = raw(); r.update(change)
+            d = b.digest(r)
+            self.assertFalse(d["ok"])
+            self.assertIsNotNone(d["err"])
+        r = raw(); r["usage"] = {}; r["timings"] = {}
+        self.assertIsNone(b.digest(r)["decode_tps"])
+
+    def test_malformed_sse_is_an_error_even_after_a_content_piece(self):
+        stream = io.BytesIO(b'data: {"choices":[{"delta":{"content":"fragment"}}]}\n\n'
+                            b'data: {broken json}\n\n'
+                            b'data: [DONE]\n\n')
+        with patch.object(b.urllib.request, "urlopen", return_value=stream):
+            r = b.chat("http://unused", "", [], 100, True)
+        self.assertEqual(r["text"], "fragment")
+        self.assertEqual(r["err"], "malformed SSE JSON")
+        self.assertFalse(b.digest(r)["ok"])
+
+    def test_cap_limited_agent_body_is_visible_but_not_a_complete_turn(self):
+        r = raw(); r["finish_reason"] = "length"
+        d = b.digest(r); d["output_chars"] = len(r["text"])
+        self.assertTrue(d["ok"])
+        self.assertTrue(d["truncated"])
+        self.assertFalse(b.agent_turn_complete(d))
+
     def test_interrupted_later_request_keeps_durable_sample_and_chain(self):
         with tempfile.TemporaryDirectory() as td:
             j = b.RequestJournal(Path(td), lambda x: x)

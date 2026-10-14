@@ -28,6 +28,7 @@
 #include "strata/prefill/moe_mmq.hpp"
 #include "strata/core/peer_experts.hpp"
 #include "strata/prefill/kernels.hpp"
+#include "strata/prefill/draft_uploads.hpp"
 
 #include <cuda_runtime.h>
 
@@ -1003,7 +1004,21 @@ bool Prefill::draft_kv(core::MtpDrafter& mtp, const float* R_rows, const int32_t
     strata::kernels::QsaShapes s = strata::kernels::qsa_real_shapes();
     s.n_head = g.n_head; s.n_head_kv = g.n_head_kv; s.head_dim = g.head_dim; s.idx_n_head = g.idx_q_heads;
     s.idx_dim = g.idx_key_dim;
-    std::vector<int32_t> tk((size_t) B);
+    detail::DraftHostUploads uploads(next_tokens, n, r0, B, g.hc, q8);
+#ifdef STRATA_ENABLE_SYCL
+    cudaError_t upload_drain_status = cudaSuccess;
+    detail::DraftUploadGuard upload_guard(
+        [&]() noexcept {
+            upload_drain_status = cudaStreamSynchronize(m.cs);
+            return upload_drain_status == cudaSuccess;
+        },
+        [&]() noexcept {
+            std::fprintf(stderr, "strata prefill: draft host uploads did not drain: %s; aborting with upload storage live\n",
+                         cudaGetErrorString(upload_drain_status));
+            std::fflush(stderr);
+            std::abort();
+        });
+#endif
     if (q8) {
         if (!m.mmq_ctx) m.mmq_ctx = std::make_unique<mmq::Context>();
         mmq::iota(ident, B * g.hc, m.cs);
@@ -1021,13 +1036,14 @@ bool Prefill::draft_kv(core::MtpDrafter& mtp, const float* R_rows, const int32_t
     };
     for (int64_t b0 = r0; b0 < n; b0 += B) {
         const int64_t nb = std::min(B, n - b0), c0 = cell0 + b0;
-        for (int64_t i = 0; i < nb; ++i) tk[(size_t) i] = next_tokens[b0 + i];
-        const int32_t bh[4] = {0, (int32_t) nb, 0, (int32_t) (nb * g.hc)};
-        if (q8 && cudaMemcpyAsync(bnd, bh, sizeof bh, cudaMemcpyHostToDevice, m.cs) != cudaSuccess) {
+#ifdef STRATA_ENABLE_SYCL
+        upload_guard.arm();
+#endif
+        if (q8 && cudaMemcpyAsync(bnd, uploads.bounds(b0), 4 * sizeof(int32_t), cudaMemcpyHostToDevice, m.cs) != cudaSuccess) {
             err = "prefill: the draft bounds' upload failed";
             return false;
         }
-        if (cudaMemcpyAsync(tok, tk.data(), (size_t) nb * 4, cudaMemcpyHostToDevice, m.cs) != cudaSuccess) {
+        if (cudaMemcpyAsync(tok, uploads.tokens(b0), (size_t) nb * 4, cudaMemcpyHostToDevice, m.cs) != cudaSuccess) {
             err = "prefill: the draft tokens' upload failed";
             return false;
         }
@@ -1078,6 +1094,9 @@ bool Prefill::draft_kv(core::MtpDrafter& mtp, const float* R_rows, const int32_t
         err = std::string("prefill: the draft layer's K/V: ") + cudaGetErrorString(cudaGetLastError());
         return false;
     }
+#ifdef STRATA_ENABLE_SYCL
+    upload_guard.retire();
+#endif
     mtp.ms_prefill += ms_since(t0);
     if (timing)
         std::fprintf(stderr, "strata draft kv: %lld cells from %lld (first needed %lld), batch %lld: drafter idle %.1f ms, "

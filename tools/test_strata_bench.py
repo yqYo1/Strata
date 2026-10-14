@@ -90,6 +90,7 @@ class BenchmarkTest(unittest.TestCase):
             snapshots.append(json.loads(json.dumps(messages)))
             r = response(generated=40)
             r["text"] = f"actual answer {len(snapshots)}"
+            r["finish_reason"] = "stop"
             return r
 
         suite = bench.Suite("http://localhost", "", 262144, 1, False, log=lambda _: None)

@@ -171,7 +171,8 @@ def chat(base: str, key: str, messages: list, max_tokens: int, think: bool = Fal
                 try:
                     j = json.loads(d)
                 except ValueError:
-                    continue
+                    err = "malformed SSE JSON"
+                    break
                 if j.get("error"):
                     err = str(j["error"])[:300]
                 for ch in j.get("choices") or []:
@@ -207,6 +208,12 @@ def digest(r: dict) -> dict:
     u, t = r.get("usage") or {}, r.get("timings") or {}
     gen = u["completion_tokens"] if u.get("completion_tokens") is not None else (r.get("pieces") or 0)
     prompt_tokens = u.get("prompt_tokens")
+    usage_complete = (type(u.get("completion_tokens")) is int and u["completion_tokens"] > 0
+                      and type(prompt_tokens) is int and prompt_tokens > 0)
+    stream_complete = bool(r.get("done_received") and r.get("finish_reason") in ("stop", "length"))
+    error = r.get("err")
+    if error is None and not (usage_complete and stream_complete):
+        error = "incomplete SSE response or missing token usage"
     cached = (u.get("prompt_tokens_details") or {}).get("cached_tokens")
     if cached is None:
         cached = t.get("cache_n")
@@ -214,20 +221,20 @@ def digest(r: dict) -> dict:
     if read is None and prompt_tokens is not None and cached is not None:
         read = prompt_tokens - cached
     dec, dsrc = t.get("predicted_per_second"), "engine"
-    if dec is None and r.get("first") is not None and gen > 1 and r["total"] > r["first"]:
+    if dec is None and usage_complete and r.get("first") is not None and gen > 1 and r["total"] > r["first"]:
         dec, dsrc = round((gen - 1) / (r["total"] - r["first"]), 1), "client"
     pp, psrc = t.get("prompt_per_second"), "engine"
     if pp is None:
         pp, psrc = None, None
-    return {"ok": r.get("err") is None and r.get("first") is not None,
-            "err": r.get("err"), "ttft_s": None if r.get("first") is None else round(r["first"], 3),
+    return {"ok": error is None and r.get("first") is not None,
+            "err": error, "ttft_s": None if r.get("first") is None else round(r["first"], 3),
             "total_s": round(r["total"], 3), "prompt_tokens": prompt_tokens, "reused_tokens": cached,
             "read_tokens": read, "generated_tokens": gen, "prompt_tps": pp, "prompt_tps_source": psrc,
             "decode_tps": dec, "decode_tps_source": dsrc if dec is not None else None,
             "prompt_ms": t.get("prompt_ms"), "decode_ms": t.get("predicted_ms"),
             "drafts_offered": t.get("draft_n"), "drafts_accepted": t.get("draft_n_accepted"),
             "finish_reason": r.get("finish_reason"), "request_sha256": r.get("request_sha256"),
-            "stream_complete": bool(r.get("done_received") and r.get("finish_reason") in ("stop", "length")),
+            "stream_complete": stream_complete, "truncated": r.get("finish_reason") == "length",
             "generated_tokens_source": "usage" if u.get("completion_tokens") is not None else "stream_pieces"}
 
 
@@ -252,6 +259,7 @@ def pctl(values, p):
 
 def agent_turn_complete(d):
     return (d.get("ok") and d.get("stream_complete") and d.get("generated_tokens_source") == "usage"
+            and d.get("finish_reason") == "stop"
             and type(d.get("generated_tokens")) is int and d["generated_tokens"] > 0
             and type(d.get("prompt_tokens")) is int and d["prompt_tokens"] > 0
             and d.get("output_chars", 0) > 0)
@@ -1030,7 +1038,7 @@ def render_readme(res: dict) -> str:
           f"- 4K / 16K{' / 32K' if '32K' in res['results']['prompts'] else ''} prompts: generated word lists sized by a calibration request, "
           f"{LONG_MAX_TOKENS} new tokens, {p['runs']} fresh prompts each",
           f"- agent session: system prompt and four tools, then {AGENT_TURNS} turns that each add about {AGENT_WORDS} words of a project file "
-          f"and continue from the model's own earlier answers (the way agent clients resend a conversation), {AGENT_MAX_TOKENS} new tokens per turn, "
+          f"and continue from the model's own earlier answers (the way agent clients resend a conversation), {out.get('agent', {}).get('max_tokens', AGENT_MAX_TOKENS)} new tokens per turn, "
           f"{p['runs']} sessions; the cache numbers come from the answer's usage (`cached_tokens`) and timings (`prompt_n`)",
           "- concurrency (when run): N requests sent at the same moment, total tokens over the wall time of the burst, "
           "latency over all requests", "",
@@ -1159,7 +1167,7 @@ def main(argv=None) -> int:
     ap.add_argument("--runs", type=int, default=3, help="runs per test (default 3)")
     ap.add_argument("--clients", type=int, default=0, metavar="N", help="also send N requests at once")
     ap.add_argument("--long", action="store_true", help="also a prompt of about 32,768 tokens")
-    ap.add_argument("--long-generation", action="store_true", help="also two 32K-input, >=1K-output MTP workloads (thinking on, up to 8K output)")
+    ap.add_argument("--long-generation", action="store_true", help="also two 32K-input, >=1K-output MTP workloads (thinking on, up to 16K output)")
     ap.add_argument("--long-generation-only", action="store_true", help="run only the new long-generation workloads and warm-up")
     ap.add_argument("--think", action="store_true", help="leave thinking on (the default suite turns it off)")
     ap.add_argument("--out", help="where to write the results folder (default: bench/results)")
@@ -1283,6 +1291,8 @@ def main(argv=None) -> int:
             return 1
         if suite.want_long_generation and suite.runs >= 3 and not out["long_generation"]["classification"]["qualified"]:
             return 1
+        if suite.want_long_generation and suite.runs < 3:
+            say("Pilot execution only: fewer than three runs cannot qualify the strong/weak MTP pair.")
         return 1 if out["failures"] and not any(out[k] for k in ("chat", "prompts", "agent")) else 0
     finally:
         if started:

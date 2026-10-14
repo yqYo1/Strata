@@ -1,0 +1,64 @@
+# R543 — review of the batched MTP host-upload lifetime fix
+
+Date: 2026-10-15 JST. Read-only source review of Main's current edits to `include/strata/prefill/draft_uploads.hpp` and `src/prefill/prefill.cpp`. I used the primary routed-FP16 census registry/corrections and R534/R540–R542 plus the stager error-ownership and guard reviews. I did not read the excluded prefill-GEMM-only record, private run/session data or PR #6 history, and did not run Git, tests, builds, GPU/process/profiler/service/reset/cleanup actions. The patch remains uncompiled, unrun and unadopted; this report is not a validation result.
+
+## Finding
+
+The edited code closes the R541 source-reuse gap on the normal path and conservatively handles early exit after an upload is queued. `DraftHostUploads` snapshots the needed token suffix and every per-batch bounds record into private vectors before the loop. No method mutates those vectors. The loop passes pointers into those vectors to `cudaMemcpyAsync`, so the next batch cannot overwrite the prior copy's source. `DraftUploadGuard` is constructed after the vectors, armed before the first possible upload, and stays active until the existing final `cudaStreamSynchronize(m.cs)` succeeds. C++ reverse destruction therefore runs the guard before destroying `uploads`.
+
+The normal path has no additional host wait between batches. The ordinary final stream synchronization remains the completion edge. If an upload fails, a later operation throws, or the final synchronization returns an error, the armed guard tries to synchronize the same stream while the vectors remain alive. It allows unwinding only when that drain returns success. Otherwise its fatal callback aborts before the host-source vectors can be destroyed. This is fail-stop behavior, not recovery or a GPU-drain guarantee. No source-level lifetime defect was found in the new helper/caller ordering. Compile, runtime, fault-fixture and quality behavior remain unverified.
+
+## Source contract and downstream queue path
+
+`generate.cpp:2154-2159` creates the owned main stream; standalone prompt setup passes it to `Prefill::init` (`generate.cpp:4488-4492, 6280-6288`), and `Prefill::init` stores it as `m.cs` and, in the SYCL build, aliases `m.copy = m.cs` (`prefill.cpp:686-718`). `Prefill::run` uses that same stream for its kernels and invokes `on_chunk` synchronously after a chunk synchronization (`prefill.cpp:2922-2938`). The callback's `nxt` vector therefore stays alive through `draft_kv`; the new helper copies its relevant suffix synchronously before queuing any read from the helper's vectors (`generate.cpp:6296-6302`, `prefill.cpp:1007-1030`). The serving callback follows the same synchronous shape (`generate.cpp:4861-4883`).
+
+The chain does not contain an implicit host wait between the upload and downstream consumers on the configured non-null stream:
+
+- The adapter's `cudaMemcpyAsync` submits `queue(st).memcpy` and drops its event (`compat.cpp:253-260`). `cudaStreamSynchronize` reaches `queue(st).wait_and_throw()` only when its `attempt` precheck succeeds (`compat.cpp:328-334`).
+- Embedding gather, row-normalization, residual, RoPE and FWHT kernels enqueue on their explicit stream. `sycl_backend::finish` waits only when its stream argument is null (`include/strata/sycl/launch.hpp:47-60,73-82`). The callback passes non-null `m.cs`.
+- In the non-q8 projection branch, `Gemm::native` dequantizes then calls `f16`; oneMKL GEMM returns an event, but `finish(stream_, event)` is a no-op for this non-null stream (`src/prefill/sycl/gemm.cpp:20-32,105-131`).
+- In the q8 branch, `mmq::quantize` submits a parallel kernel and likewise does not wait for non-null streams (`src/prefill/sycl/moe_mmq.cpp:28-63`). `Context::run` delegates to `native_mmq`; its queue submissions are not waited when `stream != nullptr` (`moe_mmq.cpp:67-77`, `native_mmvq.cpp:1154-1208`, `native_mmq_xmx.cpp:464-526`). The caller does not supply `host_bounds`, so MMQ uses the uploaded device bounds, not a retained pointer into the host helper.
+- The FP16/int8 prefill `kv_append` path and the Q4 append path submit a queue kernel; their `finish` calls also do not wait for this non-null stream (`src/kernels/sycl/kv.cpp:58-164,373-390`).
+
+Thus device-queue ordering carries the HtoD data to its consumers, while host-source lifetime is secured by immutable storage plus the final same-stream wait. In-order queue ordering by itself would not secure a host overwrite; the new code no longer overwrites it.
+
+## Bounds, full-context geometry and partial batches
+
+The helper validates non-null tokens, `0 <= first < n`, positive `batch`/`hc`, an `int32_t`-representable stored token count, and an `int32_t`-representable maximum `count * hc` bounds field before allocating (`draft_uploads.hpp:14-38`). It stores tokens for `[first,n)`. `tokens(position)` accepts only batch-start positions in that range. When requested, bounds contain four values per batch: `{0,count,0,count*hc}`; the last record uses `min(batch, n-first-b*batch)`, not the full batch size. `bounds(position)` uses the same batch-start and batch-index rule. For the caller's `b0` sequence, `b0` starts at `r0` and advances by `B`; `nb=min(B,n-b0)`, so both pointer ranges and the final partial record align (`prefill.cpp:966-981,1019-1030,1041-1045`).
+
+For the source geometry in the R540 projection (`N=2560`, `HC=4`, `LR=320`, QSA KV width `2×256=512`) and its full-capacity `max_cells=262144`, chunk-4096 `region_bytes=607,128,320` is a source estimate, not a live allocation receipt. With q8 enabled, `q8_bytes(4,2560)=11,520`, `per_row=263,396`, so source formula `B=min(n-r0,(region_bytes/per_row)&~63)` yields 2,304 when at least that many cells remain. With `STRATA_MTP_BATCH_F16=1`, q8's extra term is absent, `per_row=251,860`, giving `B=2,368`. Both are below a 4,096-cell chunk and the ring's source cap is larger; exact option values are not read here. `mmq::built()` is true in the SYCL implementation, and Q8_0 is supported, so q8 is the default when `STRATA_MTP_BATCH_F16` is not set to `1` (`moe_mmq.cpp:19-23`, `native_mmvq.cpp:1252-1255`).
+
+The prompt source sets `n_batched=n_prompt-1`, reserving the last real prompt token for the token/decode path (`generate.cpp:6240-6247`). At a full 262,144-token prompt this is 262,143 batched positions, split into 63 full chunks and a final 4,095-token chunk. If all 4,096 cells in a callback are eligible, the q8 batch split is `2304+1792`; the final prompt chunk split is `2304+1791`. Under the f16-only batch size those splits are `2368+1728` and `2368+1727`. MTP's default attention window is 32,768; when that window is enabled, `first_needed()` can trim early cells from each chunk, and `r0` is explicitly included in the helper geometry (`generate.cpp:380`, `mtp.hpp:96`). The helper handles that shortened first span and its last partial batch. Full-context arithmetic remains within signed 32-bit range, but this review did not run the 262,144-token boundary or establish device-memory fit.
+
+## Success, early-return, exception and error lifetime edges
+
+1. Eligibility gates and `mtp.idle(err)` return before the helper/guard exists and before these host sources are used (`prefill.cpp:926-1000`). `DraftHostUploads` construction can throw while copying/allocating, but no queued copy yet references its storage.
+2. After construction, the guard is declared later, so its destructor runs first. q8 `iota` is before the first `arm()` but touches device storage only; no host upload source has been queued yet.
+3. Each iteration arms before the optional bounds HtoD and token HtoD. A failed return from either call unwinds through the guard. The guard remains armed across later batches, so it covers all previously queued sources, not only the current batch. Exceptions from subsequent kernel setup/submission or allocation also unwind through it.
+4. The existing final `cudaStreamSynchronize(m.cs)` is the successful completion edge. Only after it returns `cudaSuccess` does `retire()` disable the destructor drain; the vectors then remain alive through the remainder of the function and are destroyed on return.
+5. The compatibility adapter's `attempt()` checks shared sticky runtime state before the body. If a prior async failure makes the drain skip its actual wait, the non-success return causes the guard's fatal path. If the second attempt cannot prove drain, `std::abort` prevents ordinary stack unwinding and vector destruction. This preserves the source lease at the cost of terminating the process. Because error state is shared across runtime queues, an unrelated earlier runtime error can also make this conservative guard abort; it is not evidence of this upload being faulty.
+
+The failure path does not promise clean shutdown, rollback, or cancellation of other in-flight work. It is consistent with the reviewed SYCL rule that storage used by queued operations must not be freed before completion; the official [SYCL USM allocation/free reference](https://github.khronos.org/SYCL_Reference/iface/usm_allocations.html) and [queue reference](https://github.khronos.org/SYCL_Reference/iface/queue.html) are relevant. The earlier R534/R542 sticky-error caveat still applies to unrelated callbacks and resources; this change only protects the token/bounds sources owned by this call.
+
+## Source identity and review limits
+
+SHA-256 values for this reviewed snapshot:
+
+```text
+2d32126e28c67751d14bde6cd46f1db60b92aa3939b17a6f78fd66bc10955908  include/strata/prefill/draft_uploads.hpp
+c10aa2c3bdd58ae268d1fe81166912c097fb6a5b91f2c9b77de037cbe2d39feb  src/prefill/prefill.cpp
+e3ca2a964806270e1d72862f979b6e262fb17a925a6027e7534c81dc45418871  src/program/generate.cpp
+f5288a88c399d0611d13b7d418fa2d3268f05eabb9ff13a620fd317a5465a287  src/core/mtp.cpp
+225e2021b5ce67b3bb58f116a4a15cd5d592a33dbdf2c9837940a3e89155dca7  src/sycl/compat.cpp
+d571ad74ebfafc2523e129fe29858d61058bf0c26ae686834ea294105acb5e2f  src/sycl/runtime.cpp
+9c5aaf14e4b92232d4dcd4e2e68071201d436d287a9615088a9428d88f53b1ce  include/strata/sycl/launch.hpp
+0fe1904787462a4156185bc08b2076e047f9cf51d9517ede4c8f482fa76c5410  src/prefill/sycl/gemm.cpp
+403dccf14f3a632f3cb5a6b7ecbaaf7dcfae5f0c3fbf875dae2789b6f85978f8  src/prefill/sycl/moe_mmq.cpp
+f5f69d0920c694fc84eb912ff282ae96770428a93887689fb4177ac4bfffdaef  src/kernels/sycl/native_mmq_xmx.cpp
+09b34a547c57ef6fbe84c66f58b685096381f9d6a6ad9a3c74830da20a2152d2  src/kernels/sycl/native_mmvq.cpp
+4e501f6839c20972b46f58d87c4ee3444f771c64cbcc07528a7f23d25461e07f  src/kernels/sycl/kv.cpp
+87c02222284f842fcecb46a422b119af769c72c3914edc8da5b2ee782456dc74  include/strata/kernels/qsa.hpp
+c7624d5567d464edd0e5e99951dca08f8a748545af2f0be4f18398a011c8ab89  include/strata/kernels/kv_q4.hpp
+```
+
+The examined `Prefill::draft_kv` source is the root file included by the configured SYCL build; `src/prefill/sycl/gemm.cpp`, `src/prefill/sycl/moe_mmq.cpp` and `src/kernels/sycl/*` are the downstream implementation files followed above. No source was changed for this review. No compile/test or full-context run establishes that the patch builds, that the fatal route behaves as intended under an injected failure, or that generated outputs remain unchanged. Main owns those checks and the later adoption decision.

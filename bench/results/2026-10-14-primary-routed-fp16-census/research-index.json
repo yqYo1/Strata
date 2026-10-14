@@ -144,6 +144,33 @@
       "sha256": "59c9c399df4339035e0e042e910294daef1d46302f0df7af4ee0d0b36f661bca",
       "status": "source/literature-only; see Main review before reuse",
       "direct_canonical_write": true
+    },
+    {
+      "round": 541,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research/research-sycl-async-host-lifetimes-round541-v1.txt",
+      "sha256": "cfb6b6b1c4e844039a131d712d2e17bfa193fb4466782a515128be7719e52f0b",
+      "status": "source-only; see research-round541-542-review.ja.md",
+      "direct_canonical_write": true
+    },
+    {
+      "round": 542,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research/research-sycl-graph-callback-lifetimes-round542-v1.txt",
+      "sha256": "c70900cca5656b14cf28540b9cfbcb6a760ec83531f555551334341759d6d4bf",
+      "status": "source-only; see research-round541-542-review.ja.md",
+      "direct_canonical_write": true
+    },
+    {
+      "round": 543,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research/research-mtp-upload-fix-review-round543-v1.txt",
+      "sha256": "054863403bab86f9d810067cac16b13926c1d619005ce8c9bf015df0347da0bd",
+      "status": "source-only fix review; CPU tests are separately recorded; GPU validation pending",
+      "direct_canonical_write": true
     }
   ],
   "no_intervention_until_final": true,
@@ -175,16 +202,11 @@
     "R538 fewer distinct experts than workers does not imply empty tasks: current pool splits flattened output rows across18tasks; nb1 gives640GU/2560Downrows. Actual imbalance/overhead requires observation. Q2_0 Down routes via q2_rows_any to AVX2 on this Zen3, not scalar-only. See research-round537-538-review.ja.md.",
     "R539 primary metadata has seven actual format pairs; eighth GU23/Down42 is only a possible synthetic control. Existing current build metadata already requests znver3/AVX2; source/flags do not prove executed optional NT1 helper. See research-round539-540-review.ja.md.",
     "R540 Dm halving alone does not lower primary max-region; y removal needs actual nullable/span API adaptation. bytes_needed counts unused xn but also omits grs: Main proposal reconciles both, preserving slack and actual carve. No memory-fit/speed adoption.",
-    "R54024prompt/1pp quality example is screening only: binary task resolution4.167pp and zero-discordance95% one-sided upper~11.73% under independent trials; >=299 zero harmful pairs needed for1% bound under that assumption. Do not claim negligible loss from24prompts or correlated token counts."
+    "R54024prompt/1pp quality example is screening only: binary task resolution4.167pp and zero-discordance95% one-sided upper~11.73% under independent trials; >=299 zero harmful pairs needed for1% bound under that assumption. Do not claim negligible loss from24prompts or correlated token counts.",
+    "R541 draft upload lifetime gap independently traced through non-null stream SYCL GEMM/MMQ/KV; no implicit completion before host reuse. Main safety-interrupted suite; native/server0/fault0, original incomplete receipts retained. Immutable-source fix and validation now required before GPU replay.",
+    "R542 native_capture=0 selects normal graph recording, not disabled graphs; prefill samequeue does not define Verifier queue topology. Sticky-error callback teardown hazard is conditional and is not an initial/historical GPU-fault attribution. Draft upload guard does not qualify all Verifier cleanup."
   ],
-  "pending_reports": [
-    {
-      "model": "gpt-6.1-sol",
-      "path": "mtp-decode-ledger-adaptation-v1/report.md",
-      "task": "/root/implement_stager_affinity_proposal_v1",
-      "scope": "Artifact-only adaptation of existing archived route+host service observers to actual MTP4; Main serial validation after benchmark/PR6"
-    }
-  ],
+  "pending_reports": [],
   "implementation_proposals": [
     {
       "model": "gpt-6.1-sol",
@@ -209,6 +231,19 @@
       "patch_sha256": "5053c8e68992a8b87873cdb6bcf9d19beccb88e688d3e9901877ec2d6c03f8c5",
       "main_owns_serial_tests": true,
       "status": "unapplied-uncompiled-unrun-unmeasured-unadopted"
+    },
+    {
+      "model": "gpt-6.1-sol",
+      "path": "mtp-decode-ledger-adaptation-v1/report.md",
+      "artifact_only": true,
+      "patch_sha256": "4bf7911c5f4fcccd52e62a10cb34313c7aa137cc12c7ed58f888a380b14632d8",
+      "report_sha256": "fed4372515511767d1b369a97ebee93ccd23d06139e8181e61426fb61eb7ff13",
+      "main_owns_serial_tests": true,
+      "status": "FINAL artifact-only; unapplied-uncompiled-unrun-unadopted; full Main integration review deferred after benchmark/PR6",
+      "origin_commits": [
+        "8e85169a4002e08671e09d84139390e110f2cdc5",
+        "1cd442981faf137e4370fffdc9d73ab91cce8c7a"
+      ]
     }
   ]
 }

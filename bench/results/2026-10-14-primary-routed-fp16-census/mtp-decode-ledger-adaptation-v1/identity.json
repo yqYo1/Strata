@@ -1,0 +1,73 @@
+{
+  "status": "artifact-only; unapplied/unbuilt/unrun/unadopted",
+  "branch": "feature/sycl",
+  "source_revision_note": "No current Git inspection; byte hashes are authoritative.",
+  "origins": [
+    "8e85169a4002e08671e09d84139390e110f2cdc5",
+    "1cd442981faf137e4370fffdc9d73ab91cce8c7a"
+  ],
+  "sources": [
+    {
+      "path": "include/strata/core/decode_route_ledger.hpp",
+      "base_sha256": null,
+      "proposed_sha256": "499a27d1710e09115a9763b37988a2725a696b9ee8b8b95ad61e474d4ad72d85",
+      "base_bytes": 0,
+      "proposed_bytes": 20855
+    },
+    {
+      "path": "include/strata/core/decode_service_budget.hpp",
+      "base_sha256": null,
+      "proposed_sha256": "a371f29dce2c8ea47a18d2583f41671c5c932d4816364ad9d3bffbb6ec813b09",
+      "base_bytes": 0,
+      "proposed_bytes": 1619
+    },
+    {
+      "path": "include/strata/core/expert_source.hpp",
+      "base_sha256": "cf1462b078e8b373507acd7b2097c67f83438cb25a94e68da95530d0bebc15f2",
+      "proposed_sha256": "c95de4c34a62d469dd0cb94f7b0b0ebfeceecdd76573f908d11472d237106024",
+      "base_bytes": 46023,
+      "proposed_bytes": 46155
+    },
+    {
+      "path": "include/strata/kernels/cpu/pool.hpp",
+      "base_sha256": "177897a23a38f78f51545bc50a056d3cd8feb03c0b594a0026e66fab92cec07a",
+      "proposed_sha256": "e2fe8efd1694f4e82e94ab6200127de3487d9b7f6ff14ac917ea84c338649220",
+      "base_bytes": 16391,
+      "proposed_bytes": 16733
+    },
+    {
+      "path": "include/strata/kernels/cpu/service_budget.hpp",
+      "base_sha256": null,
+      "proposed_sha256": "5108fc308354b6cdbf40c966775085b4d58c5640ef49b3307064371b0b6ae1a7",
+      "base_bytes": 0,
+      "proposed_bytes": 6303
+    },
+    {
+      "path": "src/core/expert_source.cpp",
+      "base_sha256": "daf174b8ded139073d0b16ff524892410bd8c74beb282878ff1afbbb4b27606b",
+      "proposed_sha256": "4fa7a0d6d376c9d5c20fd3625677066b04897c2dcc3eebdbeb975fc215809930",
+      "base_bytes": 142455,
+      "proposed_bytes": 150215
+    },
+    {
+      "path": "src/kernels/cpu/pool.cpp",
+      "base_sha256": "83c91704efeff4c88c25a9d1e69661f34ad76e556c154320ff6373edc7a168b8",
+      "proposed_sha256": "dbcefadc6fd4dffa1f5457a908979995e06a2c0c73d2d25eaf50360bb2ef9fa9",
+      "base_bytes": 33730,
+      "proposed_bytes": 34837
+    },
+    {
+      "path": "src/program/generate.cpp",
+      "base_sha256": "e3ca2a964806270e1d72862f979b6e262fb17a925a6027e7534c81dc45418871",
+      "proposed_sha256": "7c21332e686780e6a47a5d49a8bdaec40e98e30c1b2c5a64d72309d865674402",
+      "base_bytes": 467690,
+      "proposed_bytes": 469172
+    }
+  ],
+  "patch_sha256": "4bf7911c5f4fcccd52e62a10cb34313c7aa137cc12c7ed58f888a380b14632d8",
+  "gate": "both STRATA_DECODE_ROUTE_LEDGER=1 and STRATA_DECODE_SERVICE_CPU=1 exactly",
+  "scope": "Linux/SYCL ordinary single-device native serve MTP/spec4/splitOFF/suffix0; bounded64layers128workers",
+  "state_cap": 262144,
+  "close_output_cap": 262144,
+  "fixed_combined_cap": 524288
+}

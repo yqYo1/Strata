@@ -1,0 +1,55 @@
+# SYCL async host-pointer lifetime audit — round 541
+
+## Scope and conclusion
+
+This is a source-only audit of host pointers passed through the CUDA-shaped `cudaMemcpyAsync` adapter, scoped to the current canonical single-device SYCL prompt/MTP path (native68, MTP on, split off, short-read 0, same-queue, prefill chunk 4096, no borrow, prefill MMQ off, compact path on). It does not report a run, reproduction, or measured corruption.
+
+The adapter submits `queue(st).memcpy(dst, src, bytes)` and discards the returned SYCL event (`src/sycl/compat.cpp:253-260`). It does not pin or stage ordinary host pointers. On the SYCL contract, the host source/destination must remain valid for the operation; returning from this wrapper is not an established completion edge. CUDA's pageable-memory behavior therefore cannot be assumed for this adapter. This source-level difference is material for one MTP path:
+
+**`Prefill::draft_kv` queues copies from a reusable `std::vector<int32_t> tk` and loop-local stack array `bh`, then overwrites/reuses them on a later batch iteration before its only stream synchronization, which is after the loop (`src/prefill/prefill.cpp:1019-1031,1077-1081`).** This violates the required source-lifetime ordering whenever `n-r0 > B`. The callback reaches this path in the single-device prompt MTP flow (`src/program/generate.cpp:6296-6302`, and serve at 4861-4883); it is disabled only by `STRATA_MTP_BATCH=0` or the explicit eligibility/geometry gates at `prefill.cpp:926-978`. The canonical 4096-token case with the recorded 607,128,320-byte shared region is source-sized for multiple batches by `B = min(n-r0, floor(region_bytes/per_row) rounded down to 64)`; the exact compiled geometry and runtime `B` were not instrumented here. Treat the hazard as source-proven conditional on the loop running more than once, not as observed corruption. The q8 bounds upload has the same lifetime gap when q8 is selected; the token upload is unconditional on this batched route.
+
+The previously questioned prompt token/step arrays and short-read token/history paths do not share this gap in the canonical mode: prompt chunks synchronize before the MTP callback, and the batched draft path synchronizes before returning; short-read is inactive at `--short-read 0`. Other inspected host arrays have an explicit per-use completion edge, are pinned/mapped with an event edge, or belong to an inactive branch. Completion checks still need care: the compatibility runtime's sticky error check can prevent a synchronization body from running after an earlier error, so a checked return alone is not historical proof that a prior transfer drained. No hang or earlier failure is attributed to this lifetime finding.
+
+## Source contract
+
+- `src/sycl/compat.cpp:253-260`: async wrapper validates non-null pointers, submits `queue(st).memcpy`, returns through `attempt`, and retains no event or host staging.
+- `src/sycl/compat.cpp:261-269`: synchronous wrapper first calls `wait_all()` and then waits for its copy event.
+- `src/sycl/runtime.cpp`: runtime queue construction is in-order; `Runtime::wait` waits the event then checks runtime status. Queue ordering orders device commands, but does not order a later CPU overwrite of a host source against an earlier queued command's read of that source.
+- SYCL reference: [handler `memcpy`](https://github.khronos.org/SYCL_Reference/iface/command-group-handler.html), [queue and event behavior](https://github.khronos.org/SYCL_Reference/iface/queue.html). CUDA's documented pageable-memory staging behavior is described separately in the [CUDA Driver API synchronization behavior](https://docs.nvidia.com/cuda/archive/12.1.1/cuda-driver-api/api-sync-behavior.html) and [CUDA Runtime API `cudaMemcpyAsync`](https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__MEMORY.html); those guarantees do not establish behavior for this SYCL wrapper.
+
+## Caller and lifetime findings
+
+| Caller and host object | Reachability in canonical mode | Reuse/read edge | Assessment |
+|---|---|---|---|
+| `Prefill::draft_kv`: `tk.data()` and stack `bh` HtoD, `prefill.cpp:1026-1030` | MTP `on_chunk` calls it on single-device prompt; defaults on unless `STRATA_MTP_BATCH=0` and gates at 926-978 pass | Both copies are queued in each `b0` iteration; `tk` is rewritten and `bh` is reconstructed on the next iteration; only loop-exit sync at 1077 | **Lifetime gap if more than one batch.** Device work between copies does not make the earlier host source read complete. q8 controls `bh`; `tk` always applies. No reproduction performed. |
+| Prompt `m.tok_host` HtoD, `prefill.cpp:710-718,1618-1624` | Batched prompt embedding branch when eligible | Per-chunk `on_chunk` is active with MTP; `prefill.cpp:2915-2924` waits the compute stream before callback; next chunk cannot rewrite the vector until callback returns. `draft_kv`'s normal successful path drains before return; fallback `MtpDrafter::prefill` also drains (`mtp.cpp:760-795`). | **Covered in this mode.** If the callback is absent, the per-chunk reuse proof would need re-evaluation; that is outside the stated mode. |
+| Prompt `m.steps_host` HtoD, `prefill.cpp:1691-1692` | Every prompt chunk | Same pre-callback chunk stream wait at 2915-2924 before next chunk fills it | **Covered in this mode.** |
+| `m.ple_emb_host[ple_buf]` HtoD, `prefill.cpp:1668-1670` | PLE-on branch only | Host rows are persistent pinned HostAlloc where available (pageable vector fallback otherwise); an event is recorded after upload, and that buffer is synchronized before its producer reuses it at 1676-1687 | **Explicit event edge.** Failure handling still inherits adapter sticky-error caveat. |
+| Per-layer `m.slot_host`/`m.src_host` and group-copy fallback, `prefill.cpp:2356-2357` | Only host-copy route; mapped host table is usual path | Layer loop synchronizes before filling/reusing host lists; next reuse follows queued layer work and stream sync (`prefill.cpp:2289-2290,2823`) | **Reuse is ordered in inspected route.** Group arrays on the mapped HostAlloc path are not passed as copy sources. |
+| `m.ids_host` DtoH, `prefill.cpp:2289-2290` | Selection/grouping route | Stream sync occurs before CPU reads the IDs | **Covered before read.** |
+| `m.bounds_host` and peer `P.bounds_host`, HtoD at `prefill.cpp:2388,2432,2507` | Main MMQ bounds branch is off in canonical mode; peer bounds require multi-GPU | If enabled, per-layer flow reaches stream synchronization before host-list reuse. Peer route is unreachable in single-device mode. | **Inactive for this mode.** |
+| Expert hit host plan arrays, `expert_source.cpp:2303-2332` | Native-hit graphs are prepared for native layout | Captured graph path copies the new plan with CPU `memcpy` into persistent HostAlloc mapped memory only after the prior layer completion; release fence precedes graph launch (`expert_source.cpp:2139-2228,2294-2358`). | **Mapped-plan route has an explicit between-layer edge.** The non-captured HtoD vector route is not the selected native graph path. |
+| Short-read segment tokens/history, `generate.cpp:5596+` | `short_read=0` makes every nonempty segment take the batched path (`b-a > 0`) | Short-read staging/read-windows branch is skipped. Penalty-history upload uses synchronous `cudaMemcpy`; verifier copies into persistent staging and completes its queue before returning. | **Questioned short-read reuse is inactive; history staging is synchronous.** |
+| MTP fallback record `rec`, `mtp.cpp:773-795` | Used when batched draft eligibility fails | HtoD is followed by stream synchronization before return; subsequent record construction/reuse is after that point | **Covered in fallback.** |
+
+## Error/completion caveat
+
+This is a lifetime audit, not an error-handling fix. `attempt` consults sticky runtime status before executing its body, and the reviewed stager-error evidence says an earlier sticky error can cause a later wait/record/copy operation to be skipped. Thus the source ordering above is the intended successful path; it does not turn a returned success status into proof that the underlying queue drained after an earlier error. Prior reviews found no evidence tying that separate behavior to a historical hang. The proposed fail-stop guard remains unapplied and unvalidated; this report neither applies it nor treats it as a fix.
+
+## Evidence identity
+
+Source SHA-256 at audit time:
+
+```text
+225e2021b5ce67b3bb58f116a4a15cd5d592a33dbdf2c9837940a3e89155dca7  src/sycl/compat.cpp
+d571ad74ebfafc2523e129fe29858d61058bf0c26ae686834ea294105acb5e2f  src/sycl/runtime.cpp
+6b4b7a71175471d7d800e40f98ec62236bf57e1cfd57d9d41f4863d4653c2104  src/prefill/prefill.cpp
+e3ca2a964806270e1d72862f979b6e262fb17a925a6027e7534c81dc45418871  src/program/generate.cpp
+f5288a88c399d0611d13b7d418fa2d3268f05eabb9ff13a620fd317a5465a287  src/core/mtp.cpp
+640e0270be833ddff0218331a7db18043605af3ced2682787f6b06abdcf6316c  src/core/verify.cpp
+daf174b8ded139073d0b16ff524892410bd8c74beb282878ff1afbbb4b27606b  src/core/expert_source.cpp
+c691d1147fea50f351a208b676efc4ceaaee9d4e8534cdbf5f7672c934db7e19  src/core/expert_cache.cpp
+cace1613f7cb115f7d8ca835c132c1e86e32cbc183e6057dbb33a74e32699224  src/core/peer_experts.cpp
+```
+
+Audit limits: no source changes, build, tests, GPU/process/service inspection, or live-run artifact reads were made. The exact runtime `B`, q8 selection, and event completion timing remain unmeasured. Review the `draft_kv` lifetime in Main-owned serial work before changing it; any proposed fix must be validated against error propagation and recorded with its own source, build/run result, and retained evidence.
