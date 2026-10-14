@@ -72,3 +72,9 @@ exact histogram/format/payloadは元receiptに保持した。[観測概要](long
 観測OFFの全first logitsとwallを照合し、必要ならcensusのみを分離する。正式bench.sh比較は別。
 phaseのfirst logits/token IDsはそのconsumer用、16MiB以内、比較終了時に見直す。
 [保持計画](long-phase-retention.json)。
+
+phase evidence a8212928を検証後、成功全文・重複receipt/research11件、466,579 logical bytesを
+退去した。[manifest](long-phase-deletion-manifest.jsonl)、[集計](long-phase-retirement.json)。
+元のstatus/route histogram/format/phase/owner/fault結果はbyte-identical archiveで保持し、
+比較中のfirst logitsとtoken IDsは残した。実空き容量差は未測定。phase raw recordは退去済み。
+R521が参照したsummaryの旧hashは、注釈3fieldを除くと同じbytesに復元できることを確認した。
