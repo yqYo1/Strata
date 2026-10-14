@@ -121,6 +121,8 @@ public:
     }
 
 private:
+    bool run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::string& err);
+    bool run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, std::string& err);
     int64_t stage_lb_ = 0, stage_le_ = -1;
     Prefill* next_ = nullptr;
     const float* hand_in_ = nullptr;    ///< the previous stage's rows of the chunk being read (host, pinned)

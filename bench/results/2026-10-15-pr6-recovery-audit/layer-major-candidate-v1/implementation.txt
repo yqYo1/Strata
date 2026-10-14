@@ -1,0 +1,269 @@
+Layer-major candidate v1 — implementation handoff, NOT qualified
+2026-10-15 JST
+
+Source base and work boundary
+-----------------------------
+Base HEAD: 61b3b148871f9cccc09b6e15763982ee13b1fc0c (feature/sycl).
+Read-only git rev-parse/status confirmed this base while preparing the patch.
+Existing dirty/untracked Main reports/scripts were preserved. Product source,
+include, cmake, tests and build directories were not written by this task.
+No branch/worktree, build, test, GPU/profiler execution, cleanup, commit, push,
+environment inspection/change, service/process change or excluded private-file
+read was performed. Executed Python only materialized candidate source/diffs
+and read public project research registries. No test result is claimed.
+
+Read AGENTS.md, docs/ARTIFACT_RETENTION.md, project-only strata-upstream-sync
+SKILL.md and integration reference, git-workflow SKILL.md, all public
+bench/results/**/research-index.json registries and their Main corrections,
+R565 concrete port, R562 streamed KV contract, Main R561–562 review, current
+root prefill/cache/source/session/layout/compat/host-memory code, and the old
+own-fork run_layer_major implementation at
+.tools/pre-xe-1eb-source-v1/sycl/src/prefill/prefill.cpp:2381–2793.
+This recovers the own-fork scheduling/reuse idea; it is not a Xe implementation
+import and does not copy the old engine/body/cache-release machinery.
+
+source-base-sha256.json pins every existing file used by product.patch.
+src/prefill/prefill.cpp SHA256:
+628b1503c0564771a043b6d24ebf4264f2a27aece0652c03d9a252a1f4c427d8
+
+Deliverables and exact application boundary
+-------------------------------------------
+product.patch is a unified diff for five existing files:
+  src/prefill/prefill.cpp
+  include/strata/prefill/prefill.hpp
+  include/strata/core/expert_cache.hpp
+  src/core/expert_cache.cpp
+  CMakeLists.txt
+
+files/ contains three NEW product files, to copy to the same paths under root:
+  include/strata/prefill/layer_major_plan.hpp
+  src/prefill/layer_major.inc
+  src/prefill/layer_major_plan_test.cpp
+
+make_patch.py reconstructs product.patch in this artifact directory from the
+current product source, with exact single-occurrence replacement guards. It
+never writes product files. Do not regenerate against changed product source
+without reviewing/re-pinning the new source base. Newly added source lives in
+files/; source hashes of the old files are separate from the candidate hashes.
+
+Main application procedure, proposed but NOT executed here:
+  1. Compare current HEAD and five base-file hashes with the recorded base.
+  2. git apply --check bench/results/2026-10-15-pr6-recovery-audit/layer-major-candidate-v1/product.patch
+  3. Copy the three new files from files/ to their product-relative paths.
+  4. git apply bench/results/2026-10-15-pr6-recovery-audit/layer-major-candidate-v1/product.patch
+  5. Review, then serialize the host compile/test, production build and GPU gates.
+
+The .inc is included inside strata::prefill, after the existing chunk helpers
+and before run_impl. It defines the small public dispatcher and the new wrapper.
+It is not a separate translation unit and needs no GPU build-source resolver
+change. The selected SYCL engine remains current root src/prefill/prefill.cpp
+via cmake/sycl_backend.cmake; existing kernels and their resolvers are reused.
+
+What it implements
+------------------
+Only the exact value STRATA_PREFILL_LAYER_MAJOR=1 selects this candidate.
+Unset, 0, 10 and all other values take the existing chunk-major body, now named
+run_impl. No global environment writes or static selector cache is added.
+
+The candidate requires current 48-layer geometry (36 GDN + 12 QSA), the full
+single-device session/range, compact FP16 MoE, explicit STRATA_PREFILL_MMQ=0,
+the complete native expert source/layout, and the existing same compute/copy
+queue. Peer, portable peer, stage chains, hand_in_, vision rows, reentry,
+MMQ/fused MoE, split session, unsupported geometry/positions/chunks, ring KV,
+hybrid KV and inconsistent per-layer KV plans are explicitly rejected.
+All normal-route defaults remain unchanged.
+
+Each of 48 passes first materializes all 512 experts into ONE owned host slab
+on the main thread using copy_blob. Source bookkeeping is never assumed
+thread-safe; no source blob pointer is retained after copy_blob returns.
+The slab survives every upload reader. Then all 512 slots of a temporary
+ExpertCache are uploaded once, on m.copy == m.cs, and checked-drained.
+Only after successful completion is the current layer's 512-entry host map
+published. All chunks of this layer reuse those slots. The map and slots are
+reused for the next layer only after checked pass/boundary completion.
+
+The current chunk math is reused with [stage_lb_,stage_le_)=[layer,layer+1].
+New run_impl branches prevent any layer-major Stager job/issuer launch and
+reject a missing temporary residency entry before a fallback could use an
+absent Stager job. The old unchecked StagerDone finish helper is bypassed in
+this route. The wrapper checks no previous host jobs remain claimable/active;
+it neither starts jobs nor uses Stager::finish as a retirement proof.
+
+New ExpertCache::open_uninitialized allocates without memset/upload, so an
+initialization command cannot fail and trigger the old internal close before
+the outer lease sees its completion. This API checks its own allocation/table
+products. Existing open/open_sized keep their old zero-initialization behavior
+through open_impl(..., initialize=true). Uninitialized storage is only read
+after all 512 checked uploads and publication of the temporary host map.
+Existing decode cache bytes, MTP weights/workspaces and graph addresses are
+retained; this candidate has no release/recapture/reload path for those owners.
+
+Residual admission and storage
+------------------------------
+The helper checks the full n*10240*sizeof(float) product, addressable pointer
+range, each source blob/table span, padded cache stride/product, host map sizes,
+and each chunk/store offset. At n=262144 the full residual is 10,737,418,240 B
+(10 GiB). That total is NOT required to fit VRAM.
+
+The store is in-place between layers, with a separate device prefix and host
+tail. m.R stays the existing chunk scratch; there is no scratch/full-store alias.
+The prefix ends at an integer chunk boundary, except that a prefix covering the
+entire prompt may include its final partial chunk. Every input/output span is
+validated; host-tail offsets subtract gpu_rows rather than indexing a shortened
+host allocation by absolute prompt row. Absolute callback positions are checked
+before subtracting request pos0, and cursor checks enforce ascending chunks.
+
+STRATA_PREFILL_LAYER_MAJOR_R_GPU:
+  unset or exact auto: largest complete prefix within free-VRAM budget
+  0: host-only residual store
+  decimal integer rows: maximum prefix, rounded down to whole chunks; exactly n
+                        includes the partial final chunk
+Invalid signs, whitespace, suffixes, overflow, rows>n and an explicit rounded
+prefix exceeding the budget fail. This is a row count, not a boolean switch.
+
+Before submitting any GPU command, require known cudaMemGetInfo telemetry and
+extra padded 512-expert cache + selected prefix + 512 MiB GPU headroom <= free
+VRAM. The existing decode/MTP storage stays live and is already reflected in
+that free sample. The 512 MiB reserve is finite policy, not a measured runtime
+requirement or proof that later driver allocations always fit. Insufficient
+space fails explicitly; there is no cache retirement fallback.
+
+Require known current physical available RAM for host tail + whole-layer upload
+slab + ExpertCache blocking-host staging + two residency-map extents + 8 GiB
+host headroom, using the existing conversation memory provider. Host allocations
+are attempted before new GPU commands. This is sampled physical-memory
+admission, NOT an OS memory reservation. The existing provider does not account
+for cgroup/job limits or future competing allocations; constrained-container
+support remains unqualified. Internal source copy_blob cache growth and driver
+staging also consume headroom, not a complete separately reserved budget.
+
+This simple owned slab deliberately adds a host copy and serial source loading.
+It removes source-pointer leases and extra per-chunk expert H2D but has no claim
+of optimal upload overlap or measured performance. The host-only residual path
+adds 47 inter-layer D2H/H2D round trips; the optional/auto prefix reduces that
+traffic for its rows. No throughput, fit or correctness inference follows.
+
+State, callbacks and statistics
+-------------------------------
+run_impl retains each GDN recurrence/conv slice, QSA state/indexer/map/host KV
+and the current mode-1 stage-prior/append-current/attend sequence. No sequence
+reset occurs at a layer or chunk boundary. Resident 32768 cells and logical
+262144-cell host/stage capacity remain distinct; stage allocations are never
+replaced by the device resident pool. Uniform native F16, INT8/rotated INT8 or
+Q4 mode-0/mode-1 layout paths use existing stage/ingest code; none is qualified
+by this source handoff. The configured SYCL kv_stream.cpp remains selected.
+
+The initial ple_prev is restored before every pass. PLE math/history advances
+only in the layer-1 pass; final ple_prev is retained. The final whole-model
+checkpoint callback also sees the computed final ple_prev, rather than a
+scalar token window reset for the current pass. No session tensor rollback is
+implemented or claimed on cancellation, callback failure or queue errors.
+Partially mutated sessions require the caller's existing restore/discard policy.
+
+Intermediate on_chunk only saves residual rows; the caller/MTP on_chunk runs
+once for each final-layer chunk, in ascending position order. The caller's
+on_stage_chunk runs ONLY at final layer AND final chunk. Earlier checkpoints
+are suppressed even during the final-layer pass: their other layer states
+already include later prompt tokens. On the last chunk the original callback
+order is preserved (stage checkpoint, then final residual/MTP callback).
+Each boundary is checked for duplicate/out-of-order delivery. The last stage
+callback occurs before the last MTP callback, as in the existing API; a later
+MTP callback failure can therefore follow a valid target-state checkpoint.
+
+tokens/chunks count only the final layer in run_impl; the wrapper sets the
+successful totals to old+n and old+logical_chunks. ms_total is added once from
+the wrapper's wall interval, including admission/allocation/load/pass waits but
+ending before automatic owner destruction. experts_streamed counts the 512
+uploads per layer (24576 on successful full traversal), experts_resident counts
+actual per-chunk groups served from that temporary cache. experts_dma is not
+incremented because upload comes from the owned pageable slab, not directly
+from the source's pinned arena. ms_experts_host includes serial source copies,
+upload issue and their completion wait; it is not exclusive GPU service time.
+
+The current RoutedFp16Observation, phase timing, layout observer, residual dump,
+GDN hash/NAN dump and legacy preload/cache-release/in-place flags are explicitly
+rejected when present, including value 0 for presence-based observers. Their
+old full-model-call assumptions are not silently emitted as 48 measurements.
+STRATA_TRACE remains allowed; its repeated chunk messages describe the actual
+per-layer calls, not a normalized whole-model diagnostic counter report.
+
+Ownership and error contract
+-----------------------------
+Restore saves stage bounds, hand_in_, m.cache/m.host_res, layer-major fields and
+caller callbacks. All callback capture targets (cursor, layer, counters, plan,
+owners and saved functions) are declared before the checked lease. No capture
+owner ends its C++ lifetime before lease retirement, including exceptional exits.
+
+Declaration/destruction order is checked drain -> field/callback restoration ->
+temporary device cache/residual/host buffers/maps. The guard reuses the existing
+DraftUploadGuard policy. Successful paths explicitly check cudaStreamSynchronize
+on all participating compute/copy queues; SYCL compatibility uses wait_and_throw
+and sticky runtime checking. If successful completion cannot be established on
+an early return/exception, the fatal path aborts the native process while owners
+are live. Unchecked destructor waits, Stager::finish or cudaFree are not used as
+the completion proof. C++ field restoration is never described as state rollback.
+
+Callbacks are assumed to honor the existing API: any work retaining supplied
+rows runs on the prefill streams or is completed by the callback before return.
+The wrapper cannot retire arbitrary external queues it does not own. Existing
+MTP draft_kv uses the prefill queue and keeps its own immutable upload guards;
+it receives only final-layer residuals. No MTP persistent owner is rebound.
+
+Proposed validation — none run here
+----------------------------------
+CPU-only test source is provided and CMake exposes the default-OFF option
+STRATA_BUILD_PREFILL_HOST_TESTS. It covers exact full-context byte arithmetic,
+host-only/all-device/mixed prefixes, partial tails, offsets, malformed options,
+overflow/out-of-range rejection, ascending/duplicate callback cursor order,
+checked drain before owner destruction on exception, explicit retirement and
+(Unix child fixture) failed-drain fatal entry while its owner is live. Those
+abstract host fixtures do NOT exercise Prefill, SYCL kernels or real callbacks.
+
+After application Main may compile/run serially, for example:
+  c++ -std=c++20 -Wall -Wextra -Werror -Iinclude src/prefill/layer_major_plan_test.cpp -o <owned-output>/layer-major-plan-test
+  <owned-output>/layer-major-plan-test
+Or configure a host-only CMake build with STRATA_BUILD_PREFILL_HOST_TESTS=ON,
+STRATA_BUILD_TESTS=OFF and STRATA_ENABLE_SYCL=OFF, then build/run only this target.
+Use the existing Main-owned SYCL build recipe for the production engine next.
+
+Review and model-backed gates still required, in order:
+  * Default selector OFF regression; exact-1 dispatch and explicit unsupported
+    configuration/admission rejection before submission.
+  * Same-device 48-layer tiny prompt with at least two partial/page-crossing
+    chunks, PLE and mode-1 KV, host-only first. This candidate deliberately
+    rejects the 4-layer geometry suggested as a reduced R565 experiment.
+    Compare final residual/logits/tokens, per-layer GDN/QSA/indexer/KV/PLE state,
+    nonzero pos0 continuation and exact caller callback order/counts.
+  * Host-only, mixed device-prefix/host-tail boundary, all-device short residual,
+    final partial chunk, absent callbacks and serving MTP callback paths.
+  * Failure/cancel/source-copy/callback/checked-wait fault injection, proving
+    owner ordering and caller session discard/restore. Host guard fixtures alone
+    do not qualify real sticky-runtime or caller checkpoint lifetime behavior.
+  * Prompt longer than configured 32768 resident cells; full logical 262144
+    boundary actually appending cell262143 and rejecting cell262144. Separate
+    RESTORE/continuation and numerical/model-quality gates.
+  * Matched quiet performance samples only after correctness, recording source,
+    binary, full environment, exact input/new-token/context/chunk counts,
+    prefix bytes/rows, KV formats/capacity, expert H2D counts, MTP actual work,
+    prefill and decode separately and all faults. Old645.85tok/s is historical
+    own-fork 65538-context/resident-KV/no-timed-MTP evidence, not a current speed
+    target already attained by this source candidate.
+
+Layer slicing disables the existing cross-layer gr_write_norm fusion at each
+pass end, and chunk rescheduling can change floating reassociation. Numerical
+or bitwise parity is not assumed. No kernel math was replaced, but a model
+parity/quality gate is still mandatory. Allocations may explicitly reject this
+PC's live serving state while persistent decode/MTP cache/graphs remain live;
+this is the intended first-version limitation, not an adoption failure result.
+
+Disposition and retention
+-------------------------
+Implementation candidate is complete for Main review/application. It remains
+UNBUILT, UNTESTED, GPU-UNQUALIFIED, and makes no fit/speed/quality claim.
+No produced result has been rewritten into a pass. The only retained artifacts
+are this compact source/patch/command/contract handoff, hashes and host fixtures.
+Consumer: Main's serial layer-major review/build/correctness gate. Review point:
+after applying/rejecting this version; preserve its original committed candidate
+and decision before superseding or retiring it. No raw trace/tensor, process
+log, cleanup exception or deletion manifest is needed because none was created
+or removed by this task.

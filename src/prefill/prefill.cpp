@@ -29,6 +29,8 @@
 #include "strata/core/peer_experts.hpp"
 #include "strata/prefill/kernels.hpp"
 #include "strata/prefill/draft_uploads.hpp"
+#include "strata/prefill/layer_major_plan.hpp"
+#include "strata/core/conversation_memory.hpp"
 
 #include <cuda_runtime.h>
 
@@ -40,6 +42,7 @@
 #include <condition_variable>
 #include <cstring>
 #include <future>
+#include <limits>
 #include <memory>
 #include <mutex>
 #include <thread>
@@ -448,6 +451,10 @@ struct Prefill::Impl {
     int64_t attn_batch = 32, cap = 0;
     // MoE
     bool compact_moe_fp16 = false;
+    // Opt-in layer-major lease; normal chunk-major execution leaves these empty.
+    bool layer_major_active = false;
+    const float* layer_major_gpu_input = nullptr;
+    detail::LayerMajorResidualPlan layer_major_residual;
     float *logits = nullptr, *w = nullptr, *GU = nullptr, *Dm = nullptr, *sgate = nullptr, *sup = nullptr,
           *shared = nullptr, *sg = nullptr;
     int32_t *ids = nullptr, *slot_dev = nullptr, *src_dev = nullptr;
@@ -1511,7 +1518,9 @@ struct PeTimer {
 };
 }  // namespace
 
-bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& err) {
+#include "layer_major.inc"
+
+bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::string& err) {
     err.clear();
     Impl& m = *impl_;
     const core::OnDevice on_device(m.device);
@@ -1635,22 +1644,30 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
         if (std::getenv("STRATA_TRACE")) { std::fprintf(stderr, "strata trace: prompt chunk %lld of %lld\n", (long long) c0, (long long) n); std::fflush(stderr); }
         const int64_t T = std::min(m.T, n - c0), p0 = pos0 + c0;
         core::progress_at("reading the prompt (batched): preparing the chunk from token", p0);   // #251
-        ++stats_.chunks;
+        if (!m.layer_major_active || LE == g.n_layers) ++stats_.chunks;
         ro.chunk(T);
         pt.mark(kPfStart, cs);
         const auto tsetup = Clock::now();
         // ---- embeddings, broadcast to the four streams - or, in a later stage of a layer split, the rows the
         // previous stage handed on
-        if (hand_in_ != nullptr) {
-            if (cudaMemcpyAsync(m.R, hand_in_ + (size_t) c0 * D, (size_t) T * D * 4, cudaMemcpyHostToDevice, m.cs) !=
-                cudaSuccess) {
+        const bool residual_input = hand_in_ != nullptr || m.layer_major_gpu_input != nullptr;
+        if (residual_input) {
+            if (m.layer_major_active) {
+                const auto span = m.layer_major_residual.span(c0, T);
+                const auto* base = reinterpret_cast<const uint8_t*>(span.device ? m.layer_major_gpu_input : hand_in_);
+                if (!base || cudaMemcpyAsync(m.R, base + size_t(span.offset_bytes), size_t(span.bytes),
+                    span.device ? cudaMemcpyDeviceToDevice : cudaMemcpyHostToDevice, m.cs) != cudaSuccess) {
+                    err = "prefill layer-major: residual input copy failed"; return false;
+                }
+            } else if (cudaMemcpyAsync(m.R, hand_in_ + (size_t) c0 * D, (size_t) T * D * 4,
+                                      cudaMemcpyHostToDevice, m.cs) != cudaSuccess) {
                 err = "prefill: the layer split's hand-off upload failed";
                 return false;
             }
         }
         // C-4: the whole chunk's rows in one gather (the same per-element arithmetic as the per-token path, so the
         // same bits); a chunk with picture rows, or a token outside the table, takes the per-token path
-        bool batched = hand_in_ == nullptr && m.tok_dev != nullptr;
+        bool batched = !residual_input && m.tok_dev != nullptr;
         const core::NativeEmbed* nemb = core::native_embed();
         const core::WeightRef* wemb = nemb ? nullptr : m.wt->find("token_embd.weight");
         if (batched && nemb == nullptr &&
@@ -1681,7 +1698,7 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
                                                       (uint64_t) (wemb->ne0 / wemb->group_elems), m.emb, m.cs);
             }
         }
-        for (int64_t t = 0; hand_in_ == nullptr && !batched && t < T; ++t) {
+        for (int64_t t = 0; !residual_input && !batched && t < T; ++t) {
             const float* row = embd_rows ? embd_rows[p0 + t] : nullptr;
             if (row) {
                 if (cudaMemcpyAsync(m.emb + t * N, row, (size_t) N * 4, cudaMemcpyHostToDevice, m.cs) != cudaSuccess) {
@@ -1692,7 +1709,7 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
                 return false;
             }
         }
-        if (hand_in_ == nullptr) gr_broadcast(m.emb, m.R, T, m.cs);
+        if (!residual_input) gr_broadcast(m.emb, m.R, T, m.cs);
         // ---- the PLE rows of the whole chunk, one batched SSD request on a thread (see ple_gather).  A later chunk's
         // were read ahead during the previous chunk; the first chunk's are read beside layer 0 - they are needed from
         // layer 1 on, and gathering them here first left the GPU idle for the whole read (~0.4 s of a 32K prompt)
@@ -1742,7 +1759,7 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
         // k lands in ring slot k % ring); a copy is issued once the entry `ring` before it is consumed (its slot's
         // `used` event recorded), so the copy stream never waits on an event that is not queued yet
         const strata::kernels::cpu::ExpertLayout& lay0 = strata::kernels::cpu::expert_layout();
-        const bool stream_all = m.ring > STAGE && T >= stream_all_min() && m.src != nullptr;
+        const bool stream_all = !m.layer_major_active && m.ring > STAGE && T >= stream_all_min() && m.src != nullptr;
         const bool ps_on = stream_all && m.pp && m.pp->ps_frac > 0.0;
         if (m.pp && !ps_on) m.pp->ps_flag.clear();
         // multi-GPU: the peer's ring - issue its copies up to `limit` / give entries back (the peer device is current)
@@ -2631,7 +2648,7 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
                         std::vector<int> stage_of(order.size(), -1);
                         // the unpinned ones are copied to pinned buffers by the stager's threads, in this order
                         std::vector<int> job_of(order.size(), -1);
-                        if (!stream_all) {
+                        if (!stream_all && !m.layer_major_active) {
                             std::vector<Stager::Job> js;
                             for (size_t j = 0; j < order.size(); ++j) {
                                 const int32_t e = order[j];
@@ -2648,11 +2665,14 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
                             }
                             m.stager->start(std::move(js));
                         }
-                        StagerDone stager_done{stream_all ? nullptr : m.stager.get()};
+                        StagerDone stager_done{stream_all || m.layer_major_active ? nullptr : m.stager.get()};
                         auto stage_one = [&](size_t j) -> bool {
                             const int32_t e = order[j];
                             const bool resident = m.host_res && m.cache && m.host_res[(size_t) l * m.g->n_expert + e] >= 0;
                             if (resident) return true;
+                            if (m.layer_major_active) {
+                                err = "prefill layer-major: temporary residency map is incomplete"; return false;
+                            }
                             const int sl = stage_next;
                             stage_next = (stage_next + 1) % STAGE;
                             const auto th = Clock::now();
@@ -2937,7 +2957,7 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
                          skipped_stream_entries, skipped_after_group);
             std::fflush(stderr);
         }
-        stats_.tokens += T;
+        if (!m.layer_major_active || LE == g.n_layers) stats_.tokens += T;
         core::progress_at("reading the prompt (batched): finishing the chunk from token", p0);
         pt.mark(kPfStart, cs);
         if (next_ != nullptr) {
@@ -2958,12 +2978,18 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
             hand_buf ^= 1;
             continue;   // the last stage reports the chunk (on_chunk)
         }
-        if (const char* dump = std::getenv("STRATA_PREFILL_DUMP_R")) {   // debug: the final residuals, every 64th
-            cudaStreamSynchronize(m.cs);                                  // position (A/B quality of this path)
+        const char* dump = std::getenv("STRATA_PREFILL_DUMP_R");
+        if (dump && (!m.layer_major_active || LE == g.n_layers)) {   // final model residuals, every 64th position
+            if (cudaStreamSynchronize(m.cs) != cudaSuccess) {
+                err = "prefill: residual diagnostic stream drain failed"; return false;
+            }
             if (std::FILE* f = std::fopen(dump, c0 == 0 ? "wb" : "ab")) {
                 std::vector<float> row((size_t) D);
                 for (int64_t t = (64 - p0 % 64) % 64; t < T; t += 64) {
-                    cudaMemcpy(row.data(), m.R + t * D, (size_t) D * 4, cudaMemcpyDeviceToHost);
+                    if (cudaMemcpy(row.data(), m.R + t * D, (size_t) D * 4, cudaMemcpyDeviceToHost) != cudaSuccess) {
+                        std::fclose(f);
+                        err = "prefill: residual diagnostic readback failed"; return false;
+                    }
                     const int64_t pos = p0 + t;
                     std::fwrite(&pos, sizeof pos, 1, f);
                     std::fwrite(row.data(), 4, row.size(), f);
@@ -3014,7 +3040,7 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
         err = std::string("prefill: expert copy stream: ") + cudaGetErrorString(cst);
         return false;
     }
-    stats_.ms_total += ms_since(t_start);
+    if (!m.layer_major_active) stats_.ms_total += ms_since(t_start);
     if (pt.on) {
         pt.fold();
         double total = 0.0;

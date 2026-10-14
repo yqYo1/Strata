@@ -82,13 +82,29 @@
       "path": "research-xe2-moe-gemm-primary-round566-v1.txt",
       "sha256": "6f6cee96c6d0ffb3f434f1f7ecefd274a620bc27230ceb445596a718508fba92",
       "status": "FINAL received; Main review recorded in main-review-round565-566.ja.md; proposal only, no runtime qualification."
+    },
+    {
+      "round": 567,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-layer-major-vram-admission-round567-v1.txt",
+      "sha256": "eb9f5c7d279fb52f40f9a2d85ddac326a20a6665e34435895e28bbcafdb59338",
+      "status": "FINAL received; Main review/corrections in main-review-round567-568.ja.md. No new candidate performance/adoption."
+    },
+    {
+      "round": 568,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-qsa-headtile-slm-round568-v1.txt",
+      "sha256": "5201cc7899477d1f57793678f4033bc23180aedd94d5f0f2badab9ce3cb02358",
+      "status": "FINAL received; Main review/corrections in main-review-round567-568.ja.md. No new candidate performance/adoption."
     }
   ],
   "main_initial_findings": [
     "PR6 performance patch changes historic sycl/src/prefill/prefill.cpp, not current root src/prefill/prefill.cpp. Current root rg finds compact scratch but no layer-major selector. History preservation is not adoption.",
     "Original645.85 PP and later449.7 full-context/MTP measures need separate source/config reconciliation; different protocol does not justify discarding the old improvement."
   ],
-  "next": "Close current >=32K thinking-template old/new natural numerical pair and observed QSA route; review separate Sol layer-major proposal; Main applies/builds/validates serially before bench.sh performance comparison.",
+  "next": "Close Main small257/255chunk control/GPU-residual/host-residual numeric jobs; if qualified, compare same34603thinking input with retained natural0 fixtures, then bench.sh long/agent/long-generation with prefill/decode separate. Memory admission and full256K remain explicit gates.",
   "main_review": "main-review-round559-560.ja.md",
   "subsequent_main_review": "main-review-round561-562.ja.md",
   "public_history_reverification": "public-history-reverification.json",
@@ -98,7 +114,7 @@
     "main_review": "qsa-layout-recovery-v1/main-review.ja.md",
     "status": "Build/host and20GPU parity/oracle cases PASS/fault0. Component40sample screen closedPASS; layout1 median4.09%slower in one int8case, no adoption. No whole-model/full256K/RESTORE/quality qualification."
   },
-  "latest_main_review": "main-review-round563-564.ja.md",
+  "latest_main_review": "main-review-round567-568.ja.md",
   "component_summary": "qsa-layout-screen-summary.json",
   "gemm_orientation_probe": {
     "report": "gemm-orientation-probe-v1/implementation.txt",
@@ -113,12 +129,20 @@
     "provider": "Existing qualified PTI build6c0d6b0b reused; no new build",
     "VTune": "RyzenCPU unsupported forxpu-offload; v1/v2 FAIL preserved, no GPU fault. Do not repeat the same unsupported collector.",
     "unitrace": "Current complete operation mapping PASS, externalUTC remains false; use internal order/durations only.",
-    "raw_review": "After current model pair closes, retire current GEMM raw trace using verified compact evidence under measurement lock; keep historical clock trace only until source-clock question closes."
+    "raw_review": "After current model pair closes, retire current GEMM raw trace using verified compact evidence under measurement lock; keep historical clock trace only until source-clock question closes.",
+    "clock_source": "CPU32sample domain mismatch reproduced, separate32sample RAW-mode header check PASS; unitrace-clock-source.ja.md. HistoricalUTCfalse unchanged; provider binary unmodified. Retire raw timelines only at next exclusive idle boundary."
   },
   "implementation_next": {
     "agent": "gpt-6.1-sol",
     "directory": "layer-major-candidate-v1",
-    "state": "Nonapplied proposal in progress; product source freeze during Main GPU comparison; Main owns application/build/test",
-    "scope": "Per-layer full expert reuse plus bounded residual VRAM prefix/host tail; decode cache/graphs untouched"
+    "state": "Main applied reviewed patch+final-layer residual-dump diagnostic, build/CPU PASS per separate v2qualification. DefaultOFF; Main small two-chunk GPU numerical gate in progress.",
+    "scope": "Per-layer full expert reuse plus bounded residual VRAM prefix/host tail; decode cache/graphs untouched",
+    "main_review": "layer-major-candidate-v1/main-review.ja.md",
+    "build": "layer-major-build-v2.json"
+  },
+  "natural_model_pair": {
+    "result": "natural-layout-long-pair-v2.json",
+    "summary": "natural-layout-long-pair-summary-v2.json",
+    "status": "PASS/fault0,34603 input/34602 batched thinking-template tokens,248320firstlogits+541residual positions bitwise equal,108matrixcalls/415224queries/fallback0; not bench.sh performance/full256K/RESTORE/quality"
   }
 }

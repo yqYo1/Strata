@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <cstdio>
 #include <filesystem>
+#include <limits>
 #include <utility>
 #include <cstring>
 
@@ -160,6 +161,24 @@ bool ExpertCache::ensure_blocking_staging(std::size_t bytes, std::string& err) {
 
 bool ExpertCache::open(int64_t n_slots, int64_t n_layers, int64_t n_expert, int64_t blob_bytes,
                        std::string& err) {
+    return open_impl(n_slots, n_layers, n_expert, blob_bytes, err, true);
+}
+
+bool ExpertCache::open_uninitialized(int64_t n_slots, int64_t n_layers, int64_t n_expert, int64_t blob_bytes,
+                                     std::string& err) {
+    const uint64_t limit = std::min<uint64_t>(std::numeric_limits<std::ptrdiff_t>::max(),
+                                             std::numeric_limits<int64_t>::max());
+    if (n_slots <= 0 || n_layers <= 0 || n_expert <= 0 || blob_bytes <= 0 ||
+        uint64_t(n_slots) > limit / uint64_t(blob_bytes) ||
+        uint64_t(n_layers) > limit / sizeof(int32_t) / uint64_t(n_expert)) {
+        err = "ExpertCache: uninitialized cache geometry overflows addressable storage";
+        return false;
+    }
+    return open_impl(n_slots, n_layers, n_expert, blob_bytes, err, false);
+}
+
+bool ExpertCache::open_impl(int64_t n_slots, int64_t n_layers, int64_t n_expert, int64_t blob_bytes,
+                            std::string& err, bool initialize) {
     close();
     if (n_slots <= 0) {
         err = "ExpertCache: n_slots must be positive";
@@ -203,7 +222,7 @@ bool ExpertCache::open(int64_t n_slots, int64_t n_layers, int64_t n_expert, int6
     }
     // Zeroed so a slot read before it is filled is a DETERMINISTIC wrong answer rather than whatever the
     // allocator handed back.  A stale block of a previous process's memory would still sum to finite floats.
-    if (cudaMemset(base_, 0, (size_t) want) != cudaSuccess) {
+    if (initialize && cudaMemset(base_, 0, (size_t) want) != cudaSuccess) {
         err = "ExpertCache: cudaMemset of the slot arena failed";
         close();
         return false;
