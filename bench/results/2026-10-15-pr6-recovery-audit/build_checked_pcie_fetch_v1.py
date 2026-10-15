@@ -46,7 +46,6 @@ def main():
         root = B / 'main-checked-pcie-fetch-build-root-v1'
         receipt = A / 'checked-pcie-fetch-build-v1.json'
         require(not root.exists() and not receipt.exists(), 'fresh isolated build root required')
-        root.mkdir(mode=0o700)
         inputs = {**base['source_pins'], **host['source_pins'],
                   str(Path(__file__).relative_to(P)): sha(Path(__file__)),
                   str(database): sha(database)}
@@ -89,6 +88,9 @@ def main():
         require(len(maps) == 1, 'one reference link map required')
         link[link.index(maps[0])] = '-Wl,-Map=' + str(root / 'native.map')
         commands.append(('link-native', link))
+        cpu_limit = 900 * len(os.sched_getaffinity(0))
+        require(all(isinstance(k, str) and isinstance(v, str) for k, v in base['environment'].items()),
+                'explicit string build environment')
         record = dict(schema='main-checked-pcie-fetch-build-v1', active=True, passed=False, complete=False,
             GPU_executed=False, product_applied=False, performance_qualified=False,
             quality_qualified=False, physical_262144_qualified=False, restore_qualified=False,
@@ -100,13 +102,22 @@ def main():
                   'Other frozen native objects/libraries unchanged. Isolated candidate only; no GPU or model qualification.')
         def persist():
             (root / 'record.json').write_text(json.dumps(record, indent=2) + '\n')
-        owner = module.Owner(root / 'owned', persist)
-        record['commands'] = owner.commands
-        persist()
+        owner = None
+        root_created = False
         try:
+            # All deterministic read-only preflight/plan/record setup is above.
+            # Never delete or adopt an existing root on an initialization failure.
+            root.mkdir(mode=0o700)
+            root_created = True
+            record['stage'] = 'owner_initialization'
+            owner = module.Owner(root / 'owned', persist)
+            record['commands'] = owner.commands
+            record['owner_initialized'] = True
+            persist()
+            record['stage'] = 'commands'
             for label, argv in commands:
                 c, out, err = owner.run(label, argv, base['environment'], baseline, wall=900,
-                    cpu=900 * len(os.sched_getaffinity(0)), rss_cap=32 << 30,
+                    cpu=cpu_limit, rss_cap=32 << 30,
                     text_cap=8 << 20, total_cap=2 << 30, file_cap=512 << 20)
                 require(module.closed(c) and c['exit_code'] == 0, label + ' failed: ' + err.read_text()[-4000:])
                 persist()
@@ -135,13 +146,33 @@ def main():
             record['error'] = repr(error)
             raise
         finally:
-            record.update(active=owner.active is not None, finished_utc=module.utc())
-            if record['active'] or not all(module.closed(c) for c in owner.commands):
-                record.update(passed=False, complete=False)
-            persist()
-            with receipt.open('x') as stream:
-                json.dump(record, stream, indent=2)
-                stream.write('\n')
+            if root_created:
+                # A constructor failure has no Owner/process; do not invent a
+                # closed command receipt. Once initialized, Owner is authoritative.
+                record.update(active=owner is not None and owner.active is not None,
+                              owner_initialized=owner is not None, finished_utc=module.utc())
+                commands_closed = owner is not None and all(module.closed(c) for c in owner.commands)
+                record['ownership_state'] = ('unresolved' if record['active'] else
+                    'not_started' if owner is None or not owner.commands else
+                    'closed' if commands_closed else 'incomplete')
+                if record['active'] or (owner is not None and not commands_closed):
+                    record.update(passed=False, complete=False)
+                # Attempt the external terminal receipt even if local persistence
+                # fails. Both paths may still fail on real filesystem errors.
+                try:
+                    persist()
+                except BaseException as persist_error:
+                    record.update(passed=False, complete=False, local_persist_error=repr(persist_error))
+                    raise
+                finally:
+                    try:
+                        with receipt.open('x') as stream:
+                            json.dump(record, stream, indent=2)
+                            stream.write('\n')
+                    except BaseException as receipt_error:
+                        record.update(passed=False, complete=False, receipt_write_error=repr(receipt_error))
+                        persist()
+                        raise
         print(json.dumps(dict(passed=record['passed'], GPU_executed=False)))
 
 

@@ -42,7 +42,6 @@ def main():
         root = B / 'main-checked-pcie-fetch-host-root-v1'
         receipt = A / 'checked-pcie-fetch-host-v1.json'
         require(not root.exists() and not receipt.exists(), 'fresh qualification root required')
-        root.mkdir(mode=0o700)
         compiler = Path('/usr/bin/c++').resolve()
         record = dict(schema='main-checked-pcie-fetch-host-v1', active=True, passed=False, complete=False,
             GPU_executed=False, product_applied=False, performance_qualified=False,
@@ -53,19 +52,31 @@ def main():
                   'No real Verifier/SYCL queue, device error, source pin registration, model or speed qualification.')
         def persist():
             (root / 'record.json').write_text(json.dumps(record, indent=2) + '\n')
-        owner = module.Owner(root / 'owned', persist)
-        record['commands'] = owner.commands
+        owner = None
+        root_created = False
         env = dict(PATH='/usr/bin:/bin', HOME=str(root), LANG='C.UTF-8', LC_ALL='C.UTF-8',
             ASAN_OPTIONS='detect_leaks=1:halt_on_error=1', UBSAN_OPTIONS='halt_on_error=1:print_stacktrace=1')
-        persist()
+        fixture = proposal / 'cpu_fault_fixture.cpp'
+        plans = []
+        for variant in ('normal', 'asan'):
+            exe = root / ('checked-pcie-fetch-' + variant)
+            flags = ['-O2'] if variant == 'normal' else ['-O1', '-g', '-fsanitize=address,undefined', '-fno-omit-frame-pointer']
+            build = ['/usr/bin/c++', '-std=c++17', '-Wall', '-Wextra', '-Werror', '-UNDEBUG',
+                     *flags, str(fixture), '-o', str(exe)]
+            plans.append((variant, exe, [(variant + '-build', build), (variant + '-run', [str(exe)])]))
         try:
-            fixture = proposal / 'cpu_fault_fixture.cpp'
-            for variant in ('normal', 'asan'):
-                exe = root / ('checked-pcie-fetch-' + variant)
-                flags = ['-O2'] if variant == 'normal' else ['-O1', '-g', '-fsanitize=address,undefined', '-fno-omit-frame-pointer']
-                build = ['/usr/bin/c++', '-std=c++17', '-Wall', '-Wextra', '-Werror', '-UNDEBUG',
-                         *flags, str(fixture), '-o', str(exe)]
-                for label, argv in [(variant + '-build', build), (variant + '-run', [str(exe)])]:
+            # All deterministic read-only preflight/plan/record setup is above.
+            # Never delete or adopt an existing root on an initialization failure.
+            root.mkdir(mode=0o700)
+            root_created = True
+            record['stage'] = 'owner_initialization'
+            owner = module.Owner(root / 'owned', persist)
+            record['commands'] = owner.commands
+            record['owner_initialized'] = True
+            persist()
+            record['stage'] = 'commands'
+            for variant, exe, commands in plans:
+                for label, argv in commands:
                     c, out, err = owner.run(label, argv, env, P, wall=120, cpu=120,
                         rss_cap=2 << 30, text_cap=1 << 20, total_cap=128 << 20, file_cap=32 << 20)
                     require(module.closed(c) and c['exit_code'] == 0, label + ' failed: ' + err.read_text()[-3000:])
@@ -84,13 +95,33 @@ def main():
             record['error'] = repr(error)
             raise
         finally:
-            record.update(active=owner.active is not None, finished_utc=module.utc())
-            if record['active'] or not all(module.closed(c) for c in owner.commands):
-                record.update(passed=False, complete=False)
-            persist()
-            with receipt.open('x') as stream:
-                json.dump(record, stream, indent=2)
-                stream.write('\n')
+            if root_created:
+                # A constructor failure has no Owner/process; do not invent a
+                # closed command receipt. Once initialized, Owner is authoritative.
+                record.update(active=owner is not None and owner.active is not None,
+                              owner_initialized=owner is not None, finished_utc=module.utc())
+                commands_closed = owner is not None and all(module.closed(c) for c in owner.commands)
+                record['ownership_state'] = ('unresolved' if record['active'] else
+                    'not_started' if owner is None or not owner.commands else
+                    'closed' if commands_closed else 'incomplete')
+                if record['active'] or (owner is not None and not commands_closed):
+                    record.update(passed=False, complete=False)
+                # Attempt the external terminal receipt even if local persistence
+                # fails. Both paths may still fail on real filesystem errors.
+                try:
+                    persist()
+                except BaseException as persist_error:
+                    record.update(passed=False, complete=False, local_persist_error=repr(persist_error))
+                    raise
+                finally:
+                    try:
+                        with receipt.open('x') as stream:
+                            json.dump(record, stream, indent=2)
+                            stream.write('\n')
+                    except BaseException as receipt_error:
+                        record.update(passed=False, complete=False, receipt_write_error=repr(receipt_error))
+                        persist()
+                        raise
         print(json.dumps(dict(passed=record['passed'], GPU_executed=False)))
 
 

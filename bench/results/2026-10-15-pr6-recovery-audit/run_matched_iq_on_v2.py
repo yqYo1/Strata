@@ -2,7 +2,8 @@
 """Main's matched ON full suite; preserves the exact closed historical OFF.
 
 No run is allowed until host checks, nonce provenance, and the reviewed client
-are real. Every actual request is compared after normal native/server closure.
+are real. Fixed actual inputs are paired after normal native/server closure;
+natural agent feedback remains a distinct, nonpaired cohort.
 """
 import fcntl
 import importlib.util
@@ -40,6 +41,8 @@ def main():
         off, host, proof, build = [json.loads(p.read_text()) for p in (off_path, host_path, proof_path, build_path)]
         require(all(good(x) for x in (off, host, proof, build)), 'real closed OFF/build/input-tool/provenance gates')
         require(off['mode'] == 'full' and off['arm'] == '0' and off['runs'] == 3, 'original full OFF identity')
+        require(not any(v == '--clients' or v.startswith('--clients=') for v in off['benchmark_options']),
+                'concurrent clients are outside this input-journal contract')
         require(not off['fresh_faults'] and off['boot_unchanged'] and not off['driver_dump_exists'], 'OFF fault gate')
         require(off['boot_id'] == boot_id(), 'boot changed between arms')
         for record in (off, host, build):
@@ -55,8 +58,8 @@ def main():
         require(re.fullmatch(r'[0-9]+', proof['recovered_nonce']) is not None, 'original timestamp tag required')
         require(all(sha(P / n) == h for n, h in host['proposal_inputs'].items()), 'tested proposal changed')
         require(sha(P / 'tools/strata_bench.py') == host['proposed_client_sha256'], 'reviewed client not actually applied')
-        require({x['label'] for x in host['tests']} == {'fixed-workload', 'request-identity'} and
-                all(x['tests'] >= 6 for x in host['tests']), 'host tests missing')
+        require({x['label']: x['tests'] for x in host['tests']} ==
+                {'fixed-workload': 6, 'request-identity': 11}, 'host tests missing')
         require(all(sha(P / n) == h for n, h in build['source_pins'].items()), 'native source changed')
         require(all(sha(Path(n)) == h for n, h in build['linked_inputs'].items()), 'linked input changed')
         exe = Path(build['binary'])
@@ -99,7 +102,7 @@ def main():
         (root / 'config.json').write_text(json.dumps(config, indent=2) + '\n')
         (root / 'plan.json').write_text(json.dumps(dict(port=18097, url='http://127.0.0.1:18097', runs=3,
             benchmark_options=options, bench_timeout_seconds=wall - 300), indent=2) + '\n')
-        comparator = A / 'bench-request-identity-v1/compare_requests.py'
+        comparator = A / 'bench-request-identity-v2/compare_requests.py'
         record = dict(schema='matched-selective-iq-full-v2', active=True, passed=False, complete=False,
             GPU_executed=False, commands=[], arm='1', mode='full', runs=3, environment=env, config=config,
             engine_args=off['engine_args'], benchmark_options=options, binary_sha256=sha(exe), boot_id=boot_id(),
@@ -109,9 +112,12 @@ def main():
             original_benchmark_source=off['benchmark_source'], fixed_workload_id=proof['recovered_nonce'],
             model_identity=off['model_identity'], pack_metadata_sha256=off['pack_metadata_sha256'], MTP_metadata_sha256=off['MTP_metadata_sha256'],
             input_comparator_sha256=sha(comparator), limits=off['limits'], input_match_qualified=False,
+            fixed_input_pair_qualified=False, agent_static_tasks_qualified=False, agent_exact_input_paired_speed=False,
             adopted=False, performance_qualified=False, quality_qualified=False, physical_262144_qualified=False, restore_qualified=False,
             scope='Three official bench requests/sessions per cohort. Reviewed client delta only selects original tag and records provenance. '
-                  'All actual request bodies must match; this is not independent-process variance or quality qualification.',
+                  'Fixed request bodies and all request ordering/parameters must match. Natural agent history may differ; '
+                  'agent results remain nonpaired and static task metadata/builders are checked separately. '
+                  'This is not independent-process variance or quality qualification.',
             retention_consumer='Full OFF/ON input journal comparison and individual speed/work samples. Retire duplicate successful text only after verified extraction.')
         def persist():
             (root / 'record.json').write_text(json.dumps(record, indent=2) + '\n')
@@ -157,11 +163,21 @@ def main():
             comparison = root / 'input-comparison.json'
             utility('compare-all-inputs', ['/usr/bin/python3', '-B', str(comparator), str(old_journal), str(journals[0]), str(comparison)])
             inputs = json.loads(comparison.read_text())
-            require(inputs['inputs_match'] and inputs['status'] == 'REQUEST_INPUTS_MATCH', 'actual request inputs differ')
-            record.update(input_match_qualified=True, input_comparison=inputs, input_comparison_sha256=sha(comparison),
+            require(inputs['input_pair_qualified'] and inputs['fixed_inputs_match'] and inputs['agent_protocol_match'] and
+                    inputs['status'] in ('REQUEST_INPUTS_MATCH', 'FIXED_INPUTS_MATCH_AGENT_FEEDBACK'),
+                    'fixed inputs or actual request structure/parameters differ')
+            spec = importlib.util.spec_from_file_location('qualified_input_comparator_v2', comparator)
+            comparison_tool = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(comparison_tool)
+            tasks = comparison_tool.compare_agent_tasks(off['benchmark_result'], suite)
+            require(tasks['passed'], 'agent static file/task or generation metadata differ')
+            record.update(input_match_qualified=inputs['inputs_match'], fixed_input_pair_qualified=True,
+                          agent_static_tasks_qualified=True, agent_static_task_comparison=tasks,
+                          input_comparison=inputs, input_comparison_sha256=sha(comparison),
                           nominal_32K_actual_input_tokens=[r['prompt_tokens'] for r in prompts],
                           nominal_32K_all_at_least_32768=all(r['prompt_tokens'] >= 32768 for r in prompts))
             require(all(sha(P / n) == h for n, h in clients.items()) and all(sha(P / n) == h for n, h in build['source_pins'].items()), 'source changed during suite')
+            require(all(sha(P / n) == h for n, h in host['proposal_inputs'].items()), 'qualified input tools changed during suite')
             require(all(sha(Path(n)) == h for n, h in build['linked_inputs'].items()) and sha(exe) == record['binary_sha256'], 'binary/linked input changed')
             require(all(sha(P / n) == h for n, h in off['recipes'].items()) and sha(comparator) == record['input_comparator_sha256'], 'runner/comparator changed')
             require(sha(off_path) == record['reference_receipt_sha256'] and sha(host_path) == record['host_tools_receipt_sha256'] and sha(proof_path) == record['workload_provenance_sha256'], 'reference/review changed')
@@ -195,7 +211,9 @@ def main():
                 with receipt.open('x') as stream:
                     json.dump(record, stream, indent=2)
                     stream.write('\n')
-        print(json.dumps(dict(passed=record['passed'], inputs_match=record['input_match_qualified'], performance_adopted=False)))
+        print(json.dumps(dict(passed=record['passed'], inputs_match=record['input_match_qualified'],
+                              fixed_input_pair_qualified=record['fixed_input_pair_qualified'],
+                              agent_exact_input_paired_speed=False, performance_adopted=False)))
 
 
 if __name__ == '__main__':

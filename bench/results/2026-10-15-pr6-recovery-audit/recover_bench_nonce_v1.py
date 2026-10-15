@@ -90,8 +90,9 @@ def main():
                       actual_calibration_request_sha256=hashes,
                       performance_qualified=False, quality_qualified=False,
                       scope='Two exact historical calibration body hashes identify one timestamp tag. '
-                            'All later actual request hashes and the reviewed client delta must still '
-                            'match before reusing this run in a paired comparison.')
+                            'Later fixed request bodies and the reviewed client delta must still match '
+                            'before exact-input pairing. Natural agent feedback histories are recorded '
+                            'separately with static task metadata; they are not exact-input speed pairs.')
         with output.open('x') as stream:
             json.dump(result, stream, indent=2)
             stream.write('\n')

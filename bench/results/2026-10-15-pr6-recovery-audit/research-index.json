@@ -715,6 +715,22 @@
       "sha256": "f179774a9d45e2a48673f145469c548470639d82653217e9ee08bbb084767f45",
       "status": "FINAL independent source audit; Main hardened exact integer validation and added buffered-flush fixture source. Wave math/hooks source-aligned, no CPU/GPU execution; inherited external output-acknowledgement limit remains.",
       "main_review": "main-review-round643-644.ja.md"
+    },
+    {
+      "round": 645,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-bench-input-comparison-contract-round645-v1.txt",
+      "sha256": "724c89c74e40247a4df48c249121df23438474c438202951b7bab8fc746997c6",
+      "status": "FINAL; Main confirmed feedback-dependent agent bodies and added source-only v2 fixed-input/agent-feedback separation. Historical results untouched; host tests and paired run remain NOT_RUN."
+    },
+    {
+      "round": 646,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-checked-pcie-build-isolation-round646-v1.txt",
+      "sha256": "cbed9c7888c403d44728b83a81826749457f594ab5f87c318290eeb6663b7453",
+      "status": "FINAL; two-TU/include/dependency/map strategy corroborated, actual archive extraction unproven. Sol initialization/preflight receipt fix source-reviewed by Main; no tests/build executed."
     }
   ],
   "main_initial_findings": [
@@ -1113,11 +1129,12 @@
   },
   "bench_input_comparison_current": {
     "fixed_workload": "bench-fixed-workload-v1",
-    "comparator": "bench-request-identity-v1",
+    "comparator": "bench-request-identity-v2",
     "provenance_source": "recover_bench_nonce_v1.py",
     "host_source": "qualify_bench_input_tools_v1.py",
     "on_source": "run_matched_iq_on_v2.py",
-    "state": "Source only, NOT_RUN. Old client still pinned while full OFF runs. Recover old nonce before apply; all actual wire requests must be assessed, generated agent history may differ. Original statuses remain unchanged."
+    "state": "Source-only NOT_RUN. Old client/native unchanged while full OFF is live. Recover tag before client edit. V2 pins and reuses full bounded journal reader; all order/parameters/fixed actual bodies must match, later natural agent feedback body differences remain explicit nonpaired observations. Actual static agent file/task metadata plus unchanged builder/tools and turn0 evidence required separately. Host six fixed-ID plus eleven comparator tests not executed.",
+    "review": "main-review-round645-646.ja.md"
   },
   "mtp_width_candidate": {
     "research": "research-mtp-adaptive-decode-round640-v1.txt",
@@ -1128,10 +1145,11 @@
     "research": "research-pcie-miss-routing-round641-v2.txt",
     "proposal": "checked-pcie-fetch-v1",
     "model": "gpt-6.1-sol",
-    "review": "main-review-round643-644.ja.md",
-    "state": "R643 source-review corrections applied to proposal only. First API error/detail plus known work status preserved, checked drain before consumer. Actual-helper normal/ASan qualifier and isolated two-TU/dependency/link-map build sources prepared; NOT_RUN. Root/base binary unchanged; no GPU or past-hang causality proof.",
+    "review": "main-review-round645-646.ja.md",
+    "state": "Unapplied checked-copy proposal after R643 API/detail corrections. R646 independently reviewed two-TU/include/depfile/map plan; real archive non-extraction unproven. Sol moved deterministic preparation before mkdir and protected Owner/persist initialization failures. Main reviewed source only; helper tests/build/GPU all NOT_RUN; base binary unchanged.",
     "host_qualification_source": "qualify_checked_pcie_fetch_host_v1.py",
-    "isolated_build_source": "build_checked_pcie_fetch_v1.py"
+    "isolated_build_source": "build_checked_pcie_fetch_v1.py",
+    "preflight_review": "checked-pcie-qualification-preflight-review-v1.ja.md"
   },
   "long_setting_calibration": {
     "research": "research-long-workload-calibration-round642-v1.txt",

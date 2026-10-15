@@ -46,7 +46,7 @@ def main():
                 current = module.identity(identity['pid'])
                 require(current is None or current['start_ticks'] != identity['start_ticks'],
                         'full0 owned identity still present')
-        proposals = [A / 'bench-fixed-workload-v1', A / 'bench-request-identity-v1']
+        proposals = [A / 'bench-fixed-workload-v1', A / 'bench-request-identity-v2']
         proposal_inputs = {}
         for proposal in proposals:
             for name in ('pins.json', 'artifact-sha256.json'):
@@ -54,6 +54,8 @@ def main():
                 proposal_inputs[str(manifest.relative_to(P))] = sha(manifest)
             for rel, pin in json.loads((proposal / 'pins.json').read_text()).items():
                 require(sha(P / rel) == pin, 'original client/helper changed before qualification: ' + rel)
+                if rel.startswith('bench/results/'):
+                    proposal_inputs[rel] = pin  # reused bounded reader and inherited real-journal tests
             for rel, pin in json.loads((proposal / 'artifact-sha256.json').read_text()).items():
                 require(sha(proposal / rel) == pin, 'proposed input tool changed: ' + rel)
                 proposal_inputs[str((proposal / rel).relative_to(P))] = pin
@@ -78,15 +80,15 @@ def main():
         env = dict(PATH='/usr/bin:/bin', HOME=str(Path.home()), LANG='C.UTF-8', LC_ALL='C.UTF-8',
                    PYTHONDONTWRITEBYTECODE='1', PYTHONNOUSERSITE='1')
         try:
-            for label, script in [('fixed-workload', proposals[0] / 'test_fixed_workload.py'),
-                                  ('request-identity', proposals[1] / 'test_compare_requests.py')]:
+            for label, script, expected in [('fixed-workload', proposals[0] / 'test_fixed_workload.py', 6),
+                                            ('request-identity', proposals[1] / 'test_compare_requests.py', 11)]:
                 command, out, err = owner.run(label, ['/usr/bin/python3', '-B', str(script)], env, P,
                                               wall=60, cpu=60, rss_cap=2 << 30, text_cap=4 << 20,
                                               total_cap=256 << 20, file_cap=8 << 20)
                 require(module.closed(command) and command['exit_code'] == 0,
                         label + ' failed: ' + err.read_text()[-3000:])
                 match = re.search(r'Ran (\d+) tests? in .*\n\nOK\s*$', err.read_text())
-                require(match and int(match[1]) >= 6, label + ' did not execute the expected tests')
+                require(match and int(match[1]) == expected, label + ' did not execute the expected tests')
                 record.setdefault('tests', []).append(dict(label=label, source_sha256=sha(script),
                     tests=int(match[1]), stdout_sha256=sha(out), stderr_sha256=sha(err)))
                 persist()
