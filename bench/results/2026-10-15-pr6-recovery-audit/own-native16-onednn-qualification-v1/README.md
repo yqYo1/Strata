@@ -224,3 +224,19 @@ records its observed hash and relevant metadata scope. It is not an execution
 pin because Main owns ongoing index updates. No knowledge-collection report
 body was read. All newly authored files follow the repository's MIT LICENSE;
 oneDNN remains an external Apache-2.0 dependency.
+
+## Main review after source archive 709235b0
+
+Main reviewed the full controller and private fixture transform. Four installed
+oneDNN dependencies are now explicitly pinned and available after the existing
+LLVM/MKL/DNNL paths: TBB 2023.1 and compiler 2026.1 math DSOs. All previously
+resolved sonames, including libsycl/UR/IGC, must remain identical. No package,
+driver, runtime provider or system configuration is changed. The actual mapped
+DSOs still require the immutable allowlist proof. Earlier unresolved-dependency
+statements describe the archived source proposal, not an executed failure.
+
+An actual zero-scratch primitive leaves scratch-rejection coverage explicitly
+NOT_EXERCISED. It does not become PASS for that coverage, and it does not by
+itself fail the other qualification checks. API/runtime/numerical/owner errors
+remain failures. No product or Gemm test was weakened; execution is still UNRUN
+at this review boundary.

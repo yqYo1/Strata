@@ -511,6 +511,26 @@
       "sha256": "3add4417acc7093ccdcc0dfe7f20d19cded96073f4bafd65a704ef2e72aafd19",
       "bytes": 108119536,
       "realpath": "/opt/intel/oneapi/dnnl/2026.0/lib/libdnnl.so.3.11"
+    },
+    "/opt/intel/oneapi/tbb/2023.1/lib/libtbb.so.12.19": {
+      "sha256": "2c1fcbc65a33771a5e02a201734774252528e10f57cef9e2f902fe209c0319e1",
+      "bytes": 4462408,
+      "realpath": "/opt/intel/oneapi/tbb/2023.1/lib/libtbb.so.12.19"
+    },
+    "/opt/intel/oneapi/compiler/2026.1/lib/libsvml.so": {
+      "sha256": "a6dbbc425c8270c3485e40ef0924ef38ed89ced4026056fd3f1f529774c4f86c",
+      "bytes": 28103240,
+      "realpath": "/opt/intel/oneapi/compiler/2026.1/lib/libsvml.so"
+    },
+    "/opt/intel/oneapi/compiler/2026.1/lib/libimf.so": {
+      "sha256": "67a4b6c27002f59f26c411f4ec384300d781365af19d6a2eb9f0dd94d2a0f470",
+      "bytes": 4865192,
+      "realpath": "/opt/intel/oneapi/compiler/2026.1/lib/libimf.so"
+    },
+    "/opt/intel/oneapi/compiler/2026.1/lib/libintlc.so.5": {
+      "sha256": "612ab119242ccda945de6eb354369b5bee6a158bc9724e4da5e466cb0ad630db",
+      "bytes": 415824,
+      "realpath": "/opt/intel/oneapi/compiler/2026.1/lib/libintlc.so.5"
     }
   },
   "loaded_library_pins": {
@@ -653,12 +673,36 @@
       "sha256": "6ac6abc86ac891c6e13486470e26f1d939f47fda9e6b5d5508a7f5ec881adc84",
       "bytes": 51536,
       "realpath": "/usr/lib/x86_64-linux-gnu/libcap.so.2.66"
+    },
+    "/opt/intel/oneapi/tbb/2023.1/lib/libtbb.so.12.19": {
+      "sha256": "2c1fcbc65a33771a5e02a201734774252528e10f57cef9e2f902fe209c0319e1",
+      "bytes": 4462408,
+      "realpath": "/opt/intel/oneapi/tbb/2023.1/lib/libtbb.so.12.19"
+    },
+    "/opt/intel/oneapi/compiler/2026.1/lib/libsvml.so": {
+      "sha256": "a6dbbc425c8270c3485e40ef0924ef38ed89ced4026056fd3f1f529774c4f86c",
+      "bytes": 28103240,
+      "realpath": "/opt/intel/oneapi/compiler/2026.1/lib/libsvml.so"
+    },
+    "/opt/intel/oneapi/compiler/2026.1/lib/libimf.so": {
+      "sha256": "67a4b6c27002f59f26c411f4ec384300d781365af19d6a2eb9f0dd94d2a0f470",
+      "bytes": 4865192,
+      "realpath": "/opt/intel/oneapi/compiler/2026.1/lib/libimf.so"
+    },
+    "/opt/intel/oneapi/compiler/2026.1/lib/libintlc.so.5": {
+      "sha256": "612ab119242ccda945de6eb354369b5bee6a158bc9724e4da5e466cb0ad630db",
+      "bytes": 415824,
+      "realpath": "/opt/intel/oneapi/compiler/2026.1/lib/libintlc.so.5"
     }
   },
   "required_loaded_libraries": [
     "/opt/intel/oneapi/dnnl/2026.0/lib/libdnnl.so.3.11",
     "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libsycl.so.9.0.0-0",
-    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0.12.0"
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0.12.0",
+    "/opt/intel/oneapi/tbb/2023.1/lib/libtbb.so.12.19",
+    "/opt/intel/oneapi/compiler/2026.1/lib/libsvml.so",
+    "/opt/intel/oneapi/compiler/2026.1/lib/libimf.so",
+    "/opt/intel/oneapi/compiler/2026.1/lib/libintlc.so.5"
   ],
   "component_source": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-native16-onednn-functional-v1/proposal/src/prefill/sycl/onednn_faithful_bf16.cpp",
   "compiler": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
@@ -721,7 +765,9 @@
     "-lm",
     "-ldl",
     "-lpthread",
-    "/opt/intel/oneapi/dnnl/2026.0/lib/libdnnl.so"
+    "/opt/intel/oneapi/dnnl/2026.0/lib/libdnnl.so",
+    "-Wl,-rpath-link,/opt/intel/oneapi/tbb/2023.1/lib",
+    "-Wl,-rpath-link,/opt/intel/oneapi/compiler/2026.1/lib"
   ],
   "linked_files": [
     "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-native16-prefill-build-root-v2/build/libstrata_prefill.a",
@@ -752,7 +798,7 @@
     "LANG": "C.UTF-8",
     "LC_ALL": "C.UTF-8",
     "PYTHONDONTWRITEBYTECODE": "1",
-    "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/dnnl/2026.0/lib",
+    "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/dnnl/2026.0/lib:/opt/intel/oneapi/tbb/2023.1/lib:/opt/intel/oneapi/compiler/2026.1/lib",
     "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
     "OMP_NUM_THREADS": "1",
     "GIT_TERMINAL_PROMPT": "0",
@@ -766,7 +812,7 @@
     "HOME": "/home/yayoi",
     "LANG": "C.UTF-8",
     "LC_ALL": "C.UTF-8",
-    "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/dnnl/2026.0/lib",
+    "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib:/opt/intel/oneapi/dnnl/2026.0/lib:/opt/intel/oneapi/tbb/2023.1/lib:/opt/intel/oneapi/compiler/2026.1/lib",
     "CPLUS_INCLUDE_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include",
     "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
     "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
@@ -804,11 +850,13 @@
     "internal_FP32_partition": "UNKNOWN"
   },
   "static_dependencies": {
-    "method": "readelf -d and ldconfig -p only; no ldd/dlopen/library execution; existing exact environment plus permitted oneDNN lib directory",
+    "method": "Main extends pre-exec explicit path list after static readelf and per-file SHA review of installed TBB/math DT_NEEDED libraries. Original LLVM/UR/IGC and all previously resolved libraries must remain identical; actual mapped identities still mandatory.",
     "search_paths": [
       "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib",
       "/opt/intel/oneapi/mkl/2026.1/lib",
-      "/opt/intel/oneapi/dnnl/2026.0/lib"
+      "/opt/intel/oneapi/dnnl/2026.0/lib",
+      "/opt/intel/oneapi/tbb/2023.1/lib",
+      "/opt/intel/oneapi/compiler/2026.1/lib"
     ],
     "elf": {
       "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_blas.so.6": {
@@ -1052,7 +1100,11 @@
           "libgcc_s.so.1": "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1",
           "libsycl.so.9": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libsycl.so.9.0.0-0",
           "libc.so.6": "/usr/lib/x86_64-linux-gnu/libc.so.6",
-          "ld-linux-x86-64.so.2": "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2"
+          "ld-linux-x86-64.so.2": "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+          "libtbb.so.12": "/opt/intel/oneapi/tbb/2023.1/lib/libtbb.so.12.19",
+          "libsvml.so": "/opt/intel/oneapi/compiler/2026.1/lib/libsvml.so",
+          "libimf.so": "/opt/intel/oneapi/compiler/2026.1/lib/libimf.so",
+          "libintlc.so.5": "/opt/intel/oneapi/compiler/2026.1/lib/libintlc.so.5"
         }
       },
       "/usr/lib/x86_64-linux-gnu/libOpenCL.so.1.0.0": {
@@ -1298,46 +1350,77 @@
         "resolved_needed": {
           "libc.so.6": "/usr/lib/x86_64-linux-gnu/libc.so.6"
         }
+      },
+      "/opt/intel/oneapi/tbb/2023.1/lib/libtbb.so.12.19": {
+        "sha256": "2c1fcbc65a33771a5e02a201734774252528e10f57cef9e2f902fe209c0319e1",
+        "bytes": 4462408,
+        "realpath": "/opt/intel/oneapi/tbb/2023.1/lib/libtbb.so.12.19",
+        "needed": [
+          "libdl.so.2",
+          "libstdc++.so.6",
+          "libm.so.6",
+          "libgcc_s.so.1",
+          "libpthread.so.0",
+          "libc.so.6",
+          "ld-linux-x86-64.so.2"
+        ],
+        "soname": "libtbb.so.12",
+        "runpath": "",
+        "resolved_needed": {
+          "libdl.so.2": "/usr/lib/x86_64-linux-gnu/libdl.so.2",
+          "libstdc++.so.6": "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33",
+          "libm.so.6": "/usr/lib/x86_64-linux-gnu/libm.so.6",
+          "libgcc_s.so.1": "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1",
+          "libpthread.so.0": "/usr/lib/x86_64-linux-gnu/libpthread.so.0",
+          "libc.so.6": "/usr/lib/x86_64-linux-gnu/libc.so.6",
+          "ld-linux-x86-64.so.2": "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2"
+        }
+      },
+      "/opt/intel/oneapi/compiler/2026.1/lib/libsvml.so": {
+        "sha256": "a6dbbc425c8270c3485e40ef0924ef38ed89ced4026056fd3f1f529774c4f86c",
+        "bytes": 28103240,
+        "realpath": "/opt/intel/oneapi/compiler/2026.1/lib/libsvml.so",
+        "needed": [
+          "libintlc.so.5",
+          "libc.so.6"
+        ],
+        "soname": "libsvml.so",
+        "runpath": "",
+        "resolved_needed": {
+          "libintlc.so.5": "/opt/intel/oneapi/compiler/2026.1/lib/libintlc.so.5",
+          "libc.so.6": "/usr/lib/x86_64-linux-gnu/libc.so.6"
+        }
+      },
+      "/opt/intel/oneapi/compiler/2026.1/lib/libimf.so": {
+        "sha256": "67a4b6c27002f59f26c411f4ec384300d781365af19d6a2eb9f0dd94d2a0f470",
+        "bytes": 4865192,
+        "realpath": "/opt/intel/oneapi/compiler/2026.1/lib/libimf.so",
+        "needed": [
+          "libintlc.so.5",
+          "libc.so.6"
+        ],
+        "soname": "libimf.so",
+        "runpath": "",
+        "resolved_needed": {
+          "libintlc.so.5": "/opt/intel/oneapi/compiler/2026.1/lib/libintlc.so.5",
+          "libc.so.6": "/usr/lib/x86_64-linux-gnu/libc.so.6"
+        }
+      },
+      "/opt/intel/oneapi/compiler/2026.1/lib/libintlc.so.5": {
+        "sha256": "612ab119242ccda945de6eb354369b5bee6a158bc9724e4da5e466cb0ad630db",
+        "bytes": 415824,
+        "realpath": "/opt/intel/oneapi/compiler/2026.1/lib/libintlc.so.5",
+        "needed": [
+          "libc.so.6"
+        ],
+        "soname": "libintlc.so.5",
+        "runpath": "",
+        "resolved_needed": {
+          "libc.so.6": "/usr/lib/x86_64-linux-gnu/libc.so.6"
+        }
       }
     },
-    "unresolved": [
-      {
-        "required_by": "/opt/intel/oneapi/dnnl/2026.0/lib/libdnnl.so.3.11",
-        "soname": "libtbb.so.12",
-        "permitted_search_paths": [
-          "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib",
-          "/opt/intel/oneapi/mkl/2026.1/lib",
-          "/opt/intel/oneapi/dnnl/2026.0/lib"
-        ]
-      },
-      {
-        "required_by": "/opt/intel/oneapi/dnnl/2026.0/lib/libdnnl.so.3.11",
-        "soname": "libsvml.so",
-        "permitted_search_paths": [
-          "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib",
-          "/opt/intel/oneapi/mkl/2026.1/lib",
-          "/opt/intel/oneapi/dnnl/2026.0/lib"
-        ]
-      },
-      {
-        "required_by": "/opt/intel/oneapi/dnnl/2026.0/lib/libdnnl.so.3.11",
-        "soname": "libimf.so",
-        "permitted_search_paths": [
-          "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib",
-          "/opt/intel/oneapi/mkl/2026.1/lib",
-          "/opt/intel/oneapi/dnnl/2026.0/lib"
-        ]
-      },
-      {
-        "required_by": "/opt/intel/oneapi/dnnl/2026.0/lib/libdnnl.so.3.11",
-        "soname": "libintlc.so.5",
-        "permitted_search_paths": [
-          "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib",
-          "/opt/intel/oneapi/mkl/2026.1/lib",
-          "/opt/intel/oneapi/dnnl/2026.0/lib"
-        ]
-      }
-    ],
+    "unresolved": [],
     "sycl_soname_compatible": true,
     "loader_compatibility": "soname compatibility only; public API/C++ ABI/runtime still UNRUN",
     "resolution_limit": "RUNPATH then existing cache/default paths after LD_LIBRARY_PATH; actual loaded identity is mandatory; missing dependency blocks launch, no workaround"
@@ -1475,19 +1558,18 @@
   ],
   "blocked_assumptions": [
     "Main current active quality cohort must normally close; supply exact latest receipt/hash and assert latestness under shared lock",
-    "Static oneDNN dependencies unresolved under authorized environment; do not add Intel compiler/TBB paths, replace providers, install, symlink or preload",
     "Actual public APIs, SYCL C++ ABI, engine/context/queue, selected implementation, lifecycle and arithmetic remain unbuilt/unrun",
     "Any additional dlopened DSO absent from the immutable loaded-library pin allowlist fails qualification and needs explicit Main source-review boundary"
   ],
   "retention": "No runtime logs generated by worker; Main-only executions keep bounded private logs and exact command/ownership/fault/status evidence; publish durable receipt once after closed collection; Main alone retires verified successful traces with path/hash/reason manifest",
   "package_files": {
     "main_controller.py": {
-      "sha256": "f18a748797f072fedcf02672c108398804df9ba2f50793b98ac622741955c1b2",
-      "bytes": 33746
+      "sha256": "20bfd22d9039588e15216c92f8fa0b815721cea0b3c16ee696ee674cd574f5b6",
+      "bytes": 33781
     },
     "README.md": {
-      "sha256": "0efc5074a1a4918f9896ee0510c89748e635a48b689fb80978ac669acfb927fc",
-      "bytes": 13778
+      "sha256": "735ec13c8eca4d624702f8d6f5401051813e462e9488ec844dff7af73cc6ae98",
+      "bytes": 14715
     }
   },
   "hash_policy": "Main must supply the reviewed manifest SHA256 explicitly; manifest pins controller/README and immutable inputs, source transform, recipes, receipt/dependency/library identities without a self-hash cycle.",
@@ -1503,7 +1585,23 @@
     ],
     "Python3 pathlib/hashlib/difflib metadata authoring only; no controller execution or syntax/product test"
   ],
-  "scratch_skip_policy": "Original NOT_EXERCISED remains exactly recorded; overall check qualification fails rather than changing skipped rejection coverage into PASS.",
+  "scratch_skip_policy": "Original NOT_EXERCISED is retained for actual zero scratch, not claimed as rejection PASS. It is not an unsupported API/error. All original numerical/lifecycle/descriptor checks remain mandatory; nonzero scratch rejection must PASS.",
   "CPU_scope": "Process/submitting-thread getrusage deltas before Runtime construction through final rt->check; excludes native loader startup, evidence collection and Runtime destruction; full command wall belongs to Owner. No CPU-arithmetic or polling attribution.",
-  "source_review": "Manual complete controller/source-transform/recipe review only; all build/load/syntax/test/GPU/profile execution remains UNRUN."
+  "source_review": "Manual complete controller/source-transform/recipe review only; all build/load/syntax/test/GPU/profile execution remains UNRUN.",
+  "main_review": {
+    "original_source_archive_commit": "709235b0",
+    "original_manifest_sha256": "b54d4555b1e496c1b866a71171f4409dcc7eee5745230fa29da3256381efa67e",
+    "source_read": "Main full controller, complete R804 source/header/CMake/fixture and generated transform read before execution",
+    "changes": [
+      "Added four existing oneDNN DT_NEEDED TBB/math DSOs with exact pins; paths follow current LLVM/MKL/DNNL, all previous resolution checked unchanged; no install/provider replacement/symlink/preload",
+      "Permit an honestly unexercisable zero-scratch rejection subcase to remain NOT_EXERCISED; do not label rejection coverage PASS or suppress any runtime failure"
+    ],
+    "all_execution": "UNRUN before this review boundary",
+    "new_dependencies": {
+      "libtbb.so.12": "/opt/intel/oneapi/tbb/2023.1/lib/libtbb.so.12.19",
+      "libsvml.so": "/opt/intel/oneapi/compiler/2026.1/lib/libsvml.so",
+      "libimf.so": "/opt/intel/oneapi/compiler/2026.1/lib/libimf.so",
+      "libintlc.so.5": "/opt/intel/oneapi/compiler/2026.1/lib/libintlc.so.5"
+    }
+  }
 }
