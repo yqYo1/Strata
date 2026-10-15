@@ -52,6 +52,11 @@ def main():
     while True:
         if pending is None or not json.loads(pending.read_text())['result'].get('deliveryId'):
             r = call(['check', '--terminal', HANDLE, '--run', RUN])
+            if not r['result'].get('deliveryId'):
+                assert not r['result']['messages']
+                state['pending_receipt'] = None
+                statefile.write_text(json.dumps(state, indent=2) + '\n')
+                break
             state['check_count'] += 1
             pending = A / f"orca-native16-wave-delivery-{state['check_count']}-v1.json"
             assert not pending.exists()
@@ -93,14 +98,17 @@ def main():
         if not r.get('deliveryId'):
             break
         following = call(['check', '--terminal', HANDLE, '--run', RUN, '--ack', r['deliveryId']])
+        if not following['result'].get('deliveryId'):
+            assert not following['result']['messages']
+            state['pending_receipt'] = None
+            statefile.write_text(json.dumps(state, indent=2) + '\n')
+            break
         state['check_count'] += 1
         pending = A / f"orca-native16-wave-delivery-{state['check_count']}-v1.json"
         assert not pending.exists()
         pending.write_text(json.dumps(following, indent=2) + '\n')
         state['pending_receipt'] = pending.name
         statefile.write_text(json.dumps(state, indent=2) + '\n')
-        if not following['result'].get('deliveryId'):
-            break
     print(json.dumps(dict(completed=sorted(state['completed']), bodies_printed=False)))
 
 
