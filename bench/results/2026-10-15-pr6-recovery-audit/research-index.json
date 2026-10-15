@@ -1752,6 +1752,84 @@
       "status": "Review completed; Main consumed short operational digest only, not review body or collection originals",
       "review_text": "research-scope-review-round767-v1.ja.md",
       "review_text_sha256": "5523e83e75487526dba3e04c87d9b23b8ceee364e72d10edbd22f7f60670d90a"
+    },
+    {
+      "round": 768,
+      "path": "research-knowledge-round768-v1.txt",
+      "sha256": "f5bbc716d54143fb92c32c75893f66e5d03bea1d80eeaf275b34f6164dee6043",
+      "model": "Orca gpt-6-luna",
+      "purpose_class": "knowledge collection",
+      "review": "research-scope-review-round771-v1.json",
+      "review_sha256": "d5f8794b0ab215e6e20efb00f60c47a15a73327b14dd3f10ff656e7409ca41a1",
+      "main_body_read": false,
+      "reviewer_retrieval_metadata": {
+        "round": 768,
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/research-knowledge-round768-v1.txt",
+        "sha256": "f5bbc716d54143fb92c32c75893f66e5d03bea1d80eeaf275b34f6164dee6043",
+        "purpose_class": "knowledge_archive_conditional_candidate",
+        "main_original_needed_now": false,
+        "retrieval_brief": "Compare only if a concrete implementation question remains about moving variable expert-count metadata from host grouping to a true device-side consumer. Covers grouped oneMKL with host descriptors, uncertain device-USM descriptor placement, bounded expert/tile buckets and a custom fixed-bound consumer; includes a skewed-route experiment outline.",
+        "scope_depth_review": "Coherent and within its 1,200–1,600 word budget (1,296 words). Six primary/API or research references support distinct consumer designs, explicit metadata-contract uncertainty, bounded descriptor arithmetic, failure checks and counterexamples for queues/fusion. It adds a useful consumer-interface comparison beyond R761's stable grouping and R754/R755's host-count boundary, though the route context recurs. No material filler.",
+        "provenance_limit": "The report lists official SYCL/oneMKL/Level Zero references and non-LLM GPU/database studies; no source text, installed library behavior, B570 execution or performance claim was independently verified in this review. The proposal is design/literature evidence only.",
+        "main_correction_to_retain": "The supplied prior attribution puts host grouping at about 0.196 CPU seconds versus 25.793 CPU seconds for residual host-copy submission; the 131.610-second route-inclusive interval contains earlier queued work. Do not infer count handoff is a current bottleneck. Device-only oneMKL group metadata remains unverified for the installed version.",
+        "outcome": "Successful knowledge collection; retain in the indexed library. Do not dispatch a duplicate survey. Main needs the original only if fresh full-boundary evidence makes this specific consumer choice live."
+      },
+      "outcome": "succeeded"
+    },
+    {
+      "round": 769,
+      "path": "research-knowledge-round769-v1.txt",
+      "sha256": "7c8c2c91d82c406fa5ea7ab733f0145006c2b006d3d897d608845e17f25b0337",
+      "model": "Orca gpt-6-luna",
+      "purpose_class": "knowledge collection",
+      "review": "research-scope-review-round771-v1.json",
+      "review_sha256": "d5f8794b0ab215e6e20efb00f60c47a15a73327b14dd3f10ff656e7409ca41a1",
+      "main_body_read": false,
+      "reviewer_retrieval_metadata": {
+        "round": 769,
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/research-knowledge-round769-v1.txt",
+        "sha256": "7c8c2c91d82c406fa5ea7ab733f0145006c2b006d3d897d608845e17f25b0337",
+        "purpose_class": "knowledge_archive",
+        "main_original_needed_now": false,
+        "retrieval_brief": "Retrieve for a concrete long-prefill scheduling decision among sequential one-buffer work, a resident prefix plus one scratch window, and two-window copy/compute overlap. It supplies event dependencies, reuse/lifetime constraints, shape-derived workspace totals and a bounded end-to-end comparison outline.",
+        "scope_depth_review": "Coherent and within its 1,200–1,600 word budget (1,513 words). It narrows R763's broad residency/transfer themes to three schedules, causal event-DAG edges, slot lifetime, headroom and overlap counterexamples, using six official/API or non-LLM pipeline references. The fixed-size comparison complements the earlier broad survey without repeating it as filler.",
+        "provenance_limit": "Cited SYCL/Intel documentation and CUDA-era non-LLM studies are presented as transferable constraints, not B570 evidence. This review did not verify the cited pages, current runtime behavior, device copy engines or measured overlap.",
+        "main_correction_to_retain": "The 320 MiB chunk, 1.25 GiB prefix and 1.875 GiB two-window subtotal are shape-derived under a separate-scratch assumption, not observed allocator/VRAM totals. Queue names and inclusive waits do not establish overlap or removable copy latency; require event/timeline evidence and current memory headroom before adoption.",
+        "outcome": "Successful knowledge collection; retain for retrieval. No current implementation choice supplied with R771 requires Main to read the original now."
+      },
+      "outcome": "succeeded"
+    },
+    {
+      "round": 770,
+      "path": "research-knowledge-round770-v1.txt",
+      "sha256": "452dfdd347dd02825c46375988e18bb7fc02d083f0a02e56b813bc2b3f9bb0a2",
+      "model": "Orca gpt-6-luna",
+      "purpose_class": "knowledge collection",
+      "review": "research-scope-review-round771-v1.json",
+      "review_sha256": "d5f8794b0ab215e6e20efb00f60c47a15a73327b14dd3f10ff656e7409ca41a1",
+      "main_body_read": false,
+      "reviewer_retrieval_metadata": {
+        "round": 770,
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/research-knowledge-round770-v1.txt",
+        "sha256": "452dfdd347dd02825c46375988e18bb7fc02d083f0a02e56b813bc2b3f9bb0a2",
+        "purpose_class": "conditional_assignment_gate_failure",
+        "main_original_needed_now": false,
+        "retrieval_brief": "Dispatch audit only: the R764 prerequisite for localized residual-precision errors was absent, so no literature comparison was conducted. Keep the report available as a record of the failed conditional assignment; it has no new empirical, hardware or literature findings.",
+        "scope_depth_review": "The 434-word gate note is far below the 1,000–1,400 word research budget because the assignment correctly stopped before the unmet conditional investigation. Its gate logic agrees with the current supplied status: no per-layer paired conversion/NLL/task data. Do not assess it as a completed literature report or treat its summary of earlier receipts as new evidence.",
+        "provenance_limit": "The report points to prior index entries and R764/R767 material but adds no source verification. R771 did not independently validate those receipts or hardware/source claims.",
+        "main_correction_to_retain": "Do not dispatch selective-precision follow-up until a matched natural-input FP32/FP16/BF16 screen provides per-layer/per-branch conversion summaries, accumulated storage results, teacher-forced NLL and an independent task outcome that actually localize a material issue. The default-OFF NLL observer's host and 129-input mechanics checks do not satisfy this gate.",
+        "outcome": "Preserve R770 as failed because its stated prerequisite was absent. Do not count it as a successful research assignment, new measurement, quality result or literature finding."
+      },
+      "outcome": "failed"
+    },
+    {
+      "round": 771,
+      "path": "research-scope-review-round771-v1.json",
+      "sha256": "d5f8794b0ab215e6e20efb00f60c47a15a73327b14dd3f10ff656e7409ca41a1",
+      "model": "native Codex gpt-6-luna max",
+      "human_review": "research-scope-review-round771-v1.ja.md",
+      "human_review_sha256": "b2f3bdb95a4592bf86c50798a597593bc1d241b2bfe9f0d65f0fd70a3f7656d6",
+      "status": "Complete; Main consumed short operational digest and file identities only. Collection originals and review bodies not loaded into Main context."
     }
   ],
   "main_initial_findings": [
@@ -1943,10 +2021,46 @@
       770
     ],
     "purpose": "knowledge collection",
-    "state": "Orca workers accepted; no steering; Main continues independent work",
+    "state": "All3 settled and release receipts verified; R768/769 succeeded, R770 failed before research because its prerequisite was missing. Native Luna-max review771 completed; no original bodies read by Main.",
     "assignments_generated_from": "research-scope-review-round767-v1.json next_three_research_scopes metadata",
     "review_provider": "native Codex gpt-6-luna reasoning max on completion",
-    "main_reads_collection_bodies": false
+    "main_reads_collection_bodies": false,
+    "review": "research-scope-review-round771-v1.json",
+    "next_scopes_metadata": [
+      {
+        "priority": 1,
+        "purpose_label": "long_prefill_chunk_size_knowledge_collection",
+        "title": "Chunk-size choices for causal long prefill under GPU memory limits",
+        "finite_question": "For long causal or recurrent GPU prefill, compare smaller, current-size and larger chunks, including how to treat a short tail. Which workload and device conditions justify each choice when GEMM/tile utilization, launch amortization, live workspace, memory traffic and shared-state dependencies all matter?",
+        "breadth_and_counterevidence": "Use current SYCL/Intel primary documentation and original non-LLM GPU/ASIC papers or engineering blogs. Compare at least three chunk-size strategies and a tail strategy; include evidence where a smaller chunk reduces live memory but loses throughput to launch or tile underfill, and where a larger chunk worsens residency or memory pressure. Keep design estimates separate from measured results. Do not repeat R769's buffer/queue-overlap comparison, R667's execution-order audit, or claim B570 performance.",
+        "report_budget": "1,300–1,800 words; at most 7 substantive primary sources, exact links, applicability limits and a counterevidence table.",
+        "schedulable_now": true,
+        "prerequisites": "Long-prefill chunk tuning remains in scope; this is bounded knowledge collection and does not require a new local measurement before research.",
+        "prerequisite_evidence": "AGENTS.md keeps long-prefill chunk-size tuning active; R769 compares fixed 8,192-row buffers but does not compare chunk sizes. Any implementation choice still requires Main's measured full-path and physical-context validation."
+      },
+      {
+        "priority": 2,
+        "purpose_label": "decision_support_if_host_submission_remains_material",
+        "title": "Reusable command submission for a dynamic long-prefill graph",
+        "finite_question": "If current full-boundary attribution shows host command/copy submission is material outside waits, compare direct per-command submission with reusable SYCL/Level Zero command lists or graph-like replay for a chunked prefill DAG. Which approach lowers repeated host work while preserving dynamic pointers, event dependencies, cancellation, async-error reporting and safe resource retirement?",
+        "breadth_and_counterevidence": "Use official SYCL, oneAPI and Level Zero references plus original non-LLM GPU command-replay or launch-overhead studies. Compare at least two replay mechanisms with ordinary submission, and include counterevidence for re-record/update overhead, unsupported dynamic arguments, queue ordering, portability and cases where device work or completion waiting dominates. Avoid repeating R751's wait-policy survey, R765's UR host-copy source audit or R769's transfer/compute overlap analysis.",
+        "report_budget": "1,200–1,700 words; at most 6 substantive primary sources, exact links and a capability/applicability matrix.",
+        "schedulable_now": false,
+        "prerequisites": "A fresh, closed attribution after current source integration must show repeated command/copy submission is a material part of the active long-prefill critical path, separately from busy completion waits and host computation.",
+        "prerequisite_evidence": "The current index has prior v3 attribution with 25.793 CPU seconds in residual host-copy submission and 165.704 seconds in explicit waits, but no fresh post-integration full-boundary timing was supplied for R771. Do not dispatch on the historical CPU totals alone."
+      },
+      {
+        "priority": 3,
+        "purpose_label": "decision_support_if_storage_error_is_localized",
+        "title": "Selective residual precision after a matched storage-quality screen",
+        "finite_question": "Only if a matched FP32/FP16/BF16 screen localizes material error or task loss, compare fixed per-model storage, per-layer/per-branch storage and sparse higher-precision exceptions. Which evidence supports each strategy, and when do extra bytes, casts or dispatch erase the expected gain?",
+        "breadth_and_counterevidence": "Use same-family evidence where available plus original non-LLM activation-compression work. Distinguish storage-only cast/restore from changed live arithmetic and training quantization. Include outlier and correlated-quality counterexamples and independent task metrics; do not restate generic FP16-versus-BF16 facts or invent an acceptance threshold.",
+        "report_budget": "1,000–1,400 words; at most 6 primary sources, exact links and explicit evidence limits.",
+        "schedulable_now": false,
+        "prerequisites": "A natural-input matched FP32/FP16/BF16 measurement must produce per-layer/per-branch conversion tails, accumulated storage results, teacher-forced NLL and an independent task outcome that establish a localized material issue.",
+        "prerequisite_evidence": "Main explicitly reports that these paired per-layer quality/task data do not yet exist. The integrated default-OFF observer passed host and 129-input paired-GPU mechanics only; that does not satisfy the quality gate. This candidate must not be assigned until the named result exists."
+      }
+    ]
   },
   "phase_audit": {
     "build": "phase-audit-build-v1.json",
@@ -2863,13 +2977,14 @@
     "state": "APPLIED_BUILT_HOSTPASS_SMALL_GPU_PAIRED_PASS. Default-OFF observer only; FP16 quality/admission/fullcontext/RESTORE/performance still unqualified.",
     "base": "f27189d626f4a428982d25bb07f441b52345784c",
     "old_v2": "Supersededown proposal retired after normalizedsource comparison and exactmetadataorigin explanation; no external/Xe implementation source used. Originalv2hashes preserved inprovenance, no attributionremoval.",
-    "temporary_full_package_budget_bytes": 16777216,
-    "next_review": "After source integration commit, retire proposal full mirrors with Git membership proof. Natural-input teacher-forced controls/FP16 comparison pending.",
+    "temporary_full_package_budget_bytes": 0,
+    "next_review": "Full source mirrors retired after Git byte/reachability proofs; next gate is two FP32 long-input controls, matched FP16 loss comparison, then separate allGPU placement comparison.",
     "integration_report": "own-dense-prefill-nll-integration-v3.ja.md",
     "build_receipt": "own-dense-prefill-nll-build-v3.json",
     "first_configuration_failure_receipt": "own-dense-prefill-nll-smoke-v3.json",
     "paired_GPU_receipt": "own-dense-prefill-nll-smoke-v4.json",
-    "binary_sha256": "3770ee3c5a85d891c0dd6552ae31d296107b23f44385d13860fc310205712971"
+    "binary_sha256": "3770ee3c5a85d891c0dd6552ae31d296107b23f44385d13860fc310205712971",
+    "source_mirror_retirement": "integrated-nll-source-mirrors-retention-v1.json"
   },
   "retention_v19": {
     "manifest": "closed-own-qsa-select-model-a1-retention-v2.json",
@@ -3012,9 +3127,10 @@
     ],
     "main_consumption": "short operational reviewer digest; retrieve indexed originals only for a concrete decision; source proposal fullpatch review unchanged",
     "review_assignment": "review_research_scope_round767",
-    "completed_native_review": "research-scope-review-round767-v1.json",
-    "collection_retrieval_metadata_file": "research-scope-review-round767-v1.json",
-    "coherent_next_scopes_location": "next_three_research_scopes in reviewer JSON; use metadata without loading report bodies"
+    "completed_native_review": "research-scope-review-round771-v1.json",
+    "collection_retrieval_metadata_file": "research-scope-review-round771-v1.json",
+    "coherent_next_scopes_location": "next_three_research_scopes in reviewer JSON; use metadata without loading report bodies",
+    "scope_eligibility": "Only dispatch schedulable_now=true with recorded prerequisite evidence; unmet conditional scopes stay indexed, not launched."
   },
   "research_review_757_760": "research-rounds757-760-main-review-v1.ja.md",
   "own_prefill_CPU_host_v3": {
@@ -3072,5 +3188,23 @@
     "removed_logical_bytes": 6935037,
     "original_FAIL_preserved": true,
     "physical_free_space_claim": false
+  },
+  "retention_v26": {
+    "manifest": "integrated-nll-source-mirrors-retention-v1.json",
+    "files": 340,
+    "removed_logical_bytes": 5755317,
+    "original_proposal_status_unchanged": true,
+    "license_preserved_in_root_and_pushed_Git": true,
+    "physical_free_space_claim": false
+  },
+  "own_residual_quality_next": {
+    "input_receipt": "own-residual-quality-input-v1.json",
+    "count": 78444,
+    "batched_rows": 78443,
+    "recipe": "run_own_residual_quality_v1.py",
+    "state": "Fixed official-benchmark input only. Long NLL arms not yet executed.",
+    "quality_acceptance": "UNSET; general-language/task quality not qualified by word list",
+    "performance_cohort": "excluded",
+    "next_arm": "fp32-a"
   }
 }

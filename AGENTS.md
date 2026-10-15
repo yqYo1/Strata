@@ -114,6 +114,10 @@ are outside this work's scope.
   Main does not load the original collection reports or a long technical digest.
   A coordinating subagent between Main and researchers is optional. Do not steer
   active researchers; apply scope changes to fresh bounded sessions.
+- Before dispatching a recommended scope, check its short eligibility metadata.
+  Require `schedulable_now=true` and recorded evidence for its prerequisites.
+  Keep conditional scopes with missing prerequisites in the index for later;
+  do not start a session that can only report that its prerequisite is absent.
 - Keep findings in files and commit reviewed reports. Research is not
   implementation adoption. Main implements, or assigns a separate
   **gpt-6.1-sol** implementation task pinned to an immutable source base. Main

@@ -1,0 +1,22 @@
+# R770 gate check — selective residual precision
+
+2026-10-16 JST. This assignment was labeled knowledge collection and was conditional on Main's R764 screen establishing that a small number of branches or layers dominate overflow or quality loss. I checked the current research index, the saved residual precision receipt, the R764 report, the R764–766 Main review, and the R767 research-scope review. I did not conduct the conditional external literature comparison because its stated prerequisite is not present. No code, build, test, GPU/profiler job, process inspection, Git operation, or environment/service change was made.
+
+## Gate status
+
+The current evidence does not establish that localized precision exceptions are a live choice:
+
+- `saved-residual-precision-screen-v1.json` records a CPU post-hoc NumPy cast/round-trip over 541 sampled positions from a final-layer residual capture. It explicitly says no 48-layer accumulated rounding, GPU cast, retrieval, NLL/task quality or speed measurement was performed; model precision and quality are unqualified.
+- The index's `residual_precision` entry describes the same scope. Its synthetic small numerical gate is not natural-input, accumulated storage quality evidence.
+- The current dense-prefill NLL proposal is still marked unapplied, unbuilt and untested in the index. The selected-prefill-logit result is not a matched FP16/BF16 storage quality measurement.
+- The R767 reviewer says the next step after R764 is Main's measured screen, not another literature task repeating the lack of direct data.
+
+Consequently, there are no actual per-layer/per-branch conversion tails paired with accumulated FP16/BF16 storage, teacher-forced NLL and task outcomes from which to choose global dtype, selective dtype, or sparse higher-precision exceptions. A single final-layer post-hoc error summary cannot identify which intermediate boundary caused an end-to-end quality change. The selective-precision literature comparison is deferred; no adoption or quality inference follows from this gate check.
+
+## Prior source trail
+
+R764 already recorded and scoped its primary references: the Qwen authors' technical report, https://arxiv.org/html/2608.30320v1, and the oneDNN BF16 data-type reference, https://oneapi-spec.uxlfoundation.org/specifications/oneapi/v1.1-rev-1/elements/onednn/source/data_model/data_types/bfloat16.html. R764's Main review confirms the Qwen source supports only a trial motivation, not a direct FP16/BF16 result for this fork. This report does not re-evaluate those references or add sources.
+
+## Concrete next experiment
+
+First complete the already proposed matched FP32/FP16/BF16 storage screen with per-layer and per-branch conversion summaries, accumulated 47-boundary rounding, full-vocabulary teacher-forced NLL and an independent task outcome. If that result localizes a material error or quality loss, define the exception set from the conversion/NLL evidence before examining the follow-up outcomes, then compare fixed per-model storage, per-layer/per-branch storage and sparse FP32 exceptions on identical inputs. Report exception bytes, dispatch/cast count, NLL by context and task results separately; keep all live arithmetic and the FP32 reference unchanged. This experiment remains unassigned until the prerequisite result exists.

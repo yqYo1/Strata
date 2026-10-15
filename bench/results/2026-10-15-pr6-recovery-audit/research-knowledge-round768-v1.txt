@@ -1,0 +1,57 @@
+# R768 — device consumers for variable expert counts
+
+2026-10-16 JST. Purpose: knowledge collection; bounded public-source research. No product source, build, test, GPU, profiler, process, Git, service, environment, or cleanup operation was performed. No XeStrata source or derivative was consulted. This is a retrieval reference, not an implementation or performance recommendation.
+
+## Scope and current relevance
+
+The question is whether grouped GEMM, tiling, or a device-resident consumer can keep variable MoE counts on-GPU through the first expert GEMM. The route shape is 512 experts, top-10, and an 8,192-row chunk (81,920 routed rows). Supplied attribution puts host grouping at 0.19649 CPU seconds versus 25.793 seconds for residual host-copy submission; the route wait includes earlier queued work. R761 review likewise says its 0.16536-second grouping/map-submit interval excludes wait and map-copy completion. Retain this only if fresh full-path evidence makes count handoff material.
+
+## Comparison
+
+| Design | What it can remove | What remains or can regress |
+| --- | --- | --- |
+| Host descriptors + grouped oneMKL | Replaces many per-expert calls with one group call; fixed expert order can avoid a compact `order` list. | Host still needs each `m[e]` and output offsets/pointers. The count readback dependency remains. |
+| Device-USM descriptors + grouped oneMKL | Could keep oneMKL GEMM while avoiding host inspection if this implementation consumes device-generated metadata after a producer event. | Public docs do not specify device-only group metadata or whether the library inspects/stages it on the host. This remains version-specific. |
+| Fixed expert/tile buckets | Bounded work shapes and a statically sized launch. | oneMKL still needs batch sizes, dimensions, and pointers; fixed tiles pad tails and skew adds descriptors or work. |
+| Device descriptor consumer | A GPU kernel can consume device-generated expert/tile records without returning `ne`, `order`, or offsets to host. | Requires a real device-side GEMM consumer; custom math, fusion, buffers, and errors need qualification. A queue/fusion can add contention, idle work, or redundant math. |
+
+### Grouped oneMKL
+
+The 2026 DPC++ `gemm_batch` USM group API takes per-group dimensions, `group_size`, and matrix-pointer arrays; it accepts queue dependencies and returns an event. Its strided API needs a common shape, and its buffer API supports only strided batching. For one GEMM per expert with different row counts, a host-built grouped call can fix expert order and replace many API calls with one. That may lower submission overhead, but the caller still needs GPU-produced `count[e]` to fill `m[e]`, and `F[e]` or an equivalent output base for expert pointers. Grouping alone does not deliver those values sooner.
+
+The USM signature takes metadata pointers, so device-generated descriptors passed directly to oneMKL are a distinct possibility. However, the public description does not say that `m`, `group_size`, or pointer arrays may be device-only, or that the library avoids host inspection/staging. The general USM guide covers matrix/vector inputs; the scalar-pointer rule for deferred device dereference does not establish the group-array contract. Confirm placement and implementation behavior for the installed version before treating this as a no-sync path. If confirmed, a fixed `group_count=512` and producer-event dependency could feed device-generated dimensions and pointers; retain descriptors through the returned GEMM event.
+
+### Bounded expert/tile buckets
+
+A bucketed path turns `count[e]` into fixed-row tiles. With `B=64`, the 81,920 routed rows need at most `ceil(81,920/64)+512 = 1,792` tile descriptors under a loose bound. Sixteen-byte `{expert,row_start,row_count,flags}` records need 28 KiB per chunk. A device scan over `ceil(count[e]/B)` can emit stable expert/row tiles while the total route count stays fixed under skew.
+
+OneMKL grouping still needs bucket counts on host unless device metadata support is proven. Padding partial tiles to `B` adds arithmetic, and skew increases descriptor count. A custom SYCL consumer can use a fixed 1,792-group upper-bound launch; each group reads the device tile count and exits beyond the valid list. This removes host `ne`/`order` without dynamic-launch support, but requires optimized GEMM tiles. Larger `B` reduces descriptors and raises padding; smaller `B` does the reverse. Measure with the actual expert histogram.
+
+### Device descriptors and indirect dispatch
+
+A true consumer uses ordered producer and consumer kernels: the producer validates IDs and emits stable counts, offsets, and bounded tile records; the consumer reads them and writes expert rows. This creates a device-wide boundary without a spin barrier and avoids host count readback. Fixed upper-bound SYCL dispatch is the portable design above. Level Zero's `zeCommandListAppendLaunchKernelIndirect` can instead read a device-generated group-count buffer. It requires low-level same-context, ordering, memory-visibility, and driver support; it dispatches a custom consumer and does not make oneMKL device-driven. Neither docs nor literature establishes support or performance on this Strata build or B570.
+
+Tiles may execute out of order if descriptors retain expert and contiguous row range: write to `F[e]+row_start` and keep the existing `slot` map for token/top-k ownership. Avoid a global atomic queue that assigns output positions; per-expert scans make ordering easier to prove and compare.
+
+## Counterevidence, costs, and failure handling
+
+A queue is not a free scheduler. Tzeng, Patney, and Owens report over 100 times more idle time for centralized/distributed queues than for stealing/donation on their irregular Reyes workload. This 2010 graphics result is no Xe2 forecast; it shows queue topology and granularity can erase saved work. A fixed-index tile list avoids a contested pop for the first comparison.
+
+Cao et al.'s 2024 database study reports four kernels for Crystal/HeavyDB on Q21 versus 172 for BlazingSQL and 190 for TQP, yet Crystal still loads unnecessary data after predicates/joins. Fusion can remove barriers while retaining excess work. Fusing MoE routing through combine also requires accounting for live state, weight traffic, numerical order, and dependencies. The database result is an analogy, not a Strata speedup.
+
+Reject IDs outside `[0,512)`, verify the route count sum and row caps, and bound descriptor writes before consumers run. Invalid records must not cause out-of-range access; propagate async errors and preserve buffer lifetime through the last event. Compare counts, offsets, ownership maps, and FP32 output; retain empty-expert, skewed, tail, cancellation, fault, and physical 262,144-context coverage. A queue alone does not prove library math stays on the GPU.
+
+## One future experiment
+
+Only if new whole-boundary data makes handoff material, compare one actual 8,192-row chunk from route production through first expert projection/combine: existing per-expert oneMKL; grouped oneMKL with host descriptors; device-USM oneMKL metadata if its contract is verified; and a custom `B=64` consumer with fixed SYCL bounds (plus Level Zero indirect dispatch if available). Use identical routes in separate clean processes, then repeat with 81,920 assignments concentrated into a few experts. Record host CPU outside waits, wait CPU, device phase time, tile/padding counts, queue events, peak memory, and individual end-to-end samples. Gate on exact maps/counts, FP32 output, async-error/fault closure, and buffer bounds; component speed alone is not an inference gain.
+
+## Sources and evidence limits
+
+| Source | Supports | Limit |
+| --- | --- | --- |
+| [Intel oneMKL DPC++ `gemm_batch`, 2026.0](https://www.intel.com/content/www/us/en/docs/onemkl/developer-reference-dpcpp/2026-0/gemm-batch.html) | Group/strided API, group dimensions/sizes, pointer arrays, dependencies, completion event. | No device-only group-descriptor contract. |
+| [Intel oneMKL DPC++ introduction, 2026.0](https://www.intel.com/content/www/us/en/docs/onemkl/developer-reference-dpcpp/2026-0/introduction-to-the-intel-oneapi-math-kernel.html) | USM memory requirements for matrix/vector inputs and async queue API. | Does not resolve control-array placement or staging. |
+| [Intel oneMKL scalar arguments, 2026.0](https://www.intel.com/content/www/us/en/docs/onemkl/developer-reference-dpcpp/2026-0/scalar-arguments.html) | Device-USM scalar pointers can be dereferenced after dependencies resolve. | Not a contract for `m`, `group_size`, or pointer arrays. |
+| [Level Zero command-list API, v1.19](https://oneapi-src.github.io/level-zero-spec/level-zero/latest/core/api/apis/command_list.html) | Device-visible indirect launch arguments and ordering/lifetime contract. | No Strata/B570 capability or speed evidence. |
+| [Tzeng et al., *Task Management for Irregular-Parallel Workloads on the GPU*, HPG 2010](https://diglib.eg.org/items/d9c3a0b9-b326-4514-9fbc-e85f82662121) | Queue-topology and idle-work counterexample on irregular graphics work. | Old hardware/workload; design warning only. |
+| [Cao et al., *GPU Database Systems Characterization and Optimization*, PVLDB 2024](https://www.vldb.org/pvldb/vol17/p441-cao.pdf) | Kernel-count/fusion comparison and a case where fused execution still loads unnecessary data. | NVIDIA database results do not transfer numerically to MoE/B570. |
