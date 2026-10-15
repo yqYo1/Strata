@@ -364,6 +364,10 @@ if(STRATA_SYCL_TESTS)
   target_compile_options(sycl_qsa_fallback_layout_test PRIVATE -fno-fast-math -ffp-contract=off)
   add_test(NAME sycl_qsa_fallback_layout COMMAND sycl_qsa_fallback_layout_test)
   set_tests_properties(sycl_qsa_fallback_layout PROPERTIES TIMEOUT 180)
+  # Manual exact selector experiment; use separate immutable-environment processes.
+  add_executable(sycl_qsa_select_radix_test EXCLUDE_FROM_ALL tests/sycl/qsa_select_radix.cpp)
+  target_link_libraries(sycl_qsa_select_radix_test PRIVATE strata_kernels)
+  target_compile_options(sycl_qsa_select_radix_test PRIVATE -fno-fast-math -ffp-contract=off)
   # Manual source-only K mapping candidate; Main serializes all GPU runs.
   add_executable(sycl_prompt_k_cellmajor_test EXCLUDE_FROM_ALL tests/sycl/prompt_k_cellmajor.cpp)
   target_link_libraries(sycl_prompt_k_cellmajor_test PRIVATE strata_kernels)
