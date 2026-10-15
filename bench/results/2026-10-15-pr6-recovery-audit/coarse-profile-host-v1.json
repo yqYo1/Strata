@@ -1,0 +1,1051 @@
+{
+  "passed": true,
+  "complete": true,
+  "active": false,
+  "GPU_executed": false,
+  "commands": [
+    {
+      "label": "canonical-policy",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-canonical-bank-profile-build-root-v1/build/canonical_bank_policy_test"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-15T15:19:54.922783+00:00",
+      "wall_seconds": 30,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2431472,
+          "start_ticks": 42635904,
+          "sid": 2431472,
+          "pgid": 2431472
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 426359.044294531,
+      "pid": 2431472,
+      "spawn_return_monotonic": 426359.047322633,
+      "direct_identity": {
+        "pid": 2431472,
+        "state": "D",
+        "ppid": 2431425,
+        "pgid": 2431472,
+        "sid": 2431472,
+        "start_ticks": 42635904,
+        "rss_bytes": 159744
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-15T15:19:55.052602+00:00",
+      "elapsed_seconds": 0.12958591600181535,
+      "logs": {
+        "canonical-policy.stdout": {
+          "bytes": 78,
+          "sha256": "cf8971e901da9133f7df69d6affc938ee322aa051d5b457ca2b804acde1216b7"
+        },
+        "canonical-policy.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "compile",
+      "argv": [
+        "/home/yayoi/.nix-profile/bin/c++",
+        "-std=c++20",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-I/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/coarse-profile-host-fixture-v1",
+        "-I/home/yayoi/orca/workspaces/Strata/sycl/include",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/coarse-profile-host-fixture-v1/fixture.cpp",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-coarse-profile-host-root-v1/profile-host"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-15T15:19:55.053209+00:00",
+      "wall_seconds": 120,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2431494,
+          "start_ticks": 42635917,
+          "sid": 2431494,
+          "pgid": 2431494
+        },
+        {
+          "pid": 2431508,
+          "start_ticks": 42635921,
+          "sid": 2431494,
+          "pgid": 2431494
+        },
+        {
+          "pid": 2431783,
+          "start_ticks": 42636056,
+          "sid": 2431494,
+          "pgid": 2431494
+        },
+        {
+          "pid": 2432130,
+          "start_ticks": 42636563,
+          "sid": 2431494,
+          "pgid": 2431494
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 426359.174684103,
+      "pid": 2431494,
+      "spawn_return_monotonic": 426359.176875686,
+      "direct_identity": {
+        "pid": 2431494,
+        "state": "R",
+        "ppid": 2431425,
+        "pgid": 2431494,
+        "sid": 2431494,
+        "start_ticks": 42635917,
+        "rss_bytes": 471040
+      },
+      "peak_live_owned_identities": 3,
+      "peak_session_rss_bytes": 155320320,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-15T15:20:01.934303+00:00",
+      "elapsed_seconds": 6.8809076840407215,
+      "logs": {
+        "compile.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "compile.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "normal32",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-coarse-profile-host-root-v1/profile-host",
+        "normal32"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-15T15:20:01.935008+00:00",
+      "wall_seconds": 30,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2432163,
+          "start_ticks": 42636605,
+          "sid": 2432163,
+          "pgid": 2432163
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 426366.05658521,
+      "pid": 2432163,
+      "spawn_return_monotonic": 426366.059354674,
+      "direct_identity": {
+        "pid": 2432163,
+        "state": "R",
+        "ppid": 2431425,
+        "pgid": 2432163,
+        "sid": 2432163,
+        "start_ticks": 42636605,
+        "rss_bytes": 282624
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-15T15:20:02.108808+00:00",
+      "elapsed_seconds": 0.17352330998983234,
+      "logs": {
+        "normal32.stdout": {
+          "bytes": 102,
+          "sha256": "5f99f0682bafbad03c704c91150d57ee91127582fb3f307ca79878584c540098"
+        },
+        "normal32.stderr": {
+          "bytes": 14171,
+          "sha256": "9248ff409c847669a1b6bb9f57345a07a8220d0e8e93832a84d7687a6751268c"
+        }
+      }
+    },
+    {
+      "label": "create-1",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-coarse-profile-host-root-v1/profile-host",
+        "create-1"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-15T15:20:02.109799+00:00",
+      "wall_seconds": 30,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2432174,
+          "start_ticks": 42636623,
+          "sid": 2432174,
+          "pgid": 2432174
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 426366.231564717,
+      "pid": 2432174,
+      "spawn_return_monotonic": 426366.233581702,
+      "direct_identity": {
+        "pid": 2432174,
+        "state": "R",
+        "ppid": 2431425,
+        "pgid": 2432174,
+        "sid": 2432174,
+        "start_ticks": 42636623,
+        "rss_bytes": 299008
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-15T15:20:02.277755+00:00",
+      "elapsed_seconds": 0.16750361397862434,
+      "logs": {
+        "create-1.stdout": {
+          "bytes": 95,
+          "sha256": "15498ee46b60b4f39d636402fc3be8c4af1758d6731c9c883dd78e5dc8b76ce1"
+        },
+        "create-1.stderr": {
+          "bytes": 11923,
+          "sha256": "9b3c4ba1da3f130408425fcb44dec41e8ab88a6ed6b875e5164eced11d0aacea"
+        }
+      }
+    },
+    {
+      "label": "create-7",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-coarse-profile-host-root-v1/profile-host",
+        "create-7"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-15T15:20:02.278653+00:00",
+      "wall_seconds": 30,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2432186,
+          "start_ticks": 42636640,
+          "sid": 2432186,
+          "pgid": 2432186
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 426366.400294585,
+      "pid": 2432186,
+      "spawn_return_monotonic": 426366.402398464,
+      "direct_identity": {
+        "pid": 2432186,
+        "state": "R",
+        "ppid": 2431425,
+        "pgid": 2432186,
+        "sid": 2432186,
+        "start_ticks": 42636640,
+        "rss_bytes": 712704
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-15T15:20:02.505577+00:00",
+      "elapsed_seconds": 0.22656769899185747,
+      "logs": {
+        "create-7.stdout": {
+          "bytes": 95,
+          "sha256": "8c85a0cf258fb7923ff078d657388e970e7a984e1d7a1bb18f4ca8bf46ef86c5"
+        },
+        "create-7.stderr": {
+          "bytes": 11923,
+          "sha256": "9b3c4ba1da3f130408425fcb44dec41e8ab88a6ed6b875e5164eced11d0aacea"
+        }
+      }
+    },
+    {
+      "label": "create-12",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-coarse-profile-host-root-v1/profile-host",
+        "create-12"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-15T15:20:02.506369+00:00",
+      "wall_seconds": 30,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2432193,
+          "start_ticks": 42636663,
+          "sid": 2432193,
+          "pgid": 2432193
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 426366.631186951,
+      "pid": 2432193,
+      "spawn_return_monotonic": 426366.633609851,
+      "direct_identity": {
+        "pid": 2432193,
+        "state": "R",
+        "ppid": 2431425,
+        "pgid": 2432193,
+        "sid": 2432193,
+        "start_ticks": 42636663,
+        "rss_bytes": 1191936
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-15T15:20:02.665013+00:00",
+      "elapsed_seconds": 0.15512515604496002,
+      "logs": {
+        "create-12.stdout": {
+          "bytes": 99,
+          "sha256": "33057ee84ba44edc19ae857674acbb4e6412092e848a0859f8277e15aa8ab1d7"
+        },
+        "create-12.stderr": {
+          "bytes": 11923,
+          "sha256": "9b3c4ba1da3f130408425fcb44dec41e8ab88a6ed6b875e5164eced11d0aacea"
+        }
+      }
+    },
+    {
+      "label": "record-1",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-coarse-profile-host-root-v1/profile-host",
+        "record-1"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-15T15:20:02.666112+00:00",
+      "wall_seconds": 30,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2432205,
+          "start_ticks": 42636678,
+          "sid": 2432205,
+          "pgid": 2432205
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 426366.788024476,
+      "pid": 2432205,
+      "spawn_return_monotonic": 426366.791052187,
+      "direct_identity": {
+        "pid": 2432205,
+        "state": "R",
+        "ppid": 2431425,
+        "pgid": 2432205,
+        "sid": 2432205,
+        "start_ticks": 42636678,
+        "rss_bytes": 1167360
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-15T15:20:02.834545+00:00",
+      "elapsed_seconds": 0.16784333594841883,
+      "logs": {
+        "record-1.stdout": {
+          "bytes": 98,
+          "sha256": "bc1a02b24f60d7c650fb462b3c97f69a4db3528cfe1c2e751620b027f97de70e"
+        },
+        "record-1.stderr": {
+          "bytes": 11923,
+          "sha256": "9b3c4ba1da3f130408425fcb44dec41e8ab88a6ed6b875e5164eced11d0aacea"
+        }
+      }
+    },
+    {
+      "label": "record-2",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-coarse-profile-host-root-v1/profile-host",
+        "record-2"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-15T15:20:02.835399+00:00",
+      "wall_seconds": 30,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2432211,
+          "start_ticks": 42636695,
+          "sid": 2432211,
+          "pgid": 2432211
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 426366.957103102,
+      "pid": 2432211,
+      "spawn_return_monotonic": 426366.95879301,
+      "direct_identity": {
+        "pid": 2432211,
+        "state": "R",
+        "ppid": 2431425,
+        "pgid": 2432211,
+        "sid": 2432211,
+        "start_ticks": 42636695,
+        "rss_bytes": 307200
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-15T15:20:02.985214+00:00",
+      "elapsed_seconds": 0.14938291296130046,
+      "logs": {
+        "record-2.stdout": {
+          "bytes": 98,
+          "sha256": "d718b5a45be3754fc4bd1b4ceb81dac33219d8d5998c3fa13c39a14708a40aba"
+        },
+        "record-2.stderr": {
+          "bytes": 11923,
+          "sha256": "9b3c4ba1da3f130408425fcb44dec41e8ab88a6ed6b875e5164eced11d0aacea"
+        }
+      }
+    },
+    {
+      "label": "query-error",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-coarse-profile-host-root-v1/profile-host",
+        "query-error"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-15T15:20:02.986117+00:00",
+      "wall_seconds": 30,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2432219,
+          "start_ticks": 42636710,
+          "sid": 2432219,
+          "pgid": 2432219
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 426367.107874875,
+      "pid": 2432219,
+      "spawn_return_monotonic": 426367.109825264,
+      "direct_identity": {
+        "pid": 2432219,
+        "state": "R",
+        "ppid": 2431425,
+        "pgid": 2432219,
+        "sid": 2432219,
+        "start_ticks": 42636710,
+        "rss_bytes": 315392
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-15T15:20:03.137255+00:00",
+      "elapsed_seconds": 0.15065035404404625,
+      "logs": {
+        "query-error.stdout": {
+          "bytes": 101,
+          "sha256": "4d5cb5d94582462743b0ac78b060ff220163dffcfef2c730fd4681002cfdb94d"
+        },
+        "query-error.stderr": {
+          "bytes": 11923,
+          "sha256": "0320d6118a75de7690ae173ac756581cadcdac4b915b4ecf8298ae68bf4e7136"
+        }
+      }
+    },
+    {
+      "label": "elapsed-error",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-coarse-profile-host-root-v1/profile-host",
+        "elapsed-error"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-15T15:20:03.138626+00:00",
+      "wall_seconds": 30,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2432228,
+          "start_ticks": 42636726,
+          "sid": 2432228,
+          "pgid": 2432228
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 426367.260704299,
+      "pid": 2432228,
+      "spawn_return_monotonic": 426367.262479417,
+      "direct_identity": {
+        "pid": 2432228,
+        "state": "R",
+        "ppid": 2431425,
+        "pgid": 2432228,
+        "sid": 2432228,
+        "start_ticks": 42636726,
+        "rss_bytes": 434176
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-15T15:20:03.401462+00:00",
+      "elapsed_seconds": 0.2620526530081406,
+      "logs": {
+        "elapsed-error.stdout": {
+          "bytes": 103,
+          "sha256": "8de7c74d0364419ecf0cd605fc41b7d9518000020ad826b7394f1f84a6445d5e"
+        },
+        "elapsed-error.stderr": {
+          "bytes": 11923,
+          "sha256": "9b3c4ba1da3f130408425fcb44dec41e8ab88a6ed6b875e5164eced11d0aacea"
+        }
+      }
+    },
+    {
+      "label": "nan",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-coarse-profile-host-root-v1/profile-host",
+        "nan"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-15T15:20:03.402619+00:00",
+      "wall_seconds": 30,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2432242,
+          "start_ticks": 42636752,
+          "sid": 2432242,
+          "pgid": 2432242
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 426367.524443683,
+      "pid": 2432242,
+      "spawn_return_monotonic": 426367.52618099,
+      "direct_identity": {
+        "pid": 2432242,
+        "state": "R",
+        "ppid": 2431425,
+        "pgid": 2432242,
+        "sid": 2432242,
+        "start_ticks": 42636752,
+        "rss_bytes": 290816
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-15T15:20:03.567886+00:00",
+      "elapsed_seconds": 0.1647167869959958,
+      "logs": {
+        "nan.stdout": {
+          "bytes": 93,
+          "sha256": "bbcd045e13176b7151711542597e2fdb4bcd8909763ef813976f3a5f908f17ce"
+        },
+        "nan.stderr": {
+          "bytes": 11921,
+          "sha256": "fd2321f0542d7e80973613c28596c0a823f5d2907f83cfeee2480a4f0c4c6689"
+        }
+      }
+    },
+    {
+      "label": "negative",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-coarse-profile-host-root-v1/profile-host",
+        "negative"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-15T15:20:03.569384+00:00",
+      "wall_seconds": 30,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2432248,
+          "start_ticks": 42636769,
+          "sid": 2432248,
+          "pgid": 2432248
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 426367.691303653,
+      "pid": 2432248,
+      "spawn_return_monotonic": 426367.693179992,
+      "direct_identity": {
+        "pid": 2432248,
+        "state": "R",
+        "ppid": 2431425,
+        "pgid": 2432248,
+        "sid": 2432248,
+        "start_ticks": 42636769,
+        "rss_bytes": 446464
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-15T15:20:03.804769+00:00",
+      "elapsed_seconds": 0.23476289602695033,
+      "logs": {
+        "negative.stdout": {
+          "bytes": 98,
+          "sha256": "32342203d145408aa947a9381e4b57ee71dd655d79f58f4cb2a01a0e80f7d67f"
+        },
+        "negative.stderr": {
+          "bytes": 11921,
+          "sha256": "fd2321f0542d7e80973613c28596c0a823f5d2907f83cfeee2480a4f0c4c6689"
+        }
+      }
+    },
+    {
+      "label": "double-begin",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-coarse-profile-host-root-v1/profile-host",
+        "double-begin"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-15T15:20:03.806060+00:00",
+      "wall_seconds": 30,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2432268,
+          "start_ticks": 42636792,
+          "sid": 2432268,
+          "pgid": 2432268
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 426367.928290614,
+      "pid": 2432268,
+      "spawn_return_monotonic": 426367.930266952,
+      "direct_identity": {
+        "pid": 2432268,
+        "state": "R",
+        "ppid": 2431425,
+        "pgid": 2432268,
+        "sid": 2432268,
+        "start_ticks": 42636792,
+        "rss_bytes": 430080
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-15T15:20:03.995505+00:00",
+      "elapsed_seconds": 0.18851197295589373,
+      "logs": {
+        "double-begin.stdout": {
+          "bytes": 102,
+          "sha256": "0588fa7d3ac458403e2f51f31eb8fd7bd91fb72ba6b0b922d60b770a99547caa"
+        },
+        "double-begin.stderr": {
+          "bytes": 11921,
+          "sha256": "fd2321f0542d7e80973613c28596c0a823f5d2907f83cfeee2480a4f0c4c6689"
+        }
+      }
+    },
+    {
+      "label": "early-return",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-coarse-profile-host-root-v1/profile-host",
+        "early-return"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-15T15:20:03.998854+00:00",
+      "wall_seconds": 30,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2432283,
+          "start_ticks": 42636812,
+          "sid": 2432283,
+          "pgid": 2432283
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 426368.120809164,
+      "pid": 2432283,
+      "spawn_return_monotonic": 426368.129642426,
+      "direct_identity": {
+        "pid": 2432283,
+        "state": "R",
+        "ppid": 2431425,
+        "pgid": 2432283,
+        "sid": 2432283,
+        "start_ticks": 42636812,
+        "rss_bytes": 290816
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-15T15:20:04.245872+00:00",
+      "elapsed_seconds": 0.24633284902665764,
+      "logs": {
+        "early-return.stdout": {
+          "bytes": 104,
+          "sha256": "bdd970fd92795b31f5bee668b1d35c93c2000068146a318a50d99fad2bd79504"
+        },
+        "early-return.stderr": {
+          "bytes": 11971,
+          "sha256": "72d40455ef7e7670ed0e6f32b9da588460409f9aa7677129b5edf8ce8d9e1952"
+        }
+      }
+    },
+    {
+      "label": "destroy-error",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-coarse-profile-host-root-v1/profile-host",
+        "destroy-error"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-15T15:20:04.247441+00:00",
+      "wall_seconds": 30,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2432304,
+          "start_ticks": 42636837,
+          "sid": 2432304,
+          "pgid": 2432304
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 426368.369728151,
+      "pid": 2432304,
+      "spawn_return_monotonic": 426368.371963748,
+      "direct_identity": {
+        "pid": 2432304,
+        "state": "R",
+        "ppid": 2431425,
+        "pgid": 2432304,
+        "sid": 2432304,
+        "start_ticks": 42636837,
+        "rss_bytes": 155648
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-15T15:20:04.428476+00:00",
+      "elapsed_seconds": 0.18004482897231355,
+      "logs": {
+        "destroy-error.stdout": {
+          "bytes": 107,
+          "sha256": "1d75cecd0b079291fc07699bc75e066b8a274b474d4a450f794226e811095e6e"
+        },
+        "destroy-error.stderr": {
+          "bytes": 14173,
+          "sha256": "aa5e1cb6dff8b01d40822f195e86b80f322ccab1f3337529bf7f1d3932d2dafe"
+        }
+      }
+    }
+  ],
+  "samples": [
+    {
+      "mode": "normal32",
+      "exit_code": 0,
+      "stdout": "HOST_ONLY mode=normal32 created=12 destroyed=12 max_live=12 records=12256; no GPU/model qualification",
+      "header": "strata lm profile: v=2 complete=1 errors=0 first_status=0 wrapper_ms=1000 denominator=started_through_checked_lease_retirement teardown_unmeasured=1 queue_intervals=NONEXCLUSIVE_including_host_submission_gaps bytes=REQUESTED_not_wire wall_order=source,upload_submit,upload_drain,activation,input_submit_host,input_submit_device,store_wall_host,store_wall_device,store_drain_host,store_drain_device,chunk_drain,wrapper_drain queue_order=input,QSA,GDN,MoE,upload,store",
+      "aggregate": "strata lm profile: layer=-1 wall_ms=0,0,0,0,0,0,0,0,0,0,0,0 queue_ms=1504,384,1152,1536,48,1504 samples=1504,384,1152,1536,48,1504 upload_bytes=0 input_bytes_host_device=441576325120,63082332160 store_bytes_host_device=441576325120,63082332160 input_queue_host_device_ms=1316,188 store_queue_host_device_ms=1316,188",
+      "stderr_bytes": 14171,
+      "stderr_lines": 50,
+      "stderr_sha256": "9248ff409c847669a1b6bb9f57345a07a8220d0e8e93832a84d7687a6751268c"
+    },
+    {
+      "mode": "create-1",
+      "exit_code": 0,
+      "stdout": "HOST_ONLY mode=create-1 created=0 destroyed=0 max_live=0 records=0; no GPU/model qualification",
+      "header": "strata lm profile: v=2 complete=0 errors=1 first_status=999 wrapper_ms=-1 denominator=started_through_checked_lease_retirement teardown_unmeasured=1 queue_intervals=NONEXCLUSIVE_including_host_submission_gaps bytes=REQUESTED_not_wire wall_order=source,upload_submit,upload_drain,activation,input_submit_host,input_submit_device,store_wall_host,store_wall_device,store_drain_host,store_drain_device,chunk_drain,wrapper_drain queue_order=input,QSA,GDN,MoE,upload,store",
+      "aggregate": "strata lm profile: layer=-1 wall_ms=0,0,0,0,0,0,0,0,0,0,0,0 queue_ms=0,0,0,0,0,0 samples=0,0,0,0,0,0 upload_bytes=0 input_bytes_host_device=0,0 store_bytes_host_device=0,0 input_queue_host_device_ms=0,0 store_queue_host_device_ms=0,0",
+      "stderr_bytes": 11923,
+      "stderr_lines": 50,
+      "stderr_sha256": "9b3c4ba1da3f130408425fcb44dec41e8ab88a6ed6b875e5164eced11d0aacea"
+    },
+    {
+      "mode": "create-7",
+      "exit_code": 0,
+      "stdout": "HOST_ONLY mode=create-7 created=6 destroyed=6 max_live=6 records=0; no GPU/model qualification",
+      "header": "strata lm profile: v=2 complete=0 errors=1 first_status=999 wrapper_ms=-1 denominator=started_through_checked_lease_retirement teardown_unmeasured=1 queue_intervals=NONEXCLUSIVE_including_host_submission_gaps bytes=REQUESTED_not_wire wall_order=source,upload_submit,upload_drain,activation,input_submit_host,input_submit_device,store_wall_host,store_wall_device,store_drain_host,store_drain_device,chunk_drain,wrapper_drain queue_order=input,QSA,GDN,MoE,upload,store",
+      "aggregate": "strata lm profile: layer=-1 wall_ms=0,0,0,0,0,0,0,0,0,0,0,0 queue_ms=0,0,0,0,0,0 samples=0,0,0,0,0,0 upload_bytes=0 input_bytes_host_device=0,0 store_bytes_host_device=0,0 input_queue_host_device_ms=0,0 store_queue_host_device_ms=0,0",
+      "stderr_bytes": 11923,
+      "stderr_lines": 50,
+      "stderr_sha256": "9b3c4ba1da3f130408425fcb44dec41e8ab88a6ed6b875e5164eced11d0aacea"
+    },
+    {
+      "mode": "create-12",
+      "exit_code": 0,
+      "stdout": "HOST_ONLY mode=create-12 created=11 destroyed=11 max_live=11 records=0; no GPU/model qualification",
+      "header": "strata lm profile: v=2 complete=0 errors=1 first_status=999 wrapper_ms=-1 denominator=started_through_checked_lease_retirement teardown_unmeasured=1 queue_intervals=NONEXCLUSIVE_including_host_submission_gaps bytes=REQUESTED_not_wire wall_order=source,upload_submit,upload_drain,activation,input_submit_host,input_submit_device,store_wall_host,store_wall_device,store_drain_host,store_drain_device,chunk_drain,wrapper_drain queue_order=input,QSA,GDN,MoE,upload,store",
+      "aggregate": "strata lm profile: layer=-1 wall_ms=0,0,0,0,0,0,0,0,0,0,0,0 queue_ms=0,0,0,0,0,0 samples=0,0,0,0,0,0 upload_bytes=0 input_bytes_host_device=0,0 store_bytes_host_device=0,0 input_queue_host_device_ms=0,0 store_queue_host_device_ms=0,0",
+      "stderr_bytes": 11923,
+      "stderr_lines": 50,
+      "stderr_sha256": "9b3c4ba1da3f130408425fcb44dec41e8ab88a6ed6b875e5164eced11d0aacea"
+    },
+    {
+      "mode": "record-1",
+      "exit_code": 0,
+      "stdout": "HOST_ONLY mode=record-1 created=12 destroyed=12 max_live=12 records=1; no GPU/model qualification",
+      "header": "strata lm profile: v=2 complete=0 errors=1 first_status=999 wrapper_ms=-1 denominator=started_through_checked_lease_retirement teardown_unmeasured=1 queue_intervals=NONEXCLUSIVE_including_host_submission_gaps bytes=REQUESTED_not_wire wall_order=source,upload_submit,upload_drain,activation,input_submit_host,input_submit_device,store_wall_host,store_wall_device,store_drain_host,store_drain_device,chunk_drain,wrapper_drain queue_order=input,QSA,GDN,MoE,upload,store",
+      "aggregate": "strata lm profile: layer=-1 wall_ms=0,0,0,0,0,0,0,0,0,0,0,0 queue_ms=0,0,0,0,0,0 samples=0,0,0,0,0,0 upload_bytes=0 input_bytes_host_device=0,0 store_bytes_host_device=0,0 input_queue_host_device_ms=0,0 store_queue_host_device_ms=0,0",
+      "stderr_bytes": 11923,
+      "stderr_lines": 50,
+      "stderr_sha256": "9b3c4ba1da3f130408425fcb44dec41e8ab88a6ed6b875e5164eced11d0aacea"
+    },
+    {
+      "mode": "record-2",
+      "exit_code": 0,
+      "stdout": "HOST_ONLY mode=record-2 created=12 destroyed=12 max_live=12 records=2; no GPU/model qualification",
+      "header": "strata lm profile: v=2 complete=0 errors=1 first_status=999 wrapper_ms=-1 denominator=started_through_checked_lease_retirement teardown_unmeasured=1 queue_intervals=NONEXCLUSIVE_including_host_submission_gaps bytes=REQUESTED_not_wire wall_order=source,upload_submit,upload_drain,activation,input_submit_host,input_submit_device,store_wall_host,store_wall_device,store_drain_host,store_drain_device,chunk_drain,wrapper_drain queue_order=input,QSA,GDN,MoE,upload,store",
+      "aggregate": "strata lm profile: layer=-1 wall_ms=0,0,0,0,0,0,0,0,0,0,0,0 queue_ms=0,0,0,0,0,0 samples=0,0,0,0,0,0 upload_bytes=0 input_bytes_host_device=0,0 store_bytes_host_device=0,0 input_queue_host_device_ms=0,0 store_queue_host_device_ms=0,0",
+      "stderr_bytes": 11923,
+      "stderr_lines": 50,
+      "stderr_sha256": "9b3c4ba1da3f130408425fcb44dec41e8ab88a6ed6b875e5164eced11d0aacea"
+    },
+    {
+      "mode": "query-error",
+      "exit_code": 0,
+      "stdout": "HOST_ONLY mode=query-error created=12 destroyed=12 max_live=12 records=2; no GPU/model qualification",
+      "header": "strata lm profile: v=2 complete=0 errors=2 first_status=999 wrapper_ms=-1 denominator=started_through_checked_lease_retirement teardown_unmeasured=1 queue_intervals=NONEXCLUSIVE_including_host_submission_gaps bytes=REQUESTED_not_wire wall_order=source,upload_submit,upload_drain,activation,input_submit_host,input_submit_device,store_wall_host,store_wall_device,store_drain_host,store_drain_device,chunk_drain,wrapper_drain queue_order=input,QSA,GDN,MoE,upload,store",
+      "aggregate": "strata lm profile: layer=-1 wall_ms=0,0,0,0,0,0,0,0,0,0,0,0 queue_ms=0,0,0,0,0,0 samples=0,0,0,0,0,0 upload_bytes=0 input_bytes_host_device=0,0 store_bytes_host_device=0,0 input_queue_host_device_ms=0,0 store_queue_host_device_ms=0,0",
+      "stderr_bytes": 11923,
+      "stderr_lines": 50,
+      "stderr_sha256": "0320d6118a75de7690ae173ac756581cadcdac4b915b4ecf8298ae68bf4e7136"
+    },
+    {
+      "mode": "elapsed-error",
+      "exit_code": 0,
+      "stdout": "HOST_ONLY mode=elapsed-error created=12 destroyed=12 max_live=12 records=2; no GPU/model qualification",
+      "header": "strata lm profile: v=2 complete=0 errors=1 first_status=999 wrapper_ms=-1 denominator=started_through_checked_lease_retirement teardown_unmeasured=1 queue_intervals=NONEXCLUSIVE_including_host_submission_gaps bytes=REQUESTED_not_wire wall_order=source,upload_submit,upload_drain,activation,input_submit_host,input_submit_device,store_wall_host,store_wall_device,store_drain_host,store_drain_device,chunk_drain,wrapper_drain queue_order=input,QSA,GDN,MoE,upload,store",
+      "aggregate": "strata lm profile: layer=-1 wall_ms=0,0,0,0,0,0,0,0,0,0,0,0 queue_ms=0,0,0,0,0,0 samples=0,0,0,0,0,0 upload_bytes=0 input_bytes_host_device=0,0 store_bytes_host_device=0,0 input_queue_host_device_ms=0,0 store_queue_host_device_ms=0,0",
+      "stderr_bytes": 11923,
+      "stderr_lines": 50,
+      "stderr_sha256": "9b3c4ba1da3f130408425fcb44dec41e8ab88a6ed6b875e5164eced11d0aacea"
+    },
+    {
+      "mode": "nan",
+      "exit_code": 0,
+      "stdout": "HOST_ONLY mode=nan created=12 destroyed=12 max_live=12 records=2; no GPU/model qualification",
+      "header": "strata lm profile: v=2 complete=0 errors=1 first_status=0 wrapper_ms=-1 denominator=started_through_checked_lease_retirement teardown_unmeasured=1 queue_intervals=NONEXCLUSIVE_including_host_submission_gaps bytes=REQUESTED_not_wire wall_order=source,upload_submit,upload_drain,activation,input_submit_host,input_submit_device,store_wall_host,store_wall_device,store_drain_host,store_drain_device,chunk_drain,wrapper_drain queue_order=input,QSA,GDN,MoE,upload,store",
+      "aggregate": "strata lm profile: layer=-1 wall_ms=0,0,0,0,0,0,0,0,0,0,0,0 queue_ms=0,0,0,0,0,0 samples=0,0,0,0,0,0 upload_bytes=0 input_bytes_host_device=0,0 store_bytes_host_device=0,0 input_queue_host_device_ms=0,0 store_queue_host_device_ms=0,0",
+      "stderr_bytes": 11921,
+      "stderr_lines": 50,
+      "stderr_sha256": "fd2321f0542d7e80973613c28596c0a823f5d2907f83cfeee2480a4f0c4c6689"
+    },
+    {
+      "mode": "negative",
+      "exit_code": 0,
+      "stdout": "HOST_ONLY mode=negative created=12 destroyed=12 max_live=12 records=2; no GPU/model qualification",
+      "header": "strata lm profile: v=2 complete=0 errors=1 first_status=0 wrapper_ms=-1 denominator=started_through_checked_lease_retirement teardown_unmeasured=1 queue_intervals=NONEXCLUSIVE_including_host_submission_gaps bytes=REQUESTED_not_wire wall_order=source,upload_submit,upload_drain,activation,input_submit_host,input_submit_device,store_wall_host,store_wall_device,store_drain_host,store_drain_device,chunk_drain,wrapper_drain queue_order=input,QSA,GDN,MoE,upload,store",
+      "aggregate": "strata lm profile: layer=-1 wall_ms=0,0,0,0,0,0,0,0,0,0,0,0 queue_ms=0,0,0,0,0,0 samples=0,0,0,0,0,0 upload_bytes=0 input_bytes_host_device=0,0 store_bytes_host_device=0,0 input_queue_host_device_ms=0,0 store_queue_host_device_ms=0,0",
+      "stderr_bytes": 11921,
+      "stderr_lines": 50,
+      "stderr_sha256": "fd2321f0542d7e80973613c28596c0a823f5d2907f83cfeee2480a4f0c4c6689"
+    },
+    {
+      "mode": "double-begin",
+      "exit_code": 0,
+      "stdout": "HOST_ONLY mode=double-begin created=12 destroyed=12 max_live=12 records=1; no GPU/model qualification",
+      "header": "strata lm profile: v=2 complete=0 errors=1 first_status=0 wrapper_ms=-1 denominator=started_through_checked_lease_retirement teardown_unmeasured=1 queue_intervals=NONEXCLUSIVE_including_host_submission_gaps bytes=REQUESTED_not_wire wall_order=source,upload_submit,upload_drain,activation,input_submit_host,input_submit_device,store_wall_host,store_wall_device,store_drain_host,store_drain_device,chunk_drain,wrapper_drain queue_order=input,QSA,GDN,MoE,upload,store",
+      "aggregate": "strata lm profile: layer=-1 wall_ms=0,0,0,0,0,0,0,0,0,0,0,0 queue_ms=0,0,0,0,0,0 samples=0,0,0,0,0,0 upload_bytes=0 input_bytes_host_device=0,0 store_bytes_host_device=0,0 input_queue_host_device_ms=0,0 store_queue_host_device_ms=0,0",
+      "stderr_bytes": 11921,
+      "stderr_lines": 50,
+      "stderr_sha256": "fd2321f0542d7e80973613c28596c0a823f5d2907f83cfeee2480a4f0c4c6689"
+    },
+    {
+      "mode": "early-return",
+      "exit_code": 0,
+      "stdout": "HOST_ONLY mode=early-return created=12 destroyed=12 max_live=12 records=194; no GPU/model qualification",
+      "header": "strata lm profile: v=2 complete=0 errors=0 first_status=0 wrapper_ms=-1 denominator=started_through_checked_lease_retirement teardown_unmeasured=1 queue_intervals=NONEXCLUSIVE_including_host_submission_gaps bytes=REQUESTED_not_wire wall_order=source,upload_submit,upload_drain,activation,input_submit_host,input_submit_device,store_wall_host,store_wall_device,store_drain_host,store_drain_device,chunk_drain,wrapper_drain queue_order=input,QSA,GDN,MoE,upload,store",
+      "aggregate": "strata lm profile: layer=-1 wall_ms=0,0,0,0,0,0,0,0,0,0,0,0 queue_ms=0,0,32,32,1,32 samples=0,0,32,32,1,32 upload_bytes=0 input_bytes_host_device=0,0 store_bytes_host_device=9395240960,1342177280 input_queue_host_device_ms=0,0 store_queue_host_device_ms=28,4",
+      "stderr_bytes": 11971,
+      "stderr_lines": 50,
+      "stderr_sha256": "72d40455ef7e7670ed0e6f32b9da588460409f9aa7677129b5edf8ce8d9e1952"
+    },
+    {
+      "mode": "destroy-error",
+      "exit_code": 0,
+      "stdout": "HOST_ONLY mode=destroy-error created=12 destroyed=12 max_live=12 records=12256; no GPU/model qualification",
+      "header": "strata lm profile: v=2 complete=0 errors=1 first_status=999 wrapper_ms=1000 denominator=started_through_checked_lease_retirement teardown_unmeasured=1 queue_intervals=NONEXCLUSIVE_including_host_submission_gaps bytes=REQUESTED_not_wire wall_order=source,upload_submit,upload_drain,activation,input_submit_host,input_submit_device,store_wall_host,store_wall_device,store_drain_host,store_drain_device,chunk_drain,wrapper_drain queue_order=input,QSA,GDN,MoE,upload,store",
+      "aggregate": "strata lm profile: layer=-1 wall_ms=0,0,0,0,0,0,0,0,0,0,0,0 queue_ms=1504,384,1152,1536,48,1504 samples=1504,384,1152,1536,48,1504 upload_bytes=0 input_bytes_host_device=441576325120,63082332160 store_bytes_host_device=441576325120,63082332160 input_queue_host_device_ms=1316,188 store_queue_host_device_ms=1316,188",
+      "stderr_bytes": 14173,
+      "stderr_lines": 50,
+      "stderr_sha256": "aa5e1cb6dff8b01d40822f195e86b80f322ccab1f3337529bf7f1d3932d2dafe"
+    }
+  ],
+  "recipe_sha256": "7743f9b28c704131db9d93b6e93a987cf9d2e143a527f518541fca1916f8bd5b",
+  "references": {
+    "canonical-bank-profile-build-v1.json": "3c793d0ce0a6ca051628db9b7780bfc247d38b427b533523af7329bf2e6d49fb"
+  },
+  "source_pins": {
+    "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/coarse-profile-host-fixture-v1/fixture.cpp": "5adbdc8d1aedc0877dd463393d7e2a03287d1d735bc0b7276314db880d472a43",
+    "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/coarse-profile-host-fixture-v1/cuda_runtime.h": "86f903ee86c75821054bfc376b8e79522dbcfc88431204259a6e223a20ba4c7b",
+    "/home/yayoi/orca/workspaces/Strata/sycl/include/strata/prefill/layermajor_coarse_profile.hpp": "36d7a9b9059a83f44cac57c6d06229455a2f86114710f73fa422ed4dc940c2a6"
+  },
+  "compiler": "/home/yayoi/.nix-profile/bin/c++",
+  "compiler_sha256": "821d1e767571f989b002f078bb5408a9cbf9ddaa159a33ae65947ed4fa80280d",
+  "scope": "Actual observer header with a host-only API shim. Fixed12event lifetimes, 12256markers at32chunks/48layers, API/error/incomplete and output bounds. No actual SYCL/runtime, real queue scheduling, model, quality, RESTORE or physical-context proof.",
+  "canonical_policy_passed": true,
+  "binary_sha256": "196fcc81ee9810cfb743cff3b703e69a8834c1bb720801695dd84905c2fd8f94",
+  "host_arms": 13,
+  "finished_utc": "2026-10-15T15:20:04.430844+00:00"
+}

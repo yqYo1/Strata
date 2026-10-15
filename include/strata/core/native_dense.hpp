@@ -51,6 +51,8 @@ public:
         WeightRef original;
         std::vector<uint8_t> packed; // owned immutable original bytes
     };
+    bool prepare_layer_bank(std::string& err); // Full-only allocation; no publications/free
+    void cancel_prepared_bank(); // Full-only checked release, no submitted use
     bool enter_layer_bank(ReaderRetirement retirement, std::string& err);
     // Synchronous publication: a view remains valid until the NEXT activate or
     // restore. Caller must retire every prior view reader first, on this same

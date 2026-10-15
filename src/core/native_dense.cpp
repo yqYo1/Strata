@@ -300,11 +300,10 @@ bool NativeDense::validate_table(bool withdrawn, std::string& err) const {
     return true;
 }
 
-bool NativeDense::enter_layer_bank(ReaderRetirement retirement, std::string& err) {
-    if (residency_ != Residency::Full || !retirement.all_readers_retired) {
-        err = "native dense: enter requires Full state and retired readers"; return false;
-    }
-    if (!validate_table(false, err)) return false;
+bool NativeDense::prepare_layer_bank(std::string& err) {
+    if(residency_!=Residency::Full) {err="native dense: prepare requires Full";return false;}
+    if(!validate_table(false,err)) return false;
+    if(bank_) return true;
     // Allocate before withdrawing/freeing: allocation failure leaves every
     // original owner and published reference alive. One max-layer allocation.
     void* allocation = nullptr;
@@ -318,6 +317,19 @@ bool NativeDense::enter_layer_bank(ReaderRetirement retirement, std::string& err
     }
     if (!allocation) bank_stop("successful bank allocation returned null");
     bank_ = allocation;
+    return true;
+}
+void NativeDense::cancel_prepared_bank() {
+    if(residency_!=Residency::Full) bank_stop("cancel native bank outside Full");
+    if(bank_) {checked_bank(cudaFree(bank_),"cancel prepared native bank");bank_=nullptr;}
+}
+
+bool NativeDense::enter_layer_bank(ReaderRetirement retirement, std::string& err) {
+    if (residency_ != Residency::Full || !retirement.all_readers_retired) {
+        err = "native dense: enter requires Full state and retired readers"; return false;
+    }
+    if (!validate_table(false, err)) return false;
+    if(!prepare_layer_bank(err)) return false;
     for (const auto& s : sources_) table_->table_.at(s.name) = withdrawn_ref(s.original);
     residency_ = Residency::Bank;
     // Caller, not this component, proved graph/callback retirement. A global

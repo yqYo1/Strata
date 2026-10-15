@@ -41,6 +41,7 @@
 #include "strata/core/conversation_memory.hpp"
 
 #include <cuda_runtime.h>
+#include "strata/prefill/layermajor_coarse_profile.hpp"
 
 #include <algorithm>
 #include <chrono>
@@ -464,6 +465,7 @@ struct Prefill::Impl {
     // Opt-in layer-major lease; normal chunk-major execution leaves these empty.
     bool layer_major_active = false;
     detail::LayerMajorShapeCensus* layer_major_census = nullptr;
+    detail::LayerMajorCoarseProfile* layer_major_profile = nullptr;
     detail::Layer26PhaseAudit* layer26_phase_audit = nullptr;
     detail::LayerMajorBoundaryAudit* layer_major_audit = nullptr;
     detail::LayerMajorBoundaryAudit::Copy layer_major_audit_copy;
@@ -1714,12 +1716,23 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
         const auto it = m.native_dense_overlay->find("blk.1.ple_key.weight");
         if (it != m.native_dense_overlay->end()) {
             const auto& key = it->second;
-            if (!key.native_data || !key.native_q8_1) {
-                err = "prefill dense bank: active PLE native key absent"; return false;
+            if(key.native_type>=0) {
+                if (!key.native_data || !key.native_q8_1) {
+                    err = "prefill dense bank: active PLE native key absent"; return false;
+                }
+                prefill_ple.w.key_native_data = key.native_data;
+                prefill_ple.w.key_native_type = key.native_type;
+                prefill_ple.w.key_native_q8_1 = key.native_q8_1;
+            } else {
+                // Combined overlays also contain a persistent canonical PLE
+                // key (BF16 in the current pack). It is not a native override.
+                if(!key.resident || !key.data) {err="prefill canonical PLE key absent";return false;}
+                prefill_ple.w.key_native_data=nullptr;prefill_ple.w.key_native_q8_1=nullptr;prefill_ple.w.key_native_type=-1;
+                prefill_ple.w.key_bf16=nullptr;prefill_ple.w.key_codes=nullptr;prefill_ple.w.key_scales=nullptr;
+                if(!key.quantized()) prefill_ple.w.key_bf16=static_cast<const uint16_t*>(key.data);
+                else {prefill_ple.w.key_codes=static_cast<const uint8_t*>(key.data);
+                    prefill_ple.w.key_scales=reinterpret_cast<const float*>(prefill_ple.w.key_codes+key.codes_bytes);}
             }
-            prefill_ple.w.key_native_data = key.native_data;
-            prefill_ple.w.key_native_type = key.native_type;
-            prefill_ple.w.key_native_q8_1 = key.native_q8_1;
         }
     }
     const bool ple_on = prefill_ple.ready() && LB <= 1 && 1 < LE;
@@ -1767,7 +1780,13 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
             : hand_in_ != nullptr;
         if (residual_input) {
             if (m.layer_major_active) {
+                const auto profile_input_start = m.layer_major_profile ? detail::LayerMajorCoarseProfile::Clock::now()
+                    : detail::LayerMajorCoarseProfile::Clock::time_point{};
                 const auto span = m.layer_major_residual.span(c0, T);
+                if (m.layer_major_profile) {
+                    m.layer_major_profile->rows[LB].input_bytes[int(span.device)] += span.bytes;
+                    m.layer_major_profile->begin(detail::LayerMajorCoarseProfile::input, m.cs, span.device);
+                }
                 const auto* base = static_cast<const uint8_t*>(span.device
                     ? m.layer_major_gpu_input : m.layer_major_host_input);
                 if (!base) { err = "prefill layer-major: missing residual input store"; return false; }
@@ -1790,6 +1809,10 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                 if (cudaMemcpyAsync(m.R, base + size_t(span.offset_bytes), size_t(span.bytes),
                     span.device ? cudaMemcpyDeviceToDevice : cudaMemcpyHostToDevice, m.cs) != cudaSuccess) {
                     err = "prefill layer-major: residual input copy failed"; return false;
+                }
+                if (m.layer_major_profile) {
+                    m.layer_major_profile->end(detail::LayerMajorCoarseProfile::input, m.cs);
+                    m.layer_major_profile->add(span.device ? detail::LayerMajorCoarseProfile::input_submit_device : detail::LayerMajorCoarseProfile::input_submit_host, profile_input_start);
                 }
                 if (m.layer_major_audit && !m.layer_major_audit->input(LB, c0, T, m.R, span.device,
                                                                       m.layer_major_audit_copy)) {
@@ -2171,6 +2194,7 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                                           *wnm = need(v, "ssm_norm.weight", err), *wdt = need(v, "ssm_dt.bias", err),
                                           *wsa = need(v, "ssm_a", err);
                     if (!wqkv || !wg || !wo || !wa || !wb || !wc || !wnm || !wdt || !wsa) return false;
+                    if (m.layer_major_profile) m.layer_major_profile->begin(detail::LayerMajorCoarseProfile::gdn, m.cs);
                     pt.mark(kPfGdn, cs);
                     float* state = ss.gdn_state + (size_t) (gdn_index - ss.gdn_ord0) * gdn_floats;
                     float* conv = state + (uint64_t) g.ssm_state_size * g.ssm_v_heads * g.ssm_state_size;
@@ -2185,6 +2209,7 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                     gdn_recurrence(state, m.hbuf, m.gate, m.beta, m.z, (const float*) wnm->data, EPS, m.y, m.y_h, T, m.cs);
                     pt.mark(kPfGdnOut, cs);
                     if (!native_proj(m.gemm, wo, m.y_h, m.bo, T, v.name("ssm_out.weight"), err)) return false;
+                    if (m.layer_major_profile) m.layer_major_profile->end(detail::LayerMajorCoarseProfile::gdn, m.cs);
                     if (m.layer26_phase_audit && !m.layer26_phase_audit->capture(
                             detail::Layer26PhaseAudit::gdn_out, l, c0, T, m.bo, m.layer_major_audit_copy)) {
                         err = "prefill phase audit: GDN output copy/drain failed"; return false;
@@ -2192,6 +2217,7 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                     ++gdn_index;
                 } else if (half == 0) {
                     // ======================= QSA =======================
+                    if (m.layer_major_profile) m.layer_major_profile->begin(detail::LayerMajorCoarseProfile::qsa, m.cs);
                     const core::QsaState& st = ss.qsa_states[qsa_index];
                     const core::WeightRef *wq = need(v, "attn_q.weight", err), *wk = need(v, "attn_k.weight", err),
                                           *wv = need(v, "attn_v.weight", err), *wo = need(v, "attn_output.weight", err),
@@ -2402,6 +2428,7 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                     gate_attn(m.attn, m.Qf, m.attn_h, T, m.cs);
                     if (!native_proj(m.gemm, wo, m.attn_h, m.bo, T, v.name("attn_output.weight"), err)) return false;
                     ++qsa_index;
+                    if (m.layer_major_profile) m.layer_major_profile->end(detail::LayerMajorCoarseProfile::qsa, m.cs);
                 } else {
                     if (m.layer26_phase_audit) {
                         auto* a = m.layer26_phase_audit;
@@ -2413,6 +2440,7 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                         }
                     }
                     // ======================= MoE =======================
+                    if (m.layer_major_profile) m.layer_major_profile->begin(detail::LayerMajorCoarseProfile::moe, m.cs);
                     const core::WeightRef *wr = need(v, "ffn_gate_inp.weight", err),
                                           *wgi = need(v, "ffn_gate_inp_shexp.weight", err),
                                           *wsg = need(v, "ffn_gate_shexp.weight", err),
@@ -3073,6 +3101,7 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                             detail::Layer26PhaseAudit::moe_out, l, c0, T, m.bo, m.layer_major_audit_copy)) {
                         err = "prefill phase audit: MoE output copy/drain failed"; return false;
                     }
+                    if (m.layer_major_profile) m.layer_major_profile->end(detail::LayerMajorCoarseProfile::moe, m.cs);
                     // debug: STRATA_DBG_NAN=1 reports the first layer of a chunk whose MoE produced non-finite values
                     if (static const bool dbg = std::getenv("STRATA_DBG_NAN") != nullptr; dbg) {
                         cudaStreamSynchronize(m.cs);
@@ -3185,6 +3214,11 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                 return false;
             }
             const auto toc2 = Clock::now();
+            if (m.layer_major_profile) {
+                m.layer_major_profile->add(detail::LayerMajorCoarseProfile::chunk_drain, toc);
+                // Existing checked callback drain above covers all marks.
+                m.layer_major_profile->chunk_retired();
+            }
             if (on_stage_chunk && !on_stage_chunk(p0 + T, err)) return false;
             if (on_chunk && !on_chunk(m.R, T, p0, err)) return false;
             host_sync_ms += std::chrono::duration<double, std::milli>(toc2 - toc).count();

@@ -58,6 +58,7 @@
 #include "strata/core/mtp.hpp"
 #include "strata/prefill/prefill.hpp"
 #include "strata/core/native_dense.hpp"
+#include "strata/core/canonical_dense_bank.hpp"
 #include "strata/program/logits_selection.hpp"
 #ifdef STRATA_ENABLE_SYCL
 #include "strata/program/prefill_logits.hpp"
@@ -181,6 +182,7 @@ bool run_prompt_with_mtp_experts_impl(strata::prefill::Prefill& prompt, strata::
 struct NativeDensePhase {
     bool enabled=false, supported=false, no_token_graph=false;
     strata::core::NativeDense* dense=nullptr;
+    strata::core::CanonicalDenseBank* canonical=nullptr;
     strata::core::WeightTable* table=nullptr;
     strata::core::SessionState* session=nullptr;
     strata::core::SessionGraphs* graphs=nullptr;
@@ -268,7 +270,42 @@ bool run_prompt_with_native_dense_phase(NativeDensePhase& phase,
 #ifndef STRATA_ENABLE_SYCL
     err="prefill dense bank requires SYCL"; return false;
 #else
-    auto fatal=[](const char* why) noexcept {
+    // Host-only, bounded observation of this NativeDensePhase invocation.
+    // Declared before rollback, so guard restoration finishes before emission.
+    struct HostProfile {
+        using Clock=std::chrono::steady_clock;
+        using Time=Clock::time_point;
+        bool on=false, entry_done=false, run_returned=false, restored=false, running=false, emitted=false;
+        const char* outcome="entry_incomplete";
+        Time entry_start{}, run_start{}, restore_start{};
+        double entry_ms=-1, run_ms=-1, restore_ms=-1;
+        explicit HostProfile(bool enabled) noexcept : on(enabled) {if(on)entry_start=Clock::now();}
+        static double elapsed(Time t) noexcept {
+            return std::chrono::duration<double,std::milli>(Clock::now()-t).count();
+        }
+        void entry_end() noexcept {if(on){entry_ms=elapsed(entry_start);entry_done=true;}}
+        void run_begin() noexcept {if(on){run_start=Clock::now();running=true;outcome="run_incomplete";}}
+        void run_end(bool ok) noexcept {
+            if(on){run_ms=elapsed(run_start);running=false;run_returned=true;outcome=ok?"success":"run_false";}
+        }
+        void exception() noexcept {
+            if(on){if(running){run_ms=elapsed(run_start);running=false;}outcome="exception";}
+        }
+        void restore_begin() noexcept {if(on)restore_start=Clock::now();}
+        void restore_end() noexcept {if(on){restore_ms=elapsed(restore_start);restored=true;}}
+        void emit(bool failed=false) noexcept {
+            if(!on || emitted)return;
+            emitted=true;
+            std::fprintf(stderr,"strata native dense host profile: v=2 complete=%d outcome=%s entry_ms=%.6g run_ms=%.6g restore_ms=%.6g entry_done=%d run_returned=%d restored=%d intervals=NONEXCLUSIVE entry_scope=boundary_entry_through_Bank run_scope=MTP_release_prompt_callbacks_MTP_restore restore_scope=restore_drain_through_owner_PLE_graph_verifier_restore outer_startup_snapshot_unmeasured=1\n",
+                int(!failed && entry_done && run_returned && restored),failed?"fatal":outcome,
+                entry_ms,run_ms,restore_ms,int(entry_done),int(run_returned),int(restored));
+        }
+        ~HostProfile() noexcept {emit();}
+    };
+    const char* profile_switch=std::getenv("STRATA_PREFILL_LAYER_MAJOR_PROFILE");
+    HostProfile host_profile(profile_switch && std::strcmp(profile_switch,"1")==0);
+    auto fatal=[&](const char* why) noexcept {
+        host_profile.emit(true); // fatal exits cannot run the ordinary scope summary
         std::fprintf(stderr,"prefill dense bank: %s; stopping with owners live\n",why);
         std::fflush(stderr); std::abort();
     };
@@ -281,6 +318,10 @@ bool run_prompt_with_native_dense_phase(NativeDensePhase& phase,
        phase.dense->residency()!=strata::core::NativeDense::Residency::Full ||
        phase.dense->packed_sources().empty()) {
         err="prefill dense bank: unsupported request/reader state (head-release combination excluded)"; return false;
+    }
+    if(phase.canonical && (!strata::core::native_embed() ||
+       phase.canonical->state()!=strata::core::CanonicalDenseBank::State::Full)) {
+        err="canonical bank requires intact Full owner and independent NativeEmbed";return false;
     }
     if(verifier && !verifier->can_retire_prefill_dense(err)) return false;
     if(phase.occupied.test_and_set()) {err="prefill dense bank: request already owns transaction";return false;}
@@ -303,6 +344,20 @@ bool run_prompt_with_native_dense_phase(NativeDensePhase& phase,
             phase.dense->layer_view().size(),int(recapture),int(verifier!=nullptr),free_bytes,total_bytes);
         std::fflush(stderr);
     };
+    struct Reservations {
+        NativeDensePhase& phase;bool& retired;
+        ~Reservations() noexcept {
+            if(!retired && phase.canonical) {
+                phase.dense->cancel_prepared_bank();phase.canonical->cancel_prepared();
+            }
+        }
+    } reservations{phase,retired};
+    // Prepare BOTH destinations with original full owners/publications alive.
+    // No graph reader is retired and no owner is withdrawn on confirmed OOM.
+    if(phase.canonical) {
+        if(!phase.canonical->prepare(main_cs,err) || !phase.dense->prepare_layer_bank(err)) return false;
+    }
+
     auto drain=[&]() noexcept {
         if(cudaStreamSynchronize(main_cs)!=cudaSuccess) fatal("main stream completion uncertain");
         mtp.drain_prefill_dense_callback();
@@ -316,26 +371,40 @@ bool run_prompt_with_native_dense_phase(NativeDensePhase& phase,
     const bool native_ple=ple.key_native_data!=nullptr;
     auto restore=[&]() noexcept {
         if(!retired) return;
+        host_profile.restore_begin();
         drain();
         prompt.activate_native_dense_layer={};
         std::string e;
         if(phase.dense->residency()==strata::core::NativeDense::Residency::Bank &&
            !phase.dense->restore_full(main_cs,{true},e)) fatal("full restore failed; decode prohibited");
+        if(phase.canonical) {
+            using State=strata::core::CanonicalDenseBank::State;
+            if(phase.canonical->state()==State::Bank && !phase.canonical->restore_full(main_cs,e))
+                fatal("canonical full restore failed; both owner sets retained and decode prohibited");
+            if(phase.canonical->state()==State::Prepared) phase.canonical->cancel_prepared();
+            phase.dense->cancel_prepared_bank();
+            if(!phase.canonical->bind_ple(ple,e)) fatal("full canonical PLE rebind failed");
+        }
         if(native_ple) {
             const auto* key=rebind_ple();
             if(!key || !key->native_data || !key->native_q8_1) fatal("restored PLE publication absent");
             ple.key_native_data=key->native_data;ple.key_native_type=key->native_type;ple.key_native_q8_1=key->native_q8_1;
         }
+        if(phase.canonical && phase.canonical->state()==strata::core::CanonicalDenseBank::State::RestoredPending)
+            phase.canonical->finish_restore(); // PLE no longer points into persistent pool
         if(recapture && !phase.recapture(e)) fatal("session graph recapture failed; decode prohibited");
         if(verifier && !verifier->resume_prefill_dense(*phase.dense,e)) fatal("verifier dense resume failed");
         retired=false;
         observe("restored");
+        host_profile.restore_end();
     };
     struct Restore {decltype(restore)& f;~Restore() noexcept {f();}} rollback{restore};
     try {
         drain();
         try {
             if(verifier && !verifier->retire_prefill_dense(err)) fatal("prepared verifier retirement rejected");
+            if(phase.canonical && verifier && !verifier->retire_prefill_canonical_commit(err))
+                fatal("canonical norm-bearing commit graph retirement rejected");
             strata::core::session_graphs_retire_dense(*phase.graphs,main_cs);
             retired=true;
         } catch(...) { fatal("graph retirement threw; completion unknown"); }
@@ -343,18 +412,30 @@ bool run_prompt_with_native_dense_phase(NativeDensePhase& phase,
         // Withdraw the separate PLE native publication before releasing owners.
         if(native_ple) {ple.key_native_data=nullptr;ple.key_native_q8_1=nullptr;ple.key_native_type=-1;}
         if(!phase.dense->enter_layer_bank({true},err)) return false;
+        if(phase.canonical) {
+            phase.canonical->enter();
+            if(!phase.canonical->bind_ple(ple,err)) fatal("persistent canonical PLE rebind failed");
+        }
+        host_profile.entry_end();
         observe("bank");
         prompt.activate_native_dense_layer=[&](int64_t layer,void* stream,
                 const strata::core::LayerView::Overlay*& overlay,std::string& e) {
             drain(); // callback synchronously returned; its own queue is checked
             if(!phase.dense->activate_layer(int(layer),stream,{true},e)) return false;
             ++activated_layers;
-            overlay=&phase.dense->layer_view(); return true;
+            if(phase.canonical) {
+                if(!phase.canonical->activate(int(layer),stream,phase.dense->layer_view(),e)) return false;
+                overlay=&phase.canonical->view();
+            } else overlay=&phase.dense->layer_view();
+            return true;
         };
+        host_profile.run_begin();
         const bool ok=run();
+        host_profile.run_end(ok);
         restore();
         return ok;
     } catch(...) {
+        host_profile.exception();
         restore();
         throw;
     }
@@ -2340,6 +2421,19 @@ int main(int argc, char** argv) {
         }
         if (native_pack) skip.insert("token_embd.weight");
     }
+    const char* dense_bank_switch=std::getenv("STRATA_PREFILL_NATIVE_DENSE_BANK");
+    const bool native_dense_bank_enabled=dense_bank_switch && !std::strcmp(dense_bank_switch,"1");
+    const char* canonical_bank_switch=std::getenv("STRATA_PREFILL_CANONICAL_DENSE_BANK");
+    const bool canonical_dense_bank_enabled=canonical_bank_switch && !std::strcmp(canonical_bank_switch,"1");
+#ifndef STRATA_ENABLE_SYCL
+    if(canonical_dense_bank_enabled) {std::fprintf(stderr,"canonical dense bank requires SYCL\n");return 2;}
+#endif
+    if(canonical_dense_bank_enabled && (!native_dense_bank_enabled || !native_pack || o.keep_canonical || o.no_ple ||
+       o.graph_only || o.gpu_only_full || o.gpu_stages || o.vision || !o.layer_split.empty() || o.peer_device>=0 ||
+       std::any_of(o.expert_cache_remote.begin(),o.expert_cache_remote.end(),[](auto slots){return slots>0;}))) {
+        std::fprintf(stderr,"canonical dense bank requires native bank1, native compact skipped rows, PLE, and no keep-canonical\n");return 2;
+    }
+    strata::core::EngineSnapshot canonical_snapshot;
     uint64_t pool_bytes = 0;
     if (!strata::core::WeightTable::pool_bytes(o.pack, pool_bytes, err, skip.empty() ? nullptr : &skip)) {
         std::fprintf(stderr, "strata generate: %s\n", err.c_str());
@@ -2361,7 +2455,7 @@ int main(int argc, char** argv) {
         return 1;
     }
     strata::core::WeightTable wt;
-    if (!wt.load(o.pack, arena, pool_bytes, err, skip.empty() ? nullptr : &skip)) {
+    if (!wt.load(o.pack, arena, pool_bytes, err, skip.empty() ? nullptr : &skip, canonical_dense_bank_enabled ? &canonical_snapshot : nullptr)) {
         std::fprintf(stderr, "strata generate: %s\n", err.c_str());
         return 1;
     }
@@ -2369,8 +2463,6 @@ int main(int argc, char** argv) {
                          "served natively)\n",
                  (unsigned long long) (pool_bytes >> 20), o.pack.c_str(), skip.size());
 
-    const char* dense_bank_switch=std::getenv("STRATA_PREFILL_NATIVE_DENSE_BANK");
-    const bool native_dense_bank_enabled=dense_bank_switch && !std::strcmp(dense_bank_switch,"1");
     strata::core::NativeDense native_dense;
     if (!o.native_dense_gguf.empty()) {
         if (!native_dense.load(o.native_dense_gguf, wt, err, o.native_ple_key, native_dense_bank_enabled)) {
@@ -2381,6 +2473,10 @@ int main(int argc, char** argv) {
                      native_dense.tensor_count(), (double) native_dense.weight_bytes() / (1024.0 * 1024.0));
     }
 
+    strata::core::CanonicalDenseBank canonical_dense;
+    if(canonical_dense_bank_enabled && !canonical_dense.adopt(canonical_snapshot,wt,arena,native_dense,err)) {
+        std::fprintf(stderr,"canonical dense bank: %s\n",err.c_str());return 2;
+    }
     strata::kernels::gr_set_fp32_activations(o.gr_fp32_activations);
     strata::kernels::gr_set_native_mmvf(o.gr_native_mmvf);
     // Plan v0.3 P3: the fused hyper-connection read rides the native (FP32-activation) contract; the per-stage
@@ -4335,6 +4431,7 @@ int main(int argc, char** argv) {
         std::all_of(o.expert_cache_remote.begin(),o.expert_cache_remote.end(),[](auto slots){return slots<=0;});
     dense_phase.no_token_graph=o.no_token_graph;
     dense_phase.dense=&native_dense;dense_phase.table=&wt;dense_phase.session=&ss;
+    dense_phase.canonical=canonical_dense_bank_enabled ? &canonical_dense : nullptr;
     dense_phase.graphs=&gr;dense_phase.token=&tgraph;
     dense_phase.recapture=[&](std::string& e) {
         return strata::core::session_capture(wt,g,ss,d_parts,gr,e,false,0,-1,captured_post);

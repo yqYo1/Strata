@@ -1,0 +1,106 @@
+{
+  "schema": "canonical-bank-profile-source-integration-v1",
+  "applied": true,
+  "compiled": false,
+  "tested": false,
+  "GPU_executed": false,
+  "active": false,
+  "source_revision_before": "e9e4e765c6fa1b5458db9392c27cf629056e1bf4",
+  "base_commit": "9177ad4fb7cc1587255db7235be474aca3eb4e2a",
+  "source_diff_sha256": "25ffa24bd9f4bc195a87836e853a6a529e74f7e5711d13e3657d03b993b4b556",
+  "references": {
+    "pins.json": "fb515f45b489bc0b1c5c37a8228f552bef91c10f0e8f5ea8463655595366c371",
+    "native-direct-clean-cohort-closure-v1.json": "2f11eca07675407c8fd5d10ad3b731b8ba30e909b418fb98e2fe04c7e1828ab0"
+  },
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/prefill-bank-profile-main-v1/source.diff"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/prefill-bank-profile-main-v1/source.diff"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "files": {
+    "include/strata/core/canonical_bank_policy.hpp": {
+      "base_sha256": null,
+      "proposed_sha256": "0e3442c5585e2615db3158b4f3684e4a6c5f4d6ba54533fd345219e2e1072e9a"
+    },
+    "include/strata/core/canonical_dense_bank.hpp": {
+      "base_sha256": null,
+      "proposed_sha256": "69f1f68af053e5d4821b5a013fb0e04501a44b0179faeb376abacbb3c18557a7"
+    },
+    "include/strata/core/native_dense.hpp": {
+      "base_sha256": "e6aa60818e39d20297df126fbc773993d5afca1b521b2168db53bc42cdb1cbd0",
+      "proposed_sha256": "0c263f02639ce96b0a805e88c15b2686d5c1809b601b403ac3eee2626cb0dea9"
+    },
+    "include/strata/core/verify.hpp": {
+      "base_sha256": "0130ff2d721638bf419f641b6e8909c86fce528dc62a1c6bc0be7b3697d84d58",
+      "proposed_sha256": "919fa11c4d9daaef800b8081f5a2eb0b7868b8d5212532969f8434a9a1a609cc"
+    },
+    "include/strata/core/weights.hpp": {
+      "base_sha256": "18063071334211c008f5ca17814eda86570f228ab47e916b30f1a9690750956e",
+      "proposed_sha256": "07bc2e6eb56867630372d3ae4a698409cbb587e737da106a253b89e23caf2dcc"
+    },
+    "src/core/native_dense.cpp": {
+      "base_sha256": "f3627fb9ac392ea5c11b4d932b9b493abc86c8bafbd5dde8069e40c6a16e6ddf",
+      "proposed_sha256": "4424972f8bd8c1f0e71ea360140a6cd3c56ed6a5533d1354bdbcdbc13d387d42"
+    },
+    "src/core/verify.cpp": {
+      "base_sha256": "325c27d75423582dcb700d884e5f4b7031dc7fffe611c817266748bd92968515",
+      "proposed_sha256": "4d14222687b0d470b213ce2c062ba157c80e47ca58a13a796b82e6171a3eaba3"
+    },
+    "src/core/weights.cpp": {
+      "base_sha256": "039cb64f9dc1957bd1d1aa9db9f96ef4f7936a12861987c2947a44b312b2e5ea",
+      "proposed_sha256": "906d3182223afe2c39f9d668360a3457e453c0f365b973b171c260df99f8bfcb"
+    },
+    "src/prefill/prefill.cpp": {
+      "base_sha256": "679a72637352ef174051b1d06ab51a7f1926f4dd3355b6e83eebf5e8bdc6fb5b",
+      "proposed_sha256": "c3d3ff8b2107ee3bd7583df2788033891edf0999bf801b2781fb4f4587a3cc86"
+    },
+    "src/program/generate.cpp": {
+      "base_sha256": "717525d3457a954578ba8ea52325872600fd75d50240464f3a86d1e371b12c3d",
+      "proposed_sha256": "623c099dd1001ad61e53c51dd0f0ab16b2bbf8d8e9ad0b4e50d78b5724660584"
+    },
+    "src/prefill/layer_major.inc": {
+      "base_sha256": "bd13649913bd0d4c99d4722f1e43d1a4e6bf81ec5a3fc7ad2c867d90031fb6d7",
+      "proposed_sha256": "74b6b118bd5fab458fbdc872d345661e8827ea760d6a2f217f8da5922af8e1e9"
+    },
+    "include/strata/prefill/layermajor_coarse_profile.hpp": {
+      "base_sha256": null,
+      "proposed_sha256": "36d7a9b9059a83f44cac57c6d06229455a2f86114710f73fa422ed4dc940c2a6"
+    },
+    "tests/sycl/canonical_dense_bank.cpp": {
+      "base_sha256": null,
+      "proposed_sha256": "c7f02d789d09c3fadac1003b5831cf91ebdd5ce2a4e0205f6820530da7a54650"
+    },
+    "tests/cpu/canonical_bank_policy.cpp": {
+      "base_sha256": null,
+      "proposed_sha256": "2e33b4da0460bafab07e51cc43812f0ddc69c56953d06952706fadf199ece2d4"
+    },
+    "cmake/sycl_backend.cmake": {
+      "base_sha256": "2d3d2fd4a2c93d9c566928b89d68e7af6716354c4e8e57d74b1134294fee9ad3",
+      "proposed_sha256": "d532cd822fb8846548b1e72e2ce8815c40c229d55222983a3c4cee261eb3b977"
+    }
+  },
+  "performance_comparison_complete": false,
+  "performance_adopted": false,
+  "quality_qualified": false,
+  "physical_262144_qualified": false,
+  "scope": "Reviewed independent own-source defaultOFF canonical bank/coarse profile and manual fixtures; exact application only after audited first-failure owner closure. No runtime qualification.",
+  "finished_utc": "2026-10-15T15:12:01.030309+00:00"
+}

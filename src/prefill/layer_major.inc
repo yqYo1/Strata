@@ -202,6 +202,21 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         if (!census) std::fputs("strata lm census: {\"version\":1,\"complete\":false,\"reason\":\"host_observation_unavailable\"}\n", stderr);
     }
     detail::LayerMajorShapeBorrow census_borrow(m.layer_major_census, census.get());
+    const char* profile_switch = std::getenv("STRATA_PREFILL_LAYER_MAJOR_PROFILE");
+    const bool profile_requested = profile_switch && std::strcmp(profile_switch, "1") == 0;
+    std::unique_ptr<detail::LayerMajorCoarseProfile> profile;
+    if (profile_requested) {
+        uint64_t need = detail::layer_major_add(host_need, audit ? 4ull << 20 : 0);
+        need = detail::layer_major_add(need, phase_audit ? detail::Layer26PhaseAudit::host_reservation : 0);
+        need = detail::layer_major_add(need, census ? sizeof(detail::LayerMajorShapeCensus) : 0);
+        need = detail::layer_major_add(need, 1ull << 20); // fixed rows and twelve small compat event owners
+        if (!core::conversation_memory_admit(core::conversation_available_memory(), need, host_headroom)) {
+            err = "prefill layer-major profile: diagnostic storage exceeds RAM headroom"; return false;
+        }
+        profile.reset(new detail::LayerMajorCoarseProfile);
+    }
+    detail::LayerMajorCoarseBorrow profile_borrow(m.layer_major_profile, profile.get());
+    using LmProfile = detail::LayerMajorCoarseProfile;
     int64_t logical_chunks = 0, layer = 0;
     const int64_t final_chunk_row = ((n - 1) / m.T) * m.T;
     bool stage_delivered = false;
@@ -237,8 +252,10 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
               m.layer_major_fp16_stage, m.layer_major_residual, on_chunk, on_stage_chunk};
     cudaError_t compute_drain = cudaSuccess, copy_drain = cudaSuccess;
     auto drain = [&]() noexcept {
+        const auto profile_drain_start = profile ? LmProfile::Clock::now() : LmProfile::Clock::time_point{};
         compute_drain = cudaStreamSynchronize(m.cs);
         copy_drain = m.copy == m.cs ? compute_drain : cudaStreamSynchronize(m.copy);
+        if (profile) profile->add(LmProfile::wrapper_drain, profile_drain_start);
         return compute_drain == cudaSuccess && copy_drain == cudaSuccess;
     };
     detail::DraftUploadGuard lease(drain, [&]() noexcept {
@@ -248,6 +265,7 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     });
     lease.arm();
     if (!drain()) { err = "prefill layer-major: entry queue drain failed"; return false; }
+    if (profile) profile->open();
     if (audit || phase_audit) {
         m.layer26_phase_audit = phase_audit.get();
         m.layer_major_audit = audit.get();
@@ -296,6 +314,7 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
                              "one pack/unpack per interlayer boundary, live residual FP32, "
                              "operator/state precision unchanged\n");
     for (; layer < g.n_layers; ++layer) {
+        if (profile) profile->layer = int(layer);
         if (should_stop && should_stop()) { err = "cancelled"; return false; }
         if (!drain()) { err = "prefill layer-major: layer boundary drain failed"; return false; }
         if (std::getenv("STRATA_TRACE")) {
@@ -314,12 +333,25 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
                 err = "prefill layer-major: expert source copy failed"; return false;
             }
         }
+        if (profile) profile->add(LmProfile::source, load_start);
+        const auto upload_start = profile ? LmProfile::Clock::now() : LmProfile::Clock::time_point{};
+        if (profile) profile->begin(LmProfile::upload, m.cs);
         for (int32_t e = 0; e < NE; ++e) {
             if (!layer_cache.fill_slot(e, upload.get() + size_t(e) * size_t(stride), m.copy, err, int64_t(bytes)))
                 return false;
             ++stats_.experts_streamed;
         }
+        if (profile) {
+            profile->end(LmProfile::upload, m.cs);
+            profile->add(LmProfile::upload_submit, upload_start);
+            profile->rows[layer].upload_bytes += uint64_t(NE) * bytes;
+        }
+        const auto upload_drain_start = profile ? LmProfile::Clock::now() : LmProfile::Clock::time_point{};
         if (!drain()) { err = "prefill layer-major: expert upload drain failed"; return false; }
+        if (profile) {
+            profile->add(LmProfile::upload_drain, upload_drain_start);
+            profile->retired(LmProfile::upload); // existing checked upload drain above
+        }
         stats_.ms_experts_host += ms_since(load_start);
         // Publish all 512 only after the upload wait succeeds. No Stager/issuer
         // job can reference upload, rows, this map, or this temporary cache.
@@ -332,6 +364,7 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
                 f.up_off, f.down_off, f.bytes}, residency.data() + layer * NE,
                 m.layer_major_active && !m.pp && !next_ && m.copy == m.cs);
         }
+        const auto activation_start = profile ? LmProfile::Clock::now() : LmProfile::Clock::time_point{};
         if (activate_native_dense_layer) {
             if (!drain()) { err = "prefill dense bank: preactivation drain failed"; return false; }
             m.native_dense_overlay = nullptr;
@@ -340,6 +373,7 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
                 err = "prefill dense bank: activation published no private view"; return false;
             }
         }
+        if (profile && activate_native_dense_layer) profile->add(LmProfile::activation, activation_start);
         stage_lb_ = layer; stage_le_ = layer + 1;
         m.layer_major_host_input = layer == 0 ? nullptr : rows.get();
         m.layer_major_gpu_input = layer == 0 ? nullptr : device_rows.get();
@@ -367,7 +401,12 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
                 ++logical_chunks;
                 return !restore.chunk || restore.chunk(residual, count, position, error);
             }
+            const auto store_start = profile ? LmProfile::Clock::now() : LmProfile::Clock::time_point{};
             const auto span = plan.span(row, count);
+            if (profile) {
+                profile->rows[layer].store_bytes[int(span.device)] += span.bytes;
+                profile->begin(LmProfile::store, m.cs, span.device);
+            }
             uint8_t* destination = (span.device ? device_rows.get() : rows.get()) + size_t(span.offset_bytes);
             cudaError_t status = cudaSuccess;
             if (plan.dtype == detail::LayerMajorResidualDtype::fp16) {
@@ -385,8 +424,15 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
                 status = cudaMemcpyAsync(destination, residual, size_t(span.bytes),
                     span.device ? cudaMemcpyDeviceToDevice : cudaMemcpyDeviceToHost, m.cs);
             }
+            if (profile) profile->end(LmProfile::store, m.cs);
+            const auto store_drain_start = profile ? LmProfile::Clock::now() : LmProfile::Clock::time_point{};
             if (status != cudaSuccess || !drain()) {
                 error = "prefill layer-major: residual store copy/drain failed"; return false;
+            }
+            if (profile) {
+                profile->add(span.device ? LmProfile::store_drain_device : LmProfile::store_drain_host, store_drain_start);
+                profile->add(span.device ? LmProfile::store_wall_device : LmProfile::store_wall_host, store_start);
+                profile->retired(LmProfile::store); // existing checked residual-store drain above
             }
             if (audit && !audit->stored(layer, row, count, destination, span.device,
                                          m.layer_major_audit_copy)) {
@@ -420,6 +466,12 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     if (audit) audit->complete();
     if (phase_audit) phase_audit->complete();
     lease.retire();
+    if (profile) {
+        profile->wrapper_ms = ms_since(started);
+        profile->complete = true;
+        profile->close(); // checked lease has retired; status checked before emit
+        profile->emit();
+    }
     if (census) census->complete();
     return true;
 #endif

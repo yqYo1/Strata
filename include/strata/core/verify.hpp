@@ -83,6 +83,9 @@ public:
     bool can_retire_prefill_dense(std::string& err) const;
     bool retire_prefill_dense(std::string& err);
     bool resume_prefill_dense(const NativeDense& native, std::string& err);
+    // Canonical extension: commit graph captures GDN/indexer canonical norms.
+    // Called only inside the existing dense-retired lease, after wait_commit.
+    bool retire_prefill_canonical_commit(std::string& err);
     bool can_release_prefill_head(const NativeHead& head,std::string& err) const;
     bool retire_prefill_head(const NativeHead& head,std::string& err);
     bool resume_prefill_head(const NativeHead& head,std::string& err);

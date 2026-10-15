@@ -255,6 +255,26 @@ bool Verifier::retire_prefill_dense(std::string& err) {
     return true;
 #endif
 }
+bool Verifier::retire_prefill_canonical_commit(std::string& err) {
+#ifndef STRATA_ENABLE_SYCL
+    err="canonical commit retirement requires SYCL";return false;
+#else
+    if(!dense_retired_ || commit_pending_ || next_ || released_.load()) {
+        err="canonical commit retirement requires drained exclusive dense lease";return false;
+    }
+    using strata::sycl_backend::cleanup_fail_stop;
+    const OnDevice on_device(device_);
+    if(cudaStreamSynchronize(cs_)!=cudaSuccess) cleanup_fail_stop("canonical commit owner drain");
+    if(commit_exec_) {
+        if(cudaGraphExecDestroy(commit_exec_)!=cudaSuccess) cleanup_fail_stop("canonical norm-bearing commit graph retirement");
+        commit_exec_=nullptr;
+    }
+    // State snapshots, commit event, KV/GDN/QSA/PLE storage stay alive. Normal
+    // capture_commit rebuilds this graph against restored canonical norm refs.
+    return true;
+#endif
+}
+
 bool Verifier::resume_prefill_dense(const NativeDense& native, std::string& err) {
     if(!dense_retired_ || head_detached_ || released_.load() || !wt_ ||
        native.residency()!=NativeDense::Residency::Full || native.packed_sources().empty()) {
