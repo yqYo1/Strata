@@ -1968,7 +1968,7 @@
     "main_review": "native-dense-phase-main-review.ja.md",
     "implementation_in_progress": "prefill-native-dense-phase-v2",
     "implementation_model": "gpt-6.1-sol",
-    "implementation_state": "Actual defaultOFF product applied and full120-step SYCL build PASS. First component FAIL was fixture native-pack loader omission, preserved; corrected real300-matrix/48-layer payload+metadata and five allocation-fault arms allPASS/fault0. Generator-only trace observer buildPASS archives unchanged. First actual78453-input model transaction active; no speed/fullmodel physical/RESTORE/quality adoption.",
+    "implementation_state": "Actual defaultOFF product applied, fullSYCL buildPASS, corrected actual300-matrix/48-layer component and5allocation-fault armsPASS/fault0. Actual78453 model bank1 head0 FP32R0PASS,48activations+Fullrestore+24generated, selectedcapture matchesoldFP32referenceSHA, freequery+1840709632B. No full-state/RESTORE/physical262144/clean-speed adoption.",
     "implementation_diff_sha256": "03a385d0ef0b771d4aa89df18090fe7c602bd81eaa14c9bfa74a8e092f0caffd",
     "host_original": "native-dense-phase-host-v1.json",
     "host_corrected": "native-dense-phase-host-v2.json",
@@ -1989,9 +1989,14 @@
       "native-dense-bank-component-success-null-v2.json"
     ],
     "model_recipe": "run_native_dense_bank_model_v1.py",
-    "model_state": "ACTIVE_78453_FP32_R_GPU0_HEAD0_QSA1",
+    "model_state": "CLOSED_PASS_78453_FP32_R_GPU0_HEAD0_QSA1",
     "model_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-dense-bank-model-1-root-v1",
-    "model_receipt_when_closed": "native-dense-bank-model-1-v1.json"
+    "model_receipt_when_closed": "native-dense-bank-model-1-v1.json",
+    "model_receipt": "native-dense-bank-model-1-v1.json",
+    "model_observed_bank_free_delta_bytes": 1840709632,
+    "model_selected_raw_SHA256_matches_old_FP32_reference": true,
+    "next_gpu_recipe": "run_native_dense_bank_gpu32768_v1.py",
+    "next_gpu_state": "PREPARED_SAME_NATIVE_FP32_GPU32768_ROWS"
   },
   "prefill_capacity_current": {
     "report": "prefill-capacity-current.ja.md",
@@ -2012,5 +2017,12 @@
     "source_diff_sha256": "01de70c5abcd280a5e65124cdaecc985650a7060a8ff776dd04e9a11e6809d12",
     "base": "Immutable native-bank-v2 source mirrors verified against reachable1025e0ed. Does not include later Main generator trace observations.",
     "state": "Source-only, unapplied/uncompiled/unexecuted. V1 excludedstreamedKV; V2diff base race removedbank and MUSTNOTapply; V3preservesbank and addsactualKVmode1 observation. R708/R709 no concretesourcedefect; Main remaining fixture/checker/integration review pending."
+  },
+  "retention_v9": {
+    "manifest": "qsa-clean-dense-component-log-retention-v1.json",
+    "compact": "qsa-clean-dense-component-log-compact-v1.json",
+    "retired_files": 115,
+    "removed_bytes": 4255867,
+    "model_raw_consumer": "Same-native FP32GPU0 vs32768 selected-row comparison, paired64MiB cap; NativeDense model baseline capture retained."
   }
 }

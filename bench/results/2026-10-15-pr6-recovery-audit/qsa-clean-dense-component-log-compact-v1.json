@@ -1,0 +1,378 @@
+{
+  "passed": true,
+  "complete": true,
+  "GPU_executed": false,
+  "recipe_sha256": "8dbf24505b362e5357836cea6f00ffe7e38440c5a16421f0931fa3e4e7f08fbf",
+  "references": {
+    "qsa-device-batch-clean-comparison-v1.json": "3beb9552dee50dcddfebfbf2cb259650b0917e487431fc36c701747e8b140262",
+    "native-dense-bank-model-1-v1.json": "a8d061882acae3368b55fb367b1970ee953812dc30e1b02b3fde7ea119e71418",
+    "qsa-device-batch-clean-0-r0-v1.json": "a6083393f5a0a9694836f8a8eef31112341b38f23d6654f4de60b44e0010af36",
+    "qsa-device-batch-clean-1-r0-v1.json": "e8af6ef0292c2fc0cf7c24970ef5fd957055f9dbf6e3c31b486957c2747819b8",
+    "qsa-device-batch-clean-1-r1-v1.json": "3e238b25baef4cc95bd108c30bb06066ec3a9b32b8db4ecbc4d0e7e849313f6d",
+    "qsa-device-batch-clean-0-r1-v1.json": "67c4ed2845f73f05142e602dd938c8e1351411aee2bb18af14357db5f28e39e5",
+    "qsa-device-batch-clean-0-r2-v1.json": "df5a870ff52e481f89327ce52673d82e8d1ff65807b3d357ed48b966cb4810aa",
+    "qsa-device-batch-clean-1-r2-v1.json": "5ef1b1f7ede828404412221422938fd56f22f0e3c62955570cbfbd4f53d6eeef",
+    "native-dense-bank-component-normal-v2.json": "602a2c0e95209e05a1eb6cd68b876b5e1e667790cbac4237ae5a1a18132e4607",
+    "native-dense-bank-component-oom-null-v2.json": "b0e849e12b844ddcc51588028d144192f6e4938b17c0b60f8445164990d2acf5",
+    "native-dense-bank-component-unknown-null-v2.json": "80615579a382aade71e8246745fd9d3bd8fc20057a1780909627b125411290ff",
+    "native-dense-bank-component-unknown-nonnull-v2.json": "911bfc2a065d5f2422d1ea3d65424ca8d69a5b10c8a19282da4931731a051802",
+    "native-dense-bank-component-oom-nonnull-v2.json": "c9cb573603518a15a11284f700bd61e53209ad88dbea2b3788233f4bd03aff2f",
+    "native-dense-bank-component-success-null-v2.json": "072799b36dce1460b5bf27343bf7144f5f44a56e6aad27f12e66f9ce0bd874b4",
+    "native-dense-bank-component-normal-v1.json": "e109373db318b0860638c7b3bb60f28e3d0a0f324e91a83de3d64abbfc66a786"
+  },
+  "runs": [
+    {
+      "receipt": "qsa-device-batch-clean-0-r0-v1.json",
+      "original_passed": true,
+      "source_binary_sha256": "feb1735c12d92c0ab87cada63dd146165f0622159abb328a9e5bcf48d02dc6ee",
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_dump_exists": false,
+      "head_lifecycle": {
+        "target_release_bytes": [
+          521472000
+        ],
+        "draft_release_bytes": [
+          223227900
+        ],
+        "scope_completed_requests": 1,
+        "diagnostic_lines": [
+          "strata prefill heads: target detached bytes=521472000 source=owned-RAM D2H=521472000 H2D-on-restore=521472000",
+          "strata prefill heads: draft detached bytes=223227900 retained-map-bytes=425196",
+          "strata mtp: prompt expert phase=before-detach free_bytes=1586642944 total_bytes=10666115072",
+          "strata mtp: prompt expert phase=after-detach free_bytes=2294435840 total_bytes=10666115072",
+          "strata mtp: prompt expert phase=after-prompt-before-restore free_bytes=2242764800 total_bytes=10666115072",
+          "strata mtp: experts restored bytes=707788800, cumulative detach=0.234 ms reload=194.043 ms decode graph recapture=0.000 ms (lazy, later captures accumulate)",
+          "strata mtp: prompt expert phase=after-restore free_bytes=1534971904 total_bytes=10666115072",
+          "strata mtp: expert decode recapture kind=round coupled=0 ok=1 ms=0.699 cumulative_ms=0.699",
+          "strata mtp: expert decode recapture kind=step coupled=0 ok=1 ms=1.938 cumulative_ms=2.638",
+          "strata mtp: expert decode recapture kind=step coupled=0 ok=1 ms=1.998 cumulative_ms=4.635",
+          "strata mtp: expert decode recapture kind=round coupled=0 ok=1 ms=0.709 cumulative_ms=5.344"
+        ]
+      },
+      "placement": [
+        "strata prefill: FP16 MoE compact requested=1 effective=1, chunk=8192, scratch rows=8192, accounted=2588395008, shared region=1180698624 bytes",
+        "strata prefill: layer-major candidate, tokens=78452 chunk=8192 residual_dtype=fp32 residual_element_bytes=4 residual_total=3213393920 residual_gpu_rows=0 residual_gpu=0 residual_host=3213393920 residual_staging=0 layer_cache=1363148800; extra allocations, GPU headroom=536870912, RAM headroom=8589934592"
+      ],
+      "failure_excerpt": null,
+      "API": {}
+    },
+    {
+      "receipt": "qsa-device-batch-clean-1-r0-v1.json",
+      "original_passed": true,
+      "source_binary_sha256": "feb1735c12d92c0ab87cada63dd146165f0622159abb328a9e5bcf48d02dc6ee",
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_dump_exists": false,
+      "head_lifecycle": {
+        "target_release_bytes": [
+          521472000
+        ],
+        "draft_release_bytes": [
+          223227900
+        ],
+        "scope_completed_requests": 1,
+        "diagnostic_lines": [
+          "strata prefill heads: target detached bytes=521472000 source=owned-RAM D2H=521472000 H2D-on-restore=521472000",
+          "strata prefill heads: draft detached bytes=223227900 retained-map-bytes=425196",
+          "strata mtp: prompt expert phase=before-detach free_bytes=1570910208 total_bytes=10666115072",
+          "strata mtp: prompt expert phase=after-detach free_bytes=2278703104 total_bytes=10666115072",
+          "strata mtp: prompt expert phase=after-prompt-before-restore free_bytes=2228871168 total_bytes=10666115072",
+          "strata mtp: experts restored bytes=707788800, cumulative detach=0.208 ms reload=336.007 ms decode graph recapture=0.000 ms (lazy, later captures accumulate)",
+          "strata mtp: prompt expert phase=after-restore free_bytes=1521078272 total_bytes=10666115072",
+          "strata mtp: expert decode recapture kind=round coupled=0 ok=1 ms=2.900 cumulative_ms=2.900",
+          "strata mtp: expert decode recapture kind=step coupled=0 ok=1 ms=1.007 cumulative_ms=3.907",
+          "strata mtp: expert decode recapture kind=step coupled=0 ok=1 ms=0.441 cumulative_ms=4.348",
+          "strata mtp: expert decode recapture kind=round coupled=0 ok=1 ms=0.596 cumulative_ms=4.944"
+        ]
+      },
+      "placement": [
+        "strata prefill: FP16 MoE compact requested=1 effective=1, chunk=8192, scratch rows=8192, accounted=2588395008, shared region=1180698624 bytes",
+        "strata prefill: layer-major candidate, tokens=78452 chunk=8192 residual_dtype=fp32 residual_element_bytes=4 residual_total=3213393920 residual_gpu_rows=0 residual_gpu=0 residual_host=3213393920 residual_staging=0 layer_cache=1363148800; extra allocations, GPU headroom=536870912, RAM headroom=8589934592"
+      ],
+      "failure_excerpt": null,
+      "API": {}
+    },
+    {
+      "receipt": "qsa-device-batch-clean-1-r1-v1.json",
+      "original_passed": true,
+      "source_binary_sha256": "feb1735c12d92c0ab87cada63dd146165f0622159abb328a9e5bcf48d02dc6ee",
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_dump_exists": false,
+      "head_lifecycle": {
+        "target_release_bytes": [
+          521472000
+        ],
+        "draft_release_bytes": [
+          223227900
+        ],
+        "scope_completed_requests": 1,
+        "diagnostic_lines": [
+          "strata prefill heads: target detached bytes=521472000 source=owned-RAM D2H=521472000 H2D-on-restore=521472000",
+          "strata prefill heads: draft detached bytes=223227900 retained-map-bytes=425196",
+          "strata mtp: prompt expert phase=before-detach free_bytes=1570914304 total_bytes=10666115072",
+          "strata mtp: prompt expert phase=after-detach free_bytes=2278707200 total_bytes=10666115072",
+          "strata mtp: prompt expert phase=after-prompt-before-restore free_bytes=2228846592 total_bytes=10666115072",
+          "strata mtp: experts restored bytes=707788800, cumulative detach=0.235 ms reload=242.415 ms decode graph recapture=0.000 ms (lazy, later captures accumulate)",
+          "strata mtp: prompt expert phase=after-restore free_bytes=1521053696 total_bytes=10666115072",
+          "strata mtp: expert decode recapture kind=round coupled=0 ok=1 ms=0.542 cumulative_ms=0.542",
+          "strata mtp: expert decode recapture kind=step coupled=0 ok=1 ms=0.497 cumulative_ms=1.039",
+          "strata mtp: expert decode recapture kind=step coupled=0 ok=1 ms=0.518 cumulative_ms=1.557",
+          "strata mtp: expert decode recapture kind=round coupled=0 ok=1 ms=0.738 cumulative_ms=2.295"
+        ]
+      },
+      "placement": [
+        "strata prefill: FP16 MoE compact requested=1 effective=1, chunk=8192, scratch rows=8192, accounted=2588395008, shared region=1180698624 bytes",
+        "strata prefill: layer-major candidate, tokens=78452 chunk=8192 residual_dtype=fp32 residual_element_bytes=4 residual_total=3213393920 residual_gpu_rows=0 residual_gpu=0 residual_host=3213393920 residual_staging=0 layer_cache=1363148800; extra allocations, GPU headroom=536870912, RAM headroom=8589934592"
+      ],
+      "failure_excerpt": null,
+      "API": {}
+    },
+    {
+      "receipt": "qsa-device-batch-clean-0-r1-v1.json",
+      "original_passed": true,
+      "source_binary_sha256": "feb1735c12d92c0ab87cada63dd146165f0622159abb328a9e5bcf48d02dc6ee",
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_dump_exists": false,
+      "head_lifecycle": {
+        "target_release_bytes": [
+          521472000
+        ],
+        "draft_release_bytes": [
+          223227900
+        ],
+        "scope_completed_requests": 1,
+        "diagnostic_lines": [
+          "strata prefill heads: target detached bytes=521472000 source=owned-RAM D2H=521472000 H2D-on-restore=521472000",
+          "strata prefill heads: draft detached bytes=223227900 retained-map-bytes=425196",
+          "strata mtp: prompt expert phase=before-detach free_bytes=1586642944 total_bytes=10666115072",
+          "strata mtp: prompt expert phase=after-detach free_bytes=2294435840 total_bytes=10666115072",
+          "strata mtp: prompt expert phase=after-prompt-before-restore free_bytes=2242768896 total_bytes=10666115072",
+          "strata mtp: experts restored bytes=707788800, cumulative detach=0.645 ms reload=198.235 ms decode graph recapture=0.000 ms (lazy, later captures accumulate)",
+          "strata mtp: prompt expert phase=after-restore free_bytes=1534976000 total_bytes=10666115072",
+          "strata mtp: expert decode recapture kind=round coupled=0 ok=1 ms=1.012 cumulative_ms=1.012",
+          "strata mtp: expert decode recapture kind=step coupled=0 ok=1 ms=0.504 cumulative_ms=1.516",
+          "strata mtp: expert decode recapture kind=step coupled=0 ok=1 ms=0.434 cumulative_ms=1.950",
+          "strata mtp: expert decode recapture kind=round coupled=0 ok=1 ms=3.884 cumulative_ms=5.834"
+        ]
+      },
+      "placement": [
+        "strata prefill: FP16 MoE compact requested=1 effective=1, chunk=8192, scratch rows=8192, accounted=2588395008, shared region=1180698624 bytes",
+        "strata prefill: layer-major candidate, tokens=78452 chunk=8192 residual_dtype=fp32 residual_element_bytes=4 residual_total=3213393920 residual_gpu_rows=0 residual_gpu=0 residual_host=3213393920 residual_staging=0 layer_cache=1363148800; extra allocations, GPU headroom=536870912, RAM headroom=8589934592"
+      ],
+      "failure_excerpt": null,
+      "API": {}
+    },
+    {
+      "receipt": "qsa-device-batch-clean-0-r2-v1.json",
+      "original_passed": true,
+      "source_binary_sha256": "feb1735c12d92c0ab87cada63dd146165f0622159abb328a9e5bcf48d02dc6ee",
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_dump_exists": false,
+      "head_lifecycle": {
+        "target_release_bytes": [
+          521472000
+        ],
+        "draft_release_bytes": [
+          223227900
+        ],
+        "scope_completed_requests": 1,
+        "diagnostic_lines": [
+          "strata prefill heads: target detached bytes=521472000 source=owned-RAM D2H=521472000 H2D-on-restore=521472000",
+          "strata prefill heads: draft detached bytes=223227900 retained-map-bytes=425196",
+          "strata mtp: prompt expert phase=before-detach free_bytes=1586638848 total_bytes=10666115072",
+          "strata mtp: prompt expert phase=after-detach free_bytes=2294431744 total_bytes=10666115072",
+          "strata mtp: prompt expert phase=after-prompt-before-restore free_bytes=2242764800 total_bytes=10666115072",
+          "strata mtp: experts restored bytes=707788800, cumulative detach=0.236 ms reload=321.238 ms decode graph recapture=0.000 ms (lazy, later captures accumulate)",
+          "strata mtp: prompt expert phase=after-restore free_bytes=1534971904 total_bytes=10666115072",
+          "strata mtp: expert decode recapture kind=round coupled=0 ok=1 ms=2.084 cumulative_ms=2.084",
+          "strata mtp: expert decode recapture kind=step coupled=0 ok=1 ms=3.052 cumulative_ms=5.136",
+          "strata mtp: expert decode recapture kind=step coupled=0 ok=1 ms=0.550 cumulative_ms=5.685",
+          "strata mtp: expert decode recapture kind=round coupled=0 ok=1 ms=0.807 cumulative_ms=6.493"
+        ]
+      },
+      "placement": [
+        "strata prefill: FP16 MoE compact requested=1 effective=1, chunk=8192, scratch rows=8192, accounted=2588395008, shared region=1180698624 bytes",
+        "strata prefill: layer-major candidate, tokens=78452 chunk=8192 residual_dtype=fp32 residual_element_bytes=4 residual_total=3213393920 residual_gpu_rows=0 residual_gpu=0 residual_host=3213393920 residual_staging=0 layer_cache=1363148800; extra allocations, GPU headroom=536870912, RAM headroom=8589934592"
+      ],
+      "failure_excerpt": null,
+      "API": {}
+    },
+    {
+      "receipt": "qsa-device-batch-clean-1-r2-v1.json",
+      "original_passed": true,
+      "source_binary_sha256": "feb1735c12d92c0ab87cada63dd146165f0622159abb328a9e5bcf48d02dc6ee",
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_dump_exists": false,
+      "head_lifecycle": {
+        "target_release_bytes": [
+          521472000
+        ],
+        "draft_release_bytes": [
+          223227900
+        ],
+        "scope_completed_requests": 1,
+        "diagnostic_lines": [
+          "strata prefill heads: target detached bytes=521472000 source=owned-RAM D2H=521472000 H2D-on-restore=521472000",
+          "strata prefill heads: draft detached bytes=223227900 retained-map-bytes=425196",
+          "strata mtp: prompt expert phase=before-detach free_bytes=1570910208 total_bytes=10666115072",
+          "strata mtp: prompt expert phase=after-detach free_bytes=2278703104 total_bytes=10666115072",
+          "strata mtp: prompt expert phase=after-prompt-before-restore free_bytes=2228809728 total_bytes=10666115072",
+          "strata mtp: experts restored bytes=707788800, cumulative detach=1.060 ms reload=196.276 ms decode graph recapture=0.000 ms (lazy, later captures accumulate)",
+          "strata mtp: prompt expert phase=after-restore free_bytes=1521016832 total_bytes=10666115072",
+          "strata mtp: expert decode recapture kind=round coupled=0 ok=1 ms=0.855 cumulative_ms=0.855",
+          "strata mtp: expert decode recapture kind=step coupled=0 ok=1 ms=0.477 cumulative_ms=1.332",
+          "strata mtp: expert decode recapture kind=step coupled=0 ok=1 ms=0.799 cumulative_ms=2.131",
+          "strata mtp: expert decode recapture kind=round coupled=0 ok=1 ms=0.751 cumulative_ms=2.882"
+        ]
+      },
+      "placement": [
+        "strata prefill: FP16 MoE compact requested=1 effective=1, chunk=8192, scratch rows=8192, accounted=2588395008, shared region=1180698624 bytes",
+        "strata prefill: layer-major candidate, tokens=78452 chunk=8192 residual_dtype=fp32 residual_element_bytes=4 residual_total=3213393920 residual_gpu_rows=0 residual_gpu=0 residual_host=3213393920 residual_staging=0 layer_cache=1363148800; extra allocations, GPU headroom=536870912, RAM headroom=8589934592"
+      ],
+      "failure_excerpt": null,
+      "API": {}
+    },
+    {
+      "receipt": "native-dense-bank-component-normal-v2.json",
+      "original_passed": true,
+      "source_binary_sha256": "b928f26a9236c6f9acd23af16d95d3387957a0ddba1cc1fc16678fb5e75a26eb",
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_dump_exists": false,
+      "head_lifecycle": null,
+      "placement": null,
+      "failure_excerpt": null,
+      "API": {
+        "native-dense-bank-normal.stderr": {
+          "counts": {
+            "urAdapterGet": 2,
+            "urAdapterGetInfo": 1,
+            "urAdapterRelease": 1,
+            "urAdapterSetLoggerCallback": 1,
+            "urContextCreate": 1,
+            "urContextRelease": 1,
+            "urDeviceGet": 4,
+            "urDeviceGetGlobalTimestamps": 2884,
+            "urDeviceGetInfo": 918,
+            "urDeviceRelease": 3,
+            "urDeviceRetain": 1,
+            "urEnqueueUSMMemcpy": 2884,
+            "urEventRelease": 2884,
+            "urEventWait": 1084,
+            "urPlatformGet": 2,
+            "urPlatformGetInfo": 3,
+            "urQueueCreate": 3,
+            "urQueueFinish": 8788,
+            "urQueueRelease": 3,
+            "urUSMDeviceAlloc": 904,
+            "urUSMFree": 906,
+            "urUSMHostAlloc": 2
+          },
+          "total_returns": 21280,
+          "all_success": true
+        }
+      }
+    },
+    {
+      "receipt": "native-dense-bank-component-oom-null-v2.json",
+      "original_passed": true,
+      "source_binary_sha256": "09eed42114baf0227d294e7c76dd38a678fee22f3133fc75d7ddffc04e85cda6",
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_dump_exists": false,
+      "head_lifecycle": null,
+      "placement": null,
+      "failure_excerpt": null,
+      "API": {}
+    },
+    {
+      "receipt": "native-dense-bank-component-unknown-null-v2.json",
+      "original_passed": true,
+      "source_binary_sha256": "09eed42114baf0227d294e7c76dd38a678fee22f3133fc75d7ddffc04e85cda6",
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_dump_exists": false,
+      "head_lifecycle": null,
+      "placement": null,
+      "failure_excerpt": "native dense layer bank: fail-stop in uncertain bank allocation failure",
+      "API": {}
+    },
+    {
+      "receipt": "native-dense-bank-component-unknown-nonnull-v2.json",
+      "original_passed": true,
+      "source_binary_sha256": "09eed42114baf0227d294e7c76dd38a678fee22f3133fc75d7ddffc04e85cda6",
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_dump_exists": false,
+      "head_lifecycle": null,
+      "placement": null,
+      "failure_excerpt": "native dense layer bank: fail-stop in uncertain bank allocation failure",
+      "API": {}
+    },
+    {
+      "receipt": "native-dense-bank-component-oom-nonnull-v2.json",
+      "original_passed": true,
+      "source_binary_sha256": "09eed42114baf0227d294e7c76dd38a678fee22f3133fc75d7ddffc04e85cda6",
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_dump_exists": false,
+      "head_lifecycle": null,
+      "placement": null,
+      "failure_excerpt": "native dense layer bank: fail-stop in uncertain bank allocation failure",
+      "API": {}
+    },
+    {
+      "receipt": "native-dense-bank-component-success-null-v2.json",
+      "original_passed": true,
+      "source_binary_sha256": "09eed42114baf0227d294e7c76dd38a678fee22f3133fc75d7ddffc04e85cda6",
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_dump_exists": false,
+      "head_lifecycle": null,
+      "placement": null,
+      "failure_excerpt": "native dense layer bank: fail-stop in successful bank allocation returned null",
+      "API": {}
+    },
+    {
+      "receipt": "native-dense-bank-component-normal-v1.json",
+      "original_passed": false,
+      "source_binary_sha256": "f70a2b223270400d57332875b4b319519655e65ded6344fecdfd74c1a1b4c39b",
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_dump_exists": false,
+      "head_lifecycle": null,
+      "placement": null,
+      "failure_excerpt": [
+        "FAIL: output.weight: this pack holds the tensor only in its GGUF form (run with --native SHARD1)"
+      ],
+      "API": {
+        "native-dense-bank-normal.stderr": {
+          "counts": {
+            "urAdapterGet": 2,
+            "urAdapterGetInfo": 1,
+            "urAdapterSetLoggerCallback": 1,
+            "urContextCreate": 1,
+            "urDeviceGet": 4,
+            "urDeviceGetInfo": 15,
+            "urDeviceRelease": 2,
+            "urDeviceRetain": 1,
+            "urPlatformGet": 2,
+            "urPlatformGetInfo": 3,
+            "urQueueCreate": 3,
+            "urQueueFinish": 10,
+            "urUSMDeviceAlloc": 1,
+            "urUSMFree": 2,
+            "urUSMHostAlloc": 2
+          },
+          "total_returns": 50,
+          "all_success": true
+        }
+      }
+    }
+  ]
+}

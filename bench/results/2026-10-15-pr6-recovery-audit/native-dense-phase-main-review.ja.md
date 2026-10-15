@@ -2,8 +2,9 @@
 
 現在のintegration状態: Mainが全6 QSA clean processと比較の正常終了後に実rootへ適用した。
 `apply_build_native_dense_phase_v1.py`の120 build stepsとactual generator compile/linkはPASS。
-実GPU componentの修正後6armもPASS。実generator transactionの長文検証は進行中で、
-実モデルのVRAM回収、数値・RESTORE・物理262144・速度はまだ未合格。
+実GPU componentの修正後6armもPASS。実78453入力のgenerator transactionも正常終了し、
+driver free増加とselected FP32 captureの保存hash一致を確認した。
+全状態の数値・実RESTORE・物理262144・clean速度はまだ未合格。
 以下の「未適用」は初回レビュー時点の記録。defaultOFF、head-release併用拒否は維持する。
 
 2026-10-15。Solのcaller接続済みproposalは`prefill-native-dense-phase-v2`。
@@ -125,3 +126,20 @@ C8192、FP32/R_GPU0、alias1、QSA1を固定し、native bank1/head-release0/明
 48activation後のFull復元、旧QSA FP32 referenceのselected768行capture hash、同run store/input照合、
 実Verifier生成と通常終了/新規faultを確認する。raw referenceは既に退役済みなので、照合は保存hashとの比較と明記する。
 instrumented結果をclean速度へ読み替えず、容量変更/R_GPU/16bitの速度実験はその後に行う。
+
+この実モデルrunはその後正常終了した（`native-dense-bank-model-1-v1.json`）。
+short warmup後の78453入力と24生成、48 native-layer activation、Full復元、native/server0、owner退去、
+新規fault0、dumpなし。selected768 FP32行captureは旧referenceの保存SHA256と一致し、
+同runの752 store/input行も一致した。SessionGraphs再capture観測は0で、このrunがcaptured SessionGraphsを
+実際に退役した証拠とはしない。warm decode後のVerifierは存在した。
+bank前free826142720 B→bank後2666852352 B、driver queryの増加は1840709632 B (約1.714 GiB)。
+payload差2066032640 Bとは一致しないため、payload差を物理回収量と言わない。
+Full復元後free776048640 B。free差だけからleakの有無やallocation-pool原因は断定しない。
+診断PP240.2 tok/sはinstrumented一標本で、速度採用しない。
+次は同native・同78453入力でFP32 hiddenのGPU prefix32768行 (1342177280 B) を実際に使う。
+現runのraw31,457,280 Bはその比較の明示consumer向けに保持し、paired raw予算64 MiBとする。
+
+run閉鎖後、`retire_qsa_clean_dense_component_logs_v1.py`をlock下で実行し、closed QSA6 sampleと
+component7 armの不要trace/journal/protocol/外部duplicate recordを115 files・4255867 B削除した。
+元FAIL/PASS receiptは不変、全UR entry/return成功件数等をcompact化し、path/hash/reason manifestを保存。
+現在のmodel raw/native診断・source/build/modelは削除していない。
