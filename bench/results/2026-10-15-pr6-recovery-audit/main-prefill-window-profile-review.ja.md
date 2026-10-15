@@ -112,12 +112,27 @@ Main v2 fixtureを使用した。次の試行ではMainのinclude配置不足で
 SYCL本体全体をcompile/linkした。全command0、Werror、source固定、range-size safety flagと
 prefillの`-fno-fast-math -ffp-contract=off`を確認した。`prefill-head-release-build-v1.json`が結果。
 新binaryは`c03ca79d5a75faaed075c9ce354fd5647f78a39853150a55992753d7d93ba42e`。
-通常無効のままで、元b1 binary/archivesは変更していない。GPU/実VRAM回収は未検証。
+通常無効のままで、元b1 binary/archivesは変更していない。
 NativeHeadのみの実packed-byte/logit比較fixtureもproduction librariesへリンク済み
-（`prefill-head-component-build-v1.json`）、GPU実行前。
+（`prefill-head-component-build-v1.json`）。続いて実GPUで二回実行し、521472000 B全体と
+248320個のprojection logitが両cycleでbitwise一致した（`prefill-head-component-v1.json`）。
+確保addressも両方で変わった。実free増加は521539584/521535488 B、全exit0、新規fault0、dumpなし。
+初回確認なのでUR API tracing/parameter validationを有効にし、runtime error0。
+target head単体の証拠であり、MTP duplicateとの合計744699900 Bや全engineの空き量の実証ではない。
+二回目は64 MiBのfillerを挟み、free後の即時counterが64 MiB小さかった。
+applicationのfreeは成功しているが、allocator/driverのpoolingや計数時点を分離していない。
+全engine admissionへ単体のfree差分を無条件に足さない。
+47,983 BのAPI traceは次のwarm combined lifecycle/allocator比較をconsumerとして一つだけ残す
+（`prefill-head-component-retention-v1.json`、64 KiB予算）。
 MTP/verifier/モデル/RESTORE/物理最大context検証は引き続き別の未実施gateである。
 R683の独立sourceレビューでも明確なdangling-owner/default-off退行は見つからなかったが、
 GPUのcompletion/graph lifecycleを証明する実行ではない。
+
+次のcombined gateは`run_prefill_head_lifecycle_v1.py`。
+公式bench.shのprefill-onlyを二回、actual input/read>=32768、thinking ON、24出力上限で行い、
+同じserve内の繰り返しhead退避/復元とMTP subset再構成・decode/終了を観察する。
+parameter validation/warningとSTRATA_TRACEを付けるため**clean性能試験ではない**。
+この準備時点では未実行。別のclean三回測定と実RESTORE/最大contextは後続gateである。
 
 ## 失敗と保存
 
