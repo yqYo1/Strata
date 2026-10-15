@@ -476,7 +476,9 @@
     "research-prefill-repeat-state-round615-v1.txt",
     "research-arc-dequant-optimization-round616-v1.txt",
     "research-parallel-iq-contract-round617-v1.txt",
-    "research-checkpoint-v2-contract-round618-v1.txt"
+    "research-checkpoint-v2-contract-round618-v1.txt",
+    "research-iq3xxs-subgroup-decoder-round619-v1.txt",
+    "research-current-layermajor-mix-round620-v1.txt"
   ],
   "main_initial_findings": [
     "PR6 performance patch changes historic sycl/src/prefill/prefill.cpp, not current root src/prefill/prefill.cpp. Current root rg finds compact scratch but no layer-major selector. History preservation is not adoption.",
@@ -492,7 +494,7 @@
     "main_review": "qsa-layout-recovery-v1/main-review.ja.md",
     "status": "Build/host and20GPU parity/oracle cases PASS/fault0. Component40sample screen closedPASS; layout1 median4.09%slower in one int8case, no adoption. No whole-model/full256K/RESTORE/quality qualification."
   },
-  "latest_main_review": "iq-dequant-correctness.ja.md",
+  "latest_main_review": "parallel-iq-timing-screen.ja.md",
   "component_summary": "qsa-layout-screen-summary.json",
   "gemm_orientation_probe": {
     "report": "gemm-orientation-probe-v1/implementation.txt",
@@ -662,13 +664,10 @@
   "retention_v5": "retention-v5-manifest.json",
   "parallel_research_current": {
     "rounds": [
-      615,
-      616,
-      617,
-      618
+      619,
+      620
     ],
-    "state": "All FINAL and Main source reviewed; no sourceconfirmed third-prefill cause. R616 wrongactiveformat list corrected by Main.",
-    "review": "main-review-round615-618.ja.md"
+    "state": "Both FINAL, Main read reports/source. R619 type18 subgroup candidate and R620 boundedcurrentLMcensus delegated to separateSol proposalagents; no tests by agents."
   },
   "phase_audit": {
     "build": "phase-audit-build-v1.json",
@@ -814,14 +813,18 @@
     "research": "research-prefill-gu-hotpath-round610-v1.txt",
     "main_review": "main-review-round609-610.ja.md",
     "coverage": "dequant-shape-coverage-v1.json",
-    "state": "CPU94,044,160elements normal+ASan exacthalfPASS; B57042quick+48fullcase OFF/ON fullbuffersPASS/fault0, actualcandidate18launchesON/0OFF. Productunapplied. Cleanresident dequant+GEMM timing proposal v2 authoring; no speedadoption.",
+    "state": "CLOSED ne64 device-resident dequant+oneMKL screen36processes PASS/fault0: fiveforms33-72% lower median wall; GU18per-element9.2%slower (3pairs allworse) rejectedforadoption. Otherne+dequantalone wide180processLIVE; no productapply/modeltps/adoption.",
     "cpu": "candidate-cpu-contracts-v1.json",
     "cpu_checkpoint_continuation": "candidate-cpu-contracts-v2.json",
     "component_build": "parallel-iq-component-build-v1.json",
     "quick": "parallel-iq-component-quick-v1.json",
     "full": "parallel-iq-component-full-v1.json",
     "actual_route": "iq-diagnostic-evidence-v1.json",
-    "review": "iq-dequant-correctness.ja.md"
+    "review": "iq-dequant-correctness.ja.md",
+    "clean_build": "parallel-iq-timing-build-v2.json",
+    "clean_smoke": "parallel-iq-timing-smoke-v2.json",
+    "clean_screen": "parallel-iq-timing-screen-v2.json",
+    "clean_review": "parallel-iq-timing-screen.ja.md"
   },
   "compiler_alternative": {
     "research": "research-compiler-matrix-runtime-round611-v1.txt",
@@ -845,7 +848,7 @@
   },
   "packed_iq_xmx": {
     "v1": "packed-iq-xmx-probe-v1",
-    "state": "v1 MainREJECTED beforeexecution for unretiredUSMfree; v2FINAL correctsownership/stickyasync/metadata/compileradmission, Main source review pending completion. No build/device/speedclaim.",
+    "state": "v1 rejected; v2FINAL Main source reviewed ownership/stickyasync and roundtripmetadata; no compile/device/math/performance gates yet. Lowerpriority than measuredparallel materialization.",
     "review": "main-review-round615-618.ja.md"
   },
   "retention_v8": "iq-diagnostics-retention-v1.json"
