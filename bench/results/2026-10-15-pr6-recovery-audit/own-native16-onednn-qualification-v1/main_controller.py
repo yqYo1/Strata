@@ -365,6 +365,20 @@ def main():
                         now = module.identity(identity['pid'])
                         require(now is None or now['start_ticks'] != identity['start_ticks'], 'failed CPU build identity still live')
                 record['closed_failed_cpu_build'] = previous
+            if manifest.get('closed_failed_qualification'):
+                previous = manifest['closed_failed_qualification']
+                old = load(previous['path'])
+                require(sha(previous['path']) == previous['sha256'] and old.get('complete') and
+                        not old.get('active') and not old.get('passed') and old.get('normally_closed') and
+                        old.get('boot_id') == record['boot_id'] and not old.get('fresh_faults') and
+                        not old.get('driver_dump_exists') and 'unqualified mapped library:' in old.get('error',''),
+                        'exact normally closed library qualification failure required')
+                for command in old['commands']:
+                    require(module.closed(command) and command.get('exit_code') == 0, 'prior native or owner failure is not this continuation')
+                    for identity in command['owners']:
+                        now = module.identity(identity['pid'])
+                        require(now is None or now['start_ticks'] != identity['start_ticks'], 'prior qualification identity still live')
+                record['closed_failed_qualification'] = previous
             for name in ['own-native16-prefill-build-v2.json', 'own-native16-gemm-correctness-v2.json']:
                 path = A/name
                 value, proof = receipt_gate(module, path, manifest['input_pins'][str(path)]['sha256'], record['boot_id'])

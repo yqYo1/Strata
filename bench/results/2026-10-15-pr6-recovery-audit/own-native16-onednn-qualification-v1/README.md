@@ -247,3 +247,11 @@ changes its local event to non-const and requires the original failed CPU-only
 job's exact closure; GPU execution was false. Effective compile/link templates
 remain in this manifest. Redundant raw v2 recipe copies are recoverable from
 archive709235b0 and the pinned v2 receipt.
+
+The first native child completed its BF16 oracle and exited normally with no
+fresh fault, but `own-native16-onednn-smoke-v2.json` remains overall FAIL because
+its mapped-DSO list was not fully qualified. Main inspected and pinned those
+installed DSOs. The next private fixture resolves dnnl_version through RTLD_NEXT
+so dladdr names the actual library rather than the executable's canonical PLT.
+A new build/smoke must qualify the corrected evidence; the old result is unchanged.
+Every earlier library pin is still checked, with duplicate map entries removed.
