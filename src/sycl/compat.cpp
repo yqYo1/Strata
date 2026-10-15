@@ -1,3 +1,4 @@
+#include "strata/sycl/cpu_wait_profile.hpp"
 #include "strata/sycl/compat/cuda_runtime.h"
 #include "strata/sycl/launch.hpp"
 #include "strata/sycl/runtime.hpp"
@@ -95,7 +96,8 @@ void wait_all() {
   std::exception_ptr error;
   for (auto &q : pending)
     try {
-      q.wait_and_throw();
+      strata::sycl_backend::cpu_wait_profile::blocking(
+        strata::sycl_backend::cpu_wait_profile::compat_queue, [&] { q.wait_and_throw(); });
     } catch (...) {
       if (!error)
         error = std::current_exception();
@@ -317,7 +319,9 @@ cudaError_t cudaStreamDestroy(cudaStream_t st) {
   if (!st)
     return cudaSuccess;
   return attempt([&] {
-    queue(st).wait_and_throw();
+    { auto& wait_queue = queue(st);
+      strata::sycl_backend::cpu_wait_profile::blocking(
+          strata::sycl_backend::cpu_wait_profile::compat_queue, [&] { wait_queue.wait_and_throw(); }); }
     std::lock_guard lock(registry_mutex);
     auto it = streams.find(st);
     require(it != streams.end() && !it->second.recording,
@@ -327,7 +331,9 @@ cudaError_t cudaStreamDestroy(cudaStream_t st) {
 }
 cudaError_t cudaStreamSynchronize(cudaStream_t st) {
   return attempt([&] {
-    queue(st).wait_and_throw();
+    { auto& wait_queue = queue(st);
+      strata::sycl_backend::cpu_wait_profile::blocking(
+          strata::sycl_backend::cpu_wait_profile::compat_queue, [&] { wait_queue.wait_and_throw(); }); }
     runtime_for()->check();
   });
 }

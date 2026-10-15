@@ -46,6 +46,13 @@ are outside this work's scope.
   dependency path. FP16 and BF16 storage both use two bytes; select format from
   range, numerical/task evidence and actual performance rather than assuming
   FP16 is universally better. Preserve the existing FP32 reference.
+- Keep long-prefill inference math on the GPU and minimize CPU work beyond
+  transfer preparation, launch control and validation. Audit existing CPU
+  grouping/index operations and library fallback or emulation paths explicitly;
+  a GPU queue alone does not prove a library performs all arithmetic there.
+  Attribute thread CPU time inside GPU waits separately from host computation
+  and submission. One saturated CPU thread alone does not establish CPU latency
+  as the bottleneck, because completion polling can also consume a full core.
 - Check Niko upstream approximately every **48 hours** during ongoing work,
   using the project-only upstream sync skill. Record the actual check time,
   exact revision and integration status separately. Continue required functional

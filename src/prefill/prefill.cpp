@@ -37,6 +37,7 @@
 #include <stdexcept>
 #if defined(STRATA_ENABLE_SYCL)
 #include "strata/sycl/launch.hpp"
+#include "strata/sycl/cpu_wait_profile.hpp"
 #endif
 #include "strata/core/conversation_memory.hpp"
 

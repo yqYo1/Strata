@@ -1,0 +1,175 @@
+# R747 — Own prompt-attention 8-row head-tile geometry
+
+2026-10-16 JST. Read-only geometry and source/ISA review. This report is the
+only new file. No build, test, model/server/GPU/runtime/toolchain/process,
+environment, cleanup, or Git operation was performed. No XeStrata product
+source, helpers, tests, or archives were read or used; XeStrata remains a
+performance-numbers-only reference. The protected
+`prefill-gemm-only-contract-root-v1/record.json` was not read. Main's clean
+whole-model cohort was not disturbed.
+
+## Finding
+
+An 8-row head tile with a 64-work-item/four-subgroup group is legal as a
+source-level geometry while retaining the existing 8x16x16 `joint_matrix`
+operations. It is not a DPAS reduction: across two groups, the source DPAS
+count per query/KV-head pair remains the same as one 16-row padded group.
+It halves some per-group local arrays and work-group width, but duplicates
+K/V gathering and page/ID work for the same KV head, and does not reduce
+whole-kernel query/KV arithmetic or padding at the 12-head tail. Given those
+costs and no measurement showing that 128-work-item groups or local footprint
+are the limiting factor, this geometry is a bounded experimental candidate,
+not yet worth product implementation. It is worth keeping as a candidate only
+if future profiling identifies a per-group resource or scheduling limit.
+
+## Existing baseline and retained evidence
+
+`src/kernels/sycl/prompt_attention.cpp` defines `HEADS=12`, `CH=32`,
+`WG=128`, `HD=256`. One group covers a query and one KV head, pads the rows to
+16, and maps each SIMD16 subgroup to an 8-row by 16-cell QK panel or an
+8-row by 16-dimension PV panel. QK uses four subgroups; PV uses all eight.
+The 16x16x16 matrix contract itself is unchanged by the proposal.
+
+The closed Main receipt identifies the retained default-mode-1 Direct ASM as
+`/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prompt-jit-resources-a0-root-v3/igc/OCL_asmb338aba6bf540d32_simd16_entry_0008.asm`
+(1,178,826 bytes, SHA-256
+`01e8841d0a06c8ea23278503567809f6d5c3b1296d840ef6f29c964097a0128d`), and
+the retained ISA assembly as
+`.../OCL_asmb338aba6bf540d32_simd16_entry_0008.isaasm`
+(951,926 bytes, SHA-256
+`2b5379c537ea7a1098ea84d7e14a9ef22b5e04876eef42e0c4d8ebb6b772cfe7`).
+The matching receipt records 128 GRFs, SIMD16, compiler static SLM 4,096 B,
+UR local-argument requests 44,496 B, and device local-memory report
+131,072 B. These are distinct reports, not an occupancy calculation. In the
+ASM, work-group synchronization is represented by local-memory fence sends,
+gateway barrier signals, and `sync.bar` instructions. This confirms that the
+baseline contains repeated work-group barrier epochs; static ISA cannot say
+how much they stall. Do not infer that a 64-item group doubles or halves
+barrier latency.
+
+R745's report and the Main correction in
+`prompt-jit-resources-status-v1.ja.md` were both considered. In particular,
+the mode-1 pooled scales are FP16: each 32-cell K tile reads 8,192 B of INT8
+codes plus 256 B of scales, not 512 B of scales. The corresponding V tile is
+the same size. R746's corrected whole-model source totals are 126,655,062,343,680
+source-issued FLOPs and up to 2,012,348,790,144 B logical K/V code+scale
+payload across all 12 layers, assuming valid selected pages. These are source
+arithmetic/logical-payload totals, not measured hardware FLOPs or DRAM traffic;
+the 69,692 ms queue-span sum is nonexclusive. They are repeated here only to
+anchor scope, not as a per-layer figure or performance prediction.
+
+## Geometry and source arithmetic
+
+Use two groups per `(batch, query, KV head)`, each with 64 work-items and four
+SIMD16 subgroups. Group zero owns local query rows 0–7 (global heads 0–7);
+group one owns rows 0–7 mapped to global heads 8–15, with only rows 0–3 live.
+Global output addressing must use `kvhead * 12 + head_base + local_row`, never
+the padded 16-row stride. The second group's last four local rows are zero
+padding and must not be stored.
+
+For each 32-cell tile, one 8-row group runs two QK cell panels rather than
+two head bands times two cell panels. Two of its four subgroups perform those
+two panels; each performs the same four K-scale-group segments and high/low
+query products. The other two subgroups skip the QK collective branch
+uniformly at subgroup scope. Thus QK is 64 `joint_matrix_mad` calls per group,
+or 128 across both groups, equal to the existing group's 128 QK calls.
+For PV, all four subgroups cover four 16-dimension bands for the one local
+head tile. This is 64 PV calls per group, or 128 across both groups, equal to
+the baseline's 128. The result remains 256 source `joint_matrix_mad` calls
+per 32-cell tile and query/KV-head pair. Each call is still 8x16x16, so the
+same hi/lo decomposition and FP32 accumulation remain. This is unchanged
+source-issued DPAS work, including the four padded head rows; it is not a
+speedup estimate.
+
+The local-array sizes below follow the current mode-1 Direct launch's UR
+argument sizes and source dimensions, scaled only for arrays whose row
+extent changes. They are launch request arithmetic, not compiler allocation
+or occupancy evidence:
+
+| Local arrays per group | Current WG128 | Proposed WG64 | Change |
+| --- | ---: | ---: | ---: |
+| Query hi/lo, 16 to 8 rows | 16,384 B | 8,192 B | -8,192 B |
+| Shared K/V tile, 32x256 half | 16,384 B | 16,384 B | 0 |
+| Probability hi/lo, 16 to 8 rows | 8,192 B | 4,096 B | -4,096 B |
+| Scores, 16x32 float to 8x32 | 2,048 B | 1,024 B | -1,024 B |
+| Per-row maxima/sums/alpha, 16 to 8 | 192 B | 96 B | -96 B |
+| K/V scales, factors, row IDs | 1,296 B | 1,168 B | -128 B |
+| **Subtotal represented by these local args** | **44,496 B** | **30,960 B** | **-13,536 B** |
+
+This table uses the observed 44,496 B total and its argument sizes; it does
+not reuse the R745 double-buffer estimate. Two proposed groups request
+61,920 B in aggregate per query/KV-head pair versus 44,496 B for the current
+single group. Aggregate local argument bytes across groups do not equal
+simultaneously resident allocation or imply occupancy. The compiler's 4,096 B
+static SLM field and device's 131,072 B local-memory property must remain
+separate from these sums.
+
+K/V are gathered independently in each new group because each owns a
+separate `kv`, row table, and scale arrays. At full 32-cell tiles, mode 1
+reads 8,448 B K payload and 8,448 B V payload per group (codes plus FP16
+scales), or 16,896 B total. The split therefore adds up to another 16,896 B
+logical payload per query/KV-head pair per tile: at 65 tiles, 1,098,240 B
+extra per query/KV-head pair. This is a logical-load upper bound at full tile
+width, not a DRAM-traffic measurement; caches may reduce physical traffic.
+ID and page lookup/row validation are also repeated. Both groups also
+recompute the max-absolute query scale from all 12 heads unless separately
+hoisted; making it tile-local would change the established hi/lo scaling
+contract and is not allowed by this proposal.
+
+The same seven unconditional work-group barriers in each loop iteration
+remain necessary for row/score, K/scale, QK, V, scale-factor, probability,
+and PV lifetimes. At 65 full-cap iterations, that is 455 barriers per group,
+now across two groups instead of one: 910 group barrier instances per
+query/KV-head pair. Barriers must be outside subgroup-conditional QK work,
+and all 64 work-items must reach them in the same order. The change doubles
+the number of group barrier instances, even though each barrier synchronizes
+four rather than eight subgroups. The net cost is unknown.
+
+## Legality, tail, and review recipe
+
+Intel's official `joint_matrix` extension says matrix load/MAD/fill and
+element-wise operations are subgroup group-functions that must be encountered
+in converged control flow. Therefore the QK guard must be uniform for an
+entire subgroup and each participating subgroup must execute every collective
+in the same order. A work-group barrier remains unconditional. Preserve the
+existing half matrix type, row-major layout, local address space, 8x16x16
+shape, and leading dimensions: 256 half elements for query/KV rows (512 B),
+32 half elements for probability rows (64 B). These row strides meet the
+Intel documented 8-byte-multiple byte stride, and local matrix base pointers
+must remain 4-byte aligned. Confirm target matrix-combination support through
+the runtime/compile feature already required by this kernel; the geometry
+does not establish device support by itself. See the Intel specification's
+[collective-operation requirements](https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/experimental/sycl_ext_matrix/sycl_ext_oneapi_matrix.asciidoc#collective-matrix-operations)
+and [Intel GPU load/store alignment restrictions](https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/experimental/sycl_ext_matrix/sycl_ext_oneapi_matrix.asciidoc#intel-gpu-supported-combinations).
+
+If approved for a later opt-in component experiment, keep Direct=1 first and
+preserve the existing path as reference. Index work by `(query, kvhead,
+head_tile)` with two tiles; calculate `head_base=tile*8`; retain `HEADS=12`
+for all global strides and for the full-query `qm` reduction. Keep online
+softmax state independent per live row and zero inactive rows. No cross-group
+output reduction is needed because tiles write disjoint heads. Exercise
+`n_q=1` and multi-query batches, both KV heads, selected widths 0/1/31/32/33
+and a full 2,051-cell cap, live ranges 8+4 and tail widths, page boundaries,
+invalid pages and reordered IDs. Check complete 12-head output coverage,
+overlap/guard bytes, numerical parity, finite values and fault status before
+any timing. Capture the exact candidate's compiler/local-argument resources;
+compare component timing in fresh processes, then whole-prefill results only
+after Main closes its current cohort. No source patch or implementation is
+proposed in this report.
+
+## Sources and provenance
+
+- Own source: `src/kernels/sycl/prompt_attention.cpp`; source geometry and
+  current launch arrays only.
+- Own retained observations: `prompt-jit-resource-analysis-v1.json`,
+  `prompt-jit-resources-status-v1.ja.md`, and
+  `closed-prompt-jit-and-nll-retention-v1.json`; retained ASM/ISA path and
+  hashes are recorded above. The protected prefill contract receipt was not
+  accessed.
+- Prior own research: R745
+  `research-prompt-resource-next-round745-v1.txt`, R746
+  `research-attention-roofline-round746-v1.txt`, and Main's corrections in
+  `prompt-jit-resources-status-v1.ja.md`.
+- Intel primary specification: Intel LLVM
+  `sycl_ext_oneapi_matrix`, linked above.
+- Repository policy: `AGENTS.md` and `docs/ARTIFACT_RETENTION.md`.

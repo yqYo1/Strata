@@ -1510,6 +1510,70 @@
       "path": "research-attention-roofline-round746-v1.txt",
       "status": "FINAL reviewed: report1layer arithmetic must12x for fullphase; width deterministic fromstep source. Main full12layer exactsource formulas recorded; no hardwareutilization/perf claim.",
       "sha256": "cb63bf26f97fe9988bbfe0c96d05030c1053b3786cdb12562922652bc1c769b7"
+    },
+    {
+      "round": 747,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-prompt-headtile-round747-v1.txt",
+      "sha256": "46741f755592ed371083d96eebd378aa47dbf32c72c808914929f7e8e292f1be",
+      "status": "Main read; fixed1296B; declared44500/31092 includes4B unused placeholder; observedbaseline44496/candidateexpected31088 excludesDCE placeholder. No occupancy claim."
+    },
+    {
+      "round": 748,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-profile-counters-round748-v1.txt",
+      "sha256": "ab24673915a52a96de33e2096070e98098c62b207a1ed72faad5122661da2582",
+      "status": "Main read; unprivileged counters blocked; no profiler/GPU queries."
+    },
+    {
+      "round": 749,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-heads8-contract-round749-v1.txt",
+      "sha256": "c1af066c3d49f0c6f07bca89ad70339a6a4aa46d3719253c893638ebea4aabb8",
+      "status": "Main full source read; no concrete safety issue found but source-only. Localplaceholder statement corrected in v2README; no compile/GPU proof."
+    },
+    {
+      "round": 750,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-heads8-fixture-round750-v1.txt",
+      "sha256": "065dbf91af54b88c754f45d9a33c9f6d684a0f09cfe7889c59f15e5f8abd7551",
+      "status": "Main read; smoke/widthtable/guards addressed in sourceonlyheads8v2; Main fullfixture read. UNAPPLIED_UNBUILT_UNTESTED; CPU investigation first."
+    },
+    {
+      "round": 751,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-cpu-wait-runtime-round751-v1.txt",
+      "sha256": "0d62563d356d7d2165438fff4b11c83845c9ace48796a245350821251b30f206",
+      "status": "Main read; independently opened officialUR lowpowerevents document. Defaultbusywait plausible, not stack attribution. wait_for unused in production."
+    },
+    {
+      "round": 752,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-long-prefill-cpu-work-round752-v1.txt",
+      "sha256": "44066d67fcc38ae8368f4d199ac0c156772c7a97f6468897430462275f3d9f6e",
+      "status": "Main read/inspectedhostgroup/pinning; actualCPUgrouping exists. Main report corrects batched78452/tail4724/residualbytes/fullresidencyclear and Directflag."
+    },
+    {
+      "round": 753,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-gpu-queue-emulation-round753-v1.txt",
+      "sha256": "b80c4668cc11e031a184e6f74f86e2e1e6c360638f6f508be7b5f2f4f0f92fa9",
+      "status": "Main read; genericoneMKLspec permits hostfallback. GPUqueue/librarypresence doesnot prove execution; actualdispatch unverified. No fallback claimed fromCPUusage."
+    },
+    {
+      "round": 754,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-gpu-grouping-boundary-round754-v1.txt",
+      "sha256": "9f08461058ba60b0b17724aa971412242e8d2cb9f5fab16c0e6747fdf0efa6d0",
+      "status": "Main read; GPU grouping alone leaves hostcount-dependent perexpertGEMM and synchronization. 451883520logicalbytes/480boundaries and491520GEMM upperbound are geometry, not counters. Implementation deferred until CPU attribution."
     }
   ],
   "main_initial_findings": [
@@ -2635,5 +2699,72 @@
     "original_results_unchanged": true,
     "current_ISA_consumer": "Main baseline0 ASM/ISA2files <4MiB for next independent candidate; review nextcandidate or superseding compilation",
     "NLL": "Ownv3 fullpackage temporary16MiB pendingqualityintegration review; no separateprogressbackup"
+  },
+  "own_prefill_CPU_investigation": {
+    "report": "own-prefill-cpu-investigation-v1.ja.md",
+    "thread_observation": "own-prefill-CPU-thread-observation-v1.json",
+    "affinity_observation": "own-prefill-cpu-affinity-observation-v1.json",
+    "measured_main_core_equivalents": 0.9975873836951875,
+    "actual_main_allowed_cpus": "0",
+    "CPU_time_cause": "Actual78Kdiagnostic:77.6445%callerCPU insideexplicitGPUwaitAPI;22.3555%outside unclassified. Notpurepollstack/CPUfallback orcriticalpathproof.",
+    "host_grouping": "CPU expert rowindexgroup + devicehostroundtrip exists; time share unmeasured",
+    "proposal": "own-prefill-cpu-wait-profile-v1/source.diff",
+    "source_diff_sha256": "1acb2c04be892d72174545a9945f3c2210a007bcbf7b0c9661b61dfac3cd74df",
+    "next": "Break down48.507outside-waitCPU seconds into sourcecopies/grouping/GEMMsubmission/implicitblocking; keepmathGPU and auditactualfallback. Heads8/NLL sourceproposalsawaitthispriority.",
+    "build_receipt": "own-prefill-cpu-wait-build-v1.json",
+    "build_state": "PASS8hostmodes + existingruntime/compatGPU; fault0; defaultOFF; no perfqualification",
+    "binary_sha256": "12e1303047197a23f2184dd7232a9d43a32f1e5ad570b49de6f2a763de9ca8d6",
+    "current_diagnostic": "own-prefill-cpu-wait-model-v1.json PASS normalclosed/fault0; TRACE/validation enabled, notcleanPP",
+    "actual_seconds": {
+      "wall_s": 223.946149935,
+      "main_cpu_s": 216.981016976,
+      "wait_cpu_s": 168.47393155,
+      "wait_wall_s": 168.870337914,
+      "outside_wait_cpu_s": 48.507085426,
+      "compute_cpu_s": 7.165e-06,
+      "transfer_cpu_s": 6.173e-06,
+      "event_cpu_s": 5.1096e-05,
+      "compat_cpu_s": 168.473867116,
+      "direct_cpu_s": 0.0,
+      "compute_wall_s": 7.162e-06,
+      "transfer_wall_s": 6.1e-06,
+      "event_wall_s": 5.5976e-05,
+      "compat_wall_s": 168.870268676,
+      "direct_wall_s": 0.0
+    },
+    "wait_share_of_caller_CPU": 0.7764454877111885
+  },
+  "own_prompt_heads8_pending": {
+    "proposal": "own-prompt-heads8-v2/source.diff",
+    "source_diff_sha256": "3e0991d0a2a89e70eed80d8f336689854e16ee7c3eb294f4f32589458cf25f0c",
+    "state": "Main fullsourceonlyreview inclv2fixture done; UNAPPLIED_UNBUILT_UNTESTED; postponedforCPUpriority",
+    "temporary_budget_bytes": 16777216,
+    "owner": "Main",
+    "review": "AfterCPUattribution diagnostic, beforecomponentqualification orrejection"
+  },
+  "own_selector_clean_cohort_v1": {
+    "receipt": "own-selector-clean-comparison-v1.json",
+    "samples0": [
+      337.6,
+      339.3,
+      339.2
+    ],
+    "samples1": [
+      349.3,
+      349.6,
+      349.1
+    ],
+    "median_gain_percent": 2.977594339622658,
+    "all_six_healthy_closed": true,
+    "positive_engineering_screen": true,
+    "default_flag_adopted": false,
+    "quality_decode_restore_context_qualification": false
+  },
+  "retention_v21": {
+    "manifest": "closed-own-selector-cpu-retention-v1.json",
+    "compact": "closed-own-selector-cpu-compact-v1.json",
+    "files": 202,
+    "logical_bytes": 1618773,
+    "original_status_samples_unchanged": true
   }
 }

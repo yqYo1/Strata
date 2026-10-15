@@ -1,3 +1,4 @@
+#include "strata/sycl/cpu_wait_profile.hpp"
 #include "strata/sycl/runtime.hpp"
 #include "strata/sycl/checked_cleanup.hpp"
 
@@ -94,12 +95,14 @@ void Runtime::wait() {
   // Drain both queues even when the first queue reports an error.
   std::exception_ptr error;
   try {
-    compute_.wait_and_throw();
+    strata::sycl_backend::cpu_wait_profile::blocking(
+        strata::sycl_backend::cpu_wait_profile::compute_queue, [&] { compute_.wait_and_throw(); });
   } catch (...) {
     error = std::current_exception();
   }
   try {
-    transfer_.wait_and_throw();
+    strata::sycl_backend::cpu_wait_profile::blocking(
+        strata::sycl_backend::cpu_wait_profile::transfer_queue, [&] { transfer_.wait_and_throw(); });
   } catch (...) {
     if (!error)
       error = std::current_exception();
@@ -110,7 +113,8 @@ void Runtime::wait() {
 }
 
 void Runtime::wait(sycl::event event) {
-  event.wait_and_throw();
+  strata::sycl_backend::cpu_wait_profile::blocking(
+        strata::sycl_backend::cpu_wait_profile::event, [&] { event.wait_and_throw(); });
   check();
 }
 

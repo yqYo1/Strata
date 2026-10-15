@@ -13,8 +13,20 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
     }
     // Reuse only pays across chunks. Keep short chat/agent turns on the
     // original path even when long-prompt layer reuse is requested.
-    return requested && std::strcmp(requested, "1") == 0 && impl_ && n > impl_->T
-               ? run_layer_major(tokens, n, pos0, err) : run_impl(tokens, n, pos0, err);
+    if (requested && std::strcmp(requested, "1") == 0 && impl_ && n > impl_->T) {
+#if defined(STRATA_ENABLE_SYCL)
+        // Read on the calling thread before publishing the thread-local scope.
+        const char* cpu_wait_switch = std::getenv("STRATA_PREFILL_CPU_WAIT_PROFILE");
+        sycl_backend::cpu_wait_profile::Scope cpu_wait_scope(
+            cpu_wait_switch && std::strcmp(cpu_wait_switch, "1") == 0);
+#endif
+        const bool ok = run_layer_major(tokens, n, pos0, err);
+#if defined(STRATA_ENABLE_SYCL)
+        cpu_wait_scope.complete(ok);
+#endif
+        return ok;
+    }
+    return run_impl(tokens, n, pos0, err);
 }
 
 bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, std::string& err) try {

@@ -1,3 +1,4 @@
+#include "strata/sycl/cpu_wait_profile.hpp"
 #include "strata/kernels/f16_bits.hpp"
 #include "strata/kernels/iq_kernels.hpp"
 #include "strata/kernels/native_mmvq.hpp"
@@ -121,7 +122,8 @@ void quantize_q8_1_rows(const float *x, int64_t rows, int64_t cols, void *out,
   auto &q = queue_for(stream);
   native_quantize_q8_1(x, out, int(count), 1, &q);
   if (!stream)
-    q.wait_and_throw();
+    strata::sycl_backend::cpu_wait_profile::blocking(
+        strata::sycl_backend::cpu_wait_profile::direct_queue, [&] { q.wait_and_throw(); });
 }
 void iq_mmvq(int type, const void *w, const void *x, float *y, int ni, int no,
              int cols, void *stream) {
@@ -138,7 +140,8 @@ void iq_mmvq(int type, const void *w, const void *x, float *y, int ni, int no,
   } else
     native_mmvq(type, w, x, y, ni, no, cols, &q);
   if (!stream)
-    q.wait_and_throw();
+    strata::sycl_backend::cpu_wait_profile::blocking(
+        strata::sycl_backend::cpu_wait_profile::direct_queue, [&] { q.wait_and_throw(); });
 }
 void iq_dequant_f16(int type, const void *src, int64_t n, uint16_t *out,
                     void *stream) {

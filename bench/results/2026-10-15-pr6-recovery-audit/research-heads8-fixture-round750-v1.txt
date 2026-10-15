@@ -1,0 +1,106 @@
+# R750 — Own heads8 prompt fixture and source audit
+
+2026-10-16 JST. Read-only review of `own-prompt-heads8-v1` against the pinned
+base and live `prompt_k_cellmajor.cpp` / prompt route. No build, compiler, test,
+GPU, runtime, process, environment, service, cleanup, Git mutation, or product
+edit was performed. XeStrata was used for performance numbers only; no
+XeStrata implementation/helper/test/archive was read. The protected
+`prefill-gemm-only-contract-root-v1/record.json` was not read. The only new
+file is this report.
+
+## Result
+
+The proposal is correctly pinned to current HEAD `617647659f21487ff3bf61fa1fd4ba87ba2520bf`;
+its manifest records base and candidate hashes, an MIT root-license copy, and
+source provenance limited to the current own prompt kernel and component
+fixture. The candidate is not applied or qualified. I found no source-level
+head indexing or tile-tail error in the proposed HRows8 mapping: tile index
+participates in batch/KV-head decoding, query/output use `headbase`, shared
+query scaling still reduces all 12 heads, and padded rows 12–15 have zero
+probability/output. Existing HRows16 source path is retained through template
+defaults. This is source review only, not a compile or execution result.
+
+The important gap is that the new fixture has no small/fast execution mode for
+the required serial first gate. Its default matrix path runs 2 query counts × 8
+widths × 3 page sizes × 2 page-mask states (96 full-oracle cases), then extra
+negative/missing/empty checks per invocation. The only alternate mode is the
+nq128/256 benchmark, which also evaluates/dumps large outputs. Thus there is no
+way to reject a broken candidate with one bounded tiny component case before
+spending time on the exhaustive fixture or any long-model run. Add a bounded
+smoke selector (for example nq=1, width=33, page-size=4 with one negative ID
+and a missing page, with full FP64 oracle and guards) and run it for baseline
+and candidate in separate immutable-environment processes; byte-compare the
+complete outputs. Then run the exhaustive fixture before any long-model
+comparison. This is a concrete harness gap, not a request to begin with a
+256K-context model.
+
+## Fixture coverage and limits
+
+- The small-case loop genuinely constructs nq 1/3 and widths 0, 1, 31, 32, 33,
+  2051, -1, and 2052. Width is written to `steps[b*kStepCount+kStepWidth]`.
+  Negative IDs and per-page `-1` entries are present. A separate all-pages
+  missing check and zero-width check require zero output. The independent
+  FP64 scalar oracle checks every live output element in all these cases;
+  for the benchmark it checks queries 0, 1, 2, and last only.
+- The fixture's logical coverage enumeration checks each `(head,dim)` exactly
+  once for both one 16-row tile and two 8-row tiles, including the 8+4 tail.
+  It does not execute the kernel, and its abstract mapping is not a substitute
+  for the FP64 comparison. The actual matrix fixture does compare every output
+  against the oracle. Output prefix and suffix canaries are checked after the
+  initial output. The suffix is not rechecked after all-missing, empty-width,
+  and invalid-width calls; check it after each altered-input call for explicit
+  lifecycle coverage. Scratch tail guard is checked on the initial state.
+- Input immutability compares q, ids, steps, page table, K/V INT8 and scales
+  after the ordinary oracle run, before the fixture intentionally mutates page
+  table/steps. That matches the Mode1 candidate inputs. `Drain` is constructed
+  after all allocation owners and therefore destructs first; it waits and
+  aborts on uncertain drain, including exception unwinding. Transfer errors
+  also abort. These are fail-stop semantics, not a demonstrated runtime result.
+- `run()` is only called with format 1 (Mode1 INT8 K/V); this is appropriate
+  for the dispatch gate's Mode1 scope. The independent numerical oracle
+  reproduces that format's pool decoding and quantization. Candidate vs
+  baseline exactness is deliberately external `cmp` of full dumps; the fixture
+  itself cannot prove that comparison.
+- Rejected configuration paths are explicitly documented as UNRUN: Mode1
+  Direct0+HEADS8=1 and Direct1+HEADS8=1 with KMapping1/2. Mode0/2/3 preservation
+  is also a source claim, not an executed result. `heads8=0` baseline and
+  `heads8=1` candidate are suitable external arms. Default CMake test behavior
+  remains intact: new target is inside the existing `STRATA_SYCL_TESTS` block,
+  is `EXCLUDE_FROM_ALL`, and does not alter existing test target or defaults.
+- Dump size is finite from the accepted benchmark nq (128/256), fixed tensor
+  dimensions, and one read before plus one after repetitions; worst-case is
+  about 12.6 MB per process. The process deadline, retained-output byte cap,
+  and fault/journal boundaries must still be set by the Main-owned runner per
+  ARTIFACT_RETENTION.md. README's mention of finite budget does not itself
+  enforce a controller-side cap. No captures were created in this review.
+
+## Post-cohort serial gate
+
+After the exclusive cohort closes, the minimum useful early gate is: build only
+`sycl_prompt_heads8_test`; run the bounded nq1/width33 smoke once with
+HEADS8=0 and once with HEADS8=1, Direct=1 and KMapping=0 in separate clean
+processes; require the full FP64 oracle, finite values, input/prefix/suffix
+canaries, clean drain/exit, and byte-identical full output; then run the
+exhaustive existing small fixture. Run the two documented rejection cases as
+separate bounded cases if the fixture gains explicit routing assertions. Only
+advance to long-model work if those gates pass. Keep candidate flags process-
+local and record actual command/effective environment, source/binary hashes,
+exit/drain/fault results, and exact-output comparison under the retention
+policy. This review did not perform any gate.
+
+## Files and provenance reviewed
+
+- `own-prompt-heads8-v1/manifest.json`, `README.md`, `source.diff`,
+  `files/src/kernels/sycl/prompt_attention.cpp`,
+  `files/tests/sycl/prompt_heads8.cpp`, and
+  `files/cmake/sycl_backend.cmake`; plus the package's pinned base files for
+  kernel, existing component fixture, CMake and root LICENSE.
+- Live `src/kernels/sycl/prompt_attention.cpp`,
+  `tests/sycl/prompt_k_cellmajor.cpp`, and current CMake target wiring.
+- `AGENTS.md`, `docs/ARTIFACT_RETENTION.md`, `research-index.json`,
+  `research-prompt-headtile-round747-v1.txt`, and
+  `research-profile-counters-round748-v1.txt`. No R749 report was present in
+  the research index/files available for this review.
+
+No XeStrata-derived code was used. Proposal status remains source-only,
+unapplied, unbuilt and untested; no qualification is claimed.

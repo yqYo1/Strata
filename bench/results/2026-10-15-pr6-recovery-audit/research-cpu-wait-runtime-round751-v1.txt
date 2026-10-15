@@ -1,0 +1,38 @@
+# R751 — CPU time during long prefill: Level Zero wait behavior and diagnostic scope
+
+2026-10-16 JST. Read-only research. The only file written was this report. No build, test, runtime, compiler, profiler, device query, process control, environment, service, cleanup, permission, or Git operation was performed. XeStrata product/helper/test/archive source was not read or used. The protected `prefill-gemm-only-contract-root-v1/record.json` was not read. Main's clean GPU cohort remains untouched.
+
+## Finding
+
+Intel's official Unified Runtime Low Power Events specification explicitly says that Level Zero uses busy polling by default for host synchronization (including `urQueueFinish`), giving low completion latency at the cost of CPU utilization. Its optional low-power event hint can permit OS waits/interrupt-driven wakeup, with a latency tradeoff. This makes a Level Zero host wait a plausible explanation for a CPU thread consuming about one core while waiting for GPU completion. It does not establish that a Strata wait is the observed thread's current stack or that the CPU time is spent waiting rather than doing CPU work.
+
+The Level Zero Core Programming Guide specifies low-power synchronization as `ZE_EVENT_SYNC_MODE_FLAG_LOW_POWER_WAIT` passed in a `ze_event_sync_mode_desc_t` through `pNext` at event creation. The same guide says the driver may sleep the CPU thread instead of actively polling and warns that completion latency may change. The interrupt signal mode can add GPU signaling commands. This is a per-event creation API hint; it is not a process environment setting.
+
+I found no official UR/Level Zero environment variable documented as a wait-policy switch applicable to this installed Unified Runtime v0.12 / Level Zero driver 1.17.39395 stack. The official UR Level Zero environment-variable reference lists queue, event cache/scope, command-list, and queue synchronization controls, but no low-power/busy-wait policy. In particular, `UR_L0_QUEUE_SYNCHRONIZE_NON_BLOCKING` is documented as a non-blocking synchronization control, not a general CPU sleep/wait policy. Do not substitute older SYCL PI adapter variables as if they control current UR. UR's Low Power Events feature is explicitly experimental and describes queue-creation and barrier-with-event API hints; it is not a supported pre-exec environment toggle. Exact availability in the installed binaries has not been queried, per scope.
+
+Sources (official Intel/oneAPI):
+
+- Unified Runtime, [Low Power Events](https://oneapi-src.github.io/unified-runtime/core/EXP-LOW-POWER-EVENTS.html), especially motivation and support sections: default Level Zero host waits busy-poll; experimental UR API hints permit lower-power waiting; supported adapters must advertise support.
+- Level Zero Specification, [Core Programming Guide, Event synchronization mode](https://oneapi-src.github.io/level-zero-spec/level-zero/1.15.26/core/PROG.html#event-synchronization-mode): low-power event hint, OS wait example, latency caveat, and optional interrupt signaling.
+- Unified Runtime, [Level Zero UR Reference Document](https://oneapi-src.github.io/unified-runtime/core/LEVEL_ZERO.html#environment-variables): documented environment controls; none is a generic low-power host wait policy.
+
+## Repository and measurement evidence
+
+The actual 5-second native thread observation recorded the main `strata` thread at 4.88 s user + 0.11 s system (0.9976 core equivalents); all sampled worker threads had zero measured CPU time and were asleep in `futex_do_wait`. This is consistent with one hot host thread and dormant workers, not evidence of a particular call stack. The separate user observation of roughly 8% process CPU across 12 threads is numerically compatible with one fully occupied logical CPU, but its accounting/window and code location are not established by that percentage.
+
+The current SYCL implementation has queue waits in `Runtime::wait()` (`compute_.wait_and_throw()` and `transfer_.wait_and_throw()`) and event wait in `Runtime::wait(event)` (`event.wait_and_throw()`). Direct waits also exist in `src/sycl/compat.cpp`, `src/prefill/sycl/postops.cpp`, `src/kernels/sycl/native_mmvq.cpp`, and `src/kernels/sycl/iq.cpp`. The project `Runtime::wait_for(event, timeout)` uses status polling plus `std::this_thread::yield()`, but repository search found no active callers of that method. It should not be blamed for the observed interval without evidence of a caller.
+
+A queue/event `wait_and_throw()` may spend time inside the Level Zero synchronization path, but a source call-site match is not a measured stack. The wait may also return quickly after the GPU work has already completed; wall-clock time inside a wait alone does not show that it consumed CPU.
+
+## Bounded diagnostic coverage and interpretation
+
+For Main's separate clean runs, the useful bounded measurement is per-thread CPU time and wall time around each actual host synchronization, plus total thread CPU and wall over the same prefill phase. Label each interval by call site and kind (queue drain versus event wait), and count calls. Cover both `Runtime::wait()` queues independently, `Runtime::wait(event)`, and the direct active `wait_and_throw()` call sites listed above; retain phase boundaries so compute/transfer drains are distinguishable. If the dominant wait sits in a SYCL/UR internal path that has no source-level wrapper, the enclosing wait measurement still captures its CPU/wall ratio, but cannot name the internal function.
+
+Interpret the paired measurements as follows:
+
+- A wait interval with thread CPU time close to its wall time demonstrates that the calling thread ran on-CPU during that wait. Repeated, material CPU/wall accumulation within waits, coincident with the observed hot thread and prefill window, supports active polling as the CPU consumer. Runtime documentation makes the mechanism plausible; the timing still does not by itself prove the precise internal polling instruction or that all of the CPU time came from the driver.
+- A long wait wall interval with little thread CPU indicates the host thread mostly slept or was descheduled while that wait was open. If the observed thread's CPU remains high but measured waits account for little CPU, the CPU work lies outside the covered waits (or inside uninstrumented synchronization); it does not support blaming the wait path.
+- A wait can have high CPU/wall ratio but negligible total duration; report its cumulative CPU seconds and share of the hot thread's phase CPU, not just the ratio. Conversely, a long wall wait with low CPU may still dominate latency.
+- To prove actual call-stack attribution would require a sampled stack or equivalent call-path evidence. With `perf_event_paranoid=4` and xe observation gate `1`, normal counters/driver observation are unavailable here; the bounded timing instrumentation can discriminate wait CPU from non-wait CPU without claiming a stack.
+
+This finding does not prescribe changing wait behavior, modifying the runtime, or adopting a low-power mode. The API hint's existence and documented latency tradeoff do not establish that it is available through this Strata/UR build or beneficial for this workload.

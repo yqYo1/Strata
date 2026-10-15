@@ -1,3 +1,4 @@
+#include "strata/sycl/cpu_wait_profile.hpp"
 #include "strata/kernels/f16_bits.hpp"
 #include "strata/kernels/native_router.hpp"
 #include "strata/kernels/router_top10.hpp"
@@ -317,7 +318,8 @@ void route(const float *l, int32_t *ids, float *w, int64_t T, int64_t E,
     auto &q = queue_for(s);
     strata::kernels::native_router_top10_multi(l, ids, w, int(T), &q);
     if (!s)
-      q.wait_and_throw();
+      strata::sycl_backend::cpu_wait_profile::blocking(
+        strata::sycl_backend::cpu_wait_profile::direct_queue, [&] { q.wait_and_throw(); });
   } else {
     strata::kernels::router_top10(l, int(T), int(E), 10, ids, w, s);
   }

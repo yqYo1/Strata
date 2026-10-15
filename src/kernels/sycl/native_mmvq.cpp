@@ -1,3 +1,4 @@
+#include "strata/sycl/cpu_wait_profile.hpp"
 // Adapted from llama.cpp 3cf03257f219afbe7334045ff7c6a06ac68c627d:
 // ggml/src/ggml-cuda/{quantize.cu,vecdotq.cuh,mmvq.cu,common.cuh}
 // and ggml/src/ggml-common.h. See docs/native-mmvq.md for exact scope.
@@ -1180,7 +1181,8 @@ void native_mmq(const NativeMmq &p, void *stream) {
   (void)checked_count(groups, 128);
   auto &q = queue_for(stream);
   if (!iq_old_kernels() && (native_mmq_xmx(p, &q) || native_iq_mmq_esimd(p, &q))) {
-    if (!stream) q.wait_and_throw();
+    if (!stream) strata::sycl_backend::cpu_wait_profile::blocking(
+        strata::sycl_backend::cpu_wait_profile::direct_queue, [&] { q.wait_and_throw(); });
     return;
   }
 #define PROMPT(TYPE, ...) case TYPE: prompt_product<__VA_ARGS__>(p, q); break
@@ -1205,7 +1207,8 @@ void native_mmq(const NativeMmq &p, void *stream) {
   }
 #undef PROMPT
   if (!stream)
-    q.wait_and_throw();
+    strata::sycl_backend::cpu_wait_profile::blocking(
+        strata::sycl_backend::cpu_wait_profile::direct_queue, [&] { q.wait_and_throw(); });
 }
 
 void native_mmvq_set_multi_exact(bool exact) {
@@ -1456,6 +1459,7 @@ void native_expert_grouped(const NativeExpertLayout &L,
   grouped_dispatch<true>(L.d_type, L, ptr, start, count, dst, tok, int(groups),
                          int(entries), hq, nullptr, nullptr, out, tile, q);
   if (!stream)
-    q.wait_and_throw();
+    strata::sycl_backend::cpu_wait_profile::blocking(
+        strata::sycl_backend::cpu_wait_profile::direct_queue, [&] { q.wait_and_throw(); });
 }
 } // namespace strata::kernels
