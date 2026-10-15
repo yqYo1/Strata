@@ -1136,7 +1136,7 @@
     "PR6 performance patch changes historic sycl/src/prefill/prefill.cpp, not current root src/prefill/prefill.cpp. Current root rg finds compact scratch but no layer-major selector. History preservation is not adoption.",
     "Original645.85 PP and later449.7 full-context/MTP measures need separate source/config reconciliation; different protocol does not justify discarding the old improvement."
   ],
-  "next": "Alias allocation and same-native selected model boundary gate passed. QSA device-batch v2 applied defaultOFF and fresh actual build in progress; next Main-owned small GPU check, then broad component/model/RESTORE/clean gates. Preserve GPU hidden placement and Direct attention candidates.",
+  "next": "Run same new native QSA flag0/1 model long-prefill boundary and callback/decode continuation gate, then independent clean official bench.sh PP repetitions. Alias240MiB saving is model-selected-bitwise-qualified only, stays defaultOFF; consider GPU hidden placement and existing Direct attention thereafter. Physical full model262144/RESTORE remain required.",
   "main_review": "main-review-round559-560.ja.md",
   "subsequent_main_review": "main-review-round561-562.ja.md",
   "public_history_reverification": "public-history-reverification.json",
@@ -1146,7 +1146,7 @@
     "main_review": "qsa-layout-recovery-v1/main-review.ja.md",
     "status": "Build/host and20GPU parity/oracle cases PASS/fault0. Component40sample screen closedPASS; layout1 median4.09%slower in one int8case, no adoption. No whole-model/full256K/RESTORE/quality qualification."
   },
-  "latest_main_review": "prefill-scratch-alias-main-review.ja.md",
+  "latest_main_review": "qsa-device-batch-main-review.ja.md",
   "component_summary": "qsa-layout-screen-summary.json",
   "gemm_orientation_probe": {
     "report": "gemm-orientation-probe-v1/implementation.txt",
@@ -1737,12 +1737,17 @@
   "QSA_device_batch_candidate": {
     "proposal": "qsa-indexer-device-batch-v2",
     "model": "gpt-6.1-sol",
-    "state": "Main reviewed full production/planner and R695 fixture scope. Fresh serial actual build+host controller prepared, waiting for alias model comparison gate. Source remains unapplied/uncompiled/unexecuted.",
+    "state": "Applied defaultOFF; fresh119-step production/fixture build and host planner PASS.8 serial GPU processes PASS:223 exact state,98 score/ID comparisons,69 per-case nonmutation rejections, physical262144 component last-block+spare in2 configs.10 actual production flag/n0 processes PASS with no device work. All GPU fault0/owners retired. Actual-model/callback/realRESTORE/full physical model/clean speed unqualified.",
     "source_diff_sha256": "6732a090a727a1ede3aa2ca5165bb4c060070f625ec90696a49c533aff5c7c87",
     "review": "research-qsa-indexer-device-batch-review-round682-v1.txt",
     "original_proposal": "qsa-indexer-device-batch-v1",
-    "main_review": "main-review-round694-695.ja.md",
-    "prepared_build_recipe": "apply_build_qsa_device_batch_v1.py"
+    "main_review": "qsa-device-batch-main-review.ja.md",
+    "prepared_build_recipe": "apply_build_qsa_device_batch_v1.py",
+    "build": "qsa-device-batch-build-v1.json",
+    "small": "qsa-device-batch-small-v1.json",
+    "matrix": "qsa-device-batch-matrix-v1.json",
+    "production_flag": "qsa-device-batch-dispatch-v1.json",
+    "retention": "qsa-device-batch-trace-retention-v1.json"
   },
   "prefill_dense_layer_bank_contract": {
     "research": "research-prefill-dense-layer-bank-contract-round684-v1.txt",
