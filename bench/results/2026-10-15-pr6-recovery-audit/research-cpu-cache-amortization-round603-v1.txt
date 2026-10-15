@@ -1,0 +1,69 @@
+# R603 — CPU GU predecode cache amortization
+
+2026-10-15 JST。読み取り専用調査。指定された研究索引、R598、Main review、反復測定値、v2 observer proposal、関連ソースを確認した。唯一の書込先は本報告。製品・source変更、build/test、GPU/model/service実行、Git操作、cleanupなし。
+
+## 判断
+
+nt1で測った拡張GUの部品差は、fill費を含まないwarm呼出しでは再現している。しかし1 expertのcold fillに約1.6–2.3 ms、再fillでも約0.3–0.5 msのCPU serviceを要し、warm呼出しの節約はformatごと約0.05–0.17 ms/expertである。今回の個別値から単純換算した損益分岐は、初回fillごとに同じ展開expertを約13–31回使用、eviction後の再fillごとに約3–7回使用する範囲となる。これは単一CPU・nt1合成fixtureでの算術であり、モデルcache採用を示さない。
+
+したがってobserver結果は、raw hit率でなくformat別の「admitted fillに対する実使用回数」とeviction後の再使用回数を確認する必要がある。保守的な目安として、cold admissionでは type18=24、type22=31、type21=18回以上、refillではそれぞれ5、7、4回以上のcache-served GU呼出しが必要になる（fill時にその呼出し自身がexpanded kernelを使うものとして数える）。これは中央値由来の閾値で、ばらつきに対する余裕を含む採用基準ではない。実測の全モデルwall benefit、CPU worker並列時のfill/eviction待ち、RAM予算、出力一致が別途必要。
+
+## 元測定とbreak-even算出
+
+参照した測定は `cpu-predecode-probe-v1.json` の初回64-expert/nt1結果と `cpu-predecode-repeat-v1.json` の独立3 processで、各processに64 expert、3 formatのcold fillと同一mapping overwrite refillを各1回記録する。prepareはdestination allocation syscallを含まず、coldは初回page touch/faultを含む。64 expert計時では各expertに640 output rows。service節約値は、expanded exactと現行existing exactの同じround/pairを対応させ、`(existing_exact - expanded_exact) ns/output_row × 640 / 1000` として expert 1 GU呼出しあたりのµsに直した。各process内の12 paired blocksの中央値である。cold/refill各64-expert全体時間を64で割った。
+
+| type | cold fill µs/expert (4 process range) | overwrite refill µs/expert | 節約 µs/expert呼出し (process別中央値 range) | cold break-even 呼出し数 | refill break-even 呼出し数 |
+|---|---:|---:|---:|---:|---:|
+| 18 IQ3_XXS | 1,671–2,282 | 313–456 | 91–110 | 18–24 | 3.4–4.6 |
+| 22 IQ2_S | 1,611–1,889 | 306–365 | 53–76 | 25–31 | 4.0–6.0 |
+| 21 IQ3_S | 1,889–2,294 | 410–485 | 133–169 | 13–18 | 2.5–3.6 |
+
+呼出し数は`prepare_us / median_saved_service_us`。整数の目安は各比を上側へ丸めた。cache hit件数だけをobserverから取り出す場合、admission miss自体もfill後にexpanded kernelを実行して差額を得るため、`hits + admitted misses`をfillごとに数え、該当閾値と比較する。各eviction後の再fillにも同じ考え方を適用する。実際のwall break-evenは、worker間競合、fillの直列化、cache lookup/pinning費、prefetch並行性で変わるので、この計算だけで代替しない。
+
+測定値の内訳は各processとも同じ傾向だった。初回のcold/refillは18=1,942/410、22=1,889/306、21=2,113/415 µs。反復3processの値は18=(1,671/313; 1,972/419; 2,282/456)、22=(1,611/318; 1,656/330; 1,778/365)、21=(2,294/485; 1,889/426; 2,070/410) µs/expert。拡張対GGMLのthread-CPU中央値比は既存summaryどおり反復processで18=0.588–0.626、22=0.688–0.805、21=0.475–0.530。採算計算にはGGMLではなく、現行nt1 exact側とのservice差を用いた。fixtureはsingle CPU affinity、powersave。TSCはcore cycleではない。nt2..4はcorrectnessのみで速度未測定。
+
+この単純損益は「cacheが保持される1 expert」単位である。cold fillはそのrequestで最初のアクセス時に払う費用、overwrite refillは同じdestinationの再利用時間で、実運用の全fillがこの値に一致するとは限らない。非同期fillがdecodeと重なるならwallとCPU serviceの双方を別々に取り直す。通常の同期cache missがrequestを止めるなら、warm-hit差だけが良くても初回遅延は改善しない。
+
+## Admission policyとobserverの読み方
+
+R603時点でMainが検査中のv2は実cacheではなく、実際のCPU expert順に対するrequest内LRU observerである。256 MiB、1、4、8 GiBの各budgetについて、独立したpolicy stateを持つ。
+
+- `all_supported`はnt1..4全てがadmit、touch、evictに関与する仮想policy。nt2..4のexpanded性能は未測定で、既存packed `row_dot<TY,NT>` は同じcall内でpacked blockをtoken間共有する。このpolicyのhit-token数を新しい計算節約と見なさない。
+- `nt1_only`はnt1だけがcacheのadmission、hit、recency、evictionに関与し、nt2..4はresidentでも常にbypassする。現時点で速度差が測られたnt1候補を評価するにはこちらを使う。all-ntの履歴からnt1行だけ抽出しても、nt2..4がentryをadmit/promote/evictした履歴は消えず、代用できない。
+
+v2 READMEのMain共有情報ではCPU jobはnt1=46,071、nt2=15,757、nt3=4,361、nt4=2,592。ただしこれはこの調査者がreceiptから独立再集計した値ではなく、Main報告値である。policy1の実測結果、format別miss/fillとhit、容量別eviction、decode wallとの対応はここでは未提示。なおobserverはrequest開始時に空で、request内の逐次issuer job列をLRUと仮定する。workerの同時実行順、request間のpersistent warm cacheは観測しない。したがって「retouchが多い」だけで現実の並列cache hit率や複数requestへの償却を証明しない。
+
+実データで見るべき量は、各format×capacityごとに `fill_count`, `eviction_count`, `hits` と、format別のmiss→次のretouch距離。容量拡大でhitが増えてもevictionとfill payloadが急増するならprepare負担を差し引く。policy1に対し、少なくとも全fill epoch内の拡張GU実行回数が上記break-evenを超えるかを調べる。observerのlogical fill bytesは展開配列を書いた実測CPU時間でもDRAM trafficでもない。R603のprepare sampleがその容量・同一thread・単一process条件の実測単価を与えるが、実モデルcacheのallocator・並列性・page stateを含まない。
+
+## RAM、page touch、metadata
+
+probe表現のGU 1 expert payloadはtype18/22=3,404,800 B、type21=3,353,600 B。expanded payloadはpackedの2.38–3.24倍である。通常4 KiB pageへ丸めると各entryはそれぞれ3,407,872 B (+3,072 B)、3,354,624 B (+1,024 B)。これはmapping page tailだけで、malloc/allocator metadata、page tables、LRU/hash/format/key state、alignment、同時build用scratch、OS reclaim余地を含まない。各entryあたり832/819 pagesが触られるため、ページtableとfault処理の物理コストもゼロではない。
+
+payload-only 256 MiB / 1 GiB / 4 GiB / 8 GiBで保持できる均一formatのexpert数はtype18/22で78/315/1,261/2,522、type21で80/320/1,280/2,561。format混在ならbyte budgetで逐次決まる。ページ丸めを含めても少額の差に見えるが、予約外のmetadata等はbudgetに含まれない。8 GiBは上限であってfree RAMではない。
+
+v2 proposalが明示する採用時の物理条件は、常に少なくとも8 GiBのlive available RAMを残し、cache payload上限を `min(8 GiB, live available - 8 GiB reserve - metadata)` とすること。モデル読込、KV/prompt cache、conversation state、他プロセス、cgroup上限、page cacheも同時に確認し、実際のavailable RAM/cgroup headroom、anonymous/file/peak RSS、cache所有bytesをmatched runで測る必要がある。現在この調査で実RAM headroomを測っていないため、256 MiBを含め安全な容量を断定できない。
+
+prepareはfresh anonymous mappingのcold first-touchと同mapping overwriteを分離して測定済み。lazy mappingではfill中のtouch/faultが隠れず初回利用を遅らせる。eager prefaultを採る場合もそれは同じfill仕事の一部であり、別料金として消えない。lazy cacheが物理RAM floorを後から割ることも許容できないため、admission前にlive headroomを確認し、常にpacked fallbackできる必要がある。OS reclaim後のresident state、mmap/THP/page policy、pressure中のwall変動は今回のfixtureの単一thread・通常4 KiB page値から外挿しない。
+
+## 既存worker境界での安全なcache ownership要件
+
+現行 `expert_pool_dispatch_multi` はCPU ownershipを決めてから `d.src->blob(layer,e)` を呼び、同一layer/expertをjob slotへ一度登録し、複数activationをそのjobへまとめる。native poolはbatchをpublishしてから各workerがjobをclaimし、`run_split_multi_native` の最後に全workerが既存`wait_parked`へ戻るまで同期してreturnする。現v2 observerもworkerから状態を触らず、issuerがgroup後にjob順を記録し、完了数をpool return後に確定する。この境界をcacheにも守る。
+
+安全なprototypeで必要な条件は次のとおり。
+
+1. cache keyは現在のmodel/load generationに束縛された(layer, expert, packed GU format/source identity)。model reload、weight/source交換、type/layout変更で必ず無効化する。GPU/remote/peer ownershipを誤ってcache対象にしない。
+2. prepareとslot決定はbatch publishより前、issuer側で行う。workersには不変なexpanded GU pointerとtoken/outputを割り当てるだけにし、workerからLRU listやallocationを変更させない。missの同時fill、ready未publish読込、二重fillを禁止する。
+3. 一つのbatchでjobごとにentryをpin/leaseし、worker群がkernelを終えて既存park boundaryへ到達する前にentryをevict/rewrite/freeしない。evictionは次batchのpublish前にだけ可能。error/early-exit時もpool ownershipが証明されるまではcache memoryを破棄しない。
+4. cache lifetime ownerはrequest-local observerとは別に明示する。request間persistent cacheならmodel/session ownerがmemoryを持ち、request cancel, RESTORE, model close/reloadのdetach時にworkerが参照していないことを既存pool境界で確認してからfreeする。observerのrequest-cold hit率だけではpersistent lifetimeを評価できない。
+5. byte budget、metadata/scratch、page chargeを合計し、8 GiB live reserveを守れない時はadmission拒否またはLRU evictionしてpacked routeへfallbackする。allocation失敗、未対応type、format変更は失敗を隠さずpacked pathへ戻す。
+6. correctnessはpacked sourceとのraw GU/出力比較とexisting exact/nt routeを保持し、OFF/ON matchedでoutput/token/work、fault、pool lifecycle、decode wall、CPU serviceを照合する。未計測nt2..4をall-nt policyで使わない。
+
+これは現行worker protocolからの設計要件であり、cache実装を推奨/適用したものではない。v2 observerのissuance orderはdeterministicな観測列に過ぎず、worker実行順をserial LRUと同一と証明しない点も保持する。
+
+## 外部一次資料と限界
+
+`ggml-org/llama.cpp` の公式 source `src/llama-moe-cache.cpp` は、GPU側expert cacheのslot固定LRUで、layer/expertからslotを引き、pool budget内に収まるslot数だけ初期化する設計を示す (source: https://github.com/ggml-org/llama.cpp/blob/master/src/llama-moe-cache.cpp, `moe_cache_lru`, `plan`, `alloc_size`/slot sizing)。これはStrataのCPU expanded GU cacheやその採算の実装例ではなく、CPU cacheの速度・hit率に転用できる数値はない。今回の設計上の限られた示唆は、payload budgetを固定slot allocationへ結び、job前のplan時にLRU/evictionを確定し、worker kernelが使うslotを安定させるというownership形である。live RAM floorはStrata v2 READMEの独自ゲートに従う。
+
+## 次の判断点
+
+Mainのv2 observerが完了したら、policy1のcomplete receiptだけを使い、format×budgetのmiss/refill/hit系列を上記break-evenと照合する。request内のhitだけで閾値を超えず、またはevictionでfill回数が増える容量は候補から外す。observerはrequest間warm stateを持たないので、request内では採算しないがpersistent cacheで採算するという主張には別のbounded warm-lifetime観測が必要。policy1が採算の余地を示す時だけ、まず狭い容量とsupported format subsetのCPU cache prototypeを検討し、RAM floor・worker ownership・full-model wallを評価する。all-nt policyはnt2..4の同等速度と別途安全性が出るまで判断に使わない。

@@ -117,6 +117,22 @@ DecodeServiceBudgetScope::DecodeServiceBudgetScope(ExpertDispatch& d,int64_t lay
     for (int64_t l=0;l<layers;++l) state_->fmt[l]=layout.fmt[(size_t)l];
     state_->before=snapshot(); if (!state_->before.valid) state_->invalid=true;
     d.decode_route_ledger=state_.get(); // after prompt; one synchronous ordinary issuer
+    const char* gu_env=std::getenv("STRATA_CPU_GU_REUSE_OBSERVER");
+    if (gu_env && !std::strcmp(gu_env,"1") && layers==48 && d.n_expert==512 && !d.cpu_gu_reuse) {
+        int types[48];
+        for (int l=0;l<48;++l) types[l]=layout.fmt[(size_t)l].gu_type;
+        gu_reuse_.reset(new(std::nothrow) CpuGuReuseObserver(types));
+        if (gu_reuse_) {
+            for (int l=0;l<48;++l) {
+                const auto& f=layout.fmt[(size_t)l];
+                const size_t block=f.gu_type==18?98:f.gu_type==22?82:f.gu_type==21?110:0;
+                if (f.n_embd!=2560 || f.n_ff!=640 ||
+                    (block && (f.gu_row!=10*block || f.up_off!=640*f.gu_row || f.down_off!=2*640*f.gu_row)))
+                    gu_reuse_->invalid=true;
+            }
+            d.cpu_gu_reuse=gu_reuse_.get();
+        }
+    }
 }
 DecodeServiceBudgetScope::~DecodeServiceBudgetScope() { finish("error_or_early_exit",-1,-1,-1,0); }
 void DecodeServiceBudgetScope::finish(const char* status,int64_t emitted,int64_t offered,int64_t accepted,double decode_ms) {
@@ -146,6 +162,22 @@ void DecodeServiceBudgetScope::finish(const char* status,int64_t emitted,int64_t
     }
     if (dispatch_.decode_route_ledger==state_.get()) dispatch_.decode_route_ledger=nullptr;
     else state_->invalid=true;
+    if (gu_reuse_) {
+        if (dispatch_.cpu_gu_reuse!=gu_reuse_.get()) gu_reuse_->invalid=true;
+        else dispatch_.cpu_gu_reuse=nullptr;
+        std::unique_ptr<char[]> gu_bytes(new(std::nothrow) char[CpuGuReuseObserver::OutputCap]);
+        if (gu_bytes) {
+            const bool normal=status && (!std::strcmp(status,"length") || !std::strcmp(status,"stop"));
+            bool valid=state_->complete(normal,emitted,offered,accepted) && !state_->invalid && !state_->overflow;
+            for (unsigned nt=0;nt<4;++nt) {
+                uint64_t total=0;
+                for (unsigned f=0;f<4;++f) if (!gu_reuse_->add(total,gu_reuse_->format_nt[f][nt])) valid=false;
+                if (total!=state_->job_nt[nt]) valid=false;
+            }
+            const size_t used=gu_reuse_->receipt(gu_bytes.get(),sequence_,state_->cpu_jobs,state_->cpu_rows,valid);
+            std::fwrite(gu_bytes.get(),1,used,stderr);
+        } else std::fprintf(stderr,"strata cpu_gu_reuse_v2 request=%llu complete=0 reason=output_allocation\n",(unsigned long long)sequence_);
+    }
     std::unique_ptr<char[]> bytes(new(std::nothrow) char[DecodeLedgerOutput::kCap]);
     if (!bytes) {
         std::fprintf(stderr,"strata decode joined close request=%llu coupled=%d status=%.32s complete=0 reason=output_allocation W=%llu R=%llu D=%llu A=%llu C=%llu E=%llu\n",
@@ -1970,6 +2002,9 @@ void expert_pool_dispatch_multi(ExpertDispatch& d, const float* x_f, const int32
                                 float* out, const uint8_t* hit_mask) {
     using namespace strata::kernels::cpu;
     auto* const decode_observer=d.decode_route_ledger;
+    auto* const gu_observer=d.cpu_gu_reuse;
+    int16_t gu_job_expert[kMaxWindowEntries]; // initialized only at successful CPU job creation
+    uint64_t gu_completed_rows=0;
     if (decode_observer) decode_observer->attempt_dispatch(d.layers,n_tok,k);
     if (d.failed) return;
     if (hit_mask != nullptr && (n_tok != 1 || d.plan != nullptr || d.host_res != nullptr || d.remote_count > 0)) {
@@ -2178,6 +2213,8 @@ void expert_pool_dispatch_multi(ExpertDispatch& d, const float* x_f, const int32
                 ExpertJobMulti& nj = d.jobs_multi[(size_t) jo];
                 nj.blob = b;
                 nj.nt = 0;
+                // e is the exact source identity used by blob(d.layers,e), not a route slot.
+                if (gu_observer) gu_job_expert[(size_t)jo]=(int16_t)e;
             }
             ExpertJobMulti& jb = d.jobs_multi[(size_t) jo];
             jb.act[jb.nt] = &d.act_multi[(size_t) t];
@@ -2188,6 +2225,16 @@ void expert_pool_dispatch_multi(ExpertDispatch& d, const float* x_f, const int32
         }
     const auto c3 = std::chrono::steady_clock::now();
     pt("run", njobs);
+    if (gu_observer) {
+        if (!native || !decode_observer || !decode_observer->active || njobs<0 || njobs>kMaxWindowEntries)
+            gu_observer->invalid=true;
+        else for (int j=0;j<njobs;++j) {
+            const auto& job=d.jobs_multi[(size_t)j];
+            if (!job.blob) gu_observer->invalid=true;
+            gu_observer->touch((int)d.layers,gu_job_expert[j],job.nt);
+            if(job.nt>=1 && job.nt<=4) gu_completed_rows+=(uint64_t)job.nt;
+        }
+    }
     if (native) {
         if (decode_observer && decode_observer->active) {
             if (d.pool->service_budget()) {
@@ -2205,6 +2252,7 @@ void expert_pool_dispatch_multi(ExpertDispatch& d, const float* x_f, const int32
             });
         } else d.pool->run_split_multi_native(lay.fmt[(size_t) d.layers], d.jobs_multi.data(), njobs);
         // Native batches have completed and workers parked before this returns.
+        if (gu_observer) gu_observer->completed((uint64_t)njobs,gu_completed_rows);
         if (decode_observer && decode_observer->active) {
             if (d.pool->service_budget()!=&decode_observer->service) {
                 std::fprintf(stderr,"strata decode joined close complete=0 reason=pool_owner_changed fail_stop=1\n");

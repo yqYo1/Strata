@@ -362,13 +362,29 @@
       "path": "research-profiled-dequant-reuse-round601-v1.txt",
       "sha256": "5a14919125b5df65a12d23ec3277a519b292762ed886db4b3834747a156f5b70",
       "status": "Main reviewed. BoundedLRU needs exact sequentialreuse; sorted perchunk expert walks may thrash tinyLRU. No implementation/adoption before evidence. Fusedtile alternative larger candidate."
+    },
+    {
+      "round": 602,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-direct-clean-benchmark-round602-v1.txt",
+      "sha256": "78cd251026065f7fb529464614196524e1d614033a801cbe62ab2f9aefe08666",
+      "status": "FINAL received; Main reviewed. Same-binary officialbench environment/order and actual-token constraints; clean run pending."
+    },
+    {
+      "round": 603,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-cpu-cache-amortization-round603-v1.txt",
+      "sha256": "2699322cca76ee480e6bbd34b06b5e12977a37963a3a9069c67e9ec52088ca27",
+      "status": "FINAL received; Main reviewed. Cold/refill cost defeats a hit-rate-only argument. Main needs actual nt1-policy recurrence and full-model wall; no cache adoption."
     }
   ],
   "main_initial_findings": [
     "PR6 performance patch changes historic sycl/src/prefill/prefill.cpp, not current root src/prefill/prefill.cpp. Current root rg finds compact scratch but no layer-major selector. History preservation is not adoption.",
     "Original645.85 PP and later449.7 full-context/MTP measures need separate source/config reconciliation; different protocol does not justify discarding the old improvement."
   ],
-  "next": "Close actual existing-exact setting screen without concurrent build/test/cleanup, compare per-format work-normalized service; then review/apply/test layer26phase diagnostic and balanced cache separately. Official bench.sh performance and physical256K/RESTORE remain pending; original auto numericalFAIL unchanged.",
+  "next": "Close current actual CPUobserver OFF/ON small gate, then real34K128recurrence. Run matched clean officialbench Direct0/1 with32K+agent and full thinking strong/weak generation. Source/build/measurement serialized; fullphysical256K/RESTORE, PR6speed recovery and default-branch feature reconciliation remain pending.",
   "main_review": "main-review-round559-560.ja.md",
   "subsequent_main_review": "main-review-round561-562.ja.md",
   "public_history_reverification": "public-history-reverification.json",
@@ -600,12 +616,23 @@
     "summary": "cpu-predecode-repeat-summary-v1.json"
   },
   "prompt_direct": {
-    "state": "Int8smallDirect1 numerical/lifetime PASS/fault0, exact9selectedheads+firstlogits+8IDs. OriginalfullAPIattempt failed atlogcap, preserved; independentfaultcheckPASS. Next34K128Direct1profile queued.",
+    "state": "Small exact9heads+firstlogits+8IDs PASS; real34K128Direct1profile PASS/fault0, same128IDs/work. Attention GPUduration44.066→29.805s, about32.36%less; no clean speed adoption.",
     "recipe": "check_prompt_direct_small_v1.py",
     "small": "prompt-direct-small-v2.json",
     "failure": "prompt-direct-small-v1.json",
     "faultcheck": "prompt-direct-small-faultcheck-v1.json",
-    "long_recipe": "check_model_device_profile_v2.py"
+    "long_recipe": "check_model_device_profile_v2.py",
+    "long": "model-device-profile-v2.json",
+    "paired": "prompt-direct-profile-pair-v1.json",
+    "review": "prompt-direct-profile.ja.md",
+    "clean_recipe": "check_prompt_direct_bench_v1.py"
   },
-  "retention_v6": "retention-v6-manifest.json"
+  "retention_v6": "retention-v6-manifest.json",
+  "cpu_gu_reuse": {
+    "proposal": "cpu-gu-reuse-observer-v2",
+    "original_build_failure": "cpu-gu-reuse-build-v2.json",
+    "build": "cpu-gu-reuse-build-v3.json",
+    "recipe": "check_cpu_gu_reuse_v1.py",
+    "state": "Main fixed literal output overload without disabling warnings. Normal/ASanUBSan independent two-policy LRU contracts and actual product build PASS. DefaultOFF; actual small OFF/ON qualification running; no expanded cache or speed adoption."
+  }
 }

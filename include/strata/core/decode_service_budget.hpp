@@ -3,6 +3,7 @@
 // One owner and one close receipt for the adapted archived route/service collectors.
 #pragma once
 #include "strata/core/decode_route_ledger.hpp"
+#include "strata/core/cpu_gu_reuse_observer.hpp"
 #include "strata/core/progress.hpp"
 #include <memory>
 #include <cstdlib>
@@ -25,6 +26,7 @@ struct ExpertDispatch;
 class DecodeServiceBudgetScope {
     ExpertDispatch& dispatch_;
     std::unique_ptr<DecodeRouteLedger> state_;
+    std::unique_ptr<CpuGuReuseObserver> gu_reuse_;
     DecodeLedgerSources sources_;
     bool requested_=false,finished_=false;
     uint64_t sequence_=0;

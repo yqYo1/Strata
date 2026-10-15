@@ -1,0 +1,40 @@
+# R602 — PROMPT_DIRECT clean bench.sh A/B 手順
+
+2026-10-15 JST。読み取り専用調査。書き込みは本レポートのみ。ソース編集、build/test、GPU・server実行、cleanup、Git操作はしていない。
+
+## 結論
+
+現在の`tools/strata_bench.py`だけで候補のclean測定を行える。公式の最短1セットは、同一engine binaryと同一設定で`STRATA_SYCL_PROMPT_DIRECT=0`と`=1`のserverを別々に起動し、それぞれ`bench.sh --long --long-generation --think --runs 3`を一度実行すること。`--long-generation-only`はagentと標準32Kを飛ばすため、今回の要求には使えない。標準suiteには短いchat・4K・16Kも必ず含まれるが、候補判定には使わない。
+
+A/Bの設定差は`STRATA_SYCL_PROMPT_DIRECT`だけにする。`serve/server.py:child_env()`は親環境を複製後にconfigの`env`を重ねるため、シェルで値をexportするだけではconfigの値に負ける場合がある。各arm用に同じconfigを複製し、`env.STRATA_SYCL_PROMPT_DIRECT`をそれぞれ文字列`"0"`/`"1"`にしたうえで`--config`を渡す。既に同じportにserverがあるとbenchはその既存serverを使い、指定configから再起動しない。既存serverのないlocalhost portで、bench自身に各armを起動・終了させる。実行後の`results.json`に加え、使ったconfig、実engineの起動環境、source/binary hash、個別request行、通常終了とfault境界を保存する。
+
+```sh
+./bench.sh --config /path/direct-off.json --long --long-generation --think --runs 3 --out /path/bench-direct-off
+./bench.sh --config /path/direct-on.json  --long --long-generation --think --runs 3 --out /path/bench-direct-on
+```
+
+この二回は最低限のclean screenであり、アーム内の3反復を持つ。熱・clock・順序の効果を完全には相殺しないため、offの後にonを測るか逆順かを事前に決めて記録する。mediansがrange内で重なる、片方だけ後半に変化する、または差が小さい場合は、その結果を採否に使わず、逆順のarm実行をもう一組行う。初回から強い採用主張をするなら、A/B/B/Aの順で各armをもう一度測り、個別sample全件を残す。CLIは1回のsuite内で要求順を固定しているため、この再実行がprocess/order効果の最短の確認になる。
+
+## Suiteの意味と測定値
+
+- `--long`はnominal 32,768-token promptを3回送り、各回24-token上限。各requestの実`usage.prompt_tokens`を使う。過去の実測は32,089 tokensで、32,768未満だったため、この欄は「nominal 32K」として記録し、実入力が32,768未満なら32K以上の性能判定には使わない。
+- agentは3 session、各sessionは6 turnを順に繋ぎ、先のassistant本文とreasoningを次の入力へ返す。`--think`によりagentの上限はturnごと8,192 tokensとなり、sessionの各turnは独立sampleではない。独立した反復単位はsessionで、3件。cache hit/rereadを含む実利用の補助値として報告し、長文のfresh-prefill主判定にはしない。
+- long-generationはregular-code (strong候補) とvaried-prose (weak候補)を各3回実行する。実装はthinkingを常に有効にし、各入力実測32,768以上、生成実測1,024〜16,384、fresh-prefix reuse 0、本文512文字以上、engine decode clock、draft提案256以上をeligibility条件にする。run順は0,2でregular→prose、1でprose→regular。分類は各regularのMTP受理率が全て60%以上、各proseが全て40%以下の場合だけ成立する。名前は期待値であり、実測分類が優先される。本文長条件は応答存在確認であり、task品質判定ではない。
+- requestごとの`prompt_tps`、`prompt_ms`、TTFTをprefill側として別々に比較する。nominal 32Kの24-token生成はdecode性能の判定に使わない。agentとlong-generationの`decode_tps`/`decode_ms`は長めの生成観測として別欄にする。PROMPT_DIRECTはprompt attentionのdispatchに掛かる候補で、decode速度の改善を期待・主張する根拠はない。long-generationのdecode差には生成token数、thinking/本文比、MTP draft受理率やrouteの差が混ざるため、実値とMTP率を併記する。
+- 3反復は同じserver process内の連続requestであり、別々の完全独立process試行ではない。fresh promptはnonce付きでconversation reuseが無いことを`reused_tokens`で確認する。long-generationも`reused_tokens=0`をeligibilityに要求する。agent内turnは連続依存を持つため、6件をn=6と数えない。A/Bのprompt本文はbench起動ごとのnonceを含むためrequest hash完全一致ではない。workload version、入力token数、設定とClient fingerprintを揃え、各armの実値を比較する。
+
+## 交絡と除外条件
+
+1. **設定の実効性:** `STRATA_SYCL_PROMPT_DIRECT`は`src/kernels/sycl/prompt_attention.cpp`のdispatchが`getenv()`で読み、先頭文字が`1`ならDirect kernel、それ以外ならstaged kernelを選ぶ。server/engine起動後に変えても効かないのでarmごとに再起動する。configのenv merge規則を考慮し、engine子processに渡った値を記録する。`STRATA_SYCL_PROMPT_NATIVE_KV_MIN`など他env、binary、configのモデル・KV・resident容量・context/chunk・expert cache・pool・MTP・speculation・cache設定を同じにする。
+2. **serverとcacheのwarmup:** benchは各起動後、短いchatと約1K promptを測定外warmupとして実施する。32K/33K形状や長いdecode kernelをwarmupしない。別process間のモデルload/JIT、OS page cache、GPU clock/温度、VRAM再確保は残る交絡。profile v1/v2は異なる`XDG_CACHE_HOME`で実行されておりclean A/Bではない。bench A/Bではcache方針とruntime環境を揃え、profilerやvalidation tracingを混ぜない。
+3. **計測順と履歴:** agentは履歴とcacheを成長させる。long-generationだけがstrong/weak順を交互にする。suiteの他phase順はchat→4K→16K→agent→32K→long-generationで固定。背景GPU作業、build/test、cleanupを並走させない。結果は個別の時系列・min/median/maxで比較し、平均値だけに畳まない。
+4. **異なる比較対象:** 旧PR #6の645.85 PP t/sは入力32,768・chunk8,192・context65,538・K8V8 fully resident・timed MTPなし。今回のprofileはcontext262,144・chunk4,096・INT8 KV/resident32,768・MTP4であり、そのheadlineと比較しない。2026-10-14の既存long-generation suiteはsource `16d9d2b9…`/binary `6180b2bb…`。今回のprofile pairはsource `a4d27df2`/binary `0c281323…`なので、旧suiteの数値も今回のbaselineには流用しない。`--compare`の差分表示は参考で、比較identityが異なる測定を同条件扱いする理由にならない。
+5. **他のゲート:** profile A/Bは同一binary・同じ34,603 input/128 output・INT8 KVで、prompt attention 108 callsが44.066秒から29.805秒へ変化し、同じ128 IDs・fault 0だった。ただしこれは別processのprofiler診断で、clean end-to-end測定でもvariance評価でもない。小さい9-selected-headのbitwise確認も全model品質保証ではない。clean bench後も出力品質、長文安定性、physical 256K、RESTOREの合格を勝手に推定しない。
+
+## 判定境界
+
+短いchat、4K/16K prompt、agentだけの速さではモデル性能を判断しない。実入力が32,768以上のlong-generation各requestを長文prefillの一次判定にし、standard nominal 32Kが実入力下限に届けば補助の独立prompt比較として使う。両アームの各実測input/output、prompt/decode clock、MTP counters、request成否、ID/出力fingerprintとfault状態を並べ、prefill改善とdecode差を分けて判断する。3回各armは最小のscreenであり、全sampleが同方向でない、rangeが重なる、実際のstrong/weak帯が成立しない場合は候補優位を結論しない。
+
+## 読んだ根拠
+
+`.agents/skills/strata-upstream-sync/SKILL.md`、`docs/ARTIFACT_RETENTION.md`、`tools/strata_bench.py`、`tools/long_generation_bench.py`、`bench.sh`、`src/kernels/sycl/prompt_attention.cpp`、`serve/server.py`の`child_env()`、`bench/results/2026-10-14-long-generation-benchmark/run_server_job.py`、`upload-fix-suite-final.ja.md`、`launch-suite-v4-upload-fix-v1.json`、`bench/results/2026-10-15-pr6-recovery-audit/research-index.json`、round600/601 reports、model-device-profile v1/v2およびprompt-direct-profile-pair v1を読んだ。`run_server_job.py`はowned server、bench起動と正常shutdown検証の過去パターンとして参照したが、その保存結果は今回と異なるsource/binaryである。
