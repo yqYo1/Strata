@@ -747,6 +747,25 @@
       "path": "research-iq3xxs-subgroup-v2-preflight-round648-v1.txt",
       "sha256": "30fbd7768c47d86e31879321a4da06cda4a9d9035eb8deaaafd27e5283b9d19a",
       "status": "FINAL source mapping/spans reviewed; device IR, actual SG16/32 and lowering support, qualified quick/full controller and clean speed gates unexecuted. Old per-value type18 regression not adopted."
+    },
+    {
+      "round": 649,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-profile-cache-bounds-round649-v1.txt",
+      "sha256": "7073488a8bcec28feeb15962509e3aa0cc21a55d695477771dab69a5bdb35788",
+      "status": "FINAL independent source/count review: no arithmetic correction; bounds conditional on historical profile identity. R607 append-only and actual total-quota repartition kept separate; no new inference."
+    },
+    {
+      "round": 650,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-adaptive-cache-sycl-lifetime-round650-v2.txt",
+      "sha256": "c3cd3974bf9380cc3402fb6901a27b47a0c63503ad7f0085fe56693a610f0414",
+      "status": "Corrected FINAL: ordinary SYCL uses host_res plans, not d_res device planning; no-wait old-slot claim withdrawn for that route. Serve ignored EventRecord result remains a potential early-publication failure path; adapt0 baseline unchanged, no fix/run yet.",
+      "original_report_path": "research-adaptive-cache-sycl-lifetime-round650-v1.txt",
+      "original_report_sha256": "d2164b9dc3bab9727de0e9e0100f3b83ba4cd3e3392170b58e4323516cd156eb",
+      "correction_requested_after_FINAL": true
     }
   ],
   "main_initial_findings": [
@@ -1176,7 +1195,19 @@
   "profile_cache_coverage": {
     "analysis": "profile-cache-coverage-bounds-v1.json",
     "recipe": "analyze_profile_cache_coverage_v1.py",
-    "review": "main-review-round647-648.ja.md",
-    "state": "Offline arithmetic executed on closed real CPU-ID counts/current shipped profile. Conditional legacy256 hit range5.06-5.68%, same128 quota CPU-hindsight9.75%, not measured speed or held-out profile benefit. Historical CPU producer did not pin profile content: assumption explicitly unproven. Original statuses/profile unchanged, no new inference, no profile generated/adopted."
+    "review": "main-review-round649-650.ja.md",
+    "state": "Offline arithmetic executed on closed real CPU-ID counts/current shipped profile. Conditional legacy256 hit range5.06-5.68%, same128 quota CPU-hindsight9.75%, not measured speed or held-out profile benefit. Historical CPU producer did not pin profile content: assumption explicitly unproven. Original statuses/profile unchanged, no new inference, no profile generated/adopted.",
+    "independent_review": "research-profile-cache-bounds-round649-v1.txt"
+  },
+  "cpu_history_profile_candidate": {
+    "preparation": "cpu-count-profile-preparation-v1.json",
+    "recipe": "prepare_cpu_count_profile_v1.py",
+    "review": "main-review-round649-650.ja.md",
+    "state": "Data preparation completed using existing tools/make_profile.py writer. Separate196632-byte full-rank/inverse candidate d97b2f48... retained outsideGit for held-out legacy128 pilot. Old GPU ID frequencies unknown; not treated as measured zeros. Native loader/GPU/model/performance/quality/physical256K/RESTORE all unqualified; original profile unchanged."
+  },
+  "adaptive_cache_current_audit": {
+    "research": "research-adaptive-cache-sycl-lifetime-round650-v2.txt",
+    "review": "main-review-round649-650.ja.md",
+    "state": "Source-only. Main corrected ordinary host-plan vs disabled device-plan scope. Positive adaptive screen requires checking EventRecord failures and proving partial-copy retirement/owner preservation first. Current adapt-swaps0 job unaffected; no new failure cause claimed."
   }
 }

@@ -1,0 +1,41 @@
+# R649 — independent audit of profile/cache route bounds
+
+Date: 2026-10-15 JST. Static arithmetic and source review only. I reviewed the bounded closed CPU census receipt, its derived bounds JSON and recipe, the current 196,632-byte public profile, the four corresponding implementation files, and prior cache-census reports. No test, `py_compile`, build, benchmark, GPU/native process, Git operation, cleanup, or candidate/product edit was performed. No model weights or broad private logs were read.
+
+## Finding
+
+The reported arithmetic and its conditions are internally consistent. I found no correction needed to the result values. The important distinction from R607 is that R607's “additional slots” preserved all 128 old resident slots and appended capacity, while the R649 192/256 cases reconstruct a new total per-layer partition. Those new totals can evict old residents from the last layer; the bounds account for the reduced resident set instead of treating added slots as append-only.
+
+## Cross-checks
+
+- The input receipt hash is `17ddf01d…43cb1`; its closed/passed state and empty fresh-fault list are asserted by the recipe. The actual command records `--expert-cache 128`, `--expert-cache-per-layer`, current profile path, `--adapt-swaps 0`, and `--pcie-frac 0` (`cpu-gu-reuse-long-v1.json:2512-2557`). Its observer records 68,781 jobs, 101,036 rows and 9,816 first-touch unique IDs (`:1330-1345`). The derived receipt conserves these counts against the ledger and reports 104,160 total route entries, 3,124 GPU-owner rows and 101,036 CPU rows. The per-layer GPU counts sum to 3,124; owner totals are CPU/GPU/other = 101,036/3,124/0.
+- The current profile is exactly 196,632 bytes, SHA-256 `8f59b4aa…975baf`, and has the expected 24-byte header plus 24,576 unique in-range `(layer,expert)` pairs (`analyze_profile_cache_coverage_v1.py:25-39`). I independently matched the source receipt's pins to current `src/core/expert_cache.cpp`, `include/strata/core/expert_cache.hpp`, `include/strata/core/expert_slot_sizes.hpp`, and `src/program/generate.cpp` (`cpu-gu-reuse-long-v1.json:2576-2577,2688,2765`).
+- The source's per-layer slot rule is `q=slots/48`, with the final layer taking the remainder (`expert_cache.cpp:310-319`; `expert_cache.hpp:127-134`). Thus 128 total slots mean 2 slots on layers 0–46 and 34 on layer 47; 192 means 4 per layer, including 4 on layer 47; 256 means 5 on layers 0–46 and 21 on layer 47. The analysis recipe's legacy partition matches that rule (`analyze_profile_cache_coverage_v1.py:76-85`). In `generate.cpp`, per-layer startup fill admits ranked profile pairs only until each layer's range is full (`:3290-3318`), so taking the first quota pairs per layer from the ordered profile is consistent with the current admission/fill path.
+- The per-layer bounds use known CPU rows for selected pairs plus GPU rows only for baseline resident IDs retained in the new set. If all old residents in a layer remain, all its observed GPU rows are a valid lower as well as upper bound; if some remain, 0-to-all GPU rows is conservative because original GPU IDs/counts were not retained; if none remain, they contribute zero. These disjoint CPU/GPU owner classes avoid double-counting. For the 192 and 256 shipped-profile partitions, this yields 4,617–5,263 and 5,268–5,914 route rows, respectively, over 104,160 total rows. Fractions 4.43–5.05% and 5.06–5.68% match the report after rounding. These are conditional route-hit bounds, not speed predictions.
+- Hindsight CPU ranking under the same legacy 128 quota selects 128 pairs while preserving each layer's quota. Each selected slot's byte size depends only on its layer, so the exact same per-layer slot counts must have the same arena bytes as the original 128 layout: 281,651,200 B. The JSON reports that exact equality, with 10,159 CPU rows for legacy-quota hindsight. The separate global top-128 hindsight set uses 12,325 CPU rows and 266,342,400 B; it is an uneven placement and same-request hindsight, not a held-out result. It is correctly separated from the same-quota comparison.
+- The historical CPU-census producer pinned the profile path/source but did not pin the profile contents. The recipe and derived JSON say historical profile identity is unproven and all reconstructed-residency bounds are conditional on the current profile having been present then (`analyze_profile_cache_coverage_v1.py:10-13,27-31,122-130`; JSON `historical_profile_content_identity_proven=false`). Zero overlap between current-profile legacy residents and observed CPU IDs is a consistency check only. Current profile SHA does not retrospectively prove its contents during the old run.
+
+## Explicit clarification versus earlier reports
+
+R607's tables modeled **incremental append** of 128/256/etc. slots while preserving the old 128 residents. R649's current-profile rows instead model **replacement/repartition at the requested total**, which is why the last-layer resident quota falls from 34 to 4 or 21 at total sizes 192 and 256. These plans and their hit bounds are not interchangeable. R624's proposed future capacity sweep remains a measured-run requirement; R649 supplies no VRAM admission, hit performance, physical traffic, numerical quality, held-out fit or speed result.
+
+## Unconfirmed scope
+
+The GPU route IDs/counts were absent, so the partial-resident bounds cannot be narrowed. Historical profile content remains unknown. No arithmetic here confirms live cache allocation or held-out profile benefit. Hindsight ranking uses the same request and is descriptive only. The source/config checks do not change the historical receipt or its status.
+
+## Source identities
+
+| File | SHA-256 |
+|---|---|
+| `cpu-gu-reuse-long-v1.json` | `17ddf01d0ec4d90c6e0567fc1d0e2eb3959fccb68da893f4e404de5d89b43cb1` |
+| `data/expert-profile.bin` | `8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf` |
+| `analyze_profile_cache_coverage_v1.py` | `6ea14d40471d8a40aba494a17099ecc4ecf99e20970c288037420e7b6253ba54` |
+| `profile-cache-coverage-bounds-v1.json` | `17b361da8f04900156676602261b56993f3d461c79791a74673f77f35ce04d96` |
+| `src/core/expert_cache.cpp` | `7d9a7fe0c54e8d55addcc9e9d7117d0b3addd3da294feb3b78b0fde735ce806e` |
+| `include/strata/core/expert_cache.hpp` | `50f26589b6488e677ac6675b824c56d143dea081b46722508d332c58d9799b41` |
+| `include/strata/core/expert_slot_sizes.hpp` | `93ea194c1b4d63c71747d27fa6eda8d10ae4f1c308ba9ac8d6e026ce6a6b81b2` |
+| `src/program/generate.cpp` | `d4048082aae24f4afc6c841309b0d0f63f2303085880d92da1cc7ebe4e83e80c` |
+| `research-cpu-census-gpu-cache-round607-v1.txt` | `fe8db9e63b7f06c9aeb25aa0a888e572aefa580698799544f23d067c68785506` |
+| `research-decode-next-critical-path-round624-v1.txt` | `c19d5fdfa7b4506f4d70e79db8c6b71184437d824c61f791d3fe0a88f9026b81` |
+
+The audit report is the only written artifact in this round; record its hash in the handoff after saving.
