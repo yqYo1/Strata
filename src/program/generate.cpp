@@ -62,6 +62,7 @@
 #include "strata/program/logits_selection.hpp"
 #ifdef STRATA_ENABLE_SYCL
 #include "strata/program/prefill_logits.hpp"
+#include "strata/program/dense_prefill_nll.hpp"
 #include "strata/prefill/draft_uploads.hpp"
 #endif
 #include "strata/program/conv_cache.hpp"
@@ -1725,6 +1726,39 @@ int main(int argc, char** argv) {
         }
         }
     }
+    // Output path opt-in; the recipe is prepared and hashed by the external
+    // supervisor before this native process starts. Reject unsupported routes
+    // before GPU preflight, owner/graph detachment, or pending submissions.
+    const char* prefill_nll_path = std::getenv("STRATA_PREFILL_NLL");
+    const char* prefill_nll_recipe = std::getenv("STRATA_PREFILL_NLL_RECIPE_SHA256");
+    const bool collect_prefill_nll = prefill_nll_path != nullptr;
+    if (collect_prefill_nll || prefill_nll_recipe) {
+#ifndef STRATA_ENABLE_SYCL
+        std::fprintf(stderr, "strata generate: dense prefill NLL requires the SYCL engine\n");
+        return 2;
+#else
+        const bool remote_nll = std::any_of(o.expert_cache_remote.begin(), o.expert_cache_remote.end(),
+                                           [](auto slots) { return slots > 0; });
+        const char* release_heads = std::getenv("STRATA_PREFILL_RELEASE_HEADS");
+        const char* phase_audit = std::getenv("STRATA_PREFILL_PHASE_AUDIT");
+        if (!prefill_nll_path || !*prefill_nll_path || !prefill_nll_recipe ||
+            !strata::program::dense_prefill_nll::recipe_digest(prefill_nll_recipe) ||
+            !have_tokens || o.tokens.size() < 2 ||
+            o.tokens.size() > strata::program::dense_prefill_nll::Writer::max_input ||
+            o.prefill_chunk <= 0 || o.prefill_until != 0 || o.serve || o.vision ||
+            !o.layer_split.empty() || o.peer_device >= 0 || remote_nll || o.gpu_stages ||
+            o.graph_only || o.gpu_only_full || o.native_preset.empty() || !o.stream_token ||
+            o.coupled_draft || std::getenv("STRATA_LOGPOS") ||
+            (release_heads && std::strcmp(release_heads, "0")) ||
+            (phase_audit && std::strcmp(phase_audit, "0"))) {
+            std::fprintf(stderr, "strata generate: dense prefill NLL needs a nonempty exclusive output path, "
+                                 "STRATA_PREFILL_NLL_RECIPE_SHA256 (64 lowercase hex), --native, --stream-token, "
+                                 "--prefill and 2..262144 explicit tokens; standalone text single GPU, full "
+                                 "initial prefill, no coupled/LOGPOS/head release/phase audit\n");
+            return 2;
+        }
+#endif
+    }
 #ifdef STRATA_ENABLE_SYCL
     // Normally off. Validate the small position list BEFORE any GPU preflight.
     const char* prefill_logits_path = std::getenv("STRATA_PREFILL_LOGITS");
@@ -2215,8 +2249,8 @@ int main(int argc, char** argv) {
     }
     const bool native_pack = strata::kernels::cpu::expert_layout().native;
 #ifdef STRATA_ENABLE_SYCL
-    if (collect_prefill_logits && !native_pack) {
-        std::fprintf(stderr, "strata generate: prefill logits requires a native expert pack\n");
+    if ((collect_prefill_logits || collect_prefill_nll) && !native_pack) {
+        std::fprintf(stderr, "strata generate: prefill logits/NLL requires a native expert pack\n");
         return 2;
     }
 #endif
@@ -6657,6 +6691,20 @@ int main(int argc, char** argv) {
     std::vector<std::pair<int32_t, int32_t>> lent;     // (residency index, slot) lent to the prompt path
     const int64_t n_batched = (o.prefill_until > 0 && o.prefill_until < n_prompt - 1) ? o.prefill_until : n_prompt - 1;
 #ifdef STRATA_ENABLE_SYCL
+    strata::program::dense_prefill_nll::Writer prefill_nll;
+    double prefill_nll_callback_ms = 0.0;
+    if (collect_prefill_nll) {
+        try {
+            if (!prefill_nll.begin(prefill_nll_path, o.tokens.data(), o.tokens.size(), n_vocab,
+                                   native_head.loaded(), native_head.type(), prefill_nll_recipe, err)) {
+                std::fprintf(stderr, "strata generate: %s\n", err.c_str());
+                return 1;
+            }
+        } catch (const std::exception& exc) {
+            std::fprintf(stderr, "strata generate: dense prefill NLL open: %s\n", exc.what());
+            return 1;
+        }
+    }
     strata::program::prefill_logits::Writer prefill_logits;
     if (collect_prefill_logits) {
         try {
@@ -6779,6 +6827,57 @@ int main(int argc, char** argv) {
                 }
             };
         }
+        if (collect_prefill_nll) {
+            // Final-model chunks only: the existing layer-major callback forwards
+            // FP32 rows once, after its checked compute-stream drain. Compose
+            // with selected-logit/MTP callbacks and leave their semantics intact.
+            auto prior_nll = std::move(prefill.on_chunk);
+            prefill.on_chunk = [&, prior_nll = std::move(prior_nll)]
+                (const float* rows, int64_t count, int64_t start, std::string& error) -> bool {
+                const auto begin = Clock::now();
+                try {
+                    if (!rows || !prefill_nll.chunk(start, count, error)) {
+                        if (error.empty()) error = "dense prefill NLL: null final residual";
+                        return false;
+                    }
+                    for (int64_t t = 0; t < count; ++t) {
+                        // One borrowed residual and the existing single-token
+                        // GR/head device scratch. No T*vocabulary allocation.
+                        strata::core::BlockBuffers head_buffers = ss.block;
+                        head_buffers.R = const_cast<float*>(rows + size_t(t) * size_t(g.hc * g.n_embd));
+                        auto stop_live = []() noexcept {
+                            strata::sycl_backend::cleanup_fail_stop("dense prefill NLL: head/readback drain uncertain");
+                        };
+                        strata::prefill::detail::DraftUploadGuard pending(
+                            [&]() noexcept { return cudaStreamSynchronize(main_stream) == cudaSuccess; }, stop_live);
+                        pending.arm(); // also covers partial head submission/throw
+                        bool projected = false;
+                        if (native_head.loaded()) {
+                            projected = strata::core::lm_head_mix(wt, g, head_buffers, main_cs, error);
+                            if (projected) projected = native_head.run(head_buffers.mixed, d_logits, main_cs, error);
+                        } else {
+                            projected = strata::core::lm_head(wt, g, head_buffers, d_logits, main_cs, error);
+                        }
+                        if (!projected) return false;
+                        if (cudaMemcpyAsync(prefill_nll.row(), d_logits, prefill_nll.row_bytes(),
+                                            cudaMemcpyDeviceToHost, main_stream) != cudaSuccess) {
+                            error = "dense prefill NLL: vocabulary readback submission failed";
+                            return false;
+                        }
+                        if (cudaStreamSynchronize(main_stream) != cudaSuccess) stop_live();
+                        pending.retire(); // file/math operations have no GPU lease
+                        const int64_t position = start + t;
+                        if (!prefill_nll.append(position, o.tokens[size_t(position + 1)], error)) return false;
+                    }
+                    prefill_nll_callback_ms += std::chrono::duration<double, std::milli>(Clock::now() - begin).count();
+                    return !prior_nll || prior_nll(rows, count, start, error);
+                } catch (const std::exception& exc) {
+                    // The per-row guard has already drained any partial launch.
+                    error = std::string("dense prefill NLL callback: ") + exc.what();
+                    return false;
+                }
+            };
+        }
 #endif
         const Clock::time_point tp0 = Clock::now();
         if (!run_prompt_with_native_dense_phase(dense_phase, prefill, mtp,
@@ -6790,6 +6889,15 @@ int main(int argc, char** argv) {
             return 1;
         }
 #ifdef STRATA_ENABLE_SYCL
+        if (collect_prefill_nll) {
+            if (!prefill_nll.finish(prefill_nll_callback_ms, err)) {
+                std::fprintf(stderr, "strata generate: %s\n", err.c_str());
+                return 1;
+            }
+            std::fprintf(stderr, "strata dense prefill NLL: rows=%u callback_ms=%.3f "
+                                 "single_row_head=1 performance_cohort=excluded\n",
+                         prefill_nll.written(), prefill_nll_callback_ms);
+        }
         if (collect_prefill_logits && !prefill_logits.finish(err)) {
             std::fprintf(stderr, "strata generate: %s\n", err.c_str());
             return 1;
