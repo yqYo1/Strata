@@ -1,0 +1,32 @@
+# NativeDense接続点とQSA device-batch追加レビュー
+
+2026-10-15。Luna R694/R695はそれぞれ別scopeの読み取り専用調査を完了した。
+Mainは両原本と、NativeDense proposal全diff/fixture、QSA v2 planner、production変更、
+fixture entryと既存sourceを確認した。原本は変更しない。
+
+R694は実generator caller、session graph破棄/再capture、Verifierのhead以外のreader、
+PLE key別publication、layer-major callbackとleaseの実境界を具体化した。
+現NativeDense bank proposalはLayerViewへ渡せる完全なWeightTableではなくnative-only overlayを返す。
+既存LayerViewへoverlay-first lookupを導入し、canonical norm等は元tableから読む必要がある。
+callback/drainとgraph retirementを組み合わせて初めて有効なReaderRetirementとなる。
+Mainは現在のhead-retireを全dense-retireの証明に流用しない。
+
+Mainの追加指摘: NativeDense v1のenter_layer_bankでは、bank cudaMallocが失敗したとき、
+non-null ownerの場合だけfail-stopし、nullptrならcudaErrorMemoryAllocation以外もfalseで返す。
+restore_fullとstartup captureは非OOMもfail-stopするので、source-reviewの「uncertain allocation
+errorsはfail-stop」という説明とは一致しない。現在未適用のproposal内の契約差であり、
+実際にGPU障害を生じたとの証拠はない。統合前に、enterの通常復帰を明確なOOMだけへ限定する。
+WeightRefはscalar/PODメンバのみで、既存entryへのassignmentは追加heap確保を必要としない。
+startup publicationのassignmentをstring/vectorコピーの問題と混同しない。
+
+R695はfresh n2/n3/n4がn1 fallbackへ落ちないこと、physical262140→262144の実oracle prefix、
+各negativeで全state/guardを再比較することを確認した。Mainもproductionの三phaseを読み、
+completed-blockごとの単一writer、prior tail読取りとfinalizer間のin-order依存、
+position0 seed、最後のmoving spareの所有を追跡した。明確な範囲外・raceは見つかっていない。
+source reviewはcompiler loweringや実device correctnessの保証ではない。
+
+Mainは`apply_build_qsa_device_batch_v1.py`を準備した。これは現在のscratch alias同binary
+model境界照合の終了と結果を要求し、新規build dirへ全production/fixtureをcompileする。
+旧archives/binariesは変更しない。planner host実行の後、GPUのsmall/invalid/large/physical、
+固定環境processごとのdispatch、実model/RESTORE/clean PPは別のserial gateとする。
+この報告時点でQSA patchは未適用、build/host/GPU gateは未実行である。

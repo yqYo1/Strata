@@ -98,3 +98,15 @@ attention約44秒であり、現在の容量/hidden転送削減とattention最�
 `prefill-scratch-allocation-log-evidence-v1.json`89432 Bと
 `prefill-scratch-allocation-log-retention-v1.json`に保存した。
 元FAILED/PASS receiptのbytes/status/hashは不変。controllerが参照する原receiptは残す。
+
+## 実model同binary境界照合、OFF側
+
+`run_prefill_scratch_alias_model_v1.py 0`は公式bench.sh、同じworkload ID、thinking ON、
+C8192/FP32/R_GPU0/INT8 resident32768、実78453入力/read/reuse0で完了した。
+24 token生成後、native/server0、全owner退去、同boot、fresh fault0、dumpなし。
+同じ新binary4041cd…を使い、共有flagを0に固定してprocess開始前に設定した。
+16選択行×48層の全768出力と、各47境界の保存/次層入力752行ずつを採取し、
+same-run memcmpが全て一致。raw31457280 Bを次のON側との比較consumer用に保持する。
+診断PP235.5 tok/sを記録するが、validation/trace/境界copy同期があるためclean速度へは昇格しない。
+ON側も同じproducerで開始し、全層rawのbyte比較は両側の通常終了後にだけ行う。
+元receiptは`prefill-scratch-alias-model-0-v1.json`。

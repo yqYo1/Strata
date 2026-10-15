@@ -1112,6 +1112,24 @@
       "path": "research-pr6-gdn-keyhead-candidate-round693-v1.txt",
       "sha256": "c83ddba8325bbbccf37d10a743acfc32a0a1150fbe9e3662a90d59d0cbddfb2d",
       "status": "FINAL received; Main review/corrections in prefill-scratch-alias-main-review.ja.md; source review only."
+    },
+    {
+      "round": 694,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-native-dense-generator-seam-round694-v1.txt",
+      "sha256": "9308c50970fcda100897adf845d86e9014152a2e39d6e5e39642b1e822c7f210",
+      "main_review": "main-review-round694-695.ja.md",
+      "status": "FINAL/Main source review complete; no new GPU or performance qualification by research."
+    },
+    {
+      "round": 695,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-qsa-batch-v2-seed-boundary-round695-v1.txt",
+      "sha256": "822d477426369c7134cd57ed834fc64cc495e4208144db6caad350ff4f9d7310",
+      "main_review": "main-review-round694-695.ja.md",
+      "status": "FINAL/Main source review complete; no new GPU or performance qualification by research."
     }
   ],
   "main_initial_findings": [
@@ -1719,10 +1737,12 @@
   "QSA_device_batch_candidate": {
     "proposal": "qsa-indexer-device-batch-v2",
     "model": "gpt-6.1-sol",
-    "state": "Sol FINAL source only. v2 retains production kernel/planner, adds pos0 seed and invalid span nonmutation fixture cases. Main review and serial host/GPU validation pending; unapplied.",
+    "state": "Main reviewed full production/planner and R695 fixture scope. Fresh serial actual build+host controller prepared, waiting for alias model comparison gate. Source remains unapplied/uncompiled/unexecuted.",
     "source_diff_sha256": "6732a090a727a1ede3aa2ca5165bb4c060070f625ec90696a49c533aff5c7c87",
     "review": "research-qsa-indexer-device-batch-review-round682-v1.txt",
-    "original_proposal": "qsa-indexer-device-batch-v1"
+    "original_proposal": "qsa-indexer-device-batch-v1",
+    "main_review": "main-review-round694-695.ja.md",
+    "prepared_build_recipe": "apply_build_qsa_device_batch_v1.py"
   },
   "prefill_dense_layer_bank_contract": {
     "research": "research-prefill-dense-layer-bank-contract-round684-v1.txt",
@@ -1773,7 +1793,7 @@
     "model": "gpt-6.1-sol",
     "source_diff_sha256": "4b8638e596bb704c98ee3c58ccea9782eda70fd2883daeca9a77e6ff52ed318f",
     "review": "research-prefill-scratch-alias-review-round688-v1.txt",
-    "state": "Applied default OFF; actual production native linked, normal11+ASan/UBSan11 host processes PASS; GPU owned8K/borrowed exact8K/relayout4K/canary/one-byte-short/topology rejection PASS. Model inference, quality, RESTORE, physical262144 and speed remain unqualified.",
+    "state": "Default OFF. Host22 and actual allocation PASS. Same-native actual78453 OFF model diagnostic PASS, selected768 outputs and752 store/input rows equal within run; native/server0/fault0. ON counterpart running; paired parity not yet qualified.",
     "C8192_carve_saving_bytes": 251659008,
     "host_recipe": "qualify_prefill_scratch_alias_v1.py",
     "host_fixture": "prefill_scratch_prefix_fixture_v1.cpp",
@@ -1782,13 +1802,17 @@
     "build_host_corrected": "prefill-scratch-alias-build-host-v2.json",
     "GPU_allocation_original": "prefill-scratch-allocation-v1.json",
     "GPU_allocation_corrected": "prefill-scratch-allocation-v2.json",
-    "retention": "prefill-scratch-allocation-log-retention-v1.json"
+    "retention": "prefill-scratch-allocation-log-retention-v1.json",
+    "model_OFF": "prefill-scratch-alias-model-0-v1.json",
+    "model_recipe": "run_prefill_scratch_alias_model_v1.py",
+    "model_comparator": "compare_prefill_scratch_alias_model_v1.py"
   },
   "prefill_native_dense_bank": {
     "research": "research-prefill-native-dense-graph-handoff-round689-v1.txt",
     "model": "gpt-6-luna",
-    "state": "Sol component source proposal complete, unused/unapplied/uncompiled/unexecuted; independent Luna R691 source review no component defect under truthful caller retirement. Native only recovery2066032640 B; canonical arena remains resident. Main full component code review/integration still pending.",
+    "state": "Main complete component diff/fixture source review plus R694 caller seam. Unapplied/unbuilt/untested. Main found enter bank non-OOM/null-owner allocation can return false unlike declared fail-stop contract; correct before integration. SessionGraphs/PLE/private overlay seam still required.",
     "proposal": "prefill-native-dense-layer-bank-v1",
-    "component_model": "gpt-6.1-sol"
+    "component_model": "gpt-6.1-sol",
+    "main_review": "main-review-round694-695.ja.md"
   }
 }
