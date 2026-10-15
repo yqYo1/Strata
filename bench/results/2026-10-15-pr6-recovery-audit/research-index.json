@@ -1136,7 +1136,7 @@
     "PR6 performance patch changes historic sycl/src/prefill/prefill.cpp, not current root src/prefill/prefill.cpp. Current root rg finds compact scratch but no layer-major selector. History preservation is not adoption.",
     "Original645.85 PP and later449.7 full-context/MTP measures need separate source/config reconciliation; different protocol does not justify discarding the old improvement."
   ],
-  "next": "Current user capacity calculation now tied to real alias allocation/carve; alias remains default OFF. Next serial model OFF/ON boundary gate then GPU saved-hidden placement. Preserve QSA batch and Direct attention candidates; NativeDense-only bank needs all graph/PLE ownership handoff. No new decode tuning.",
+  "next": "Alias allocation and same-native selected model boundary gate passed. QSA device-batch v2 applied defaultOFF and fresh actual build in progress; next Main-owned small GPU check, then broad component/model/RESTORE/clean gates. Preserve GPU hidden placement and Direct attention candidates.",
   "main_review": "main-review-round559-560.ja.md",
   "subsequent_main_review": "main-review-round561-562.ja.md",
   "public_history_reverification": "public-history-reverification.json",
@@ -1793,7 +1793,7 @@
     "model": "gpt-6.1-sol",
     "source_diff_sha256": "4b8638e596bb704c98ee3c58ccea9782eda70fd2883daeca9a77e6ff52ed318f",
     "review": "research-prefill-scratch-alias-review-round688-v1.txt",
-    "state": "Default OFF. Host22 and actual allocation PASS. Same-native actual78453 OFF model diagnostic PASS, selected768 outputs and752 store/input rows equal within run; native/server0/fault0. ON counterpart running; paired parity not yet qualified.",
+    "state": "Default OFF. Host22/allocation PASS; same-native actual78453 OFF/ON long model diagnostics PASS, all768 selected FP32 layer output rows exact and finite, same-run752 store/input rows exact perarm, both native/server0/fault0. No clean performance/task quality/real RESTORE/physical262144 qualification.",
     "C8192_carve_saving_bytes": 251659008,
     "host_recipe": "qualify_prefill_scratch_alias_v1.py",
     "host_fixture": "prefill_scratch_prefix_fixture_v1.cpp",
@@ -1805,7 +1805,12 @@
     "retention": "prefill-scratch-allocation-log-retention-v1.json",
     "model_OFF": "prefill-scratch-alias-model-0-v1.json",
     "model_recipe": "run_prefill_scratch_alias_model_v1.py",
-    "model_comparator": "compare_prefill_scratch_alias_model_v1.py"
+    "model_comparator": "compare_prefill_scratch_alias_model_v2.py",
+    "model_ON_failed_original": "prefill-scratch-alias-model-1-v1.json",
+    "model_ON": "prefill-scratch-alias-model-1-v2.json",
+    "model_recipe_corrected": "run_prefill_scratch_alias_model_on_v2.py",
+    "model_pair": "prefill-scratch-alias-model-comparison-v1.json",
+    "model_retention": "prefill-scratch-alias-model-retention-v1.json"
   },
   "prefill_native_dense_bank": {
     "research": "research-prefill-native-dense-graph-handoff-round689-v1.txt",

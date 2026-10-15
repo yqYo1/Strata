@@ -110,3 +110,29 @@ same-run memcmpが全て一致。raw31457280 Bを次のON側との比較consumer
 診断PP235.5 tok/sを記録するが、validation/trace/境界copy同期があるためclean速度へは昇格しない。
 ON側も同じproducerで開始し、全層rawのbyte比較は両側の通常終了後にだけ行う。
 元receiptは`prefill-scratch-alias-model-0-v1.json`。
+
+## ON側の再試行と完了
+
+最初のON試行v1はrunnerが127.0.0.1:18098のbindでEADDRINUSEとなり、native起動前に終了した。
+listen中のownerは後続確認で見えず、直前の同port終了後のTIME_WAITが候補だが当時のsocket stateは
+未採取なので断定しない。他process/serviceは停止していない。
+元v1 receiptのGPU_executed=trueはlaunch試行前に付けたflagで、実GPU起動の証拠ではない。
+engine-start/native stderrが無いこととrunner tracebackから、実際はGPU native未起動と判断する。
+wrapperの親controllerがresult.json不存在で上書きした例外も保持し、v2で元runnerエラーを先に確認する。
+元FAILED receiptは書き換えない。全owner退去/fresh fault0/dumpなし。
+
+ON v2は新しいrootとport18099を使い、同一request body・binary・compiled source・engine args・
+実験設定を維持した。native/server0、同boot、fresh fault0、dumpなし、全owner退去。
+actual78453入力/read/reuse0、24生成、thinking ON。診断PP235.1で、clean速度値ではない。
+actual carve2588395008 B、MTP expert退避後free2294431744 Bを観測した。
+
+`compare_prefill_scratch_alias_model_v2.py`で768行を全byte比較し、48層すべて16行が一致した。
+全FP32値もfinite。各armの47境界×16行の保存/次入力比較も一致した。
+output/reasoning fingerprintは結果へ記録するが、品質判定に完全一致を要求するものではない。
+診断の追加同期がraceを隠す可能性と、未採取行・unsynchronized run・RESTORE・physical262144・
+品質・clean速度が未合格であることを維持する。共有は既定OFFのまま。
+
+`retire_prefill_scratch_model_v1.py`で比較の全row結果、hash、phase件数、全層chunk完了と
+必要なhead/free/restore行を保存・照合後、成功raw2本/全boundary text/重複native trace
+64244150 Bを削除した。次QSA実model比較は新binaryで別の同binary controlを採るため、
+このrawを残すconsumerはない。原receipt/statusは不変。

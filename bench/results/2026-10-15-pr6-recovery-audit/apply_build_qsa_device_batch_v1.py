@@ -27,7 +27,7 @@ def main():
             pair['sampled_layer_residuals_bitwise_equal'],'closed same-native alias gate')
         module = load_owner(P/'bench/results/2026-10-14-niko-main-service-port/direct_owner.py')
         for arm in (0,1):
-            path = A/f'prefill-scratch-alias-model-{arm}-v1.json'
+            path = A/('prefill-scratch-alias-model-0-v1.json' if arm == 0 else 'prefill-scratch-alias-model-1-v2.json')
             old = json.loads(path.read_text())
             require(pair['references'][path.name]==sha(path) and old['passed'] and old['complete'] and
                 not old['active'] and not old['fresh_faults'] and old['boot_unchanged'] and
