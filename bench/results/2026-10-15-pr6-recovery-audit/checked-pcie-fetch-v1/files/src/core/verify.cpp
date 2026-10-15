@@ -1344,6 +1344,8 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
         // queue wait. Drain the submitted prefix before any further publication.
         if (fetch_status_.failed()) {
             finish_fetch(err); // preserves first enqueue error even when drain fails
+            if (work_status_ != cudaSuccess)
+                err += "; independent shared/hit status=" + std::to_string(int(work_status_));
             return false;
         }
         if (overlap_gpu_ && work_launched_ && work_status_ == cudaSuccess) {

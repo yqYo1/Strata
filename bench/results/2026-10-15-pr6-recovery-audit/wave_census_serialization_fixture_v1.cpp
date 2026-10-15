@@ -5,6 +5,8 @@
 #include <cassert>
 #include <cstdio>
 #include <memory>
+#include <string>
+#include <vector>
 
 using Census = strata::prefill::detail::LayerMajorShapeCensus;
 struct Shape { int64_t n, pos, chunk; bool rotate; };
@@ -42,6 +44,38 @@ int main() {
         }
         census->complete(stdout);
         assert(!census->failure);
+    }
+    // A full stdio buffer can defer /dev/full's error until fflush. Exercise
+    // both the actual Writer boundary and complete()'s in-memory failure flag.
+    // This does not prove durable external acknowledgement of a completion line.
+    for (bool via_complete : {false, true}) {
+        auto census = std::make_unique<Census>(1, 0, 1);
+        std::array<int32_t, 512> counts{};
+        for (int e = 0; e < 10; ++e) counts[e] = 1;
+        for (int layer = 0; layer < 48; ++layer) {
+            census->begin(layer, format, residency.data(), true);
+            census->counts(layer, 1, counts.data(), counts.size());
+            for (int e = 0; e < 10; ++e) {
+                census->issue(true, layer, 1, e, e, -1);
+                census->issue(false, layer, 1, e, e, -1);
+            }
+            census->end(layer);
+        }
+        assert(!census->failure);
+        std::vector<char> buffer(Census::output_cap);
+        FILE* bad = std::fopen("/dev/full", "w");
+        assert(bad && std::setvbuf(bad, buffer.data(), _IOFBF, buffer.size()) == 0);
+        if (via_complete) {
+            census->complete(bad);
+            assert(census->failure && std::string(census->failure) == "output_io_incomplete");
+        } else {
+            Census::Writer writer{bad};
+            census->serialize(writer);
+            assert(writer.ok && writer.bytes < buffer.size() && !std::ferror(bad));
+            assert(std::fflush(bad) != 0);
+            census->finalized = true;
+        }
+        std::fclose(bad);
     }
     return std::fflush(stdout) == 0 ? 0 : 1;
 }

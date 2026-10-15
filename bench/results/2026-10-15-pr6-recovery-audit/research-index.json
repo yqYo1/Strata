@@ -697,6 +697,24 @@
       "sha256": "f8a131766740443180105b48ddf3d8c7bfc55fca7755ed925a59d692d915c956",
       "status": "FINAL/Main source review: short thinking-off setup calibration does not qualify requested long workload. Existing controls only; long screen NOT_RUN; 5x3 grid is a suggestion, not mandatory minimum.",
       "main_review": "main-review-round641-642.ja.md"
+    },
+    {
+      "round": 643,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-checked-pcie-fetch-contract-round643-v1.txt",
+      "sha256": "fc3c9314692618e7bc3321bb35679c4936d95c7be64d76389dfe7ed14d583286",
+      "status": "FINAL independent source audit; Main corrected known parallel-work status preservation and copy/callback API labels in the proposal. CPU/helper and real integration gates remain unexecuted.",
+      "main_review": "main-review-round643-644.ja.md"
+    },
+    {
+      "round": 644,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-wave-census-contract-round644-v1.txt",
+      "sha256": "f179774a9d45e2a48673f145469c548470639d82653217e9ee08bbb084767f45",
+      "status": "FINAL independent source audit; Main hardened exact integer validation and added buffered-flush fixture source. Wave math/hooks source-aligned, no CPU/GPU execution; inherited external output-acknowledgement limit remains.",
+      "main_review": "main-review-round643-644.ja.md"
     }
   ],
   "main_initial_findings": [
@@ -713,7 +731,7 @@
     "main_review": "qsa-layout-recovery-v1/main-review.ja.md",
     "status": "Build/host and20GPU parity/oracle cases PASS/fault0. Component40sample screen closedPASS; layout1 median4.09%slower in one int8case, no adoption. No whole-model/full256K/RESTORE/quality qualification."
   },
-  "latest_main_review": "main-review-round641-642.ja.md",
+  "latest_main_review": "main-review-round643-644.ja.md",
   "component_summary": "qsa-layout-screen-summary.json",
   "gemm_orientation_probe": {
     "report": "gemm-orientation-probe-v1/implementation.txt",
@@ -1090,8 +1108,8 @@
   "wave_census_current": {
     "proposal": "layermajor-wave-census-v2",
     "qualification_source": "qualify_wave_census_host_v2.py",
-    "review": "main-wave-host-plan-v2.ja.md",
-    "state": "Source-only; NOT_BUILT/NOT_TESTED/NOT_RUN/unapplied. Independent C++ and Python reference/serializer checks prepared, serially after current owner closes. No SCC observer added."
+    "review": "main-review-round643-644.ja.md",
+    "state": "Source-only NOT_BUILT/NOT_TESTED/NOT_RUN/unapplied. Independent C++/Python summaries and buffered flush-failure fixture prepared. Generic exact-int validation hardened; now four validator tests. Original model gate and 4MiB/1MiB limits unchanged; durable external completion acknowledgement not solved."
   },
   "bench_input_comparison_current": {
     "fixed_workload": "bench-fixed-workload-v1",
@@ -1110,8 +1128,10 @@
     "research": "research-pcie-miss-routing-round641-v2.txt",
     "proposal": "checked-pcie-fetch-v1",
     "model": "gpt-6.1-sol",
-    "review": "main-review-round641-642.ja.md",
-    "state": "FINAL/source-reviewed proposal only; root unchanged, NOT_BUILT/NOT_TESTED/NOT_RUN. First synchronous copy/callback error and checked prefix drain before consumer. Recompile both verify/generate for changed class layout, isolated from current b1 comparison. Does not establish past hang cause or speed."
+    "review": "main-review-round643-644.ja.md",
+    "state": "R643 source-review corrections applied to proposal only. First API error/detail plus known work status preserved, checked drain before consumer. Actual-helper normal/ASan qualifier and isolated two-TU/dependency/link-map build sources prepared; NOT_RUN. Root/base binary unchanged; no GPU or past-hang causality proof.",
+    "host_qualification_source": "qualify_checked_pcie_fetch_host_v1.py",
+    "isolated_build_source": "build_checked_pcie_fetch_v1.py"
   },
   "long_setting_calibration": {
     "research": "research-long-workload-calibration-round642-v1.txt",

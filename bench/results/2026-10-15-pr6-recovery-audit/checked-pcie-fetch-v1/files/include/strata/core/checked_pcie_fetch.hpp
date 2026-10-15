@@ -56,12 +56,12 @@ struct CheckedPcieFetch {
         for(int i=0;i<n;++i) {
             drained=false; // Even a failed enqueue may have unknown side effects.
             const int code=copy(static_cast<uint8_t*>(stage)+size_t(i)*bytes,src[i],bytes);
-            if(code) {remember(code,"copy_enqueue",i,describe(code));return;}
+            if(code) {remember(code,"copy_api",i,describe(code));return;}
             ++submitted;
         }
         drained=false;
         const int code=notify();
-        if(code)remember(code,"callback_enqueue",n,describe(code));
+        if(code)remember(code,"callback_api",n,describe(code));
     }
     template<class Drain,class Describe> bool finish(Drain drain,Describe describe) {
         // Caller uses this in place of its existing checked copy-stream sync;

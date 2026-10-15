@@ -10,14 +10,16 @@ from validate_layermajor_census_v1 import validate_census, need
 
 
 def validate_wave_fields(d):
-    need(d.get('version')==1 and d.get('complete') is True,'completed v1 fields required')
-    need(d.get('wave_schema_version')==1 and d.get('wave_grouping')=='request_relative_chunk_ordinal' and
+    need(type(d.get('version')) is int and d['version']==1 and d.get('complete') is True,'completed v1 fields required')
+    need(type(d.get('wave_schema_version')) is int and d['wave_schema_version']==1 and d.get('wave_grouping')=='request_relative_chunk_ordinal' and
          d.get('issuer_expert_ids_verified') is True,'wave/issuer schema')
     n,position,chunk=d['tokens'],d['position'],d['configured_chunk']
     need(all(type(x) is int for x in (n,position,chunk)) and 0<n<=262144 and 0<=position<=262144-n and 1<=chunk<=8192,'wave request geometry')
     chunks=(n+chunk-1)//chunk
     need(len(d['layers'])==48,'wave layer count')
     for index,layer in enumerate(d['layers']):
+        need(all(type(layer.get(k)) is int and 0<=layer[k]<=2**64-1
+                 for k in ('layer','chunks','tokens','gu_calls','down_calls')),'wave layer scalar types/ranges')
         need(layer['layer']==index and layer['chunks']==chunks and layer['tokens']==n,'wave layer coverage')
         need(layer['gu_calls']==layer['down_calls'],'wave source incidences')
         waves=layer.get('waves')

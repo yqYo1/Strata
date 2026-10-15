@@ -84,7 +84,7 @@ def main():
                 persist()
             _, out, err = run('validator-tests', ['/usr/bin/python3', '-B', str(proposal / 'test_validator.py')], 60)
             match = re.search(r'Ran (\d+) tests? in .*\n\nOK\s*$', err.read_text())
-            require(match and int(match[1]) == 3, 'validator test count')
+            require(match and int(match[1]) == 4, 'validator test count')
             record['validator_tests'] = int(match[1])
             require(all(sha(P / rel) == pin for rel, pin in inputs.items()), 'source changed during host checks')
             require(sha(compiler) == record['compiler_sha256'], 'compiler changed during host checks')

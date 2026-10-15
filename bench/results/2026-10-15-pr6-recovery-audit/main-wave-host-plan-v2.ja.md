@@ -12,7 +12,7 @@ Mainは次の三ファイルを追加した。すべてsource-only、未build・
   終端receipt、子processのreap、session空、PID/start identity消失を確認する。提案の全pin、
   Mainのfixture/validator、Owner/helper、compilerのhashを保存する。既存の独立CPU fixtureと
   新しいserializer fixtureをnormalとASan/UBSanでそれぞれbuild/runし、Pythonの実出力照合と
-  提案validatorの3 testsも実行する。`-UNDEBUG`を必須にし、assertionを無効にしない。
+  提案validatorの4 testsも実行する。`-UNDEBUG`を必須にし、assertionを無効にしない。
 - `wave_census_serialization_fixture_v1.cpp`: 提案headerそのものをincludeし、5つのsynthetic
   geometryを48 layerずつ処理する。独立のGU/Down発行順を使い、実sizeofとserializerの出力を
   stdoutへ返す。n/pos/chunkは(1,0,1)、(13,17,3)、(32769,0,8192)、(262144,0,8192)、

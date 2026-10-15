@@ -26,6 +26,16 @@ def report():
 
 class ValidatorTests(unittest.TestCase):
     def test_nonzero_position_partial_waves(self):self.assertTrue(validator.validate_wave_fields(report())['passed'])
+    def test_rejects_bool_and_float_integer_fields(self):
+        for key in ('version','wave_schema_version'):
+            for value in (True,1.0):
+                d=report();d[key]=value
+                with self.subTest(key=key,value=value),self.assertRaises(RuntimeError):validator.validate_wave_fields(d)
+        for key in ('layer','chunks','tokens','gu_calls','down_calls'):
+            for kind in ('bool','float'):
+                d=report();value=d['layers'][0][key]
+                d['layers'][0][key]=bool(value) if kind=='bool' else float(value)
+                with self.subTest(key=key,kind=kind),self.assertRaises(RuntimeError):validator.validate_wave_fields(d)
     def test_rejects_wrong_union_hist_tail_schema(self):
         for key,value in [('union_sum',31),('partial_tokens',2),('max_wave_ne',32769),('expert_rows',131),('duplicate_incidences',19),('expert_wave_rows_hist',[0]*16)]:
             d=report();d['layers'][0]['waves'][0][key]=value
