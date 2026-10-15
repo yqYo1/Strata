@@ -1,0 +1,103 @@
+{
+  "schema": "main-bench-prefill-only-host-v2",
+  "active": false,
+  "passed": true,
+  "complete": true,
+  "GPU_executed": false,
+  "commands": [
+    {
+      "label": "benchmark-evidence",
+      "argv": [
+        "/usr/bin/python3",
+        "-B",
+        "tools/test_benchmark_evidence.py"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONNOUSERSITE": "1"
+      },
+      "started_utc": "2026-10-15T08:00:46.825066+00:00",
+      "wall_seconds": 90,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 610404,
+          "start_ticks": 40001094,
+          "sid": 610404,
+          "pgid": 610404
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 400010.946550912,
+      "pid": 610404,
+      "spawn_return_monotonic": 400010.948174779,
+      "direct_identity": {
+        "pid": 610404,
+        "state": "R",
+        "ppid": 610367,
+        "pgid": 610404,
+        "sid": 610404,
+        "start_ticks": 40001094,
+        "rss_bytes": 577536
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 13643776,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-15T08:00:47.242076+00:00",
+      "elapsed_seconds": 0.41680578200612217,
+      "logs": {
+        "benchmark-evidence.stdout": {
+          "bytes": 202,
+          "sha256": "33c8573dccbb8dec64fa554782e53f41b04643a226a4f75cb0cd18298da964d5"
+        },
+        "benchmark-evidence.stderr": {
+          "bytes": 113,
+          "sha256": "357a61e4157bd25312bf94125cf6fa13430b907026f74a763a371e1086370595"
+        }
+      }
+    }
+  ],
+  "original_failed_receipt_sha256": "fb3d2e14a9cbae614511916d1347cf272775e1c8b2f2392fa09898fdd91d5df0",
+  "reused_passed_tests": [
+    {
+      "label": "proposed-prefill-only",
+      "tests": 5
+    },
+    {
+      "label": "benchmark-regression",
+      "tests": 5
+    },
+    {
+      "label": "benchmark-failfast",
+      "tests": 7
+    }
+  ],
+  "recipe_sha256": "967644b011866f6df1866cde59d8395f1bfde5129fb3892bdab934ac8046bf3e",
+  "source_pins": {
+    "tools/strata_bench.py": {
+      "base_sha256": "7be3ab66b9afaf911c80c0fc7869fa440886841c5168564df09202199a2e3645",
+      "proposed_sha256": "be421b2775569cd1bd937a35c606985c532c7d98f344a42d119a005ae54e9559"
+    },
+    "bench.sh": {
+      "base_sha256": "dc46e2d14ac42fa11cadbfc187c48ee17360631530d3f15172baff60f1fd4cc8",
+      "proposed_sha256": "56ff8c4a49ce489a50555c0e33c4ec6dd7276d41a98f833cc82ed0bb2f15dcb9"
+    }
+  },
+  "evidence_fixture_sha256": "fed534da576bcf6451104f2598611a1e6656e1614ca5e211dc5f3b916821709d",
+  "reason": "Old comparison fixture omitted actual nonce metadata required since fixed-workload patch; supply valid identity and also assert missing/different identities suppress comparison.",
+  "new_tests": 14,
+  "total_host_tests": 31,
+  "actual_client_sha256": "be421b2775569cd1bd937a35c606985c532c7d98f344a42d119a005ae54e9559",
+  "actual_wrapper_sha256": "56ff8c4a49ce489a50555c0e33c4ec6dd7276d41a98f833cc82ed0bb2f15dcb9",
+  "finished_utc": "2026-10-15T08:00:47.243165+00:00"
+}

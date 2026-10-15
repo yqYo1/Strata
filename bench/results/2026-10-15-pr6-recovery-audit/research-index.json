@@ -924,13 +924,67 @@
       "sha256": "1ab7ee313bea70838e453135ec1ed8870f1c0488e829c3595a3f31416a3817ab",
       "status": "Main checked shared PR6/current outer loop and configuration deltas. OFF already closed; ON live. Chunk8192 with R_GPU4096 rounds prefix to0; matched admission mandatory.",
       "main_review": "long-prefill-execution-order.ja.md"
+    },
+    {
+      "round": 669,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-long-prefill-profile-route-round669-v1.txt",
+      "sha256": "3d3786dc5aade4422f5c9133efc37157f3c4f868a7cb7bb8e468ec930ab3d842",
+      "status": "Superseded units error:600/1000 are tok/s, not600K/1M input; do not execute v1 input advice.",
+      "main_review": "prefill-only-host-and-priority-transition.ja.md"
+    },
+    {
+      "round": 669,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-long-prefill-profile-route-round669-v2.txt",
+      "sha256": "a0d3529e1d4a738a00f3232606a9e3876ab43d308f3a1c1a0c0554ac8b50ab9f",
+      "status": "Corrected FINAL after Main review; intended32K/64K. Actual fixed provider ITT linkage unverified; no profile executed.",
+      "main_review": "prefill-only-host-and-priority-transition.ja.md"
+    },
+    {
+      "round": 670,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-prefill-8k-admission-current-round670-v1.txt",
+      "sha256": "c0d4373e5e37012afa1caaf895d0aa3121daf0027da72774c15e6c14e93f24f1",
+      "status": "Superseded by v2: C4096 free cannot admit C8192 without subtracting extra no-borrow workspace.",
+      "main_review": "prefill-only-host-and-priority-transition.ja.md"
+    },
+    {
+      "round": 670,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-prefill-8k-admission-current-round670-v2.txt",
+      "sha256": "8e23c43f8398e2efced9ef662dc01b51d52823db3f94596ed0d46f6c93ecf951",
+      "status": "Corrected FINAL/Main reviewed: extra1210776832B first; projected C8192 free1212846848B belowcache+headroom by687172864B even RGPU0. No8K run admitted.",
+      "main_review": "prefill-only-host-and-priority-transition.ja.md"
+    },
+    {
+      "round": 671,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-prefill-gpu-local-routing-contract-round671-v1.txt",
+      "sha256": "c09023b5d3f851a15005b611d891596be184d0eb56d5e0af87998ae3affeea22",
+      "status": "FINAL received; hostoneMKL M dependency and compiled grouping candidate reported; Main source review/native tests pending.",
+      "main_review": "prefill-only-host-and-priority-transition.ja.md"
+    },
+    {
+      "round": 672,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-prefill-head-owner-deferral-round672-v1.txt",
+      "sha256": "155c2e9af10858208fcdff55e7b25d3c14e5ae1d825e89596bf65867263b7a41",
+      "status": "FINAL received; potential standalone head deferral/lifetime obligations reported, Main review/implementation/native qualification pending.",
+      "main_review": "prefill-only-host-and-priority-transition.ja.md"
     }
   ],
   "main_initial_findings": [
     "PR6 performance patch changes historic sycl/src/prefill/prefill.cpp, not current root src/prefill/prefill.cpp. Current root rg finds compact scratch but no layer-major selector. History preservation is not adoption.",
     "Original645.85 PP and later449.7 full-context/MTP measures need separate source/config reconciliation; different protocol does not justify discarding the old improvement."
   ],
-  "next": "Long-prefill only until repeated long-input PP exceeds600; goal1000 retained. Keep short-input decode-layout path; defer short-input threshold/new decode tuning. Actual execution-order report complete. Current owned IQ ON10041 remains live in previously launched long-generation cohort; no restart/overlap. Next qualify prefill-only phase profile and safe chunk/residual-admission controls; no >=600/adoption/quality/full262144/RESTORE/default/upstream completion claim.",
+  "next": "Old IQ ON10041 deliberately interrupted to prioritize prefill; native/server normal0,fault0,owner retired; fullsuite remains incomplete. Officialbench prefill-only mode actually applied;31hostchecks passed across preserved failed-v1/fixed-v2. New clean >=65536 actual input/runs3 recipe prepared on unchangedb1/C4096/FP32/RGPU4096/IQ1. Next start/observe exact ownedrecipe; no newdecode tuning and no blind8K arm. Review R671GPU grouping/R672head lifetime alongside liveGPU; no concurrenttest/build/cleanup.",
   "main_review": "main-review-round559-560.ja.md",
   "subsequent_main_review": "main-review-round561-562.ja.md",
   "public_history_reverification": "public-history-reverification.json",
@@ -940,7 +994,7 @@
     "main_review": "qsa-layout-recovery-v1/main-review.ja.md",
     "status": "Build/host and20GPU parity/oracle cases PASS/fault0. Component40sample screen closedPASS; layout1 median4.09%slower in one int8case, no adoption. No whole-model/full256K/RESTORE/quality qualification."
   },
-  "latest_main_review": "long-prefill-execution-order.ja.md",
+  "latest_main_review": "prefill-only-host-and-priority-transition.ja.md",
   "component_summary": "qsa-layout-screen-summary.json",
   "gemm_orientation_probe": {
     "report": "gemm-orientation-probe-v1/implementation.txt",
@@ -1416,5 +1470,28 @@
     "review": "main-review-round661-666.ja.md",
     "use": "Only as needed for long-prefill reduced-storage quality screening; no acceptance threshold or quality claim."
   },
-  "source_proposal_integrity": "source-proposal-integrity-v1.json"
+  "source_proposal_integrity": "source-proposal-integrity-v1.json",
+  "prefill_only_benchmark": {
+    "proposal": "bench-prefill-only-v1",
+    "host_receipt": "bench-prefill-only-host-v2.json",
+    "original_failed_host": "bench-prefill-only-host-v1.json",
+    "state": "ACTUALLY_APPLIED_HOST31_PASS; engine source/binary unchanged; realbenchmark notyetstarted at commit",
+    "recipe": "run_prefill_only_clean_v1.py",
+    "planned_receipt": "prefill-only-clean-iq1-c4096-v1.json",
+    "minimum_actual_input": 65536,
+    "runs": 3,
+    "thinking": true,
+    "output_cap": 24
+  },
+  "closed_iq_on": {
+    "receipt": "selective-iq-clean-bench-full-1-v2.json",
+    "status": "DELIBERATELY_INTERRUPTED_NOT_COMPLETE",
+    "stop": "selective-iq-on-priority-stop-v1.json",
+    "completed_prefix": "selective-iq-on-completed-prefix-v1.json",
+    "native_exit": 0,
+    "server_exit": 0,
+    "new_faults": 0,
+    "owner_retired": true,
+    "performance_adopted": false
+  }
 }

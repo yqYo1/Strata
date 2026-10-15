@@ -1,0 +1,345 @@
+{
+  "schema": "main-bench-prefill-only-host-v1",
+  "active": false,
+  "passed": false,
+  "complete": false,
+  "GPU_executed": false,
+  "commands": [
+    {
+      "label": "proposed-prefill-only",
+      "argv": [
+        "/usr/bin/python3",
+        "-B",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/bench-prefill-only-v1/test_prefill_only.py"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONNOUSERSITE": "1"
+      },
+      "started_utc": "2026-10-15T07:58:24.968661+00:00",
+      "wall_seconds": 90,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 601537,
+          "start_ticks": 39986909,
+          "sid": 601537,
+          "pgid": 601537
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 399869.090275643,
+      "pid": 601537,
+      "spawn_return_monotonic": 399869.09232352,
+      "direct_identity": {
+        "pid": 601537,
+        "state": "R",
+        "ppid": 601501,
+        "pgid": 601537,
+        "sid": 601537,
+        "start_ticks": 39986909,
+        "rss_bytes": 462848
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 34648064,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-15T07:58:25.551677+00:00",
+      "elapsed_seconds": 0.5826969590270892,
+      "logs": {
+        "proposed-prefill-only.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "proposed-prefill-only.stderr": {
+          "bytes": 103,
+          "sha256": "ad90271e0e7055c1a7caa9bf0006347b8ac44212f4223ac2e4bb48a4231e1a6b"
+        }
+      }
+    },
+    {
+      "label": "apply-reviewed-client",
+      "argv": [
+        "git",
+        "apply",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/bench-prefill-only-v1/source.diff"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONNOUSERSITE": "1"
+      },
+      "started_utc": "2026-10-15T07:58:25.552401+00:00",
+      "wall_seconds": 90,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 601581,
+          "start_ticks": 39986967,
+          "sid": 601581,
+          "pgid": 601581
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 399869.673872003,
+      "pid": 601581,
+      "spawn_return_monotonic": 399869.675508613,
+      "direct_identity": {
+        "pid": 601581,
+        "state": "R",
+        "ppid": 601501,
+        "pgid": 601581,
+        "sid": 601581,
+        "start_ticks": 39986967,
+        "rss_bytes": 397312
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-15T07:58:25.672422+00:00",
+      "elapsed_seconds": 0.11982469900976866,
+      "logs": {
+        "apply-reviewed-client.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "apply-reviewed-client.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "benchmark-regression",
+      "argv": [
+        "/usr/bin/python3",
+        "-B",
+        "tools/test_strata_bench.py"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONNOUSERSITE": "1"
+      },
+      "started_utc": "2026-10-15T07:58:25.673092+00:00",
+      "wall_seconds": 90,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 601606,
+          "start_ticks": 39986979,
+          "sid": 601606,
+          "pgid": 601606
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 399869.794585643,
+      "pid": 601606,
+      "spawn_return_monotonic": 399869.796165434,
+      "direct_identity": {
+        "pid": 601606,
+        "state": "R",
+        "ppid": 601501,
+        "pgid": 601606,
+        "sid": 601606,
+        "start_ticks": 39986979,
+        "rss_bytes": 462848
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 9986048,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-15T07:58:25.963069+00:00",
+      "elapsed_seconds": 0.28974967199610546,
+      "logs": {
+        "benchmark-regression.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "benchmark-regression.stderr": {
+          "bytes": 103,
+          "sha256": "b0dd04239029a366af42e7a16c28cfbd2a9f7d5319e0614ad07a350ecb2ef585"
+        }
+      }
+    },
+    {
+      "label": "benchmark-failfast",
+      "argv": [
+        "/usr/bin/python3",
+        "-B",
+        "tools/test_strata_bench_failfast.py"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONNOUSERSITE": "1"
+      },
+      "started_utc": "2026-10-15T07:58:25.963676+00:00",
+      "wall_seconds": 90,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 601659,
+          "start_ticks": 39987008,
+          "sid": 601659,
+          "pgid": 601659
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 399870.085206932,
+      "pid": 601659,
+      "spawn_return_monotonic": 399870.086869231,
+      "direct_identity": {
+        "pid": 601659,
+        "state": "R",
+        "ppid": 601501,
+        "pgid": 601659,
+        "sid": 601659,
+        "start_ticks": 39987008,
+        "rss_bytes": 577536
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 10383360,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-15T07:58:26.250287+00:00",
+      "elapsed_seconds": 0.2863547269953415,
+      "logs": {
+        "benchmark-failfast.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "benchmark-failfast.stderr": {
+          "bytes": 1015,
+          "sha256": "8dcb1ed21aa2dc00157a9fdcd5b82ad223813f939d8eee400fb11637e3cdceb2"
+        }
+      }
+    },
+    {
+      "label": "benchmark-evidence",
+      "argv": [
+        "/usr/bin/python3",
+        "-B",
+        "tools/test_benchmark_evidence.py"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONNOUSERSITE": "1"
+      },
+      "started_utc": "2026-10-15T07:58:26.251016+00:00",
+      "wall_seconds": 90,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 601666,
+          "start_ticks": 39987037,
+          "sid": 601666,
+          "pgid": 601666
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 399870.37259221,
+      "pid": 601666,
+      "spawn_return_monotonic": 399870.37455804,
+      "direct_identity": {
+        "pid": 601666,
+        "state": "R",
+        "ppid": 601501,
+        "pgid": 601666,
+        "sid": 601666,
+        "start_ticks": 39987037,
+        "rss_bytes": 462848
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 13795328,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 1,
+      "finished_utc": "2026-10-15T07:58:26.663070+00:00",
+      "elapsed_seconds": 0.4117498629493639,
+      "logs": {
+        "benchmark-evidence.stdout": {
+          "bytes": 202,
+          "sha256": "33c8573dccbb8dec64fa554782e53f41b04643a226a4f75cb0cd18298da964d5"
+        },
+        "benchmark-evidence.stderr": {
+          "bytes": 900,
+          "sha256": "56eba21f8ae424087163fc661dcbbbbc60d68140d4e615394340b7b42102c0e0"
+        }
+      }
+    }
+  ],
+  "tests": [
+    {
+      "label": "proposed-prefill-only",
+      "tests": 5
+    },
+    {
+      "label": "benchmark-regression",
+      "tests": 5
+    },
+    {
+      "label": "benchmark-failfast",
+      "tests": 7
+    }
+  ],
+  "source_applied": true,
+  "recipe_sha256": "dfa71a31ef0c046d07f8bbb352839da5dc36807bd67753b378a1428640fb7f7e",
+  "proposal_manifest_sha256": "da37eeb16553438a55ef302fcfa95580a19a1e20702a2aa4847830a093bf0ed3",
+  "source_pins": {
+    "tools/strata_bench.py": {
+      "base_sha256": "7be3ab66b9afaf911c80c0fc7869fa440886841c5168564df09202199a2e3645",
+      "proposed_sha256": "be421b2775569cd1bd937a35c606985c532c7d98f344a42d119a005ae54e9559"
+    },
+    "bench.sh": {
+      "base_sha256": "dc46e2d14ac42fa11cadbfc187c48ee17360631530d3f15172baff60f1fd4cc8",
+      "proposed_sha256": "56ff8c4a49ce489a50555c0e33c4ec6dd7276d41a98f833cc82ed0bb2f15dcb9"
+    }
+  },
+  "prior_interrupted_receipt_sha256": "c1a51695e09654e966f47c467bcb6b2ed0c088a9b19301d80ea0283084f7f8d6",
+  "scope": "Host fake-HTTP, body/coverage/journal/CLI tests plus actual client patch. No native inference/speed/quality gate.",
+  "error": "RuntimeError('benchmark-evidence: ..F...........\\n======================================================================\\nFAIL: test_changed_identity_suppresses_comparison (__main__.EvidenceTests.test_changed_identity_suppresses_comparison)\\n----------------------------------------------------------------------\\nTraceback (most recent call last):\\n  File \"/home/yayoi/orca/workspaces/Strata/sycl/tools/test_benchmark_evidence.py\", line 213, in test_changed_identity_suppresses_comparison\\n    self.assertIn(\"+100.0%\", b.compare_table(old, new))\\nAssertionError: \\'+100.0%\\' not found in \\'                                          old          new    change\\\\nchat decode tok/s                       10.00        20.00          \\\\n\\\\ndifferences:\\\\n  not comparable: missing actual nonce/workload policy; descriptive values only\\'\\n\\n----------------------------------------------------------------------\\nRan 14 tests in 0.154s\\n\\nFAILED (failures=1)\\n')",
+  "finished_utc": "2026-10-15T07:58:26.663688+00:00"
+}

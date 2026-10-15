@@ -208,14 +208,21 @@ class EvidenceTests(unittest.TestCase):
         stats = {"median": 10., "min": 10., "max": 10., "n": 3}
         old = {"results": {"chat": {"decode_tps": stats}, "prompts": {}, "agent": {}, "clients": {}},
                "machine": {}, "complete": True,
-               "comparison_identity": {"client": "a", "model": "m", "quant": "q", "thinking": True}}
+               "comparison_identity": {"client": "a", "model": "m", "quant": "q", "thinking": True,
+                                       "workload": {"workload_id": "fixture", "nonce": "fixture", "nonce_policy": "fixed-id"}}}
         new = copy.deepcopy(old); new["results"]["chat"]["decode_tps"]["median"] = 20.
         self.assertIn("+100.0%", b.compare_table(old, new))
-        for field, value in [("client", "b"), ("model", "other"), ("quant", "other"), ("thinking", False)]:
+        for field, value in [("client", "b"), ("model", "other"), ("quant", "other"), ("thinking", False),
+                             ("workload", {"workload_id": "other", "nonce": "other", "nonce_policy": "fixed-id"})]:
             changed = copy.deepcopy(new); changed["comparison_identity"][field] = value
             table = b.compare_table(old, changed)
             self.assertNotIn("+100.0%", table)
             self.assertIn(field, table)
+        missing = copy.deepcopy(new)
+        del missing["comparison_identity"]["workload"]
+        table = b.compare_table(old, missing)
+        self.assertNotIn("+100.0%", table)
+        self.assertIn("missing actual nonce/workload policy", table)
 
 if __name__ == "__main__":
     unittest.main()

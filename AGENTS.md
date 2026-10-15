@@ -31,6 +31,11 @@ are outside this work's scope.
   optimization until the prefill milestone; this does not defer long-prefill
   chunk-size, placement or scheduling tuning. Preserve shared state and the
   physical 262144-context correctness requirements.
+- Prefer GPU-local long-prefill data and control when added GPU work costs less
+  than the removed CPU work, transfers and synchronization. Measure the whole
+  dependency path. FP16 and BF16 storage both use two bytes; select format from
+  range, numerical/task evidence and actual performance rather than assuming
+  FP16 is universally better. Preserve the existing FP32 reference.
 - Check Niko upstream approximately every **48 hours** during ongoing work,
   using the project-only upstream sync skill. Record the actual check time,
   exact revision and integration status separately. Continue required functional

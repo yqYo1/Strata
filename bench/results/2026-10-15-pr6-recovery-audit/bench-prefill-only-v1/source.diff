@@ -1,0 +1,359 @@
+--- a/tools/strata_bench.py
++++ b/tools/strata_bench.py
+@@ -379,16 +379,54 @@
+     return value
+ 
+ 
++def prefill_eligibility(raw, row, minimum, context):
++    usage,timings=raw.get("usage") or {},raw.get("timings") or {}
++    prompt,read=usage.get("prompt_tokens"),timings.get("prompt_n")
++    cache_usage=(usage.get("prompt_tokens_details") or {}).get("cached_tokens")
++    cache_engine=timings.get("cache_n")
++    caches=[v for v in (cache_usage,cache_engine) if v is not None]
++    errors=[]
++    if not row.get("ok"): errors.append(row.get("err") or "incomplete response")
++    for name,value in (("usage.prompt_tokens",prompt),("timings.prompt_n",read)):
++        if type(value) is not int or value < minimum: errors.append(f"{name} must report >= {minimum}, got {value!r}")
++    if not caches or any(type(v) is not int or v!=0 for v in caches):
++        errors.append(f"every reported reuse count must be zero, got {caches!r}")
++    generated=usage.get("completion_tokens")
++    if type(generated) is not int or not 1<=generated<=LONG_MAX_TOKENS:
++        errors.append("completion usage outside 1..24")
++    if type(context) is not int or type(prompt) is not int or prompt+LONG_MAX_TOKENS+256>context:
++        errors.append("actual prompt lacks verified context/output headroom")
++    if type(read) is int and type(prompt) is int and read>prompt:
++        errors.append("reported read count exceeds reported prompt count")
++    pp=timings.get("prompt_per_second")
++    if type(pp) not in (float,int) or not 0<pp<float("inf"):
++        errors.append("missing finite positive engine prompt_per_second")
++    return {"eligible":not errors,"eligibility_errors":errors,"requested_min_tokens":minimum,
++            "actual_prompt_tokens":prompt,"actual_read_tokens":read,"read_tokens":read,
++            "actual_reused_tokens":caches[0] if caches else None,
++            "prompt_count_source":"usage.prompt_tokens","read_count_source":"timings.prompt_n",
++            "reuse_counts_reported":{"usage":cache_usage,"timings":cache_engine},
++            "thinking_requested":True,"reasoning_observed":bool(raw.get("reasoning_text")),
++            "reasoning_tokens_reported":(usage.get("completion_tokens_details") or {}).get("reasoning_tokens")}
++
++
+ class Suite:
+     def __init__(self, base, key, ctx, runs, think, log=print, want_clients=0, want_long=False, quick=False,
+-                 want_long_generation=False, long_generation_only=False, journal=None, fail_fast_engine_error=False, workload_id=None):
++                 want_long_generation=False, long_generation_only=False, journal=None, fail_fast_engine_error=False, workload_id=None, prefill_only=False, prefill_tokens=65536):
+         self.base, self.key, self.ctx, self.runs, self.think, self.log = base, key, ctx, runs, think, log
++        self.prefill_only, self.prefill_tokens = prefill_only, prefill_tokens
++        if prefill_only and (want_clients or want_long or want_long_generation or long_generation_only or quick):
++            raise ValueError("prefill-only cannot be combined with other suite scopes")
++        if prefill_tokens not in (32768,65536):
++            raise ValueError("prefill minimum must be 32768 or 65536")
++        if prefill_only:
++            self.think = True
+         self.clients, self.want_long = want_clients, want_long
+         self.quick = quick
+         self.want_long_generation = want_long_generation
+         self.long_generation_only = long_generation_only
+         self.journal = journal
+-        self.fail_fast_engine_error = fail_fast_engine_error
++        self.fail_fast_engine_error = fail_fast_engine_error or prefill_only
+         self.workload_id = validate_workload_id(workload_id) if workload_id is not None else None
+         self.nonce = self.workload_id if self.workload_id is not None else str(int(time.time()))
+         self.tokens_per_word, self.overhead = 1.1, 40
+@@ -414,11 +452,17 @@
+         row.update(output_chars=len(raw["text"]), reasoning_chars=len(raw["reasoning_text"]),
+                    output_sha256=hashlib.sha256(raw["text"].encode()).hexdigest(),
+                    reasoning_sha256=hashlib.sha256(raw["reasoning_text"].encode()).hexdigest())
++        if phase == "prefill-only":
++            row.update(prefill_eligibility(raw, row, self.prefill_tokens, self.ctx))
++            if not row["eligible"]:
++                row.update(ok=False, err="; ".join(row["eligibility_errors"]))
+         if phase.startswith("long-generation/"):
+             row.update(long_generation.sample_eligibility(raw, row))
+         if self.journal:
+             self.journal.append("result", phase, run, turn, request_index=request_index, sample=row)
+         if raw.get("_interrupted") is not None:
++            if self.prefill_only:
++                self.out.setdefault("request_samples", []).append({"phase":phase,"run":run,"turn":turn,"sample":row})
+             raise raw["_interrupted"]
+         if self.fail_fast_engine_error:
+             sample = {"phase": phase, "run": run, "turn": turn,
+@@ -432,6 +476,54 @@
+                 # The sole result row has already been fsynced; never add interrupted.
+                 raise EngineRequestError(reason)
+         return raw
++
++    def prefill_plan(self):
++        return {"mode":"prefill-only", "requested_min_tokens":self.prefill_tokens,
++                "construction_target_tokens":self.prefill_tokens * 5 // 4,
++                "construction_tokens_per_word":1.1, "construction_overhead":40,
++                "construction_version":1, "max_tokens":LONG_MAX_TOKENS,
++                "thinking_requested":True, "workload":self.workload_identity(),
++                "freshness":"distinct run tags; reported reuse must equal zero",
++                "calibration":"none; body never repaired from server responses"}
++
++    def prefill_prompt(self, run):
++        # Reuse the official prompt generator, with fixed construction constants.
++        # Independent of all server responses and mutable legacy calibration state.
++        return self.prompt_for(self.prefill_tokens * 5 // 4,run,fixed=True)
++
++    def run_prefill_only(self):
++        plan=self.prefill_plan()
++        cohort={**plan,"requests":[],"complete":False,"eligible_runs":0}
++        self.out["prefill_only"]=cohort
++        required=plan["construction_target_tokens"]+LONG_MAX_TOKENS+256
++        if type(self.ctx) is not int or self.ctx < required:
++            reason=f"prefill-only needs known context >= {required}, got {self.ctx!r}; no body repair"
++            self.out["terminal_failure"]={"phase":"prefill-only/setup","error":reason}
++            self.fail("prefill-only/setup",{"err":reason})
++            raise EngineRequestError(reason)
++        # Only the existing bounded short chat warmup; no calibration requests.
++        self.request("warm-up/chat",None,None,[{"role":"user","content":PROMPTS[0]}],24,True)
++        label=f"{self.prefill_tokens}-minimum"
++        self.out["prompts"][label]=cohort
++        try:
++            for run in range(self.runs):
++                before=len(self.out.get("request_samples",[]))
++                try:
++                    self.request("prefill-only",run,None,self.prefill_prompt(run),LONG_MAX_TOKENS,True)
++                finally:
++                    # Failed and interrupted returned responses remain individual samples.
++                    for sample in self.out.get("request_samples",[])[before:]:
++                        if sample["phase"]=="prefill-only":
++                            cohort["requests"].append({**sample["sample"],"run":run})
++        finally:
++            good=[r for r in cohort["requests"] if r.get("eligible") and r.get("ok")]
++            cohort.update(eligible_runs=len(good),complete=len(good)==self.runs,
++                          prompt_tps=stat(r["prompt_tps"] for r in good),
++                          ttft_s=stat(r["ttft_s"] for r in good),
++                          prompt_tokens=stat(r["actual_prompt_tokens"] for r in good),
++                          read_tokens=stat(r["actual_read_tokens"] for r in good),
++                          reused_tokens=stat(r["actual_reused_tokens"] for r in good))
++        return self.out
+ 
+     def run_long_generation(self):
+         lg = long_generation
+@@ -515,8 +607,9 @@
+         self.overhead = max(0, (pts[0] or 0) - 200 * self.tokens_per_word) if slope else 40
+         self.log(f"  calibrated: about {self.tokens_per_word:.2f} tokens per word")
+ 
+-    def prompt_for(self, tokens: int, run: int) -> list:
+-        words = max(50, int((tokens - self.overhead) / self.tokens_per_word))
++    def prompt_for(self, tokens: int, run: int, fixed=False) -> list:
++        rate,offset=(1.1,40) if fixed else (self.tokens_per_word,self.overhead)
++        words = max(50, int((tokens - offset) / rate))
+         return [{"role": "user", "content": f"[bench {self.tag(run, tokens, 'p')}]\n" + long_prompt(words)}]
+ 
+     def warm_up(self):
+@@ -709,6 +802,8 @@
+                                "errors": sum(r["error_count"] for r in rows)}
+ 
+     def run(self):
++        if self.prefill_only:
++            return self.run_prefill_only()
+         self.warm_up()
+         if self.long_generation_only:
+             self.run_long_generation()
+@@ -728,17 +823,17 @@
+ 
+ def summary_metrics(out: dict) -> dict:
+     """The flat {name: stat} the --compare table and the README table read."""
+-    m = {"chat decode tok/s": out["chat"].get("decode_tps"), "chat first token (s)": out["chat"].get("ttft_s")}
+-    for k, v in out["prompts"].items():
++    m = {"chat decode tok/s": out.get("chat", {}).get("decode_tps"), "chat first token (s)": out.get("chat", {}).get("ttft_s")}
++    for k, v in out.get("prompts", {}).items():
+         m[f"{k} prompt tok/s"] = v.get("prompt_tps")
+         m[f"{k} first token (s)"] = v.get("ttft_s")
+-    a = out["agent"]
++    a = out.get("agent", {})
+     if a:
+         m["agent cache hit %"] = a.get("hit_pct")
+         m["agent re-read tokens/session"] = a.get("reread_tokens")
+         m["agent turn first token (s)"] = a.get("turn_ttft_s")
+         m["agent decode tok/s"] = a.get("turn_decode_tps")
+-    c = out["clients"]
++    c = out.get("clients", {})
+     if c:
+         m[f"{c['clients']} clients total tok/s"] = c.get("total_tps")
+     for name, case in (out.get("long_generation") or {}).get("workloads", {}).items():
+@@ -1019,14 +1114,14 @@
+     lines = ["| Configuration | Actual prompt tokens | Reused tokens | Generated tokens | Runs | Prompt tok/s median and range | "
+              "Decode tok/s median and range | TTFT seconds median and range |",
+              "| --- | ---: | ---: | ---: | ---: | --- | --- | --- |"]
+-    c = out["chat"]
++    c = out.get("chat", {})
+     if c:
+         lines.append(row("short chat", fmt(c.get("prompt_tokens"), 0), "0", fmt(c.get("generated_tokens"), 0),
+                          (c.get("ttft_s") or {}).get("n", 0), "not measured", fmt(c.get("decode_tps")), fmt(c.get("ttft_s"), 2)))
+-    for k, v in out["prompts"].items():
++    for k, v in out.get("prompts", {}).items():
+         lines.append(row(f"{k} prompt, fresh", fmt(v.get("prompt_tokens"), 0), fmt(v.get("reused_tokens"), 0), str(LONG_MAX_TOKENS) + " cap",
+                          (v.get("ttft_s") or {}).get("n", 0), fmt(v.get("prompt_tps")), "not measured", fmt(v.get("ttft_s"), 2)))
+-    a = out["agent"]
++    a = out.get("agent", {})
+     if a:
+         n = a.get("complete_sessions", sum(x.get("complete", False) for x in a.get("session_samples", [])))
+         lines.append(row("agent session, follow-up turns", fmt(a.get("last_turn_prompt_tokens"), 0) + " at the last turn",
+@@ -1037,6 +1132,24 @@
+ 
+ def render_readme(res: dict) -> str:
+     mc, out, p = res["machine"], res["results"], res["params"]
++    if p.get("mode")=="prefill-only":
++        cohort=out.get("prefill_only",{})
++        lines=["# Prefill-only diagnostic", "",
++               f"Complete: {res.get('complete',False)}. Minimum actual prompt/read tokens: {p['prefill_tokens']}. "
++               f"Thinking requested: true; output cap: {LONG_MAX_TOKENS}. No decode/agent qualification.", "",
++               "One short warmup, then fresh long requests. No calibration or dynamic body repair.",
++               "Workload provenance: `"+json.dumps(p.get("workload"),sort_keys=True)+"`", "",
++               "| Run | Actual prompt | Actual read | Actual reused | Reasoning observed | Eligible | Prompt tok/s |",
++               "| --- | ---: | ---: | ---: | --- | --- | ---: |"]
++        for r in cohort.get("requests",[]):
++            lines.append(f"| {r.get('run')} | {r.get('actual_prompt_tokens')} | {r.get('actual_read_tokens')} | "
++                         f"{r.get('actual_reused_tokens')} | {r.get('reasoning_observed')} | {r.get('eligible')} | {r.get('prompt_tps')} |")
++        lines += ["", "Individual counts, body SHA256, sources, failures and construction plan: `results.json`; "
++                  "durable ordered requests: `requests.jsonl` and `journal-state.json`.", "",
++                  "Failure: "+str(res.get("terminal_failure",out.get("terminal_failure",{}))), "",
++                  "No physical-memory, quality or optimization-adoption result follows from this client diagnostic."]
++        return "\n".join(lines)+"\n"
++
+     gpu = " + ".join(mc.get("gpu") or []) or "CPU only"
+     vram = f"{mc['gpu_vram_mib'] / 1024:.0f} GiB VRAM" if mc.get("gpu_vram_mib") else "VRAM not read"
+     model = (model_label(mc) if mc.get("model") else mc.get("quant")) or "model not read"
+@@ -1078,7 +1191,7 @@
+           "## Results", ""]
+     L += results_table(out)
+     L += ["", "Ranges are the lowest and highest of the runs; long-generation summaries include only eligible requests."]
+-    ag = out["agent"]
++    ag = out.get("agent", {})
+     if ag and ag.get("sessions"):
+         L += ["", "### Agent session (conversation cache)", "",
+               f"Complete sessions: {ag.get('complete_sessions', 0)}; partial: {ag.get('partial_sessions', 0)}; "
+@@ -1090,7 +1203,7 @@
+         for d in ag["sessions"][0]:
+             if d["ok"]:
+                 L.append(f"| {d['turn']} | {d['prompt_tokens']} | {d['reused_tokens']} | {d['read_tokens']} | {d['prompt_tps'] or '-'} | {d['ttft_s']} | {d['decode_tps'] or '-'} |")
+-    cl = out["clients"]
++    cl = out.get("clients", {})
+     gen = out.get("long_generation")
+     if gen:
+         L += ["", "### Long generation and observed MTP agreement", "",
+@@ -1211,6 +1324,8 @@
+     ap.add_argument("--long", action="store_true", help="also a prompt of about 32,768 tokens")
+     ap.add_argument("--long-generation", action="store_true", help="also two 32K-input, >=1K-output MTP workloads (thinking on, up to 16K output)")
+     ap.add_argument("--long-generation-only", action="store_true", help="run only the new long-generation workloads and warm-up")
++    ap.add_argument("--prefill-only", action="store_true", help="only one short warmup and fresh long prefill requests; thinking on, output capped at 24")
++    ap.add_argument("--prefill-tokens", type=int, choices=(32768,65536), default=None, help="minimum ACTUAL prompt/read tokens for --prefill-only (default 65536)")
+     ap.add_argument("--think", action="store_true", help="leave thinking on (the default suite turns it off)")
+     ap.add_argument("--out", help="where to write the results folder (default: bench/results)")
+     ap.add_argument("--compare", metavar="DIR", help="a results folder (or its results.json) to put beside this run")
+@@ -1222,6 +1337,15 @@
+     a = ap.parse_args(argv)
+     if a.fail_fast_engine_error and a.clients:
+         ap.error("--fail-fast-engine-error cannot be combined with --clients")
++    if a.prefill_tokens is not None and not a.prefill_only:
++        ap.error("--prefill-tokens requires --prefill-only")
++    if a.prefill_only and (a.clients or a.long or a.long_generation or a.long_generation_only or a.compare_only):
++        ap.error("--prefill-only cannot be combined with other suite scopes or --compare-only")
++    if a.prefill_only and a.runs<1:
++        ap.error("--prefill-only needs positive --runs")
++    if a.prefill_only:
++        a.think=True
++    a.prefill_tokens=a.prefill_tokens or 65536
+     say = (lambda *x, **k: None) if a.quiet else (lambda *x, **k: print(*x, **k, flush=True))
+ 
+     if a.compare_only:
+@@ -1282,16 +1406,19 @@
+         suite = Suite(base, key, pre.get("context"), max(1, a.runs), a.think, log=say, want_clients=a.clients, want_long=a.long,
+                       want_long_generation=a.long_generation or a.long_generation_only,
+                       long_generation_only=a.long_generation_only, journal=journal,
+-                      fail_fast_engine_error=a.fail_fast_engine_error, workload_id=a.workload_id)
++                      fail_fast_engine_error=a.fail_fast_engine_error, workload_id=a.workload_id,
++                      prefill_only=a.prefill_only, prefill_tokens=a.prefill_tokens)
+         journal.append("identity", "suite", source=client_fingerprint(),
+                        model=pre.get("model"), quant=pre.get("quant"), context=pre.get("context"),
+                        thinking=a.think, long_generation_thinking=long_generation.THINKING,
+                        workload_version=long_generation.WORKLOAD_VERSION, requested_runs=max(1, a.runs),
+-                       fail_fast_engine_error=a.fail_fast_engine_error, workload=suite.workload_identity())
++                       fail_fast_engine_error=suite.fail_fast_engine_error, workload=suite.workload_identity(),
++                       mode="prefill-only" if a.prefill_only else "suite",
++                       prefill_plan=suite.prefill_plan() if a.prefill_only else None)
+         slots = pre.get("parallel_slots") or 1
+         if a.clients and a.clients > slots:
+             say(f"Note: the server runs {slots} request(s) at a time (--batch), so {a.clients} clients will partly wait their turn.")
+-        say("Running the suite (long generation may take much longer than the standard suite) ..."
++        say("Running prefill-only diagnostic ..." if a.prefill_only else "Running the suite (long generation may take much longer than the standard suite) ..."
+             if suite.want_long_generation else "Running the suite (about 3-10 minutes) ...")
+         try:
+             terminal_error = None
+@@ -1305,26 +1432,29 @@
+             if not machine.get("gpu"):
+                 machine["gpu"] = pre.get("gpu")
+             res = {"schema": SCHEMA, "tool": "tools/strata_bench.py", "date": datetime.date.today().isoformat(),
+-                   "params": {"workload": suite.workload_identity(), "fail_fast_engine_error": a.fail_fast_engine_error, "runs": suite.runs, "think": a.think, "clients": a.clients, "long": a.long, "started_server": started,
++                   "params": {"mode":"prefill-only" if a.prefill_only else "suite", "prefill_tokens":a.prefill_tokens if a.prefill_only else None, "workload": suite.workload_identity(), "fail_fast_engine_error": suite.fail_fast_engine_error, "runs": suite.runs, "think": a.think, "clients": a.clients, "long": a.long, "started_server": started,
+                               "long_generation": suite.want_long_generation, "long_generation_only": a.long_generation_only,
+                               "command": "python tools/strata_bench.py" + "".join(
+                                   f" {x}" for x in (f"--clients {a.clients}" if a.clients else "", "--long" if a.long else "",
+                                                     "--think" if a.think else "",
++                                                    f"--prefill-only --prefill-tokens {a.prefill_tokens}" if a.prefill_only else "",
+                                                     f"--workload-id {a.workload_id}" if a.workload_id is not None else "",
+                                                     "--fail-fast-engine-error" if a.fail_fast_engine_error else "", f"--runs {a.runs}" if a.runs != 3 else "",
+                                                     "--long-generation-only" if a.long_generation_only else
+                                                     "--long-generation" if a.long_generation else "") if x)},
+                    "elapsed_s": time.time() - t0, "machine": machine, "results": out,
+-                   "comparison_identity": {"workload": suite.workload_identity(), "client": client_fingerprint(), "thinking": a.think,
++                   "comparison_identity": {"mode":"prefill-only" if a.prefill_only else "suite", "prefill_plan":suite.prefill_plan() if a.prefill_only else None, "workload": suite.workload_identity(), "client": client_fingerprint(), "thinking": a.think,
+                        "reasoning_budget_tokens": 0, "temperature": 0, "model": machine.get("model"),
+                        "quant": machine.get("quant"), "context": machine.get("context"),
+                        "long_generation_version": long_generation.WORKLOAD_VERSION,
+                        "long_generation_thinking": long_generation.THINKING,
+                        "long_generation_instructions": long_generation.WORKLOADS,
+                        "calibration": [suite.tokens_per_word, suite.overhead],
+-                       "agent_files": [(n, hashlib.sha256(v.encode()).hexdigest()) for n, v in suite.agent_files()],
++                       "agent_files": [(n, hashlib.sha256(v.encode()).hexdigest()) for n, v in ([] if a.prefill_only else suite.agent_files())],
+                        "agent_max_tokens": AGENT_THINK_MAX_TOKENS if a.think else AGENT_MAX_TOKENS},
+                    "complete": terminal_error is None}
++            if a.prefill_only:
++                res["qualified"]=False
+             if terminal_error is not None:
+                 res.update(terminal="failed", qualified=False, terminal_failure=out["terminal_failure"])
+                 # Save JSON before rendering: a partial suite need not support every report table.
+@@ -1336,14 +1466,30 @@
+                 os.replace(partial, directory / "results.json")
+                 journal.state(terminal="failed", complete=False, qualified=False,
+                               error=str(terminal_error)[:300])
++                if a.prefill_only:
++                    (directory / "README.md").write_text(red(render_readme(res)),encoding="utf-8")
+                 say("Benchmark stopped after a failed request; partial results: " + str(directory / "results.json"))
+                 return 1
+             parent = Path(a.out) if a.out else ROOT / "bench" / "results"
+             d = write_results(res, parent, red, log_excerpt(log_path) if log_path else [], directory=directory)
+             journal.state(complete=True, terminal="complete", qualified=False)
+         except BaseException as error:
+-            journal.state(terminal="failed" if suite.out.get("terminal_failure") else "interrupted",
++            journal.state(terminal=("interrupted" if isinstance(error,(KeyboardInterrupt,SystemExit)) else "failed") if a.prefill_only else ("failed" if suite.out.get("terminal_failure") else "interrupted"),
+                           complete=False, qualified=False, error=repr(error)[:300])
++            if a.prefill_only:
++                partial={"schema":SCHEMA,"tool":"tools/strata_bench.py","date":datetime.date.today().isoformat(),
++                         "params":{"mode":"prefill-only","prefill_tokens":a.prefill_tokens,"think":True,
++                                   "runs":suite.runs,"workload":suite.workload_identity(),"started_server":started},
++                         "comparison_identity":{"mode":"prefill-only","prefill_plan":suite.prefill_plan(),
++                                                "workload":suite.workload_identity(),"client":client_fingerprint()},
++                         "elapsed_s":time.time()-t0,"machine":pre,"results":suite.out,"complete":False,
++                         "qualified":False,"terminal":"interrupted" if isinstance(error,(KeyboardInterrupt,SystemExit)) else "failed","terminal_failure":repr(error)[:300]}
++                target=directory/"results.tmp"
++                with target.open("w",encoding="utf-8") as handle:
++                    json.dump(redact_obj(partial,red),handle,indent=1,ensure_ascii=False)
++                    handle.flush();os.fsync(handle.fileno())
++                os.replace(target,directory/"results.json")
++                (directory/"README.md").write_text(red(render_readme(partial)),encoding="utf-8")
+             raise
+         say("\nResults (median, range over the runs):")
+         say(red(short_table(res)))
+--- a/bench.sh
++++ b/bench.sh
+@@ -1,6 +1,7 @@
+ #!/bin/sh
+ # Benchmark this Strata install the way it is used and write a report you can share (docs/COMMUNITY_BENCHMARKS.md).
+ # It starts the model with your settings (or uses the one already running), takes about 10 minutes and changes nothing.
++# --prefill-only [--prefill-tokens 32768|65536] runs only short warmup + fresh long prompts (thinking on).
+ # --long includes the standard agent session; --long-generation adds two ~1K-output MTP workloads.
+ cd "$(dirname "$0")" || exit 1
+ if [ -x .venv/bin/python ]; then
