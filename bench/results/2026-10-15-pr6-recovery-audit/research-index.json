@@ -1494,6 +1494,22 @@
       "path": "research-igc-ra-metadata-round744-v1.txt",
       "status": "FINAL read by Main; binaryRA opaque, obtain actual matching JIT ELF/ZEInfo/ISA; no resource or occupancy claims yet.",
       "sha256": "349e00554f7af003f3d940f97fa05b22629d058f38dd6c53ad690ddfa3f31d1c"
+    },
+    {
+      "round": 745,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-prompt-resource-next-round745-v1.txt",
+      "status": "FINAL reviewed by Main: scale globalFP16 notFP32; all8subgroups PV means adding same-thread nextK gather does not establish overlap. Doublebuffer UNIMPLEMENTED; see prompt-jit-resources-status-v1.ja.md.",
+      "sha256": "bd4e6db2de4fc0bb1f8390cd59ee337e2561417d103220d8723069700b3b03ef"
+    },
+    {
+      "round": 746,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-attention-roofline-round746-v1.txt",
+      "status": "FINAL reviewed: report1layer arithmetic must12x for fullphase; width deterministic fromstep source. Main full12layer exactsource formulas recorded; no hardwareutilization/perf claim.",
+      "sha256": "cb63bf26f97fe9988bbfe0c96d05030c1053b3786cdb12562922652bc1c769b7"
     }
   ],
   "main_initial_findings": [
@@ -2351,7 +2367,8 @@
     "model_comparison": "license-clean-prefill-model-comparison-v1.json",
     "diagnostic_PP": 293.8,
     "performance_adopted": false,
-    "latest_review": "main-review-round743-744.ja.md"
+    "latest_review": "main-review-round743-744.ja.md",
+    "latest_NLL_metadata_resolution": "own-dense-prefill-nll-main-review-v3.ja.md"
   },
   "retention_v11": {
     "compact": "closed-direct-diagnostics-compact-v1.json",
@@ -2362,10 +2379,10 @@
     "raw_byte_budget": 33554432
   },
   "current_next_actions": [
-    "Obtain actual IGC2.41.5 prompt kernel ELF/ZEInfo/ISA with corrected filename regex; oldv1 binaryRA alone gives no resource fields. All build/tests/GPU/cleanup Main serial.",
-    "Qualify scoped selector same-native actual78453 model and independent clean baseline/candidate repetitions. Keep defaultOFF until component and workload decisions.",
-    "Resolve own denseNLL v2 LGPL metadata origin before any integration, then Main fullpatch/lifetime/build/host/smallGPU review. FP16 quality/allGPU admission remain unqualified.",
-    "Keep physical262144/RESTORE/taskquality/capturedgraphrestore and requiredNiko functional imports outstanding. Next actual upstreamcheck approximately2026-10-16T01:12Z."
+    "Run independent clean whole-prefill baseline/radix1 repetitions with scoped beda08 binary and actual78453 requests; component win and oldn1diagnostics do not establish adoption.",
+    "Use actual defaultprompt ASM/ISA and corrected12layer deterministic source work to choose next bottleneck experiment; no paddedK adoption or assumedoccupancy/dynamicspill explanation.",
+    "After scoped clean cohort, Main integrate/build/host/smallGPU qualify ownNLLv3 for FP16 matched quality and separateallGPU admission. All physical262144/RESTORE/taskquality/capturedgraphrestore remain outstanding.",
+    "RequiredNiko functional imports stilloutstanding; next actual upstreamcheck approximately2026-10-16T01:12Z, not newly checked by reading reports."
   ],
   "prefill_layermajor_coarse_profile": {
     "directory": "layermajor-coarse-profile-v2",
@@ -2523,7 +2540,7 @@
       "cyclic": true
     },
     "model_adopted": false,
-    "next": "Dedicated prefill-only scope build/full3/clean18 PASS. Actual scoped-binary78453/model and clean whole-prefill repeats pending. Both defaultOFF; no adoption.",
+    "next": "Scoped radix1 actual78453/model selected768byteexact healthyPASS345.3 diagnosticn1. Clean currentbinary baseline/candidate repetitions pending, flags remaindefaultOFF.",
     "model_report": "own-qsa-select-model-v1.ja.md",
     "arm1": {
       "receipt": "own-qsa-select-model-a1-v1.json",
@@ -2549,7 +2566,16 @@
       "healthy_closed": true,
       "performance_adopted": false
     },
-    "old_model_scope": "Arms1/2 use earlier global flags shared with decode/verify; retain mixed-scope diagnostics, not dedicated prefill adoption."
+    "old_model_scope": "Arms1/2 use earlier global flags shared with decode/verify; retain mixed-scope diagnostics, not dedicated prefill adoption.",
+    "scoped_model": {
+      "receipt": "own-qsa-select-model-a1-v2.json",
+      "comparison": "own-qsa-select-model-a1-comparison-v2.json",
+      "actual_input": 78453,
+      "selected_rows_exact": 768,
+      "diagnostic_PP": 345.3,
+      "healthy_closed": true,
+      "performance_adopted": false
+    }
   },
   "retention_v16": {
     "manifest": "closed-own-qsa-select-retention-v1.json",
@@ -2562,9 +2588,12 @@
     "receipt": "own-qsa-select-model-a1-loaded-libraries-v1.json",
     "path": "/usr/local/lib/libigc.so.2.41.5+1788943183",
     "package_metadata_is_not_loaded_library_proof": true,
-    "JIT_resource_capture": "v1 closed healthy/exact;11binaryRA+SIP only, resourcefields UNQUALIFIED, filenamefilter correction and newv2 needed",
+    "JIT_resource_capture": "v1 RAonly, v2 ZEInfoonly, v3 exactmodulehashfilter capturedactualASM/ISA all11specializations. Three mapping128GRF/SIMD16 withflags30store38load; actualarm0launch localargs44496. No memoryspilltraffic/occupancy/causalperformance proof.",
     "hashes": "own-qsa-select-model-a1-library-hashes-v1.json",
-    "JIT_receipt": "prompt-jit-resources-a0-v1.json"
+    "JIT_receipt": "prompt-jit-resources-a0-v3.json",
+    "analysis": "prompt-jit-resource-analysis-v1.json",
+    "report": "prompt-jit-resources-status-v1.ja.md",
+    "compiler_reported_git_hash": "f05f218e6f0b888823c5678e1f64e91e597ea2dc"
   },
   "retention_v17": {
     "manifest": "closed-own-qsa-select-model-a2-retention-v1.json",
@@ -2581,10 +2610,30 @@
     "original_status_samples_unchanged": true
   },
   "own_dense_prefill_nll_current": {
-    "proposal": "own-dense-prefill-nll-v2",
-    "status": "SOURCE_ONLY_UNAPPLIED_UNBUILT_UNTESTED",
-    "source_diff_sha256": "c4febed46b321c782ec0ea08f55347c6846a713c83baf1b5c8cfa87f0c022079",
-    "license_metadata": "Author admitted copied SPDX lines from project skill without rootLICENSE check. RootMIT. No claimed external/Xe implementation consultation; fullsource/lifetime and productionorigin review pending before integration.",
-    "review": "main-review-round743-744.ja.md"
+    "proposal": "own-dense-prefill-nll-v3",
+    "model": "gpt-6.1-sol",
+    "source_diff_sha256": "fca81a0f6aac0ae805b438ab5368cf5f91120179e33c2df5fd100d8679f20689",
+    "provenance": "own-dense-prefill-nll-v3/provenance.json",
+    "review": "own-dense-prefill-nll-main-review-v3.ja.md",
+    "state": "Main fullpatch/currentwriter/drain source review and metadata origin/normalizedbyte equality done. UNAPPLIED_UNBUILT_UNTESTED; no quality/performance/admission claims.",
+    "base": "f27189d626f4a428982d25bb07f441b52345784c",
+    "old_v2": "Supersededown proposal retired after normalizedsource comparison and exactmetadataorigin explanation; no external/Xe implementation source used. Originalv2hashes preserved inprovenance, no attributionremoval.",
+    "temporary_full_package_budget_bytes": 16777216,
+    "next_review": "After scoped selector clean cohort, integrate/qualify NLL or reject, then retirefullmirrors."
+  },
+  "retention_v19": {
+    "manifest": "closed-own-qsa-select-model-a1-retention-v2.json",
+    "compact": "closed-own-qsa-select-model-a1-compact-v2.json",
+    "files": 26,
+    "logical_bytes": 32465083,
+    "original_results_unchanged": true
+  },
+  "retention_v20": {
+    "manifest": "closed-prompt-jit-and-nll-retention-v1.json",
+    "files": 469,
+    "logical_bytes": 88477412,
+    "original_results_unchanged": true,
+    "current_ISA_consumer": "Main baseline0 ASM/ISA2files <4MiB for next independent candidate; review nextcandidate or superseding compilation",
+    "NLL": "Ownv3 fullpackage temporary16MiB pendingqualityintegration review; no separateprogressbackup"
   }
 }

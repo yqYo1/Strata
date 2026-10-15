@@ -1,0 +1,222 @@
+{
+  "passed": true,
+  "complete": true,
+  "active": false,
+  "GPU_executed": false,
+  "references": {
+    "prompt-jit-resources-a0-v2.json": "03659aa8097dda04e82d5bb0f7c6b93c45134cefa252daf7328ffd3e690d2b1b",
+    "prompt-jit-resources-a0-v3.json": "78174dab291fe2f08f2bf7dacd8f7672dde95aa55d2c43a3ffe0042e2c6c2578",
+    "prompt-jit-identity-v1.json": "15f5d8c8ed1420928b5c59f7ca64b74097179bd25d638a205a63e27fe9b9087a"
+  },
+  "kernels": {
+    "0": {
+      "exact_symbol": "_ZTSZZN6strata7kernels12_GLOBAL__N_16launchILi1ELb1ELb0ELi0EEEvPKfNS0_12QsaAttnPoolsEPKiS7_lNS0_9QsaShapesEPflPvENKUlRN4sycl3_V17handlerEE_clESE_EUlNSC_7nd_itemILi1EEEE_",
+      "execution_env": {
+        "barrier_count": 1,
+        "grf_count": 128,
+        "has_4gb_buffers": "true",
+        "has_dpas": "true",
+        "has_no_stateless_write": "true",
+        "require_disable_eufusion": "true",
+        "indirect_stateless_count": 41,
+        "inline_data_payload_size": 32,
+        "offset_to_skip_per_thread_data_load": 192,
+        "simd_size": 16,
+        "slm_size": 4096,
+        "subgroup_independent_forward_progress": "true",
+        "eu_thread_count": 8
+      },
+      "assembly": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prompt-jit-resources-a0-root-v3/igc/OCL_asmb338aba6bf540d32_simd16_entry_0008.asm",
+        "bytes": 1178826,
+        "sha256": "01e8841d0a06c8ea23278503567809f6d5c3b1296d840ef6f29c964097a0128d",
+        "header": [
+          "//.kernel _ZTSZZN6strata7kernels12_GLOBAL__N_16launchILi1ELb1ELb0ELi0EEEvPKfNS0_12QsaAttnPoolsEPKiS7_lNS0_9QsaShapesEPflPvENKUlRN4sycl3_V17handlerEE_clESE_EUlNSC_7nd_itemILi1EEEE_",
+          "//.platform XE2",
+          "//.thread_config numGRF=128, numAcc=4, numSWSB=16",
+          "//.options_string \"-emitCrossThreadOffR0Reloc -hashmovs 3006835622 3209956658 -hashmovs1 0 8 \"",
+          "//.full_options \"-emitLocation -wideMulMadOpsEn -enableCoalesceScalarMoves -supportLSCImmScale 0 -samplerHeaderWA -enablePreemptionR0Only -hasRNEandDenorm -noStitchExternFunc -useInlineData -emitCrossThreadOffR0Reloc -abortOnSpill 4 -enableBundleCR 3 -freqBasedSpillCost 8 -freqBasedSpillCostFunc 1 -boundsChecking -presched-rp 100 -nodpsendreorder -SBIDDepLoc -PVCSendWARWA -output -binary -dumpcommonisa -dumpcombinedcisa -shaderDumpRegexFilter .*b338aba6bf540d32.* -dumpvisa -printHexFloatInAsm -noverifyCISA -enableHalfLSC -partialInt64 -activeThreadsOnlyBarrier -hashmovs 3006835622 3209956658 -hashmovs1 0 8 -GRFBumpUpNumber 2 \"",
+          "//.instCount 6264",
+          "//.RA type\tGRAPH_COLORING_FF_BC_RA",
+          "//.git-hash f05f218e6f0b888823c5678e1f64e91e597ea2dc",
+          "//.spill flag store 30",
+          "//.spill flag load 38"
+        ],
+        "instCount": 6264,
+        "numGRF": 128,
+        "compiler_reported_git_hash": "f05f218e6f0b888823c5678e1f64e91e597ea2dc",
+        "flag_spill_store": 30,
+        "flag_spill_load": 38,
+        "spilled_flag_declarations": 28,
+        "spilled_GRF_declarations": 0
+      },
+      "resource_metadata_block": "      barrier_count:   1\n      grf_count:       128\n      has_4gb_buffers: true\n      has_dpas:        true\n      has_no_stateless_write: true\n      require_disable_eufusion: true\n      indirect_stateless_count: 41\n      inline_data_payload_size: 32\n      offset_to_skip_per_thread_data_load: 192\n      simd_size:       16\n      slm_size:        4096\n      subgroup_independent_forward_progress: true\n      eu_thread_count: 8\n"
+    },
+    "1": {
+      "exact_symbol": "_ZTSZZN6strata7kernels12_GLOBAL__N_16launchILi1ELb1ELb0ELi1EEEvPKfNS0_12QsaAttnPoolsEPKiS7_lNS0_9QsaShapesEPflPvENKUlRN4sycl3_V17handlerEE_clESE_EUlNSC_7nd_itemILi1EEEE_",
+      "execution_env": {
+        "barrier_count": 1,
+        "grf_count": 128,
+        "has_4gb_buffers": "true",
+        "has_dpas": "true",
+        "has_no_stateless_write": "true",
+        "require_disable_eufusion": "true",
+        "indirect_stateless_count": 41,
+        "inline_data_payload_size": 32,
+        "offset_to_skip_per_thread_data_load": 192,
+        "simd_size": 16,
+        "slm_size": 4096,
+        "subgroup_independent_forward_progress": "true",
+        "eu_thread_count": 8
+      },
+      "assembly": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prompt-jit-resources-a0-root-v3/igc/OCL_asmb338aba6bf540d32_simd16_entry_0005.asm",
+        "bytes": 1181098,
+        "sha256": "db57c02071ca6b5c4b75d9405b960b8d714dee615fc92e22b0dac4ca004b6a70",
+        "header": [
+          "//.kernel _ZTSZZN6strata7kernels12_GLOBAL__N_16launchILi1ELb1ELb0ELi1EEEvPKfNS0_12QsaAttnPoolsEPKiS7_lNS0_9QsaShapesEPflPvENKUlRN4sycl3_V17handlerEE_clESE_EUlNSC_7nd_itemILi1EEEE_",
+          "//.platform XE2",
+          "//.thread_config numGRF=128, numAcc=4, numSWSB=16",
+          "//.options_string \"-emitCrossThreadOffR0Reloc -hashmovs 3006835622 3209956658 -hashmovs1 0 5 \"",
+          "//.full_options \"-emitLocation -wideMulMadOpsEn -enableCoalesceScalarMoves -supportLSCImmScale 0 -samplerHeaderWA -enablePreemptionR0Only -hasRNEandDenorm -noStitchExternFunc -useInlineData -emitCrossThreadOffR0Reloc -abortOnSpill 4 -enableBundleCR 3 -freqBasedSpillCost 8 -freqBasedSpillCostFunc 1 -boundsChecking -presched-rp 100 -nodpsendreorder -SBIDDepLoc -PVCSendWARWA -output -binary -dumpcommonisa -dumpcombinedcisa -shaderDumpRegexFilter .*b338aba6bf540d32.* -dumpvisa -printHexFloatInAsm -noverifyCISA -enableHalfLSC -partialInt64 -activeThreadsOnlyBarrier -hashmovs 3006835622 3209956658 -hashmovs1 0 5 -GRFBumpUpNumber 2 \"",
+          "//.instCount 6286",
+          "//.RA type\tGRAPH_COLORING_FF_BC_RA",
+          "//.git-hash f05f218e6f0b888823c5678e1f64e91e597ea2dc",
+          "//.spill flag store 30",
+          "//.spill flag load 38"
+        ],
+        "instCount": 6286,
+        "numGRF": 128,
+        "compiler_reported_git_hash": "f05f218e6f0b888823c5678e1f64e91e597ea2dc",
+        "flag_spill_store": 30,
+        "flag_spill_load": 38,
+        "spilled_flag_declarations": 28,
+        "spilled_GRF_declarations": 0
+      },
+      "resource_metadata_block": "      barrier_count:   1\n      grf_count:       128\n      has_4gb_buffers: true\n      has_dpas:        true\n      has_no_stateless_write: true\n      require_disable_eufusion: true\n      indirect_stateless_count: 41\n      inline_data_payload_size: 32\n      offset_to_skip_per_thread_data_load: 192\n      simd_size:       16\n      slm_size:        4096\n      subgroup_independent_forward_progress: true\n      eu_thread_count: 8\n"
+    },
+    "2": {
+      "exact_symbol": "_ZTSZZN6strata7kernels12_GLOBAL__N_16launchILi1ELb1ELb0ELi2EEEvPKfNS0_12QsaAttnPoolsEPKiS7_lNS0_9QsaShapesEPflPvENKUlRN4sycl3_V17handlerEE_clESE_EUlNSC_7nd_itemILi1EEEE_",
+      "execution_env": {
+        "barrier_count": 1,
+        "grf_count": 128,
+        "has_4gb_buffers": "true",
+        "has_dpas": "true",
+        "has_no_stateless_write": "true",
+        "require_disable_eufusion": "true",
+        "indirect_stateless_count": 41,
+        "inline_data_payload_size": 32,
+        "offset_to_skip_per_thread_data_load": 192,
+        "simd_size": 16,
+        "slm_size": 4096,
+        "subgroup_independent_forward_progress": "true",
+        "eu_thread_count": 8
+      },
+      "assembly": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prompt-jit-resources-a0-root-v3/igc/OCL_asmb338aba6bf540d32_simd16_entry_0001.asm",
+        "bytes": 1180904,
+        "sha256": "f97cc8aceb579357300f1656779d01d8eacc4caf306862e1f621a990bea923a8",
+        "header": [
+          "//.kernel _ZTSZZN6strata7kernels12_GLOBAL__N_16launchILi1ELb1ELb0ELi2EEEvPKfNS0_12QsaAttnPoolsEPKiS7_lNS0_9QsaShapesEPflPvENKUlRN4sycl3_V17handlerEE_clESE_EUlNSC_7nd_itemILi1EEEE_",
+          "//.platform XE2",
+          "//.thread_config numGRF=128, numAcc=4, numSWSB=16",
+          "//.options_string \"-emitCrossThreadOffR0Reloc -hashmovs 3006835622 3209956658 -hashmovs1 0 1 \"",
+          "//.full_options \"-emitLocation -wideMulMadOpsEn -enableCoalesceScalarMoves -supportLSCImmScale 0 -samplerHeaderWA -enablePreemptionR0Only -hasRNEandDenorm -noStitchExternFunc -useInlineData -emitCrossThreadOffR0Reloc -abortOnSpill 4 -enableBundleCR 3 -freqBasedSpillCost 8 -freqBasedSpillCostFunc 1 -boundsChecking -presched-rp 100 -nodpsendreorder -SBIDDepLoc -PVCSendWARWA -output -binary -dumpcommonisa -dumpcombinedcisa -shaderDumpRegexFilter .*b338aba6bf540d32.* -dumpvisa -printHexFloatInAsm -noverifyCISA -enableHalfLSC -partialInt64 -activeThreadsOnlyBarrier -hashmovs 3006835622 3209956658 -hashmovs1 0 1 -GRFBumpUpNumber 2 \"",
+          "//.instCount 6285",
+          "//.RA type\tGRAPH_COLORING_FF_BC_RA",
+          "//.git-hash f05f218e6f0b888823c5678e1f64e91e597ea2dc",
+          "//.spill flag store 30",
+          "//.spill flag load 38"
+        ],
+        "instCount": 6285,
+        "numGRF": 128,
+        "compiler_reported_git_hash": "f05f218e6f0b888823c5678e1f64e91e597ea2dc",
+        "flag_spill_store": 30,
+        "flag_spill_load": 38,
+        "spilled_flag_declarations": 28,
+        "spilled_GRF_declarations": 0
+      },
+      "resource_metadata_block": "      barrier_count:   1\n      grf_count:       128\n      has_4gb_buffers: true\n      has_dpas:        true\n      has_no_stateless_write: true\n      require_disable_eufusion: true\n      indirect_stateless_count: 41\n      inline_data_payload_size: 32\n      offset_to_skip_per_thread_data_load: 192\n      simd_size:       16\n      slm_size:        4096\n      subgroup_independent_forward_progress: true\n      eu_thread_count: 8\n"
+    }
+  },
+  "observed_arm0_launch": {
+    "kernel_create": "   <--- urKernelCreate(.hProgram = 0x15b0d140, .pKernelName = 0x432c1a (_ZTSZZN6strata7kernels12_GLOBAL__N_16launchILi1ELb1ELb0ELi0EEEvPKfNS0_12QsaAttnPoolsEPKiS7_lNS0_9QsaShapesEPflPvENKUlRN4sycl3_V17handlerEE_clESE_EUlNSC_7nd_itemILi1EEEE_), .phKernel = 0x7ffe28dd0410 (0x1b2bbac0)) -> UR_RESULT_SUCCESS;",
+    "first_launch": "   <--- urEnqueueKernelLaunchWithArgsExp(.hQueue = 0x15ad4880, .hKernel = 0x1b2bbac0, .workDim = 1, .pGlobalWorkOffset = nullptr, .pGlobalWorkSize = 0x7ffe28dd1440 (65536), .pLocalWorkSize = 0x7ffe28dd1458 (128), .numArgs = 20, .pArgs = 0x15ccfe10 {(struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 0, .size = 72, .value = (union ur_exp_kernel_arg_value_t){.value = 0x15a5b638}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 1, .size = 16384, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 2, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffd556b7400000}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 3, .size = 8192, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 4, .size = 8192, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 5, .size = 64, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 6, .size = 64, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 7, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xfffffffffee30000}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 8, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.value = 0x15a5b730}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 9, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xfffffffffea00000}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 10, .size = 72, .value = (union ur_exp_kernel_arg_value_t){.value = 0x15a5b740}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 11, .size = 256, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 12, .size = 2048, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 13, .size = 512, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 14, .size = 64, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 15, .size = 512, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 16, .size = 16, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 17, .size = 4096, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 18, .size = 4096, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 19, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffd556c4200000}}}, .launchPropList = nullptr, .numEventsInWaitList = 0, .phEventWaitList = nullptr, .phEvent = 0x7ffe28dd0670 (0x15b1bd30)) -> UR_RESULT_SUCCESS;",
+    "second_launch_same_local_sizes": true,
+    "local_args": [
+      [
+        1,
+        16384
+      ],
+      [
+        3,
+        8192
+      ],
+      [
+        4,
+        8192
+      ],
+      [
+        5,
+        64
+      ],
+      [
+        6,
+        64
+      ],
+      [
+        11,
+        256
+      ],
+      [
+        12,
+        2048
+      ],
+      [
+        13,
+        512
+      ],
+      [
+        14,
+        64
+      ],
+      [
+        15,
+        512
+      ],
+      [
+        16,
+        16
+      ],
+      [
+        17,
+        4096
+      ],
+      [
+        18,
+        4096
+      ]
+    ],
+    "requested_local_arg_bytes": 44496,
+    "UR_device_LOCAL_MEM_SIZE": 131072,
+    "device_query": "   <--- urDeviceGetInfo(.hDevice = 0x15acd600, .propName = UR_DEVICE_INFO_LOCAL_MEM_SIZE, .propSize = 8, .pPropValue = 0x7ffe28dd17b0 (131072), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;"
+  },
+  "source_arithmetic": {
+    "origin": "Main source-derived deterministic n_kv=p0+t+1,width=min(n_kv,2051),p0=0. Not a hardware counter measurement.",
+    "batched_rows": 78452,
+    "QSA_layers": 12,
+    "KV_heads": 2,
+    "selected_cells_per_layer_per_head": 158802777,
+    "tiles_per_layer_per_head": 5032820,
+    "total_source_joint_matrix_mad": 30921646080,
+    "total_source_DPASFLOPs": 126655062343680,
+    "total_logical_KV_code_scale_bytes_upper": 2012348790144,
+    "assumes_all_selected_IDs_have_valid_pages_for_payload": true,
+    "source_dpasmad_per_tile_per_WG": 256,
+    "barriers_in_loop_per_tile_per_WG": 7,
+    "total_loop_barrier_arrivals_per_WG_instances": 845513760,
+    "hardware_traffic_or_busytime_measured": false
+  },
+  "scope": "Actual known carrier JIT compiler output and launch arguments. Flag-register spill metadata is not memory scratch traffic. No occupancy, dynamic scratch/SLM allocation, causal timing or performance adoption claim.",
+  "next": "Main inspect baseline ISA/ASM memory and barrier code before new component geometry; repeated scoped whole-prefill speed still pending."
+}

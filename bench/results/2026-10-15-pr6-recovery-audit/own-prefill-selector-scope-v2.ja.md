@@ -40,3 +40,13 @@ task品質、実RESTORE・captured graph復元・physical262144は未検証。�
 `closed-own-qsa-select-scope-retention-v2.json`が全path/size/SHA/reason、compact evidence、
 元receipt不変を記録する。独立したcompact patch/manifest/prepareと実sourceをGitに保持する。
 次は同じ新binaryのactual78453モデル比較とclean反復。attentionの実JIT資源取得も継続する。
+
+## 専用化後の実モデル閉鎖
+
+Mainの`run_own_qsa_select_model_v2.py 1`はactual78453/reuse0/thinkingON/24生成で正常閉鎖した。
+実nativeは上記beda08、radix4は長文prefill専用APIだけに適用。48層全activation→Full復元、
+native/server0、全owned退去、同boot、新規fault0、dumpなし。768 FP32行/7864320値は旧referenceと
+byte一致・finite、同runの752 store/inputも正常。比較と元receiptは`own-qsa-select-model-a1-comparison-v2.json`、
+`own-qsa-select-model-a1-v2.json`。生成tokenの一致は合格条件にしない。
+診断1回は345.3 tok/s。新binaryのclean baseline/candidate反復は未実施で、速度の採用は未確定。
+比較後に重複raw・成功trace等26 files / 32,465,083Bを退役した。

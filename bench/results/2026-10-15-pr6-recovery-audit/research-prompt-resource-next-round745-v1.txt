@@ -1,0 +1,133 @@
+# R745 — Prompt-attention scheduling candidate from live resource evidence
+
+2026-10-16 JST. Read-only research. Only this report was written. No build,
+test, model/server/GPU/runtime/toolchain/process/environment operation, cleanup,
+or Git operation was performed. XeStrata product source, helpers, tests, and
+archived proposals were not inspected or used. The protected
+`prefill-gemm-only-contract-root-v1/record.json` was not read.
+
+## Finding and evidence boundary
+
+The strongest actionable architecture candidate is a two-buffer K/V staging
+pipeline: retain one tile for the current PV phase while the work-items gather
+the next K tile into a second local tile, then swap roles at an unconditional
+work-group barrier. This could overlap irregular page-table/global-memory
+loads and dequantization with current-tile matrix work. It is a proposal for a
+component experiment, not a claim that attention is the long-prefill critical
+path or that the extra local-memory use will improve throughput.
+
+The live `prompt-jit-resources-a0-v2` console evidence reports `grf_count=128`,
+`simd_size=16`, and compiler `slm_size=4096` for each of the eleven emitted
+kernel records. The UR trace for the observed dispatch reports a 128-work-item
+group and 20 arguments, of which 13 are local arguments totaling 44,496 bytes;
+the device's `UR_DEVICE_INFO_LOCAL_MEM_SIZE` is 131,072 bytes. The local
+argument sum is an observed launch parameter, not a runtime occupancy result
+or proof that all those bytes map to a particular hardware allocation class.
+The report labels 4,096 as compiler static SLM; it does not combine the two
+numbers into a claimed total, nor infer resident groups, spills, or occupancy.
+The capture's compiler metadata is identical across the mapping variants, so
+it does not establish that a particular mapping changes resource use.
+
+The actual prompt source is `src/kernels/sycl/prompt_attention.cpp`. Each
+iteration gathers K into `kv`, computes QK, updates online softmax, gathers V
+into the same `kv`, and computes PV. Barriers currently protect K writes/read,
+QK-score publication, V overwrite, and PV reads. The UR record confirms a
+local argument of 16,384 bytes, matching the declared `CH * HD` half K/V tile
+for the observed ordinary mapping. A second tile therefore adds 16,384 local
+argument bytes if represented as a same-sized half array. The observed local
+argument sum would become 60,880 bytes before any alignment or compiler
+effects. Two such groups would account for 121,760 bytes of launch local
+arguments, leaving only 9,312 bytes against the reported device limit before
+accounting for implementation details. This arithmetic motivates a strict
+resource gate; it does not predict how many groups will be resident.
+
+The measured QSA attention queue interval is 69,692 ms in the R742/R739
+instrumented model receipt, but it is nonexclusive, includes repeated work,
+and is not the kernel's isolated critical path. Do not prioritize this change
+over the pending fine profile solely from that interval. R737's pitch-40 K
+candidate was 61.40% slower in its component comparison and remains rejected;
+plain cell-major was about 11% slower. The new proposal retains the existing
+unpadded tile and mapping. The exact-selector results are also still
+default-off and not a whole-prefill adoption result.
+
+## Candidate: overlap next K gather with current PV
+
+Current ordering serializes next-chunk row lookup, K loads/dequantization,
+matrix QK, softmax, V loads/dequantization, and matrix PV. A second local half
+tile could let each work-item assigned to V/PV work also stage a subset of the
+next chunk's K while matrix subgroups consume the current V tile. The expected
+work removed from the exposed dependency path is the next chunk's global K
+code/scale loads, page/row checks, and conversion/dequantization latency; no
+global bytes disappear. The change adds one local K-tile write/read lifecycle,
+an extra 16 KiB local allocation, and likely another barrier. It may save no
+time if the kernel is limited by matrix throughput, if current gather is
+already hidden, or if reduced group residency costs more than the overlap.
+
+For mode 1, each K tile contains 256 x 32 int8 codes (8,192 bytes) plus four
+FP32 scales per cell (512 bytes) read globally, then converted to 16,384 bytes
+of half values written locally. These figures exclude row metadata and page
+table access and are exact logical payload sizes, not DRAM traffic measurements.
+The candidate aims to overlap those reads/conversions for the next tile with
+current PV. It does not change output precision or matrix types.
+
+Legal shape and synchronization constraints:
+
+- Keep the existing 16 x 16 `joint_matrix` B tiles, local address-space
+  pointers, row-major layout, and base/stride alignment. Intel's primary
+  `joint_matrix` specification requires convergent group operations and, for
+  BMG-G21 half matrices, an 8-byte-multiple row stride in bytes and a 4-byte
+  aligned base. The current `HD=256` stride satisfies this. Do not let a
+  subgroup load from a buffer while any work-item can overwrite the same tile.
+- Keep `joint_matrix_load`/`mad` calls convergent within participating
+  subgroups. Existing `subgroup < 4` is uniform for each subgroup, but a
+  replacement must preserve uniform control flow for every matrix collective.
+- A work-group barrier must remain unconditional and separate the completion
+  of current PV reads from reuse of that buffer, and the completion of next-K
+  writes from QK reads. A source-level barrier is not a substitute for proving
+  that all producer/consumer phases use the same local allocation and correct
+  buffer index.
+- Do not double-buffer V as well. The existing one-tile K-to-V reuse remains
+  safe only after QK has finished reading K; an explicit phase/lifetime table
+  must show when both K buffers and the current V tile are live.
+- The extra tile must pass the kernel's device local-memory admission gate.
+  The current device-reported local-memory capacity is 131,072 bytes, but the
+  44,496-byte UR sum and 4,096-byte compiler static SLM field have different
+  provenances. Query or capture the same exact compiled kernel's allocation
+  before calculating any residency estimate.
+
+## Minimum evidence before implementation is worth testing
+
+First, Main should correlate the R745 ZEInfo/UR capture to the exact mode,
+direct flag, mapping, and local-argument indices; obtain a direct same-handle
+`localMemSize` result or version-qualified per-kernel field; and use the fine
+profile to establish that the K-gather-to-PV dependency is materially exposed.
+The current data do not establish those facts. If either gate fails, close this
+candidate without editing product source.
+
+If those gates pass, the minimal component comparison should retain the
+current one-buffer path as reference and add a default-off pipeline arm. Require
+all existing component parity, finite-output, bounds, and fault checks; test
+counts 0/1/31/32/33 and multiple chunks so tail handling and buffer swaps are
+covered. Measure separate clean-process component samples with identical input
+and toolchain, then assess repeated whole-long-prefill samples and physical
+262144-context correctness before any adoption. Capture actual per-kernel
+resources for both arms. A component speedup alone does not establish a
+whole-prefill gain or satisfy the 600 tok/s milestone.
+
+## Sources and provenance
+
+- Own source: `src/kernels/sycl/prompt_attention.cpp`, especially `launch`,
+  `kv`, K gather, QK, V overwrite, PV, and barriers.
+- Live observation: `/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prompt-jit-resources-a0-root-v2/owned/component-jit-capture.stdout`
+  (eleven ZEInfo records); corresponding stderr UR launch trace. These are
+  observations only and were not modified.
+- Prior research: `research-prompt-compile-resources-round734-v1.txt`,
+  `research-padded-k-contract-round737-v1.txt`,
+  `research-live-jit-resources-round739-v1.txt`,
+  `research-aot-cold-compile-round742-v1.txt`,
+  `research-igc-ra-metadata-round744-v1.txt`,
+  `main-review-round743-744.ja.md`.
+- Intel primary specification: [oneAPI `joint_matrix` extension](https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/experimental/sycl_ext_matrix/sycl_ext_oneapi_matrix.asciidoc), including convergent group-function requirements and BMG-G21 stride/alignment restrictions.
+- Repository policy: `AGENTS.md` and `docs/ARTIFACT_RETENTION.md`.
+
+No source change or performance adoption is proposed in this round.
