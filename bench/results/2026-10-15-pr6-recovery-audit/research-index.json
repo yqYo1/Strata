@@ -1830,6 +1830,15 @@
       "human_review": "research-scope-review-round771-v1.ja.md",
       "human_review_sha256": "b2f3bdb95a4592bf86c50798a597593bc1d241b2bfe9f0d65f0fd70a3f7656d6",
       "status": "Complete; Main consumed short operational digest and file identities only. Collection originals and review bodies not loaded into Main context."
+    },
+    {
+      "round": 772,
+      "path": "research-available-scopes-round772-v1.json",
+      "sha256": "462dca63707a9b27ca340ec7e381b85d630317e8ddd1c3d6979a175ee871b761",
+      "model": "native Codex gpt-6-luna",
+      "reasoning_effort": "max",
+      "human_review": "research-available-scopes-round772-v1.ja.md",
+      "status": "Scope/redundancy review complete; all3 next scopes eligible. Main consumed only short operational digest and file identities, not review body."
     }
   ],
   "main_initial_findings": [
@@ -2016,49 +2025,34 @@
   "retention_v5": "retention-v5-manifest.json",
   "parallel_research_current": {
     "wave": [
-      768,
-      769,
-      770
+      773,
+      774,
+      775
     ],
     "purpose": "knowledge collection",
-    "state": "All3 settled and release receipts verified; R768/769 succeeded, R770 failed before research because its prerequisite was missing. Native Luna-max review771 completed; no original bodies read by Main.",
-    "assignments_generated_from": "research-scope-review-round767-v1.json next_three_research_scopes metadata",
-    "review_provider": "native Codex gpt-6-luna reasoning max on completion",
-    "main_reads_collection_bodies": false,
-    "review": "research-scope-review-round771-v1.json",
-    "next_scopes_metadata": [
+    "state": "All3 Orca Luna workers accepted; report bodies go to native Luna-max review after settlement, not to Main on arrival.",
+    "scope_review": "research-available-scopes-round772-v1.json",
+    "review_provider": "native Codex gpt-6-luna max on completion",
+    "no_steering": true,
+    "main_parallel_work": "Owned FP32-a 78444-token dense NLL diagnostic, single GPU process; not a speed cohort",
+    "launches": [
       {
-        "priority": 1,
-        "purpose_label": "long_prefill_chunk_size_knowledge_collection",
-        "title": "Chunk-size choices for causal long prefill under GPU memory limits",
-        "finite_question": "For long causal or recurrent GPU prefill, compare smaller, current-size and larger chunks, including how to treat a short tail. Which workload and device conditions justify each choice when GEMM/tile utilization, launch amortization, live workspace, memory traffic and shared-state dependencies all matter?",
-        "breadth_and_counterevidence": "Use current SYCL/Intel primary documentation and original non-LLM GPU/ASIC papers or engineering blogs. Compare at least three chunk-size strategies and a tail strategy; include evidence where a smaller chunk reduces live memory but loses throughput to launch or tile underfill, and where a larger chunk worsens residency or memory pressure. Keep design estimates separate from measured results. Do not repeat R769's buffer/queue-overlap comparison, R667's execution-order audit, or claim B570 performance.",
-        "report_budget": "1,300–1,800 words; at most 7 substantive primary sources, exact links, applicability limits and a counterevidence table.",
-        "schedulable_now": true,
-        "prerequisites": "Long-prefill chunk tuning remains in scope; this is bounded knowledge collection and does not require a new local measurement before research.",
-        "prerequisite_evidence": "AGENTS.md keeps long-prefill chunk-size tuning active; R769 compares fixed 8,192-row buffers but does not compare chunk sizes. Any implementation choice still requires Main's measured full-path and physical-context validation."
+        "round": 773,
+        "task": "task_8ff53c3aba6d",
+        "dispatch": "ctx_d46fd606dc20",
+        "model": "gpt-6-luna"
       },
       {
-        "priority": 2,
-        "purpose_label": "decision_support_if_host_submission_remains_material",
-        "title": "Reusable command submission for a dynamic long-prefill graph",
-        "finite_question": "If current full-boundary attribution shows host command/copy submission is material outside waits, compare direct per-command submission with reusable SYCL/Level Zero command lists or graph-like replay for a chunked prefill DAG. Which approach lowers repeated host work while preserving dynamic pointers, event dependencies, cancellation, async-error reporting and safe resource retirement?",
-        "breadth_and_counterevidence": "Use official SYCL, oneAPI and Level Zero references plus original non-LLM GPU command-replay or launch-overhead studies. Compare at least two replay mechanisms with ordinary submission, and include counterevidence for re-record/update overhead, unsupported dynamic arguments, queue ordering, portability and cases where device work or completion waiting dominates. Avoid repeating R751's wait-policy survey, R765's UR host-copy source audit or R769's transfer/compute overlap analysis.",
-        "report_budget": "1,200–1,700 words; at most 6 substantive primary sources, exact links and a capability/applicability matrix.",
-        "schedulable_now": false,
-        "prerequisites": "A fresh, closed attribution after current source integration must show repeated command/copy submission is a material part of the active long-prefill critical path, separately from busy completion waits and host computation.",
-        "prerequisite_evidence": "The current index has prior v3 attribution with 25.793 CPU seconds in residual host-copy submission and 165.704 seconds in explicit waits, but no fresh post-integration full-boundary timing was supplied for R771. Do not dispatch on the historical CPU totals alone."
+        "round": 774,
+        "task": "task_134090c6cdf6",
+        "dispatch": "ctx_4d746d5dcab8",
+        "model": "gpt-6-luna"
       },
       {
-        "priority": 3,
-        "purpose_label": "decision_support_if_storage_error_is_localized",
-        "title": "Selective residual precision after a matched storage-quality screen",
-        "finite_question": "Only if a matched FP32/FP16/BF16 screen localizes material error or task loss, compare fixed per-model storage, per-layer/per-branch storage and sparse higher-precision exceptions. Which evidence supports each strategy, and when do extra bytes, casts or dispatch erase the expected gain?",
-        "breadth_and_counterevidence": "Use same-family evidence where available plus original non-LLM activation-compression work. Distinguish storage-only cast/restore from changed live arithmetic and training quantization. Include outlier and correlated-quality counterexamples and independent task metrics; do not restate generic FP16-versus-BF16 facts or invent an acceptance threshold.",
-        "report_budget": "1,000–1,400 words; at most 6 primary sources, exact links and explicit evidence limits.",
-        "schedulable_now": false,
-        "prerequisites": "A natural-input matched FP32/FP16/BF16 measurement must produce per-layer/per-branch conversion tails, accumulated storage results, teacher-forced NLL and an independent task outcome that establish a localized material issue.",
-        "prerequisite_evidence": "Main explicitly reports that these paired per-layer quality/task data do not yet exist. The integrated default-OFF observer passed host and 129-input paired-GPU mechanics only; that does not satisfy the quality gate. This candidate must not be assigned until the named result exists."
+        "round": 775,
+        "task": "task_805507e6778c",
+        "dispatch": "ctx_06019b755e34",
+        "model": "gpt-6-luna"
       }
     ]
   },
@@ -3202,9 +3196,12 @@
     "count": 78444,
     "batched_rows": 78443,
     "recipe": "run_own_residual_quality_v1.py",
-    "state": "Fixed official-benchmark input only. Long NLL arms not yet executed.",
+    "state": "FP32-a live; owned controller holds exclusive lock. No result yet.",
     "quality_acceptance": "UNSET; general-language/task quality not qualified by word list",
     "performance_cohort": "excluded",
-    "next_arm": "fp32-a"
+    "next_arm": "fp32-a",
+    "live_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-residual-quality-root-v1/fp32-a",
+    "controller_session_id": 29361,
+    "source_freeze": true
   }
 }
