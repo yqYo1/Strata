@@ -1,0 +1,78 @@
+# Arc B570 IQ dequantization architecture research — Round 616
+
+Date: 2026-10-15 JST. Read-only source and primary-reference research for the Strata SYCL fork. No source changes, builds, tests, GPU work, profiler/process inspection, cleanup or Git mutation. This report is the only new file.
+
+## Question and prior-work boundary
+
+The current `src/kernels/sycl/iq.cpp` path launches one SYCL work-item for each GGUF block. Each work-item invokes the scalar `decode_block` into `float values[256]` and converts/scatters values to FP16. Current candidate formats are IQ2_XS (type 17), IQ3_S (21), IQ4_XS (23) on GU and IQ4_NL (20) on Down. The proposed lane-parallel exact-half candidate changes how this transfer-time decoder assigns values and stores halves, but still materializes all weights and then calls the existing oneMKL GEMM.
+
+R610 already recommended a direct packed-to-XMX tile path and documented llama.cpp's gather precedent. The parallel-IQ-dequant proposal already contains a scalar parity fixture and serial validation plan; it has not been run. I do not repeat either as a fresh discovery. The useful next architecture refinement is to make the packed XMX matrix path serve as a *streaming consumer* of each expert's packed GU/Down and to fuse the GU SwiGLU epilogue at the output-tile boundary, so expert weight expansion and its later GEMM reread are absent. Keep the quantized activation/fused-native route as a distinct comparator; it changes arithmetic and is not a bit-exact substitute for this FP16 fallback.
+
+## Candidate architecture
+
+Prototype an opt-in, format-specialized `packed_expert_xmx` path for the compact, non-MMQ native expert callback:
+
+1. For GU, one workgroup/subgroup owns one admitted output tile and row tile. It loads the packed IQ stream in coalesced chunks, decodes the type's indices/scales locally, converts only the current matrix fragment to the XMX operand type, and feeds `joint_matrix_mad`. The logical matrix remains `[ne, K] x [K, 1280]`; packed weights retain the current GGUF row/block order. Each tile decodes the packed bytes it consumes, rather than producing a full `[1280,2560]` FP16 weight tensor.
+2. Apply the existing interleaved SwiGLU formula to the completed gate/up accumulators while those values are still live in the output tile/registers. Write only the resulting `[ne,640]` hidden activation to the existing H staging buffer. This removes the 1280-wide GU accumulator write/read boundary if the current downstream op requires it; preserve existing FP32 accumulator and FP16 hidden conversion semantics where current helper does so. The exact helper contract must be source-audited before coding.
+3. For Down, stream-decode `[2560,640]` packed weights into XMX fragments and multiply the compact H rows into the existing FP32 destination. Down is a separate kernel launch because it consumes the completed SwiGLU rows. It avoids the full `[2560,640]` FP16 weight expansion and subsequent read.
+
+This is three logical operations but potentially two launches (GU+epilogue, then Down). It avoids expanded-weight scratch and oneMKL dispatch for both products. Preserve a fallback for each format/shape. A second phase could fuse both products only if a cooperative tile schedule can retain the full hidden vector without cross-workgroup synchronization or excessive registers; that is not the minimum prototype.
+
+The current callback already gathers the `ne` routed activation rows contiguously to `Xs` when compact FP16 is active. The proposed path should consume this compact input directly. It must not change routing/order or expert output offsets. The native fused kernel at `src/prefill/sycl/moe_fused.cpp` is a useful packed decode reference, but its `unpack` creates signed 8-bit codes and `store_act` quantizes activations for integer dot products. It is not an exact arithmetic template for the compact FP16 oneMKL route. Reuse format parsing only after checking every codebook, scale, row offset and output semantics against `include/strata/sycl/gguf_decode.hpp` and `include/strata/artifact/dequant.hpp`.
+
+## Concrete lane/layout choices
+
+A work-item-per-block decoder has a serial 256-value loop and a large temporary. For a decode-to-XMX tile, use one subgroup as a cooperative packed-fragment decoder, not as a lane-parallel full-matrix scatter kernel:
+
+- For IQ2_XS, lanes load adjacent packed 16-bit grid/sign words and the corresponding scale byte, unpack each grid's 8 signed values, then transpose/replicate those values into the `K x N` XMX fragment layout. IQ2_XS uses 16-value scales inside its 256-value superblock; the scale must follow the exact nibble selection in the scalar oracle.
+- For IQ3_S, coalesce reads across `qs`, `qh`, `signs`, and per-32-group scales; reconstruct the 9-bit grid index and sign mask before codebook lookup. The staggered planes mean a naïve lane-per-consecutive-output approach can create gathers. Cooperative vector loads followed by subgroup shuffles/register permutation are worth comparing with ESIMD gathers.
+- For IQ4_XS, coalesce its packed nibbles and compact six-bit sub-scales, then apply IQ4_NL's non-linear value table and superblock scale. IQ4_NL Down uses 32-element blocks and is simpler: contiguous nibble words plus one FP16 scale and a 16-entry code table.
+
+Candidate load policy: start with ordinary SYCL subgroup loads and explicit subgroup broadcast/shuffle, using a stable `reqd_sub_group_size` only after querying actual supported sizes in the owned test. In a separate variant, use ESIMD block loads for contiguous planes and gather only where the IQ layout forces non-contiguous addressing. ESIMD `gather/scatter` is a programming facility, not an assumed speedup; the Intel ESIMD docs define it as per-lane addressed memory access and list device/shape restrictions. The primary opportunity is to amortize packed loads across the matrix fragment and avoid writing expanded weights, not merely replace scalar stores with vector stores.
+
+A direct conversion into XMX fragments may use f16 operands and f32 accumulation. That changes multiplication order relative to oneMKL and may differ from the existing path's activation precision; XMX work-item mapping and `joint_matrix` shape admission must be validated on the actual configured B570 compiler/runtime. Do not assume the Xe2 table combinations in upstream llama docs are all supported by this build. Query/check `ext_intel_matrix`, compile-time tile support and runtime device aspects in the eventual owned fixture; keep exact fallback on any unsupported shape.
+
+## Numeric contract and dispatch constraints
+
+The compatibility target is current compact FP16 fallback behavior, not the Q8 fused-native result. Establish the exact behavior from source first: dequant uses the repository GGUF block decoders followed by `f16_from_f32`; oneMKL `Gemm::f16` uses FP16 X and W and returns FP32 accumulation; GU's `swiglu_interleaved` is followed by Down's FP16 GEMM. A direct tile should preserve weight values after FP16 conversion and the activation representation at each current boundary. Fused epilogue can change rounding if it avoids materializing/reloading GU output, so compare exact buffers and then model outputs; require numerical acceptance explicitly rather than silently loosening parity.
+
+At minimum, specialize only types 17/21/23 for GU and 20 for Down, `N=2560`, `FF=640`, `lay.native`, `!use_mmq`, compact FP16 enabled, one device, no peer execution, and exact tile divisibility. Keep the current path for other layouts, numerical modes, and unsupported tile shapes. The first product can be guarded by an explicit opt-in selector; no default dispatch change is justified by this research.
+
+Do not use the historical `ne<=64` census as a speed claim or current coverage estimate. That receipt is explicitly not layer-major qualified, has no per-format x `ne` joint histogram, and says `ne<=64` is 72.7% of calls but only 4.64% of routed rows. A direct packed path works by weight shape independently of `ne`, but XMX utilization and padding waste depend strongly on `ne`. Before choosing the dispatch range, Main needs a current layer-major format-by-`ne` histogram, plus a tile-padding weighted coverage calculation. A potential higher-value design is a variable-M tile path (pad M to the admitted XMX tile only); report actual useful/padded rows, not just call share. Do not batch unrelated experts into one M dimension unless the kernel has a correct grouped-weight addressing scheme.
+
+## Minimum worthwhile experiment
+
+First implement no product change. Build a standalone fixture proposal around one exact GU and Down expert, comparing:
+
+- existing scalar-dequant + current oneMKL GEMM + existing SwiGLU;
+- direct packed XMX GU with epilogue + direct packed XMX Down;
+- existing `fused::experts_native` only as a separately labeled lower-precision/Q8 comparator where the caller permits it.
+
+Sweep all four active types, representative `ne` values from the actual current histogram, and exact `N=2560/FF=640`; include one tile-edge shape that must decline to fallback. Record complete output parity/reference error, kernel duration, launch count, host submission and completed-batch wall separately, logical expanded bytes avoided (not physical DRAM claims), XMX occupancy/admission, registers/spills/SLM and packed-load efficiency. Keep clean timing separate from diagnostic resource collection. Use identical input/weight buffers and separate owned process environments/arms under the archive's measurement rules. The optimization is worthwhile only if end-to-end expert callback time improves repeatably for a row-weighted material share and the full expert/model numerical gates pass; fewer logical bytes or faster isolated unpack is insufficient.
+
+An even smaller first experiment is a no-SwiGLU direct packed GU tile versus current `dequant+oneMKL` for one representative active `ne` per type. This isolates the risky converter/XMX product. If this loses, stop before implementing the full epilogue. It is a more useful gate than a standalone SIMD dequant kernel because it tests the central architectural premise: whether B570 XMX can consume these packed IQ formats efficiently without the expansion roundtrip.
+
+## Rejected alternatives
+
+- **Another lane-parallel decode-to-half kernel as the primary next step:** valuable as the fallback candidate already described by parallel-iq-dequant-v1, but it retains full FP16 expansion and its reread. It cannot answer the architecture question posed here.
+- **Assume existing Q8 `fused_native` is equivalent:** it quantizes activations and uses integer dot arithmetic; its existing support does not establish parity with the FP16 fallback. Keep it as a comparator, not a replacement.
+- **One-kernel GU+SwiGLU+Down fusion immediately:** Down depends on all 640 hidden features after SwiGLU, while output tiles are distributed across workgroups. A single ordinary SYCL kernel has no grid-wide barrier; holding all intermediates in one workgroup creates huge resources and sacrifices parallelism. Start with GU epilogue fusion and a separate Down launch.
+- **Pure ESIMD decoder/store rewrite:** ESIMD load/store/gather APIs are available, but a decode-only rewrite leaves the dominant expanded matrix and library GEMM path. ESIMD can be tested inside packed-fragment staging if ordinary subgroup layout is poor.
+- **oneDNN or oneMKL quantized GEMM as the first route:** oneMKL currently receives dense FP16 matrices; upstream discussion/code docs say the useful feature is custom packed dequant into XMX tiles. No primary evidence found for these four GGUF IQ layouts being directly accepted by a library primitive.
+- **Persistent expanded-weight cache:** R610 established the memory expansion problem; for low routed rows each expert is still re-expanded per callback, but retaining all expanded tensors is not viable on this board. Do not add caching absent measured recurrent expert locality and a budget accounting for packed residency.
+- **Claim the old 64-row histogram implies large benefit:** its archived census is not the current layer-major source/workload and is strongly call-weighted versus row-weighted. Recalculate before gating.
+
+## Primary references
+
+- llama.cpp pinned official SYCL backend docs at `a0e6dc7384edb8f5d927155e1d26c10b4a310e6d`: [XMX gather format bits, row-length/64-token fallback gates, joint_matrix shape table and precision notes](https://github.com/ggml-org/llama.cpp/blob/a0e6dc7384edb8f5d927155e1d26c10b4a310e6d/docs/backend/SYCL.md). The docs list IQ4_NL, IQ3_S, IQ4_XS and IQ2_XS as XMX gather-eligible; they say eligible matrices are dequantized straight into XMX tiles, while >64 rows per expert or incompatible row lengths use library GEMM. They report about 50% prompt-processing gain for a different Qwen3-30B-A3B UD-IQ3_XXS case on Arc Pro B60; that is not a Strata/B570 prediction.
+- Same pinned llama.cpp source resolver/dispatch candidate for code inspection: [ggml-sycl.cpp](https://github.com/ggml-org/llama.cpp/blob/a0e6dc7384edb8f5d927155e1d26c10b4a310e6d/ggml/src/ggml-sycl/ggml-sycl.cpp) and [SYCL backend tree](https://github.com/ggml-org/llama.cpp/tree/a0e6dc7384edb8f5d927155e1d26c10b4a310e6d/ggml/src/ggml-sycl). Docs establish the pattern and boundaries; inspect the pinned implementation before borrowing tile details.
+- Intel oneAPI Optimization Guide: [Programming Intel XMX Using SYCL Joint Matrix Extension](https://www.intel.com/content/www/us/en/docs/oneapi/optimization-guide-gpu/2025-2/programming-intel-xmx-using-sycl-joint-matrix.html), including device `ext_intel_matrix` check, subgroup-uniform calls, `joint_matrix_load/mad/apply` and DPAS model.
+- Intel LLVM primary extension documentation: [ESIMD functions](https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/supported/sycl_ext_intel_esimd/sycl_ext_intel_esimd_functions.md), including gather/scatter signatures, memory semantics and hardware/shape restrictions.
+- Intel Arc B570 official product specification: [Xe2 and 144 XMX engines](https://www.intel.com/content/www/us/en/products/sku/241676/intel-arc-b570-graphics/specifications.html). Engine count establishes hardware presence, not achieved utilization or kernel speed.
+- Intel blog context (secondary, implementation claims checked against the pinned llama.cpp docs above): [Run LLMs on Intel GPUs Using llama.cpp](https://www.intel.com/content/www/us/en/developer/articles/technical/run-llms-on-gpus-using-llama-cpp.html). It is broad SYCL/backend context and does not qualify this candidate's performance.
+
+Local source and receipt references:
+- Current tree: `src/kernels/sycl/iq.cpp`, `include/strata/sycl/gguf_decode.hpp`, `include/strata/artifact/dequant.hpp`, `src/prefill/sycl/gemm.cpp`, `src/prefill/sycl/moe_fused.cpp`, and the compact branch in `src/prefill/prefill.cpp` near the `compute` lambda.
+- Prior work: `research-prefill-gu-hotpath-round610-v1.txt`, `dequant-shape-coverage-v1.json`, `parallel-iq-dequant-v1/main-validation-plan.md`, and `parallel-iq-dequant-v1/README.md` under `bench/results/2026-10-15-pr6-recovery-audit`.
+
+No implementation, performance result, numerical result, dispatch coverage, or adoption decision is claimed by this report.

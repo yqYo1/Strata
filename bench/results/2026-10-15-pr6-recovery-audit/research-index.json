@@ -454,7 +454,27 @@
       "sha256": "0fc37a7965c4df324ddac4413c1af0f4f21ee95d8cb6d4ecf35ae1c6c1911f42",
       "main_review": "main-review-round611-612.ja.md",
       "status": "FINAL/Main reviewed. Source invariants plausible; fullactivecount fixture missing separately from highID smallpool. Runtime/kernelroute/physical256K unqualified."
-    }
+    },
+    {
+      "round": 613,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-repeated-prefill-stall-round613-v1.txt",
+      "sha256": "85026cdcc8ae805f09ece8fef839b0dbf173d30c442cf451e5333bd0b8eb061f",
+      "main_review": "prompt-direct-bench-full-0-failure.ja.md",
+      "status": "FINAL/Main source review; queue/library wait, hostgrouping, only stack-supportedJIT hypotheses. Correct nativeabort precedesMainstop; see full0 failure report."
+    },
+    {
+      "round": 614,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-bench-failstop-round614-v1.txt",
+      "sha256": "b6ee63ec96749e7ac0e5d4a2e15f422d94c3773574256c0bafec58eb8a80b895",
+      "main_review": "prompt-direct-bench-full-0-failure.ja.md",
+      "status": "FINAL/Main reviewed; failfast/lifecycle blueprint useful. Report misidentifies same incompletejournal as earlierattempt and 32K successes as longgeneration; corrected by exact rows75/77/79/81 in Mainfailure report."
+    },
+    "research-prefill-repeat-state-round615-v1.txt",
+    "research-arc-dequant-optimization-round616-v1.txt"
   ],
   "main_initial_findings": [
     "PR6 performance patch changes historic sycl/src/prefill/prefill.cpp, not current root src/prefill/prefill.cpp. Current root rg finds compact scratch but no layer-major selector. History preservation is not adoption.",
@@ -638,7 +658,13 @@
     "report": "existing-exact-setting.ja.md"
   },
   "retention_v5": "retention-v5-manifest.json",
-  "parallel_research_current": [],
+  "parallel_research_current": {
+    "rounds": [
+      615,
+      616
+    ],
+    "state": "Both FINAL received; Main review of R615 performed, R616 primary-code review pending. No active research process."
+  },
   "phase_audit": {
     "build": "phase-audit-build-v1.json",
     "host": "phase-audit-host-v1.json",
@@ -713,12 +739,17 @@
     {
       "directory": "layerwise-checkpoint-capture-v2",
       "model": "gpt-6.1-sol",
-      "state": "Authoring proposal-only afterv1FINAL; reread bypass, actualC++ contract and unconditionalcallback RAII; no tests/build/GPU."
+      "state": "SolFINAL received; Main review/CPU actualheader fixture pending. Productunapplied. OriginalDirectpairfailed, independentdiagnosis first; no optimizationGPUexecution."
     },
     {
       "directory": "parallel-iq-dequant-v1",
       "model": "gpt-6.1-sol",
-      "state": "Authoring proposal-only defaultOFF exacthalf lane-parallel dequant for actualGU18/22/21/23 Down20/42; source/CPU/GPU qualification pending."
+      "state": "SolFINAL received; Main source/CPU exacthalf review pending. No productapply/build/runtime. OriginalDirectpairfailed; diagnosefirst."
+    },
+    {
+      "directory": "owned-stall-stack-probe-v1",
+      "model": "gpt-6.1-sol",
+      "state": "SolFINAL, Mainreview and CPUrealattach/detach/resume PASS; model protocol assembly pending, noGPUreproyet."
     }
   ],
   "kv_copy_groups": {
@@ -747,8 +778,11 @@
     "paired": "prompt-direct-profile-pair-v1.json",
     "review": "prompt-direct-profile.ja.md",
     "clean_recipe": "check_prompt_direct_bench_v1.py",
-    "clean_state": "OFF arm officialbench --long --think --long-generation --runs3 is live, root main-primary-prompt-direct-bench-full-0-root-v1. Check authoritative handle/process before treating terminal; ON not started.",
-    "agent_setting_limit": "CurrentsamebinaryDirect0/1 comparison inherits prompt-cache0/turn-token-1/short-read0 fromcensus, hence cold-agent re-read and zero reuse; not optimizedagent performance. Cacheenabled separate setting screen planned aftersourceaudit and activearms close."
+    "clean_state": "CLOSED FAILED Direct0full0: third32089input stalledlayer27/chunk0 watchdog480s; originalnativeabort-6/wrapper134 beforeMainstop. Ownedjobclosed, freshfault0/nodump/bootunchanged. Direct1NOTRUN; no performancepair/adoption. Same92binary retained; independentownedstackdiagnostic pending.",
+    "agent_setting_limit": "CurrentsamebinaryDirect0/1 comparison inherits prompt-cache0/turn-token-1/short-read0 fromcensus, hence cold-agent re-read and zero reuse; not optimizedagent performance. Cacheenabled separate setting screen planned aftersourceaudit and activearms close.",
+    "clean_failure": "prompt-direct-bench-full-0-failure.ja.md",
+    "clean_receipt": "prompt-direct-bench-full-0-v1.json",
+    "failure_evidence": "prompt-direct-bench-failure-evidence-v1.json"
   },
   "retention_v6": "retention-v6-manifest.json",
   "cpu_gu_reuse": {
@@ -768,7 +802,7 @@
     "source_review": "agent-cache-source-review-v1.json",
     "main_review": "main-review-round608.ja.md",
     "research": "research-agent-cache-settings-round608-v1.txt",
-    "state": "Source mixed-position mechanism reviewed; callersegmentation safetyfallback retained, onepassv1 source blockedreread regression; v2 authoring. Currentcache0 Directcomparison unchanged; RESTORE/physical256K unqualified.",
+    "state": "Mixed-position mechanism sourceconfirmed. Callersegmentation fallback notadopted. Onepassv2FINAL awaitingMainreview; currentformalDirect0failedliveness unrelatedtocache0 no-op; diagnosisbeforeGPUcandidate tests.",
     "traffic_scenarios": "checkpoint-traffic-scenarios-v1.json"
   },
   "dequant_candidates": {
@@ -781,5 +815,11 @@
     "research": "research-compiler-matrix-runtime-round611-v1.txt",
     "main_review": "main-review-round611-612.ja.md",
     "state": "Identicalsource oneMKLfixed customDPCPP versusicpx2026.1 compiler/stack A/B pending, after bothDirectclosures and smallgates; originalbenchmarkbuild untouched."
+  },
+  "owned_stall_stack": {
+    "proposal": "owned-stall-stack-probe-v1",
+    "main_review": "owned-stack-main-review.ja.md",
+    "host_gate": "owned-stack-host-preflight-v1.json",
+    "state": "Main CPU build and actual2thread GDB attach/detach/resume PASS; originalfixtureexit7 preserved, allownedclosed. InitialGCC-Werrorbuildfailure preserved and fixedwrite-resultcheck. GPUmodel NOT_RUN."
   }
 }
