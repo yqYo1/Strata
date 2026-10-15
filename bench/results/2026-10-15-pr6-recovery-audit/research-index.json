@@ -3724,7 +3724,7 @@
     "new_kernel_test": "own-native16-gemm-correctness-v2.json",
     "implementation_round787": "Full source/provenance review completed; unadopted/unbuilt. Need actualallocation extent/context guard consideration before production integration.",
     "research_next": [
-      813
+      817
     ],
     "registry_lifetime_failure": "own-native16-registry-lifetime-v1.ja.md",
     "regression": "own-native16-regression-followup2-correctness-v2.json",
@@ -3734,14 +3734,14 @@
     "clean_first_fp32": "346.5tok/s n1",
     "attention_main_review": "own-native16-attention-main-review-v1.ja.md",
     "implementation_next": [
-      809,
-      810
+      816,
+      818
     ],
     "clean_first_bf16": "123.8tok/s n1, same request/binary/GPU32768 residual rows; -64.27% throughput",
     "initial_long_comparison": "own-native16-first-long-comparison-v1.json",
     "performance_adopted": false,
-    "next": "R810actualvLLM Xe2 source and R809oneDNN controller pending. Quality closed; Main can build/test next under exclusive lock after full source reviews.",
-    "onednn_candidate": "R799 incomplete gated source unadopted; R804 functional faithful-BF16 source returned, Main full C++/CMake/header/fixture read, UNBUILT/UNRUN; exception-lifetime fixture fix required before test.",
+    "next": "Main R816 vLLM component compile/test/operator before engine hook. R818 QSA typed16 source-only in parallel. Main hardware-idle after oneDNN check closure; no source/default performance adoption.",
+    "onednn_candidate": "Main build-v3/smoke-v3 PASS. Check-v3 FAIL at strict exact BF16 identity/subnormal case12 after11numeric cases; exactbits not captured. No GPUfault/dump, ownership closure true; numerics exit1. Chain/lifecycle/scratch UNRUN. Hold secondary candidate; do not weaken old68tests.",
     "retention": "closed-native16-first-wave-retention-v1.json:366files/124263459logicalbytes retired; all statuses unchanged; currentv2build, oldoneGEMMexecutable, oldFP32NLLcontrols preserved.",
     "natural_input": "own-native16-natural-input-v1.json:32863 thinkingON,64 positions, no repeatedpadding, no GPU executed",
     "coarse_profile": "Matched FP32/BF16 officialbench long diagnostic PASS; own-native16-coarse-comparison-v1.json; MoE22.0774->166.014s; nonexclusive intervals.",
@@ -3751,9 +3751,10 @@
     "research_807": "Settled/released, review808 complete. Main read only What the kernel actually does and Smallest viable standalone adaptation for actual kernel selection; then read actual pinned BSD3 primary Xe2 core/grouped helper/launcher145lines and policy (policy not authorized for copying).",
     "research_808": "research-scope-review-round808-v1.json; no further general GEMM survey needed; actual execution remains UNRUN",
     "onednn_main_review": "own-native16-onednn-main-review-v1.ja.md; Main full source review completed, qualification controller R809 source-only active.",
-    "vllm_xe2_candidate": "R810 source-only Sol adaptation of actual vLLM Xe2 core; same caller queue, direct native16 output, independent adapter; NOT built/tested/adopted.",
+    "vllm_xe2_candidate": "R810 actual BSD3 Xe2 source returned/committed b3644165; Main full source+provenance review own-vllm-xe2-main-review-v1.ja.md; UNBUILT/UNRUN/unadopted.",
     "research_811": "Completed/settled/released, reviewed812; collection body Main UNREAD. Surface/prefetch/tail contracts held for matching R810 source review decision; actual BMG behavior UNRUN.",
     "retention_screen": "closed-native16-screen-log-retention-v1.json:99closed log/duplicate files retired,64589559logicalbytes; onlyFP32-a+customBF16canonical64fullvocabularycaptures retained forR810/R804 numericalcomparison; privateR803exe/buildrecord still currentconsumer. Allstatusbytesunchanged.",
-    "research_813": "OrcaLuna read-only knowledge collection active: grouped native16 MoE/partial dequantized-layer residency tradeoffs under10GiB. Share priorindex and do not interveneR810; Main body unread pending nativeLuna review."
+    "research_813": "Reviewed814; knowledge collection Main body UNREAD/hold. Overlap withR601/R627-633/R701-702; no new grouped survey until actualroute/livebyte/R810 evidence.",
+    "research_817": "OrcaLuna current-decision source research: exact AOT binary extraction/ISA proof, scope distinct fromR805general lowering; active, Main body notread."
   }
 }
