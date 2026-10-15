@@ -90,6 +90,14 @@ target_sources(strata_kernels PRIVATE src/kernels/sycl/native_mmq_xmx.cpp)
 set_source_files_properties(src/kernels/sycl/native_mmq_xmx.cpp PROPERTIES COMPILE_OPTIONS "-fno-fast-math")
 set_source_files_properties(src/kernels/sycl/native_iq_esimd.cpp PROPERTIES COMPILE_OPTIONS "-fno-fast-math")
 target_compile_options(strata_kernels PRIVATE -ffp-contract=off)
+
+# Manual component targets: no automatic GPU execution in CTest.
+add_executable(kv_copy_groups_host_fixture EXCLUDE_FROM_ALL tools/sycl/kv_copy_groups_host.cpp)
+target_compile_features(kv_copy_groups_host_fixture PRIVATE cxx_std_17)
+target_include_directories(kv_copy_groups_host_fixture PRIVATE ${PROJECT_SOURCE_DIR}/include)
+add_executable(sycl_kv_copy_groups_bench EXCLUDE_FROM_ALL tools/sycl/kv_copy_groups_bench.cpp)
+target_link_libraries(sycl_kv_copy_groups_bench PRIVATE strata_kernels)
+target_compile_options(sycl_kv_copy_groups_bench PRIVATE -fno-fast-math -ffp-contract=off)
 set_source_files_properties(src/kernels/sycl/native_q5_head.cpp src/kernels/sycl/native_q3_esimd.cpp src/kernels/sycl/native_q4_esimd.cpp src/kernels/sycl/native_q2_esimd.cpp src/kernels/sycl/native_iq4xs_esimd.cpp src/kernels/sycl/native_q2.cpp src/kernels/sycl/rope.cpp src/kernels/sycl/native_qsa_indexer.cpp src/kernels/sycl/ple.cpp src/kernels/sycl/s2_experts.cpp PROPERTIES COMPILE_OPTIONS "-fno-fast-math")
 
 add_library(strata_engine STATIC src/core/layer.cpp src/core/session.cpp src/core/expert_source.cpp src/core/remote_experts.cpp

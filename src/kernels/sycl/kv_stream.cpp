@@ -1,9 +1,11 @@
 #include "strata/kernels/kv_stream.hpp"
+#include "strata/kernels/kv_stream_copy_groups.hpp"
 #include "strata/kernels/kv_q4.hpp"
 #include "strata/sycl/launch.hpp"
 #include <algorithm>
 #include <array>
 #include <climits>
+#include <cstdlib>
 #include <vector>
 
 namespace strata::kernels {
@@ -122,6 +124,20 @@ void kv_stream_resolve(const KvStreamMap &m, const QsaAttnPools &slots,
                        const QsaShapes &s, void *stream) {
   if (nq <= 0)
     return;
+  // The process environment is fixed before runtime initialization. The
+  // component fixture supplies the same policy explicitly without changing it.
+  const uint32_t group_cap = kv_stream_copy_group_cap_from_text(
+      std::getenv("STRATA_SYCL_KV_COPY_GROUPS"));
+  kv_stream_resolve_with_copy_groups(m, slots, host, fmt, ids, steps, nq, cap,
+                                     s, stream, group_cap);
+}
+void kv_stream_resolve_with_copy_groups(
+    const KvStreamMap &m, const QsaAttnPools &slots, const KvHostPools &host,
+    int fmt, const int32_t *ids, const int32_t *steps, int64_t nq, int64_t cap,
+    const QsaShapes &s, void *stream, uint32_t copy_group_cap) {
+  if (nq <= 0)
+    return;
+  validate_kv_stream_copy_group_cap(copy_group_cap);
   if (nq > INT_MAX || cap <= 0 || cap > INT_MAX)
     throw std::invalid_argument("invalid KV selection dimensions");
   auto w = map_spans(m);
@@ -131,6 +147,7 @@ void kv_stream_resolve(const KvStreamMap &m, const QsaAttnPools &slots,
   run_spans(r, m.n_slots, m.n_blocks, w, rd);
   spans(w, rd);
   auto &q = queue_for(stream);
+  const size_t copy_groups = std::min(size_t(m.n_slots), size_t(copy_group_cap));
   // Deterministic baseline policy. Mark every hit before choosing victims;
   // bounded miss storage also makes an over-capacity selection safe.
   q.single_task([=] {
@@ -216,17 +233,37 @@ void kv_stream_resolve(const KvStreamMap &m, const QsaAttnPools &slots,
     increment(m.ctl + 6, lookups);
     increment(m.ctl + 8, 1);
   });
-  auto event = q.parallel_for(
-      sycl::nd_range<1>(size_t(m.n_slots) * 128, 128),
-      [=](sycl::nd_item<1> it) {
-        const size_t k = it.get_group_linear_id(), t = it.get_local_linear_id();
-        if (k >= size_t(m.ctl[2]))
-          return;
-        const size_t b = m.miss_block[k], slot = m.miss_slot[k];
-        for (int a = 0; a < r.n; ++a)
-          for (size_t i = t; i < r.len[a]; i += 128)
-            r.dst[a][slot * r.len[a] + i] = r.src[a][b * r.len[a] + i];
-      });
+  sycl::event event;
+  if (!copy_groups) {
+    // Legacy default: one workgroup per residency slot, including all hits.
+    event = q.parallel_for(
+        sycl::nd_range<1>(size_t(m.n_slots) * 128, 128),
+        [=](sycl::nd_item<1> it) {
+          const size_t k = it.get_group_linear_id(), t = it.get_local_linear_id();
+          if (k >= size_t(m.ctl[2]))
+            return;
+          const size_t b = m.miss_block[k], slot = m.miss_slot[k];
+          for (int a = 0; a < r.n; ++a)
+            for (size_t i = t; i < r.len[a]; i += 128)
+              r.dst[a][slot * r.len[a] + i] = r.src[a][b * r.len[a] + i];
+        });
+  } else {
+    // The same in-order queue publishes ctl/miss lists before this kernel.
+    // Every placement k belongs to exactly one k % copy_groups workgroup.
+    // Placements have distinct destination slots, so no barrier is needed.
+    event = q.parallel_for(
+        sycl::nd_range<1>(copy_groups * 128, 128),
+        [=](sycl::nd_item<1> it) {
+          const size_t t = it.get_local_linear_id();
+          for (size_t k = it.get_group_linear_id(); k < size_t(m.ctl[2]);
+               k += copy_groups) {
+            const size_t b = m.miss_block[k], slot = m.miss_slot[k];
+            for (int a = 0; a < r.n; ++a)
+              for (size_t i = t; i < r.len[a]; i += 128)
+                r.dst[a][slot * r.len[a] + i] = r.src[a][b * r.len[a] + i];
+          }
+        });
+  }
   finish(stream, event);
 }
 void kv_ring_table(int32_t *table, int64_t blocks, int64_t slots,

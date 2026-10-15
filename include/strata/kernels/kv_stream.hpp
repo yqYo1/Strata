@@ -74,6 +74,15 @@ void kv_stream_resolve(const KvStreamMap& m, const QsaAttnPools& slots, const Kv
                        const int32_t* ids, const int32_t* steps, int64_t n_q, int64_t cap, const QsaShapes& s,
                        void* stream);
 
+/// Explicit copy geometry for component fixtures/benchmarks. Shares the full
+/// validation, residency policy and copy implementation with kv_stream_resolve.
+/// 0 preserves the legacy launch; supported opt-ins are 128/256/512/1024.
+/// Does not read or modify the process environment. Geometry is fixed at capture.
+void kv_stream_resolve_with_copy_groups(
+    const KvStreamMap& m, const QsaAttnPools& slots, const KvHostPools& host, int fmt,
+    const int32_t* ids, const int32_t* steps, int64_t n_q, int64_t cap, const QsaShapes& s,
+    void* stream, uint32_t copy_group_cap);
+
 /// The static ring table `block -> block % n_slots`.
 void kv_ring_table(int32_t* page_table, int64_t n_blocks, int64_t n_slots, void* stream);
 

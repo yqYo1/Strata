@@ -322,6 +322,14 @@
       "path": "research-layer26-sync-masking-round596-v1.txt",
       "sha256": "75eed41101d889133ef2687e5aa4fe72b34ab4b2bab141692cefafa6a7cd49a5",
       "status": "FINAL received and Main reviewed in phase-audit-closure.ja.md; candidates unqualified."
+    },
+    {
+      "round": 597,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-kv-resolver-parallel-round597-v1.txt",
+      "sha256": "60031d15ed4a335aa411e57772f7783ab8a0e22a87f149ba2f0e77e00ace4d1e",
+      "status": "Main reviewed. Ordered read-only prefetch proposal only; R597 int8 all-hit arm labels reversed, authoritative receipt has base1952.73us/candidate1948.18us. Actual kernel service still unmeasured; do not implement before profile."
     }
   ],
   "main_initial_findings": [
@@ -507,14 +515,14 @@
   "retention_v5": "retention-v5-manifest.json",
   "parallel_research_current": [
     {
-      "round": 590,
-      "scope": "CPU IQ2_S kernels and alternatives",
-      "agent": "/root/research_iq2s_cpu_kernel_round590"
+      "round": 598,
+      "scope": "Lossless CPU predecode tradeoff and arithmetic review",
+      "agent": "/root/research_cpu_predecode_tradeoff_round598"
     },
     {
-      "round": 591,
-      "scope": "Safe bounded actual profiler collection control",
-      "agent": "/root/research_profile_safe_control_round591"
+      "round": 599,
+      "scope": "Checked prefill scratch retirement for decode capacity",
+      "agent": "/root/research_prefill_scratch_retire_round599"
     }
   ],
   "phase_audit": {
@@ -531,7 +539,7 @@
   "parallel_implementations_current": [
     {
       "directory": "bounded-kv-copy-groups-v2",
-      "state": "FINAL Mainreviewdone, next serialCPU/build/GPU tests"
+      "state": "Applied/built, CPU normal+ASan and825GPU checks PASS/fault0,1440graph samples closed. No meaningfulint8 win; defaultOFF; see kv-copy-groups-closure.ja.md."
     },
     {
       "directory": "qsa-score-gemm-candidate-v1",
@@ -539,11 +547,18 @@
     },
     {
       "directory": "external-session-decode-profile-v2",
-      "state": "FINAL reviewed, unapplied; smallprovider graphsmokeproposal running"
+      "state": "FINAL reviewed; smoke proposal FINAL received, unapplied/unexecuted. Main first profiles unmodified component all-collection-on with official device timing."
     },
     {
       "directory": "cpu-predecode-probe-v1",
-      "state": "Solcomponentprototype running; Main onlytests"
+      "state": "Sol FINAL received; source review and Main CPU tests pending; not applied."
     }
-  ]
+  ],
+  "kv_copy_groups": {
+    "build": "kv-copy-groups-build-v2.json",
+    "validation": "kv-copy-groups-validation-v2.json",
+    "summary": "kv-copy-groups-summary-v1.json",
+    "report": "kv-copy-groups-closure.ja.md",
+    "state": "Correctness PASS; no speed adoption, legacy default retained. Host spans not exclusive device time."
+  }
 }

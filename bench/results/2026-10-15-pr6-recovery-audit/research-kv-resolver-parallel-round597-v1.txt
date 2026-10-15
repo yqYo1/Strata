@@ -1,0 +1,61 @@
+# R597 — KV resolver の選択 lookup を並列化する候補
+
+2026-10-15 JST。指定された `research-index.json`、R587/R588、`bounded-kv-copy-groups-v2`、build/validation receipt、128-group graph receipt、実装を読んだ。指定先以外の書き込み、Git操作、build/test/GPU/service/cleanupは行っていない。実行中の512-group receiptは読んでいない。
+
+## 結論
+
+候補は1件に絞る。`kv_stream_resolve_with_copy_groups()` の既存選択・CLOCK `single_task` を正本として残し、その直前に各有効IDの `page_table[block]` を読む小さな並列先読みkernelを挿入する。最終taskは今と同じ順で有効IDを走査し、先読み結果をhitのslot値として使い、missは現在の `page_table` を再読して `-1/-2` を解決する。これならmissの最初の出現順、miss list、victim順、counterを変えずに、hit lookupの直列レイテンシを隠せる可能性がある。改善は未測定であり、現在は採用候補にすぎない。
+
+実装場所は `src/kernels/sycl/kv_stream.cpp:135-268`、特に単一taskでID検査・隣接run抑制・hit mark・unique miss記録・CLOCK sweep・u64 counter更新を一続きに行う153–234行。現worktreeのsource SHA256は下記のとおり。今回のsourceは他作業と共有されdirtyなので、このSHAは監査時点の未コミットworktree値で、build receiptのsourceとは同一と主張しない。
+
+## 候補: parallel read-only page-table prefetch + ordered authoritative merge
+
+1. `nq<=4`, `cap<=2051`, 256K contextの通常QSA選択用に、既存resolver scratch領域に `int32 slot_snapshot[nq*cap]` を置く。各work-itemは対応cellを検査し、有効IDなら `page_table[cell/page_size]` を読み、無効ならsentinelを保存する。ここではtable/control/slot/counterを一切書かない。各位置が別scratch要素を持つためwrite raceがない。
+2. 既存 `single_task` を続けて起動する。同じin-order queueなのでkernel境界が先読み書込み完了を保証する。single-taskは元コードどおりwidth/IDを検査し、invalid IDを `ctl[3]` に記録し、`previous` は有効cellのblockにだけ更新する。従ってinvalid cellを挟んだ後のduplicate比較も元の「直前の有効page」契約を維持する。隣接同一pageは元どおりlookup counterへ加算しない。
+3. その順序走査のhit判定だけ `slot_snapshot[qi*cap+i]` の値で行う。snapshotが合法slotなら`slot_stamp`/`slot_ref`の書き込みは従来のsingle-taskだけが行う。snapshotが`-1`の場合は現tableを読み直す: まだ`-1`ならmissを最初の出現として`-2`にし、同一call内の重複が既に`-2`なら二重登録せず、その他の不正値は従来どおりoverflowを記録する。CLOCK、victim割当、copy-list順、u64 incrementはそのまま残す。
+
+この処理はall-hit専用分岐ではなくhit/miss混在callにも使える。先読みする範囲は実際の `width` より広い `cap` を含むため、範囲をselector shapeに固定して無効なtailを無視しないこと。IDは任意順・任意値を受け、検証は現在と同じ範囲で行う。256K logical contextでは `n_blocks=65,536` のpage tableを現行のまま使用し、より大きいcontextや一般の `nq/cap` はscratch上限チェック後に元kernelへfallbackする。候補を製品既定にせず、明示opt-in/default OFFとする。
+
+追加コストはresolve当たり1 kernel launch、`4*nq*cap` bytesの固定scratch。観測形状 `nq=4, cap=2051` なら32,816 bytes/map。12層全てで別scratchを保持すると393,792 bytes (384.6 KiB)。graph capture中の割当は禁止し、state init時に確保するか、capture-safeな上限付きowner bufferが必要。`KvStreamMap`は固定pointerでgraphに捕捉されるため、bufferの寿命/再利用と複数stream並行利用を設計する必要がある。上限外のcallは旧経路を使い、256K対応・任意ID処理を狭い高速pathで失わない。現在のコードにこのscratch確保/owner機構はない。
+
+この候補が有効なのは先読み時間をlookup parallelismで隠せる場合だけで、host submission又はwhole-queue spanを短くすると推定してはいけない。実GPU上でcopy kernelが小さい場合でも、追加launch分がresolveの総時間を悪化させる可能性がある。選択IDの隣接重複と任意IDにより、先読みwork-item数は最大8204だが既存lookup数はこれより少なくなり得るので、重複先読みの損失も測定対象。
+
+### 並列atomic案を候補にしない理由
+
+`page_table`の`-1 -> -2` claimや同一hit slotへの`slot_stamp=epoch` / `slot_ref=1`を複数work-itemから実行する案は採らない。単純な非atomic同値storeにもdata raceがある。`sycl::atomic_ref`でclaimをatomic化しても、どのwork-itemがmiss listに追加されるかが実行順で変わればCLOCKへのmiss順とvictim対応が変わる。安定した「先頭runだけ」のwinner、全callでのfirst occurrence順、distinct miss union、同一blockの非連続run lookup counterを別途exactに定義する必要があり、現行契約を維持する実装・検証費用に対しR597の性能証拠はない。SYCL atomic_refは操作のatomic性を定義するが、ここで必要な決定的順序や同値non-atomic raceの安全性は自動では与えない。
+
+## 既存契約と境界
+
+現sourceは`previous`を有効IDに対してだけ更新するため、invalid cellはrun境界をresetしない (`kv_stream.cpp:169-188`)。各有効連続runが1 lookupで、同一blockが後で非連続に再登場すれば再度lookup計上する。`-1`は未登録、`-2`はこのcallのmiss-listで既にclaim済み。Miss list順はquery順・cell順で、CLOCKはその順にslotを割り当てる。hitページを先にmarkし、そのcallで使ったslotをvictimから除外する。epoch negative/`INT_MAX`ではstamp全体をclearしてepochを1から再開。counterはu64であり、lookupsはquery run参照、missesは実際にplacedしたunique block数、callsはresolve数である。Candidateではどのcontrol/table書込みも順序taskへ残す。
+
+当該 source/header SHA256:
+
+* `src/kernels/sycl/kv_stream.cpp`: `4473c66af0c24663534fe2ca01e56cdb41f96c3aaae7de61eabeda8d25294696` (作業tree観測値)
+* `include/strata/kernels/kv_stream.hpp`: `d3389020074da15a5b414667089734d0f46b20697b23dc5a46e04f6ea6dbaea9` (作業tree観測値)。fixed map/counters、copy APIの契約はheader 50–84行。
+
+## 既存の性能・正しさ証拠
+
+* 指定された新しいcomponent result: 825 oracle case、60 graph replayがPASS、fault 0。これはcomponent correctness/graph reproducibilityであり、kernel内訳/profileではない。
+* `kv-copy-groups-graph-benchmark-128-v3.json` のreal-int8 T4 all-hit比較は、128 copy groups 1.95273 ms、legacy 1.94818 ms。差は約0.23%で「ほぼ差なし」。host operation submitは約35 usで、whole-queue spanの大部分はissue後にある。ただしreceiptには`device_marker_envelope_ns: null`があり、これからGPU kernel serviceを逆算しない。
+* 実decodeのblock hit率95.85%は、lookup参照のblock hit割合であり、resolve callのうちmiss=0の割合ではない。per-call miss分布を計らず「大半がall-hit call」としてspecial-caseの根拠にしない。
+* 128-group receiptは `adopted:false`, `performance_qualified:false`, `model_performance_qualified:false`, `physical_262144_qualified:false`。source `kv_stream.cpp` は既にlocal changesあり。GPU内訳は未測定であり、single_taskがcopyに支配的と断定できない。
+
+R587は4-cell/2,051-ID selector境界、隣接run dedupe、deterministic CLOCKを記録したが性能修飾なし。R588もkernel service計測を持たず、GPU work attributionを結論していない。これらから新しいperformance claimを引き継がない。
+
+## Mainが次に行う最小のGPU profile / table / bench
+
+1. Mainが実行中の512-group測定を閉じた後、normal actual decodeを1回だけbounded `unitrace` (又は同等のSYCL event profilingを有効にした専用diagnostic binary)で捕捉する。現行resolverはlookup+CLOCK kernelが一つ、copy kernelが一つなので、それぞれのGPU begin/end duration、host submit duration、whole-queue resolve spanを別欄にする。GPU lane coverageが足りない場合はduration欠落を明記し、gapをkernel executionに足さない。現状unitrace/device-eventでこの分解は未測定。
+2. 同じwindow/layerのcompact tableは `nq`, widths sum, valid run lookups, lookup hit references, unique miss blocks, `misses==0` call数/全call数, invalid/overflow, resolver kernel us, copy kernel us, host submit us, end-to-end queue span us とする。既存 aggregate 95.85%のhit率とper-call all-hit比を別列に置く。Control writes/recorderはdiagnostic default OFFで、graph replay内のhost sync/readbackを追加しない。
+3. resolver kernelが支配的と見えた場合だけ、同じ実windowの入力/初期mapを使ったcomponent paired benchmarkを追加する。baseline vs prefetchを nq=1/2/4、width=2051、実際のmixed miss分布およびall-hit callを含め40+ replay/armで比較し、oracleは825-case fixtureのinvalid ID, duplicate runs (valid間にinvalidを挟む例も含む), duplicate non-adjacent block, epoch rollover, u64 wrap, miss overflow, deterministic victim orderを同じく検証する。full 256K `n_blocks=65,536` のreceiptを別項目にし、上限外 `nq/cap` 旧経路fallbackもhost/component contractで確認する。
+
+採用へ進む計測条件は、actual tableでresolver lookup/CLOCK kernelがall-hitとmixed-callの双方の代表窓において、lookup+copyを合算したdevice resolve serviceの少なくとも50%を占め、copy kernelやlaunch/queue spanが主因でないこと。かつpaired component benchで追加lookup kernel込みのresolve end-to-end p50とp95がbaselineより各10%以上改善し、run-to-run paired spreadの2倍を超えること。all-hit以外の95.85%-hit selector-shaped mixed samples、copy-disabled/1/513 miss制御、physical 256K shapeを落とさない。閾値に達しない/lookupが支配しないなら旧 single_task維持。これは次の採否gate案であり、測定結果ではない。
+
+## 外部一次資料 (2026-10-15閲覧)
+
+* SGLang `RadixCache` の公式ソース: https://github.com/sgl-project/sglang/blob/main/python/sglang/srt/mem_cache/radix_cache.py — block/pageベースKV cacheのhost-side tree lookup。ここで読む範囲は構造参照用で、SYCL/GPU resolverの直接性能比較には使わない。
+* SGLang HiCache storage API `batch_exists`: https://github.com/sgl-project/sglang/blob/main/python/sglang/srt/mem_cache/hicache_storage.py — default pathはキーの連続prefix存在確認を順に行い、backendはbatch実装をoverrideできる。first-prefix semanticsを保つbatchingの参考。
+* vLLM prefix caching design: https://github.com/vllm-project/vllm/blob/main/docs/design/prefix_caching.md — hashed KV blocksとblock tableの論理設計。Strataの任意選択ID / CLOCK semanticsと異なり、resolver移植元や比較baselineではない。
+* Khronos `sycl::atomic_ref` reference: https://github.khronos.org/SYCL_Reference/iface/atomic_ref.html — atomic operationsのAPI/scope。atomic化はorder determinismを提供するものではない。
+* Khronos SYCL 2020 revision 11: https://registry.khronos.org/SYCL/specs/sycl-2020/pdf/sycl-2020.pdf — `compare_exchange_weak` とmemory order/scope仕様。
+
+外部参考はcandidate/claim/fault policyの直接代替ではなく、ブロック検索とbatch/atomic semanticsの境界を確認する目的に限る。
