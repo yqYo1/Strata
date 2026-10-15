@@ -52,9 +52,20 @@ partial line、重複sequence拒絶、partial line上限のCPU回帰確認を通
 
 ## 次の判断
 
-現在の本体nativeで、既存失敗調査と同じ32089入力/gen24を一件実行中。
-結果は`selective-iq-model-v1.json`へ保存し、完全な形状記録をmodel sidecarと照合する。
-この実行は診断用でclean性能対ではない。その後、同条件のclean OFF/ON反復、
+本体nativeで既存失敗調査と同じ32089入力/gen24を一件実行し、native exit0、全所有process
+正常回収、新規fault0、24生成IDとMTP17/21が同一入力の元nativeと一致した。
+元collectorは完全prompt長32089をbatched-prefill長として渡したため最後の検証で失敗した。
+元receipt `selective-iq-model-v1.json`の失敗状態は変更していない。
+`generate.cpp:6370`とPP終端はprefill対象が`n_prompt-1=32088`で、最後の入力位置はtoken loopが
+処理することを示す。閉じた同じ証拠を再検証した`selective-iq-model-assessment-v2.json`は、
+model sidecarの全48層形式と全histogram保存則を検証済み。GPU再実行は行っていない。
+
+実モデルMoEのGU/Downは各82,878回。GU内訳はIQ3_XXS30,380、IQ2_S34,365、
+IQ3_S17,421、IQ4_XS712回。DownはIQ4_NL67,746、Q2_015,132回。
+GU+DownのFP16論理出力は814,723,891,200 B。この数は累積materialization量であり、
+実DRAM/PCIe byteではない。ne64の小測定を全実モデルに外挿せず、この分布とclean実測で判断する。
+今回の記録はprompt171,999 ms/decode11,291.9 msだが、validation/trace入りの一件であり
+性能比較・採用の証拠にしない。その後、同条件のclean OFF/ON反復、
 bench.shのlong/agent/thinking有効長生成、decode単独の反復を行って採否を決める。
 full physical262144、RESTORE、task能力、1000/70目標達成はいずれも未証明。
 
