@@ -1,0 +1,76 @@
+{
+  "complete": true,
+  "clean_speed_qualified": false,
+  "performance_adopted": false,
+  "intervals_exclusive": false,
+  "cases": {
+    "fp32": {
+      "receipt": "own-native16-fp32-coarse-profile-v1.json",
+      "receipt_sha256": "1672c3042531d0ea233d0b7ddef08eb6a72efa1b4bd4df061720094dfe7d3376",
+      "wrapper_seconds": 106.591,
+      "queue_interval_seconds": {
+        "input": 2.45636,
+        "QSA": 42.1232,
+        "GDN": 9.02066,
+        "MoE": 22.0774,
+        "upload": 8.408040000000002,
+        "store": 2.62469
+      },
+      "requested_upload_bytes": 50292326400,
+      "requested_input_host_device_bytes": [
+        12486328320,
+        63082332160
+      ],
+      "requested_store_host_device_bytes": [
+        12486328320,
+        63082332160
+      ],
+      "input_host_device_seconds": [
+        2.07261,
+        0.383745
+      ],
+      "store_host_device_seconds": [
+        2.2354000000000003,
+        0.38929199999999997
+      ],
+      "request_sha256": "aecfc120ddb82cdef5c5a69b317f6f4b8d40d1e593c536791a031be64bbb81b5",
+      "actual_input": 39255,
+      "binary_sha256": "b66d13c5672c698f76577478e0018cb7557dfae6685dec31927ee9dc21ea03a4"
+    },
+    "bf16": {
+      "receipt": "own-native16-coarse-profile-v1.json",
+      "receipt_sha256": "55972a4ba7aa941803d136abbb827c064373052cc045acde91b44d1e9dd442d6",
+      "wrapper_seconds": 320.877,
+      "queue_interval_seconds": {
+        "input": 1.23415,
+        "QSA": 52.3514,
+        "GDN": 39.3722,
+        "MoE": 166.014,
+        "upload": 8.40031,
+        "store": 1.31805
+      },
+      "requested_upload_bytes": 50292326400,
+      "requested_input_host_device_bytes": [
+        6243164160,
+        31541166080
+      ],
+      "requested_store_host_device_bytes": [
+        6243164160,
+        31541166080
+      ],
+      "input_host_device_seconds": [
+        1.04041,
+        0.193739
+      ],
+      "store_host_device_seconds": [
+        1.11737,
+        0.200684
+      ],
+      "request_sha256": "aecfc120ddb82cdef5c5a69b317f6f4b8d40d1e593c536791a031be64bbb81b5",
+      "actual_input": 39255,
+      "binary_sha256": "b66d13c5672c698f76577478e0018cb7557dfae6685dec31927ee9dc21ea03a4"
+    }
+  },
+  "interpretation": "Matched same-binary 39255-token input. MoE and GDN intervals grew sharply while residual host-copy windows roughly halved. Coarse intervals include host submission gaps and overlap other accounting; do not sum as exclusive Amdahl costs or infer a GEMM root cause before operator comparison. Raw bytes are requested bytes, not PCIe wire counters.",
+  "next": "Main-owned R803 old oneMKL direct, old+GPUcast, and new16 GEMM wall dependencies, then tune measured cause."
+}

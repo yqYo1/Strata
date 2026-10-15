@@ -1,0 +1,301 @@
+{
+  "schema_version": 1,
+  "proposal": "R804 functional standalone oneDNN faithful BF16 comparison source proposal",
+  "recorded_at_utc": "2026-10-15T22:54:53.058240+00:00",
+  "task_id": "task_13bc486e2940",
+  "dispatch_id": "ctx_d5a7c47d87f4",
+  "requested_model": "gpt-6.1-sol",
+  "base_commit": "66c4e6c17c4168657746eff827b81d3d95e90d19",
+  "base_pin": "dispatch immutable revision; four add-only targets, no existing-file rewrite; no Git commands executed",
+  "delivery_status": "source implementation complete for Main review; runtime usability UNRUN",
+  "functional_execution_source_present": true,
+  "unconditional_denial_gate": false,
+  "functional_backend_runtime_qualified": false,
+  "qualification_reason": "No compile/load/GPU execution authorized for this worker; actual public API and selected implementation remain Main-owned qualification",
+  "execution_status": "UNRUN",
+  "builds": "UNRUN",
+  "library_load": "UNRUN",
+  "tests": "UNRUN",
+  "GPU_jobs": "UNRUN",
+  "profiling": "UNRUN",
+  "performance": "UNKNOWN",
+  "model_quality": "UNESTABLISHED",
+  "activated": false,
+  "production_files_modified": false,
+  "existing_Gemm_ABI_or_RNE_tests_changed": false,
+  "prefill_hook_added": false,
+  "upstream_or_remote_actions": false,
+  "numerical_contract": {
+    "api": "OneDnnFaithfulBf16::submit",
+    "formats": "BF16/BF16->BF16 only",
+    "accumulation": "oneDNN strict FP32",
+    "destination_rounding": "separate faithful contract; not universal exact RNE",
+    "beta": "positive or negative zero only",
+    "layouts": "X[T,K] contiguous; W[N,K] viewed [K,N] with strides [1,K]; Y[T,N] stride ldy",
+    "persistent_boundary": "BF16 output can be consumed directly as next BF16 input; no wrapper FP32 staging",
+    "oracle": "finite exact-FP32 dyadic fixtures: exact representable BF16 including subnormals/zeros must match; otherwise the two bracketing values, <=1 BF16 rank from RNE; separate NaN/Inf/overflow classification",
+    "full_numerical_fixture_cases": 20
+  },
+  "implementation": {
+    "candidate_origin": "independently authored Strata API wrapper, permitted own R799 structural reference",
+    "underlying_library": "/opt/intel/oneapi/dnnl/2026.0/lib/libdnnl.so",
+    "underlying_header_version": "3.11.4",
+    "underlying_reported_source": "0291f89430882d350585d276cc0d0eda623906e9",
+    "actual_selected_impl": "UNRUN (prepare returns impl_info_str)",
+    "native_XMX": "UNESTABLISHED; no prequalification denial gate",
+    "GPU_arithmetic_placement": "UNQUALIFIED; explicit GPU engine and no wrapper CPU fallback do not substitute for actual arithmetic inspection",
+    "Level_Zero": "actual API result decides; undefined generated macro alone is not a decision"
+  },
+  "resources": {
+    "max_cached_primitive_entries": 32,
+    "max_pending_call_owner_records": 512,
+    "memory_wrappers_per_record": "3 plus scratch wrapper when scratch>0; at most 2048 wrappers",
+    "max_shared_temporary_bytes": 134217728,
+    "user_scratch_allocation": "one registered GPU allocation per object; query/account actual bytes; drain/free old before growth",
+    "primitive_owned_memory": "checked-status C query, summed across live cache entries and budgeted with scratch",
+    "library_global_caches": "capacity observed, not changed by wrapper; outside wrapper-owned residency guarantee; Main can freeze capacity=0 before exec",
+    "hidden_internal_FP32_partition": "UNKNOWN until actual selected implementation is inspected; aggregate scratch is not evidence of zero full FP32 intermediates",
+    "queue": "retained value copy of caller exact in-order GPU queue; retains Runtime/context/device; no raw queue lifetime",
+    "close": "checked stream/queue drain then release; error retained/poisoned; noexcept destructor fail-stops before unsafe release"
+  },
+  "changed_targets": [
+    {
+      "target_path": "cmake/sycl_onednn_faithful_bf16.cmake",
+      "change": "add",
+      "base_commit": "66c4e6c17c4168657746eff827b81d3d95e90d19",
+      "base_blob": null,
+      "base_condition": "new path; Main verifies absence at exact base before applying",
+      "live_target_exists_at_packaging": false,
+      "proposal_sha256": "3d74800539c80fc1984d8dd00dec426c995c9f54d69d26c006f6d16605e6c8a8"
+    },
+    {
+      "target_path": "include/strata/prefill/onednn_faithful_bf16.hpp",
+      "change": "add",
+      "base_commit": "66c4e6c17c4168657746eff827b81d3d95e90d19",
+      "base_blob": null,
+      "base_condition": "new path; Main verifies absence at exact base before applying",
+      "live_target_exists_at_packaging": false,
+      "proposal_sha256": "7910a7ab6cf3d95895195fb86f3009f28fc0fd06bfa47f71691fbfadee577254"
+    },
+    {
+      "target_path": "src/prefill/sycl/onednn_faithful_bf16.cpp",
+      "change": "add",
+      "base_commit": "66c4e6c17c4168657746eff827b81d3d95e90d19",
+      "base_blob": null,
+      "base_condition": "new path; Main verifies absence at exact base before applying",
+      "live_target_exists_at_packaging": false,
+      "proposal_sha256": "adb7c4fc870db3d158d5aaaa135b713f811411191f2235326ada7dcfbcc64292"
+    },
+    {
+      "target_path": "tests/sycl/onednn_faithful_bf16.cpp",
+      "change": "add",
+      "base_commit": "66c4e6c17c4168657746eff827b81d3d95e90d19",
+      "base_blob": null,
+      "base_condition": "new path; Main verifies absence at exact base before applying",
+      "live_target_exists_at_packaging": false,
+      "proposal_sha256": "bf896b2ca07b2615f3dc2dac6958abf50e418efb1a2737dbb602627778c885e7"
+    }
+  ],
+  "preservation_observations": [
+    {
+      "path": "include/strata/prefill/gemm.hpp",
+      "read_input_sha256": "e5ef22688c4d46bbd3fa11b3881a8352323fc7492c377b66ec4ee6385513573c",
+      "packaging_sha256": "e5ef22688c4d46bbd3fa11b3881a8352323fc7492c377b66ec4ee6385513573c",
+      "changed_between_reads": false,
+      "worker_modified": false
+    },
+    {
+      "path": "src/prefill/sycl/gemm16.cpp",
+      "read_input_sha256": "82be59973a27cdc0f1d965459fd8d2c651d01da7aa0ea6b4ba3a622ae7f563dd",
+      "packaging_sha256": "82be59973a27cdc0f1d965459fd8d2c651d01da7aa0ea6b4ba3a622ae7f563dd",
+      "changed_between_reads": false,
+      "worker_modified": false
+    },
+    {
+      "path": "tests/sycl/gemm16.cpp",
+      "read_input_sha256": "5ba2cdc8f95c4f9b78a5ae1abfd0b6ebb2ea9892fbcc76cd78c2f68795830d86",
+      "packaging_sha256": "5ba2cdc8f95c4f9b78a5ae1abfd0b6ebb2ea9892fbcc76cd78c2f68795830d86",
+      "changed_between_reads": false,
+      "worker_modified": false
+    },
+    {
+      "path": "cmake/sycl_backend.cmake",
+      "read_input_sha256": "70ebb97dac6e5d8347022305178fabcfb3d8c09d56fc149990324bbb06f8af0b",
+      "packaging_sha256": "70ebb97dac6e5d8347022305178fabcfb3d8c09d56fc149990324bbb06f8af0b",
+      "changed_between_reads": false,
+      "worker_modified": false
+    }
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 16304,
+      "sha256": "4590da639d758cb7ab28be3559157001ee4802a922d0015f53afc97be7aed5b8",
+      "provenance": {
+        "kind": "independently authored Strata source/report or generated static evidence",
+        "authoring_task": "R804 / task_13bc486e2940 / ctx_d5a7c47d87f4",
+        "license": "repository LICENSE (MIT)",
+        "foreign_implementation_copied": false,
+        "XeStrata_source_used": false,
+        "external_material": "file identities, bounded facts/paraphrases and source references only; external material not relicensed"
+      }
+    },
+    {
+      "path": "installed-evidence.json",
+      "bytes": 5988,
+      "sha256": "c1db7c5a74057fdb1b0ea9e5ed8720758f35c269aed044ec45e2205ae67f58da",
+      "provenance": {
+        "kind": "independently authored Strata source/report or generated static evidence",
+        "authoring_task": "R804 / task_13bc486e2940 / ctx_d5a7c47d87f4",
+        "license": "repository LICENSE (MIT)",
+        "foreign_implementation_copied": false,
+        "XeStrata_source_used": false,
+        "external_material": "file identities, bounded facts/paraphrases and source references only; external material not relicensed"
+      }
+    },
+    {
+      "path": "proposal/cmake/sycl_onednn_faithful_bf16.cmake",
+      "bytes": 2397,
+      "sha256": "3d74800539c80fc1984d8dd00dec426c995c9f54d69d26c006f6d16605e6c8a8",
+      "provenance": {
+        "kind": "independently authored Strata source/report or generated static evidence",
+        "authoring_task": "R804 / task_13bc486e2940 / ctx_d5a7c47d87f4",
+        "license": "repository LICENSE (MIT)",
+        "foreign_implementation_copied": false,
+        "XeStrata_source_used": false,
+        "design_basis": [
+          "explicit R804 dispatch",
+          "own R799 MIT wrapper/fixture structure",
+          "project Runtime/registered-span APIs",
+          "installed oneDNN 3.11.4 public APIs and exact-source contract inspection"
+        ],
+        "external_dependency": "oneDNN headers/library remain Apache-2.0; API use only; no copied headers/kernels/templates/samples"
+      }
+    },
+    {
+      "path": "proposal/include/strata/prefill/onednn_faithful_bf16.hpp",
+      "bytes": 4536,
+      "sha256": "7910a7ab6cf3d95895195fb86f3009f28fc0fd06bfa47f71691fbfadee577254",
+      "provenance": {
+        "kind": "independently authored Strata source/report or generated static evidence",
+        "authoring_task": "R804 / task_13bc486e2940 / ctx_d5a7c47d87f4",
+        "license": "repository LICENSE (MIT)",
+        "foreign_implementation_copied": false,
+        "XeStrata_source_used": false,
+        "design_basis": [
+          "explicit R804 dispatch",
+          "own R799 MIT wrapper/fixture structure",
+          "project Runtime/registered-span APIs",
+          "installed oneDNN 3.11.4 public APIs and exact-source contract inspection"
+        ],
+        "external_dependency": "oneDNN headers/library remain Apache-2.0; API use only; no copied headers/kernels/templates/samples"
+      }
+    },
+    {
+      "path": "proposal/src/prefill/sycl/onednn_faithful_bf16.cpp",
+      "bytes": 16151,
+      "sha256": "adb7c4fc870db3d158d5aaaa135b713f811411191f2235326ada7dcfbcc64292",
+      "provenance": {
+        "kind": "independently authored Strata source/report or generated static evidence",
+        "authoring_task": "R804 / task_13bc486e2940 / ctx_d5a7c47d87f4",
+        "license": "repository LICENSE (MIT)",
+        "foreign_implementation_copied": false,
+        "XeStrata_source_used": false,
+        "design_basis": [
+          "explicit R804 dispatch",
+          "own R799 MIT wrapper/fixture structure",
+          "project Runtime/registered-span APIs",
+          "installed oneDNN 3.11.4 public APIs and exact-source contract inspection"
+        ],
+        "external_dependency": "oneDNN headers/library remain Apache-2.0; API use only; no copied headers/kernels/templates/samples"
+      }
+    },
+    {
+      "path": "proposal/tests/sycl/onednn_faithful_bf16.cpp",
+      "bytes": 19827,
+      "sha256": "bf896b2ca07b2615f3dc2dac6958abf50e418efb1a2737dbb602627778c885e7",
+      "provenance": {
+        "kind": "independently authored Strata source/report or generated static evidence",
+        "authoring_task": "R804 / task_13bc486e2940 / ctx_d5a7c47d87f4",
+        "license": "repository LICENSE (MIT)",
+        "foreign_implementation_copied": false,
+        "XeStrata_source_used": false,
+        "design_basis": [
+          "explicit R804 dispatch",
+          "own R799 MIT wrapper/fixture structure",
+          "project Runtime/registered-span APIs",
+          "installed oneDNN 3.11.4 public APIs and exact-source contract inspection"
+        ],
+        "external_dependency": "oneDNN headers/library remain Apache-2.0; API use only; no copied headers/kernels/templates/samples"
+      }
+    },
+    {
+      "path": "proposal.patch",
+      "bytes": 44590,
+      "sha256": "4ab35531e715bade2efbeecc8bad4658944cb4e3f84ee5c164daee43a2ed8279",
+      "provenance": {
+        "kind": "generated unified add-only diff of the exact proposal files",
+        "authoring_task": "R804 / task_13bc486e2940 / ctx_d5a7c47d87f4",
+        "license": "repository LICENSE (MIT)",
+        "foreign_implementation_copied": false,
+        "XeStrata_source_used": false,
+        "base_commit": "66c4e6c17c4168657746eff827b81d3d95e90d19",
+        "generator": "Python3 difflib.unified_diff from empty additions; no Git command"
+      }
+    },
+    {
+      "path": "read-inputs.json",
+      "bytes": 11677,
+      "sha256": "7d951507682abe9063cf9c66c6fca3b09348aabcf0c793e26970e0f8e9b13f43",
+      "provenance": {
+        "kind": "independently authored Strata source/report or generated static evidence",
+        "authoring_task": "R804 / task_13bc486e2940 / ctx_d5a7c47d87f4",
+        "license": "repository LICENSE (MIT)",
+        "foreign_implementation_copied": false,
+        "XeStrata_source_used": false,
+        "external_material": "file identities, bounded facts/paraphrases and source references only; external material not relicensed"
+      }
+    },
+    {
+      "path": "source-evidence.json",
+      "bytes": 13065,
+      "sha256": "10bb70daa6f7138ab8dd91847a5aa1c1177874ab5c97f0a0c943c78cecccfbf4",
+      "provenance": {
+        "kind": "independently authored Strata source/report or generated static evidence",
+        "authoring_task": "R804 / task_13bc486e2940 / ctx_d5a7c47d87f4",
+        "license": "repository LICENSE (MIT)",
+        "foreign_implementation_copied": false,
+        "XeStrata_source_used": false,
+        "external_material": "file identities, bounded facts/paraphrases and source references only; external material not relicensed"
+      }
+    }
+  ],
+  "hash_policy": "files inventories payload except manifest.json/manifest.sha256; manifest.sha256 pins manifest without self-hash",
+  "budget": {
+    "limit_bytes": 307200,
+    "raw_external_copies": [],
+    "raw_run_logs": [],
+    "tensor_captures": [],
+    "deletions": [],
+    "retention": "compact source, provenance, API/source/static ELF facts for Main review"
+  },
+  "review": {
+    "kind": "manual source and public API/source inspection plus artifact identity/size checks only",
+    "product_build_or_test_executed": false,
+    "notes": [
+      "Real dnnl::sycl_interop::execute path with BF16 descriptors and strict attributes; no stub/always-false gate.",
+      "Typed temporary-limit rejection keeps actual API errors from being accepted as expected budget-test results.",
+      "Public C++ memory query silently returning zero on query error is avoided using checked C status.",
+      "Oracle decodes BF16 directly to double to prevent host FTZ/DAZ masking subnormal failures.",
+      "No production hooks, Gemm ABI/RNE-test changes, environment/global-cache changes, process inspection, GPU work, agent dispatch or cleanup.",
+      "No third-party implementation copied or relicensed; Apache-2.0 oneDNN remains an external dependency."
+    ]
+  },
+  "main_next": [
+    "Review full patch against exact immutable base and optional include location in configured SYCL resolver.",
+    "Compile/link using existing installation/toolchain; unsupported actual API/engine/context is failure, not fake numerical success.",
+    "Small traced smoke with fault validation, then all fixture modes and unchanged 68 custom exact tests.",
+    "Qualify actual GPU arithmetic/native BF16, scratch partitions/full FP32 intermediates, driver/runtime and lifecycle errors.",
+    "Paired component benchmark, same 128-token model comparison, then long/quality gates before any adoption."
+  ]
+}
