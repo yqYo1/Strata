@@ -53,6 +53,9 @@ GPU prefixをさらにchunk単位に切り下げる。全hiddenがGPUに入る�
 `measure_prefill_capacity_fp16_admission_v1.py`はproduction planner headerを直接compileし、
 partial auto配置、全hidden上限の受理、次4 tokenの拒否を検査するためのhost専用recipeである。
 実行成否は同名のJSON receiptで確認する。
+このhost gateは正常終了し、alias OFF/ONとruntime余裕512 MiB/1 GiBの16条件について、
+上記三検査の計48ケースが合格した（`prefill-capacity-fp16-admission-v1.json`）。
+GPU割当やモデル実行をこのhost検査で行ったという意味ではない。
 
 全12層KVと256K hiddenを同時にGPUへ残すには、4KでもK8V8で**1.7098 GiB**、
 K8V4で**1.0067 GiB**不足する。単なるV4化だけでは全体は入らない。
@@ -70,3 +73,8 @@ K8V4も現在のlayer-major経路は拒否するため、容量のみの仮定�
 根拠は`prefill-capacity-metadata-v2.json`、`prefill-scratch-allocation-v2.json`、
 `prefill-capacity-alias-delta-v1.json`と各recipe/source hash。
 物理262144モデル実行、FP16/BF16数値品質、実runtime最大量、KV退避・decode再構成費用は別の検証項目。
+
+新nativeのFP32/QSA OFF・ON実78453入力の診断では、両armの48層×選択16行は全byte一致、
+有限値、選択行の最大絶対値41.56731414794922、FP16最大有限値65504超は0要素だった。
+`qsa-device-batch-model-comparison-v1.json`に層別値とcapture hashを残した。
+選択行のレンジ観測であり、FP16へ変換した品質や全256K行のレンジは検証していない。

@@ -1166,6 +1166,15 @@
       "sha256": "31bf09b1ae60459004e36a01415499a9db06ad7d3ecf7a589c42039bce10638e",
       "main_review": "prefill-capacity-current.ja.md",
       "status": "FINAL/Main report and production source review complete; independent four partial-FP16 capacity counts agree. Source-only, not physical admission or numeric quality."
+    },
+    {
+      "round": 700,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-physical-context-mtp-terminal-round700-v1.txt",
+      "sha256": "15af6903cb0dad50bdadff080612317c16f1d3122adf2709a224e41fc11cda60",
+      "main_review": "main-review-round696-698.ja.md",
+      "status": "FINAL/Main source review complete. Terminal verifier commit seam identified; Main adds adapt-thread join and pre-mutation first-window guard requirements. Source-only; producer not implemented."
     }
   ],
   "main_initial_findings": [
@@ -1357,7 +1366,7 @@
     ],
     "model": "gpt-6-luna",
     "read_only": true,
-    "state": "R699 FINAL/Main read complete: four partial-FP16 counts and one-chunk staging agree. R700 MTP terminal full-context research remains running; no intervention.",
+    "state": "Both699/700 FINAL received; Main reports/source reviewed. No active research agent. R699 capacity staging agrees, R700 terminal MTP verifier seam retained with Main thread/flag corrections.",
     "prior_report_directory": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit",
     "main_review": "main-review-round696-698.ja.md"
   },
@@ -1775,7 +1784,7 @@
   "QSA_device_batch_candidate": {
     "proposal": "qsa-indexer-device-batch-v2",
     "model": "gpt-6.1-sol",
-    "state": "Applied defaultOFF; fresh119-step production/fixture build and host planner PASS.8 serial GPU processes PASS:223 exact state,98 score/ID comparisons,69 per-case nonmutation rejections, physical262144 component last-block+spare in2 configs.10 actual production flag/n0 processes PASS with no device work. All GPU fault0/owners retired. Actual-model/callback/realRESTORE/full physical model/clean speed unqualified.",
+    "state": "Default OFF. Component/build/dispatch gates PASS. Same-native78453-input OFF/ON diagnostic pair PASS, all768 selected FP32 boundary rows exact/finite and752 stored/reloaded perarm exact. Native/server0/fault0/owners retired. Six independent-process clean samples prepared; task quality, realRESTORE, physical262144 and clean performance adoption pending.",
     "source_diff_sha256": "6732a090a727a1ede3aa2ca5165bb4c060070f625ec90696a49c533aff5c7c87",
     "review": "research-qsa-indexer-device-batch-review-round682-v1.txt",
     "original_proposal": "qsa-indexer-device-batch-v1",
@@ -1785,7 +1794,12 @@
     "small": "qsa-device-batch-small-v1.json",
     "matrix": "qsa-device-batch-matrix-v1.json",
     "production_flag": "qsa-device-batch-dispatch-v1.json",
-    "retention": "qsa-device-batch-trace-retention-v1.json"
+    "retention": "qsa-device-batch-trace-retention-v1.json",
+    "model_OFF": "qsa-device-batch-model-0-v1.json",
+    "model_ON": "qsa-device-batch-model-1-v1.json",
+    "model_comparison": "qsa-device-batch-model-comparison-v1.json",
+    "model_retention": "qsa-device-batch-model-retention-v1.json",
+    "clean_recipe": "run_qsa_device_batch_clean_v1.py"
   },
   "prefill_dense_layer_bank_contract": {
     "research": "research-prefill-dense-layer-bank-contract-round684-v1.txt",
@@ -1867,6 +1881,7 @@
     "report": "prefill-capacity-current.ja.md",
     "byte_budget": "prefill-capacity-alias-delta-v1.json",
     "partial_FP16_host_recipe": "measure_prefill_capacity_fp16_admission_v1.py",
-    "state": "Hypothetical active-layer bank. Main found partial byte ceilings omit host-tail conversion stage and chunk rounding; prepared actual production planner host gate. No full-model admission or quality qualification."
+    "state": "Hypothetical active-layer bank. Actual production planner host gate48cases PASS including alias OFF/ON and runtime512MiB/1GiB. Partial hidden counts include one-chunk conversion stage and chunk rounding. No full-model physical admission or numeric quality qualification.",
+    "partial_FP16_host_receipt": "prefill-capacity-fp16-admission-v1.json"
   }
 }

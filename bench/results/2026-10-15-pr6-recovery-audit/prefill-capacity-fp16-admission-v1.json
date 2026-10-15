@@ -1,0 +1,543 @@
+{
+  "schema": "prefill-capacity-FP16-partial-admission-v1",
+  "passed": true,
+  "complete": true,
+  "active": false,
+  "GPU_executed": false,
+  "commands": [
+    {
+      "label": "compiler-version",
+      "argv": [
+        "/usr/bin/g++",
+        "--version"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-15T12:14:58.666965+00:00",
+      "wall_seconds": 30,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1611113,
+          "start_ticks": 41526278,
+          "sid": 1611113,
+          "pgid": 1611113
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 415262.788493824,
+      "pid": 1611113,
+      "spawn_return_monotonic": 415262.790206163,
+      "direct_identity": {
+        "pid": 1611113,
+        "state": "R",
+        "ppid": 1611051,
+        "pgid": 1611113,
+        "sid": 1611113,
+        "start_ticks": 41526278,
+        "rss_bytes": 438272
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-15T12:14:58.776998+00:00",
+      "elapsed_seconds": 0.10979357798350975,
+      "logs": {
+        "compiler-version.stdout": {
+          "bytes": 246,
+          "sha256": "59d1cbef41d4ae78d5063d525b7aa13d18dc0493ea00537efc19b2ee398cb5a8"
+        },
+        "compiler-version.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "compile-production-planner",
+      "argv": [
+        "/usr/bin/g++",
+        "-std=c++17",
+        "-O2",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-I",
+        "/home/yayoi/orca/workspaces/Strata/sycl/include",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/prefill-capacity-fp16-admission-v1/fixture.cpp",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prefill-capacity-fp16-admission-root-v1/capacity-planner"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-15T12:14:58.777674+00:00",
+      "wall_seconds": 30,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1611135,
+          "start_ticks": 41526289,
+          "sid": 1611135,
+          "pgid": 1611135
+        },
+        {
+          "pid": 1611137,
+          "start_ticks": 41526290,
+          "sid": 1611135,
+          "pgid": 1611135
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 415262.899163134,
+      "pid": 1611135,
+      "spawn_return_monotonic": 415262.901180488,
+      "direct_identity": {
+        "pid": 1611135,
+        "state": "R",
+        "ppid": 1611051,
+        "pgid": 1611135,
+        "sid": 1611135,
+        "start_ticks": 41526289,
+        "rss_bytes": 331776
+      },
+      "peak_live_owned_identities": 2,
+      "peak_session_rss_bytes": 73084928,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-15T12:14:59.250942+00:00",
+      "elapsed_seconds": 0.47307567502139136,
+      "logs": {
+        "compile-production-planner.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "compile-production-planner.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "actual-production-planner",
+      "argv": [
+        "/usr/bin/python3",
+        "-B",
+        "-c",
+        "import subprocess,sys; r=subprocess.run([sys.argv[1]],stdin=open(sys.argv[2],\"rb\"));sys.exit(r.returncode)",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prefill-capacity-fp16-admission-root-v1/capacity-planner",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prefill-capacity-fp16-admission-root-v1/planner-input.txt"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-15T12:14:59.251900+00:00",
+      "wall_seconds": 30,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1611167,
+          "start_ticks": 41526337,
+          "sid": 1611167,
+          "pgid": 1611167
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 415263.373383948,
+      "pid": 1611167,
+      "spawn_return_monotonic": 415263.375093352,
+      "direct_identity": {
+        "pid": 1611167,
+        "state": "R",
+        "ppid": 1611051,
+        "pgid": 1611167,
+        "sid": 1611167,
+        "start_ticks": 41526337,
+        "rss_bytes": 462848
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 9957376,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-15T12:14:59.365627+00:00",
+      "elapsed_seconds": 0.11350212100660428,
+      "logs": {
+        "actual-production-planner.stdout": {
+          "bytes": 1397,
+          "sha256": "d5d6b93578048e1661ba993e016abcdb0446616787ec439d5b459ccdb9551937"
+        },
+        "actual-production-planner.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "recipe_sha256": "58c6e3812c32708f664e05b1b20ead8b0b245e5400eb0e9f1ac4dc91bab6ae0d",
+  "fixture_sha256": "8c48d576edde701b86dbf3d5dbefb8370701e6ca363ba42080fc0e9dd9abb5b7",
+  "references": {
+    "prefill-capacity-alias-delta-v1.json": "db213fcb3056663c1fce50923d9f8fbfe7578db31e977adec2e285ab1ecf56ae"
+  },
+  "source_pins": {
+    "include/strata/prefill/layer_major_plan.hpp": "f067cd631a6900864723b2049a95cb207ea5ac03055e2691b7d67f2706ef3721"
+  },
+  "compiler": "/usr/bin/g++",
+  "compiler_sha256": "1353e9bdd29a7295c7226bf6c63abccce056d8cac31f112e5cdbecc3f28c2769",
+  "cases": [
+    {
+      "chunk": 4096,
+      "format": "K8V8",
+      "scratch_alias": false,
+      "runtime_headroom_bytes": 536870912,
+      "available_for_KV_hidden_bytes": 7201798144,
+      "full_262144_QSA_bytes": 3794839744,
+      "byte_only_hidden_ceiling": 166355,
+      "partial_hidden_conversion_staging_bytes": 83886080,
+      "actual_planner_GPU_hidden_rows": 159744,
+      "actual_planner_GPU_hidden_bytes": 3271557120,
+      "actual_planner_RAM_hidden_rows": 102400,
+      "remaining_bytes": 51515200,
+      "max_context_with_all_hidden_rows": 206020,
+      "production_planner_outputs": [
+        "accepted 159744 3271557120 2097152000 83886080",
+        "accepted 206020 4219289600 0 0",
+        "rejected"
+      ]
+    },
+    {
+      "chunk": 4096,
+      "format": "K8V8",
+      "scratch_alias": false,
+      "runtime_headroom_bytes": 1073741824,
+      "available_for_KV_hidden_bytes": 6664927232,
+      "full_262144_QSA_bytes": 3794839744,
+      "byte_only_hidden_ceiling": 140140,
+      "partial_hidden_conversion_staging_bytes": 83886080,
+      "actual_planner_GPU_hidden_rows": 135168,
+      "actual_planner_GPU_hidden_bytes": 2768240640,
+      "actual_planner_RAM_hidden_rows": 126976,
+      "remaining_bytes": 17960768,
+      "max_context_with_all_hidden_rows": 190664,
+      "production_planner_outputs": [
+        "accepted 135168 2768240640 2600468480 83886080",
+        "accepted 190664 3904798720 0 0",
+        "rejected"
+      ]
+    },
+    {
+      "chunk": 4096,
+      "format": "K8V8",
+      "scratch_alias": true,
+      "runtime_headroom_bytes": 536870912,
+      "available_for_KV_hidden_bytes": 7327628032,
+      "full_262144_QSA_bytes": 3794839744,
+      "byte_only_hidden_ceiling": 172499,
+      "partial_hidden_conversion_staging_bytes": 83886080,
+      "actual_planner_GPU_hidden_rows": 167936,
+      "actual_planner_GPU_hidden_bytes": 3439329280,
+      "actual_planner_RAM_hidden_rows": 94208,
+      "remaining_bytes": 9572928,
+      "max_context_with_all_hidden_rows": 209620,
+      "production_planner_outputs": [
+        "accepted 167936 3439329280 1929379840 83886080",
+        "accepted 209620 4293017600 0 0",
+        "rejected"
+      ]
+    },
+    {
+      "chunk": 4096,
+      "format": "K8V8",
+      "scratch_alias": true,
+      "runtime_headroom_bytes": 1073741824,
+      "available_for_KV_hidden_bytes": 6790757120,
+      "full_262144_QSA_bytes": 3794839744,
+      "byte_only_hidden_ceiling": 146285,
+      "partial_hidden_conversion_staging_bytes": 83886080,
+      "actual_planner_GPU_hidden_rows": 139264,
+      "actual_planner_GPU_hidden_bytes": 2852126720,
+      "actual_planner_RAM_hidden_rows": 122880,
+      "remaining_bytes": 59904576,
+      "max_context_with_all_hidden_rows": 194264,
+      "production_planner_outputs": [
+        "accepted 139264 2852126720 2516582400 83886080",
+        "accepted 194264 3978526720 0 0",
+        "rejected"
+      ]
+    },
+    {
+      "chunk": 4096,
+      "format": "K8V4",
+      "scratch_alias": false,
+      "runtime_headroom_bytes": 536870912,
+      "available_for_KV_hidden_bytes": 7201798144,
+      "full_262144_QSA_bytes": 3039865024,
+      "byte_only_hidden_ceiling": 203219,
+      "partial_hidden_conversion_staging_bytes": 83886080,
+      "actual_planner_GPU_hidden_rows": 196608,
+      "actual_planner_GPU_hidden_bytes": 4026531840,
+      "actual_planner_RAM_hidden_rows": 65536,
+      "remaining_bytes": 51515200,
+      "max_context_with_all_hidden_rows": 224520,
+      "production_planner_outputs": [
+        "accepted 196608 4026531840 1342177280 83886080",
+        "accepted 224520 4598169600 0 0",
+        "rejected"
+      ]
+    },
+    {
+      "chunk": 4096,
+      "format": "K8V4",
+      "scratch_alias": false,
+      "runtime_headroom_bytes": 1073741824,
+      "available_for_KV_hidden_bytes": 6664927232,
+      "full_262144_QSA_bytes": 3039865024,
+      "byte_only_hidden_ceiling": 177004,
+      "partial_hidden_conversion_staging_bytes": 83886080,
+      "actual_planner_GPU_hidden_rows": 172032,
+      "actual_planner_GPU_hidden_bytes": 3523215360,
+      "actual_planner_RAM_hidden_rows": 90112,
+      "remaining_bytes": 17960768,
+      "max_context_with_all_hidden_rows": 207784,
+      "production_planner_outputs": [
+        "accepted 172032 3523215360 1845493760 83886080",
+        "accepted 207784 4255416320 0 0",
+        "rejected"
+      ]
+    },
+    {
+      "chunk": 4096,
+      "format": "K8V4",
+      "scratch_alias": true,
+      "runtime_headroom_bytes": 536870912,
+      "available_for_KV_hidden_bytes": 7327628032,
+      "full_262144_QSA_bytes": 3039865024,
+      "byte_only_hidden_ceiling": 209363,
+      "partial_hidden_conversion_staging_bytes": 83886080,
+      "actual_planner_GPU_hidden_rows": 204800,
+      "actual_planner_GPU_hidden_bytes": 4194304000,
+      "actual_planner_RAM_hidden_rows": 57344,
+      "remaining_bytes": 9572928,
+      "max_context_with_all_hidden_rows": 228444,
+      "production_planner_outputs": [
+        "accepted 204800 4194304000 1174405120 83886080",
+        "accepted 228444 4678533120 0 0",
+        "rejected"
+      ]
+    },
+    {
+      "chunk": 4096,
+      "format": "K8V4",
+      "scratch_alias": true,
+      "runtime_headroom_bytes": 1073741824,
+      "available_for_KV_hidden_bytes": 6790757120,
+      "full_262144_QSA_bytes": 3039865024,
+      "byte_only_hidden_ceiling": 183149,
+      "partial_hidden_conversion_staging_bytes": 83886080,
+      "actual_planner_GPU_hidden_rows": 176128,
+      "actual_planner_GPU_hidden_bytes": 3607101440,
+      "actual_planner_RAM_hidden_rows": 86016,
+      "remaining_bytes": 59904576,
+      "max_context_with_all_hidden_rows": 211704,
+      "production_planner_outputs": [
+        "accepted 176128 3607101440 1761607680 83886080",
+        "accepted 211704 4335697920 0 0",
+        "rejected"
+      ]
+    },
+    {
+      "chunk": 8192,
+      "format": "K8V8",
+      "scratch_alias": false,
+      "runtime_headroom_bytes": 536870912,
+      "available_for_KV_hidden_bytes": 5991004928,
+      "full_262144_QSA_bytes": 3794839744,
+      "byte_only_hidden_ceiling": 107234,
+      "partial_hidden_conversion_staging_bytes": 167772160,
+      "actual_planner_GPU_hidden_rows": 98304,
+      "actual_planner_GPU_hidden_bytes": 2013265920,
+      "actual_planner_RAM_hidden_rows": 163840,
+      "remaining_bytes": 15127104,
+      "max_context_with_all_hidden_rows": 171384,
+      "production_planner_outputs": [
+        "accepted 98304 2013265920 3355443200 167772160",
+        "accepted 171384 3509944320 0 0",
+        "rejected"
+      ]
+    },
+    {
+      "chunk": 8192,
+      "format": "K8V8",
+      "scratch_alias": false,
+      "runtime_headroom_bytes": 1073741824,
+      "available_for_KV_hidden_bytes": 5454134016,
+      "full_262144_QSA_bytes": 3794839744,
+      "byte_only_hidden_ceiling": 81020,
+      "partial_hidden_conversion_staging_bytes": 167772160,
+      "actual_planner_GPU_hidden_rows": 65536,
+      "actual_planner_GPU_hidden_bytes": 1342177280,
+      "actual_planner_RAM_hidden_rows": 196608,
+      "remaining_bytes": 149344832,
+      "max_context_with_all_hidden_rows": 156024,
+      "production_planner_outputs": [
+        "accepted 65536 1342177280 4026531840 167772160",
+        "accepted 156024 3195371520 0 0",
+        "rejected"
+      ]
+    },
+    {
+      "chunk": 8192,
+      "format": "K8V8",
+      "scratch_alias": true,
+      "runtime_headroom_bytes": 536870912,
+      "available_for_KV_hidden_bytes": 6242663936,
+      "full_262144_QSA_bytes": 3794839744,
+      "byte_only_hidden_ceiling": 119522,
+      "partial_hidden_conversion_staging_bytes": 167772160,
+      "actual_planner_GPU_hidden_rows": 106496,
+      "actual_planner_GPU_hidden_bytes": 2181038080,
+      "actual_planner_RAM_hidden_rows": 155648,
+      "remaining_bytes": 99013952,
+      "max_context_with_all_hidden_rows": 178584,
+      "production_planner_outputs": [
+        "accepted 106496 2181038080 3187671040 167772160",
+        "accepted 178584 3657400320 0 0",
+        "rejected"
+      ]
+    },
+    {
+      "chunk": 8192,
+      "format": "K8V8",
+      "scratch_alias": true,
+      "runtime_headroom_bytes": 1073741824,
+      "available_for_KV_hidden_bytes": 5705793024,
+      "full_262144_QSA_bytes": 3794839744,
+      "byte_only_hidden_ceiling": 93308,
+      "partial_hidden_conversion_staging_bytes": 167772160,
+      "actual_planner_GPU_hidden_rows": 81920,
+      "actual_planner_GPU_hidden_bytes": 1677721600,
+      "actual_planner_RAM_hidden_rows": 180224,
+      "remaining_bytes": 65459520,
+      "max_context_with_all_hidden_rows": 163224,
+      "production_planner_outputs": [
+        "accepted 81920 1677721600 3690987520 167772160",
+        "accepted 163224 3342827520 0 0",
+        "rejected"
+      ]
+    },
+    {
+      "chunk": 8192,
+      "format": "K8V4",
+      "scratch_alias": false,
+      "runtime_headroom_bytes": 536870912,
+      "available_for_KV_hidden_bytes": 5991004928,
+      "full_262144_QSA_bytes": 3039865024,
+      "byte_only_hidden_ceiling": 144098,
+      "partial_hidden_conversion_staging_bytes": 167772160,
+      "actual_planner_GPU_hidden_rows": 131072,
+      "actual_planner_GPU_hidden_bytes": 2684354560,
+      "actual_planner_RAM_hidden_rows": 131072,
+      "remaining_bytes": 99013184,
+      "max_context_with_all_hidden_rows": 186772,
+      "production_planner_outputs": [
+        "accepted 131072 2684354560 2684354560 167772160",
+        "accepted 186772 3825090560 0 0",
+        "rejected"
+      ]
+    },
+    {
+      "chunk": 8192,
+      "format": "K8V4",
+      "scratch_alias": false,
+      "runtime_headroom_bytes": 1073741824,
+      "available_for_KV_hidden_bytes": 5454134016,
+      "full_262144_QSA_bytes": 3039865024,
+      "byte_only_hidden_ceiling": 117884,
+      "partial_hidden_conversion_staging_bytes": 167772160,
+      "actual_planner_GPU_hidden_rows": 106496,
+      "actual_planner_GPU_hidden_bytes": 2181038080,
+      "actual_planner_RAM_hidden_rows": 155648,
+      "remaining_bytes": 65458752,
+      "max_context_with_all_hidden_rows": 170036,
+      "production_planner_outputs": [
+        "accepted 106496 2181038080 3187671040 167772160",
+        "accepted 170036 3482337280 0 0",
+        "rejected"
+      ]
+    },
+    {
+      "chunk": 8192,
+      "format": "K8V4",
+      "scratch_alias": true,
+      "runtime_headroom_bytes": 536870912,
+      "available_for_KV_hidden_bytes": 6242663936,
+      "full_262144_QSA_bytes": 3039865024,
+      "byte_only_hidden_ceiling": 156386,
+      "partial_hidden_conversion_staging_bytes": 167772160,
+      "actual_planner_GPU_hidden_rows": 147456,
+      "actual_planner_GPU_hidden_bytes": 3019898880,
+      "actual_planner_RAM_hidden_rows": 114688,
+      "remaining_bytes": 15127872,
+      "max_context_with_all_hidden_rows": 194616,
+      "production_planner_outputs": [
+        "accepted 147456 3019898880 2348810240 167772160",
+        "accepted 194616 3985735680 0 0",
+        "rejected"
+      ]
+    },
+    {
+      "chunk": 8192,
+      "format": "K8V4",
+      "scratch_alias": true,
+      "runtime_headroom_bytes": 1073741824,
+      "available_for_KV_hidden_bytes": 5705793024,
+      "full_262144_QSA_bytes": 3039865024,
+      "byte_only_hidden_ceiling": 130172,
+      "partial_hidden_conversion_staging_bytes": 167772160,
+      "actual_planner_GPU_hidden_rows": 114688,
+      "actual_planner_GPU_hidden_bytes": 2348810240,
+      "actual_planner_RAM_hidden_rows": 147456,
+      "remaining_bytes": 149345600,
+      "max_context_with_all_hidden_rows": 177880,
+      "production_planner_outputs": [
+        "accepted 114688 2348810240 3019898880 167772160",
+        "accepted 177880 3642982400 0 0",
+        "rejected"
+      ]
+    }
+  ],
+  "quality_qualified": false,
+  "performance_qualified": false,
+  "physical_model_262144_qualified": false,
+  "scope": "Hypothetical active-layer-only layout with current FP32 workspace and FP16 saved hidden. Actual production host planner only; no model/GPU maximum-context admission or numeric qualification.",
+  "compiler_version": "g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0\nCopyright (C) 2023 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\n",
+  "binary_sha256": "abc0d1c22ff86647ce66c983c2e522fff0614b8e2745177e967757ce4f95a40a",
+  "host_planner_cases": 48,
+  "original_partial_counts_are_byte_only": true,
+  "finished_utc": "2026-10-15T12:14:59.366283+00:00"
+}

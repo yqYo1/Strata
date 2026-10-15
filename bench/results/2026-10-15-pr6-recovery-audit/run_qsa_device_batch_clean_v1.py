@@ -161,6 +161,7 @@ def main(arm, repetition):
                 record.update(active=owner.active is not None,GPU_executed=(root/'engine-start.json').exists(),finished_utc=module.utc())
                 if record['active'] or not all(module.closed(c) for c in owner.commands) or 'fresh_faults' not in record or record.get('fresh_faults') or not record.get('boot_unchanged') or record.get('driver_dump_exists'):
                     record.update(passed=False,complete=False)
+                record['performance_qualified']=bool(record['passed'] and record['complete'])
                 persist()
                 with receipt.open('x') as f:json.dump(record,f,indent=2);f.write('\n')
         print(json.dumps(dict(passed=record['passed'],actual_inputs=[r['actual_prompt_tokens'] for r in cohort['requests']],head_cycles=len(record.get('head_lifecycle',{}).get('target_release_bytes',[])),prefill=cohort['prompt_tps'],performance_qualified=record['performance_qualified'])),flush=True)

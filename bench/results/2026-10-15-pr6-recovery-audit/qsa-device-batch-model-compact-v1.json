@@ -1,0 +1,465 @@
+{
+  "passed": true,
+  "complete": true,
+  "GPU_executed": false,
+  "comparison_sha256": "a57086bd986301baafd52ca8a073ee726bdd12cefeb8b911be4b4c1a0a13c473",
+  "recipe_sha256": "1180615965f048e1d5a67142388907a4a6cc914b17cce54e02118ac953c029fd",
+  "runs": [
+    {
+      "receipt": "qsa-device-batch-model-0-v1.json",
+      "receipt_sha256": "c56c3fe690da798789742ebfb077405bce2fc26a933e7b9c38fa96ea7302d161",
+      "qsa_batch_arm": 0,
+      "boundary_shape": "tokens=78452 pos0=0 width=10240 layers=48 chunk=8192 selected=16",
+      "boundary_completion": "status=complete boundary_memcmp=equal",
+      "phase_counts": {
+        "output_chunk": 480,
+        "output_before_store": 768,
+        "stored": 752,
+        "next_input": 752
+      },
+      "layer_completed_chunks": [
+        [
+          0,
+          10
+        ],
+        [
+          1,
+          10
+        ],
+        [
+          2,
+          10
+        ],
+        [
+          3,
+          10
+        ],
+        [
+          4,
+          10
+        ],
+        [
+          5,
+          10
+        ],
+        [
+          6,
+          10
+        ],
+        [
+          7,
+          10
+        ],
+        [
+          8,
+          10
+        ],
+        [
+          9,
+          10
+        ],
+        [
+          10,
+          10
+        ],
+        [
+          11,
+          10
+        ],
+        [
+          12,
+          10
+        ],
+        [
+          13,
+          10
+        ],
+        [
+          14,
+          10
+        ],
+        [
+          15,
+          10
+        ],
+        [
+          16,
+          10
+        ],
+        [
+          17,
+          10
+        ],
+        [
+          18,
+          10
+        ],
+        [
+          19,
+          10
+        ],
+        [
+          20,
+          10
+        ],
+        [
+          21,
+          10
+        ],
+        [
+          22,
+          10
+        ],
+        [
+          23,
+          10
+        ],
+        [
+          24,
+          10
+        ],
+        [
+          25,
+          10
+        ],
+        [
+          26,
+          10
+        ],
+        [
+          27,
+          10
+        ],
+        [
+          28,
+          10
+        ],
+        [
+          29,
+          10
+        ],
+        [
+          30,
+          10
+        ],
+        [
+          31,
+          10
+        ],
+        [
+          32,
+          10
+        ],
+        [
+          33,
+          10
+        ],
+        [
+          34,
+          10
+        ],
+        [
+          35,
+          10
+        ],
+        [
+          36,
+          10
+        ],
+        [
+          37,
+          10
+        ],
+        [
+          38,
+          10
+        ],
+        [
+          39,
+          10
+        ],
+        [
+          40,
+          10
+        ],
+        [
+          41,
+          10
+        ],
+        [
+          42,
+          10
+        ],
+        [
+          43,
+          10
+        ],
+        [
+          44,
+          10
+        ],
+        [
+          45,
+          10
+        ],
+        [
+          46,
+          10
+        ],
+        [
+          47,
+          10
+        ]
+      ],
+      "raw_sha256": "23c2bb018c7ac5057f0aaa986633fc8f8af43a47c829e9ade3b9a9f1f59b6d55",
+      "raw_bytes": 31457280,
+      "native_selected_lines": [
+        "strata prefill: FP16 MoE compact requested=1 effective=1, chunk=8192, scratch rows=8192, accounted=2588395008, shared region=1180698624 bytes",
+        "strata serve: prompt 74 tokens = 0 reused + 74 read in 22853 ms (3.2 tok/s), 24 generated in 7992 ms (3.0 tok/s), drafts accepted 18 of 18, 0 checkpoints",
+        "strata prefill heads: target detached bytes=521472000 source=owned-RAM D2H=521472000 H2D-on-restore=521472000",
+        "strata prefill heads: draft detached bytes=223227900 retained-map-bytes=425196",
+        "strata mtp: prompt expert phase=before-detach free_bytes=1586634752 total_bytes=10666115072",
+        "strata mtp: prompt expert phase=after-detach free_bytes=2294427648 total_bytes=10666115072",
+        "strata prefill: layer-major candidate, tokens=78452 chunk=8192 residual_dtype=fp32 residual_element_bytes=4 residual_total=3213393920 residual_gpu_rows=0 residual_gpu=0 residual_host=3213393920 residual_staging=0 layer_cache=1363148800; extra allocations, GPU headroom=536870912, RAM headroom=8589934592",
+        "strata mtp: prompt expert phase=after-prompt-before-restore free_bytes=2242416640 total_bytes=10666115072",
+        "strata mtp: experts restored bytes=707788800, cumulative detach=0.365 ms reload=274.973 ms decode graph recapture=0.000 ms (lazy, later captures accumulate)",
+        "strata mtp: prompt expert phase=after-restore free_bytes=1534623744 total_bytes=10666115072",
+        "strata mtp: expert decode recapture kind=round coupled=0 ok=1 ms=0.969 cumulative_ms=0.969",
+        "strata mtp: expert decode recapture kind=step coupled=0 ok=1 ms=2.061 cumulative_ms=3.030",
+        "strata mtp: expert decode recapture kind=step coupled=0 ok=1 ms=0.469 cumulative_ms=3.499",
+        "strata mtp: expert decode recapture kind=round coupled=0 ok=1 ms=2.661 cumulative_ms=6.160",
+        "strata serve: prompt 78453 tokens = 0 reused + 78453 read in 333136 ms (235.5 tok/s), 24 generated in 2630 ms (9.1 tok/s), drafts accepted 16 of 21, 0 checkpoints"
+      ],
+      "native_sha256": "6deaddbbb472e3d05f46b31b4f60064360bbedc7aebb4486cc800068c3b2a497",
+      "boundary_text_sha256": "9816d2ba921a598571be40647ad4d4bf0001485aae0768b6ee9c918cfa6210ce"
+    },
+    {
+      "receipt": "qsa-device-batch-model-1-v1.json",
+      "receipt_sha256": "1748be1adf92bf41b0090a9b6828404dc5a47b5bbb9c0b7d60815a591c185eb9",
+      "qsa_batch_arm": 1,
+      "boundary_shape": "tokens=78452 pos0=0 width=10240 layers=48 chunk=8192 selected=16",
+      "boundary_completion": "status=complete boundary_memcmp=equal",
+      "phase_counts": {
+        "output_chunk": 480,
+        "output_before_store": 768,
+        "stored": 752,
+        "next_input": 752
+      },
+      "layer_completed_chunks": [
+        [
+          0,
+          10
+        ],
+        [
+          1,
+          10
+        ],
+        [
+          2,
+          10
+        ],
+        [
+          3,
+          10
+        ],
+        [
+          4,
+          10
+        ],
+        [
+          5,
+          10
+        ],
+        [
+          6,
+          10
+        ],
+        [
+          7,
+          10
+        ],
+        [
+          8,
+          10
+        ],
+        [
+          9,
+          10
+        ],
+        [
+          10,
+          10
+        ],
+        [
+          11,
+          10
+        ],
+        [
+          12,
+          10
+        ],
+        [
+          13,
+          10
+        ],
+        [
+          14,
+          10
+        ],
+        [
+          15,
+          10
+        ],
+        [
+          16,
+          10
+        ],
+        [
+          17,
+          10
+        ],
+        [
+          18,
+          10
+        ],
+        [
+          19,
+          10
+        ],
+        [
+          20,
+          10
+        ],
+        [
+          21,
+          10
+        ],
+        [
+          22,
+          10
+        ],
+        [
+          23,
+          10
+        ],
+        [
+          24,
+          10
+        ],
+        [
+          25,
+          10
+        ],
+        [
+          26,
+          10
+        ],
+        [
+          27,
+          10
+        ],
+        [
+          28,
+          10
+        ],
+        [
+          29,
+          10
+        ],
+        [
+          30,
+          10
+        ],
+        [
+          31,
+          10
+        ],
+        [
+          32,
+          10
+        ],
+        [
+          33,
+          10
+        ],
+        [
+          34,
+          10
+        ],
+        [
+          35,
+          10
+        ],
+        [
+          36,
+          10
+        ],
+        [
+          37,
+          10
+        ],
+        [
+          38,
+          10
+        ],
+        [
+          39,
+          10
+        ],
+        [
+          40,
+          10
+        ],
+        [
+          41,
+          10
+        ],
+        [
+          42,
+          10
+        ],
+        [
+          43,
+          10
+        ],
+        [
+          44,
+          10
+        ],
+        [
+          45,
+          10
+        ],
+        [
+          46,
+          10
+        ],
+        [
+          47,
+          10
+        ]
+      ],
+      "raw_sha256": "23c2bb018c7ac5057f0aaa986633fc8f8af43a47c829e9ade3b9a9f1f59b6d55",
+      "raw_bytes": 31457280,
+      "native_selected_lines": [
+        "strata prefill: FP16 MoE compact requested=1 effective=1, chunk=8192, scratch rows=8192, accounted=2588395008, shared region=1180698624 bytes",
+        "strata serve: prompt 74 tokens = 0 reused + 74 read in 22647 ms (3.3 tok/s), 24 generated in 7685 ms (3.1 tok/s), drafts accepted 18 of 18, 0 checkpoints",
+        "strata prefill heads: target detached bytes=521472000 source=owned-RAM D2H=521472000 H2D-on-restore=521472000",
+        "strata prefill heads: draft detached bytes=223227900 retained-map-bytes=425196",
+        "strata mtp: prompt expert phase=before-detach free_bytes=1570906112 total_bytes=10666115072",
+        "strata mtp: prompt expert phase=after-detach free_bytes=2278699008 total_bytes=10666115072",
+        "strata prefill: layer-major candidate, tokens=78452 chunk=8192 residual_dtype=fp32 residual_element_bytes=4 residual_total=3213393920 residual_gpu_rows=0 residual_gpu=0 residual_host=3213393920 residual_staging=0 layer_cache=1363148800; extra allocations, GPU headroom=536870912, RAM headroom=8589934592",
+        "strata mtp: prompt expert phase=after-prompt-before-restore free_bytes=2228617216 total_bytes=10666115072",
+        "strata mtp: experts restored bytes=707788800, cumulative detach=0.386 ms reload=170.348 ms decode graph recapture=0.000 ms (lazy, later captures accumulate)",
+        "strata mtp: prompt expert phase=after-restore free_bytes=1520824320 total_bytes=10666115072",
+        "strata mtp: expert decode recapture kind=round coupled=0 ok=1 ms=0.577 cumulative_ms=0.577",
+        "strata mtp: expert decode recapture kind=step coupled=0 ok=1 ms=0.606 cumulative_ms=1.183",
+        "strata mtp: expert decode recapture kind=step coupled=0 ok=1 ms=0.736 cumulative_ms=1.919",
+        "strata mtp: expert decode recapture kind=round coupled=0 ok=1 ms=3.430 cumulative_ms=5.349",
+        "strata serve: prompt 78453 tokens = 0 reused + 78453 read in 316876 ms (247.6 tok/s), 24 generated in 2681 ms (9.0 tok/s), drafts accepted 16 of 21, 0 checkpoints"
+      ],
+      "native_sha256": "357fabb5a5a8df27f03ab2f7c296a51bf14dafb08b9a7bd3463cb01483aaa56b",
+      "boundary_text_sha256": "9816d2ba921a598571be40647ad4d4bf0001485aae0768b6ee9c918cfa6210ce"
+    }
+  ]
+}

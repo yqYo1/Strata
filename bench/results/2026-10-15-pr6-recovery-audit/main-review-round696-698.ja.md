@@ -33,3 +33,11 @@ CPUのみの旧fixtureでのenv変更を、それだけでruntime後のUBと断�
 旧capacity receiptのpartial hidden数はbyte上限であり、現plannerでそのまま選べる行数ではない。
 現在の表・仮定は`prefill-capacity-current.ja.md`、production headerのhost gate recipeは
 `measure_prefill_capacity_fp16_admission_v1.py`。R699はこの限定論点の独立source review。
+
+R700 FINALを受領し、Mainがreportとgenerate.cppのfirst-window/commit/produce、
+verify.cppのcommit/wait_commitを確認した。最後のprompt入力はT=1のverifierで処理し、
+commit(1)とwait_commit成功後に終了すれば、次position262144へ進めずterminalを検証できる設計候補。
+実装時はcommit前に開始されうる`adapt_thr`を必ずjoinしなければならない。
+joinable threadを残してreturn/breakする変更はしない。first_windowはcommit前にfalseへ更新されるため、
+terminal判定をその後のfirst_window値だけに依存させない。MTP callbackの別stateは別receiptとする。
+このproducerのsource変更、build、GPU実行はまだ行っていない。

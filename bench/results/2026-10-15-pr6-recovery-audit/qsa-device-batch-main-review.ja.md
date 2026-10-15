@@ -75,3 +75,20 @@ UR traceでもcontext/queue作成、USM allocation、kernel enqueueが無いこ�
 componentのsynthetic restoreや最終4 token比較をこれらの代用にしない。
 直近のclean PPは別binary/配置の235.3/239.5/239.2 tok/s、中央値239.2のままで、
 このQSA変更の速度向上や600/1000達成を主張する材料ではない。
+# 実78453入力の同native診断pair
+
+後続の`qsa-device-batch-model-{0,1}-v1.json`は両方正常終了。
+新規fault0、dumpなし、native/server0、所有process退去、head復元・MTP再capture後24生成まで完了した。
+alias1、C8192、FP32/R_GPU0、Direct0を固定し、QSA batch flagだけを別processで変更。
+`qsa-device-batch-model-comparison-v1.json`は同一request bodyと実read78453/reuse0を確認し、
+全48層×選択16行のFP32 hidden全byte一致・有限を検査した。
+各arm内の752 store/next-input行も一致。未選択行、追加同期無しのrace、実RESTORE、
+全モデル品質、物理262144はこの比較で合格扱いしない。
+診断PPはOFF235.5 / ON247.6 tok/sで、clean速度比較ではない。
+固定順0,1,1,0,0,1で各arm三つの独立processを測るclean recipeを準備済み。
+同じ実78453入力とthinking ON、24出力を使い、速度採用は反復結果を見て別途判定する。
+
+上記の照合後、`retire_qsa_device_batch_model_v1.py`で成功raw二組とboundary/native診断を削除した。
+全layer/chunk完了・必要なhead/memory/配置行とhashを`qsa-device-batch-model-compact-v1.json`へ保存し、
+64244151 Bのpath/size/hash/理由を`qsa-device-batch-model-retention-v1.json`へ記録した。
+元receipt/comparisonのstatusとbyteは変更しない。
