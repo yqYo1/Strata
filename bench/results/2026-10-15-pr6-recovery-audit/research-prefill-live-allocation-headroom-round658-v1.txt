@@ -1,0 +1,38 @@
+# Prefill live-allocation headroom audit (R658)
+
+Read-only source audit for the stated C=4096, context=262144, int8 resident=32768, FP32, layer-major, no-borrow configuration. No private run record, live-ON state, or environment was read. No build, test, GPU run, process control, Git operation, or cleanup was performed. This is an allocation/lifetime assessment; it reports no measured free-byte delta, speed change, or quality result.
+
+## Finding
+
+I found no source-supported delayed-allocation or aliasing change that frees at least 0.5 GiB of VRAM during the prompt while retaining the current chunk, full-context QSA work, and current staging behavior. The only allocation with enough gross size to appear to meet that threshold is the expert staging ring. Its buffers are the active producer/consumer window for streamed misses; leaving them unallocated would reduce the ring, which is an existing concurrency setting change with an unmeasured performance cost, rather than safe deferral of dead storage. The shared attention/MoE region is already max-sized and reused, not duplicated.
+
+## Ownership and lifetimes
+
+`Prefill::carve` allocates the GEMM scratch/workspace, chunk-wide activations and residuals, one shared `region`, two dequantized-expert scratch pairs, the streamed-expert stage ring, PLE chunk buffers, and QSA KV staging. `Prefill::release` synchronizes its compute and copy streams and then frees the owned allocations. Thus these allocations remain live throughout `Prefill::run`; end-of-prompt release is outside the requested interval.
+
+The shared region is exactly `max(gdn_set_bytes, qsa_set_bytes, moe_set_bytes)` and is carved three ways over the same base. The source documents that a layer completes attention before its MoE, so those scratch sets are mutually exclusive. QSA still needs its scratch during QSA layers and MoE scratch during MoE layers; replacing the max with a smaller allocation or aliasing two live phases without preserving queue ordering is unsafe. The current implementation already takes the principal region-sharing opportunity.
+
+At the stated 256K context, QSA's `sel_ids` capacity is tied to the full `kTopkMaxCells` bound, not just the 4096-token chunk. With cap 32771, `T * cap * sizeof(int32_t)` is 536,887,296 B (512 MiB); Qf is `T * 12288 * sizeof(float)` = 201,326,592 B (192 MiB). These are simultaneously part of the QSA scratch layout and are required by the full-context selection/attention path. Shrinking them based only on chunk size would violate the context bound. The layer-major and delayed-wave reports also establish that previous-wave data may overlap the next chunk's QSA/GDN work; that lifetime prevents reclaiming those shared buffers at a chunk boundary while the prompt continues.
+
+The prompt callback consumes the final chunk's `R` after successful chunk completion, so its source cannot be reused before that callback. The MTP expert weights are separately owned; retiring them after prompt is not a Prefill allocation optimization and is excluded here.
+
+## Only size-screened alternative: smaller expert ring
+
+The source allocates `m.ring` independent `MAXBLOB()` device buffers. For `T >= 1024`, the default is 384 slots when the pinned-source share is at least 0.9, otherwise 96; `STRATA_PREFILL_RING` can override it. `MAXBLOB()` is the pack's `expert_layout().max_blob`. Using the 2,662,400 B stride recorded for the current native pack in R572, changing 384 to 96 would reduce the allocation by:
+
+`(384 - 96) * 2,662,400 = 766,771,200 B` (731.25 MiB).
+
+That is enough gross capacity, but it is not a safe deferred-allocation win under unchanged execution. The issuer may submit up to `m.ring` expert copies ahead of consumption, and slot reuse is guarded by the compute-use event / consumed watermark. The source comments say nearly all 512 experts are routed at this chunk size; it uses the ring to overlap expert copies with attention and grouped MoE work. Reducing the ring caps the in-flight window and can serialize that overlap. The existing source reports large ring-size performance effects on other GPU/pack/workload combinations, so those numbers do not establish the effect on this run. Do not claim a 731 MiB production saving or unchanged speed from the arithmetic alone. A 96-slot ring is only a separately measured capacity/performance setting experiment, not a qualifying allocation/alias candidate for the current configuration.
+
+## Source basis
+
+- `src/prefill/prefill.cpp:100-120,148-164`: blob stride and ring sizing rationale/defaults.
+- `src/prefill/prefill.cpp:560-582`: Prefill release synchronizes streams before freeing owners.
+- `src/prefill/prefill.cpp:588-590,870-906`: max-sized shared scratch region and its three views.
+- `src/prefill/prefill.cpp:918-925`: per-slot device staging allocation and PLE buffers.
+- `src/prefill/prefill.cpp:1877-1898,1930-1957,1962-1969,2370-2397,2919-2964`: producer lead, slot reuse, copy/compute dependencies, and consumer release.
+- `src/prefill/prefill.cpp:1261-1281`: `bytes_needed` counts the same region, ring and KV staging; it is sizing accounting, not a runtime free-memory measurement.
+- `src/program/generate.cpp:4243`: pinned-source share supplied to Prefill ring policy.
+- `bench/results/2026-10-15-pr6-recovery-audit/research-prefill-scratch-retire-round599-v1.txt`: distinguishes owned allocation accounting from driver free-memory measurements and prompt-end retirement.
+- `bench/results/2026-10-15-pr6-recovery-audit/research-wave-region-liveness-round637-v1.txt`: QSA/GDN/MoE and delayed-wave overlap constraints.
+- `bench/results/2026-10-15-pr6-recovery-audit/research-layer-upload-batch-round572-v1.txt`: current pack's 2,662,400 B aligned expert stride.

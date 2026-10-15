@@ -1,0 +1,39 @@
+# Prefill live-allocation headroom audit (R658, corrected)
+
+This v2 corrects v1's QSA capacity and streamed-ring analysis. It leaves v1 unchanged. Scope is read-only source review for the stated C=4096, context=262144, int8 resident=32768, FP32, layer-major, no-borrow configuration. The only run-specific setting consulted was the public JSON key `environment.STRATA_PREFILL_RING` in `selective-iq-clean-bench-full-0-v1.json`; no private record, live-ON state, or raw environment dump was accessed. No build, test, GPU run, process control, Git operation, or cleanup was performed. No free-memory delta, speed result, or quality result was measured.
+
+## Corrected finding
+
+No source-supported delayed allocation or aliasing opportunity of at least 0.5 GiB during this prompt is established. The actual layer-major route does not use the large `stream_all` producer/consumer ring described in v1. The public run setting requests 8 slots, and layer-major loads all 512 experts into its per-layer cache, drains the upload, and only then publishes all 512 as resident. In `run_impl`, `stream_all` is explicitly false whenever `m.layer_major_active` is true. In the non-stream fallback, the per-expert stage helper first checks residency; a resident expert returns without touching `stage_dev`. Therefore the requested 8 stage buffers are allocated but not read as expert staging for this layer-major path. Their gross allocation is about 21 MB, well below 0.5 GiB.
+
+The shared QSA/GDN/MoE scratch region is already allocated once at the maximum of the three sets. QSA's actual selection width is 2051, not 32771: `qsa_real_shapes()` uses `idx_top_k=2048`, `idx_block=4`, and `qsa_selection_width` returns `min(n_kv, idx_top_k + idx_block - 1)`. At C=4096 the `sel_ids` slice is consequently `4096 * 2051 * 4 = 33,603,584 B` (about 32.0 MiB), not 512 MiB. Qf remains `4096 * 12288 * 4 = 201,326,592 B` (192 MiB), but it is required by QSA work during the prompt. Neither this correction nor the ring allocation supplies a safe ≥0.5 GiB live-prompt reduction.
+
+## Exact route and ring calculation
+
+The public record's `STRATA_PREFILL_RING` value is the string `8`. In `ring_slots`, `STAGE` is 8; the explicit `v && r == STAGE` branch returns 8 even for chunks above the normal streaming threshold. With the pack stride of 2,662,400 B recorded in R572, `carve` allocates `8 * 2,662,400 = 21,299,200 B` (about 20.3 MiB) of `stage_dev` storage. This allocation is not a 384-slot / 731-MiB ring for the public configuration.
+
+The layer-major code fills each layer's temporary cache with all 512 experts, calls `drain()`, and only after a successful drain publishes every residency entry. `run_impl` uses `stream_all = !m.layer_major_active && m.ring > STAGE && T >= stream_all_min() && m.src != nullptr`, which is false here. The non-stream fallback calls `stage_one` for the routed order, but `stage_one` immediately returns for an expert found in the complete residency map; it only reports an incomplete map if a layer-major expert is unexpectedly missing. In the fallback compute loop those resident entries use `m.cache->device_slot(...)`; the `stage_of[j] >= 0` branch that reads `m.stage_dev[...]` is not selected for these resident experts. Thus deferring the eight stage allocations during this route could save at most the stated ~20.3 MiB gross, subject to confirming no other caller uses them in this mode; it is not a half-GiB candidate.
+
+The ring's larger producer/consumer window and reuse events in `issue_until` / the threaded issuer / streamed walk apply to the ordinary `stream_all` path. Those lines should not be used to infer layer-major ring occupancy or justify a ring reduction for this run.
+
+## QSA and aliasing bounds
+
+`carve` computes `m.cap` directly from `qsa_selection_width(kTopkMaxCells, s)`. `qsa_real_shapes()` fixes `idx_top_k=2048`, `idx_block=4`; the header definition gives the width `min(n_kv, 2048+4-1)`, so the maximum selection width is 2051. For the 4096-row chunk, `sel_ids` is 33,603,584 B. `Qf` is 201,326,592 B. Other QSA buffers are also carved from the same `region` base as GDN and MoE buffers. The allocation is already `max(gdn_set_bytes, qsa_set_bytes, moe_set_bytes)` and each set is addressed over that base, matching the source comment that a layer runs attention before its MoE. The region is not three additive scratch allocations that can be freed by aliasing them again.
+
+QSA scratch is used by QSA layers in the prompt, and MoE scratch by their MoE phase. Removing either before its phase finishes is not a lifetime-safe way to increase memory available to another prompt allocation. The layer-major upload drain is a real owner boundary for the expert slab/cache/map, but it does not make the chunk-wide activation or QSA scratch dead while later layer computation continues. MTP callback and post-prompt release remain outside this live-allocation screen.
+
+## Decision
+
+The only directly identified defer candidate is skipping allocation of the eight layer-major-unused `stage_dev` buffers, with a gross ceiling of 21,299,200 B for the recorded pack stride and public ring setting. This is far below the target and has no measured free-memory or performance effect. No ≥0.5 GiB candidate is recommended from current source evidence. The prior v1 512-MiB `sel_ids` estimate and its 384-to-96 ring discussion do not describe this public layer-major run and must not be used as its basis.
+
+## Source basis
+
+- `include/strata/kernels/qsa.hpp:109-115,127-135`: real shape (`idx_top_k=2048`, `idx_block=4`) and bounded selection width.
+- `src/prefill/prefill.cpp:100-120,148-164`: `STAGE=8`, ring override and explicit 8-slot behavior.
+- `src/prefill/prefill.cpp:861-887`: `m.cap`, max-sized shared region and QSA scratch slices.
+- `src/prefill/prefill.cpp:918-926`: per-slot `stage_dev` allocation and adjacent owners.
+- `src/prefill/prefill.cpp:1792-1797`: `stream_all` is disabled when layer-major is active.
+- `src/prefill/prefill.cpp:2712-2763,2901-2917`: non-stream stage helper checks residency first; compute selects cache slot for residents, stage buffer only for staged misses.
+- `src/prefill/layer_major.inc:300-327`: upload all 512 experts, drain, then publish all residency entries.
+- `bench/results/2026-10-15-pr6-recovery-audit/selective-iq-clean-bench-full-0-v1.json`: only `environment.STRATA_PREFILL_RING` was read; value is `8`.
+- `bench/results/2026-10-15-pr6-recovery-audit/research-layer-upload-batch-round572-v1.txt`: 2,662,400 B aligned expert stride.

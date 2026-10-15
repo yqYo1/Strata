@@ -817,6 +817,25 @@
       "path": "research-decode-host-observer-current-readiness-round656-v1.txt",
       "sha256": "32389adadc1f02fe9737ea514f4d7a6377b10eb51a786c71633d067a2f09781a",
       "status": "FINAL five current base hashes match; proposal remains unapplied/unbuilt/untested. Host exclusive leaves cannot be added to parent/worker CPU/GPU clocks; Main-controlled fixture/build/small joined smoke needed after IQ ON."
+    },
+    {
+      "round": 657,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-mtp-nonexpert-prefill-headroom-round657-v1.txt",
+      "sha256": "072b877c880a477919c5153e6a11ba6e89866e7199887df5117084f2d260c78c",
+      "status": "FINAL source reader census: prompt uses dense/arena/KV, output head group separable only as proposed transaction. Main found actual startup106299/212.9MiB and selected shared indexed Q6_K head implementation candidate instead of repeated copy/detach; no new free/speed result."
+    },
+    {
+      "round": 658,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-prefill-live-allocation-headroom-round658-v2.txt",
+      "sha256": "c189e4b3b4adc843b52052955a74a8b46b7b9a4fd947f76d1afcaddda0a68e45",
+      "status": "Corrected FINAL after Main review: actual cap2051/sel_ids33603584B, explicit ring8/21299200B. Layer-major allresident cache disables stream_all; old large-ring active explanation withdrawn for this route. No safe >=0.5GiB defer/alias candidate established.",
+      "original_report_path": "research-prefill-live-allocation-headroom-round658-v1.txt",
+      "original_report_sha256": "f3f3aaa45bc3a8443a5d2438573a2f28afc89e5e53ee63ffdfb55182011b56d5",
+      "correction_requested_after_FINAL": true
     }
   ],
   "main_initial_findings": [
@@ -833,7 +852,7 @@
     "main_review": "qsa-layout-recovery-v1/main-review.ja.md",
     "status": "Build/host and20GPU parity/oracle cases PASS/fault0. Component40sample screen closedPASS; layout1 median4.09%slower in one int8case, no adoption. No whole-model/full256K/RESTORE/quality qualification."
   },
-  "latest_main_review": "main-review-round655-656.ja.md",
+  "latest_main_review": "main-review-round657-658.ja.md",
   "component_summary": "qsa-layout-screen-summary.json",
   "gemm_orientation_probe": {
     "report": "gemm-orientation-probe-v1/implementation.txt",
@@ -1281,16 +1300,22 @@
   },
   "research_pending": [
     {
-      "round": 657,
+      "round": 659,
       "model": "gpt-6-luna",
       "read_only": true,
-      "scope": "MTP nonexpert allocations not read during current batched Prefill; no code or tests"
+      "scope": "Root MTP subset state/Nv/coupled/map/accounting contract, not live implementation"
     },
     {
-      "round": 658,
+      "round": 660,
       "model": "gpt-6-luna",
       "read_only": true,
-      "scope": "Current Prefill live allocations, lazy allocation/alias opportunity; no code or tests"
+      "scope": "Root Q6_K generic indexed row parity/spans/shape contract, not live implementation"
     }
-  ]
+  ],
+  "mtp_indexed_head_candidate": {
+    "proposal": "sycl-mtp-indexed-head-v1",
+    "model": "gpt-6.1-sol",
+    "state": "Source-only implementation requested in separate proposal; root/native unchanged. Q6_K indexed subset rows share existing full NativeHead device weights, defaultOFF/SYCL only. Startup212.9MiB is rounded requested duplicate size, not measured free delta. All CPU/build/GPU parity/model/quality/speed/full-context/RESTORE gates pending.",
+    "review": "main-review-round657-658.ja.md"
+  }
 }
