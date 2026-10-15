@@ -1,0 +1,94 @@
+{
+  "schema": "own-qsa-subprofile-source-proposal-v2",
+  "base_commit": "a39e44a49e5ba38e58221714bd71acae52d3a2e1",
+  "immutable_base": "base-manifest.json",
+  "source_only": true,
+  "live_product_modified": false,
+  "git_operations": false,
+  "compiled": false,
+  "tests_run": false,
+  "GPU_executed": false,
+  "provenance": "Independent own-fork source. No XeStrata implementation source consulted.",
+  "input_sha256": {
+    "AGENTS.md": "52e1a617cc2ab50c87da5f3849da7509b738caa57604ba7914f37c483809ccbb",
+    "docs/ARTIFACT_RETENTION.md": "577bed900716a76d3e443a481f46caad9cccd34b10fb86e0676a7122eaa083db",
+    ".claude/skills/strata-upstream-sync/SKILL.md": "e19bfb051a39332616ecac67038bbb98741aff9e924f5ffa55a85a3d39e34330",
+    "bench/results/2026-10-15-pr6-recovery-audit/research-index.json": "af96b7feb78cd127ef785e859f67083bf98d9fc55c10803361037c22445c693f",
+    "bench/results/2026-10-15-pr6-recovery-audit/research-actual-coarse-observer-round727-v1.txt": "e07d7f0f551f97d9c4cc447433f659ddddc416c2739bfc5a8d1665d7f6df2b4f",
+    "bench/results/2026-10-15-pr6-recovery-audit/research-own-moe-submission-candidates-round728-v1.txt": "52f5743bd984fd5075c10751ff2e21cbd4d578ab9b7b8f7960a8439bb936eef5",
+    "bench/results/2026-10-15-pr6-recovery-audit/research-canonical-profile-model-gate-round729-v1.txt": "761ebf8d2aece01232e7cde71b1161be443c7a52c16b5aa8a22e35ba462808f0",
+    "bench/results/2026-10-15-pr6-recovery-audit/research-gpu-residual-prefix-round730-v1.txt": "cff9f9d2883222bfebfb54e227aa7d1cd9113db79e44468440a10d79f374d41f",
+    "bench/results/2026-10-15-pr6-recovery-audit/canonical-bank-profile-model-v1.json": "b26ff02ab08fcb354d4f940438cad6de9876b152cfb29467a7027d6d0007ebd6",
+    "bench/results/2026-10-15-pr6-recovery-audit/canonical-bank-profile-analysis-v1.json": "94819ab9da3649adb675f011d629dd4f9c44f7453575e570f1e33a5b01239b90"
+  },
+  "files": {
+    "README.md": {
+      "bytes": 11110,
+      "sha256": "3581b745d0c13ed7aa65675a045caec27110d6c5329d1dc94ecf7bbf0ca757f3"
+    },
+    "base/include/strata/prefill/layermajor_coarse_profile.hpp": {
+      "bytes": 7116,
+      "sha256": "36d7a9b9059a83f44cac57c6d06229455a2f86114710f73fa422ed4dc940c2a6"
+    },
+    "base/include/strata/sycl/compat/cuda_runtime.h": {
+      "bytes": 6295,
+      "sha256": "39b71df35e317851bd16b383027f088be159be2e0d602c592e8ddab30fe7e26a"
+    },
+    "base/src/prefill/layer_major.inc": {
+      "bytes": 30164,
+      "sha256": "74b6b118bd5fab458fbdc872d345661e8827ea760d6a2f217f8da5922af8e1e9"
+    },
+    "base/src/prefill/prefill.cpp": {
+      "bytes": 207668,
+      "sha256": "c3d3ff8b2107ee3bd7583df2788033891edf0999bf801b2781fb4f4587a3cc86"
+    },
+    "base/src/sycl/compat.cpp": {
+      "bytes": 20628,
+      "sha256": "225e2021b5ce67b3bb58f116a4a15cd5d592a33dbdf2c9837940a3e89155dca7"
+    },
+    "base-manifest.json": {
+      "bytes": 631,
+      "sha256": "f5c5d7c8eb3ccbc7eb376a1a485931ea36f8d3dbc3a41b131abbf748966be022"
+    },
+    "fixtures/qsa_subprofile_fixture.cpp": {
+      "bytes": 6979,
+      "sha256": "bff51a28c28dd44239225bbc2ad373c4fd12c3ce5e7a945d381a7efc5c49fecb"
+    },
+    "fixtures/shim/cuda_runtime.h": {
+      "bytes": 2446,
+      "sha256": "c227aeac24e30d30128cd17d8f7c78bd1223143fe481c1ad1b938fd5fe0f9434"
+    },
+    "proposed/include/strata/prefill/layermajor_qsa_profile.hpp": {
+      "bytes": 9403,
+      "sha256": "1495cdd3f1e5892c4ac4011b92a6420034c97d7b18a74ed6f14a50a2924e3370"
+    },
+    "proposed/src/prefill/layer_major.inc": {
+      "bytes": 32243,
+      "sha256": "f16c023d35d181b1c88650d134c7a982d19f9dcb105c5400054af97f285509bc"
+    },
+    "proposed/src/prefill/prefill.cpp": {
+      "bytes": 209296,
+      "sha256": "a019ef42e2e6fa4553b89f5b319c079fb0dd8161baccaa307cd53887d5cbd75e"
+    },
+    "source.diff": {
+      "bytes": 20088,
+      "sha256": "dba9d301385f8d166df50ecd3022d32f0cadf95020a7d82d45816ef488bf37ff"
+    }
+  },
+  "predicted_C8192": {
+    "current_QSA_chunks": 120,
+    "maximum_262144_QSA_chunks": 384,
+    "sections": 7,
+    "event_handles": 14,
+    "extra_output_lines": 50,
+    "extra_output_budget_bytes": 65536,
+    "current_queries_per_QSA_layer": 78452,
+    "current_query_total": 941424,
+    "maximum_262144_query_total": 3145728,
+    "expected_cap_current": 2051
+  },
+  "consumer": "Main full source review, serialized host/product compile and model gates; no qualification claims",
+  "supersedes": "qsa-subprofile-v1, left immutable",
+  "reported_main_HEAD": "04659cea (report-only; actual product base remains byte-pinned a39e44a)",
+  "additions": "Actual matrix/fallback chunk/query and staged counters with cap consistency; expanded unrun failure fixtures"
+}

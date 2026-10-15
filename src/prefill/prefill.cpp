@@ -42,6 +42,7 @@
 
 #include <cuda_runtime.h>
 #include "strata/prefill/layermajor_coarse_profile.hpp"
+#include "strata/prefill/layermajor_qsa_profile.hpp"
 
 #include <algorithm>
 #include <chrono>
@@ -466,6 +467,7 @@ struct Prefill::Impl {
     bool layer_major_active = false;
     detail::LayerMajorShapeCensus* layer_major_census = nullptr;
     detail::LayerMajorCoarseProfile* layer_major_profile = nullptr;
+    detail::LayerMajorQsaProfile* layer_major_qsa_profile = nullptr;
     detail::Layer26PhaseAudit* layer26_phase_audit = nullptr;
     detail::LayerMajorBoundaryAudit* layer_major_audit = nullptr;
     detail::LayerMajorBoundaryAudit::Copy layer_major_audit_copy;
@@ -2218,6 +2220,12 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                 } else if (half == 0) {
                     // ======================= QSA =======================
                     if (m.layer_major_profile) m.layer_major_profile->begin(detail::LayerMajorCoarseProfile::qsa, m.cs);
+                    // Seven bounded sections for this whole layer/chunk, never
+                    // marks per selected batch/query. Host spans may include
+                    // synchronous helper work; they are not CPU service time.
+                    using QsaProfile = detail::LayerMajorQsaProfile;
+                    auto* qp = m.layer_major_qsa_profile;
+                    if (qp) qp->begin(QsaProfile::projections, m.cs);
                     const core::QsaState& st = ss.qsa_states[qsa_index];
                     const core::WeightRef *wq = need(v, "attn_q.weight", err), *wk = need(v, "attn_k.weight", err),
                                           *wv = need(v, "attn_v.weight", err), *wo = need(v, "attn_output.weight", err),
@@ -2237,6 +2245,8 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                     rope(m.Kc, T, 2, 256, 512, p0, strata::kernels::rope_scaling(), m.cs);
                     // KV streaming: this layer's cells [0, p0) come in from the host copy to the staging pool, and the
                     // chunk's cells go to the host copy, the staging pool, and the VRAM slots of resident blocks
+                    if (qp) qp->end(QsaProfile::projections, m.cs);
+                    if (qp) qp->begin(QsaProfile::kv_stage, m.cs);
                     const bool staged = st.kv_mode == 1;
                     if (staged) {
                         pt.mark(kPfKvStage, cs);
@@ -2245,6 +2255,8 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                                                             (p0 + s.page_size - 1) / s.page_size, s, m.cs);
                         pt.mark(kPfQsa, cs);
                     }
+                    if (qp) qp->end(QsaProfile::kv_stage, m.cs);
+                    if (qp) qp->begin(QsaProfile::kv_append_query, m.cs);
                     if (st.kv_hybrid) {   // K8V4: K INT8 unrotated, V rotated Q4_0 (only V and the output rotate)
                         strata::kernels::fwht256_inplace_cuda(m.Vc, T * 2, m.cs);
                         kv_append(m.Kc, m.Kc, T, p0, st.page_table, s.page_size, nullptr, nullptr,
@@ -2274,6 +2286,8 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                     // the indexer appends, token by token; then scores + selection for many queries at once:
                     // a query reads completed blocks (final once completed) and `dead` for its own tail block
                     const strata::kernels::QsaIndexerBuffers ib{st.idx_tail, st.idx_dead, st.idx_pooled, st.idx_block_pos};
+                    if (qp) qp->end(QsaProfile::kv_append_query, m.cs);
+                    if (qp) qp->begin(QsaProfile::indexer_append, m.cs);
                     pt.mark(kPfQsaIdx, cs);
                     // C-2: the chunk's appends in three launches instead of one per token (the same end state:
                     // the queries below read it only after the whole chunk is appended). STRATA_INDEXER_PER_TOKEN=1: the old
@@ -2291,6 +2305,8 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                                                                        strata::kernels::rope_scaling(), m.cs);
                         }
                     } catch (const std::exception& e) { err = std::string("prefill indexer: ") + e.what(); return false; }
+                    if (qp) qp->end(QsaProfile::indexer_append, m.cs);
+                    if (qp) qp->begin(QsaProfile::selection, m.cs);
                     pt.mark(kPfQsaSel, cs);
                     for (int64_t t0 = 0; t0 < T; t0 += m.sel_batch) {
                         const int64_t nb = std::min(m.sel_batch, T - t0);
@@ -2395,6 +2411,8 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                     }
                     const strata::kernels::QsaAttnPools pools = staged ? pools_of(m.stage, m.ident_table)
                                                                        : core::qsa_attn_pools(st);
+                    if (qp) qp->end(QsaProfile::selection, m.cs);
+                    if (qp) qp->begin(QsaProfile::attention, m.cs);
                     pt.mark(kPfQsaAttn, cs);
                     // perf-review D-1: the whole chunk on tensor cores, one block per (query, KV head), FP32-level
                     // accuracy but not bitwise (qsa_prompt_attn.hpp). Q4_0 KV, or STRATA_PROMPT_ATTN_OLD=1: the
@@ -2403,6 +2421,7 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                     static const bool old_attn = std::getenv("STRATA_PROMPT_ATTN_OLD") != nullptr;
                     const bool matrix_used = !old_attn && strata::kernels::qsa_prompt_attn_batch(
                         m.q, pools, m.sel_ids, m.steps_dev, m.cap, s, m.attn, T, m.cs);
+                    if (qp) qp->dispatch(matrix_used, staged, T, m.cap);
                     if (observe_attn_dispatch) {
                         if (matrix_used) { ++matrix_chunks; matrix_queries += (uint64_t) T; }
                         else { ++fallback_chunks; fallback_queries += (uint64_t) T; }
@@ -2425,8 +2444,11 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                         }
                     if (st.kv_rot || st.kv_hybrid) strata::kernels::fwht256_inplace_cuda(m.attn, T * 24, m.cs);
                     pt.mark(kPfQsa, cs);
+                    if (qp) qp->end(QsaProfile::attention, m.cs);
+                    if (qp) qp->begin(QsaProfile::output_projection, m.cs);
                     gate_attn(m.attn, m.Qf, m.attn_h, T, m.cs);
                     if (!native_proj(m.gemm, wo, m.attn_h, m.bo, T, v.name("attn_output.weight"), err)) return false;
+                    if (qp) qp->end(QsaProfile::output_projection, m.cs);
                     ++qsa_index;
                     if (m.layer_major_profile) m.layer_major_profile->end(detail::LayerMajorCoarseProfile::qsa, m.cs);
                 } else {
@@ -3218,6 +3240,7 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                 m.layer_major_profile->add(detail::LayerMajorCoarseProfile::chunk_drain, toc);
                 // Existing checked callback drain above covers all marks.
                 m.layer_major_profile->chunk_retired();
+                if (m.layer_major_qsa_profile) m.layer_major_qsa_profile->chunk_retired();
             }
             if (on_stage_chunk && !on_stage_chunk(p0 + T, err)) return false;
             if (on_chunk && !on_chunk(m.R, T, p0, err)) return false;

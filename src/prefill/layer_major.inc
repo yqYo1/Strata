@@ -216,6 +216,35 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         profile.reset(new detail::LayerMajorCoarseProfile);
     }
     detail::LayerMajorCoarseBorrow profile_borrow(m.layer_major_profile, profile.get());
+    // Read only: callers configure the native process environment before exec.
+    // A short warmup never enters run_layer_major and allocates no observer.
+    const char* qsa_profile_switch = std::getenv("STRATA_PREFILL_LAYER_MAJOR_QSA_PROFILE");
+    const bool qsa_profile_requested = qsa_profile_switch && std::strcmp(qsa_profile_switch, "1") == 0;
+    std::unique_ptr<detail::LayerMajorQsaProfile> qsa_profile;
+    if (qsa_profile_requested) {
+        if (!profile_requested) {
+            err = "prefill QSA profile: requires STRATA_PREFILL_LAYER_MAJOR_PROFILE=1"; return false;
+        }
+        uint64_t need = detail::layer_major_add(host_need, audit ? 4ull << 20 : 0);
+        need = detail::layer_major_add(need, phase_audit ? detail::Layer26PhaseAudit::host_reservation : 0);
+        need = detail::layer_major_add(need, census ? sizeof(detail::LayerMajorShapeCensus) : 0);
+        need = detail::layer_major_add(need, 2ull << 20); // coarse + fine fixed owners, fourteen extra events
+        if (!core::conversation_memory_admit(core::conversation_available_memory(), need, host_headroom)) {
+            err = "prefill QSA profile: diagnostic storage exceeds RAM headroom"; return false;
+        }
+        qsa_profile.reset(new detail::LayerMajorQsaProfile);
+        for (int l = 0; l < 48; ++l) {
+            auto& row = qsa_profile->rows[l];
+            if (core::is_qsa_layer(g, l)) {
+                row.expected = uint64_t(1 + (n - 1) / m.T);
+                row.expected_queries = uint64_t(n);
+                row.cap = m.cap;
+            }
+        }
+    }
+    // Reverse destruction: lease, Restore, this borrow, fine owner, coarse borrow,
+    // coarse owner. Failed retirement aborts while all event owners remain live.
+    detail::LayerMajorQsaBorrow qsa_profile_borrow(m.layer_major_qsa_profile, qsa_profile.get());
     using LmProfile = detail::LayerMajorCoarseProfile;
     int64_t logical_chunks = 0, layer = 0;
     const int64_t final_chunk_row = ((n - 1) / m.T) * m.T;
@@ -266,6 +295,7 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     lease.arm();
     if (!drain()) { err = "prefill layer-major: entry queue drain failed"; return false; }
     if (profile) profile->open();
+    if (qsa_profile) qsa_profile->open();
     if (audit || phase_audit) {
         m.layer26_phase_audit = phase_audit.get();
         m.layer_major_audit = audit.get();
@@ -315,6 +345,7 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
                              "operator/state precision unchanged\n");
     for (; layer < g.n_layers; ++layer) {
         if (profile) profile->layer = int(layer);
+        if (qsa_profile) qsa_profile->layer = int(layer);
         if (should_stop && should_stop()) { err = "cancelled"; return false; }
         if (!drain()) { err = "prefill layer-major: layer boundary drain failed"; return false; }
         if (std::getenv("STRATA_TRACE")) {
@@ -471,6 +502,11 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         profile->complete = true;
         profile->close(); // checked lease has retired; status checked before emit
         profile->emit();
+    }
+    if (qsa_profile) {
+        qsa_profile->finish(profile->wrapper_ms);
+        qsa_profile->close();
+        qsa_profile->emit();
     }
     if (census) census->complete();
     return true;

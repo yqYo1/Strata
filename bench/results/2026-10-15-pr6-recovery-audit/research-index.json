@@ -1381,6 +1381,38 @@
       "path": "research-gpu-residual-prefix-round730-v1.txt",
       "sha256": "cff9f9d2883222bfebfb54e227aa7d1cd9113db79e44468440a10d79f374d41f",
       "status": "Main read full own-source capacity audit. Proposed next explicit FP32 R40960 adds320MiB; main actual pending model has reached Bank with free4198129664B. No speed/adoption claim."
+    },
+    {
+      "round": 731,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-measured-qsa-selection-round731-v1.txt",
+      "sha256": "a2b966fe61c1e0f9c9e6820eb782118d4a214e0f009e69f3d1c4946b4163d502",
+      "status": "Read full; conditional own score/radix/finalizer hypotheses. Main corrected actualcap2051 and analysis hash, see main-review-round731-732.ja.md."
+    },
+    {
+      "round": 732,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-measured-qsa-attention-round732-v1.txt",
+      "sha256": "8d71ffe8da03ce9c703bcda5bb46cc3d1bd089f877ce69e4a5b3b660ab447bcd",
+      "status": "Read full; conditional ownK gather. Main corrected batched78452 count and missing hi/lo arithmetic factor; no observed traffic/throughput claim."
+    },
+    {
+      "round": 733,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-qsa-subprofile-safety-round733-v1.txt",
+      "sha256": "b3392534c7ce77a6a593880fd01a489594937e7d2a59cb5665f0a064d929ab8f",
+      "status": "Main read full actual applied observer/caller/parser audit. No concrete defect found; duplicate-key and aggregate recomputation hardening are unobserved opportunities, not falsePASS evidence. Fine model pending."
+    },
+    {
+      "round": 734,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-prompt-compile-resources-round734-v1.txt",
+      "sha256": "9aca1681971bb0c1428703459ee187ccc6a9ce9cd730b935707c4cc71a25361b",
+      "status": "Main read full offline resource-inspection plan. Installed ocloc metadata found; no AOT compile/disassembly or register/spill/SLM results. Target spelling and AOT-vsJIT image equivalence remain execution gates."
     }
   ],
   "main_initial_findings": [
@@ -1567,12 +1599,12 @@
   "retention_v5": "retention-v5-manifest.json",
   "parallel_research_current": {
     "rounds": [
-      731,
-      732
+      733,
+      734
     ],
     "past_reports": "research-index.json",
     "intervention": false,
-    "main_work": "R40960 owned same-native model running after canonical R32768 PASS and exact768selected comparison; QSA subprofile delegated to6.1Sol source-only; Main owns tests."
+    "status": "both FINAL read; Main continues fine-QSA actualmodel/comparator/report while no agents executeGPU"
   },
   "phase_audit": {
     "build": "phase-audit-build-v1.json",
@@ -2291,5 +2323,31 @@
     "bytes": 17746435,
     "original_status_unchanged": true,
     "reference_retained": "31457280B/32MiB, Main same-workload canonical model consumer"
+  },
+  "prefill_QSA_subprofile_current": {
+    "report": "qsa-subprofile-status-v2.ja.md",
+    "build": "qsa-subprofile-build-host-v2.json",
+    "source_diff": "qsa-subprofile-v2/source.diff",
+    "source_diff_sha256": "dba9d301385f8d166df50ecd3022d32f0cadf95020a7d82d45816ef488bf37ff",
+    "default": false,
+    "host_cases": 23,
+    "host_passed": true,
+    "SYCL_build_passed": true,
+    "binary_sha256": "f01e8bd5c9e22f7984594b3928dcefade19b50fb72918c0506986bf25db51241",
+    "model_status": "running; no qualification yet",
+    "GPU_owner": "Main",
+    "source_origin": "independent own fork; no Xe source"
+  },
+  "native_R40960_placement": {
+    "receipt": "canonical-bank-profile-r40960-model-v1.json",
+    "comparison": "canonical-bank-profile-r40960-model-comparison-v1.json",
+    "passed": true,
+    "selected_rows_exact": 768,
+    "diagnostic_PP": [
+      331.9,
+      332.4
+    ],
+    "performance_qualified": false,
+    "adopted": false
   }
 }
