@@ -46,6 +46,12 @@ are outside this work's scope.
   dependency path. FP16 and BF16 storage both use two bytes; select format from
   range, numerical/task evidence and actual performance rather than assuming
   FP16 is universally better. Preserve the existing FP32 reference.
+- Current precision work (2026-10-16): implement native 16-bit hidden-state
+  producer/consumer kernels using checked SGLang/vLLM/Intel design references.
+  Converting saved residuals to 16-bit and restoring FP32 before each operator
+  alone does not satisfy this work. Keep necessary local FP32 accumulation,
+  reductions, router decisions and recurrent state distinct from tensor storage;
+  record remaining FP32 boundaries, provenance and numerical/performance gates.
 - Keep long-prefill inference math on the GPU and minimize CPU work beyond
   transfer preparation, launch control and validation. Audit existing CPU
   grouping/index operations and library fallback or emulation paths explicitly;
