@@ -60,3 +60,14 @@ actual Prefill/Verifier/SessionGraphs/MTPを通る新candidate modelは未実行
 直前Direct clean cohortは3成功/4attemptで、4回目にVRAM headroom判定で終了した。
 Direct0=278.2、Direct1=273.9/298.4のみ。残りは未実行、優劣・ばらつき除去を主張しない。
 この失敗を成功へ変えていない。prefill反復600超→1000、decode70目標は未達で継続する。
+
+## work boundaryとretention
+
+actual source/fixtures/commands/初期FAIL/修正/個別結果をfeature/sycl96cd84bcへcommit/pushした。
+閉鎖後にMain exclusive lock下でfull成功trace、重複record/result、不要になったsource-only v1と
+canonical full review mirrorを退役した。233files/17746435B。path/size/SHA/reasonは
+closed-canonical-profile-retention-v1.json、必要なerror/progress/個別結果はcompact側と元receiptに残す。
+原FAIL/PASSとsource statusは不変。Direct失敗の小さなpartial result/journalをspecific diagnosticとして保持する。
+latest FP32 reference31457280B/SHA23c2bb018c7ac5057f0aaa986633fc8f8af43a47c829e9ade3b9a9f1f59b6d55は
+次の同workloadモデル比較のMain consumer向けに32MiB以内で保持し、比較閉鎖時に再審査する。
+現時点でbuild/test/GPU実行は全て閉鎖。次のモデル診断は未起動。
