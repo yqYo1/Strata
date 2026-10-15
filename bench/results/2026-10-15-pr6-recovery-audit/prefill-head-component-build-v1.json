@@ -1,0 +1,211 @@
+{
+  "passed": true,
+  "complete": true,
+  "active": false,
+  "GPU_executed": false,
+  "recipe_sha256": "5b2c2b1dbfd19fe1c30100530273634d8247295deeb9faf6b9d1e7e366be6dd8",
+  "source_sha256": "5798f03bf53952dde855e9d3dc810a7ed2dbdcde33316921d8c9cac75e845aef",
+  "product_build_sha256": "5b5a87de27c83c6f8ea612ff5c78d5364f7f7bca98442603d76e911b6a912648",
+  "compiler": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+  "compiler_sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb",
+  "environment": {
+    "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+    "HOME": "/home/yayoi",
+    "LANG": "C.UTF-8",
+    "LC_ALL": "C.UTF-8",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+    "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+    "OMP_NUM_THREADS": "1",
+    "GIT_TERMINAL_PROMPT": "0",
+    "GIT_SSH_COMMAND": "ssh -oBatchMode=yes",
+    "RUBYLIB": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/lib/ruby/vendor_ruby:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/chef-utils-16.12.3/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/kramdown-2.4.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/kramdown-parser-gfm-1.1.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mdl-0.13.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-cli-2.1.6/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-config-3.0.6/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-shellout-3.2.5/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/tomlrb-1.3.0/lib",
+    "GEM_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all:/usr/share/rubygems-integration/all:/usr/lib/ruby/gems/3.2.0",
+    "CPLUS_INCLUDE_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include",
+    "PYTHONPATH": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/niko-service-test-deps-v1:/home/yayoi/orca/workspaces/Strata/sycl/tools:/home/yayoi/orca/workspaces/Strata/sycl",
+    "PIP_CONFIG_FILE": "/dev/null"
+  },
+  "commands": [
+    {
+      "label": "link-head-component",
+      "argv": [
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+        "-O3",
+        "-DNDEBUG",
+        "-std=c++20",
+        "-fsycl",
+        "-fsycl-id-queries-range=size_t",
+        "-fno-fast-math",
+        "-ffp-contract=off",
+        "-fsycl-allow-device-image-dependencies",
+        "-DSTRATA_ENABLE_SYCL=1",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-I/home/yayoi/orca/workspaces/Strata/sycl/include",
+        "-I/home/yayoi/orca/workspaces/Strata/sycl/include/strata/sycl/compat",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/prefill_head_roundtrip_fixture_v1.cpp",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prefill-head-release-build-root-v1/build/libstrata_prefill.a",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prefill-head-release-build-root-v1/build/libstrata_spec.a",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prefill-head-release-build-root-v1/build/libstrata_engine.a",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prefill-head-release-build-root-v1/build/libstrata_kernels.a",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prefill-head-release-build-root-v1/build/libstrata_core.a",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prefill-head-release-build-root-v1/build/libstrata_sycl_runtime.a",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prefill-head-release-build-root-v1/build/libstrata_kernels_cpu.a",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prefill-head-release-build-root-v1/build/ggml/src/libggml-cpu.a",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prefill-head-release-build-root-v1/build/ggml/src/libggml-base.a",
+        "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_blas.so",
+        "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_intel_ilp64.so",
+        "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sequential.so",
+        "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_core.so",
+        "-Wl,-rpath=/opt/intel/oneapi/mkl/2026.1/lib",
+        "-lm",
+        "-ldl",
+        "-lpthread",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prefill-head-component-build-root-v1/head-roundtrip"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+        "OMP_NUM_THREADS": "1",
+        "GIT_TERMINAL_PROMPT": "0",
+        "GIT_SSH_COMMAND": "ssh -oBatchMode=yes",
+        "RUBYLIB": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/lib/ruby/vendor_ruby:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/chef-utils-16.12.3/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/kramdown-2.4.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/kramdown-parser-gfm-1.1.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mdl-0.13.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-cli-2.1.6/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-config-3.0.6/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-shellout-3.2.5/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/tomlrb-1.3.0/lib",
+        "GEM_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all:/usr/share/rubygems-integration/all:/usr/lib/ruby/gems/3.2.0",
+        "CPLUS_INCLUDE_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include",
+        "PYTHONPATH": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/niko-service-test-deps-v1:/home/yayoi/orca/workspaces/Strata/sycl/tools:/home/yayoi/orca/workspaces/Strata/sycl",
+        "PIP_CONFIG_FILE": "/dev/null"
+      },
+      "started_utc": "2026-10-15T09:46:25.091847+00:00",
+      "wall_seconds": 300,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1033996,
+          "start_ticks": 40634921,
+          "sid": 1033996,
+          "pgid": 1033996
+        },
+        {
+          "pid": 1034028,
+          "start_ticks": 40634937,
+          "sid": 1033996,
+          "pgid": 1033996
+        },
+        {
+          "pid": 1034194,
+          "start_ticks": 40635274,
+          "sid": 1033996,
+          "pgid": 1033996
+        },
+        {
+          "pid": 1034434,
+          "start_ticks": 40635617,
+          "sid": 1033996,
+          "pgid": 1033996
+        },
+        {
+          "pid": 1034563,
+          "start_ticks": 40635688,
+          "sid": 1033996,
+          "pgid": 1033996
+        },
+        {
+          "pid": 1034740,
+          "start_ticks": 40635991,
+          "sid": 1033996,
+          "pgid": 1033996
+        },
+        {
+          "pid": 1034938,
+          "start_ticks": 40636301,
+          "sid": 1033996,
+          "pgid": 1033996
+        },
+        {
+          "pid": 1035781,
+          "start_ticks": 40637477,
+          "sid": 1033996,
+          "pgid": 1033996
+        },
+        {
+          "pid": 1035793,
+          "start_ticks": 40637493,
+          "sid": 1033996,
+          "pgid": 1033996
+        },
+        {
+          "pid": 1035827,
+          "start_ticks": 40637569,
+          "sid": 1033996,
+          "pgid": 1033996
+        },
+        {
+          "pid": 1035835,
+          "start_ticks": 40637594,
+          "sid": 1033996,
+          "pgid": 1033996
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 406349.213456235,
+      "pid": 1033996,
+      "spawn_return_monotonic": 406349.215166233,
+      "direct_identity": {
+        "pid": 1033996,
+        "state": "R",
+        "ppid": 1033815,
+        "pgid": 1033996,
+        "sid": 1033996,
+        "start_ticks": 40634921,
+        "rss_bytes": 397312
+      },
+      "peak_live_owned_identities": 3,
+      "peak_session_rss_bytes": 919560192,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-15T09:46:52.520252+00:00",
+      "elapsed_seconds": 27.428090551984496,
+      "logs": {
+        "link-head-component.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "link-head-component.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "linked_inputs": {
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prefill-head-release-build-root-v1/build/libstrata_prefill.a": "a25f38188f1d113e4213bcce265b1065b5c70649d4f54b729776cb6de25b57c4",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prefill-head-release-build-root-v1/build/libstrata_spec.a": "9f67e6486abcb2890a53da4ce04988157e5535040cda3d0266c5633a84b50b5f",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prefill-head-release-build-root-v1/build/libstrata_engine.a": "9ff628c0fb737b468bd32b84cdedf354ae5e8f6cfb9f8af6470013c630c10f4a",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prefill-head-release-build-root-v1/build/libstrata_kernels.a": "1dea933c8196c40bf01640cb9eaf80207132ec2fcd82381a680853d54f8ed26d",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prefill-head-release-build-root-v1/build/libstrata_core.a": "5cf87ab01eb924ed0177687ddcf017d20ccd1b5adf2d59dafddc0f69fa5db168",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prefill-head-release-build-root-v1/build/libstrata_sycl_runtime.a": "9de3c2ca7b026a9211589d21b458ad893a316b2a02fffa4ec954f4b2149a03c1",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prefill-head-release-build-root-v1/build/libstrata_kernels_cpu.a": "bbf432f4e82de620cecb35a7b9fb92f91f47130b55b0eb771ab531b1dc85bf7e",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prefill-head-release-build-root-v1/build/ggml/src/libggml-cpu.a": "4c06418a5938121f22865aaecd518d1952a2618f95d5a3f5cc5c990c88c99448",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prefill-head-release-build-root-v1/build/ggml/src/libggml-base.a": "0e899a366b985d6cb77739412f04adbc625ddc9ddf0b30056b8743246e59186b",
+    "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_blas.so": "51d6c16990701a5aaf9fbbde5d86f5a7197b81357b66b19cbb912206564cf4ee",
+    "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_intel_ilp64.so": "ffbbeff402fdf09baa53f8226b86f27046592d984ae2916b1bbc2e59132c7c89",
+    "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sequential.so": "4e7ff529bec90a1b0ce70299258a64a2ebae7a5a6f3ec031306a6ddb39b5a650",
+    "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_core.so": "b4f086651ee5a8471140d53fedfdbbaba606287784763b0739f282872c31aa9b"
+  },
+  "scope": "Build-only isolated NativeHead production API fixture. No runtime or model qualification.",
+  "binary": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prefill-head-component-build-root-v1/head-roundtrip",
+  "binary_sha256": "8a53bbad6a406cff28e0279e831ab4f1175210f73c3d41e8f818018d26432d02",
+  "finished_utc": "2026-10-15T09:46:52.527884+00:00"
+}

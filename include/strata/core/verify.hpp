@@ -75,6 +75,12 @@ public:
     bool init(const WeightTable& wt, const ModelGeometry& g, SessionState& ss, const VerifyHits& hits,
               const NativeHead* head, int max_t, std::string& err);
 
+    // Head-only retirement. Own the serialized request boundary; this preserves
+    // all arenas, commit graph, session/KV/GDN/PLE and sampling state.
+    bool can_release_prefill_head(const NativeHead& head,std::string& err) const;
+    bool retire_prefill_head(const NativeHead& head,std::string& err);
+    bool resume_prefill_head(const NativeHead& head,std::string& err);
+
     /// One window: `tokens[0..T)` at positions pos0.., the pool served per layer; `out[t]` = argmax after token t.
     /// The PLE rows are gathered here from `ss.ple_prev` and the tokens.  Captures the T-token graph on first use.
     bool run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool, void* user, int32_t* out, std::string& err);
@@ -186,6 +192,10 @@ private:
     }();   ///< greedy by default; per-request via set_sampling
     const int32_t* hist_d_ = nullptr;   ///< penalty-history row (set_history); null = no penalties apply
     int hist_len_ = 0;
+    bool head_detached_=false,head_recapture_checked_=false;
+    uint64_t release_head_bytes_=0;
+    size_t release_head_row_=0;
+    int release_head_type_=-1;
     bool head_sampling_ = true;          ///< set_head_sampling
     int device_ = -1;                    ///< the device `init` ran on: run/commit switch to it (layer split)
     std::atomic<bool> released_{false};  ///< #267: release_gpu_waits ran (maybe on the watchdog thread): no more windows

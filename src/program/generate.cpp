@@ -51,6 +51,10 @@
 #include "strata/kernels/kv_q4.hpp"
 #include "strata/kernels/qsa.hpp"
 #include "strata/core/native_head.hpp"
+#include "strata/core/prefill_head_scope.hpp"
+#ifdef STRATA_ENABLE_SYCL
+#include "strata/sycl/checked_cleanup.hpp"
+#endif
 #include "strata/core/verify.hpp"
 #include "strata/core/mtp.hpp"
 #include "strata/prefill/prefill.hpp"
@@ -116,7 +120,7 @@ namespace {
 // layer-major residual/cache temporaries; its return (including cancel/error)
 // destroys them before the expert reload begins. Short segments/windows never
 // detach. No feature-specific allocation, scan, kernel or wait when default off.
-bool run_prompt_with_mtp_experts(strata::prefill::Prefill& prompt, strata::core::MtpDrafter& mtp,
+bool run_prompt_with_mtp_experts_impl(strata::prefill::Prefill& prompt, strata::core::MtpDrafter& mtp,
                                  bool supported, const int64_t* tokens, int64_t n, int64_t pos0,
                                  std::string& err) {
     const char* release = std::getenv("STRATA_PREFILL_RELEASE_MTP_EXPERTS");
@@ -169,6 +173,76 @@ bool run_prompt_with_mtp_experts(strata::prefill::Prefill& prompt, strata::core:
     }
     restore(); // keep the original prompt failure/cancellation error unchanged
     return ok;
+#endif
+}
+
+// Both warm serve and standalone pass through this request-scoped boundary.
+// Default off and short segments take exactly the existing prompt/expert path.
+bool run_prompt_with_mtp_experts(strata::prefill::Prefill& prompt,strata::core::MtpDrafter& mtp,
+        bool supported,strata::core::NativeHead& head,strata::core::Verifier* verifier,cudaStream_t main_cs,
+        const int64_t* tokens,int64_t n,int64_t pos0,std::string& err) {
+    auto run=[&](){return run_prompt_with_mtp_experts_impl(prompt,mtp,supported,tokens,n,pos0,err);};
+    const char* requested=std::getenv("STRATA_PREFILL_RELEASE_HEADS");
+    if(!requested || std::strcmp(requested,"1")!=0 || prompt.chunk()<=0 || n<=prompt.chunk())return run();
+#ifndef STRATA_ENABLE_SYCL
+    (void)head;(void)verifier;(void)main_cs;
+    err="head release requires SYCL";return false;
+#else
+    const char* lm=std::getenv("STRATA_PREFILL_LAYER_MAJOR");
+    const char* cp=std::getenv("STRATA_SPEC_COUPLED");
+    if(!supported || !lm || std::strcmp(lm,"1")!=0 || (cp && std::strcmp(cp,"1")==0) ||
+       std::getenv("STRATA_PREFILL_LOGITS") || std::getenv("STRATA_PREFILL_LOGITS_POSITIONS") ||
+       std::getenv("STRATA_PREFILL_NLL") || std::getenv("STRATA_LOGPOS")) {
+        err="head release requires long layer-major single-GPU native MTP4 without split/peer/remote/coupled or logits/NLL diagnostics";
+        return false; // no owner is detached on unsupported routes
+    }
+    struct Boundary {
+        strata::core::NativeHead& head;strata::core::MtpDrafter& mtp;
+        strata::core::Verifier* verifier;cudaStream_t main_cs;
+        strata::core::detail::PrefillHeadState state;
+        using Phase=strata::core::detail::PrefillHeadState::Phase;
+        [[noreturn]] static void fatal(const char* why) noexcept {strata::sycl_backend::cleanup_fail_stop(why);}
+        void move(Phase from,Phase to) noexcept {if(!state.transition(from,to))fatal("head boundary duplicate/out-of-order transition");}
+        bool prepare(std::string& error) {
+            if(!state.readable() || !main_cs){error="head boundary is not ready";return false;}
+            if(verifier && !verifier->can_release_prefill_head(head,error))return false;
+            if(!mtp.prepare_prefill_head(head,error))return false;
+            try {
+                if(!head.prepare_prefill_weights(error)){mtp.cancel_prefill_head();return false;}
+            }catch(...){mtp.cancel_prefill_head();throw;}
+            move(Phase::ready,Phase::prepared);return true;
+        }
+        void retire_readers() noexcept try {
+            // Ordinary target projection runs on main_cs, outside token graphs.
+            if(cudaStreamSynchronize(main_cs)!=cudaSuccess)fatal("main head stream retirement");
+            std::string error;
+            if(verifier && !verifier->retire_prefill_head(head,error))fatal("verifier rejected prepared head retirement");
+            mtp.retire_prefill_head_readers();
+            move(Phase::prepared,Phase::retired);
+        }catch(...){fatal("head reader retirement threw");}
+        void detach() noexcept {
+            if(state.phase()!=Phase::retired)fatal("head detach before all graph readers retired");
+            head.detach_prefill_weights();mtp.detach_prefill_head();
+            move(Phase::retired,Phase::detached);
+        }
+        void restore() noexcept {
+            if(state.phase()!=Phase::detached)fatal("head restore state");
+            // Prefill::run has returned/unwound its checked local owners. Drain
+            // its main stream as well as MTP's KV-only queue before reuse.
+            if(cudaStreamSynchronize(main_cs)!=cudaSuccess)fatal("prompt main completion before head restore");
+            head.restore_prefill_weights();mtp.restore_prefill_head();
+            move(Phase::detached,Phase::restored);
+        }
+        void resume() noexcept try {
+            if(state.phase()!=Phase::restored)fatal("head resume before complete restore");
+            head.resume_prefill_weights();mtp.resume_prefill_head();
+            std::string error;
+            if(verifier && !verifier->resume_prefill_head(head,error))fatal("verifier head resume failed");
+            move(Phase::restored,Phase::ready);
+        }catch(...){fatal("head resume threw");}
+        ~Boundary() noexcept {if(!state.readable())fatal("head boundary escaped without restore");}
+    } boundary{head,mtp,verifier,main_cs,{}};
+    return strata::core::detail::with_prefill_head_release(boundary,run,err);
 #endif
 }
 
@@ -2995,6 +3069,11 @@ int main(int argc, char** argv) {
     if (wo == nullptr) { std::fprintf(stderr, "strata generate: output.weight is missing\n"); return 1; }
     const int64_t n_vocab = wo->ne1;
     strata::core::NativeHead native_head;
+    struct HeadReaderLease {
+        strata::core::MtpDrafter& mtp;
+        cudaStream_t stream;
+        ~HeadReaderLease() noexcept {mtp.retire_head_owner_readers(stream);}
+    } head_reader_lease{mtp,main_stream};
     if (!o.native_head_gguf.empty() && !multi_gpu) {   // a layer split's head is on its last stage
         if (!native_head.load(o.native_head_shards, g.n_embd, n_vocab, err)) {
             std::fprintf(stderr, "strata generate: %s\n", err.c_str());
@@ -5927,7 +6006,7 @@ int main(int argc, char** argv) {
                     sp, mtp, native_pack && o.spec == 4 && !o.mtp.empty() && !multi_gpu &&
                     o.layer_split.empty() && o.peer_device < 0 && !peer.valid() &&
                     std::all_of(o.expert_cache_remote.begin(), o.expert_cache_remote.end(), [](auto slots) { return slots <= 0; }),
-                    ids.data() + at, to - at, at, err);
+                    native_head, &ver, main_stream, ids.data() + at, to - at, at, err);
                 if (trace) {
                     std::fprintf(stderr, "strata trace: read %lld tokens (%s) in %.1f ms\n", (long long) (to - at),
                                  win ? "windows" : "batched",
@@ -6497,7 +6576,7 @@ int main(int argc, char** argv) {
                 native_pack && o.spec == 4 && !o.mtp.empty() && !multi_gpu &&
                 o.layer_split.empty() && o.peer_device < 0 && !peer.valid() &&
                 std::all_of(o.expert_cache_remote.begin(), o.expert_cache_remote.end(), [](auto slots) { return slots <= 0; }),
-                o.tokens.data(), n_batched, 0, err)) {
+                native_head, nullptr, main_stream, o.tokens.data(), n_batched, 0, err)) {
             std::fprintf(stderr, "strata generate: %s\n", err.c_str());
             return 1;
         }

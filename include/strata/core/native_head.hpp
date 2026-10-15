@@ -20,6 +20,15 @@ public:
     NativeHead& operator=(const NativeHead&) = delete;
 
     bool load(const std::vector<std::string>& shards, int64_t n_in, int64_t n_out, std::string& err);
+    // Narrow SYCL prompt boundary. Caller first preflights all consumers, then
+    // retires their graphs/streams before detach. Snapshot budget: 1 GiB packed
+    // weights, no files; scratch and tensor metadata remain owned and unchanged.
+    bool prepare_prefill_weights(std::string& err);
+    void cancel_prefill_weights() noexcept;
+    void detach_prefill_weights() noexcept;
+    void restore_prefill_weights() noexcept;
+    void resume_prefill_weights() noexcept;
+    bool head_detached() const { return head_detached_; }
     bool run(const float* mixed, float* logits, void* stream, std::string& err) const;
     uint64_t weight_bytes() const { return bytes_; }
     bool loaded() const { return weights_ != nullptr; }
@@ -30,6 +39,8 @@ public:
     size_t row_bytes() const { return n_out_ > 0 ? (size_t) (bytes_ / (uint64_t) n_out_) : 0; }
 
 private:
+    bool head_prepared_=false,head_detached_=false,head_release_used_=false;
+    std::vector<uint8_t> head_snapshot_; // exact packed bytes, request-scoped RAM
     void* weights_ = nullptr;
     void* scratch_ = nullptr;
     uint64_t bytes_ = 0;

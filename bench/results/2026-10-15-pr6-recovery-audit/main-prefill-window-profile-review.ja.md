@@ -98,7 +98,7 @@ pos0 seed、half-round順序、tail/dead/spare/block_posの単一writer、causal
 
 BF16 storage v2もSolから受領したが、v1が漏らしていた既存CPU audit fixtureのenum対応を含む
 置換proposalであり、未適用・未build・未実行。FP16/BF16の実品質は未合格。
-head releaseもsource-onlyであり、744699900 Bのpayload回収を実測済みとは言わない。
+head releaseの744699900 Bというpayload回収を実測済みとは言わない。
 短入力のdecode配置経由prefillと既存FP32 referenceは維持する。
 
 Mainは続いてhead-scope/KV-prefixの**提案したproduction helperそのもの**を
@@ -108,7 +108,16 @@ head fixtureの元の一行ifはGCCの`-Werror=misleading-indentation`で失敗�
 Main v2 fixtureを使用した。次の試行ではMainのinclude配置不足でKV fixtureがcompile失敗し、
 提案headerとbyte同一のproduction include path overlayを作って解消した。
 元v1/v2失敗結果とwarning条件は保存し、test logicやWerrorを弱めていない。
-rootへの適用、実SYCL build、モデル/RESTORE/物理最大context検証は未実施のままである。
+その後Mainはhead-releaseだけをexact diff/pinsで実sourceへ適用し、新しい別build directoryで
+SYCL本体全体をcompile/linkした。全command0、Werror、source固定、range-size safety flagと
+prefillの`-fno-fast-math -ffp-contract=off`を確認した。`prefill-head-release-build-v1.json`が結果。
+新binaryは`c03ca79d5a75faaed075c9ce354fd5647f78a39853150a55992753d7d93ba42e`。
+通常無効のままで、元b1 binary/archivesは変更していない。GPU/実VRAM回収は未検証。
+NativeHeadのみの実packed-byte/logit比較fixtureもproduction librariesへリンク済み
+（`prefill-head-component-build-v1.json`）、GPU実行前。
+MTP/verifier/モデル/RESTORE/物理最大context検証は引き続き別の未実施gateである。
+R683の独立sourceレビューでも明確なdangling-owner/default-off退行は見つからなかったが、
+GPUのcompletion/graph lifecycleを証明する実行ではない。
 
 ## 失敗と保存
 
@@ -129,6 +138,7 @@ raw timeline約1.60 GBは全イベント集計・gap解析・独立表照合の�
 原本のrun receiptは変えず、元trace pathが退役したことはこのmanifestで示す。
 大きなtimeline/失敗した4.6 MB中間集計をGitへ追加しない。
 
-今回変更したのは測定/解析/容量説明と未適用proposalであり、native product sourceは変えていない。
+プロファイルは旧binaryで取得後、head-releaseのproduct sourceだけを通常無効で統合した。
+BF16/KV-prefix/device-indexer-batchはまだ未適用。
 公式bench.shの直前clean結果は実78453入力で219.1/222.3/221.5 tok/s、中央値221.5。
 600/1000 tok/s、品質、物理最大contextの実行、RESTOREの新しい合格はまだ得ていない。

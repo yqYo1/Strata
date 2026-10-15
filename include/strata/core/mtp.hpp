@@ -85,6 +85,18 @@ public:
     void set_draft_history(const int32_t* tail, int64_t n_tail, int32_t next);
     bool coupled() const { return coupled_active_; }
 
+    // Head-only request boundary: caller serializes all public calls and keeps
+    // NativeHead alive. IDs and their device allocation never change; KV-only
+    // prompt graphs, arenas, logits and sampling state remain live.
+    bool prepare_prefill_head(const NativeHead& head,std::string& err);
+    void cancel_prefill_head() noexcept;
+    void retire_prefill_head_readers() noexcept;
+    void detach_prefill_head() noexcept;
+    void restore_prefill_head() noexcept;
+    void resume_prefill_head() noexcept;
+    // Invoke before borrowed NativeHead destruction after this opt-in was used.
+    void retire_head_owner_readers(cudaStream_t owner_stream) noexcept;
+
     /// Prompt-only expert retirement. Caller must own the entire prompt/decode
     /// boundary; no concurrent public calls are allowed. Both methods reject a
     /// duplicate transition. KV-only prompt graphs, draft KV, dense weights and
@@ -110,6 +122,13 @@ public:
     }
 
 private:
+    bool head_prepared_=false,head_detached_=false,head_restored_=false;
+    bool head_release_used_=false,head_owner_retired_=false,head_had_subset_=false,head_storage_released_=false;
+    uint64_t head_release_bytes_=0,head_full_bytes_=0;
+    size_t head_row_bytes_=0;
+    int head_type_=-1;
+    std::vector<int32_t> head_ids_,head_map_check_; // immutable map + bounded readback scratch
+    void retire_full_head_graphs() noexcept;
     bool upload_experts_checked(bool original, std::string& err);
     bool experts_detached_ = false, expert_source_valid_ = false;
     bool expert_recapture_timing_ = false;

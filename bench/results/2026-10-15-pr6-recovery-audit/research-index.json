@@ -1064,6 +1064,22 @@
       "read_only": true,
       "sha256": "a760fa73cd2192cd81ef886658fa5bb612ec59f3ed76d0177c6f91651c845381",
       "status": "Main independently verified histograms; corrected residual row-count text and classified remaining PLE H2D; original report preserved."
+    },
+    {
+      "round": 682,
+      "path": "research-qsa-indexer-device-batch-review-round682-v1.txt",
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "sha256": "d950b7df679db7ac0d14f0b2a04730fa4400ddd47e0646fc8542561d398ac3ca",
+      "status": "Main read summary; no clear source race/order defect, seed-only n2/n3/n4 and broader invalid spans still needed. No tests/build."
+    },
+    {
+      "round": 683,
+      "path": "research-prefill-head-release-actual-review-round683-v1.txt",
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "sha256": "10ccdc9752c98c7cd9ab1eb2cba922bd388a72fec81ab99bb9aaa6c000b495f3",
+      "status": "Main reviewed; no direct UAF/default-off defect by source inspection. NativeHead fixture scope excludes MTP/verifier lifecycle; device fail-stop remains deliberate."
     }
   ],
   "main_initial_findings": [
@@ -1626,9 +1642,11 @@
   },
   "prefill_head_release_candidate": {
     "proposal": "prefill-head-release-v1",
-    "state": "Sol FINAL source only; Main reviewed source/diff and helper CPU normal+ASan/UBSan passed. Unapplied/no actual SYCL build/GPU/model/RESTORE qualification or measured capacity recovery.",
+    "state": "Main exact applied/default-off; all four CPU helper arms PASS and fresh full SYCL product build PASS. Isolated product NativeHead fixture linked but GPU not run. No actual VRAM recovery/model/RESTORE/quality/performance qualification.",
     "source_diff_sha256": "737b9a346e719aec22fc069915e86da97e5caebe4ec4ca27ffa5308ed49262bc",
-    "host_helper_receipt": "prefill-owner-helpers-host-v3.json"
+    "host_helper_receipt": "prefill-owner-helpers-host-v3.json",
+    "build_receipt": "prefill-head-release-build-v1.json",
+    "component_build": "prefill-head-component-build-v1.json"
   },
   "prefill_bf16_storage_candidate": {
     "proposal": "bf16-prefill-storage-v2",
@@ -1656,11 +1674,12 @@
     "source_diff_sha256": "2f431778bfe168f2d912deed6855a57e94aca2245df40bbeb5208e9b77e1e0ce",
     "host_helper_receipt": "prefill-owner-helpers-host-v3.json"
   },
-  "implementation_pending": [
-    {
-      "proposal": "qsa-indexer-device-batch-v1",
-      "model": "gpt-6.1-sol",
-      "state": "Source-only agent running; Main controls all builds/tests/GPU serially. No source outcome yet."
-    }
-  ]
+  "implementation_pending": [],
+  "QSA_device_batch_candidate": {
+    "proposal": "qsa-indexer-device-batch-v1",
+    "model": "gpt-6.1-sol",
+    "state": "Sol FINAL source-only received; independent R682 review complete, Main needs to finish review and serial fixtures/build. Unapplied.",
+    "source_diff_sha256": "e8a11fc1ea66123f3d464c6e7ce982aed1ceb246bbf4db079454610889f0b995",
+    "review": "research-qsa-indexer-device-batch-review-round682-v1.txt"
+  }
 }
