@@ -21,10 +21,10 @@ from owned_stack_probe import load_owner, require, sha, boot_id
 
 def main():
     require(len(sys.argv) == 4 and sys.argv[1] in ('v2', 'v3') and
-            sys.argv[2] == 'bf16' and sys.argv[3] == '0',
+            sys.argv[2] in ('fp32', 'bf16') and sys.argv[3] == '0',
             'fresh build version, native arm, repetition')
     version, arm, repetition = sys.argv[1], sys.argv[2], int(sys.argv[3])
-    order = [('bf16', 0)]
+    order = [(arm, 0)]
     position = order.index((arm, repetition))
     module = load_owner(P / 'bench/results/2026-10-14-niko-main-service-port/direct_owner.py')
     with (B / 'owned-v0141-measurement.lock').open('a') as lock:
@@ -45,6 +45,10 @@ def main():
             closed(v)
         for a in ('fp32', 'bf16'):
             closed(json.loads((A / f'own-native16-clean-{a}-r0-{version}.json').read_text()))
+        if arm == 'fp32':
+            bf16_profile = json.loads((A / 'own-native16-coarse-profile-v1.json').read_text())
+            closed(bf16_profile)
+            require(bf16_profile['binary_sha256'] == build['binary_sha256'], 'same-binary coarse pair')
         require(smoke['binary_sha256'] == build['binary_sha256'] and
                 set(smoke['cases']) == {'fp32', 'bf16'}, 'same-binary two-arm mechanics')
         for a, n in order[:position]:
@@ -65,8 +69,8 @@ def main():
         for n, v in old['model_identity'].items():
             st = Path(n).stat()
             require(st.st_size == v['bytes'] and st.st_mtime_ns == v['mtime_ns'], 'model identity')
-        root = B / 'main-own-native16-coarse-profile-root-v1'
-        target = A / 'own-native16-coarse-profile-v1.json'
+        root = B / ('main-own-native16-coarse-profile-root-v1' if arm == 'bf16' else 'main-own-native16-fp32-coarse-profile-root-v1')
+        target = A / ('own-native16-coarse-profile-v1.json' if arm == 'bf16' else 'own-native16-fp32-coarse-profile-v1.json')
         require(not root.exists() and not target.exists(), 'fresh independent process')
         root.mkdir(mode=0o700)
         env = {k: v for k, v in old['environment'].items() if k.startswith('STRATA_') or k in (
@@ -122,7 +126,7 @@ def main():
             MTP_metadata_sha256=old['MTP_metadata_sha256'], external_profile_sha256=sha(profile),
             local_profile_initial_sha256=sha(local), boot_id=boot_id(),
             performance_qualified=False, quality_qualified=False, physical_262144_qualified=False,
-            scope='Separate diagnostic official bench.sh >=32768 fresh input, thinking ON,24 output cap,C8192/R_GPU32768/BF16. TRACE+coarse queue intervals enabled; NOT clean speed or exclusive Amdahl data. No quality/fullcontext/RESTORE qualification.')
+            scope='Separate diagnostic official bench.sh >=32768 fresh input, thinking ON,24 output cap,C8192/R_GPU32768. Recorded arm selects FP32 or BF16. TRACE+coarse queue intervals enabled; NOT clean speed or exclusive Amdahl data. No quality/fullcontext/RESTORE qualification.')
         def persist():
             (root / 'record.json').write_text(json.dumps(record, indent=2) + '\n')
         owner = module.Owner(root / 'owned', persist); record['commands'] = owner.commands; persist()
