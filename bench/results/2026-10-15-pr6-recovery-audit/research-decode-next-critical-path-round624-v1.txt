@@ -1,0 +1,77 @@
+# R624 — Arc decode の次のcritical-path候補と測定順
+
+2026-10-15 JST。読み取り専用の過去証跡・現root source・observer proposal監査。唯一の書込先は本報告。製品source、build/test、GPU/profiler/service/process、Git、cleanupには触れていない。対象はArc B570 10 GiB / Ryzen 5 5600X 6 core/12 thread / RAM128 GiB、native Qwen3.8-Flash-Next IQ3_S、48層・top-10、K8 resident32768、MTP4、cache128/per-layerの現在のdecodeである。
+
+## 結論と実行順
+
+現在のclean long-generation結果は強いMTPのコード生成で8.4 t/s中央値、弱いMTPの文章生成で4.8 t/s中央値。70 t/sの約8–15倍に届かない。最も大きい改善余地は、現在97%前後がCPUに割り当てられるexpert-token行を、実際に入る範囲でGPU resident expert cacheへ移すことにある。測定済みCPU service量から見ると、CPU kernelの小改善だけでは70 t/sに届く見込みがない。一方、route histogramによるslot追加の計算はwall-time改善ではなく、GPU側の性能・適合性・VRAM入場も未証明である。
+
+優先順は次のとおり。
+
+1. **既存GPU expert cache設定の容量・配置を、実測routeから試す。** まず現行128 slotsの正確なslot配置を維持した基準を固定し、Main既存の安全予算・live free VRAM条件で192/256 total-slot範囲を評価する。cache128の実route hitは約3%で、34K/128 decodeはCPU route rows 101,036/104,160。保存済みID別censusのhindsight上限では既存slotに加え+128 slotsでCPU rowsの12.20%、+256で20.08%、+512で32.09%をGPUへ移し得るが、これは同じrequestのCPU-owned routesだけに対する理想固定配置の行数上限であり、実速度でもprofileの達成値でもない。+512 slotsは現128に約1,004 MiBのexpert payloadを追加し、640 totalとなるため最初の入場候補にしない。`balanced-layer-cache-v1`は未適用のslot分配案であり、同じ128 slotsを再配置するだけなので、それ自体にhit改善やspeedupは計上しない。実測profile hit、live VRAM予算、token/logit品質を確認できない場合はここで止める。
+2. **同一promptでMTP幅1/2/4のnet decodeを比較する。** MTP4のD/Aとdraft wallは既存receiptにあり、長い正式ベンチでもコード82%・文章約39%のMTP採用率と明瞭なthroughput差が出た。ただしworkloadが異なるため因果比較ではない。現行configでMTPなし/小幅の同じprompt・出力上限・KV/cache条件を順に比較し、decode end-to-end、draft span、実際のverifier T、W/R/D/A/C/E、CPU rows/service、出力品質を一緒に見る。高acceptanceでもdraft costと追加verifier行がnet winを消す場合は幅を下げる。低acceptance仕事ではMTP4を無条件に使わない。
+3. **host submit/waitが目立つ場合だけ、v2 host-phase計測の後に1 verifier windowのdevice timelineを取る。** 現observer案はhost側のcapture/staging/graph submit/event wait/pool callback/copy waitを区別できるが、GPU kernel duration・active/idle・copy実byteを分けない。GPU小kernelとCPU submissionどちらが先かは、既存v2の結果と同じwindowのbounded device traceを分けて取る必要がある。現時点ではその時間配分がなく、2560-wide GPU kernelを最大候補と断定できない。
+
+## 測定済み数値とその限界
+
+| 証跡 | 測定済み事実 | 言えないこと |
+| --- | --- | --- |
+| `upload-fix-suite-final.ja.md` / `suite-v4-upload-fix-final-summary.json` | 32K超のlong code 3 runsはdecode 8.4/5.8/9.6 t/s、MTP採用率82.28/81.98/82.32%。long prose 3 runsは4.8/3.8/6.4 t/s、採用率37.17/39.77/38.87%。全て別の実生成列を持つ通常完了request。 | 強い/弱い採用率の差を同じpromptでのMTP幅差や唯一の速度原因とは言えない。本文存在はtask品質合格ではない。PR #6の645.85 t/sは32768/8192/K8V8 fully residentのprefill medianで、MTP時間を測っておらずdecode性能に転用できない。 |
+| `decode-ledger-fp32-fixed-normal-v1.json`, `decode-ledger-final.ja.md` | 34,603 input / 128 emittedのMTP4初回: W55, R217, D162, A76, C131, E128。提案位置のacceptは76/162=46.9%。CPU unique jobs68,781、CPU rows101,036 / 104,160 route entries=97.00%、平均CPU job nt=1.469。CPU thread service36.734 s (GU25.533, Down11.102, quant0.099)、decode loop25.544 s、existing GPU-boundary wait7.713 s、pool callback8.363 s、draft caller3.183 s。 | CPU thread-secondsは並列サービス量であってdecode wallへの加算・減算項ではない。`GPU-boundary wait`はGPU時間ではなくsubmit後からSYCL graph completionまでのhost wall。pool callback、wait、request runはscopeが重なり、和をcritical pathにできない。first/second 34K requestは出力列と仕事量が異なりwarm speed pairではない。 |
+| `decode-format-service-normal-v1.json`, `decode-format-service-summary-v1.json` | 同じ34K/128 MTP4 workの実CPU GU serviceはtype18=9.296 s、22=9.475 s、21=6.375 s、23=0.312 s。Down type20=9.466 s、type42=1.464 s。複数formatが大きく、IQ3_Sだけを速くしても全CPU GUを置き換えない。 | format別CPU serviceはGPU decode時間やkernel critical pathを示さない。 |
+| `decode-format-service-extra-v1.json`, `research-decode-kv-residency-round587-v1.txt` | cache128/per-layerは総slot数128。reported decode cache hitは3124/104160=3.0%。GPU cached expertsはnative Q8_1 arithmetic、CPU expert側IQ arithmeticと一致するbitwise数値経路ではない。KV mode1は選択されたmiss pageだけhost backingからstageする。 | route ledgerのlogical packed bytesはDRAM traffic/H2D bytesではない。KV full-request aggregateやpage resolve logicだけでdecode-window transfer byte/timeを得られない。cache owner変更は出力/qualityを変える可能性がある。 |
+| `cpu-gpu-cache-opportunity-v1.json`, R607 | 1 requestのexact CPU-owned `(layer,expert,nt)` censusは98,304-byte histogram、9,816 distinct CPU-routed pairs。既存128 slotsに追加で+128/+256/+512個のCPU rowsを選ぶhindsight upper boundは12.20/20.08/32.09% (CPU jobsは7.12/12.72/22.93%)。+512に選んだpairのsource payloadは1,053,235,200 B / 1004.44 MiB。 | GPU-owned ID/hitや将来routeを含む最適配置、CPU elapsed saving、cache arena actual allocated bytes、GPU execute capacity、live VRAM fit、speedupを示さない。追加slotを既存cacheに上書きせず足す前提と、total-slot partitionを再計算する案は別実験。 |
+| `research-decode-cpu-roofline-round579-v1.txt` / `main-review-round576-579.ja.md` | 上のCPU service約36.7 thread-s / 128 emitted=約0.287 CPU-s/output。この仕事が同じなら70 output/sで約20 CPU-thread-seconds/sec必要。設定poolは5 workers+issuerで最大6参加thread。CPU-only workloadが同じままなら全6 slotsを常時使っても単純線形換算約21 output/s相当が上限スクリーニングとなる。 | これは現仕事の条件付きservice算術で、モデル/CPU絶対上限ではない。R579の当初0.818 TFLOP/s・36.87 GB/s controlはpacked IQ実能力ではなく、logical byte数をDRAM byte数とみなして70 t/sの可否を断定しない。 |
+
+この条件付きCPU service算術が第一候補をGPU route ownershipへ置く理由である。仮に追加512 GPU slotsの理想上限どおりCPU rowsを現baselineの約68%分だけ移せても、残りCPU serviceは未調整時の約65%で、70 t/sに必要なCPU service 20 thread-s/s相当から十分離れ得る。大きいslot増だけで70へ届くと約束せず、cache拡大・MTP幅・CPU service効率を一つずつ測る。
+
+## v2 host observerの具体的な能力監査
+
+`decode-host-phase-observer-v2/README.ja.md`とproposalの実header/source hook (`files/include/strata/core/decode_host_phases.hpp`, `files/src/core/verify.cpp`)を読んだ。これは**未適用・未build・未実行のproposal**であり、現行binaryの計測値ではない。実装されれば、Linux SYCL ordinary graph/G1 eligible decodeに対しissuer-onlyのsteady-clock host wallを、fixed-state leafとして記録する設計である。
+
+- `capture`, `capture_commit`, `host_staging`, `initial_graphsubmit`、各layerの`layer_eventwait`, `poolcallback`, `copy_stream_sync`, `next_graphsubmit`、`tail_compute_sync`, `tail_copy_sync`, `finalreadout`、および親の`run_total`を独立scopeとして分ける。RunTotalはleaf和と比較し、親とleafを二重加算しない。正常windowごとの計測、実T=1..4別global marginal、layerごとの四phase marginal、window ordinal bandsがあり、分布はcount/sum/min/maxとbase-4ヒストグラムから得るp50/p95区間である。
+- 従ってCPU caller/host serviceが**どの既存host境界で使われているか**、`copy_stream_sync` host waitか`next_graphsubmit` host submitか、T=1とT>1でhost費が違うかは判別可能。per-layer marginalは層間偏りを示せる。
+- ただし`layer_eventwait`はevent completionまでのhost waitで、runtime/driver・GPU execution completionを含む。これをdevice active time、small kernel time、GPU idleとして扱えない。per-layer rowsはT×layer cross productではなく、by-T global marginalとlayer marginalは別配列なので「T4のlayer17が遅い」と結合できない。
+- `poolcallback`はCPU callback wallだけでなくその中のshared/hit graph submit等も含む。MTP4 joined observerのthread CPU service countersとは別時計であり、互いを差し引けない。
+- `copy_stream_sync`は同期呼び出しwallで、DMA byte数、copy engine activity、PCIe wire bytes、host-to-device実payloadを計測しない。既存route reportもfooterに`logical_bytes_not_dram_or_h2d=1`を明記する。
+- observerは`G=1`, ordinary graph, 正常成功window等の適用scopeであり、`--spec`やcache変化のdecode end-to-end計時ではない。提案がMainにより適用・検証される前は利用不能。
+
+従って既存v2案は次の**host**区間を切るには具体的に十分だが、今回問われているCPU/GPU/transferの三者を単独で分けるには足りない。v2でhost submit/event/copy-waitを一度切り分け、device-active/copy-payloadが依然上位候補ならR588/R606のbounded one-window trace gateに進む。device traceは既存collectors/providerの固定条件と同じwindowのqueue/event/device timestampsをsource mappingし、copy source/destinationとpayloadを確認する必要がある。host timingだけでkernel durationを推定しない。
+
+## 1〜3候補の実行材料
+
+### 1. 追加GPU resident experts — 第一候補だがVRAM/品質ゲート付き
+
+理由は現在のowner分布: top-10のCPU route entries約97%、cache hit約3%、CPU GU+Down service約36.7 thread-s/128 outputである。CPU poolでの一行処理micro-optimizationより、大量CPU-owned workの一部をGPUへ移す方が効果の上限が大きい。実行順は route source/configを固定した128 baseline → total 192 → total 256。R584のsource screenが提案した128/192/256 total-slot ladderとlive 700 MiB reserve checkを使う。MTP4、KV/cache, context, pool5+host, residual placement、promptを固定し、cache capacityごとにfresh free VRAM/actual arena bytesを記録する。`balanced-layer-cache-v1`はMain source review前の案で、従来128 slotsのlegacy配分(47層×2 + 最後34)と新balanced(32層×3 + 16層×2)を混ぜずに扱う。既存128のowner mappingが維持されない再配分試験は、append-only +128上限とは異なるexperimentとして名前を付ける。
+
+採否はdecode clean wallの変化だけでなくactual cache hit/CPU route row・jobs/nt、GPU resident hit kernel負荷、128-ID output/repro、token/logit quality、fresh fault、physical 256K host fallbackと同じfree reserveで判定する。GPU Q8_1のownerが増えて出力が変わるとき、同一IDを速度比較だけで採用しない。R607の+128追加はhindsightでCPU rowsの12.20%だけをカバーする。+512追加は32.09%上限だが1,004 MiB source payloadを要求し、profile適合やarena sizeを含むlive allocationで入場許可が出るまで候補実行しない。
+
+### 2. MTP4から同一仕事ごとの幅選択へ
+
+現行 MTP4 34K/128は55 verifier windows / 217 rows / 76 accepted draftsで、A/D=46.9%、draft caller3.18 s。正式long benchmarkはMTP4設定でコードの3 runsが82% acceptかつ中央値8.4 t/s、proseは39%かつ4.8 t/sだが、各は異なるprompt/taskである。これだけではMTP4が原因または必ず得かはわからない。
+
+現在の設定面で、同一入力・同一context/KV/cache/CPU poolに対してT=1/no speculation、より低いspec width、T=4を順に比較する。まず診断receiptでT histogram、W/R/D/A/C/E、`dt_draft`、CPU owner rows、CPU service、decode totalを取る。その後、性能採用はobserver/profilerなしで複数clean long runsへ移す。比較はoutput sequenceが分岐しても同じinput/configで行い、実際のoutput lengthとbody/token qualityを併記する。acceptanceを最大化するのでなく、draft wallと余計なverifier CPU rowsを含めた emitted tokens/sを選ぶ。
+
+### 3. 49-segment verifier host/device path — v2後にだけ
+
+R588/R606 source reviewではordinary verifierが一windowを最大49 event-completed graph segmentsとしている (T=1/T=4 capture logs)。実actual MTP4 ledgerは7.4 s event-boundary host waitと8.7 s pool-callback wall、22.2 s verify runを記録するが、これらはexclusive時間ではない。`model-device-profile-v2.json`はstartup+prefill+decode一括profileであり、34K prefill attention durationや660 decode KV resolver callsを含んでもdecode phase-only kernel-duration/busy-unionを出さない。したがって2560-wide GPU small kernelが遅い、またはsubmit overheadが遅いという確定値はない。
+
+次の独立区間は (a) issuer host submit時間、(b) layer graph submit→event completion host wall、(c) CPU callback/thread service、(d) explicit copy stream sync wall、(e) same-window device kernel/copy intervals、(f) decode-window logical KV page missesと実際のpayload/read bytesである。(a)–(d)はv2 proposalのhost spansとjoined CPU serviceが分けられる範囲。(e) bounded device trace、(f) per-window KV source miss/payload観測が必要で、現v2では測れない。device timelineで全device activityが揃わない限りqueue gapをGPU idleと呼ばない。これらが揃うまではhost-submit/kernel fusionやqueue restructuringを実装候補の優先にしない。
+
+## 後回しにするCPU変種
+
+- R603のCPU GU predecodeはnt1-only 8 GiB observerで約54% request-cold hitを得たが、cold fill約1.6–2.3 ms/expert、再fill約0.3–0.5 msで、warm saveは約0.05–0.17 ms/callにとどまり、full request net benefitを示していない。単純な高hit率だけで再実装しない。
+- Existing exact IQ GU settingの3-request gateはfault0だったが、first long IDs/work matchのwall差は0.9%だけで、次requestは別work。default OFF / not adopted。CPU format serviceはGU costを18/22/21へ分散する。単format CPU kernelの改善をend-to-end改善とみなさない。
+- Per-layer cache balanced proposalは128 slots内で余剰を偏在させない構造案で、source review・CPU/build/GPU/perf未実施。R607の追加slot route histogramはappend-only policyで算出され、total-slot balanced再割当のhit ceilingではない。これらを同じ結果として扱わない。
+
+## 先行証跡と現source位置
+
+- Task/perf boundary: `bench/results/2026-10-14-long-generation-benchmark/upload-fix-suite-final.ja.md` — current long-gen 3-run MTP4 sample、PR #6との条件差。
+- Actual MTP4 route/service: `bench/results/2026-10-15-pr6-recovery-audit/decode-ledger-fp32-fixed-normal-v1.json`, `decode-format-service-normal-v1.json`, `decode-format-service-summary-v1.json`, `decode-format-service-extra-v1.json`, `decode-ledger-final.ja.md`。
+- Exact route-ID opportunity and constraints: `research-cpu-census-gpu-cache-round607-v1.txt`, `cpu-gpu-cache-opportunity-v1.json`; CPU predecode negative net: `research-cpu-cache-amortization-round603-v1.txt`; cache/profile fit and unknowns: `research-decode-cache-profile-round584-v1.txt`; unadopted balanced cache source: `balanced-layer-cache-v1/README.ja.md`.
+- CPU service interpretation and corrected roofline denominators: `research-decode-cpu-roofline-round579-v1.txt`, `main-review-round576-579.ja.md`; `R=verifier input rows`, `cpu_rows=expert-token rows`, denominator is total route entries.
+- Boundary source: `research-decode-wall-accounting-round604-v1.txt`, `research-native-decode-host-gaps-round606-v1.txt`, `research-decode-gpu-boundary-round588-v1.txt`; actual verifier path `src/core/verify.cpp`, host/kernel compatibility path `src/sycl/compat.cpp`, issuer route/jobs `src/core/expert_source.cpp`, CPU roles/pool `src/kernels/cpu/pool.cpp`, MTP loop/draft/final wait `src/program/generate.cpp`.
+- v2 host observer proposal: `decode-host-phase-observer-v2/README.ja.md`, `main-review.ja.md`, `files/include/strata/core/decode_host_phases.hpp`, and `files/src/core/verify.cpp`; registry marks it not applied/not compiled/not tested. v2's `run_total` leaves are host scopes only. `model-device-profile-v2.json` marks its scope as startup+prefill+decode aggregate and explicitly lacks phase-specific device timeline/busy-union.
+- KV distinction: `research-decode-kv-residency-round587-v1.txt`; `src/kernels/sycl/kv_stream.cpp`, `src/core/verify.cpp`. Current route logical byte fields are not H2D/DRAM counters.
+
+No source claims 70 t/s is impossible or that a single proposal can supply it. R624 narrows the next work to measured slot expansion first, MTP net-width comparison second, and window-specific host/device diagnosis only if the first two leaves a large unresolved gap. No experiment was run and no speed/quality adoption is claimed.

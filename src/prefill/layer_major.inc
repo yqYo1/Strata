@@ -185,6 +185,19 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         }
         phase_audit.reset(new detail::Layer26PhaseAudit(n, pos0, m.T, m.mixed_bf_lo != nullptr));
     }
+    // Optional owner precedes borrowed pointer, Restore and checked lease.
+    // Failure to qualify/allocate the observation does not change inference.
+    std::unique_ptr<detail::LayerMajorShapeCensus> census;
+    const char* census_switch = std::getenv("STRATA_PREFILL_LAYER_MAJOR_SHAPE_CENSUS");
+    if (census_switch && std::strcmp(census_switch, "1") == 0) {
+        uint64_t need = detail::layer_major_add(host_need, audit ? 4ull << 20 : 0);
+        need = detail::layer_major_add(need, phase_audit ? detail::Layer26PhaseAudit::host_reservation : 0);
+        need = detail::layer_major_add(need, sizeof(detail::LayerMajorShapeCensus));
+        if (core::conversation_memory_admit(core::conversation_available_memory(), need, host_headroom))
+            census.reset(new (std::nothrow) detail::LayerMajorShapeCensus(n, pos0, m.T));
+        if (!census) std::fputs("strata lm census: {\"version\":1,\"complete\":false,\"reason\":\"host_observation_unavailable\"}\n", stderr);
+    }
+    detail::LayerMajorShapeBorrow census_borrow(m.layer_major_census, census.get());
     int64_t logical_chunks = 0, layer = 0;
     const int64_t final_chunk_row = ((n - 1) / m.T) * m.T;
     bool stage_delivered = false;
@@ -305,6 +318,14 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         // Publish all 512 only after the upload wait succeeds. No Stager/issuer
         // job can reference upload, rows, this map, or this temporary cache.
         for (int32_t e = 0; e < NE; ++e) residency[size_t(layer * NE + e)] = e;
+        if (census) {
+            const auto& f = layout.fmt[size_t(layer)];
+            // run_impl stream_all is !layer_major_active && ...; therefore its
+            // copy issuer cannot start here. Compute/count hooks run inline.
+            census->begin(layer, {f.gu_type, f.d_type, f.gu_row, f.d_row,
+                f.up_off, f.down_off, f.bytes}, residency.data() + layer * NE,
+                m.layer_major_active && !m.pp && !next_ && m.copy == m.cs);
+        }
         stage_lb_ = layer; stage_le_ = layer + 1;
         m.layer_major_host_input = layer == 0 ? nullptr : rows.get();
         m.layer_major_gpu_input = layer == 0 ? nullptr : device_rows.get();
@@ -362,6 +383,7 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         if (!run_impl(tokens, n, pos0, err)) return false;
         if (!drain()) { err = "prefill layer-major: pass drain failed"; return false; }
         if (!cursor.complete()) { err = "prefill layer-major: incomplete layer callbacks"; return false; }
+        if (census) census->end(layer);
         if (std::getenv("STRATA_TRACE")) {
             std::fprintf(stderr, "strata trace: layer-major layer %lld of %lld: completed %lld chunks\n",
                          (long long)layer, (long long)g.n_layers, (long long)cursor.calls);
@@ -383,6 +405,7 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     if (audit) audit->complete();
     if (phase_audit) phase_audit->complete();
     lease.retire();
+    if (census) census->complete();
     return true;
 #endif
 } catch (const std::exception& exc) {

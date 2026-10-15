@@ -2,6 +2,7 @@
 #include "strata/kernels/iq_kernels.hpp"
 #include "strata/kernels/native_mmvq.hpp"
 #include "strata/sycl/gguf_decode.hpp"
+#include "strata/sycl/iq_parallel_decode.hpp"
 #include "strata/sycl/launch.hpp"
 #include <atomic>
 #include <climits>
@@ -14,6 +15,59 @@ std::atomic<bool> old{[] {
   const char *v = std::getenv("STRATA_OLD_IQ_MMVQ");
   return v && std::atoi(v) != 0;
 }()};
+// Read once before use; callers keep the exec-time environment immutable.
+// Only the exact string "1" opts in. OFF adds no allocation or queue work.
+const bool parallel_iq_dequant = [] {
+  const char *v = std::getenv("STRATA_SYCL_PARALLEL_IQ_DEQUANT");
+  return v && v[0] == '1' && v[1] == '\0';
+}();
+
+template <int Type, bool GU>
+void parallel_iq_launch(const void *gate, const void *up, size_t count,
+                        size_t width, uint16_t *out, void *stream) {
+  constexpr size_t B = parallel_iq_width<Type>, S = parallel_iq_bytes<Type>;
+  auto event = queue_for(stream).parallel_for(
+      sycl::range<1>(count), [=](sycl::id<1> id) {
+        const size_t i = id[0];
+        const uint8_t *block;
+        unsigned j;
+        if constexpr (GU) {
+          const size_t row = i / width, col = i % width;
+          const auto *base = static_cast<const uint8_t *>(row % 2 ? up : gate);
+          block = base + (row / 2) * (width / B * S) + col / B * S;
+          j = unsigned(col % B);
+        } else {
+          block = static_cast<const uint8_t *>(gate) + i / B * S;
+          j = unsigned(i % B);
+        }
+        out[i] = f16_from_f32(parallel_iq_element<Type>(block, j));
+      });
+  finish(stream, event);
+}
+
+template <bool GU>
+bool try_parallel_iq(int type, const void *gate, const void *up, size_t count,
+                     size_t width, uint16_t *out, void *stream) {
+  if (!parallel_iq_dequant)
+    return false;
+  // Admit only the role/format pairs that won the resident component screen.
+  // IQ3_XXS was slower; other role/format combinations were not measured.
+  if constexpr (GU) {
+    switch (type) {
+    case 21: parallel_iq_launch<21, true>(gate, up, count, width, out, stream); break;
+    case 22: parallel_iq_launch<22, true>(gate, up, count, width, out, stream); break;
+    case 23: parallel_iq_launch<23, true>(gate, up, count, width, out, stream); break;
+    default: return false;
+    }
+  } else {
+    switch (type) {
+    case 20: parallel_iq_launch<20, false>(gate, up, count, width, out, stream); break;
+    case 42: parallel_iq_launch<42, false>(gate, up, count, width, out, stream); break;
+    default: return false;
+    }
+  }
+  return true;
+}
 template <class Out> Out convert(float value) {
   if constexpr (sizeof(Out) == 2)
     return f16_from_f32(value);
@@ -31,6 +85,10 @@ void dequant(int type, const void *src, int64_t n, Out *out, void *stream) {
   // begin at a 2-byte-aligned address even when the original tensor is aligned.
   validate_spans({{out, checked_count(n, sizeof(Out))}},
                  {{src, checked_count(n / f.width, f.bytes)}}, 2);
+  if constexpr (sizeof(Out) == 2) {
+    if (try_parallel_iq<false>(type, src, nullptr, size_t(n), 0, out, stream))
+      return;
+  }
   auto event = queue_for(stream).parallel_for(
       sycl::range<1>(size_t(n / f.width)), [=](sycl::id<1> id) {
         float values[256];
@@ -127,6 +185,9 @@ void iq_dequant_gu_f16(int type, const void *gate, const void *up, int64_t rows,
     throw std::invalid_argument("SYCL dequantization size overflow");
   validate_spans({{out, count * 4}}, {{gate, checked_count(rows, rowbytes)},
                                       {up, checked_count(rows, rowbytes)}});
+  if (try_parallel_iq<true>(type, gate, up, count * 2, size_t(width), out,
+                             stream))
+    return;
   auto event = queue_for(stream).parallel_for(
       sycl::range<2>(size_t(rows) * 2, size_t(width / f.width)),
       [=](sycl::id<2> id) {

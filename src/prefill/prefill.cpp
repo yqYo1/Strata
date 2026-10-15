@@ -32,6 +32,8 @@
 #include "strata/prefill/layer_major_plan.hpp"
 #include "strata/prefill/layer_major_boundary_audit.hpp"
 #include "strata/prefill/layer26_phase_audit.hpp"
+#include "strata/prefill/layermajor_shape_census.hpp"
+#include <new>
 #include "strata/core/conversation_memory.hpp"
 
 #include <cuda_runtime.h>
@@ -455,6 +457,7 @@ struct Prefill::Impl {
     bool compact_moe_fp16 = false;
     // Opt-in layer-major lease; normal chunk-major execution leaves these empty.
     bool layer_major_active = false;
+    detail::LayerMajorShapeCensus* layer_major_census = nullptr;
     detail::Layer26PhaseAudit* layer26_phase_audit = nullptr;
     detail::LayerMajorBoundaryAudit* layer_major_audit = nullptr;
     detail::LayerMajorBoundaryAudit::Copy layer_major_audit_copy;
@@ -1916,6 +1919,7 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
             ~IssuerJoin() { if (t->joinable()) { stop->store(true); t->join(); } }
         } issuer_join{&a_stop, &issuer};
         const bool threaded_issue = stream_all && issuer_on;
+        if (m.layer_major_census && threaded_issue) m.layer_major_census->reject("threaded_issuer_unsupported");
         size_t skipped_stream_entries = 0, skipped_after_group = 0;
         if (std::getenv("STRATA_TRACE")) {
             std::fprintf(stderr, "strata trace: prefill issuer threaded=%d stream_all=%d ring=%d "
@@ -2443,6 +2447,7 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                             ++m.cnt[(size_t) e];
                         }
                         ro.counts(l, T, m.cnt);
+                        if (m.layer_major_census) m.layer_major_census->counts(l, T, m.cnt.data(), m.cnt.size());
                         // multi-GPU: the rows of the experts the peer computes go last, as one block [rows_local, T*K)
                         const bool pre_mmq = mmq_plan().any && mmq_plan().layer[(size_t) l];
                         std::vector<char> on_peer;
@@ -2882,10 +2887,14 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                             const int64_t scratch_row = m.compact_moe_fp16 ? 0 : o0;
                             pt.mark(kPfGemmGU, cs);
                             ro.gu(ne, slot);
+                            if (m.layer_major_census) m.layer_major_census->issue(true, l, ne, e,
+                                m.host_res ? m.host_res[size_t(l * NE + e)] : -1, slot);
                             m.gemm.f16(m.Xs + scratch_row * N, m.dq_gu[q], m.GU + scratch_row * 1280, ne, 1280, N);
                             swiglu_interleaved(m.GU + scratch_row * 1280, m.Hh + scratch_row * 640, ne, m.cs);
                             pt.mark(kPfGemmD, cs);
                             ro.down(ne);
+                            if (m.layer_major_census) m.layer_major_census->issue(false, l, ne, e,
+                                m.host_res ? m.host_res[size_t(l * NE + e)] : -1, slot);
                             m.gemm.f16(m.Hh + scratch_row * 640, m.dq_d[q], m.Dm + o0 * N, ne, N, 640);
                             return true;
                         };
