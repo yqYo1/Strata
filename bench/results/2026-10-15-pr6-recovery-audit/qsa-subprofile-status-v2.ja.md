@@ -72,3 +72,57 @@ canonical-bank-profile-r40960-reference-retention-v1.jsonにpath/hash/replacemen
 元receiptは不変。残るR32768 referenceとnew fine captureのpaired raw budgetは64MiB、閉鎖後再審査。
 
 600/1000tok/s、task品質、物理262144、RESTORE、実captured SessionGraphs復元は未合格。
+
+
+## fineモデルの閉鎖と次の実装
+
+qsa-subprofile-model-v2.jsonもPASSで閉鎖した。actual/read78453/reuse0/thinking ON、
+24生成、native/server0、48activation→Full復元、sameboot、新規fault0、dumpなし。
+compare_qsa_subprofile_model_v2.pyで選択768行/7864320 FP32値は全byte一致・有限、
+同runのstore/inputも一致。source変更はレビュー済み3fileだけである。
+
+| QSA細分区間 | queue interval ms | host wall ms |
+| --- | ---: | ---: |
+| projections | 1856.59 | 66.8032 |
+| KV stage | 937.713 | 12.9183 |
+| KV append/query norm | 6766.48 | 25.3678 |
+| indexer append | 6.69084 | 13.2672 |
+| selection | 24399.6 | 133.641 |
+| attention | 69909.3 | 9.42802 |
+| output projection | 1045.63 | 15.4097 |
+
+各section120samples。実matrix_chunks120、fallback0、matrix query合計941424、
+cap2051、staged120を記録した。今度はactual matrix_usedの結果であり、単なる機能存在や
+configured Direct flagから採用を推測したものではない。
+queue/hostは非排他的な区間で、純GPU service/CPU serviceとは同一視しない。
+attention queue区間約70秒に対しhost呼出区間は合計約9.4msで、次の改善対象は実matrix
+attention経路。QSAの中では約66.6%、wrapper251647msに対し約27.8%の大きさだった。
+selection約24.4秒も次の対象である。KV stageだけを減らしても今回QSA区間全体の大半は残る。
+
+診断PPは331.9→309.9、各n1。coarse QSA103980→104926msに対し、source/input/store等の
+区間も増えており、差をfine eventのoverheadや性能デグレだけに帰属しない。
+clean反復速度の判定はしていない。追加計測はdefault OFFのまま。
+
+次は6.1 Sol実装agentへown-prompt-k-cellmajor-v1のsource-only提案を依頼した。
+R725のown sourceのK読込だけをcell-majorへ変え、同じSLM論理tileへ配置する案で、
+V/scales/CH32/WG128/barriers/演算/選択は保持する。SLM conflictによって遅くなる可能性もあり、
+component parity、compiled-resource、実component時間とwhole-prefill反復で採否判断する。
+R732のCUDA側parity fixtureをconfigured SYCL fixtureと取り違えず、実cmakeと
+process環境を途中変更しないtest方式も実装依頼に含めた。
+Mainはこの提案が返るまで閉鎖evidence/retention/commitを進め、agentへ途中介入しない。
+
+
+閉鎖後、Main exclusive lock下で105files/54456525Bのsuccessful fulltrace・duplicate record、
+旧1694 binary、review済みfullsource mirrorを退役した。host23caseは各header/aggregateと
+対応case順をcompactへ保存し、元receipt全hash不変を前後で検査した。
+closed-qsa-diagnostics-{compact,retention}-v1.jsonに証拠を保存する。
+最新fine selected raw31457280Bだけを、Main own-prompt-k-cellmajor比較consumer向けに保持する。
+このturnの先行二回のraw退役を含む論理削除量は117371085B。snapshot等により実free増分とは異なる。
+
+R734のmetadata queryがcwdへOCL_DRIVER_VERSION15Bを作成していたため、only-report-writeの
+記述は正確でなかった。元reportは不変とし、value/hash/reasonを別manifestへ保存して削除した。
+以後のmetadata queryもprivate owned directoryで副作用を確認する。
+
+K-cellmajor v1はFINAL受領し全diffをレビューしたが未適用。
+6groupしかないnq3 timingをlong-prefillの判定に使わず、normal full correctnessとは別に
+nq256のbounded timingを持つv2をFINAL後に依頼した。Mainはその間に本閉鎖記録を進める。

@@ -1412,7 +1412,8 @@
       "read_only": true,
       "path": "research-prompt-compile-resources-round734-v1.txt",
       "sha256": "9aca1681971bb0c1428703459ee187ccc6a9ce9cd730b935707c4cc71a25361b",
-      "status": "Main read full offline resource-inspection plan. Installed ocloc metadata found; no AOT compile/disassembly or register/spill/SLM results. Target spelling and AOT-vsJIT image equivalence remain execution gates."
+      "status": "Main read full offline resource-inspection plan. Installed ocloc metadata found; no AOT compile/disassembly or register/spill/SLM results. Target spelling and AOT-vsJIT image equivalence remain execution gates.",
+      "main_correction": "ocloc query created root OCL_DRIVER_VERSION15B despite report-only claim. Main saved value/path/hash and removed artifact: ocloc-metadata-query-sideeffect-v1.json; original report unchanged."
     }
   ],
   "main_initial_findings": [
@@ -2016,7 +2017,17 @@
     "source_diff_sha256": "2f431778bfe168f2d912deed6855a57e94aca2245df40bbeb5208e9b77e1e0ce",
     "host_helper_receipt": "prefill-owner-helpers-host-v3.json"
   },
-  "implementation_pending": [],
+  "implementation_pending": {
+    "task": "own-prompt-k-cellmajor-v1",
+    "agent": "/root/implement_own_prompt_k_cellmajor_v1",
+    "model": "gpt-6.1-sol",
+    "source_only": true,
+    "base": "3d873f9c",
+    "main_GPU_tests": true,
+    "source_origin": "own fork only; XeStrata performancevalues only",
+    "review_point": "FINAL sourceproposal thenMainfullreview; no interventionbeforeFINAL",
+    "status": "v1 FINAL received and Main full review; v2 requested afterFINAL for saturation-relevant bounded component timing. Stillsource-only/unapplied/uncompiled/untested."
+  },
   "QSA_device_batch_candidate": {
     "proposal": "qsa-indexer-device-batch-v2",
     "model": "gpt-6.1-sol",
@@ -2271,10 +2282,10 @@
     "raw_byte_budget": 33554432
   },
   "current_next_actions": [
-    "Close current R40960 diagnostic and compare selected FP32 against canonical R32768 reference.",
-    "Review independent bounded QSA subprofile proposal, build and test serially; measure selection/attention/KV/projection breakdown.",
-    "Use whole-prefill repeated clean samples for adoption; continue toward repeated600 then1000.",
-    "Preserve physical262144/RESTORE/task-quality gates and mandatory Niko functional imports; next actual upstream check due approximately2026-10-16T01:12Z."
+    "Review/qualify own-prompt-k-cellmajor-v1 source-only proposal against current3d873f9c source. Actual fine profile identifies matrix attention69909ms with host9.4ms; no Xe source reuse.",
+    "Main serial component parity/timing and compilerresource inspection, then same78453 model compare and clean repetitions. No600/1000qualification.",
+    "Keep R32768 FP32 route for matched baseline; R40960 diagnostic passed selected parity but no performance adoption.",
+    "Physical262144/RESTORE/task-quality/capturedgraphrestore and mandatoryNiko functional obligations remain. Next actualupstreamcheck approximately2026-10-16T01:12Z."
   ],
   "prefill_layermajor_coarse_profile": {
     "directory": "layermajor-coarse-profile-v2",
@@ -2334,9 +2345,18 @@
     "host_passed": true,
     "SYCL_build_passed": true,
     "binary_sha256": "f01e8bd5c9e22f7984594b3928dcefade19b50fb72918c0506986bf25db51241",
-    "model_status": "running; no qualification yet",
+    "model_status": "closedPASS",
     "GPU_owner": "Main",
-    "source_origin": "independent own fork; no Xe source"
+    "source_origin": "independent own fork; no Xe source",
+    "receipt": "qsa-subprofile-model-v2.json",
+    "comparison": "qsa-subprofile-model-comparison-v2.json",
+    "analysis": "qsa-subprofile-analysis-v2.json",
+    "selected_rows_exact": 768,
+    "actual_matrix_chunks": 120,
+    "actual_fallback_chunks": 0,
+    "actual_QSA_queries": 941424,
+    "diagnostic_PP": 309.9,
+    "performance_qualified": false
   },
   "native_R40960_placement": {
     "receipt": "canonical-bank-profile-r40960-model-v1.json",
@@ -2349,5 +2369,14 @@
     ],
     "performance_qualified": false,
     "adopted": false
+  },
+  "retention_v13": {
+    "manifest": "closed-qsa-diagnostics-retention-v1.json",
+    "compact": "closed-qsa-diagnostics-compact-v1.json",
+    "files": 105,
+    "logical_bytes": 54456525,
+    "current_selected_raw": 31457280,
+    "consumer": "Main own-prompt-k-cellmajor same78453 selected-row comparator",
+    "source_status_unchanged": true
   }
 }
