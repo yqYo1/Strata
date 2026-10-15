@@ -1,0 +1,170 @@
+diff --git a/src/kernels/sycl/iq.cpp b/src/kernels/sycl/iq.cpp
+--- a/src/kernels/sycl/iq.cpp
++++ b/src/kernels/sycl/iq.cpp
+@@ -2,6 +2,7 @@
+ #include "strata/kernels/iq_kernels.hpp"
+ #include "strata/kernels/native_mmvq.hpp"
+ #include "strata/sycl/gguf_decode.hpp"
++#include "strata/sycl/iq_parallel_decode.hpp"
+ #include "strata/sycl/launch.hpp"
+ #include <atomic>
+ #include <climits>
+@@ -14,6 +15,52 @@
+   const char *v = std::getenv("STRATA_OLD_IQ_MMVQ");
+   return v && std::atoi(v) != 0;
+ }()};
++// Read once before use; callers keep the exec-time environment immutable.
++// Only the exact string "1" opts in. OFF adds no allocation or queue work.
++const bool parallel_iq_dequant = [] {
++  const char *v = std::getenv("STRATA_SYCL_PARALLEL_IQ_DEQUANT");
++  return v && v[0] == '1' && v[1] == '\0';
++}();
++
++template <int Type, bool GU>
++void parallel_iq_launch(const void *gate, const void *up, size_t count,
++                        size_t width, uint16_t *out, void *stream) {
++  constexpr size_t B = parallel_iq_width<Type>, S = parallel_iq_bytes<Type>;
++  auto event = queue_for(stream).parallel_for(
++      sycl::range<1>(count), [=](sycl::id<1> id) {
++        const size_t i = id[0];
++        const uint8_t *block;
++        unsigned j;
++        if constexpr (GU) {
++          const size_t row = i / width, col = i % width;
++          const auto *base = static_cast<const uint8_t *>(row % 2 ? up : gate);
++          block = base + (row / 2) * (width / B * S) + col / B * S;
++          j = unsigned(col % B);
++        } else {
++          block = static_cast<const uint8_t *>(gate) + i / B * S;
++          j = unsigned(i % B);
++        }
++        out[i] = f16_from_f32(parallel_iq_element<Type>(block, j));
++      });
++  finish(stream, event);
++}
++
++template <bool GU>
++bool try_parallel_iq(int type, const void *gate, const void *up, size_t count,
++                     size_t width, uint16_t *out, void *stream) {
++  if (!parallel_iq_dequant)
++    return false;
++  switch (type) {
++  case 18: parallel_iq_launch<18, GU>(gate, up, count, width, out, stream); break;
++  case 20: parallel_iq_launch<20, GU>(gate, up, count, width, out, stream); break;
++  case 21: parallel_iq_launch<21, GU>(gate, up, count, width, out, stream); break;
++  case 22: parallel_iq_launch<22, GU>(gate, up, count, width, out, stream); break;
++  case 23: parallel_iq_launch<23, GU>(gate, up, count, width, out, stream); break;
++  case 42: parallel_iq_launch<42, GU>(gate, up, count, width, out, stream); break;
++  default: return false;
++  }
++  return true;
++}
+ template <class Out> Out convert(float value) {
+   if constexpr (sizeof(Out) == 2)
+     return f16_from_f32(value);
+@@ -31,6 +78,10 @@
+   // begin at a 2-byte-aligned address even when the original tensor is aligned.
+   validate_spans({{out, checked_count(n, sizeof(Out))}},
+                  {{src, checked_count(n / f.width, f.bytes)}}, 2);
++  if constexpr (sizeof(Out) == 2) {
++    if (try_parallel_iq<false>(type, src, nullptr, size_t(n), 0, out, stream))
++      return;
++  }
+   auto event = queue_for(stream).parallel_for(
+       sycl::range<1>(size_t(n / f.width)), [=](sycl::id<1> id) {
+         float values[256];
+@@ -127,6 +178,9 @@
+     throw std::invalid_argument("SYCL dequantization size overflow");
+   validate_spans({{out, count * 4}}, {{gate, checked_count(rows, rowbytes)},
+                                       {up, checked_count(rows, rowbytes)}});
++  if (try_parallel_iq<true>(type, gate, up, count * 2, size_t(width), out,
++                             stream))
++    return;
+   auto event = queue_for(stream).parallel_for(
+       sycl::range<2>(size_t(rows) * 2, size_t(width / f.width)),
+       [=](sycl::id<2> id) {
+diff --git a/include/strata/sycl/iq_parallel_decode.hpp b/include/strata/sycl/iq_parallel_decode.hpp
+new file mode 100644
+--- /dev/null
++++ b/include/strata/sycl/iq_parallel_decode.hpp
+@@ -0,0 +1,80 @@
++#pragma once
++// Per-output transcription of this fork's scalar GGUF definitions. Codebooks
++// and their original license remain in artifact/iq_codebooks.hpp.
++#include "strata/artifact/dequant.hpp"
++
++namespace strata::sycl_backend {
++template <int Type> inline constexpr bool parallel_iq_type =
++    Type == 18 || Type == 20 || Type == 21 || Type == 22 || Type == 23 || Type == 42;
++template <int Type> inline constexpr unsigned parallel_iq_width =
++    Type == 20 ? 32 : Type == 42 ? 64 : 256;
++template <int Type> inline constexpr unsigned parallel_iq_bytes =
++    Type == 18 ? 98 : Type == 21 ? 110 : Type == 22 ? 82 : Type == 23 ? 136 : 18;
++
++// Internal precondition: Type is admitted and j < parallel_iq_width<Type>.
++// Every read is byte-based; no packed-word alignment assumption is added.
++// Keep each FP32 multiplication in scalar order, including the final sign
++// multiply. In particular, do not fold signs into d or integer grid values.
++template <int Type>
++inline float parallel_iq_element(const uint8_t *block, unsigned j) {
++  static_assert(parallel_iq_type<Type>);
++  if constexpr (Type == 42) {
++    const float d = fp16_to_fp32(read_u16(block));
++    const int code = (block[2 + j / 4] >> (2 * (j % 4))) & 3;
++    return float(code - 1) * d;
++  } else if constexpr (Type == 20) {
++    const float d = fp16_to_fp32(read_u16(block));
++    const unsigned code = (block[2 + j % 16] >> (j < 16 ? 0 : 4)) & 15;
++    return d * float(kvalues_iq4nl[code]);
++  } else if constexpr (Type == 23) {
++    const float d = fp16_to_fp32(read_u16(block));
++    const unsigned group = j / 32, k = j % 32;
++    const uint16_t scales_h = read_u16(block + 2);
++    const int ls = ((block[4 + group / 2] >> (4 * (group % 2))) & 15) |
++                   (((scales_h >> (2 * group)) & 3) << 4);
++    const float dl = d * float(ls - 32);
++    const unsigned code =
++        (block[8 + group * 16 + k % 16] >> (k < 16 ? 0 : 4)) & 15;
++    return dl * float(kvalues_iq4nl[code]);
++  } else {
++    const float d = kernels::f32_from_f16(read_u16(block));
++    const unsigned group = j / 32, k = j % 32;
++    if constexpr (Type == 22) {
++      const unsigned cell = k / 8, lane = k % 8;
++      const unsigned index = block[2 + group * 4 + cell] |
++          (((block[66 + group] >> (2 * cell)) & 3) << 8);
++      const uint64_t grid = iq2_s_grid[index];
++      const float db = d * (0.5f + ((block[74 + group] >>
++                                    (4 * (cell / 2))) & 15)) * 0.25f;
++      const uint8_t signs = block[34 + group * 4 + cell];
++      return db * int((grid >> (8 * lane)) & 255) *
++             ((signs >> lane) & 1 ? -1.f : 1.f);
++    } else {
++      const unsigned word = k / 4, lane = k % 4;
++      if constexpr (Type == 21) {
++        const int scale = 1 + 2 * ((block[106 + group / 2] >>
++                                   (4 * (group % 2))) & 15);
++        const float db = d * scale;
++        const unsigned index = block[2 + group * 8 + word] |
++            (((block[66 + group] >> word) & 1) << 8);
++        const uint32_t grid = iq3_s_grid[index];
++        const uint8_t signs = block[74 + group * 4 + word / 2];
++        return db * int((grid >> (8 * lane)) & 255) *
++               ((signs >> (4 * (word % 2) + lane)) & 1 ? -1.f : 1.f);
++      } else {
++        static_assert(Type == 18);
++        const uint8_t *aux = block + 66 + group * 4;
++        const uint32_t scales_and_signs = uint32_t(aux[0]) |
++            (uint32_t(aux[1]) << 8) | (uint32_t(aux[2]) << 16) |
++            (uint32_t(aux[3]) << 24);
++        const float db = d * (0.5f + (scales_and_signs >> 28)) * 0.5f;
++        const uint32_t grid = iq3_xxs_grid[block[2 + group * 8 + word]];
++        const uint8_t signs = iq_even_parity_signs(scales_and_signs >>
++                                                  (7 * (word / 2)));
++        return db * int((grid >> (8 * lane)) & 255) *
++               ((signs >> (4 * (word % 2) + lane)) & 1 ? -1.f : 1.f);
++      }
++    }
++  }
++}
++} // namespace strata::sycl_backend

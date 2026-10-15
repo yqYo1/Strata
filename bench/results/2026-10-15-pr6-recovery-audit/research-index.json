@@ -474,7 +474,9 @@
       "status": "FINAL/Main reviewed; failfast/lifecycle blueprint useful. Report misidentifies same incompletejournal as earlierattempt and 32K successes as longgeneration; corrected by exact rows75/77/79/81 in Mainfailure report."
     },
     "research-prefill-repeat-state-round615-v1.txt",
-    "research-arc-dequant-optimization-round616-v1.txt"
+    "research-arc-dequant-optimization-round616-v1.txt",
+    "research-parallel-iq-contract-round617-v1.txt",
+    "research-checkpoint-v2-contract-round618-v1.txt"
   ],
   "main_initial_findings": [
     "PR6 performance patch changes historic sycl/src/prefill/prefill.cpp, not current root src/prefill/prefill.cpp. Current root rg finds compact scratch but no layer-major selector. History preservation is not adoption.",
@@ -661,9 +663,12 @@
   "parallel_research_current": {
     "rounds": [
       615,
-      616
+      616,
+      617,
+      618
     ],
-    "state": "Both FINAL received; Main review of R615 performed, R616 primary-code review pending. No active research process."
+    "state": "All FINAL and Main source reviewed; no sourceconfirmed third-prefill cause. R616 wrongactiveformat list corrected by Main.",
+    "review": "main-review-round615-618.ja.md"
   },
   "phase_audit": {
     "build": "phase-audit-build-v1.json",
@@ -809,7 +814,7 @@
     "research": "research-prefill-gu-hotpath-round610-v1.txt",
     "main_review": "main-review-round609-610.ja.md",
     "coverage": "dequant-shape-coverage-v1.json",
-    "state": "Historicalshape coverage only. Exacthalf SIMDproposal authoring; packedXMX directtile researchvalidatedbyprimarydoc but Strata kernel notimplemented; no performanceadoption."
+    "state": "Exacthalf6format SIMDproposal SolFINAL and Main+R617source review; normal/sanitizedCPUfixtures prepared but serialized after live model closes. No productapply or performanceadoption."
   },
   "compiler_alternative": {
     "research": "research-compiler-matrix-runtime-round611-v1.txt",
@@ -820,12 +825,19 @@
     "proposal": "owned-stall-stack-probe-v1",
     "main_review": "owned-stack-main-review.ja.md",
     "host_gate": "owned-stack-host-preflight-v1.json",
-    "state": "Main CPU build and actual2thread GDB attach/detach/resume PASS; originalfixtureexit7 preserved, allownedclosed. InitialGCC-Werrorbuildfailure preserved and fixedwrite-resultcheck. GPUmodel NOT_RUN."
+    "state": "CPU explicit and automatic silence capture/detach/resume PASS; new request after stall rejected. Mainowned3x32089 diagnostic currently LIVE session14941/native3609620, noautoretry. No source/binary change; no performanceclaim.",
+    "automatic_gate": "owned-prefill-stall-host-auto-v1.json",
+    "model_recipe": "check_owned_prefill_stall_v1.py"
   },
   "bench_failfast": {
     "state": "Applied defaultOFF opt-in --fail-fast-engine-error; Main7new+19existinghosttests PASS, GPU not executed. Future serial formal suites opt in. Originalfailedbaseline untouched.",
     "review": "bench-failfast-main-review.ja.md",
     "receipt": "bench-failfast-host-v1.json",
     "recipe": "check_bench_failfast_v1.py"
+  },
+  "packed_iq_xmx": {
+    "v1": "packed-iq-xmx-probe-v1",
+    "state": "SolFINAL source, MainREJECTED beforeexecution: unconditional USMfree on uncertaincompletion. v2 correction authoring; no productapply/build/device execution.",
+    "review": "main-review-round615-618.ja.md"
   }
 }
