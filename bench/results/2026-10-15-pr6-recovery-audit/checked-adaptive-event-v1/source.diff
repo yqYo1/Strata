@@ -1,0 +1,80 @@
+--- a/src/program/generate.cpp
++++ b/src/program/generate.cpp
+@@ -18,6 +18,7 @@
+ #include "strata/core/expert_cache.hpp"
+ #ifdef STRATA_ENABLE_SYCL
+ #include "strata/core/expert_slot_sizes.hpp"
++#include "strata/sycl/checked_adaptive_event.hpp"
+ #endif
+ #include "strata/core/conversation_snapshot.hpp"
+ #include "strata/core/conversation_memory.hpp"
+@@ -5124,7 +5125,17 @@
+                 host_res[out] = strata::core::kNotResident;   // evicted now: the CPU computes it meanwhile
+                 pending.emplace_back((int32_t) in, slot);      // resident once the copy has landed
+             }
+-            if (!swaps.empty()) cudaEventRecord(adapt_ev, adapt_stream);
++            if (!swaps.empty()) {
++#ifdef STRATA_ENABLE_SYCL
++                static_assert(cudaSuccess == 0);
++                strata::sycl_backend::checked_adaptive_event_record(
++                    [&] { return int(cudaEventRecord(adapt_ev, adapt_stream)); },
++                    [](int code) { return cudaGetErrorString(static_cast<cudaError_t>(code)); },
++                    "serve adaptive refill");
++#else
++                cudaEventRecord(adapt_ev, adapt_stream);
++#endif
++            }
+             (void) main_live;
+             for (auto& st : stages)
+                 if (st->adapt_live) {
+@@ -6922,7 +6933,17 @@
+                 host_res[out] = strata::core::kNotResident;   // evicted now: the CPU computes it meanwhile
+                 pending.emplace_back((int32_t) in, slot);      // resident once the copy has landed
+             }
+-            if (!swaps.empty()) cudaEventRecord(adapt_ev, adapt_stream);
++            if (!swaps.empty()) {
++#ifdef STRATA_ENABLE_SYCL
++                static_assert(cudaSuccess == 0);
++                strata::sycl_backend::checked_adaptive_event_record(
++                    [&] { return int(cudaEventRecord(adapt_ev, adapt_stream)); },
++                    [](int code) { return cudaGetErrorString(static_cast<cudaError_t>(code)); },
++                    "standalone adaptive refill");
++#else
++                cudaEventRecord(adapt_ev, adapt_stream);
++#endif
++            }
+             if (trace_adapt)
+                 std::fprintf(stderr, "strata: ADAPT round=%lld swapped %zu of %d slots, usage decayed\n",
+                              (long long) adapt_rounds, swaps.size(), o.adapt_swaps);
+--- /dev/null
++++ b/include/strata/sycl/checked_adaptive_event.hpp
+@@ -0,0 +1,29 @@
++#pragma once
++#include "strata/sycl/checked_cleanup.hpp"
++#include <exception>
++
++namespace strata::sycl_backend {
++// Called on the adapt issuer, immediately after DMA enqueues and before it can
++// return to pending publication. Failure must not unwind DMA/commit owners.
++template<class Record,class Describe>
++void checked_adaptive_event_record(Record&& record,Describe&& describe,
++                                   const char* where) noexcept {
++    try {
++        const int code=std::forward<Record>(record)();
++        if(code==0)return;
++        // Read/print TLS-backed detail immediately: no intervening runtime API,
++        // allocation, queue drain or deferred cudaGetLastError lookup.
++        const char* detail=std::forward<Describe>(describe)(code);
++        std::fprintf(stderr,"Strata SYCL adaptive event: %s status=%d: %s\n",
++                     where,code,detail?detail:"unknown API error");
++        std::fflush(stderr);
++    } catch(const std::exception& error) {
++        std::fprintf(stderr,"Strata SYCL adaptive event: %s exception: %s\n",where,error.what());
++        std::fflush(stderr);
++    } catch(...) {
++        std::fprintf(stderr,"Strata SYCL adaptive event: %s unknown exception\n",where);
++        std::fflush(stderr);
++    }
++    cleanup_fail_stop("adaptive event recording failed; pending residency must not be published");
++}
++} // namespace strata::sycl_backend

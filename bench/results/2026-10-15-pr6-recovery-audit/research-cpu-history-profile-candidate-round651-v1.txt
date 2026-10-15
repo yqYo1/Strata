@@ -1,0 +1,36 @@
+# R651 — audit of the CPU-history-first profile candidate
+
+Date: 2026-10-15 JST. Read-only source and bounded artifact review. I read the preparation recipe, metadata receipt, existing `tools/make_profile.py`, relevant profile loader/fill code, the closed training receipt, and only the named 196,632-byte candidate file under B. No other B/private records or environment data were read. No GPU, tests, native/model loader, benchmark, Git operation, cleanup, or product/candidate edit was performed.
+
+## Finding
+
+The candidate is produced by the existing profile writer and matches the stated full-rank/inverse format. It ranks observed CPU-owned expert-token rows first, then appends the prior profile's order for the remaining pairs. Its ranking is explicitly a CPU-history-first experiment: missing GPU-owned frequencies are unknown, not measured zero counts. The 128-slot training coverage and byte count match the legacy quota, but are hindsight on the training request. No held-out benefit, native loading, correctness, task quality or performance has been established.
+
+## Evidence
+
+- `prepare_cpu_count_profile_v1.py` opens only `cpu-gu-reuse-long-v1.json`, current `data/expert-profile.bin`, `tools/make_profile.py`, its output path and small recipe/reader metadata; count input is byte-capped and hash-checked (`:20-47`). It imports the actual writer module, reads the prior ranking with `writer.read_profile`, then calls `writer.rank_profile(prior, frequencies, reorder=True)` (`:49-58`) and `writer.write_profile(candidate, ranked)` (`:71-75`). This is the same writer implementation whose CLI also calls `rank_profile` and `write_profile` (`tools/make_profile.py:66-93,111-117`), not a parallel profile serializer.
+- `rank_profile(reorder=True)` sorts only present trace pairs by descending frequency and pair ID, appends unseen prior pairs in prior order, then fills any remaining pairs (`tools/make_profile.py:66-89`). The preparation recipe builds `frequencies` only from nonzero CPU census counts (`prepare_cpu_count_profile_v1.py:38-47`). The actual verification recovered exactly 98,304 counters, 68,781 jobs, 101,036 weighted CPU rows and 9,816 nonzero CPU pairs; the first 9,816 candidate ranks equal the CPU-count descending/pair-ID ordering, and rank 9,816 is the first pair without a measured CPU count. Thus the rest are not established as zero-frequency routes: they receive the previous ranking only as a fallback order. Old GPU-owned ID frequencies remain unavailable.
+- The one specific B file inspected has size 196,632 B and SHA-256 `d97b2f483b00341001883537ea4848049b26944c0d14f668b5c43aa88a7a5456`. Its `STRP` header is `(version=1, layers=48, experts=512, slots=24576, ranked=24576)`, all 24,576 pairs are unique/in-range, and each of the 24,576 inverse-table entries maps its `(layer, expert)` back to the candidate's actual rank. These values match the preparation receipt and full-profile writer layout (`make_profile.py:47-63`). The current prior profile hash also matches the recipe's pinned prior SHA; no in-repo profile was written.
+- The training receipt is the earlier closed CPU census (`cpu-gu-reuse-long-v1.json` SHA `17ddf01d…43cb1`). The recipe uses its first request's recurrence only (`:32-47`), so the generated ranking is trained on that request. With legacy quota `[2]*47 + [34]`, the ranked candidate selects exactly 128 pairs and reproduces 10,159 known CPU rows (`:79-86`), or about 10.05% of its 101,036 CPU rows. Because both baseline and candidate use the same per-layer slot counts and each layer has a fixed expert blob size, the arena byte count is exactly the same 281,651,200 B as the legacy 128 plan. That training coverage is hindsight, not a held-out measurement.
+- The metadata names the next consumer as a held-out official `bench.sh` profile pilot at fixed legacy128 quota, followed by actual loader, payload, owner/numerical/task-quality and separate clean throughput checks (`cpu-count-profile-preparation-v1.json:27-32`). No held-out run exists in this preparation artifact; the separation is a declared next-step requirement, not completed validation. A future pilot should use a request distinct from this training request and retain independent measurements.
+- Static loader compatibility is plausible from source: `read_expert_profile` checks `STRP`, model shape, ranked count bound, truncation and pair ranges, then returns the rank list (`src/core/expert_cache.cpp:15-70`). Startup later admits profile pairs and fills their payloads; it checks a slot against source bytes (`src/program/generate.cpp:3290-3327`). The loader reads only the header and ranked pair list; it does not validate the inverse table or execute this candidate. The preparation receipt therefore correctly leaves `native_loader_qualified`, `performance_qualified`, `quality_qualified` and `adopted` false.
+
+## Corrections and limits
+
+No correction to the candidate metadata or reported counts was found. Clarification: the candidate does not represent complete route frequency, because the CPU census lacks GPU-owned expert IDs; the “unknown, not measured zeros” caveat is essential. Also, while the preparation proves the binary's full inverse table by reading back the generated bytes, this is host-side format validation only. The native loader's code path and model-dependent expert payload copy remain untested. The old training producer did not pin the old profile content hash, so historical profile identity remains conditional; the new candidate itself is pinned by its own hash and the current prior hash.
+
+No task-quality, numerical parity, live VRAM fit, physical 262,144 context, RESTORE, held-out hit rate or speed conclusion follows from this artifact.
+
+## Source identities
+
+| File | SHA-256 |
+|---|---|
+| `prepare_cpu_count_profile_v1.py` | `2fedf986bb3343e4f47f51e4265d200935fa717d30fed63b4c689e094ac28bf7` |
+| `tools/make_profile.py` | `7afbd361e2afedcc1aa87a0e51b026a6177462c646901f9056a3f81f2224986d` |
+| `cpu-count-profile-preparation-v1.json` | `630faae17f4f38a9b2c389f2a7f810ffa6d2487b844b456f6e5b004f73eb644f` |
+| `cpu-gu-reuse-long-v1.json` | `17ddf01d0ec4d90c6e0567fc1d0e2eb3959fccb68da893f4e404de5d89b43cb1` |
+| `data/expert-profile.bin` | `8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf` |
+| B `cpu-history-first-profile.bin` | `d97b2f483b00341001883537ea4848049b26944c0d14f668b5c43aa88a7a5456` |
+| `main-review-round649-650.ja.md` | `807b78acfd879187dfd7066b509f8b714e6b66feb57a035df9a9c6d6a5528457` |
+
+The audit report is the only file written in this round; its hash is recorded in the handoff after saving.

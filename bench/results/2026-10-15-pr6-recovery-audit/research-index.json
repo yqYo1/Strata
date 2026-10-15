@@ -766,13 +766,48 @@
       "original_report_path": "research-adaptive-cache-sycl-lifetime-round650-v1.txt",
       "original_report_sha256": "d2164b9dc3bab9727de0e9e0100f3b83ba4cd3e3392170b58e4323516cd156eb",
       "correction_requested_after_FINAL": true
+    },
+    {
+      "round": 651,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-cpu-history-profile-candidate-round651-v1.txt",
+      "sha256": "437e580cfd81ece1b58e4f9066bbe5cbde6fe0c7f385e5a03e908d44b96d87d4",
+      "status": "FINAL independent bounded artifact/writer review; candidate format/rank/inverse/quota confirmed. Training-only hindsight, unknown GPU counts and historical profile identity limits preserved. Native/held-out/quality/performance not qualified."
+    },
+    {
+      "round": 652,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-adaptive-event-failstop-contract-round652-v1.txt",
+      "sha256": "243143318c883dfbd5eece28b9d8de719b8d6a11b0ff41c39322c9ea3a6c6786",
+      "status": "FINAL source contract: failed refill EventRecord requires non-unwinding fail-stop, not ordinary false/unwind. Production automatic engine restart not established."
+    },
+    {
+      "round": 653,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-checked-adaptive-event-proposal-round653-v1.txt",
+      "sha256": "0e52704b43a8a9e41ff43a1fd684d1c5455e4bdacef033ab3e07ea2a9d88cdb9",
+      "status": "FINAL source review/reconstruction of narrow primary serve+standalone proposal; no scoped blocker. Real host tests/build/event/DMA unexecuted; stage/peer/partial enqueue failures remain unqualified."
+    },
+    {
+      "round": 654,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-profile-heldout-pilot-contract-round654-v2.txt",
+      "sha256": "aead7789697ea4ee5c3c678ca8a539a17d94c6ca9164a98ef4de20ad2d6c768b",
+      "status": "Corrected FINAL after Main review: root bench.sh exists and must be used. Source/run identity alone does not fix nonce-dependent calibration; future exact actual body comparison required. Profile-only same128 pilot and native per-request hits still NOT_RUN.",
+      "original_report_path": "research-profile-heldout-pilot-contract-round654-v1.txt",
+      "original_report_sha256": "a06e143acc0528573b2cfd3557a70789368caf3e338f325bc1670a121d491d89",
+      "correction_requested_after_FINAL": true
     }
   ],
   "main_initial_findings": [
     "PR6 performance patch changes historic sycl/src/prefill/prefill.cpp, not current root src/prefill/prefill.cpp. Current root rg finds compact scratch but no layer-major selector. History preservation is not adoption.",
     "Original645.85 PP and later449.7 full-context/MTP measures need separate source/config reconciliation; different protocol does not justify discarding the old improvement."
   ],
-  "next": "Continue exact live full OFF handle16956; first code and prose complete eligible, remaining two repetitions in progress. Do not overlap tests/builds/GPU/cleanup. After authoritative closure, recover old nonce before client edit, qualify input tools, and run matched IQ ON only on real gates. CPU-qualify wave and checked PCIe fetch serially; fix/check DMA enqueue propagation before any positive PCIe-fraction diagnostic. Then choose existing chunk/cache/MTP settings and bounded wave/attention/IQ candidates from measurements. Physical256K/RESTORE/quality/upstream/default reconciliation and 1000/70 remain incomplete.",
+  "next": "Continue exact live full OFF handle16956; 3x32K and 3x6 agent turns complete, code3/prose2 long outputs complete; final prose answering at last live poll. No concurrent tests/build/GPU/cleanup. At actual closure recover old nonce, qualify comparison tools/wave/checked PCIe helper serially, then matched IQ ON on real gates. Profile-only held-out pilot is a later separate arm, with bench.sh and actual body hashes. Positive adaptive/PCIe screens need their separate lifetime/integration gates first. PR6 recovery, physical256K/RESTORE/quality/upstream/default and 1000/70 remain unmet.",
   "main_review": "main-review-round559-560.ja.md",
   "subsequent_main_review": "main-review-round561-562.ja.md",
   "public_history_reverification": "public-history-reverification.json",
@@ -782,7 +817,7 @@
     "main_review": "qsa-layout-recovery-v1/main-review.ja.md",
     "status": "Build/host and20GPU parity/oracle cases PASS/fault0. Component40sample screen closedPASS; layout1 median4.09%slower in one int8case, no adoption. No whole-model/full256K/RESTORE/quality qualification."
   },
-  "latest_main_review": "main-review-round643-644.ja.md",
+  "latest_main_review": "main-review-round651-654.ja.md",
   "component_summary": "qsa-layout-screen-summary.json",
   "gemm_orientation_probe": {
     "report": "gemm-orientation-probe-v1/implementation.txt",
@@ -1203,11 +1238,16 @@
     "preparation": "cpu-count-profile-preparation-v1.json",
     "recipe": "prepare_cpu_count_profile_v1.py",
     "review": "main-review-round649-650.ja.md",
-    "state": "Data preparation completed using existing tools/make_profile.py writer. Separate196632-byte full-rank/inverse candidate d97b2f48... retained outsideGit for held-out legacy128 pilot. Old GPU ID frequencies unknown; not treated as measured zeros. Native loader/GPU/model/performance/quality/physical256K/RESTORE all unqualified; original profile unchanged."
+    "state": "Data preparation completed using existing tools/make_profile.py writer. Separate196632-byte full-rank/inverse candidate d97b2f48... retained outsideGit for held-out legacy128 pilot. Old GPU ID frequencies unknown; not treated as measured zeros. Native loader/GPU/model/performance/quality/physical256K/RESTORE all unqualified; original profile unchanged.",
+    "independent_review": "research-cpu-history-profile-candidate-round651-v1.txt",
+    "pilot_contract_review": "research-profile-heldout-pilot-contract-round654-v2.txt"
   },
   "adaptive_cache_current_audit": {
     "research": "research-adaptive-cache-sycl-lifetime-round650-v2.txt",
-    "review": "main-review-round649-650.ja.md",
-    "state": "Source-only. Main corrected ordinary host-plan vs disabled device-plan scope. Positive adaptive screen requires checking EventRecord failures and proving partial-copy retirement/owner preservation first. Current adapt-swaps0 job unaffected; no new failure cause claimed."
+    "review": "main-review-round651-654.ja.md",
+    "state": "Source-only narrow primary serve+standalone EventRecord fail-stop proposal reviewed, unapplied/unbuilt/untested. Success order/sync/cache unchanged; failure prints code/TLS detail then existing _Exit. Stage/peer and partial H2D failure retirement not addressed; do not enable adaptation solely on this patch. Current adapt0 job unaffected.",
+    "proposal": "checked-adaptive-event-v1",
+    "proposal_model": "gpt-6.1-sol",
+    "independent_review": "research-checked-adaptive-event-proposal-round653-v1.txt"
   }
 }
