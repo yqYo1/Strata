@@ -209,6 +209,11 @@ def main():
             argv = ['journalctl','-k','-b','--no-pager','-o','json','--show-cursor']
             if cursor:
                 argv += ['--after-cursor',cursor]
+            else:
+                # Current normal owner closure and present dump checks are the
+                # preflight. Bound the new window without replaying days of
+                # unrelated historical kernel messages into a new result.
+                argv += ['-n','0']
             out,err = run(label,argv,hostenv)
             text = out.read_text()
             tail = re.search(r'^-- cursor: (\S+)\s*$',text,re.M)
@@ -250,7 +255,7 @@ def main():
             require(json.loads(gate['checks']['gemm16-first']['stdout'])['numerical_cases']==68,'original 68-case gate required')
             record['owner_scan'] = no_model_owners(manifest['known_model_files'])
             record['device_sysfs'] = no_dump()
-            cursor = journal('journal-preexisting') # Full current boot, check exit 0 and fault count 0.
+            cursor = journal('journal-before') # Fresh cursor; current owner/device guards above.
             if args.mode == 'build':
                 entries = load(build/'compile_commands.json')
                 fixture_source = str(P/'tests/sycl/gemm16.cpp')

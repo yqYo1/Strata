@@ -10,6 +10,7 @@
 #include <chrono>
 #include <cmath>
 #include <cstdint>
+#include <cstdlib>
 #include <iomanip>
 #include <iostream>
 #include <limits>
@@ -185,6 +186,18 @@ void run(std::shared_ptr<Runtime> rt, Shape s, int shape_id, bool bf, bool smoke
   const size_t outputs = size_t(s.t)*s.n;
   Buffer<uint16_t> x(rt,size_t(s.t)*s.k), w(rt,size_t(s.n)*s.k), cast16(rt,outputs), native16(rt,outputs);
   Buffer<uint32_t> y32(rt,outputs);
+  // Drain before device owners unwind, including an exception after a producer
+  // was queued but before the ordinary completion wait was reached.
+  struct Drain {
+    Runtime &runtime;
+    ~Drain() {
+      try { runtime.wait(); }
+      catch (...) {
+        std::cerr << "paired GEMM checked drain failed\n";
+        std::abort();
+      }
+    }
+  } drain{*rt};
   const size_t bytes = x.allocation.size()+w.allocation.size()+cast16.allocation.size()+native16.allocation.size()+y32.allocation.size();
   require(bytes < (192u<<20), "bounded device allocation budget");
   std::vector<uint16_t> hx(x.count+2*Guard,Mark16), hw(w.count+2*Guard,Mark16);

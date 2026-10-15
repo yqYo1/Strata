@@ -10,12 +10,12 @@
   "compiler": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
   "package_files": {
     "paired_gemm.cpp": {
-      "sha256": "e342b7ab3ea5857ee1ce40047947a91e17a8cab08be5c65f084caf26472f381d",
-      "bytes": 15746
+      "sha256": "7ff6df313afcb9cb9b42f382ddc1b988f2d5a7c1019f3546eb3605f0917b0e9a",
+      "bytes": 16129
     },
     "main_controller.py": {
-      "sha256": "70440c734ac97242cfa1950cd8b62eddbde880fabb3258b584321918f96f69f1",
-      "bytes": 25896
+      "sha256": "08407094790619552c841413054252ab14a4b6600575f84af9f0ae80ee5949e8",
+      "bytes": 26171
     },
     "README.md": {
       "sha256": "b6ffc8c359b2e12839afba1cb35fd907cdb4fa1f289d94ccdf05773fe7031b3c",
@@ -524,5 +524,14 @@
     "agents": false
   },
   "report_budget": "source package below 200 KiB; no duplicated old translation unit or raw captures",
-  "next_owner": "Main: review complete package, check latest owner normal closure, build private fixture, smoke both small formats, then serialize six processes; no model extrapolation"
+  "next_owner": "Main: review complete package, check latest owner normal closure, build private fixture, smoke both small formats, then serialize six processes; no model extrapolation",
+  "Main_review": {
+    "original_proposal_commit": "6f61c9bc",
+    "original_proposal_status": "UNRUN",
+    "changes": [
+      "Add checked queue drain before any Buffer ownership unwinds after queued work; fail before freeing owners if drain fails.",
+      "Use a fresh bounded kernel journal cursor, with current normal ownership and dump preflight; do not replay all historical boot messages."
+    ],
+    "execution": "UNRUN; Main will build after matched FP32 coarse profile closure"
+  }
 }
