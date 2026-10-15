@@ -39,6 +39,9 @@ ONではcomplete=1、unsupported133を含む全仕事量の保存を確認した
 診断付き各1回の小入力時間差を速度の根拠にしない。
 
 実使用判断は続く34603入力・128生成の`long`測定で行う。
+GPU expert cacheの`--expert-cache 128`は全48層で合計128 slotを意味し、
+`--expert-cache-per-layer`は配分policyである。各層128 slotではない。
+この既存legacy配分は47層に各2・最後の層に34で、balanced配分案は未適用。
 request-cold仮想LRUのpayload予算は256MiB/1GiB/4GiB/8GiBで、
 実RAM確保・worker同時アクセス・request間永続cacheの証明ではない。
 実装時はpage/metadataも予算に含め、8GiB live available RAMの余裕が必要。

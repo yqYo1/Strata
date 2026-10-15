@@ -378,13 +378,45 @@
       "path": "research-cpu-cache-amortization-round603-v1.txt",
       "sha256": "2699322cca76ee480e6bbd34b06b5e12977a37963a3a9069c67e9ec52088ca27",
       "status": "FINAL received; Main reviewed. Cold/refill cost defeats a hit-rate-only argument. Main needs actual nt1-policy recurrence and full-model wall; no cache adoption."
+    },
+    {
+      "round": 604,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-decode-wall-accounting-round604-v1.txt",
+      "sha256": "6e5fa424d8514cab87e07b87b0a9495ba7cc84506c7a31f08e0afb9cad4c9cf6",
+      "status": "Main reviewed, native-path scope corrections in cpu-gu-reuse-long.ja.md: wait excludes preceding graph launch; native drain is entire run_split_multi_native, not run_phase clock."
+    },
+    {
+      "round": 605,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-int8-attention-tiling-round605-v1.txt",
+      "sha256": "a86280b15503eedcac57fb52ae08a93d596a52e8875e0f191d8fbc10c6487be2",
+      "status": "Main reviewed. Existing1query1KVhead perWG, not bothKVheads. Separate Solproposal requested for CH32 exact-order split first plus optionalCH64; unapplied, no tests during officialbench."
+    },
+    {
+      "round": 606,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-native-decode-host-gaps-round606-v1.txt",
+      "sha256": "600f4e1790bdb5777486a48f87ce31b911b2d7fab3a8b71fa828afa987e44bf3",
+      "status": "FINAL Main reviewed; keepcopy/event/asyncerror contracts. Wording ms_wait fromsubmit corrected: a follows previous submit, so its hostcost is outside."
+    },
+    {
+      "round": 607,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-cpu-census-gpu-cache-round607-v1.txt",
+      "sha256": "fe8db9e63b7f06c9aeb25aa0a888e572aefa580698799544f23d067c68785506",
+      "status": "FINAL Main independentlyrecomputed in cpu-gpu-cache-opportunity-v1.json. Rowceilings12.20/20.08/32.09% match; global128bytes/tie-dependentjobs differ, use explicitMainranking. Conditional routecount opportunity, no speed/admission."
     }
   ],
   "main_initial_findings": [
     "PR6 performance patch changes historic sycl/src/prefill/prefill.cpp, not current root src/prefill/prefill.cpp. Current root rg finds compact scratch but no layer-major selector. History preservation is not adoption.",
     "Original645.85 PP and later449.7 full-context/MTP measures need separate source/config reconciliation; different protocol does not justify discarding the old improvement."
   ],
-  "next": "Close current actual CPUobserver OFF/ON small gate, then real34K128recurrence. Run matched clean officialbench Direct0/1 with32K+agent and full thinking strong/weak generation. Source/build/measurement serialized; fullphysical256K/RESTORE, PR6speed recovery and default-branch feature reconciliation remain pending.",
+  "next": "Poll live DirectOFF full officialbench; on safe terminal closure run samebinary DirectON full, compare individual32K/agent/strongweakthinking. Packed CPU kept after actualcachecost negative. Review Sol headsplit proposal only afterFINAL, apply/build/test only after GPUbench closes. Physical256K/RESTORE and defaultbranch feature reconciliation remain pending.",
   "main_review": "main-review-round559-560.ja.md",
   "subsequent_main_review": "main-review-round561-562.ja.md",
   "public_history_reverification": "public-history-reverification.json",
@@ -598,6 +630,11 @@
     {
       "directory": "cpu-gu-reuse-observer-v1",
       "state": "SolFINAL; Mainsource reviewdone; CPUmock/productapply/build/realmodel gates pending."
+    },
+    {
+      "directory": "int8-prompt-head-split-v1",
+      "model": "gpt-6.1-sol",
+      "state": "Proposal-only directory authoring; product source frozen during clean benchmark. Main owns all later builds/tests; FINAL awaited, no intervention."
     }
   ],
   "kv_copy_groups": {
@@ -625,7 +662,8 @@
     "long": "model-device-profile-v2.json",
     "paired": "prompt-direct-profile-pair-v1.json",
     "review": "prompt-direct-profile.ja.md",
-    "clean_recipe": "check_prompt_direct_bench_v1.py"
+    "clean_recipe": "check_prompt_direct_bench_v1.py",
+    "clean_state": "OFF arm officialbench --long --think --long-generation --runs3 is live, root main-primary-prompt-direct-bench-full-0-root-v1. Check authoritative handle/process before treating terminal; ON not started."
   },
   "retention_v6": "retention-v6-manifest.json",
   "cpu_gu_reuse": {
@@ -633,6 +671,12 @@
     "original_build_failure": "cpu-gu-reuse-build-v2.json",
     "build": "cpu-gu-reuse-build-v3.json",
     "recipe": "check_cpu_gu_reuse_v1.py",
-    "state": "Main fixed literal output overload without disabling warnings. Normal/ASanUBSan independent two-policy LRU contracts and actual product build PASS. DefaultOFF; actual small OFF/ON qualification running; no expanded cache or speed adoption."
-  }
+    "state": "CPU normal/ASan+actual build and smallOFF/ON+34K128actualrecurrence PASS/fault0. Orderednt1only8GiB54.21%hit. Measuredprepare scenarios show more CPU service; no synchronouswholeGUrequestcoldcache implementation/adoption.",
+    "small": "cpu-gu-reuse-small-v1.json",
+    "long": "cpu-gu-reuse-long-v1.json",
+    "summary": "cpu-gu-reuse-summary-v1.json",
+    "review": "cpu-gu-reuse-long.ja.md",
+    "GPU_cache_opportunity": "cpu-gpu-cache-opportunity-v1.json"
+  },
+  "retention_v7": "retention-v7-manifest.json"
 }
