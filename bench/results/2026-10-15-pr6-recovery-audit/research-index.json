@@ -418,6 +418,42 @@
       "path": "research-agent-cache-settings-round608-v1.txt",
       "sha256": "911843a6ae9c28c4f56d0c6e352e3465b30cd0d2e4142a34a17f5db78bf32d9a",
       "status": "FINAL/Main source review complete in main-review-round608.ja.md; cold-agent limit and LM periodic mixed-position path confirmed by source, RESTORE runtime unqualified; memory MiB/refill-order corrections recorded."
+    },
+    {
+      "round": 609,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-checkpoint-cost-round609-v1.txt",
+      "sha256": "79ef4dbe08069ea02c4238aeb91f95c7c90c25bca1a6ae84d6b8fa32e2345136",
+      "main_review": "main-review-round609-610.ja.md",
+      "status": "FINAL/Main source+payload arithmetic reviewed. Volume verified; observed-rate scenarios are not hardware lowerbounds or target impossibility proof. One-pass implementation proposed."
+    },
+    {
+      "round": 610,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-prefill-gu-hotpath-round610-v1.txt",
+      "sha256": "0fe9838862a7f78d0574cde7d95bd05bed76b33ff46a814e9010468b69bcf55c",
+      "main_review": "main-review-round609-610.ja.md",
+      "status": "FINAL/Main source+oldcensus reweight reviewed. ne<=64 72.7123%calls/4.6422%rows; currentLM/performatjoint coverage unknown; genericdequant notallDown. SIMDexacthalf proposal authoring."
+    },
+    {
+      "round": 611,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-compiler-matrix-runtime-round611-v1.txt",
+      "sha256": "4c3738f06d92718e90b8a39ad390715b60666d4e0fe05189ea2224f5a3f5ab0e",
+      "main_review": "main-review-round611-612.ja.md",
+      "status": "FINAL/Main savedcompiler/CMake/officialdoc reviewed. CustomDPC++7.1.0pre Clang22.1; oneMKLalready2026.1; installedicpx stackAB candidate, no3.1x transferclaim."
+    },
+    {
+      "round": 612,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-headsplit-independent-audit-round612-v1.txt",
+      "sha256": "0fc37a7965c4df324ddac4413c1af0f4f21ee95d8cb6d4ecf35ae1c6c1911f42",
+      "main_review": "main-review-round611-612.ja.md",
+      "status": "FINAL/Main reviewed. Source invariants plausible; fullactivecount fixture missing separately from highID smallpool. Runtime/kernelroute/physical256K unqualified."
     }
   ],
   "main_initial_findings": [
@@ -602,20 +638,7 @@
     "report": "existing-exact-setting.ja.md"
   },
   "retention_v5": "retention-v5-manifest.json",
-  "parallel_research_current": [
-    {
-      "round": 609,
-      "model": "gpt-6-luna",
-      "path": "research-checkpoint-cost-round609-v1.txt",
-      "state": "Running readonly; caller segmentation extra expert traffic versus one-pass per-layer-prefix running-state capture, bounded ownership/cancel contract."
-    },
-    {
-      "round": 610,
-      "model": "gpt-6-luna",
-      "path": "research-prefill-gu-hotpath-round610-v1.txt",
-      "state": "Running readonly; actual hot GU/genericF16dequant source/traffic and primary external implementations, distinct from attention headsplit and rejected CPUcoldcache."
-    }
-  ],
+  "parallel_research_current": [],
   "phase_audit": {
     "build": "phase-audit-build-v1.json",
     "host": "phase-audit-host-v1.json",
@@ -661,7 +684,8 @@
     {
       "directory": "int8-prompt-head-split-v2",
       "model": "gpt-6.1-sol",
-      "state": "SolFINAL received; kernel byte-identical tov1, separate immutable-arm native captures/offline comparator; Main review pending; neither applied nor built/tested."
+      "state": "SolFINAL/Main source+R612 review. Nativeimmutable fixture plausible, controller BLOCKED killpg/postreapgroup; Mainapprovedowner adapter required; fullactivecount/physical256K separate. Unapplied/unbuilt/untested.",
+      "main_review": "int8-prompt-head-split-v2/main-review.ja.md"
     },
     {
       "directory": "decode-host-phase-observer-v1",
@@ -672,12 +696,29 @@
     {
       "directory": "decode-host-phase-observer-v2",
       "model": "gpt-6.1-sol",
-      "state": "Authoring proposal-only followup afterv1FINAL. Main requested nonowned-slot no dereference and full band/layer conservation; no build/test/GPU."
+      "state": "SolFINAL/Main source review passed; collision and band/layer conservation fixed. Await bothDirect formalclosures, then CPU/build/small+34K actual gates. Not applied/tested.",
+      "main_review": "decode-host-phase-observer-v2/main-review.ja.md"
     },
     {
       "directory": "layer-major-checkpoint-coherence-v1",
       "model": "gpt-6.1-sol",
-      "state": "SolFINAL received; periodic checkpoint at coherent whole-segment boundary with MTP/loan refill; Main review pending; not applied/built/tested."
+      "state": "SolFINAL/Main source review complete; coherent caller segmentation safetyfallback, not chosen optimizedpath due repeated50.29GBsweeps; no execution.",
+      "main_review": "layer-major-checkpoint-coherence-v1/main-review.ja.md"
+    },
+    {
+      "directory": "layerwise-checkpoint-capture-v1",
+      "model": "gpt-6.1-sol",
+      "state": "SolFINAL/Main source review; BLOCKEDreread diagnostic beginoldchain regression and no actualC++ CPUfixture; RAII callback revision requested."
+    },
+    {
+      "directory": "layerwise-checkpoint-capture-v2",
+      "model": "gpt-6.1-sol",
+      "state": "Authoring proposal-only afterv1FINAL; reread bypass, actualC++ contract and unconditionalcallback RAII; no tests/build/GPU."
+    },
+    {
+      "directory": "parallel-iq-dequant-v1",
+      "model": "gpt-6.1-sol",
+      "state": "Authoring proposal-only defaultOFF exacthalf lane-parallel dequant for actualGU18/22/21/23 Down20/42; source/CPU/GPU qualification pending."
     }
   ],
   "kv_copy_groups": {
@@ -691,7 +732,7 @@
     "proposal": "cpu-predecode-probe-v1",
     "receipt": "cpu-predecode-probe-v1.json",
     "review": "cpu-predecode-main-review.ja.md",
-    "state": "Normal+ASan6276cases eachPASS. Initial1296samples+1296repeat samples. Streamingnt1 win reproduced4processes; actualrecurrenceobserver proposal FINAL, Mainreviewinprogress, no productcache/adoption.",
+    "state": "Normal+ASan6276cases eachPASS;4process synthetic cost and actual68781job recurrence closed; synchronouswholeGUcoldcache rejected from negative net CPUservice scenarios, no cache implementation/adoption.",
     "repeat": "cpu-predecode-repeat-v1.json",
     "summary": "cpu-predecode-repeat-summary-v1.json"
   },
@@ -727,6 +768,18 @@
     "source_review": "agent-cache-source-review-v1.json",
     "main_review": "main-review-round608.ja.md",
     "research": "research-agent-cache-settings-round608-v1.txt",
-    "state": "Source confirms LM intermediate on_chunk periodic save can mix layer positions; cache0 current matched runs unaffected. Coherent segment proposal FINAL, low-traffic architecture research running; all RESTORE/physical256K qualification pending."
+    "state": "Source mixed-position mechanism reviewed; callersegmentation safetyfallback retained, onepassv1 source blockedreread regression; v2 authoring. Currentcache0 Directcomparison unchanged; RESTORE/physical256K unqualified.",
+    "traffic_scenarios": "checkpoint-traffic-scenarios-v1.json"
+  },
+  "dequant_candidates": {
+    "research": "research-prefill-gu-hotpath-round610-v1.txt",
+    "main_review": "main-review-round609-610.ja.md",
+    "coverage": "dequant-shape-coverage-v1.json",
+    "state": "Historicalshape coverage only. Exacthalf SIMDproposal authoring; packedXMX directtile researchvalidatedbyprimarydoc but Strata kernel notimplemented; no performanceadoption."
+  },
+  "compiler_alternative": {
+    "research": "research-compiler-matrix-runtime-round611-v1.txt",
+    "main_review": "main-review-round611-612.ja.md",
+    "state": "Identicalsource oneMKLfixed customDPCPP versusicpx2026.1 compiler/stack A/B pending, after bothDirectclosures and smallgates; originalbenchmarkbuild untouched."
   }
 }

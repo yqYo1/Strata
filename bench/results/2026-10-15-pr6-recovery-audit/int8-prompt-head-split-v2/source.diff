@@ -1,0 +1,268 @@
+--- a/src/kernels/sycl/prompt_attention.cpp
++++ b/src/kernels/sycl/prompt_attention.cpp
+@@ -9,6 +9,7 @@
+ #include <climits>
+ #include <cmath>
+ #include <cstdlib>
++#include <cstring>
+ #include <sycl/ext/oneapi/matrix/matrix.hpp>
+ 
+ namespace strata::kernels {
+@@ -292,6 +293,236 @@
+   });
+   finish(stream, event);
+ }
++// Experimental Direct-only INT8 candidate. Keep launch<> above unchanged.
++// C32 preserves chunk boundaries and scalar/MAD order; parity remains unproven.
++// C64 changes softmax/factor/PV chunk boundaries and requires tolerance gates.
++template <int Cells>
++void launch_mode1_head_split(const float *query, QsaAttnPools pools, const int32_t *ids,
++            const int32_t *steps, int64_t cap, QsaShapes shapes, float *output,
++            int64_t queries, void *stream) {
++  static_assert(Cells == 32 || Cells == 64);
++  constexpr int R = 8, W = 64, KG = 4, VG = 4;
++  auto event = queue_for(stream).submit([&](sycl::handler &h) {
++    sycl::local_accessor<sycl::half, 1> qhi(R * HD, h), qlo(R * HD, h),
++        kv(Cells * HD, h);
++    sycl::local_accessor<sycl::half, 1> phi(VG * R * Cells, h),
++        plo(VG * R * Cells, h);
++    sycl::local_accessor<float, 1> scores(R * Cells, h), ks(Cells * KG, h),
++        vs(Cells * VG, h);
++    sycl::local_accessor<float, 1> maxima(R, h), sums(R, h), alpha(R, h),
++        factors(VG, h);
++    sycl::local_accessor<int64_t, 1> rows(Cells, h);
++    h.parallel_for(
++        sycl::nd_range<1>(size_t(queries) * size_t(shapes.n_head_kv) * 2 * W, W),
++        [=](sycl::nd_item<1> it) [[sycl::reqd_sub_group_size(16)]] {
++          const size_t index = it.get_group_linear_id(), tile = index % 2,
++                       kvhead = (index / 2) % size_t(shapes.n_head_kv),
++                       batch = index / (2 * size_t(shapes.n_head_kv));
++          const int tid = it.get_local_linear_id(), subgroup = tid / 16;
++          const int head_base = int(tile) * R, live_heads = tile == 0 ? R : 4;
++          const int db = subgroup;
++          auto sg = it.get_sub_group();
++          const float *q =
++              query + (batch * shapes.n_head + kvhead * HEADS) * HD;
++          // Both WGs rescan ALL 12 heads. Tile-local max would alter hi/lo.
++          float qm = 0;
++          for (int i = tid; i < HEADS * HD; i += W)
++            qm = sycl::fmax(qm, sycl::fabs(q[i]));
++          qm = sycl::reduce_over_group(it.get_group(), qm,
++                                       sycl::maximum<float>());
++          int qe = 0;
++          if (qm > 0)
++            (void)sycl::frexp(qm, &qe);
++          const int shift = sycl::clamp(14 - qe, -126, 126);
++          const float qup = sycl::ldexp(1.f, shift),
++                      qdown = sycl::ldexp(.0625f, -shift);
++          for (int i = tid; i < R * HD; i += W) {
++            const float x = i / HD < live_heads ? q[head_base * HD + i] * qup : 0.f;
++            const sycl::half hi = sycl::half(x);
++            qhi[i] = hi;
++            qlo[i] = sycl::half(x - float(hi));
++          }
++          if (tid < R) {
++            maxima[tid] = -INFINITY;
++            sums[tid] = 0;
++          }
++          using Acc = mx::joint_matrix<sycl::sub_group, float,
++                                       mx::use::accumulator, 8, 16>;
++          using A = mx::joint_matrix<sycl::sub_group, sycl::half, mx::use::a, 8,
++                                     16, mx::layout::row_major>;
++          using B = mx::joint_matrix<sycl::sub_group, sycl::half, mx::use::b,
++                                     16, 16, mx::layout::row_major>;
++          Acc acc[4];
++          for (int j = 0; j < 4; ++j)
++            mx::joint_matrix_fill(sg, acc[j], 0.f);
++          const int count0 = steps[batch * kStepCount + kStepWidth];
++          const int count = count0 >= 0 && count0 <= cap ? count0 : 0;
++          it.barrier(sycl::access::fence_space::local_space);
++          // int64_t also avoids final-increment overflow for count==INT_MAX.
++          for (int64_t c0 = 0; c0 < count; c0 += Cells) {
++            if (tid < Cells) {
++              int64_t row = -1;
++              if (c0 + tid < count) {
++                const int cell = ids[batch * size_t(cap) + size_t(c0) + size_t(tid)];
++                const int page =
++                    cell < 0 ? -1 : pools.page_table[cell / shapes.page_size];
++                if (page >= 0)
++                  row = (int64_t(page) * shapes.n_head_kv + kvhead) *
++                            shapes.page_size +
++                        cell % shapes.page_size;
++              }
++              rows[tid] = row;
++            }
++            for (int i = tid; i < R * Cells; i += W)
++              scores[i] = 0;
++            it.barrier(sycl::access::fence_space::local_space);
++            for (int i = tid; i < HD * Cells; i += W) {
++              const int dim = i / Cells, c = i % Cells;
++              kv[i] = rows[c] >= 0
++                          ? half_code<1, false, false>(pools, rows[c], dim)
++                          : sycl::half(0.f);
++            }
++            for (int i = tid; i < Cells * KG; i += W)
++              ks[i] = rows[i / KG] >= 0
++                          ? scale<1, false>(pools, rows[i / KG], i % KG)
++                          : 0.f;
++            it.barrier(sycl::access::fence_space::local_space);
++            // SG0/1 cover C32 QK; SG2/3 still reach every WG barrier.
++            // C64 uses all four subgroups. Each branch is subgroup-uniform.
++            if (subgroup < Cells / 16) {
++              const int head = 0, cell = subgroup * 16;
++              for (int g = 0; g < KG; ++g) {
++                Acc part;
++                A a;
++                B b;
++                mx::joint_matrix_fill(sg, part, 0.f);
++                for (int k = g * (HD / KG); k < (g + 1) * (HD / KG); k += 16) {
++                  mx::joint_matrix_load(
++                      sg, b,
++                      kv.template get_multi_ptr<sycl::access::decorated::no>() +
++                          k * Cells + cell,
++                      Cells);
++                  mx::joint_matrix_load(sg, a,
++                                        qhi.template get_multi_ptr<
++                                            sycl::access::decorated::no>() +
++                                            head * HD + k,
++                                        HD);
++                  mx::joint_matrix_mad(sg, part, a, b, part);
++                  mx::joint_matrix_load(sg, a,
++                                        qlo.template get_multi_ptr<
++                                            sycl::access::decorated::no>() +
++                                            head * HD + k,
++                                        HD);
++                  mx::joint_matrix_mad(sg, part, a, b, part);
++                }
++                mi::joint_matrix_apply(
++                    sg, part, [=](float &v, size_t r, size_t c) {
++                      scores[(head + r) * Cells + cell + c] +=
++                          v * ks[(cell + c) * KG + g] * qdown;
++                    });
++              }
++            }
++            it.barrier(sycl::access::fence_space::local_space);
++            if (tid < R) {
++              if (tid < live_heads) {
++                float m = maxima[tid];
++                for (int c = 0; c < Cells; ++c)
++                  if (rows[c] >= 0)
++                    m = sycl::fmax(m, scores[tid * Cells + c]);
++                const float a =
++                    maxima[tid] == -INFINITY ? 0.f : sycl::exp(maxima[tid] - m);
++                float l = 0;
++                for (int c = 0; c < Cells; ++c) {
++                  const float p =
++                      rows[c] >= 0 ? sycl::exp(scores[tid * Cells + c] - m) : 0.f;
++                  scores[tid * Cells + c] = p;
++                  l += p;
++                }
++                maxima[tid] = m;
++                sums[tid] = sycl::fma(sums[tid], a, l);
++                alpha[tid] = a;
++              } else {
++                for (int c = 0; c < Cells; ++c)
++                  scores[tid * Cells + c] = 0.f;
++                alpha[tid] = 0.f;
++              }
++            }
++            for (int i = tid; i < Cells * VG; i += W)
++              vs[i] = rows[i / VG] >= 0
++                          ? scale<1, true>(pools, rows[i / VG], i % VG)
++                          : 0.f;
++            for (int i = tid; i < Cells * HD; i += W) {
++              const int c = i / HD, dim = i % HD;
++              kv[i] = rows[c] >= 0
++                          ? half_code<1, true, false>(pools, rows[c], dim)
++                          : sycl::half(0.f);
++            }
++            it.barrier(sycl::access::fence_space::local_space);
++            if (tid < VG) {
++              float m = 0;
++              for (int c = 0; c < Cells; ++c)
++                m = sycl::fmax(m, sycl::fabs(vs[c * VG + tid]));
++              factors[tid] = m;
++            }
++            it.barrier(sycl::access::fence_space::local_space);
++            for (int i = tid; i < VG * R * Cells; i += W) {
++              const int g = i / (R * Cells), r = (i / Cells) % R, c = i % Cells;
++              const float m = factors[g];
++              const float p =
++                  m > 0 ? scores[r * Cells + c] * (vs[c * VG + g] * (16384.f / m))
++                        : 0.f;
++              const sycl::half hi = sycl::half(p);
++              phi[i] = hi;
++              plo[i] = sycl::half(p - float(hi));
++            }
++            it.barrier(sycl::access::fence_space::local_space);
++            for (int j = 0; j < 4; ++j) {
++              const int dim = (db * 4 + j) * 16, vg = dim / (HD / VG);
++              Acc part;
++              A a;
++              B b;
++              mx::joint_matrix_fill(sg, part, 0.f);
++              for (int k = 0; k < Cells; k += 16) {
++                mx::joint_matrix_load(
++                    sg, b,
++                    kv.template get_multi_ptr<sycl::access::decorated::no>() +
++                        k * HD + dim,
++                    HD);
++                mx::joint_matrix_load(
++                    sg, a,
++                    phi.template get_multi_ptr<sycl::access::decorated::no>() +
++                        (vg * R) * Cells + k,
++                    Cells);
++                mx::joint_matrix_mad(sg, part, a, b, part);
++                mx::joint_matrix_load(
++                    sg, a,
++                    plo.template get_multi_ptr<sycl::access::decorated::no>() +
++                        (vg * R) * Cells + k,
++                    Cells);
++                mx::joint_matrix_mad(sg, part, a, b, part);
++              }
++              mi::joint_matrix_apply(
++                  sg, acc[j],
++                  [=](float &v, size_t r, size_t) { v *= alpha[r]; });
++              const float down = factors[vg] * (1.f / 16384.f);
++              mx::joint_matrix_apply(
++                  sg, acc[j], part, [=](float &v, float &u) { v += u * down; });
++            }
++            it.barrier(sycl::access::fence_space::local_space);
++          }
++          for (int j = 0; j < 4; ++j) {
++            mi::joint_matrix_apply(sg, acc[j], [=](float &v, size_t r, size_t c) {
++              const float sum = sums[r];
++              v = sum > 0 ? v / sum : 0.f;
++              if (r < size_t(live_heads))
++                output[(batch * shapes.n_head + kvhead * HEADS + head_base + r) *
++                           HD + (db * 4 + j) * 16 + c] = v;
++            });
++          }
++        });
++  });
++  finish(stream, event);
++}
+ // Select distinct kernels so the existing output path has no device branch.
+ template <int Mode>
+ void dispatch(const float *q, QsaAttnPools p, const int32_t *ids,
+@@ -299,6 +530,20 @@
+               int64_t nq, void *stream) {
+   const char *direct = std::getenv("STRATA_SYCL_PROMPT_DIRECT");
+   if (direct && direct[0] == '1') {
++    if constexpr (Mode == 1) {
++      const char *split = std::getenv("STRATA_SYCL_PROMPT_HEAD_SPLIT");
++      // Exact new opt-in. Existing Direct prefix semantics remain below.
++      if (direct[1] == '\0' && split) {
++        if (std::strcmp(split, "32") == 0) {
++          launch_mode1_head_split<32>(q, p, ids, steps, cap, s, out, nq, stream);
++          return;
++        }
++        if (std::strcmp(split, "64") == 0) {
++          launch_mode1_head_split<64>(q, p, ids, steps, cap, s, out, nq, stream);
++          return;
++        }
++      }
++    }
+     if constexpr (Mode == 0) {
+       const char *native = std::getenv("STRATA_SYCL_PROMPT_NATIVE_KV_MIN");
+       char *end = nullptr;

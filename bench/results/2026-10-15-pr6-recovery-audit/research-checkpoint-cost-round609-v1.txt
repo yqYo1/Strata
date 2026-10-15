@@ -1,0 +1,88 @@
+# Round 609 — periodic checkpoint cost: caller segmentation vs per-layer capture
+
+2026-10-15 JST. Read-only source and retained-receipt analysis for the Arc B570 personal Strata fork. Only this report was written. No source, Git, build, test, GPU, server, profiler, process, service, or cleanup action was performed. I read `AGENTS.md`, `docs/ARTIFACT_RETENTION.md`, the current `research-index.json` first, the prior R574/R584/R594/R599/R605/R608 reports, and `layer-major-checkpoint-coherence-v1/implementation.ja.md` plus `source.diff`. The proposed R608-era fix is still unapplied/unbuilt/unrun. This report addresses the marginal cost of its segmentation approach against a source-feasible per-layer running-state capture design.
+
+## Finding
+
+At a 16,384-token periodic interval, splitting a layer-major prompt into independent caller runs preserves checkpoint safety but repeats the dominant work: every run reloads all 512 experts for each of 48 layers. The model's actual packed native expert payload is **50,292,326,400 bytes (50.292 GB / 46.84 GiB) per full layer-major pass**. With chunk 8,192, an otherwise uninterrupted prompt becomes 2, 4, or 16 runs at nominal 32K, 64K, or 256K. Relative to one pass, this approach adds respectively **50.29, 150.88, or 754.38 GB of logical expert payload**. This is source-derived payload, not measured PCIe traffic or elapsed time.
+
+A per-layer prefix capture could keep one full layer-major run and preserve expert reuse. It would copy each layer's recurrent/indexer state at the desired chunk boundary while that layer is at that prefix, then publish a checkpoint only after all 48 layer pieces and the final-layer MTP prompt callback for that position have succeeded. This adds state-copy service but avoids repeating the 50.29 GB expert sweep. I judge this the only promising architecture for retaining 16K RESTORE points without a likely throughput-level regression. It is a feasibility finding, not a measured implementation result.
+
+## Source path and proposed capture contract
+
+Configured SYCL uses root `src/prefill/prefill.cpp`, `src/prefill/layer_major.inc`, `src/core/conversation_state.cpp`, and `src/program/generate.cpp`. Pinned SHA256s at review time:
+
+- `src/prefill/layer_major.inc`: `5ec3ba7dbc57f53bc832d5d8e6bd04e3d22bec0b6b7fbf5ad5959a54dacc64aa`
+- `src/prefill/prefill.cpp`: `a01c39cc269f84ab85129d8c106d8adb5227e33234fa5a6d7ae6537ab2f68371`
+- `src/program/generate.cpp`: `d4048082aae24f4afc6c841309b0d0f63f2303085880d92da1cc7ebe4e83e80c`
+- `src/core/conversation_state.cpp`: `296a5e2de758e638a80ddaf6a25f9a48419c88bc42d8ceb68eae4df7fb933c7d`
+- Format/payload receipt: `bench/results/2026-10-14-primary-transfer-ceiling/results.json`; measurement interpretation: its `RESULTS.md` and R577 report.
+
+`Prefill::run_layer_major` loops layers outside token chunks. For each layer it loads all 512 experts, calls `run_impl(tokens,n,pos0)`, and its wrapped `on_chunk` sees each chunk boundary. Current wrapper only forwards user `on_chunk` on the final layer, while forwarding the final whole-segment `on_stage_chunk` after all layers. The proposal's observation is correct: the user callback at an intermediate final-layer chunk cannot represent the same prefix for earlier layers, already processed through the full segment. `conversation_checkpoint_save` simply copies current GDN, PLE, QSA tail/dead/block position buffers; it validates allocation sizes and geometry but does not validate that those buffers were computed for `c.ids`' prefix.
+
+A safe capture design needs a distinct internal layer-progress callback, not changing the meaning of the existing public `on_chunk` or `on_stage_chunk`:
+
+1. Before a layer run, establish candidate prefix positions that the conversation cache will retain under the normal checkpoint eviction policy. Each candidate has its exact token-ID prefix and image metadata, a generation/position key, GDN/QSA layer completion bits, PLE completion, and a pending state.
+2. At each actual chunk end that reaches one or more 16K thresholds, copy only this layer's post-chunk state into the matching candidate builder: one GDN row for each of 36 GDN layers; QSA `idx_tail`, `idx_dead`, `idx_block_pos` for each of 12 QSA layers; and `ple_hist` at its owning layer. Compute `ple_prev` from the matching IDs prefix as the existing restore path does. Chunk-end position and session layer ordinal must match the candidate exactly. The per-layer capture runs after `run_impl` has advanced that layer through the callback's chunk and before the layer consumes a later chunk.
+3. Let the ordinary final-layer callback run its MTP `draft_kv`/fallback, progress and token accounting unchanged. A candidate remains pending until all required layer pieces are complete and the final-layer callback has advanced target/draft prompt state through that same prefix. Publish only after the full layer-major run, MTP work, and the current caller's borrowed-cache refill complete successfully; a failed run/copy/cancel/refill drops incomplete builders and must never expose them to RESTORE.
+4. Preserve current `ConversationCheckpoint` serialization and eviction semantics once assembled. Keep QSA positional KV and draft KV as positional session state; this mechanism snapshots recurrent/indexer running state, not full KVs. At RESTORE, retain existing QSA dead-row reconstruction into `idx_pooled[row=ids.size()/idx_block]`, PLE previous-ID setup, MTP KV rewind/restore behavior, and prefix validation. Verify all of those together with the matching MTP prefix before considering publication correct.
+
+This is bounded in host memory if the builder follows the existing maximum retained checkpoint count: six candidates require at least six GDN payloads, 673.3125 MiB total, plus small PLE/QSA state and IDs. A 16K checkpoint adds about 64 KiB IDs; a 256K one adds about 1 MiB. One additional in-progress full checkpoint would raise the GDN working set to about 785 MiB. Prefer writing layer slices directly into the not-yet-published retained candidate slots rather than keeping a second full checkpoint copy. Exact preselection has to honor root/turn checkpoints, `used` recency and eviction; blindly retaining the last six periodic positions could discard a checkpoint the current policy would keep. If the final retained set cannot be known safely in advance, use a bounded builder/eviction design that does not publish partial candidates and disclose its peak bytes.
+
+There is a practical queue choice. Host-side per-layer copies are straightforward and bounded, but make 36 GDN D2H operations per checkpoint instead of the current one whole-GDN copy. An alternative is a bounded device staging set for only retained candidates, with same in-order queue D2D copies of each layer piece and one D2H export per complete candidate. That adds roughly 673 MiB of device storage for six GDN snapshots, likely costly on the 10 GiB card, so it needs fresh VRAM admission and may be inferior to pageable-host slices. No approach may read a GDN/QSA/PLE source after later work overwrites it; same-queue ordering plus checked layer-drain and capture-copy completion/lifetime must be explicit. Do not copy state pointers into a candidate and defer the copy until all layers finish.
+
+## Exact state sizes and checkpoint-count ladder
+
+Current geometry is 48 layers = 36 GDN + 12 QSA, `ssm_state_size=128`, `ssm_v_heads=48`, `ssm_conv_channels=10240`, `ssm_d_conv=4`, `idx_key_dim=128`, `idx_block=4`, and `NG_HIST=9`, `NG_HC_DIM=10240`.
+
+- One GDN layer running state is `(128*48*128 + 10240*3)*4 = 3,268,608 B` (3.116 MiB). All 36 layers: **117,669,888 B = 112.21875 MiB** per checkpoint.
+- PLE history is `9*10240*4 = 368,640 B` = 0.352 MiB. QSA tails/dead/block positions across 12 layers are about 24.1 KiB. These are small beside GDN.
+- With six retained checkpoints, GDN payload alone is `6*117,669,888 = 706,019,328 B = 673.3125 MiB`, plus QSA/PLE, token IDs, vectors/capacity and images. R608's earlier rounded `~118 MB` means decimal MB; it should not be read as MiB.
+
+Assuming periodic checkpoints at every 16K boundary through the final batched prefix, maximum nominal candidates are roughly 2/4/16 for 32K/64K/256K. Their GDN copy volume is 224.4375/448.875/1,795.5 MiB respectively, though only six can remain in the current cache. The maximum retained GDN residency remains 673.3125 MiB (not 16 copies at 256K). Actual number of saved prefixes can differ at the final `n-1` boundary, resume/root/turn boundaries, and eviction; receipts must record actual positions.
+
+## Segmentation cost from model bytes and transfer receipts
+
+The native expert metadata reports 48 layers × 512 experts and **50,292,326,400 B total**, with actual layer blob sizes from 1,510,400 to 2,662,400 B. `layer_major.inc` explicitly iterates 512 `copy_blob` calls and 512 `fill_slot` uploads for every layer. Existing phase receipts confirm 48 layer passes and “loading 512 experts” at each pass, but do not report per-layer load times or isolate expert-transfer wall.
+
+For the 16K caller segmentation model (ignoring small final-run differences):
+
+| Batched prompt | Full layer-major runs | Extra expert payload over one run | Optimistic host→device floor at measured 2.2487 GB/s ordinary-host bulk | At measured 2.7293 GB/s Host-USM bulk |
+|---:|---:|---:|---:|---:|
+| 32K | 2 | 50.29 GB | 22.37 s | 18.43 s |
+| 64K | 4 | 150.88 GB | 67.10 s | 55.28 s |
+| 256K | 16 | 754.38 GB | 335.48 s | 276.40 s |
+
+The two rates are measured medians from 256 MiB transfer-ceiling bursts on the same Arc B570 / primary SYCL 9 + Level Zero V2 stack, with copy-offload and DirectSubmission disabled: ordinary-host H2D 2.2487 GB/s, Host-USM H2D 2.7293 GB/s. They are **optimistic lower-bound arithmetic only**: divide the full extra logical expert payload by the measured large-burst one-way rate. They are not measured layer-major service or whole-prompt elapsed times. Actual expert copies are many ~1.5–2.66 MB transfers; in the same receipt ordinary H2D of 1.9712 MB in batches of eight reached 5.30–5.49 GB/s, while batches of 32 reached 2.52–3.34 GB/s. Those measurements show size/batch dependence and are not a sustained same-path rate for the 24,576 per-layer copies. File reads, `copy_blob`, API submission, synchronization, upload slot handling, and compute/transfer overlap can change the realized cost. The transfer receipt explicitly did not test overlap.
+
+The 1000 prefill tokens/s goal allows only about 32.8 s at 32K, 65.5 s at 64K and 262 s at 256K. Even the optimistic extra-transfer floor for 64K exceeds the entire 1000-t/s wall budget; at 256K it also exceeds budget. At 32K it consumes most of the budget before compute and other service. Therefore periodic caller segmentation at 16K is not a credible route to the target. This is a budget comparison, not a predicted candidate benchmark.
+
+Each segmented long call also crosses `run_prompt_with_mtp_experts`: for qualifying native MTP4 runs it detaches and restores MTP experts around each call. Retained receipts report the draft expert source as 707,788,800 B and actual load of the combined draft layer as 834 MiB; one full restore took about 3.57–3.72 s from owned RAM (~211–220 MiB/s file/read report). Thus each extra successful qualifying segment can add a 707.8 MB expert restore (plus detach/graph lifecycle); that measured one-load timing is an extra component, not a per-16K measured bound. The returned MTP state and target/draft KVs must remain coherent. For n=16K itself, existing `Prefill::run` short-prompt guard chooses `run_impl`, so a period <= chunk or a final short segment may not detach MTP experts and may lose layer-major reuse; the 32/64/256 table assumes each full 16K segment remains on the long layer-major path.
+
+Borrowed-cache refill/re-lend and per-segment residual allocation/admission also repeat under segmentation. R594/R599 establish that cache-tail borrowing is live and Prefill's accounted 1,662,831,872 B is not measured reclaim; there is no receipt measuring the incremental bytes/time per 16K refill or allocation. I do not assign a time or bandwidth to them.
+
+## Per-layer capture transfer floor and break-even
+
+A complete checkpoint's GDN payload is 117,669,888 B. Dividing by the measured 256 MiB D2H bulk median for ordinary host (5.0467 GB/s) gives **23.32 ms per checkpoint**; using Host-USM D2H (5.6624 GB/s) gives 20.78 ms. Those are lower-bound-style transfer arithmetic for a large burst, not measured checkpoint copy latencies. QSA/PLE/IDs add under 0.5 MiB at 16K and about 1.4 MiB at 256K. Expected total GDN-only device-to-host payload for 2/4/16 candidate boundaries is 0.235/0.470/1.882 GB; at the bulk D2H medians the corresponding floor is 46.6/93.2/372.8 ms (ordinary host), versus 41.6/83.2/332.6 ms (Host-USM).
+
+Break-even at 16K is consequently wide: if per-layer capture costs less than even the *minimum* extra expert upload (about 22.4 seconds at the measured bulk rate for each extra pass, before MTP reload/refill), it saves wall time in that simplified transfer-only comparison. Yet a realistic capture path has 36 layer-local operations per checkpoint, copy queue/event overhead, pending builder memory, caller publication, and could affect layer-major scheduling. Existing `conversation_checkpoint_save` instead issues one whole-buffer GDN copy and synchronizes; its exact receipt timing is unavailable. Therefore no implementation performance estimate is claimed. A one-pass per-layer capture remains worth a tightly scoped prototype after the active official Direct0/1 arms close, because its static payload floor is orders of magnitude below replaying 50.29 GB per checkpoint; it should start as a host-only control/candidate with exact state fingerprints and matched prompt timings.
+
+## Correctness gaps and required gates
+
+Current checkpoint validation (`conversation_checkpoint_validate`) establishes sizes, geometry targets, image keys and prefix IDs. It has no state-position stamp, layer completion mask, checkpoint generation, source run identity, QSA pooled-row completeness, or proof that GDN/PLE/QSA came from the same prefix. `checkpoint_at` copies whatever state is live and marks it used; a successful copy is not a numerical proof. The R608/R609 source review likewise does not establish RESTORE correctness or full physical 256K behavior.
+
+A candidate capture record should be invalid until it has: exact prefix token/image identity; all 36 GDN layer slices stamped with the same absolute end and run generation; all 12 QSA tail/dead/block-position slices at that end; PLE history plus derived `ple_prev`; final-layer callback and MTP prompt KV through that same end; successful prompt loan refill/residency publication; completed copy operations; then ordinary `checkpoint_validate` plus a dedicated completeness check. Cancellation/error/fault before commit discards it. A completed earlier candidate can survive a later cancelled segment; incomplete partial capture can never enter `checks` or LIVE.
+
+Required comparison is not the proposal's CPU boundary fixture alone: fresh-process matched actual same-binary cases with periodic off/control and candidate capture, cache/re-read RESTORE of exact IDs at 32K and 64K, then real 256K physical max-context with host-backed/streamed QSA KV. Verify per-layer GDN hashes/values, PLE history/prev, QSA tail/dead/block positions and reconstructed pooled row, actual IDs/images, target KV positions, MTP draft KV and offered/accepted draft counters, first logits and ordinary generated IDs/body. Include cancellation at a layer mid-boundary, just-after complete boundary, copy failure and slot-refill failure; faulted copies must not be reported as cancellation or published. Build and diagnostics are Main-owned and serialized after active official benchmarks close.
+
+## Decision
+
+Do not pursue repeated 16K caller segmentation for an optimization whose goal is 1000 prefill t/s. It is a viable conservative safety fallback only if its severe repeated full-model expert pass is explicitly accepted, which is outside the stated performance goal. The one-pass per-layer-prefix capture design is worth a future bounded prototype: its transfer volume is modest and it preserves layer-major expert reuse, but it needs a new per-layer callback and a partial-owner builder contract, plus full state/MTP/RESTORE validation. Keep both designs unqualified until measured. No source or proposal has been edited by this report.
+
+## Provenance
+
+- Local model bytes/formats and transfer samples: `bench/results/2026-10-14-primary-transfer-ceiling/{RESULTS.md,results.json}`; primary experiment setup and limitations are stated there.
+- Large residual transfer semantics and prior caution: `bench/results/2026-10-15-pr6-recovery-audit/research-host-residual-transfer-round577-v1.txt`.
+- Earlier scope/correctness review: `research-decode-cache-prefill-release-round574-v1.txt`, `research-decode-cache-profile-round584-v1.txt`, `research-phase-vram-cache-round594-v1.txt`, `research-prefill-scratch-retire-round599-v1.txt`, `research-int8-attention-tiling-round605-v1.txt`, `research-agent-cache-settings-round608-v1.txt`.
+- Candidate semantics and source changes reviewed: `layer-major-checkpoint-coherence-v1/implementation.ja.md` and `source.diff`; candidate remains proposal only.
+- No external citation was needed: the numerical claims above are tied to pinned local source and retained primary measurements; no unverified third-party implementation claim is used.

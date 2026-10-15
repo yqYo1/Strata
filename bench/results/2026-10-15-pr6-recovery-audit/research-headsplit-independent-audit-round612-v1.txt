@@ -1,0 +1,103 @@
+# Round 612 — independent source audit of INT8 prompt head split v2
+
+2026-10-15 JST. Read-only source and artifact audit. Read `AGENTS.md`,
+`docs/ARTIFACT_RETENTION.md`, and the primary routed-FP16 research index first;
+then read the PR6 recovery index/R605 report, v1 Main review, v2 source,
+diff, design and probe files. No build, test, device, service, profiler, Git
+write, cleanup, or process operation was run. The only write is this report.
+
+## Finding
+
+I found no source-level work-group divergence, row-stride, padding-store, or
+online-softmax rescale defect in `int8-prompt-head-split-v2`. Independent review
+agrees with the v1/v2 source-design conclusion, with one additional fixture
+coverage gap: the current 28-case set tests logical ID 262143 at capacity
+262144, but its active width is only 65. It therefore does not execute the
+candidate's final 256K-count chunk or test the corresponding high `c0`/batch
+offset under device execution. The mapped row is valid in its five-page toy
+pool; this is not a full physical 256K KV pool, nor a full-count traversal.
+
+Before describing the component as safe at a full 256K selected-cell count,
+add one bounded terminal-count case: `cap=steps.width=262144`, `nq=1` (or 3 for
+large-cap batch stride), negative IDs for all but a small set of valid cells,
+and a valid terminal ID 262143 mapped to an allocated physical page. This
+exercises every chunk and the final offset without allocating 256K physical
+pages. Label it a full-count/index test only. A claim about full physical-pool
+residency still requires a separately budgeted fixture with the actual
+physical-page extent. No additional fixture is needed to reason about the
+kernel's current signed-offset arithmetic before the first bounded device
+sanity run; retain these limits in the result.
+
+## Kernel invariants checked
+
+- `launch_mode1_head_split<32/64>` is selected only in Mode 1, with Direct
+  exactly `"1"` and split exactly `"32"` or `"64"`. Other mode, false-Direct,
+  invalid selector, and unset selector fall through to existing launchers.
+  The old launcher body remains present in the proposal.
+- Linear group decode is `tile=index%2`, `kv=(index/2)%n_head_kv`,
+  `batch=index/(2*n_head_kv)`. Each tile uses local rows 0..7; tile 1 writes
+  only its four live rows. The output expression retains external `n_head=24`
+  and per-KV stride 12. Local row count 8 does not leak into the external
+  stride. The 8+4 mapping covers all 24 heads exactly once for each output
+  dimension.
+- All four subgroups are size 16 and participate in all group barriers. QK's
+  `subgroup < Cells/16` predicate is subgroup-uniform: CH32 assigns SG0/1 to
+  the two cell bands while SG2/3 skip only the QK collective; CH64 assigns
+  all four. Joint-matrix calls are not guarded by per-lane head validity.
+  Each subgroup owns one PV 64-dimension band. Padded rows have zero Q, zero
+  scores/probabilities and no final global store.
+- Both work-groups recompute the max absolute value across the same 12x256 Q
+  values, then use the same frexp/clamp/ldexp scale formula. Candidate Q
+  loading preserves per-dimension hi/lo decomposition for each live row;
+  tile 1's four padded rows are zero. For finite inputs, max reduction order
+  does not change the maximum value. NaN/Inf behavior and actual compiler
+  lowering remain outside this source-only conclusion.
+- CH32 preserves scale-group order, K-dimension order, hi-MAD then lo-MAD,
+  score accumulation, cell-order softmax, FMA rescale, V-factor computation,
+  P hi/lo conversion, PV MAD order, alpha rescale and normalization in the
+  old body. Thus bitwise parity is a reasonable required test, not a proven
+  result. CH64 changes softmax/factor/PV chunk boundaries and requires both
+  its fixed tolerance comparison and the independent oracle; it cannot claim
+  bitwise parity.
+- `count` remains the existing checked `int` bounded by `cap`; the candidate
+  alone uses `int64_t c0`, `c0+tid`, and size_t selection offsets. For the
+  public cap ceiling `INT_MAX`, the loop increment cannot overflow signed
+  int64. At 262144, valid IDs and page offsets fit signed int. Negative IDs
+  avoid page-table access, missing pages produce zero K/V/scales, count zero
+  writes zero output, and tail slots are masked before reading IDs. The API
+  still has no page-table-length or physical-pool-length argument; as in the
+  old kernel, callers must provide valid table entries and backing pools for
+  every nonnegative ID.
+- Packed local-accessor arithmetic is consistent with the proposal: 31,088 B
+  for CH32 and 53,872 B for CH64, without alignment/spill/compiler overhead.
+  Existing admission still requires max work-group size 128 and mode-1 local
+  memory threshold 60,880 B, which is conservative relative to these logical
+  sums but proves neither actual allocation nor kernel launch admission.
+
+## Probe coverage and remaining evidence
+
+The v2 probe has 28 deterministic INT8 cases: sparse/dense tails at
+0, 1, 31, 32, 33, 63, 64, 65 and 2051; all-missing pages; zero scales; a high
+logical ID with large capacity; both large-Q tile orientations; subnormal Q
+and FP16 scales; zero Q; and negative/over-cap step widths. It checks all
+output elements, guards and input immutability. Its scalar FP64 oracle decodes
+the stored INT8 codes and FP16 scales and independently computes QK, stable
+softmax and PV; the comparator requires same input fingerprints and oracle
+bytes, CH32 all-output bitwise equality, and CH64 all-output tolerance.
+Those are meaningful proposed gates, not executed evidence.
+
+The high-ID case is `Input(1,3,65,...,cap=262144)` with ID 262143 mapped to
+physical page 2 in a five-page pool. This checks page-table index 65535,
+large `batch*cap` selection offsets for three batches, and a high logical
+address into an allocated small pool. The count remains 65, so `c0` never
+approaches the last full-context chunk. Full physical-page extent, a 262144
+active-count run, RESTORE, model quality, and runtime/kernel-name/resource
+observation remain unproven. The probe's synthetic oracle, `host_contracts`
+ownership enumeration and expected dispatch route also do not establish that
+the compiler accepted the kernel or that the device selected this kernel.
+
+The v2 process environment is immutable after exec in the probe design. The
+serial controller remains outside this kernel audit; per task direction, its
+previously identified post-reap process-group retirement approach is not
+re-reviewed or recommended for execution here. Main must use its approved
+owner adapter and own all build/device gates.

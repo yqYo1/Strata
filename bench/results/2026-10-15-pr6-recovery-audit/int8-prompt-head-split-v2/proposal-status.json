@@ -1,0 +1,90 @@
+{
+  "schema": "head-split-proposal-status-v2",
+  "date_jst": "2026-10-15",
+  "status": "UNAPPLIED_UNBUILT_UNTESTED_UNEXECUTED_GPU_UNQUALIFIED",
+  "write_root": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/int8-prompt-head-split-v2",
+  "v1_original_preserved": true,
+  "product_cmake_existing_fixture_binary_changed": false,
+  "build_test_gpu_server_profiler_git_cleanup_run": false,
+  "controller_comparator_help_or_syntax_checks_run": false,
+  "operations_performed": [
+    "Read source and previous proposal",
+    "Author new v2 text/source snapshots only",
+    "Generate SHA256 receipts"
+  ],
+  "kernel": {
+    "origin": "v1 fork-derived kernel proposal",
+    "source_diff_sha256": "6eeb412b4d6c918ec25a34fc5048d55389b287b6f1f146f96cce3b1e6351b365",
+    "v1_source_diff_sha256": "6eeb412b4d6c918ec25a34fc5048d55389b287b6f1f146f96cce3b1e6351b365",
+    "snapshot_sha256": "0016fe8934c0e10d5ca0aa58a9e27818bf9f7efb9e270b09d86fc8e19c93c181",
+    "v1_snapshot_sha256": "0016fe8934c0e10d5ca0aa58a9e27818bf9f7efb9e270b09d86fc8e19c93c181",
+    "old_launcher_changed": false,
+    "mode": 1,
+    "direct_exact": "1",
+    "split_values_exact": [
+      "32",
+      "64"
+    ],
+    "ch32_bitwise": "REQUIRED_BUT_UNPROVEN",
+    "ch64_abs_rel_tolerance": 1e-05,
+    "packed_local_bytes": {
+      "32": 31088,
+      "64": 53872
+    },
+    "dynamic_slm_measured": false,
+    "legacy_INT_MAX_loop_issue": "Separate issue; existing body preserved; does not arise at cap262144"
+  },
+  "probe": {
+    "one_process_one_arm": true,
+    "process_environment_writers": false,
+    "pre_runtime_route_validation": "Read-only exact expected exec environment",
+    "deterministic_full_cases": 28,
+    "isolation_pairs": 23,
+    "isolation_native_processes": 46,
+    "all_f32_outputs_and_guards_captured": true,
+    "all_f64_references_captured": true,
+    "all_input_array_sha256": true,
+    "capture_default_bytes": 8388608,
+    "capture_hard_max_bytes": 16777216,
+    "overwrite_allowed": false,
+    "actual_captures_created": false
+  },
+  "comparison": {
+    "separate_process": true,
+    "normal_exit_retirement_and_fresh_fault_receipts_required": true,
+    "same_source_binary_fixture_and_inputs_required": true,
+    "all_values_oracle": true,
+    "ch32_bitwise": true,
+    "ch64_abs_rel": 1e-05,
+    "missing_declined_incomplete": "FAIL_CLOSED",
+    "existing_environment_switch_test_planned": false
+  },
+  "controller": {
+    "source_only": true,
+    "executed": false,
+    "existing_shared_lock_required": true,
+    "freeze_requires_both_clean_direct0_direct1_same92acf71e_binary": true,
+    "all_benchmark_owners_retired_required": true,
+    "mutates_parent_os_environ": false,
+    "child_route_set_only_at_exec": true,
+    "main_readonly_fault_adapter_required": true,
+    "fault_adapter_implemented_here": false,
+    "whole_deadline_seconds": 21600,
+    "whole_byte_budget": 67108864
+  },
+  "limits": {
+    "observed_route_proved": false,
+    "runtime_fault_gate_run": false,
+    "model_measurement_run": false,
+    "model_minimum_actual_input_required": 32768,
+    "physical_256k_proved": false,
+    "restore_proved": false,
+    "source_build_binary_frozen_until_both_benchmark_arms_close": true
+  },
+  "retention": {
+    "consumer": "Main v2 source/controller/comparator review and first serial validation",
+    "full_array_consumer": "Future exact offline pair comparison and first numerical-failure investigation",
+    "review_point": "After comparisons and required diagnostic decisions; preserve last unresolved fixture",
+    "deletions": []
+  }
+}
