@@ -143,3 +143,22 @@ run閉鎖後、`retire_qsa_clean_dense_component_logs_v1.py`をlock下で実行�
 component7 armの不要trace/journal/protocol/外部duplicate recordを115 files・4255867 B削除した。
 元FAIL/PASS receiptは不変、全UR entry/return成功件数等をcompact化し、path/hash/reason manifestを保存。
 現在のmodel raw/native診断・source/build/modelは削除していない。
+
+## 同nativeのGPU hidden prefix比較・閉鎖
+
+後続`native-dense-bank-gpu32768-v1.json`も正常終了した。同native・同78453入力・
+FP32演算のままGPU hiddenを0行から32768行（1342177280 B）へ変更した。
+実admissionはresidual total3213393920 B、GPU1342177280 B、host1871216640 B、staging0。
+48activation後Full復元、24生成、native/server0、全owner退去、新規fault0、dumpなし。
+`native-dense-bank-gpu-rows-comparison-v1.json`は両run閉鎖後にMainが実行してPASS。
+選択16行×48層のFP32値は全byte一致・有限で、各runの752 store/input行も一致した。
+診断PPはGPU0の240.2に対し32768行の251.8 tok/s。各一標本・instrumentedのため速度採用しない。
+
+比較後、GPU0 rawのconsumerが閉じたためretire v1を実行したが、JSON roundtrip時に
+tupleとlistを比較したMain cleanupの誤りで、unlink前に失敗した。削除0の元FAILを別receiptに保存した。
+v2でlistに統一し、compactを検証してから13 files・32267018 Bを削除した。
+`native-dense-gpu0-model-{compact,retention}-v{1,2}.json`に経緯・path/hash/reasonを記録し、
+元model/comparison receiptは不変。GPU32768の31,457,280 B rawは残した。
+その次の明示consumerは既存attention Direct0/1の比較で、paired raw予算64 MiB。
+`run_native_dense_bank_direct1_v1.py`は準備済みだが、この境界では未実行。
+新kernel/16bit計算/clean速度/物理262144/RESTOREの合格を加えたものではない。

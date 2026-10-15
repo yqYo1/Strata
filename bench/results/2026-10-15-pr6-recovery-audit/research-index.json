@@ -1211,6 +1211,30 @@
       "sha256": "2e46569756cbe09bef11d097875bb002edac4c424ec89ef92c1ddef06a68c991",
       "main_review": "native-dense-phase-main-review.ja.md",
       "status": "FINAL/Main report and source review complete; no concrete source defect under exclusive-reader contract, actual generator/driver gates unqualified."
+    },
+    {
+      "round": 710,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-canonical-capture-owner-round710-v1.txt",
+      "sha256": "9208935587c3b1f7aed6d0e763ee6d1dd8b6d2ea5e75f23d32c35617c791d998",
+      "status": "FINAL Main read: definite illegal startup statements inside GpuStage; canonical proposal not compile-ready and MUST NOT apply. No runtime qualification."
+    },
+    {
+      "round": 711,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-capacity-arithmetic-round711-v1.txt",
+      "sha256": "d76c749c4d90e7db7009dea315c3b94018d389c16538a670362a4bc68c9d1612",
+      "status": "Main independent live-header/48-layer and16-condition recomputation agrees. Current headline arithmetic valid under explicit hypothetical owners/reserves; no new GPU run."
+    },
+    {
+      "round": 712,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-capacity-workspace-round712-v1.txt",
+      "sha256": "40ede4d71ce5db4741594636662cc395951bf081172d9fedd40e3ebc5bf9cedb",
+      "status": "Main source review accepted: component allocation is not simultaneous residency proof. Explicit norm/non-layer HC/PLE owner and lifetime constraints added to current capacity report."
     }
   ],
   "main_initial_findings": [
@@ -1996,21 +2020,27 @@
     "model_observed_bank_free_delta_bytes": 1840709632,
     "model_selected_raw_SHA256_matches_old_FP32_reference": true,
     "next_gpu_recipe": "run_native_dense_bank_gpu32768_v1.py",
-    "next_gpu_state": "PREPARED_SAME_NATIVE_FP32_GPU32768_ROWS"
+    "next_gpu_state": "CLOSED_PASS_SAME_NATIVE_FP32_GPU32768_ROWS",
+    "GPU32768_receipt": "native-dense-bank-gpu32768-v1.json",
+    "GPU_rows_comparison": "native-dense-bank-gpu-rows-comparison-v1.json",
+    "prepared_next_recipe": "run_native_dense_bank_direct1_v1.py",
+    "prepared_next_state": "NOT_RUN_DIRECT1_SAME_NATIVE_GPU32768"
   },
   "prefill_capacity_current": {
     "report": "prefill-capacity-current.ja.md",
     "byte_budget": "prefill-capacity-alias-delta-v1.json",
     "partial_FP16_host_recipe": "measure_prefill_capacity_fp16_admission_v1.py",
     "state": "Hypothetical active-layer bank. Actual production planner host gate48cases PASS including alias OFF/ON and runtime512MiB/1GiB. Partial hidden counts include one-chunk conversion stage and chunk rounding. No full-model physical admission or numeric quality qualification.",
-    "partial_FP16_host_receipt": "prefill-capacity-fp16-admission-v1.json"
+    "partial_FP16_host_receipt": "prefill-capacity-fp16-admission-v1.json",
+    "current_reconfirmation": "2026-10-15T13:59Z: live2GGUFheaders,300native tensors,48layers,16arithmetic conditions verified by Main; independent R711/R712 reviewed. No new GPU/build.",
+    "owner_limits": "Ideal combined reusable layer bank, individual next-layer norm and deferred output owners. Persistent allnorm+outputHC exceeds16MiB; actual proposed persistent PLE/HC pool requires its own budget."
   },
   "prefill_canonical_bank": {
     "research": "research-canonical-layer-bank-round707-v1.txt",
     "main_corrections": "main-review-round707.ja.md",
     "implementation": "prefill-canonical-dense-bank-v1",
     "model": "gpt-6.1-sol",
-    "state": "Source-only implementation in progress, immutablebase1025e0ed; actualroot untouched bySol. Currentnative-only bank does not implement combinedcanonical/expert hypothesis."
+    "state": "Source-only proposal FINAL; R710 found deterministic C++ startup statements inserted at GpuStage class scope. Unapplied/uncompiled; correction required before qualification."
   },
   "physical_context_consume": {
     "proposal": "physical-context-consume-v3",
@@ -2023,6 +2053,13 @@
     "compact": "qsa-clean-dense-component-log-compact-v1.json",
     "retired_files": 115,
     "removed_bytes": 4255867,
-    "model_raw_consumer": "Same-native FP32GPU0 vs32768 selected-row comparison, paired64MiB cap; NativeDense model baseline capture retained."
+    "model_raw_consumer": "GPU0 raw retired after all768-row comparison PASS; GPU32768 raw retained for prepared Direct0/1 comparison, paired64MiB cap."
+  },
+  "retention_v10": {
+    "original_failed_manifest": "native-dense-gpu0-model-retention-v1.json",
+    "corrected_manifest": "native-dense-gpu0-model-retention-v2.json",
+    "compact": "native-dense-gpu0-model-compact-v2.json",
+    "removed_files": 13,
+    "removed_bytes": 32267018
   }
 }

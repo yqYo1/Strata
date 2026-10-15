@@ -92,3 +92,32 @@ K8V4も現在のlayer-major経路は拒否するため、容量のみの仮定�
 有限値、選択行の最大絶対値41.56731414794922、FP16最大有限値65504超は0要素だった。
 `qsa-device-batch-model-comparison-v1.json`に層別値とcapture hashを残した。
 選択行のレンジ観測であり、FP16へ変換した品質や全256K行のレンジは検証していない。
+
+## 依頼に対する再確認（2026-10-15 13:59 UTC）
+
+Mainがexclusive measurement lock下で実GGUF二shardのheader hash、file size/mtime、
+pack/native index hashを再確認し、実headerから300 native tensorと全48層のbytesを再集計した。
+最大layer47と上の1440161792 Bが一致した。新しいGPU推論・大量確保は行っていない。
+既存GPU allocation receiptの正常閉鎖・新規faultなしと参照hash chainも確認した。
+現在のproduction planner headerは既合格48ケースのsource pinと一致し、16条件の
+context上限・partial hidden・staging・次page/次chunk超過をMainも独立再計算して一致した。
+
+GPU総量は十進で10.6661 GB、最大レイヤーは1.4402 GB。
+本文と表は一貫してGiB（2^30 B）を使う。
+重みとworkspaceだけの和は4Kで2.4836 GiB、8Kで3.4941 GiB。
+全12層の256K KVを残す主表と、処理中の一層だけKV/indexerを置く別案は混同しない。
+
+読み取り専用Luna R711は容量式・partial staging・reserve感度を独立に再計算し、
+現在の主表に明白な算術欠陥を見つけなかった。R712はsource/実測の範囲を監査した。
+次層lookahead norm 40960 Bは小owner予算から明示確保する必要がある。
+全48層normを恒久保持する場合の追加3850240 Bとnon-layer HC出力tensor13148160 Bを
+両方16 MiBに押し込むことはできない（合計16998400 B）。
+主表を実装するには、一層先normを個別に読む、最終出力tensorは出力段階で読む等の
+生存期間を定めて予算内に収める必要がある。
+PLEのcanonical借用pointerもfull arenaを解放する前にprivate bindingへ切り替える。
+別提案の常駐PLE/HC poolを採用するときは、その実owner bytesで再計算し、
+この理想配置の6.8244 GiBをそのまま使わない。
+
+レビュー原本は`research-capacity-arithmetic-round711-v1.txt`と
+`research-capacity-workspace-round712-v1.txt`。容量試算の確認であり、
+現在の実装でこの配置が動作・同時確保できるという合格には変更しない。
