@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Main-owned CPU normal/sanitized fixtures; never applies product patches."""
+import argparse
 import fcntl
 import json
 from pathlib import Path
@@ -8,12 +9,16 @@ import sys
 HERE = Path(__file__).resolve().parent
 PROJECT = HERE.parents[2]
 BASE = Path('/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007')
-ROOT = BASE / 'main-iq-checkpoint-cpu-contracts-root-v1'
 sys.path.insert(0, str(HERE / 'owned-stall-stack-probe-v1'))
 from owned_stack_probe import load_owner, require, sha
 
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--checkpoint-recheck', action='store_true')
+    args = parser.parse_args()
+    suffix = 'v2' if args.checkpoint_recheck else 'v1'
+    ROOT = BASE / ('main-iq-checkpoint-cpu-contracts-root-' + suffix)
     module = load_owner(PROJECT / 'bench/results/2026-10-14-niko-main-service-port/direct_owner.py')
     with (BASE / 'owned-v0141-measurement.lock').open('a') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
@@ -37,6 +42,20 @@ def main():
                       GPU_executed=False, product_applied=False, commands=[], source_pins=pins,
                       recipe_sha256=sha(Path(__file__)), closed_diagnostic_sha256=sha(HERE / 'owned-prefill-stall-model-v1.json'),
                       qualification='Host candidate arithmetic/state contracts only. No SYCL compile/device/model/RESTORE/physical256K/performance proof.')
+        if args.checkpoint_recheck:
+            previous_path = HERE / 'candidate-cpu-contracts-v1.json'
+            previous = json.loads(previous_path.read_text())
+            require(not previous['active'] and not previous['passed'], 'original failed CPU run must remain terminal')
+            require('unused-function' in previous.get('error', ''), 'unexpected original failure')
+            for label in ('iq-normal-build', 'iq-normal-run', 'iq-asan-build', 'iq-asan-run'):
+                commands = [c for c in previous['commands'] if c['label'] == label]
+                require(len(commands) == 1 and module.closed(commands[0]) and commands[0]['exit_code'] == 0,
+                        'previous IQ result not closed/pass')
+            require(all(sha(PROJECT / n) == h for n, h in previous['source_pins'].items()
+                        if n != str((ck / 'cpu_contract_fixture.cpp').relative_to(PROJECT))), 'unreviewed source changed')
+            record['original_failure_sha256'] = sha(previous_path)
+            record['reused_IQ_normal_and_ASan_results'] = 'candidate-cpu-contracts-v1.json; not rerun'
+            record['main_fixture_fix'] = 'Remove unused read_tag helper; all comparisons/assertions retained, Werror retained.'
 
         def persist():
             (ROOT / 'record.json').write_text(json.dumps(record, indent=2) + '\n')
@@ -51,6 +70,8 @@ def main():
                 ('iq', iq, 'cpu_fixture.cpp', [iq / 'proposed/include', PROJECT / 'include']),
                 ('checkpoint', ck, 'cpu_contract_fixture.cpp', [ck / 'fixture_stubs', ck / 'proposed/include', PROJECT / 'include']),
             ):
+                if args.checkpoint_recheck and name == 'iq':
+                    continue
                 for variant in ('normal', 'asan'):
                     exe = ROOT / (name + '-' + variant)
                     mode = ['-O2'] if variant == 'normal' else ['-O1', '-g', '-fsanitize=address,undefined', '-fno-omit-frame-pointer']
@@ -74,7 +95,7 @@ def main():
         finally:
             record.update(active=owner.active is not None, finished_utc=module.utc())
             persist()
-            (HERE / 'candidate-cpu-contracts-v1.json').write_text(json.dumps(record, indent=2) + '\n')
+            (HERE / ('candidate-cpu-contracts-' + suffix + '.json')).write_text(json.dumps(record, indent=2) + '\n')
         print(json.dumps(dict(passed=record['passed'], GPU_executed=False, product_applied=False)), flush=True)
 
 

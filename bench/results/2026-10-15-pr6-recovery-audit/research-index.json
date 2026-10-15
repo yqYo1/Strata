@@ -492,7 +492,7 @@
     "main_review": "qsa-layout-recovery-v1/main-review.ja.md",
     "status": "Build/host and20GPU parity/oracle cases PASS/fault0. Component40sample screen closedPASS; layout1 median4.09%slower in one int8case, no adoption. No whole-model/full256K/RESTORE/quality qualification."
   },
-  "latest_main_review": "decode-format-service.ja.md",
+  "latest_main_review": "iq-dequant-correctness.ja.md",
   "component_summary": "qsa-layout-screen-summary.json",
   "gemm_orientation_probe": {
     "report": "gemm-orientation-probe-v1/implementation.txt",
@@ -744,17 +744,17 @@
     {
       "directory": "layerwise-checkpoint-capture-v2",
       "model": "gpt-6.1-sol",
-      "state": "SolFINAL received; Main review/CPU actualheader fixture pending. Productunapplied. OriginalDirectpairfailed, independentdiagnosis first; no optimizationGPUexecution."
+      "state": "Main v2 actualheader normal+ASan hostfixture PASS after removingunusedtesthelper; originalcompilefailure preserved. No productapply/device/modelRESTORE/physical256K qualification."
     },
     {
       "directory": "parallel-iq-dequant-v1",
       "model": "gpt-6.1-sol",
-      "state": "SolFINAL received; Main source/CPU exacthalf review pending. No productapply/build/runtime. OriginalDirectpairfailed; diagnosefirst."
+      "state": "CPU94,044,160elements normal+ASan exacthalfPASS; B57042quick+48fullcase OFF/ON fullbuffersPASS/fault0, actualcandidate18launchesON/0OFF. Productunapplied. Cleanresident dequant+GEMM timing proposal v2 authoring; no speedadoption."
     },
     {
       "directory": "owned-stall-stack-probe-v1",
       "model": "gpt-6.1-sol",
-      "state": "SolFINAL, Mainreview and CPUrealattach/detach/resume PASS; model protocol assembly pending, noGPUreproyet."
+      "state": "CLOSED: three exact32089-input/gen24 diagnostic requests all48layers PASS/fault0; precedingchat/agentomitted, originalfullsuitefailure unresolved. CPU explicit+automaticGDB gatesPASS. NoGPUhangclaim or speedadoption."
     }
   ],
   "kv_copy_groups": {
@@ -807,14 +807,21 @@
     "source_review": "agent-cache-source-review-v1.json",
     "main_review": "main-review-round608.ja.md",
     "research": "research-agent-cache-settings-round608-v1.txt",
-    "state": "Mixed-position mechanism sourceconfirmed. Callersegmentation fallback notadopted. Onepassv2FINAL awaitingMainreview; currentformalDirect0failedliveness unrelatedtocache0 no-op; diagnosisbeforeGPUcandidate tests.",
+    "state": "Main v2 actualheader normal+ASan hostfixture PASS after removingunusedtesthelper; originalcompilefailure preserved. No productapply/device/modelRESTORE/physical256K qualification.",
     "traffic_scenarios": "checkpoint-traffic-scenarios-v1.json"
   },
   "dequant_candidates": {
     "research": "research-prefill-gu-hotpath-round610-v1.txt",
     "main_review": "main-review-round609-610.ja.md",
     "coverage": "dequant-shape-coverage-v1.json",
-    "state": "Exacthalf6format SIMDproposal SolFINAL and Main+R617source review; normal/sanitizedCPUfixtures prepared but serialized after live model closes. No productapply or performanceadoption."
+    "state": "CPU94,044,160elements normal+ASan exacthalfPASS; B57042quick+48fullcase OFF/ON fullbuffersPASS/fault0, actualcandidate18launchesON/0OFF. Productunapplied. Cleanresident dequant+GEMM timing proposal v2 authoring; no speedadoption.",
+    "cpu": "candidate-cpu-contracts-v1.json",
+    "cpu_checkpoint_continuation": "candidate-cpu-contracts-v2.json",
+    "component_build": "parallel-iq-component-build-v1.json",
+    "quick": "parallel-iq-component-quick-v1.json",
+    "full": "parallel-iq-component-full-v1.json",
+    "actual_route": "iq-diagnostic-evidence-v1.json",
+    "review": "iq-dequant-correctness.ja.md"
   },
   "compiler_alternative": {
     "research": "research-compiler-matrix-runtime-round611-v1.txt",
@@ -825,9 +832,10 @@
     "proposal": "owned-stall-stack-probe-v1",
     "main_review": "owned-stack-main-review.ja.md",
     "host_gate": "owned-stack-host-preflight-v1.json",
-    "state": "CPU explicit and automatic silence capture/detach/resume PASS; new request after stall rejected. Mainowned3x32089 diagnostic currently LIVE session14941/native3609620, noautoretry. No source/binary change; no performanceclaim.",
+    "state": "CLOSED: three exact32089-input/gen24 diagnostic requests all48layers PASS/fault0; precedingchat/agentomitted, originalfullsuitefailure unresolved. CPU explicit+automaticGDB gatesPASS. NoGPUhangclaim or speedadoption.",
     "automatic_gate": "owned-prefill-stall-host-auto-v1.json",
-    "model_recipe": "check_owned_prefill_stall_v1.py"
+    "model_recipe": "check_owned_prefill_stall_v1.py",
+    "model_receipt": "owned-prefill-stall-model-v1.json"
   },
   "bench_failfast": {
     "state": "Applied defaultOFF opt-in --fail-fast-engine-error; Main7new+19existinghosttests PASS, GPU not executed. Future serial formal suites opt in. Originalfailedbaseline untouched.",
@@ -837,7 +845,8 @@
   },
   "packed_iq_xmx": {
     "v1": "packed-iq-xmx-probe-v1",
-    "state": "SolFINAL source, MainREJECTED beforeexecution: unconditional USMfree on uncertaincompletion. v2 correction authoring; no productapply/build/device execution.",
+    "state": "v1 MainREJECTED beforeexecution for unretiredUSMfree; v2FINAL correctsownership/stickyasync/metadata/compileradmission, Main source review pending completion. No build/device/speedclaim.",
     "review": "main-review-round615-618.ja.md"
-  }
+  },
+  "retention_v8": "iq-diagnostics-retention-v1.json"
 }

@@ -1,0 +1,203 @@
+{
+  "schema": "main-parallel-iq-component-build-v1",
+  "active": false,
+  "passed": true,
+  "complete": true,
+  "GPU_executed": false,
+  "product_applied": false,
+  "commands": [
+    {
+      "label": "build-standalone-iq",
+      "argv": [
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+        "-std=c++20",
+        "-O3",
+        "-DNDEBUG",
+        "-DSTRATA_ENABLE_SYCL=1",
+        "-fsycl",
+        "-fsycl-id-queries-range=size_t",
+        "-fno-fast-math",
+        "-ffp-contract=off",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-I/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/parallel-iq-dequant-v1/proposed/include",
+        "-I/home/yayoi/orca/workspaces/Strata/sycl/include",
+        "-I/home/yayoi/orca/workspaces/Strata/sycl/include/strata/sycl/compat",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/parallel-iq-dequant-v1/gpu_fixture.cpp",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/parallel-iq-dequant-v1/proposed/src/kernels/sycl/iq.cpp",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-native-build-root-v1/build/libstrata_kernels.a",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-native-build-root-v1/build/libstrata_core.a",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-native-build-root-v1/build/libstrata_sycl_runtime.a",
+        "-fsycl-allow-device-image-dependencies",
+        "-ldl",
+        "-lpthread",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-parallel-iq-component-build-root-v1/parallel_iq_fixture"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "CPLUS_INCLUDE_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include",
+        "OMP_NUM_THREADS": "1",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1"
+      },
+      "started_utc": "2026-10-15T03:03:58.367795+00:00",
+      "wall_seconds": 600,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 3662206,
+          "start_ticks": 38220248,
+          "sid": 3662206,
+          "pgid": 3662206
+        },
+        {
+          "pid": 3662221,
+          "start_ticks": 38220264,
+          "sid": 3662206,
+          "pgid": 3662206
+        },
+        {
+          "pid": 3662404,
+          "start_ticks": 38220625,
+          "sid": 3662206,
+          "pgid": 3662206
+        },
+        {
+          "pid": 3662667,
+          "start_ticks": 38221074,
+          "sid": 3662206,
+          "pgid": 3662206
+        },
+        {
+          "pid": 3662907,
+          "start_ticks": 38221484,
+          "sid": 3662206,
+          "pgid": 3662206
+        },
+        {
+          "pid": 3663160,
+          "start_ticks": 38221956,
+          "sid": 3662206,
+          "pgid": 3662206
+        },
+        {
+          "pid": 3663248,
+          "start_ticks": 38221969,
+          "sid": 3662206,
+          "pgid": 3662206
+        },
+        {
+          "pid": 3663664,
+          "start_ticks": 38222282,
+          "sid": 3662206,
+          "pgid": 3662206
+        },
+        {
+          "pid": 3663828,
+          "start_ticks": 38222577,
+          "sid": 3662206,
+          "pgid": 3662206
+        },
+        {
+          "pid": 3664440,
+          "start_ticks": 38223725,
+          "sid": 3662206,
+          "pgid": 3662206
+        },
+        {
+          "pid": 3664447,
+          "start_ticks": 38223728,
+          "sid": 3662206,
+          "pgid": 3662206
+        },
+        {
+          "pid": 3664451,
+          "start_ticks": 38223739,
+          "sid": 3662206,
+          "pgid": 3662206
+        },
+        {
+          "pid": 3664517,
+          "start_ticks": 38223818,
+          "sid": 3662206,
+          "pgid": 3662206
+        },
+        {
+          "pid": 3664526,
+          "start_ticks": 38223844,
+          "sid": 3662206,
+          "pgid": 3662206
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 382202.489410134,
+      "pid": 3662206,
+      "spawn_return_monotonic": 382202.491496205,
+      "direct_identity": {
+        "pid": 3662206,
+        "state": "R",
+        "ppid": 3661932,
+        "pgid": 3662206,
+        "sid": 3662206,
+        "start_ticks": 38220248,
+        "rss_bytes": 0
+      },
+      "peak_live_owned_identities": 3,
+      "peak_session_rss_bytes": 922112000,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-15T03:04:34.553698+00:00",
+      "elapsed_seconds": 36.18557323497953,
+      "logs": {
+        "build-standalone-iq.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "build-standalone-iq.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "environment": {
+    "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+    "HOME": "/home/yayoi",
+    "LANG": "C.UTF-8",
+    "LC_ALL": "C.UTF-8",
+    "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+    "CPLUS_INCLUDE_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include",
+    "OMP_NUM_THREADS": "1",
+    "MKLROOT": "/opt/intel/oneapi/mkl/2026.1"
+  },
+  "source_pins": {
+    "bench/results/2026-10-15-pr6-recovery-audit/parallel-iq-dequant-v1/gpu_fixture.cpp": "8c4533a2f7fb664d3dce8a53404aa528a4600d66e0b0818506f79919531953d1",
+    "bench/results/2026-10-15-pr6-recovery-audit/parallel-iq-dequant-v1/fixture_common.hpp": "9e33eab5a601631f8ea81846d87abe51495b30f7993a15eb3453045764713e7a",
+    "bench/results/2026-10-15-pr6-recovery-audit/parallel-iq-dequant-v1/proposed/src/kernels/sycl/iq.cpp": "726c041d5ad88b2483efee6aa05619f5ddfffd499359ee3aa1bee30441e18d41",
+    "bench/results/2026-10-15-pr6-recovery-audit/parallel-iq-dequant-v1/proposed/include/strata/sycl/iq_parallel_decode.hpp": "282f95240c9ce614df0d05f9944a52d8154be64a01ba5ff898f0248e860bc234"
+  },
+  "linked_archives": {
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-native-build-root-v1/build/libstrata_kernels.a": "6987dba27779ac868cbe4e26f2affaa74bd0f5f43da9a36d75bc9b38fd97084e",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-native-build-root-v1/build/libstrata_core.a": "5cf87ab01eb924ed0177687ddcf017d20ccd1b5adf2d59dafddc0f69fa5db168",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-native-build-root-v1/build/libstrata_sycl_runtime.a": "9de3c2ca7b026a9211589d21b458ad893a316b2a02fffa4ec954f4b2149a03c1"
+  },
+  "baseline_binary_sha256": "92acf71e6b4fd914f68c8cefcae7e03f170adf62b5e3b94cf31af747344183f7",
+  "compiler": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+  "compiler_sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb",
+  "recipe_sha256": "bc653212470d9d66427de57ebf5139d62e1e74a02a3bbeac5891d9b995efe6e5",
+  "host_fixture_sha256": "ccb4ca019b1e734a2da64b27fe1e71e0a65183a2de372fdf0508efec6805e7b9",
+  "scope": "Standalone actual candidate IQ public functions plus existing runtime/kernels; no engine source apply/rebuild or performance adoption.",
+  "binary": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-parallel-iq-component-build-root-v1/parallel_iq_fixture",
+  "binary_sha256": "053092aa2c627e30947e9a47ed40fb5f3d820b435582168f24b3c93b721f5013",
+  "finished_utc": "2026-10-15T03:04:34.662800+00:00"
+}

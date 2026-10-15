@@ -42,10 +42,6 @@ static Ids ids(int64_t n) {
     for (int64_t p=0;p<n;++p) out[size_t(p)] = token(p);
     return out;
 }
-static Tag read_tag(const std::vector<uint8_t>& v, size_t off=0) {
-    assert(off <= v.size() && sizeof(Tag) <= v.size()-off);
-    Tag out; std::memcpy(&out,v.data()+off,sizeof out); return out;
-}
 static void put_tag(std::vector<uint8_t>& v, size_t off, Tag value) {
     assert(off <= v.size() && sizeof(Tag) <= v.size()-off);
     std::memcpy(v.data()+off,&value,sizeof value);
