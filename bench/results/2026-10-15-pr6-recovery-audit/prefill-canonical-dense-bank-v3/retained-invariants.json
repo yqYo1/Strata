@@ -1,0 +1,49 @@
+{
+  "scope": "source preservation only; no runtime qualification",
+  "immutable_base": "5942f1853f006b0df45e15fd4f1c60bc37b7b3b3",
+  "generator_blocks": {
+    "struct GpuStage {": {
+      "base_sha256": "a2cc3c1354c0bac6bda2f1bd6d7b94d99385a64453ca0deb832cec280a37260a",
+      "proposed_sha256": "a2cc3c1354c0bac6bda2f1bd6d7b94d99385a64453ca0deb832cec280a37260a",
+      "byte_identical": true
+    },
+    "auto observe=": {
+      "base_sha256": "a57de4e2c083761074377c3f4b05b1311dfed521dfa8a4732d889ff99a070322",
+      "proposed_sha256": "a57de4e2c083761074377c3f4b05b1311dfed521dfa8a4732d889ff99a070322",
+      "byte_identical": true
+    },
+    "bool run_prompt_with_mtp_experts(": {
+      "base_sha256": "4ab72437932279248c42c76612dce7ad508836f23e7e870eb1829c56674bb267",
+      "proposed_sha256": "4ab72437932279248c42c76612dce7ad508836f23e7e870eb1829c56674bb267",
+      "byte_identical": true
+    }
+  },
+  "untouched_files": {
+    "src/core/expert_source.cpp": "fac2d982477f1ba76f202ef8aa0cf88b76b8de41c449e362f7405ddfa4151f2a",
+    "include/strata/core/expert_source.hpp": "cf1462b078e8b373507acd7b2097c67f83438cb25a94e68da95530d0bebc15f2",
+    "src/kernels/cpu/pool.cpp": "ff9287b125a9830fcbad823af99534a5e1c2fbba489c6a2f8d6d6173ae8042e0",
+    "include/strata/kernels/cpu/pool.hpp": "177897a23a38f78f51545bc50a056d3cd8feb03c0b594a0026e66fab92cec07a",
+    "src/core/mtp.cpp": "04cb9d86e2861877263dd2177fce893bd0dd7b17c045594292ee6d6625d09c1f",
+    "include/strata/core/mtp.hpp": "397d8951d0e366efc003d6b080b641e2af0565d252227d48d239706700c310b2",
+    "include/strata/core/mtp_expert_source.hpp": "11b545fc4ce99c3f3fcf65b67dc7d4626a7538d2129373198624ab2f24b4be32",
+    "src/core/session.cpp": "4c1aa246e568f96b40b9f9e16000e1f1dc6d75c99168cb26baef56a43b4e4bce",
+    "include/strata/core/session.hpp": "b7f6e053fd3c4c454980f071ada8bbc4ad0fc92902d9009d9c8761aaaefcfbb9",
+    "src/kernels/sycl/native_mmvq.cpp": "09b34a547c57ef6fbe84c66f58b685096381f9d6a6ad9a3c74830da20a2152d2",
+    "src/kernels/sycl/native_mmq_xmx.cpp": "f5f69d0920c694fc84eb912ff282ae96770428a93887689fb4177ac4bfffdaef",
+    "include/strata/sycl/native_mmq.hpp": "756b2275ecfb6737857a127cd951ad478b7b4db2ce7f90ec99e01d64311f3c85",
+    "include/strata/core/native_dense_bank_policy.hpp": "c3e37260e0cc60bcacb65ec31e3aea08c285debd23fe9239b36fc8af542cb40f"
+  },
+  "requirements": [
+    "single NativeDensePhase reader lease",
+    "default-off and immutable child environment",
+    "exact converted host upload capture; no D2H; 3GiB canonical payload cap",
+    "3GiB native snapshot cap separately; aggregate max 6GiB payload",
+    "HC96/lookahead and all canonical PLE projections persistent",
+    "reserve both destinations before reader retirement and withdrawal",
+    "confirmed OOM-null rollback; unknown/contradictory status fail-stop",
+    "all SessionGraphs arrays retained and retired; canonical norm commit graph destroyed under exclusive lease",
+    "Full owner publications and all PLE rebindings before persistent-pool free and recapture",
+    "MTP/NativeEmbed/private resolver/short-input full layout preserved",
+    "current native-call exception fail-stop untouched"
+  ]
+}

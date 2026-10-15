@@ -62,3 +62,34 @@ Direct0の31,457,280 B rawは比較閉鎖後に退役し、Direct1だけを新na
 run_license_clean_prefill_model_v1.pyをMainが起動した。sourceはrun中固定、validation/logはexec前に設定する。
 このreport初版時点では実行中で、合格・速度・数値は未判定。閉鎖receiptと比較を次に記録する。
 目標prefill反復600超→1000、decode70は未達で、goalは継続する。
+
+
+## 新nativeの実行閉鎖と前後比較
+
+license-clean-prefill-model-v1.jsonは正常閉鎖した。実78453入力/reuse0/thinkingON/24生成、
+48activation→Full復元、native/server0、全owned process退去、新規fault0、dumpなし。
+比較recipeはsource変更をremoval v1/v2のexact hash chainに限定し、数値演算/MTP/sessionの
+source不変と同入力・設定を確認した。選択768 FP32行は撤去前のDirect1と全byte一致・有限、
+両runの752 store/input行も一致（license-clean-prefill-model-comparison-v1.json）。
+診断PPは303.2→293.8、各一標本。source撤去の速度効果やばらつき幅をこの二点から断定しない。
+clean独立反復とDirect0/1の部品別性能判定は未完了。
+
+閉鎖後にDirect0/Direct1/撤去後の成功trace・requestjournal・外部duplicate record等をcompact化・検証し、
+37 files / 33886835 Bを退役した。最新のFP32 selected raw31457280 Bだけを、
+同workloadのcanonical dense bank v3比較consumer向けに32 MiB予算で保持する。
+closed-direct-diagnostics-{compact,retention}-v1.jsonに証拠を保存した。元FAIL/PASSや個別速度は不変。
+
+canonical extension v3はcleanbase5942f185へ34hunkを再構成したsource-only提案として戻った。
+旧診断の復帰なし、TRACE/GpuStage/MTP helper保持hashを伴う。diffSHAは
+44ee495f93be0ca4e7f73f5cbed8d2c57cc86784f00f7539d92b6643d56a0282。
+Mainの全source/host/component/actualcaller qualification前であり、未適用・未compile・未採用。
+
+R721をMainがsourceへ照合した。FP16はphase-auditを外せば既存typed boundary auditを使える。
+保存/復帰の同run mechanicsとFP32対FP16の品質は別。BF16は未対応・parser拒否であり、
+boolean half auditをそのままBF16へ使わない。natural long FP16品質とdense NLLは未合格。
+R720の最小timer案はMainが却下した。現環境はlayer-major=1で、actualadmissionと全48層完了がある。
+layer_major.inc:69はSTRATA_PREFILL_TIMINGを明示rejectするので、「flag追加だけで現在routeを測れる」は誤り。
+この未実行案をprofile結果や実行可能recipeとして扱わない。元reportは保存し、訂正を別に記録する。
+
+R722の別訂正reportを受領した。実layer-major routeとTIMING拒否を認め、現在source/binary pinsを使う
+unitrace --device-timing集約を未実行の候補とした。全process集計をphase排他時間やcritical pathとは呼ばない。
