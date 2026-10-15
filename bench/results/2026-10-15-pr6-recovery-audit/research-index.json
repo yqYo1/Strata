@@ -1397,18 +1397,17 @@
   "retention_v5": "retention-v5-manifest.json",
   "parallel_research_current": {
     "rounds": [
-      705,
-      706
+      708,
+      709
     ],
     "model": "gpt-6-luna",
     "read_only": true,
     "prior_report_directory": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit",
-    "state": "705/706 both FINAL; Main reviewed sources/primary documentation and corrected R705 old/mixed capacity cases in main-review-round705-706.ja.md. No active researcher. Sol physical-context-consume-v2 source-only implementation active; Main exclusively owns all builds/tests/GPU.",
+    "state": "708/709 FINAL, Main read complete reports; no concrete new source defect found, runtime proof unqualified. Sol canonical-bank source-only implementation active against immutablecommit1025e0ed after Main corrected R707 largestdense and PLEowners. Main exclusively owns alltests/build/GPU.",
     "reports": [
-      "research-single-qsa-residency-round705-v1.txt",
-      "research-hidden16-quality-round706-v1.txt"
-    ],
-    "main_review": "main-review-round705-706.ja.md"
+      "research-consume-terminal-round708-v1.txt",
+      "research-consume-kv-observer-round709-v1.txt"
+    ]
   },
   "phase_audit": {
     "build": "phase-audit-build-v1.json",
@@ -1969,12 +1968,30 @@
     "main_review": "native-dense-phase-main-review.ja.md",
     "implementation_in_progress": "prefill-native-dense-phase-v2",
     "implementation_model": "gpt-6.1-sol",
-    "implementation_state": "6.1Sol FINAL caller-connected proposal, Main full diff/fixture and703/704 reviewed. Proposed host43cases PASS; original fake integer-handle compile FAIL preserved. Actual product unapplied, fullcaller SYCL compile/GPU/model not run, head-release1 excluded.",
+    "implementation_state": "Actual defaultOFF product applied and full120-step SYCL build PASS. First component FAIL was fixture native-pack loader omission, preserved; corrected real300-matrix/48-layer payload+metadata and five allocation-fault arms allPASS/fault0. Generator-only trace observer buildPASS archives unchanged. First actual78453-input model transaction active; no speed/fullmodel physical/RESTORE/quality adoption.",
     "implementation_diff_sha256": "03a385d0ef0b771d4aa89df18090fe7c602bd81eaa14c9bfa74a8e092f0caffd",
     "host_original": "native-dense-phase-host-v1.json",
     "host_corrected": "native-dense-phase-host-v2.json",
     "prepared_build_recipe": "apply_build_native_dense_phase_v1.py",
-    "build_receipt_when_closed": "native-dense-phase-build-v1.json"
+    "build_receipt_when_closed": "native-dense-phase-build-v1.json",
+    "builds": [
+      "native-dense-phase-build-v1.json",
+      "native-dense-phase-build-v2.json",
+      "native-dense-phase-build-v3.json"
+    ],
+    "component_original": "native-dense-bank-component-normal-v1.json",
+    "component_corrected": [
+      "native-dense-bank-component-normal-v2.json",
+      "native-dense-bank-component-oom-null-v2.json",
+      "native-dense-bank-component-unknown-null-v2.json",
+      "native-dense-bank-component-unknown-nonnull-v2.json",
+      "native-dense-bank-component-oom-nonnull-v2.json",
+      "native-dense-bank-component-success-null-v2.json"
+    ],
+    "model_recipe": "run_native_dense_bank_model_v1.py",
+    "model_state": "ACTIVE_78453_FP32_R_GPU0_HEAD0_QSA1",
+    "model_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-dense-bank-model-1-root-v1",
+    "model_receipt_when_closed": "native-dense-bank-model-1-v1.json"
   },
   "prefill_capacity_current": {
     "report": "prefill-capacity-current.ja.md",
@@ -1982,5 +1999,18 @@
     "partial_FP16_host_recipe": "measure_prefill_capacity_fp16_admission_v1.py",
     "state": "Hypothetical active-layer bank. Actual production planner host gate48cases PASS including alias OFF/ON and runtime512MiB/1GiB. Partial hidden counts include one-chunk conversion stage and chunk rounding. No full-model physical admission or numeric quality qualification.",
     "partial_FP16_host_receipt": "prefill-capacity-fp16-admission-v1.json"
+  },
+  "prefill_canonical_bank": {
+    "research": "research-canonical-layer-bank-round707-v1.txt",
+    "main_corrections": "main-review-round707.ja.md",
+    "implementation": "prefill-canonical-dense-bank-v1",
+    "model": "gpt-6.1-sol",
+    "state": "Source-only implementation in progress, immutablebase1025e0ed; actualroot untouched bySol. Currentnative-only bank does not implement combinedcanonical/expert hypothesis."
+  },
+  "physical_context_consume": {
+    "proposal": "physical-context-consume-v3",
+    "source_diff_sha256": "01de70c5abcd280a5e65124cdaecc985650a7060a8ff776dd04e9a11e6809d12",
+    "base": "Immutable native-bank-v2 source mirrors verified against reachable1025e0ed. Does not include later Main generator trace observations.",
+    "state": "Source-only, unapplied/uncompiled/unexecuted. V1 excludedstreamedKV; V2diff base race removedbank and MUSTNOTapply; V3preservesbank and addsactualKVmode1 observation. R708/R709 no concretesourcedefect; Main remaining fixture/checker/integration review pending."
   }
 }

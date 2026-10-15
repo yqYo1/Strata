@@ -56,12 +56,21 @@ static void metadata(WeightRef a, WeightRef b) {
 static void run(const std::string& pack, const std::vector<std::string>& shards, cudaStream_t queue) {
     uint64_t arena_bytes = 0;
     std::string err;
-    require(strata::core::WeightTable::pool_bytes(pack, arena_bytes, err), err);
+    // Match generate --native: metadata-only GGUF rows have no canonical
+    // payload to load. Keep their shape/provenance and let NativeDense serve
+    // every projection below; head/embedding are not used by this component.
+    std::set<std::string> skip;
+    require(NativeDense::served_names(shards, false, skip, err), err);
+    skip.insert("output.weight");
+    skip.insert("token_embd.weight");
+    require(NativeDense::keep_unquantized_ple_key(pack, skip, err), err);
+    require(strata::core::WeightTable::pool_bytes(pack, arena_bytes, err, &skip), err);
+    require(arena_bytes == 1538035200ULL, "actual target canonical arena census");
     void* arena = nullptr;
     gpu(cudaMalloc(&arena, arena_bytes));
     {
         strata::core::WeightTable table;
-        require(table.load(pack, arena, arena_bytes, err), err);
+        require(table.load(pack, arena, arena_bytes, err, &skip), err);
         // A bounded startup failure must not publish a single override.
         {
             NativeDense bounded;

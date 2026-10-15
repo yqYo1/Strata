@@ -1,8 +1,9 @@
 # NativeDense phase v2のMainレビューとhost検査
 
 現在のintegration状態: Mainが全6 QSA clean processと比較の正常終了後に実rootへ適用した。
-`apply_build_native_dense_phase_v1.py`が別buildで全ABI callerと二つのmanual GPU fixtureをcompile中。
-この段階ではcompile/link、実GPU payload、generator transaction、VRAM回収はまだ未合格。
+`apply_build_native_dense_phase_v1.py`の120 build stepsとactual generator compile/linkはPASS。
+実GPU componentの修正後6armもPASS。実generator transactionの長文検証は進行中で、
+実モデルのVRAM回収、数値・RESTORE・物理262144・速度はまだ未合格。
 以下の「未適用」は初回レビュー時点の記録。defaultOFF、head-release併用拒否は維持する。
 
 2026-10-15。Solのcaller接続済みproposalは`prefill-native-dense-phase-v2`。
@@ -83,3 +84,44 @@ Solが古いproduction由来mirrorを編集する間にMainが上記bankを適�
 v2のdiffはbankのclass/関数/caller/declarationを削除する内容だった。Mainは適用していない。
 元v2はそのまま保存し、immutable bank-v2 proposalをbaseにした統合v3を別dirで依頼した。
 以降、source proposalのbaseはmutable worktreeでなく、reachable commitまたは固定hashのmirrorを指定する。
+
+## 実GPU componentとfixture設定修正
+
+初回`native-dense-bank-component-normal-v1.json`はFAIL。fixtureが`generate --native`のskip setを
+渡さず、metadata-onlyの`output.weight`をcanonical payloadとして読もうとしてabortした。
+runtime API errorではなく正確なloader拒否で、新規fault0、dumpなし、全owner退去。
+元のFAIL receipt/statusは不変。productionのbank/数値処理はこの修正で変えていない。
+
+Mainはfixtureにserved_names、native head/embedding skip、非量子化PLE key保持を適用した。
+canonical arena1538035200 Bを独立したcensusに照合し、実運用と同じskip setをpool_bytes/loadへ渡した。
+`build_native_dense_component_v2.py`は二つのmanual fixtureだけをrebuildし、actual product binaryは不変。
+
+`check_native_dense_bank_component_v2.py`をMainがlock下で直列実行した結果:
+
+| arm | exit | 結果 |
+| --- | ---: | --- |
+| normal | 0 | GGUF/RAM/device全300 payload・全metadata、48層activation、全restore、再enter/restore PASS |
+| oom-null | 0 | Full/table/viewを保持した通常拒否、その後の実enter/payload/restore PASS |
+| unknown-null | -6 | 正確なproduction allocation fail-stop、通常returnなし |
+| unknown-nonnull | -6 | 同上、nonnull ownerの不確実性を通常拒否としない |
+| oom-nonnull | -6 | 同上、OOMでもnonnull ownerを通常拒否としない |
+| success-null | -6 | 正確なsuccessful-allocation/null-owner fail-stop |
+
+各armの個別receiptは`native-dense-bank-component-*-v2.json`。
+すべて同boot、新規GPU fault0、dumpなし、全owned process退去。初回normalはflushed UR trace/validation、
+故障armはwarning validationをexec前に固定した。SIGABRTだけで期待故障PASSとせずoperation messageも照合した。
+このcomponentは実generatorのgraph retirementや全モデル数学を通さない。
+
+## 実モデル検証の観測
+
+Mainは`STRATA_TRACE`時だけouter generator transactionのretired/bank/restored各境界を記録するよう追加した。
+actual NativeDense state、snapshot/full/bank bytes、activation回数、overlay、graph再capture有無、
+Verifier有無とdriverのfree/total queryを同時に記録する。未知のquery completionはfail-stopする。
+`build_native_dense_observer_v3.py`はgeneratorのみrebuildし、全component archive/fixtureのhash不変を確認してPASS。
+新native SHA256 `291da414dbd55efb3142a47fbca18296e17fa8b2bb680f9e3f1861e01ecb94e1`。
+
+`run_native_dense_bank_model_v1.py 1`はofficial bench.sh、short warmup後の実78453入力、thinking ON、24出力。
+C8192、FP32/R_GPU0、alias1、QSA1を固定し、native bank1/head-release0/明示no-token-graphで実行中。
+48activation後のFull復元、旧QSA FP32 referenceのselected768行capture hash、同run store/input照合、
+実Verifier生成と通常終了/新規faultを確認する。raw referenceは既に退役済みなので、照合は保存hashとの比較と明記する。
+instrumented結果をclean速度へ読み替えず、容量変更/R_GPU/16bitの速度実験はその後に行う。

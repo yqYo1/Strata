@@ -288,6 +288,22 @@ bool run_prompt_with_native_dense_phase(NativeDensePhase& phase,
     struct Exclusion {NativeDensePhase& p;~Exclusion(){p.occupied.clear();}} exclusion{phase};
     const bool recapture=phase.graphs->captured;
     bool retired=false;
+    int64_t activated_layers=0;
+    const bool trace_dense=std::getenv("STRATA_TRACE")!=nullptr;
+    auto observe=[&](const char* state) noexcept {
+        if(!trace_dense) return;
+        size_t free_bytes=0,total_bytes=0;
+        if(cudaMemGetInfo(&free_bytes,&total_bytes)!=cudaSuccess)
+            fatal("dense memory observation failed");
+        std::fprintf(stderr,"strata prefill dense: phase=%s residency=%s activations=%lld "
+            "full_bytes=%llu bank_bytes=%llu snapshot_bytes=%llu overlay_rows=%zu "
+            "session_recapture=%d verifier=%d free_bytes=%zu total_bytes=%zu\n",
+            state,phase.dense->residency()==strata::core::NativeDense::Residency::Full?"Full":"Bank",
+            (long long)activated_layers,(unsigned long long)phase.dense->weight_bytes(),
+            (unsigned long long)phase.dense->bank_bytes(),(unsigned long long)phase.dense->snapshot_bytes(),
+            phase.dense->layer_view().size(),int(recapture),int(verifier!=nullptr),free_bytes,total_bytes);
+        std::fflush(stderr);
+    };
     auto drain=[&]() noexcept {
         if(cudaStreamSynchronize(main_cs)!=cudaSuccess) fatal("main stream completion uncertain");
         mtp.drain_prefill_dense_callback();
@@ -314,6 +330,7 @@ bool run_prompt_with_native_dense_phase(NativeDensePhase& phase,
         if(recapture && !phase.recapture(e)) fatal("session graph recapture failed; decode prohibited");
         if(verifier && !verifier->resume_prefill_dense(*phase.dense,e)) fatal("verifier dense resume failed");
         retired=false;
+        observe("restored");
     };
     struct Restore {decltype(restore)& f;~Restore() noexcept {f();}} rollback{restore};
     try {
@@ -323,13 +340,16 @@ bool run_prompt_with_native_dense_phase(NativeDensePhase& phase,
             strata::core::session_graphs_retire_dense(*phase.graphs,main_cs);
             retired=true;
         } catch(...) { fatal("graph retirement threw; completion unknown"); }
+        observe("retired");
         // Withdraw the separate PLE native publication before releasing owners.
         if(native_ple) {ple.key_native_data=nullptr;ple.key_native_q8_1=nullptr;ple.key_native_type=-1;}
         if(!phase.dense->enter_layer_bank({true},err)) return false;
+        observe("bank");
         prompt.activate_native_dense_layer=[&](int64_t layer,void* stream,
                 const strata::core::LayerView::Overlay*& overlay,std::string& e) {
             drain(); // callback synchronously returned; its own queue is checked
             if(!phase.dense->activate_layer(int(layer),stream,{true},e)) return false;
+            ++activated_layers;
             overlay=&phase.dense->layer_view(); return true;
         };
         const bool ok=run();
