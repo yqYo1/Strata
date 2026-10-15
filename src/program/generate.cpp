@@ -95,6 +95,7 @@
 #include <future>
 #include <thread>
 #include <atomic>
+#include <functional>
 #include <condition_variable>
 #include <deque>
 #include <map>
@@ -176,6 +177,19 @@ bool run_prompt_with_mtp_experts_impl(strata::prefill::Prefill& prompt, strata::
 #endif
 }
 
+// Owned by the generator's serialized request loop. No worker may launch
+// decode/session/verifier work while this synchronous request boundary runs.
+struct NativeDensePhase {
+    bool enabled=false, supported=false, no_token_graph=false;
+    strata::core::NativeDense* dense=nullptr;
+    strata::core::WeightTable* table=nullptr;
+    strata::core::SessionState* session=nullptr;
+    strata::core::SessionGraphs* graphs=nullptr;
+    const strata::core::TokenGraph* token=nullptr;
+    std::function<bool(std::string&)> recapture;
+    std::atomic_flag occupied=ATOMIC_FLAG_INIT;
+};
+
 // Both warm serve and standalone pass through this request-scoped boundary.
 // Default off and short segments take exactly the existing prompt/expert path.
 bool run_prompt_with_mtp_experts(strata::prefill::Prefill& prompt,strata::core::MtpDrafter& mtp,
@@ -245,6 +259,89 @@ bool run_prompt_with_mtp_experts(strata::prefill::Prefill& prompt,strata::core::
     return strata::core::detail::with_prefill_head_release(boundary,run,err);
 #endif
 }
+
+bool run_prompt_with_native_dense_phase(NativeDensePhase& phase,
+        strata::prefill::Prefill& prompt,strata::core::MtpDrafter& mtp,
+        bool supported,strata::core::NativeHead& head,strata::core::Verifier* verifier,cudaStream_t main_cs,
+        const int64_t* tokens,int64_t n,int64_t pos0,std::string& err) {
+    auto run=[&](){return run_prompt_with_mtp_experts(prompt,mtp,supported,head,verifier,main_cs,tokens,n,pos0,err);};
+    if(!phase.enabled || prompt.chunk()<=0 || n<=prompt.chunk()) return run();
+#ifndef STRATA_ENABLE_SYCL
+    err="prefill dense bank requires SYCL"; return false;
+#else
+    auto fatal=[](const char* why) noexcept {
+        std::fprintf(stderr,"prefill dense bank: %s; stopping with owners live\n",why);
+        std::fflush(stderr); std::abort();
+    };
+    const char* lm=std::getenv("STRATA_PREFILL_LAYER_MAJOR");
+    const char* heads=std::getenv("STRATA_PREFILL_RELEASE_HEADS");
+    if(!phase.supported || !phase.no_token_graph || !phase.token || phase.token->captured || phase.token->exec ||
+       !phase.dense || !phase.table || !phase.session || !phase.graphs || !phase.recapture ||
+       phase.graphs->split_captured || !main_cs || !lm || std::strcmp(lm,"1") ||
+       (heads && !std::strcmp(heads,"1")) || prompt.activate_native_dense_layer ||
+       phase.dense->residency()!=strata::core::NativeDense::Residency::Full ||
+       phase.dense->packed_sources().empty()) {
+        err="prefill dense bank: unsupported request/reader state (head-release combination excluded)"; return false;
+    }
+    if(verifier && !verifier->can_retire_prefill_dense(err)) return false;
+    if(phase.occupied.test_and_set()) {err="prefill dense bank: request already owns transaction";return false;}
+    struct Exclusion {NativeDensePhase& p;~Exclusion(){p.occupied.clear();}} exclusion{phase};
+    const bool recapture=phase.graphs->captured;
+    bool retired=false;
+    auto drain=[&]() noexcept {
+        if(cudaStreamSynchronize(main_cs)!=cudaSuccess) fatal("main stream completion uncertain");
+        mtp.drain_prefill_dense_callback();
+    };
+    auto rebind_ple=[&]() noexcept {
+        const auto* key=phase.table->find("blk.1.ple_key.weight");
+        // Only an originally native PLE key is withdrawn/rebound below.
+        return key;
+    };
+    auto& ple=phase.session->ple.w;
+    const bool native_ple=ple.key_native_data!=nullptr;
+    auto restore=[&]() noexcept {
+        if(!retired) return;
+        drain();
+        prompt.activate_native_dense_layer={};
+        std::string e;
+        if(phase.dense->residency()==strata::core::NativeDense::Residency::Bank &&
+           !phase.dense->restore_full(main_cs,{true},e)) fatal("full restore failed; decode prohibited");
+        if(native_ple) {
+            const auto* key=rebind_ple();
+            if(!key || !key->native_data || !key->native_q8_1) fatal("restored PLE publication absent");
+            ple.key_native_data=key->native_data;ple.key_native_type=key->native_type;ple.key_native_q8_1=key->native_q8_1;
+        }
+        if(recapture && !phase.recapture(e)) fatal("session graph recapture failed; decode prohibited");
+        if(verifier && !verifier->resume_prefill_dense(*phase.dense,e)) fatal("verifier dense resume failed");
+        retired=false;
+    };
+    struct Restore {decltype(restore)& f;~Restore() noexcept {f();}} rollback{restore};
+    try {
+        drain();
+        try {
+            if(verifier && !verifier->retire_prefill_dense(err)) fatal("prepared verifier retirement rejected");
+            strata::core::session_graphs_retire_dense(*phase.graphs,main_cs);
+            retired=true;
+        } catch(...) { fatal("graph retirement threw; completion unknown"); }
+        // Withdraw the separate PLE native publication before releasing owners.
+        if(native_ple) {ple.key_native_data=nullptr;ple.key_native_q8_1=nullptr;ple.key_native_type=-1;}
+        if(!phase.dense->enter_layer_bank({true},err)) return false;
+        prompt.activate_native_dense_layer=[&](int64_t layer,void* stream,
+                const strata::core::LayerView::Overlay*& overlay,std::string& e) {
+            drain(); // callback synchronously returned; its own queue is checked
+            if(!phase.dense->activate_layer(int(layer),stream,{true},e)) return false;
+            overlay=&phase.dense->layer_view(); return true;
+        };
+        const bool ok=run();
+        restore();
+        return ok;
+    } catch(...) {
+        restore();
+        throw;
+    }
+#endif
+}
+
 
 // Windows' WDDM driver model: native Windows, or WSL2 (its GPU goes through /dev/dxg to the Windows driver).  There,
 // pinning a large arena into two CUDA contexts leaves WDDM refusing every later allocation (the 5080 + 3090 rig);
@@ -2253,9 +2350,11 @@ int main(int argc, char** argv) {
                          "served natively)\n",
                  (unsigned long long) (pool_bytes >> 20), o.pack.c_str(), skip.size());
 
+    const char* dense_bank_switch=std::getenv("STRATA_PREFILL_NATIVE_DENSE_BANK");
+    const bool native_dense_bank_enabled=dense_bank_switch && !std::strcmp(dense_bank_switch,"1");
     strata::core::NativeDense native_dense;
     if (!o.native_dense_gguf.empty()) {
-        if (!native_dense.load(o.native_dense_gguf, wt, err, o.native_ple_key)) {
+        if (!native_dense.load(o.native_dense_gguf, wt, err, o.native_ple_key, native_dense_bank_enabled)) {
             std::fprintf(stderr, "strata generate: native dense projections: %s\n", err.c_str());
             return 1;
         }
@@ -4210,6 +4309,17 @@ int main(int argc, char** argv) {
     // Plan v0.3 P3: the whole token as ONE graph whenever nothing needs a host step between the ring and post[l]
     // (the VRAM expert tier and the per-layer dumps do).  `--no-token-graph` keeps two graphs per layer.
     strata::core::TokenGraph tgraph;
+    NativeDensePhase dense_phase;
+    dense_phase.enabled=native_dense_bank_enabled;
+    dense_phase.supported=native_pack && !multi_gpu && o.layer_split.empty() && !o.gpu_stages &&
+        o.peer_device<0 && !peer.valid() &&
+        std::all_of(o.expert_cache_remote.begin(),o.expert_cache_remote.end(),[](auto slots){return slots<=0;});
+    dense_phase.no_token_graph=o.no_token_graph;
+    dense_phase.dense=&native_dense;dense_phase.table=&wt;dense_phase.session=&ss;
+    dense_phase.graphs=&gr;dense_phase.token=&tgraph;
+    dense_phase.recapture=[&](std::string& e) {
+        return strata::core::session_capture(wt,g,ss,d_parts,gr,e,false,0,-1,captured_post);
+    };
     struct TokenGraphFree {
         strata::core::TokenGraph* p;
         ~TokenGraphFree() { strata::core::token_graph_free(*p); }
@@ -5993,6 +6103,9 @@ int main(int argc, char** argv) {
                 if (to <= at) continue;
                 err.clear();
                 const bool win = windows_ok(at, to);
+                if(native_dense_bank_enabled && win && to-at>sp.chunk()) {
+                    std::printf("ERR prefill dense bank excludes window prompts\n"); return 1;
+                }
                 if (win && !refill(err)) {
                     std::printf("ERR refilling a lent slot failed: %s\n", err.c_str());
                     return 1;
@@ -6002,7 +6115,7 @@ int main(int argc, char** argv) {
                     return 1;
                 }
                 const auto tsp = Clock::now();
-                const bool sp_ok = win ? read_windows(at, to, err) : run_prompt_with_mtp_experts(
+                const bool sp_ok = win ? read_windows(at, to, err) : run_prompt_with_native_dense_phase(dense_phase,
                     sp, mtp, native_pack && o.spec == 4 && !o.mtp.empty() && !multi_gpu &&
                     o.layer_split.empty() && o.peer_device < 0 && !peer.valid() &&
                     std::all_of(o.expert_cache_remote.begin(), o.expert_cache_remote.end(), [](auto slots) { return slots <= 0; }),
@@ -6572,7 +6685,7 @@ int main(int argc, char** argv) {
         }
 #endif
         const Clock::time_point tp0 = Clock::now();
-        if (!run_prompt_with_mtp_experts(prefill, mtp,
+        if (!run_prompt_with_native_dense_phase(dense_phase, prefill, mtp,
                 native_pack && o.spec == 4 && !o.mtp.empty() && !multi_gpu &&
                 o.layer_split.empty() && o.peer_device < 0 && !peer.valid() &&
                 std::all_of(o.expert_cache_remote.begin(), o.expert_cache_remote.end(), [](auto slots) { return slots <= 0; }),

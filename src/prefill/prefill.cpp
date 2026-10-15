@@ -426,6 +426,7 @@ struct PeerPrefill {
 
 struct Prefill::Impl {
     const core::WeightTable* wt = nullptr;
+    const core::LayerView::Overlay* native_dense_overlay = nullptr;
     const core::ModelGeometry* g = nullptr;
     core::SessionState* ss = nullptr;
     core::ExpertSource* src = nullptr;
@@ -1706,7 +1707,23 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
     // The PLE rows of a chunk are read from the model file on the host (an SSD read per missed row): the chunk
     // after this one is read on a thread while the GPU runs this one, into the other of two buffers.  The rows
     // depend only on the tokens (the two before a position name its n-grams), so this is the same data.
-    const bool ple_on = ss.ple.ready() && LB <= 1 && 1 < LE;
+    // Native PLE may have no canonical key. Evaluate ready() only after the
+    // private active-layer key is composed, never against withdrawn ss.ple.w.
+    auto prefill_ple = ss.ple;
+    if (m.native_dense_overlay) {
+        const auto it = m.native_dense_overlay->find("blk.1.ple_key.weight");
+        if (it != m.native_dense_overlay->end()) {
+            const auto& key = it->second;
+            if (!key.native_data || !key.native_q8_1) {
+                err = "prefill dense bank: active PLE native key absent"; return false;
+            }
+            prefill_ple.w.key_native_data = key.native_data;
+            prefill_ple.w.key_native_type = key.native_type;
+            prefill_ple.w.key_native_q8_1 = key.native_q8_1;
+        }
+    }
+    const bool ple_on = prefill_ple.ready() && LB <= 1 && 1 < LE;
+    const auto& prefill_ple_weights = prefill_ple.w;
     // the PLE block batched over the chunk: the pinned postops and a BF16 or GGUF-native key (else token by token);
     // STRATA_PLE_BATCH=0 keeps the per-token block (the A/B)
     static const bool ple_batch_env = [] {
@@ -1714,7 +1731,7 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
         return v == nullptr || std::atoi(v) != 0;
     }();
     const bool ple_batch = ple_on && ple_batch_env && strata::kernels::ple_native_postops_enabled() &&
-                           (ss.ple.w.key_bf16 != nullptr || ss.ple.w.key_native_data != nullptr) &&
+                           (prefill_ple_weights.key_bf16 != nullptr || prefill_ple_weights.key_native_data != nullptr) &&
                            m.region_bytes / ((uint64_t) (3 * strata::kernels::NG_HC_DIM + N + 4) * 4 + (uint64_t) N * 2 + 4096) >= 64;
     const int32_t prev0[2] = {prev[0], prev[1]};
     auto ple_gather = [&m, &ss, tokens, n, prev0](int64_t c0, int buf, std::string& e) -> bool {
@@ -2065,7 +2082,7 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
         for (int64_t l = LB; l < LE; ++l) {
             core::progress_beat();   // the serve watchdog: a prompt chunk of 8192 tokens is still moving
             core::progress_at("reading the prompt (batched): layer", l, p0);   // #251: a stall names layer and chunk
-            const core::LayerView v(*m.wt, l);
+            const core::LayerView v(*m.wt, l, m.native_dense_overlay);
             if (l == std::max<int64_t>(LB, 1) && !ple_land()) return false;   // the PLE rows, read from layer 1 on
             // ---- the PLE block at layer 1, token by token (its conv reads the previous tokens' rows)
             if (l == 1 && ple_on && ple_batch) {
@@ -2074,7 +2091,7 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                 // files), the rest with the per-token kernels' arithmetic (native_ple_postops_batch)
                 pt.mark(kPfPle, cs);
                 const auto tp = Clock::now();
-                const strata::kernels::PleWeights& pw = ss.ple.w;
+                const strata::kernels::PleWeights& pw = prefill_ple_weights;
                 constexpr int64_t HD = strata::kernels::NG_HC_DIM;
                 const uint64_t per_token = (uint64_t) (3 * HD + N + 4) * 4 + (uint64_t) N * (bf16x2() ? 4 : 2) + 4096;
                 const int64_t SB = std::min<int64_t>(T, (int64_t) (m.region_bytes / per_token));
@@ -2115,7 +2132,7 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                     po.normalized = m.ple_norm;
                     po.result = m.R + t * D;
                     try {
-                        strata::kernels::ple_block(m.ple_emb + t * N, m.R + t * D, ss.ple.hist, ss.ple.w, po,
+                        strata::kernels::ple_block(m.ple_emb + t * N, m.R + t * D, ss.ple.hist, prefill_ple_weights, po,
                                                    ss.ple.scratch, m.cs);
                     } catch (const std::exception& e) { err = std::string("prefill PLE: ") + e.what(); return false; }
                     strata::kernels::ple_history_advance(ss.ple.hist, m.ple_norm, m.cs);
@@ -3088,7 +3105,7 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                                   !(half == 1 && strata::kernels::cvec().covers(l));
                 const core::WeightRef* wnn = nullptr;
                 if (fuse) {
-                    const core::LayerView vn(*m.wt, nl);
+                    const core::LayerView vn(*m.wt, nl, m.native_dense_overlay);
                     wnn = need(vn, half == 0 ? "hc_ffn_norm.weight" : "hc_attn_norm.weight", err);
                     if (!wnn) return false;
                 }

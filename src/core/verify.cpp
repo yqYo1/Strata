@@ -1,3 +1,4 @@
+#include "strata/core/native_dense.hpp"
 // src/core/verify.cpp - see include/strata/core/verify.hpp.
 #include "strata/core/verify.hpp"
 #if defined(_WIN32)
@@ -215,12 +216,67 @@ void Verifier::diag(std::FILE* f) const {
                  cur_layer_.load() + 1, reached, flag(h_flag_), flag(h_flagA_), flag(h_flagB_));
 }
 
+bool Verifier::can_retire_prefill_dense(std::string& err) const {
+#ifndef STRATA_ENABLE_SYCL
+    err="verify: dense bank requires SYCL"; return false;
+#else
+    const auto phase=diag_window_.read().phase;
+    if(dense_retired_ || head_detached_ || released_.load() || !g_ || !wt_ ||
+       !cs_ || !copy_ || next_ || lb_!=0 || le_!=g_->n_layers ||
+       (phase!=VerifyPhase::inactive && phase!=VerifyPhase::completed)) {
+        err="verify: dense retirement requires idle full single-device owner"; return false;
+    }
+    return true;
+#endif
+}
+bool Verifier::retire_prefill_dense(std::string& err) {
+#ifndef STRATA_ENABLE_SYCL
+    err="verify: dense bank requires SYCL"; return false;
+#else
+    using strata::sycl_backend::cleanup_fail_stop;
+    const OnDevice on_device(device_);
+    if(!can_retire_prefill_dense(err)) return false;
+    int current=-1;
+    if(cudaGetDevice(&current)!=cudaSuccess || current!=device_)
+        cleanup_fail_stop("verify dense retirement device");
+    if(!wait_commit(err)) cleanup_fail_stop("verify dense commit drain");
+    if(cudaStreamSynchronize(cs_)!=cudaSuccess) cleanup_fail_stop("verify dense compute drain");
+    if(cudaStreamSynchronize(copy_)!=cudaSuccess) cleanup_fail_stop("verify dense copy/callback drain");
+    dense_retired_=true;head_recapture_checked_=true;
+    auto destroy=[](cudaGraphExec_t& e) { if(e) {
+        if(cudaGraphExecDestroy(e)!=cudaSuccess) cleanup_fail_stop("verify dense graph retirement");
+        e=nullptr;
+    }};
+    for(auto& e:exec_) destroy(e);
+    for(auto& v:segments_) { for(auto& e:v) destroy(e); v.clear(); }
+    for(auto& v:work_) { for(auto& e:v) destroy(e); v.clear(); }
+    work_launched_=false; work_status_=cudaSuccess; reached_.store(0);
+    // wait_commit completed. commit_exec_ contains state copies only.
+    return true;
+#endif
+}
+bool Verifier::resume_prefill_dense(const NativeDense& native, std::string& err) {
+    if(!dense_retired_ || head_detached_ || released_.load() || !wt_ ||
+       native.residency()!=NativeDense::Residency::Full || native.packed_sources().empty()) {
+        err="verify: dense resume requires complete restored native owner"; return false;
+    }
+    for(const auto& source:native.packed_sources()) {
+        const auto* ref=wt_->find(source.name);
+        if(!ref || ref->native_data!=source.original.native_data ||
+           ref->native_q8_1!=source.original.native_q8_1 || ref->native_type!=source.original.native_type ||
+           !ref->native_data || !ref->native_q8_1) {
+            err="verify: dense resume publication mismatch"; return false;
+        }
+    }
+    dense_retired_=false; return true; // weight graphs recapture lazily
+}
+
 bool Verifier::can_release_prefill_head(const NativeHead& head,std::string& err) const {
 #ifndef STRATA_ENABLE_SYCL
     (void)head;err="head release requires SYCL";return false;
 #else
     const auto phase=diag_window_.read().phase;
-    if(head_detached_ || released_.load() || head_!=&head || !head.loaded() || head.head_detached() ||
+    if(dense_retired_ || head_detached_ || released_.load() || head_!=&head || !head.loaded() || head.head_detached() ||
        !g_ || !cs_ || !copy_ || max_t_!=4 || next_ || lb_!=0 || le_!=g_->n_layers ||
        (phase!=VerifyPhase::inactive && phase!=VerifyPhase::completed)) {
         err="verify: head release requires idle intact single-device native MTP4 window";return false;
@@ -256,7 +312,7 @@ bool Verifier::retire_prefill_head(const NativeHead& head,std::string& err) {
 #endif
 }
 bool Verifier::resume_prefill_head(const NativeHead& head,std::string& err) {
-    if(!head_detached_ || released_.load() || head_!=&head || !head.loaded() || head.head_detached() ||
+    if(dense_retired_ || !head_detached_ || released_.load() || head_!=&head || !head.loaded() || head.head_detached() ||
        head.weight_bytes()!=release_head_bytes_ || head.row_bytes()!=release_head_row_ || head.type()!=release_head_type_) {
         err="verify: head resume owner/format/state mismatch";return false;
     }
@@ -266,7 +322,7 @@ bool Verifier::resume_prefill_head(const NativeHead& head,std::string& err) {
 Verifier::~Verifier() {
     g_verifiers.remove(this); // Wait for acquired callbacks before freeing any member.
 #ifdef STRATA_ENABLE_SYCL
-    if(head_detached_)strata::sycl_backend::cleanup_fail_stop("verify teardown while head detached");
+    if(dense_retired_ || head_detached_)strata::sycl_backend::cleanup_fail_stop("verify teardown while head detached");
     if(head_recapture_checked_) {
         if(cs_ && cudaStreamSynchronize(cs_)!=cudaSuccess)strata::sycl_backend::cleanup_fail_stop("verify restored-head teardown compute drain");
         if(copy_ && cudaStreamSynchronize(copy_)!=cudaSuccess)strata::sycl_backend::cleanup_fail_stop("verify restored-head teardown copy drain");
@@ -310,7 +366,7 @@ Verifier::~Verifier() {
 
 bool Verifier::init(const WeightTable& wt, const ModelGeometry& g, SessionState& ss, const VerifyHits& hits,
                     const NativeHead* head, int max_t, std::string& err) {
-    if(head_detached_){err="verify: init while head detached";return false;}
+    if(dense_retired_ || head_detached_){err="verify: init while head detached";return false;}
     cudaGetDevice(&device_);   // a layer split's stage on another GPU: its streams, graphs and buffers live there
     strata::kernels::fused_gr_check();   // once per card: which bitwise-equal hyper-connection read runs there
     wt_ = &wt;
@@ -532,7 +588,7 @@ const float* Verifier::final_R(int t) const { return R_ + (size_t) t * (size_t) 
 // while the GPU combines A and runs A's layer l+1.  B's mixer only needs A's mixer of the same layer (K/V, GDN
 // state), never A's experts, so nothing waits that did not wait before.  Every token's arithmetic is unchanged.
 bool Verifier::record_window(int T, cudaStream_t cs, std::string& err) {
-    if(head_detached_){err="verify: head is detached for prompt";return false;}
+    if(dense_retired_ || head_detached_){err="verify: head is detached for prompt";return false;}
     using namespace strata::kernels;
     const ModelGeometry& g = *g_;
     const WeightTable& wt = *wt_;
@@ -1119,7 +1175,7 @@ bool Verifier::end_segment(int T, std::string& err, bool work) {
 #endif
 
 bool Verifier::capture(int T, std::string& err) try {
-    if(head_detached_){err="verify: head is detached for prompt";return false;}
+    if(dense_retired_ || head_detached_){err="verify: head is detached for prompt";return false;}
 #ifdef STRATA_ENABLE_SYCL
     if (!segments_[T].empty()) return true;
     const auto capture_start = Clock::now();
@@ -1291,7 +1347,7 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
                    std::string& err) {
     using namespace strata::kernels;
     const OnDevice on_device(device_);
-    if(head_detached_){err="verify: run while head detached";return false;}
+    if(dense_retired_ || head_detached_){err="verify: run while head detached";return false;}
     if (T < 1 || T > max_t_) { err = "verify: window size out of range"; return false; }
     if (released_.load()) { err = "verify: an earlier window never finished on the GPU (#267); restart the engine"; return false; }
     const ModelGeometry& g = *g_;
@@ -1657,7 +1713,7 @@ void Verifier::launch_work() {
 
 bool Verifier::window_logprobs(const int32_t* targets, int T, int64_t pos0, int32_t extra_id, std::FILE* out,
                                std::string& err) {
-    if(head_detached_){err="verify: logits while head detached";return false;}
+    if(dense_retired_ || head_detached_){err="verify: logits while head detached";return false;}
     if (next_ != nullptr) return next_->window_logprobs(targets, T, pos0, extra_id, out, err);
     const OnDevice on_device(device_);
     if (head_logits_ == nullptr || n_vocab_ <= 0 || T <= 0 || targets == nullptr || out == nullptr) {
@@ -1716,7 +1772,7 @@ namespace { bool g_commit_async = false; }
 void Verifier::set_commit_async(bool on) { g_commit_async = on && std::getenv("STRATA_COMMIT_SYNC") == nullptr; }
 
 bool Verifier::commit(int n_keep, std::string& err) {
-    if(head_detached_){err="verify: commit while head detached";return false;}
+    if(dense_retired_ || head_detached_){err="verify: commit while head detached";return false;}
     const OnDevice on_device(device_);
     if (n_keep < 1 || n_keep > last_t_) { err = "verify: commit count out of range"; return false; }
     const Clock::time_point t0 = Clock::now();
@@ -1764,7 +1820,7 @@ bool Verifier::wait_commit(std::string& err) {
 }
 
 bool Verifier::copy_logits(int t, float* host) const {
-    if(head_detached_)return false;
+    if(dense_retired_ || head_detached_)return false;
     if (next_ != nullptr) return next_->copy_logits(t, host);   // a layer split: the head is on the last stage
     if (head_logits_ == nullptr || host == nullptr || t < 0 || n_vocab_ <= 0) return false;
     return cudaMemcpy(host, head_logits_ + (size_t) t * (size_t) n_vocab_, (size_t) n_vocab_ * sizeof(float),

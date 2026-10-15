@@ -628,6 +628,65 @@ void session_graphs_free(SessionGraphs& gr) {
     gr.captured = false;
 }
 
+void session_graphs_retire_dense(SessionGraphs& gr, void* replay_stream) {
+    auto stop=[]() noexcept {
+        std::fprintf(stderr,"session: uncertain dense graph retirement; owners retained\n");
+        std::fflush(stderr); std::abort();
+    };
+    if (!replay_stream || cudaStreamSynchronize(static_cast<cudaStream_t>(replay_stream)) != cudaSuccess) stop();
+    auto destroy=[&](cudaGraphExec_t graph) {
+        if (graph && cudaGraphExecDestroy(graph) != cudaSuccess) stop();
+    };
+#ifdef STRATA_ENABLE_SYCL
+    for (auto graphs : {gr.routes, gr.shared}) {
+        if (!graphs) continue;
+        for (int64_t i = 0; i < gr.shared_capacity; ++i)
+            if (graphs[i]) destroy(graphs[i]);
+        delete[] graphs;
+    }
+    gr.routes = nullptr;
+    gr.shared = nullptr;
+    gr.shared_capacity = 0;
+    gr.post_miss_host = nullptr;
+    gr.post_add_hits_host = nullptr;
+    gr.post_routes_next = false;
+#endif
+    if (gr.execs) {
+        for (int64_t i = 0; i < gr.n; ++i) destroy(gr.execs[i]);
+        delete[] gr.execs;
+    }
+    if (gr.posts) {
+        for (int64_t i = 0; i < gr.n; ++i)
+            if (gr.posts[i] != nullptr) destroy(gr.posts[i]);
+        delete[] gr.posts;
+    }
+    if (gr.preA) {
+        for (int64_t i = 0; i < gr.n; ++i)
+            if (gr.preA[i] != nullptr) destroy(gr.preA[i]);
+        delete[] gr.preA;
+    }
+    if (gr.preB) {
+        for (int64_t i = 0; i < gr.n; ++i)
+            if (gr.preB[i] != nullptr) destroy(gr.preB[i]);
+        delete[] gr.preB;
+    }
+    for (int k = 0; k < 5; ++k) {
+        if (gr.preP[k] == nullptr) continue;
+        for (int64_t i = 0; i < gr.n; ++i)
+            if (gr.preP[k][i] != nullptr) destroy(gr.preP[k][i]);
+        delete[] gr.preP[k];
+        gr.preP[k] = nullptr;
+    }
+    gr.preA = nullptr;
+    gr.preB = nullptr;
+    gr.split_captured = false;
+    gr.posts = nullptr;
+    gr.execs = nullptr;
+    gr.parts_dev = nullptr;
+    gr.n = 0;
+    gr.captured = false;
+}
+
 bool SessionLoopScratch::init(size_t parts_bytes_in, std::string& err) {
     if (y_miss != nullptr || probe != nullptr) {
         err = "SessionLoopScratch::init: already initialised";

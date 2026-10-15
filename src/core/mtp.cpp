@@ -1024,6 +1024,15 @@ bool finish_capture(cudaStream_t cs, bool ok, cudaGraphExec_t& exec, const char*
 }
 }  // namespace
 
+void MtpDrafter::drain_prefill_dense_callback() {
+    if (!cs_) return; // no loaded drafter and therefore no callback queue
+    const OnDevice on_device(device_);
+    if (cudaStreamSynchronize(cs_) != cudaSuccess) {
+        std::fprintf(stderr,"mtp: uncertain dense-bank callback completion; owners retained\n");
+        std::fflush(stderr); std::abort();
+    }
+}
+
 bool MtpDrafter::capture_prefill(int T, std::string& err) {
     if (prefill_exec_[T]) return true;
     using namespace strata::kernels;

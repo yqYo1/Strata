@@ -88,6 +88,12 @@ public:
 
     const PrefillStats& stats() const { return stats_; }
 
+    // Outer caller must hold exclusive graph/owner retirement lease. Default
+    // unset. Synchronous activation after local drain; borrowed view expires
+    // after pass drain. Does not prove global reader retirement itself.
+    std::function<bool(int64_t layer, void* stream,
+        const core::LayerView::Overlay*& overlay, std::string& err)> activate_native_dense_layer;
+
     /// multi-GPU: the experts the peer GPU holds are computed THERE for every prompt chunk (up to `cap_rows` routed
     /// rows per layer; the rest of the peer's experts are read by this GPU over P2P).  Allocates the peer's buffers for
     /// chunks of up to init's `chunk` tokens.  Needs P2P between the two cards.

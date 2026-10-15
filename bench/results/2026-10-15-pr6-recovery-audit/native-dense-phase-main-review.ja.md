@@ -1,5 +1,10 @@
 # NativeDense phase v2のMainレビューとhost検査
 
+現在のintegration状態: Mainが全6 QSA clean processと比較の正常終了後に実rootへ適用した。
+`apply_build_native_dense_phase_v1.py`が別buildで全ABI callerと二つのmanual GPU fixtureをcompile中。
+この段階ではcompile/link、実GPU payload、generator transaction、VRAM回収はまだ未合格。
+以下の「未適用」は初回レビュー時点の記録。defaultOFF、head-release併用拒否は維持する。
+
 2026-10-15。Solのcaller接続済みproposalは`prefill-native-dense-phase-v2`。
 source.diff SHA256 `03a385d0ef0b771d4aa89df18090fe7c602bd81eaa14c9bfa74a8e092f0caffd`。
 Mainは14 production fileの全diff（594挿入/32削除）、全fixture/shim、manifest、review、recipeを読んだ。
@@ -72,3 +77,9 @@ host43ケースを実VRAM回収、モデル品質、物理contextや速度の証
 source-only実装担当には別dir `physical-context-consume-v1`でfull-context producerも依頼した。
 通常CLI/APIのmax-new意味を変えず、最後prompt tokenを実MTP4 verifierへ通すもの。
 それもMainのbuild/test/GPU管理下で検証するまで合格扱いしない。
+
+物理context producer v2のsource proposalにはbase raceが見つかった。
+Solが古いproduction由来mirrorを編集する間にMainが上記bankを適用し、diff生成時のbaseだけが新しくなったため、
+v2のdiffはbankのclass/関数/caller/declarationを削除する内容だった。Mainは適用していない。
+元v2はそのまま保存し、immutable bank-v2 proposalをbaseにした統合v3を別dirで依頼した。
+以降、source proposalのbaseはmutable worktreeでなく、reachable commitまたは固定hashのmirrorを指定する。

@@ -54,6 +54,7 @@ struct VerifyHits {
     int64_t blob = 0;
 };
 
+class NativeDense;
 class Verifier {
 public:
     Verifier() = default;
@@ -77,6 +78,11 @@ public:
 
     // Head-only retirement. Own the serialized request boundary; this preserves
     // all arenas, commit graph, session/KV/GDN/PLE and sampling state.
+    // Dedicated native projection retirement. Head release combination is
+    // rejected until a single combined owner transaction is implemented.
+    bool can_retire_prefill_dense(std::string& err) const;
+    bool retire_prefill_dense(std::string& err);
+    bool resume_prefill_dense(const NativeDense& native, std::string& err);
     bool can_release_prefill_head(const NativeHead& head,std::string& err) const;
     bool retire_prefill_head(const NativeHead& head,std::string& err);
     bool resume_prefill_head(const NativeHead& head,std::string& err);
@@ -192,6 +198,7 @@ private:
     }();   ///< greedy by default; per-request via set_sampling
     const int32_t* hist_d_ = nullptr;   ///< penalty-history row (set_history); null = no penalties apply
     int hist_len_ = 0;
+    bool dense_retired_=false;
     bool head_detached_=false,head_recapture_checked_=false;
     uint64_t release_head_bytes_=0;
     size_t release_head_row_=0;

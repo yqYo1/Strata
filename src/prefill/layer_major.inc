@@ -7,6 +7,10 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
         (!requested || std::strcmp(requested, "1") || !impl_ || n <= impl_->T)) {
         err = "prefill phase audit: requires the long-prompt layer-major path"; return false;
     }
+    if (activate_native_dense_layer &&
+        (!requested || std::strcmp(requested, "1") || !impl_ || n <= impl_->T)) {
+        err = "prefill dense bank: hook requires long layer-major request"; return false;
+    }
     // Reuse only pays across chunks. Keep short chat/agent turns on the
     // original path even when long-prompt layer reuse is requested.
     return requested && std::strcmp(requested, "1") == 0 && impl_ && n > impl_->T
@@ -208,6 +212,7 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     // tensors are NOT rolled back by restoring these borrowed C++ fields.
     struct Restore {
         Prefill& p; Impl& m;
+        const core::LayerView::Overlay* overlay;
         int64_t lb, le; const float* input;
         const core::ExpertCache* cache; const int32_t* residency;
         detail::Layer26PhaseAudit* phase;
@@ -217,6 +222,7 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         detail::LayerMajorResidualPlan plan;
         decltype(on_chunk) chunk; decltype(on_stage_chunk) stage;
         ~Restore() noexcept {
+            m.native_dense_overlay = overlay;
             p.stage_lb_ = lb; p.stage_le_ = le; p.hand_in_ = input;
             m.cache = cache; m.host_res = residency; m.layer_major_active = active;
             m.layer26_phase_audit = phase;
@@ -225,7 +231,7 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
             m.layer_major_fp16_stage = fp16_stage; m.layer_major_residual = plan;
             p.on_chunk = std::move(chunk); p.on_stage_chunk = std::move(stage);
         }
-    } restore{*this, m, stage_lb_, stage_le_, hand_in_, m.cache, m.host_res,
+    } restore{*this, m, m.native_dense_overlay, stage_lb_, stage_le_, hand_in_, m.cache, m.host_res,
               m.layer26_phase_audit, m.layer_major_audit, m.layer_major_audit_copy,
               m.layer_major_active, m.layer_major_gpu_input, m.layer_major_host_input,
               m.layer_major_fp16_stage, m.layer_major_residual, on_chunk, on_stage_chunk};
@@ -326,6 +332,14 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
                 f.up_off, f.down_off, f.bytes}, residency.data() + layer * NE,
                 m.layer_major_active && !m.pp && !next_ && m.copy == m.cs);
         }
+        if (activate_native_dense_layer) {
+            if (!drain()) { err = "prefill dense bank: preactivation drain failed"; return false; }
+            m.native_dense_overlay = nullptr;
+            if (!activate_native_dense_layer(layer, m.cs, m.native_dense_overlay, err)) return false;
+            if (!m.native_dense_overlay || m.native_dense_overlay->empty()) {
+                err = "prefill dense bank: activation published no private view"; return false;
+            }
+        }
         stage_lb_ = layer; stage_le_ = layer + 1;
         m.layer_major_host_input = layer == 0 ? nullptr : rows.get();
         m.layer_major_gpu_input = layer == 0 ? nullptr : device_rows.get();
@@ -382,6 +396,7 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         };
         if (!run_impl(tokens, n, pos0, err)) return false;
         if (!drain()) { err = "prefill layer-major: pass drain failed"; return false; }
+        m.native_dense_overlay = nullptr; // checked pass drain completed
         if (!cursor.complete()) { err = "prefill layer-major: incomplete layer callbacks"; return false; }
         if (census) census->end(layer);
         if (std::getenv("STRATA_TRACE")) {

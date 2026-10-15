@@ -326,6 +326,10 @@ bool session_replay_stages_per_layer(const ModelGeometry& g, int64_t pos, int32_
 
 /// Releases the graph execs.  The `SessionGraphs` struct holds no device memory of its own.
 void session_graphs_free(SessionGraphs& gr);
+// Exclusive single-device request owner only. Owning replay stream must be
+// supplied; all other producers/callbacks must already be excluded and drained.
+// Any runtime uncertainty fail-stops before dense owners can be freed.
+void session_graphs_retire_dense(SessionGraphs& gr, void* replay_stream);
 
 // ================================ THE HOST LOOP ================================
 

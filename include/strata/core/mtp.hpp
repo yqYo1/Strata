@@ -50,6 +50,9 @@ public:
     /// At most this many drafts per round (below max_t - 1): a window longer than the MTP's comes from elsewhere.
     void set_max_drafts(int k) { max_drafts_ = k; }
     uint64_t vram_bytes() const { return vram_; }
+    // Synchronous callback completion proof for target dense bank transitions.
+    // No MTP weight/graph/state is retired: it owns distinct projections.
+    void drain_prefill_dense_callback();
     /// The draft layer's K/V state (read-only: --serve's STRATA_STATE_HASH check hashes it)
     const QsaState& kv_state() const { return st_; }
     /// KV streaming: refill the ring of the drafter's window from its host copy for a sequence that continues at
