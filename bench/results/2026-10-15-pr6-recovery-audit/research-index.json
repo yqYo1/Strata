@@ -670,13 +670,40 @@
       "sha256": "1e8b87df2ab1a21279a9820e73c2720aef5c0043fe7070e2745da1b475887ebe",
       "status": "Archived read-only FINAL report; consult chronological Main reviews before use. No runtime, speed or adoption qualification from research.",
       "main_review": "main-review-round639-640.ja.md"
+    },
+    {
+      "round": 641,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-pcie-miss-routing-round641-v1.txt",
+      "sha256": "26d1d2c5a68baa5717f41645fe183c9d0a853bf9f274b6bfec36ce9459c433c6",
+      "status": "Superseded synchronization explanation by R641 v2; preserve original, do not use mapped-spin timeline for SYCL.",
+      "main_review": "main-review-round641-642.ja.md"
+    },
+    {
+      "round": 641,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-pcie-miss-routing-round641-v2.txt",
+      "sha256": "a5b8b7fa06e302d95decf14ee903361d9b1b08989e82a401f7404186209383fb",
+      "status": "FINAL/Main source review: ignored synchronous DMA enqueue status is a fix-before-positive-fraction diagnostic gap. No causality or speed claim.",
+      "main_review": "main-review-round641-642.ja.md"
+    },
+    {
+      "round": 642,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-long-workload-calibration-round642-v1.txt",
+      "sha256": "f8a131766740443180105b48ddf3d8c7bfc55fca7755ed925a59d692d915c956",
+      "status": "FINAL/Main source review: short thinking-off setup calibration does not qualify requested long workload. Existing controls only; long screen NOT_RUN; 5x3 grid is a suggestion, not mandatory minimum.",
+      "main_review": "main-review-round641-642.ja.md"
     }
   ],
   "main_initial_findings": [
     "PR6 performance patch changes historic sycl/src/prefill/prefill.cpp, not current root src/prefill/prefill.cpp. Current root rg finds compact scratch but no layer-major selector. History preservation is not adoption.",
     "Original645.85 PP and later449.7 full-context/MTP measures need separate source/config reconciliation; different protocol does not justify discarding the old improvement."
   ],
-  "next": "Poll existing live selective-IQ full OFF job16956; do not restart it from an observation timeout or overlap tests/builds/GPU/cleanup. After authoritative closure, recover old input nonce before client changes, qualify input tools, and use matched ON v2 only if its real gates hold. Wave CPU qualification is prepared but NOT_RUN. Then prioritize bounded wave census, chunk4096/8192 and fixed MTP widths from actual evidence. Full-context/RESTORE/quality, upstream/default reconciliation and 1000/70 remain incomplete.",
+  "next": "Continue exact live full OFF handle16956; first code and prose complete eligible, remaining two repetitions in progress. Do not overlap tests/builds/GPU/cleanup. After authoritative closure, recover old nonce before client edit, qualify input tools, and run matched IQ ON only on real gates. CPU-qualify wave and checked PCIe fetch serially; fix/check DMA enqueue propagation before any positive PCIe-fraction diagnostic. Then choose existing chunk/cache/MTP settings and bounded wave/attention/IQ candidates from measurements. Physical256K/RESTORE/quality/upstream/default reconciliation and 1000/70 remain incomplete.",
   "main_review": "main-review-round559-560.ja.md",
   "subsequent_main_review": "main-review-round561-562.ja.md",
   "public_history_reverification": "public-history-reverification.json",
@@ -686,7 +713,7 @@
     "main_review": "qsa-layout-recovery-v1/main-review.ja.md",
     "status": "Build/host and20GPU parity/oracle cases PASS/fault0. Component40sample screen closedPASS; layout1 median4.09%slower in one int8case, no adoption. No whole-model/full256K/RESTORE/quality qualification."
   },
-  "latest_main_review": "main-review-round639-640.ja.md",
+  "latest_main_review": "main-review-round641-642.ja.md",
   "component_summary": "qsa-layout-screen-summary.json",
   "gemm_orientation_probe": {
     "report": "gemm-orientation-probe-v1/implementation.txt",
@@ -1078,5 +1105,17 @@
     "research": "research-mtp-adaptive-decode-round640-v1.txt",
     "review": "main-review-round639-640.ja.md",
     "state": "Fixed --spec4 loaded capacity with --mtp-max-t2/3/4 is an existing-control candidate; suffix0/minp0/coupledOFF. Actual MTP release max_t4 gate remains eligible. No sweep/adaptive controller implemented or tested."
+  },
+  "pcie_fetch_error_handling": {
+    "research": "research-pcie-miss-routing-round641-v2.txt",
+    "proposal": "checked-pcie-fetch-v1",
+    "model": "gpt-6.1-sol",
+    "review": "main-review-round641-642.ja.md",
+    "state": "FINAL/source-reviewed proposal only; root unchanged, NOT_BUILT/NOT_TESTED/NOT_RUN. First synchronous copy/callback error and checked prefix drain before consumer. Recompile both verify/generate for changed class layout, isolated from current b1 comparison. Does not establish past hang cause or speed."
+  },
+  "long_setting_calibration": {
+    "research": "research-long-workload-calibration-round642-v1.txt",
+    "review": "main-review-round641-642.ja.md",
+    "state": "Existing setup calibrator has short inputs, max128 output and thinking closed; not a long-workload tuning result. Official bench long-generation-only with fresh configs can screen existing startup settings without client modifications. Source-only plan; no tuned parameters adopted."
   }
 }

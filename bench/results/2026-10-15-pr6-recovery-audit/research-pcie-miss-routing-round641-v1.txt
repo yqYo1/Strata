@@ -1,0 +1,80 @@
+# R641 — `--pcie-frac` native/SYCL miss-routing source audit
+
+Date: 2026-10-15 JST
+Scope: read-only source/evidence/literature review; this report is the only new file. No GPU run, test, build, process control, Git operation, cleanup, source change, active job 16956 inspection, or raw measurement access occurred.
+
+## Decision
+
+With the current SYCL/native implementation, changing `--pcie-frac` from zero can route a fraction of each layer's distinct, nonresident and pinned expert misses away from the CPU pool and through the GPU's native grouped-expert path. It is not a generic PCIe transfer of every missing expert: eligibility depends on `GpuPlanSink`, source pinning/device availability, the number of distinct misses in the verifier window, and the fixed-point share rounding. In SYCL, `Verifier::set_pcie_mode()` forces mode 0, so the current consumer is explicit DMA into a device staging ring. That path already overlaps plan publication/copy submission with CPU expert service; no overlap benefit or end-to-end speedup follows merely from the old 6 GB/s PCIe measurement.
+
+The one novel candidate worth screening, if the existing fraction-only experiment shows a bottleneck, is a **per-window load-aware assignment of distinct misses to CPU versus PCIe/GPU**. Today the fraction selects the last qualifying misses in router order. HybriMoE describes estimating CPU/GPU work and transfer completion and simulating resource timelines; its transferable idea is balancing completion time, not its CUDA implementation. In Strata terms, estimate CPU service by expert `nt` and format, GPU grouped-kernel work by routed rows, and transfer duration by per-layer blob size; select a subset of misses that minimizes the predicted CPU/GPU/PCIe makespan. This is not implemented, not proven useful here, and may change arithmetic ownership and outputs. Do not implement or tune it before a one-token exercise of the current path and a bounded matched fraction screen. No second new method is proposed.
+
+## Prior reports reconciled
+
+Reports read: R579, R584, R607, R624, R632 and R640, plus current `research-index.json` through round 640.
+
+- R579 reports old stock MTP4 decode around 3.4 tok/s median and roughly 97.9% GPU-cache lookup misses by *entry*. It explicitly says these miss percentages are not CPU row ownership or PCIe bytes; its 6-GB/s H2D control does not price this inference path. Current 34K/128 MTP4 CPU service figures are separate evidence and still do not give a critical-path split.
+- R584 says the shipped expert profile is a rank list, not a histogram. `--expert-profile-save` and the aggregate ledger do not recover expert IDs/routing frequencies. Its cache-size suggestions are not repeated here.
+- R607 provides an exact retained CPU-owned route histogram and hindsight static-cache ceilings for one request. Those results are about resident-cache placement; they do not establish PCIe-selected IDs, transfer bytes or benefit.
+- R624 is the existing priority review: its host phase / device trace ideas and conditional MTP comparison remain separate from this fraction-only screen. Its wait and callback spans overlap; they are not GPU duration.
+- R632 covers capacity and cache admission; no cache-size or residency proposal is repeated.
+- R640 covers MTP window-width selection, not the native miss owner. Hold the task's MTP4/no-coupled/ordinary-graph baseline fixed when comparing PCIe fractions.
+
+The retained 6-GB/s transfer ceiling is a transport-shape measurement. It does not establish sustained traffic for the current expert payloads, DMA path, GPU kernel cost, CPU miss service saved, or decode token rate.
+
+## Source resolver and runtime path
+
+The configured source lists SYCL `src/core/expert_source.cpp`, `src/core/verify.cpp`, `src/kernels/sycl/native_mmvq.cpp` and `src/program/generate.cpp` into the engine/executable (`CMakeLists.txt:36,185,365-366`; `cmake/sycl_backend.cmake:67,77-106,119`). The SYCL target publishes `STRATA_ENABLE_SYCL=1`. The PCIe miss path in this audit therefore resolves to the `#ifdef STRATA_ENABLE_SYCL` branches, not CUDA's separate mode behavior.
+
+`--pcie-frac` is parsed at `generate.cpp:1329`. An explicit value bypasses startup native-pack link probing (`:1968-1986`). Serve request keys also accept `pcie_frac` and clamp it to [0,1] (`:5374-5400`); immediately before the request's decode, the value is quantized to `pcie_num = round(fraction*256)` (`:5884-5888`). Standalone sets the same share at `:6824-6828`; serve initializes it at `:5020-5022`. This is a useful existing request-scoped control, so comparisons can keep one server/binary and vary only the request field, although separate owned processes give cleaner independent samples.
+
+The source path selected at startup depends on `--mmap-experts` (`generate.cpp:2907-2955`):
+
+- Default non-mmap mode uses `ArenaExpertSource`, which loads the expert pack (or native GGUF expert shards) into a resident host arena. Linux defaults to pinning the whole arena; explicit `STRATA_ARENA_PIN_GIB` or WDDM/multi-GPU limits can make registration partial (`:2935-2955`; arena load and aliases at `expert_source.cpp:2958-3070`). Its `pinned(layer, expert)` checks the blob's extent against registered bytes (`:3094-3107`).
+- `--mmap-experts` uses `FileExpertSource`; PCIe eligibility then requires its resident complement to be ready, pinned and to contain that expert (`expert_source.cpp:1839-1858`). Plain mmap/file-backed misses that are not pinned do not enter the PCIe list.
+
+At each native layer, `expert_pool_dispatch_multi` receives that window's actual host route IDs. It deduplicates them in first-occurrence order, counts distinct nonresident misses excluding peer-owned routes, computes `m = (nmiss * pcie_num) >> 8`, and enables this share only if `pcie_num > 0` and `src->pcie_layer(layer)` (`expert_source.cpp:2041-2065`). The last `m` missed experts in router order are considered; they enter the PCIe group only when their source blob is pinned (`:2071-2095`). There is no fallback pass to select earlier pinned misses if a selected suffix blob is unpinned. Repeated token entries for one expert share that expert group. Entries owned by VRAM cache are kind 0; selected PCIe entries are kind 1; remaining misses stay kind -1 and are computed by CPU (`:2096-2127,2170-2224`).
+
+This selection is per **distinct (layer, expert) within one verify window**, not per route entry. At top-k 10 and MTP4 max verifier width T=4, at most 40 route entries exist per layer/window; unique misses can be fewer. A positive fraction can still select zero because the integer share rounds down. For example, `pcie_num=38` (fraction ~0.1484, request value 0.15) selects one only when `nmiss >= ceil(256/38)=7`; otherwise `m=0`. Actual selection must be confirmed by the existing `pcie_experts` counter, not inferred from the requested fraction.
+
+The verifier's plan sink has `T*K` capacity and a `kStagingBlobs` device arena allocation (`verify.cpp:318-338,341-397`). For the eligible T≤4 path the route count is at most 40; the source also bounds PCIe list creation by both staging capacity and 64 entries (`expert_source.cpp:2067-2069,2084`). Resident VRAM experts use pointers into `ExpertCache`; PCIe groups point to the per-layer staging slot in mode 0 (`:2075-2114`). CPU work retains one `ExpertJobMulti` per unique CPU-owned expert with its real token-row `nt` and returns only after the native pool drains/parks workers (`:2179-2225,2238-2265`).
+
+## Pack staging, kernel and overlap
+
+The current native GPU consumer is `Verifier::project_group()` in `src/core/verify.cpp:810-828`: when `lay.native`, it resolves the actual per-layer `NativeExpertLayout` and calls `native_expert_grouped`; its group pointers may reference cache slots (VRAM) or staged misses. SYCL `native_expert_grouped` validates layout/extents, uses Q8_1 activations, grouped packed-weight dispatch, FP32 gate/up intermediates, SwiGLU, quantizes the intermediate and runs grouped down (`src/kernels/sycl/native_mmvq.cpp:1369-1393,1407-1457`). `native_mmvq_supported` includes types 16/17/18/20/21/22/23/42 and several K/Q types (`:1252-1255`); startup checks each actual native format (`generate.cpp:1936`). This is a packed-native kernel route; it does not first expand the packed IQ blob to a persistent FP16 expert matrix. CPU misses use the native GGML CPU layer implementation / `run_split_multi_native` (`src/kernels/cpu/native_expert.cpp:1-4`; `expert_source.cpp:2238-2265`).
+
+For SYCL, `Verifier::set_pcie_mode(mode)` intentionally ignores its argument and assigns `sink_.pcie_mode=0` (`include/strata/core/verify.hpp:154-165`). Thus `--pcie-mode=auto|dma|direct|kernel` is not a selector for this path in a `STRATA_ENABLE_SYCL` build. Mode 0 copies each selected expert blob from pinned host to a slot in the GPU staging ring using `cudaMemcpyAsync(..., cudaMemcpyHostToDevice, copy_)`, then enqueues a host callback that raises flag B (`verify.cpp:1527-1540`). The compute graph processes resident GPU groups first, waits on B, then processes PCIe groups from staging (`:859-885`). The GPU sink planner has staged pointers and capacity (`:364-397`). The file-level comments in `generate.cpp:4817-4821` and `:6820-6824` describe auto/copy-kernel behavior for the general engine, but the SYCL override takes precedence; this is a source/documentation mismatch worth preserving in any later review.
+
+The intended overlap order is real in source: the issuer publishes the host plan before CPU route construction/pool service, SYCL `publish_plan` starts the captured shared/hit graph, `P.fetch` starts H2D on a separate copy stream, and then the CPU builds/executes its CPU-owned expert jobs (`expert_source.cpp:2128-2133,2170-2225`; `verify.cpp:1542-1567`). The graph completes resident GPU work, then may wait for transferred misses. The CPU and DMA can therefore progress concurrently; no trace reviewed measures the overlap for the baseline. At the end of the pool callback the verifier checks work completion, then synchronizes the copy stream before advancing to the next layer segment (`verify.cpp:1333-1389`). This checked drain protects the staging lifetime. Existing host `ms_wait`, `ms_pool`, `ms_host`, dispatch times and any device event wait are separate/overlapping scopes; a copy-stream sync duration is host wait, not DMA active time. A graph event wait is not device-kernel duration. `pcie_experts * blob_bytes(layer)` is logical requested DMA payload, not measured PCIe wire bytes; no current metric establishes link protocol bytes or actual transfer-engine utilization.
+
+## Numerical and quality status
+
+The existing mixed-owner system deliberately uses separate CPU and GPU implementations. CPU native code uses GGML's activation quantizer and dot-product traits (`src/kernels/cpu/native_expert.cpp:21-68`). GPU native experts consume Q8_1 activation blocks and use SYCL's grouped packed formats (`native_mmvq.cpp:1407-1457`). The prior R624/R632 notes explain that GPU cached rows use Q8_1 arithmetic while CPU rows use their native IQ arithmetic; moving an expert from CPU to PCIe/GPU can change floating-point results and later routing. No quality delta for this exact `pcie_frac` change is measured in retained reports. Treat token equality, logits/numerical tolerance, task-quality gates and fresh fault status as required gates; do not infer equivalence from identical packed expert bytes or successful completion.
+
+## First bounded diagnostic and anti-hang conditions
+
+Do not start with a long generation or a fraction sweep. After Main's measurement lock permits it and without reusing job 16956/raw output, the minimum path exercise is one bounded request with the exact baseline binary/model/source/settings and same prompt configuration, but `max_new=1` and request-scoped `pcie_frac=0.15`. This is one of the smallest practical positive shares expected to select one miss at T=1 for a 128-slot per-layer cache (`pcie_num=38`); the arithmetic gate remains explicit: if the actual first-layer `nmiss<7`, no PCIe expert is selected and the run did not exercise the path. Check startup's arena pin note, successful SYCL graph capture, completion of all 48 layers, `pcie_experts>0`, normal DONE/close, no fault/dump change, and output/logit quality before any longer test. The current full-arena pinned assumption must be verified from this run's startup note; do not rely on platform default alone.
+
+Serve has a per-request watchdog (default 300 seconds unless `STRATA_WATCHDOG_S` sets another value; `generate.cpp:5296-5312`) and verifier release code for stalled spin flags (`verify.hpp:64-72`; `verify.cpp:167-187,1393-1404`). Keep the existing watchdog enabled and set a bounded explicit value at process start for a diagnostic if it is otherwise disabled. A watchdog is failure containment, not proof that a failure is harmless. Do not turn off GPU overlap, device graph segments, cache residency, or pool workers in the same arm: the purpose is to exercise the configured path with only `pcie_frac` changed. If the one-token path completes, the next arm may use the baseline max-new/context and compare pcie_frac 0 against one positive fraction; use identical input and distinct output samples, record host waits/device timing separately, and evaluate quality. The 6-GB/s control alone is not a reason to proceed to larger fractions.
+
+## One external method and transfer limit
+
+The primary source reviewed is the v1 HybriMoE paper, [arXiv:2504.05897v1](https://arxiv.org/abs/2504.05897v1), especially its dynamic hybrid scheduling section. It models CPU, GPU compute and PCIe transfer timelines, then assigns activated experts based on task load and earliest completion; it also prioritizes transfer of heavier uncached experts. That is a concrete example relevant to the current fixed-fraction, route-order split. HybriMoE's reported evaluation uses an RTX A6000, a 10-core Xeon Gold and Mixtral/DeepSeek-V2-Lite/Qwen2 on kTransformers/llama.cpp kernels, not Arc B570, this model's 48-layer IQ3_S pack, this CPU implementation or the SYCL DMA path. Its result numbers are not transferable. The paper's inter-layer score/prefetch and cache methods are outside this narrow task and are not proposed here.
+
+## Source hashes captured
+
+SHA-256 at review time:
+
+| File | SHA-256 |
+|---|---|
+| `CMakeLists.txt` | `01dde67c9af61c88f5aa22b0ea0e639f9f37cb2a31f9c7785fddd7233c34216d` |
+| `cmake/sycl_backend.cmake` | `5afbdb50088564ec30d72bcc7246e705b64100b997e83d17c267816942c00a8b` |
+| `src/program/generate.cpp` | `d4048082aae24f4afc6c841309b0d0f63f2303085880d92da1cc7ebe4e83e80c` |
+| `src/core/expert_source.cpp` | `2b252e49025178349f327eb54205e1a19b2deb0724945a8deb6a8ec72bf04ae5` |
+| `src/core/verify.cpp` | `640e0270be833ddff0218331a7db18043605af3ced2682787f6b06abdcf6316c` |
+| `include/strata/core/verify.hpp` | `1f8f43ed9f7278ce260a2681b70f3dbfa18b07ff87a90ddb520a60406fb92787` |
+| `include/strata/core/expert_source.hpp` | `38bbbad222b62e8cd5ae7bbdcc2760371ea042ded3db67db40fe6872ddb827a1` |
+| `src/kernels/sycl/native_mmvq.cpp` | `09b34a547c57ef6fbe84c66f58b685096381f9d6a6ad9a3c74830da20a2152d2` |
+| `src/kernels/cpu/native_expert.cpp` | `fcb4a7c74ba45a13da162eed832860f9644f4544d3f269b9c8588f01b40fb106` |
+
+No runtime observation or performance claim was produced. This report is a source-grounded test plan and one unqualified scheduling candidate, not implementation approval.

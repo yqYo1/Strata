@@ -1,0 +1,39 @@
+# R641 v2 — SYCL segment order and DMA enqueue error audit
+
+Date: 2026-10-15 JST
+Scope: read-only correction after Main review. R641 v1 is retained unchanged. This is the only new file. No implementation, GPU/process action, test, build, Git operation, cleanup, active-job inspection, or raw measurement access.
+
+## Corrected finding
+
+The CUDA comment describing flag B as a GPU spin wait does not describe the configured SYCL verifier. In `src/core/verify.cpp:843-845,872-875,892-894`, all ordinary `wait_flag_ge` calls are inside `#ifndef STRATA_ENABLE_SYCL`; the SYCL counterparts in `src/kernels/sycl/sequence.cpp:37-44` throw because mapped polling is unsupported. SYCL completion is event/stream based.
+
+The SYCL overlap path builds two graph kinds. For each group, `pre()` publishes the host plan and, when overlap is enabled, starts the shared/resident-hit work graph (`verify.cpp:801-807,1542-1567`). That work graph contains the shared expert and resident grouped-hit work from the captured `pre()` segment. Separately, the verifier captures a layer segment containing `post()` and the next `pre()` (`:923-950`); for overlap it first captures and instantiates a shared/hit work segment (`:931-942`). At each layer/group boundary the request thread ends capture and then completes `layer_done_` before host-plan/results consumption (`:927-945,1292-1301`).
+
+After the pool callback has served the CPU-owned rows, the SYCL path checks/starts the shared-hit work if the pool did not publish it, then synchronizes `copy_` (`:1333-1389`). That checked copy drain protects the staging and callback storage lifetime. Only after it succeeds does it launch the next layer segment (`:1373-1389`). The next captured segment performs the post/combine and following pre work; `cs_` is synchronized at the end of the verify window (`:1393-1404`). Therefore describe this as host pool + overlapping shared/resident graph and DMA enqueue, followed by checked copy-stream drain and next graph segment. It is not the host waiting for a GPU spin kernel on mapped flag B. Copy-stream sync time is host wait, not DMA active duration; neither that wait nor graph completion alone measures PCIe bandwidth.
+
+## DMA error propagation: confirmed gap to fix before a diagnostic
+
+`Verifier::fetch_dma()` currently ignores every `cudaMemcpyAsync` return and the `cudaLaunchHostFunc` return (`verify.cpp:1530-1540`). In SYCL compat, `cudaMemcpyAsync` executes `attempt()`: it validates pointers, invokes `queue(st).memcpy`, and returns an error code if validation or submission throws (`src/sycl/compat.cpp:253-259`). `cudaLaunchHostFunc` similarly returns an error from validation or queue submission (`:426-431`). These are synchronous enqueue/API failures, distinct from asynchronous device/queue execution errors.
+
+The compat `attempt()` records such a failure in thread-local `last_error`/`detail` and returns it (`compat.cpp:47-76`). The later `cudaStreamSynchronize(copy_)` calls `wait_and_throw()` and runtime async-error checks (`:328-332`); that observes asynchronous queue failures, but it does not inspect or return the earlier thread-local `last_error` (`:583-588` show that it is only consumed by `cudaGetLastError`). Thus a synchronous DMA enqueue/validation error can be silently discarded by `fetch_dma`; the subsequent stream sync is not proven to report it. A rejected copy enqueue can therefore leave a staging slot without a successfully submitted transfer even though the later drain returns success; this can expose invalid expert bytes to the next segment. The callback status is also unchecked; on this SYCL path flag-B mapped polling is absent, so do not claim that callback failure itself stalls the SYCL graph. This is a source-confirmed error-handling gap, not a claim that it caused a retained failure.
+
+Main should correct this before the first PCIe-path diagnostic: check each copy enqueue and the callback enqueue, preserve the first error in verifier-owned request state, stop publishing/launching dependent work, and return a clear failure at the callback/pool boundary. Do not rely on thread-local last-error as delayed sticky propagation. Separately keep checking `copy_` synchronization, because successful enqueue does not prove asynchronous completion succeeded.
+
+## Fraction and timeout corrections
+
+The configured serve SYCL watchdog default is 300 seconds; explicit `STRATA_WATCHDOG_S` overrides it (`src/program/generate.cpp:5290-5317`). The retained R613 failure report records a 480-second watchdog event. That is the current measurement's fixed timeout, not a source-level default; preserve 480 seconds for a bounded reproduction if that is the owner's established recipe.
+
+`pcie_frac=0.15` is not established as the smallest positive fraction that selects an expert. It quantizes to `pcie_num=38`; selection is `m=(nmiss*pcie_num)>>8`, so the inference is only that at least 7 distinct eligible misses are needed for one selected entry at this share. Actual per-window `pcie_experts` must confirm the path; if the observed count is zero, the arm did not exercise PCIe routing. Source selection further requires a pinned blob, so `nmiss>=7` alone is not sufficient.
+
+## Evidence and limits
+
+Source locations above were checked in the current worktree. R641 v1 remains the prior record of source maps, fraction mechanics, arithmetic-quality caveats, and proposed bounded request; its incorrect synchronization wording and default-timeout phrasing are superseded by this v2. The actual first diagnostic remains contingent on Main's measurement lock and on fixing the ignored enqueue statuses. No new performance or numerical evidence was collected.
+
+Source byte hashes at review:
+
+| File | SHA-256 |
+|---|---|
+| `src/core/verify.cpp` | `640e0270be833ddff0218331a7db18043605af3ced2682787f6b06abdcf6316c` |
+| `src/sycl/compat.cpp` | `225e2021b5ce67b3bb58f116a4a15cd5d592a33dbdf2c9837940a3e89155dca7` |
+| `src/kernels/sycl/sequence.cpp` | `14ed9efceafac9828d495e0265d5831e0e2f5eea071e9edb159df94580c730b8` |
+| `src/program/generate.cpp` | `d4048082aae24f4afc6c841309b0d0f63f2303085880d92da1cc7ebe4e83e80c` |
