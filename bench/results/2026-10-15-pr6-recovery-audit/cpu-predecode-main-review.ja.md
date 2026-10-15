@@ -31,7 +31,22 @@ expanded/GGMLのpaired thread-CPU時間比の中央値は18=0.6260、22=0.8030�
 既存single-exactに対しては18=0.7001、22=0.7439、21=0.5701。
 ただし周波数設定はpowersaveで、paired比の幅も大きい。
 例えばtype22の対GGML比は0.5904〜1.0561。初回だけで安定した改善と判断しない。
-同一coreの独立プロセスで64expert条件を追加反復する。
+同一coreの独立プロセスで64expert条件を追加反復した。
+
+`check_cpu_predecode_repeat_v1.py`による追加3process（各432、計1,296サンプル）も
+正常終了・回収済み。対GGMLのpaired thread-CPU中央値比は次の通り。
+
+| type | 最初のprocess | 追加0 | 追加1 | 追加2 |
+| --- | ---: | ---: | ---: | ---: |
+| 18 IQ3_XXS | 0.6260 | 0.6202 | 0.5878 | 0.6007 |
+| 22 IQ2_S | 0.8030 | 0.8054 | 0.7199 | 0.6884 |
+| 21 IQ3_S | 0.5298 | 0.4875 | 0.5115 | 0.4755 |
+
+wallの中央値比も同様の改善方向で、既存single-exactに対しても各processで改善した。
+全個別値は`cpu-predecode-repeat-v1.json`、各ABBAブロックの両clock比は
+`cpu-predecode-repeat-summary-v1.json`に保存した。初回を含む独立4processで
+部品計算の改善が再現したため、次は実モデルの再訪観測へ進む。
+nt2〜4は正しさだけの合格で、性能比較はまだしていない。
 
 この結果は合成packed重みの部品結果である。
 実モデルのexpert分布、再訪率、複数workerでの帯域競合、展開代の回収は未測定。

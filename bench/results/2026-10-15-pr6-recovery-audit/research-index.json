@@ -346,6 +346,22 @@
       "path": "research-prefill-scratch-retire-round599-v1.txt",
       "sha256": "283c0267bdd02a77f35041c73fa7b679e6a700f291ad70f835376c3bf8ab7e7a",
       "status": "Main reviewed owner proposal. Sol checked retirement proposal FINAL, not applied/built/tested. Accounted1.55GiB is not measured reclaim."
+    },
+    {
+      "round": 600,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-profiled-prompt-attention-round600-v1.txt",
+      "sha256": "8313e3f0f427a55b3c046a3c8a839342f097e26b425976c04ca27e3a9fc382a1",
+      "status": "Main reviewed. Priority existingDirect int8; small Main diagnostic now active. Correct R600 DownGEMM12.073s to genericF16dequant, Kcodes enter half exactly rather thanhi/lo. No speed adoption."
+    },
+    {
+      "round": 601,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-profiled-dequant-reuse-round601-v1.txt",
+      "sha256": "5a14919125b5df65a12d23ec3277a519b292762ed886db4b3834747a156f5b70",
+      "status": "Main reviewed. BoundedLRU needs exact sequentialreuse; sorted perchunk expert walks may thrash tinyLRU. No implementation/adoption before evidence. Fusedtile alternative larger candidate."
     }
   ],
   "main_initial_findings": [
@@ -376,7 +392,10 @@
     "component": "kv-resolver-profile-v1.json",
     "summary": "kv-resolver-profile-summary-v1.json",
     "model_recipe": "check_model_device_profile_v1.py",
-    "state": "Official pinned unitrace device table collected;756resolve/378+378copy counts match full graph fixture. Model34K128 profile active, no model result yet."
+    "state": "Actual34K128normalMTP4 profile PASS/fault0, same128IDs/work. Promptattention44.066s priority; GUdequant22.413s; genericdequant12.073s; KV1.295+.318s660calls. Aggregate not clean throughput or busy union.",
+    "model": "model-device-profile-v1.json",
+    "model_summary": "model-device-profile-summary-v1.json",
+    "review": "model-device-profile.ja.md"
   },
   "implementation_next": {
     "agent": "gpt-6.1-sol",
@@ -555,6 +574,14 @@
     {
       "directory": "cpu-predecode-probe-v1",
       "state": "Sol FINAL received; source review and Main CPU tests pending; not applied."
+    },
+    {
+      "directory": "checked-prefill-retire-v1",
+      "state": "SolFINAL; Mainfirstreviewdone, unapplied/unbuilt/untested; accountedbytes not measuredfree."
+    },
+    {
+      "directory": "cpu-gu-reuse-observer-v1",
+      "state": "SolFINAL; Mainsource reviewdone; CPUmock/productapply/build/realmodel gates pending."
     }
   ],
   "kv_copy_groups": {
@@ -568,6 +595,12 @@
     "proposal": "cpu-predecode-probe-v1",
     "receipt": "cpu-predecode-probe-v1.json",
     "review": "cpu-predecode-main-review.ja.md",
-    "state": "Main normal+ASan6276cases eachPASS;1296nt1samples, streaming ratios promising but variable. Independent64expert repeats queued; no productcache/adoption."
+    "state": "Normal+ASan6276cases eachPASS. Initial1296samples+1296repeat samples. Streamingnt1 win reproduced4processes; actualrecurrenceobserver proposal FINAL, Mainreviewinprogress, no productcache/adoption.",
+    "repeat": "cpu-predecode-repeat-v1.json",
+    "summary": "cpu-predecode-repeat-summary-v1.json"
+  },
+  "prompt_direct": {
+    "state": "Existingflag only, initialint8smallDirect1 first-use diagnostic active. No sourcechange/no performanceadoption.",
+    "recipe": "check_prompt_direct_small_v1.py"
   }
 }

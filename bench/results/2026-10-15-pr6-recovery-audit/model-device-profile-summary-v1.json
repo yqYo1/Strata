@@ -1,0 +1,2648 @@
+{
+  "total_device_service_ns": 167176225008,
+  "kernels": [
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::launch<1, false, false>(float const*, strata::kernels::QsaAttnPools, int const*, int const*, long, strata::kernels::QsaShapes, float*, long, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "calls": 108,
+      "total_ns": 44066063496,
+      "reported_percent": 26.359047,
+      "average_ns": 408019106,
+      "minimum_ns": 202404687,
+      "maximum_ns": 465451354
+    },
+    {
+      "kernel": "zeCommandListAppendMemoryCopy(M2D)",
+      "calls": 25758,
+      "total_ns": 29275485626,
+      "reported_percent": 17.511753,
+      "average_ns": 1136558,
+      "minimum_ns": 2916,
+      "maximum_ns": 110111770
+    },
+    {
+      "kernel": "strata::kernels::iq_dequant_gu_f16(int, void const*, void const*, long, long, unsigned short*, void*)::{lambda(sycl::_V1::id<2>)#1}",
+      "calls": 91880,
+      "total_ns": 22413195562,
+      "reported_percent": 13.406927,
+      "average_ns": 243939,
+      "minimum_ns": 214687,
+      "maximum_ns": 413854
+    },
+    {
+      "kernel": "zeCommandListAppendMemoryCopy(D2M)",
+      "calls": 390,
+      "total_ns": 12633204209,
+      "reported_percent": 7.556819,
+      "average_ns": 32392831,
+      "minimum_ns": 2500,
+      "maximum_ns": 149006875
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::dequant<unsigned short>(int, void const*, long, unsigned short*, void*)::{lambda(sycl::_V1::id<1>)#1}",
+      "calls": 94580,
+      "total_ns": 12073214518,
+      "reported_percent": 7.221849,
+      "average_ns": 127650,
+      "minimum_ns": 88854,
+      "maximum_ns": 6281145
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::prompt_product<strata::kernels::(anonymous namespace)::SmallTraits<strata::kernels::(anonymous namespace)::Q80Block, 8> >(strata::kernels::NativeMmq, sycl::_V1::queue&)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "calls": 68,
+      "total_ns": 4022049658,
+      "reported_percent": 2.405874,
+      "average_ns": 59147789,
+      "minimum_ns": 61145,
+      "maximum_ns": 247152500
+    },
+    {
+      "kernel": "gemm_f16f16f32_nocopy_tn_64x40_4x8",
+      "calls": 6817,
+      "total_ns": 4011811154,
+      "reported_percent": 2.39975,
+      "average_ns": 588500,
+      "minimum_ns": 50208,
+      "maximum_ns": 8401770
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::recurrence(float*, float const*, float const*, float const*, int, float const*, float const*, float const*, float const*, float, float*, int, int, int, int const*, bool, int, void*, unsigned short*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "calls": 4284,
+      "total_ns": 3680105152,
+      "reported_percent": 2.201333,
+      "average_ns": 859034,
+      "minimum_ns": 16666,
+      "maximum_ns": 23632395
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::append<1>(strata::kernels::(anonymous namespace)::Pools, int const*, int const*, long, long, float const*, float const*, strata::kernels::QsaShapes const&, void*, strata::kernels::KvHostPools, strata::kernels::KvHostPools)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "calls": 3104,
+      "total_ns": 2963586940,
+      "reported_percent": 1.772732,
+      "average_ns": 954763,
+      "minimum_ns": 8958,
+      "maximum_ns": 41446666
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::launch<strata::kernels::(anonymous namespace)::Q6KTraits, 1, 4>(void const*, void const*, float*, int, int, int, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "calls": 7257,
+      "total_ns": 2951619159,
+      "reported_percent": 1.765574,
+      "average_ns": 406727,
+      "minimum_ns": 22604,
+      "maximum_ns": 18666562
+    },
+    {
+      "kernel": "gemm_f16f16f32_nocopy_tn_32x64_8x4",
+      "calls": 9691,
+      "total_ns": 2855920358,
+      "reported_percent": 1.708329,
+      "average_ns": 294698,
+      "minimum_ns": 39583,
+      "maximum_ns": 4603437
+    },
+    {
+      "kernel": "strata::kernels::qsa_block_scores(float const*, float const*, float const*, int const*, long, long, strata::kernels::QsaShapes const&, float*, void*, long)::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "calls": 2292,
+      "total_ns": 2801861532,
+      "reported_percent": 1.675993,
+      "average_ns": 1222452,
+      "minimum_ns": 18854,
+      "maximum_ns": 3356666
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::append(sycl::_V1::queue&, float const*, int const*, int, int, float const*, float, strata::kernels::QsaIndexerBuffers, int, strata::kernels::(anonymous namespace)::Angles)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "calls": 420468,
+      "total_ns": 1934200042,
+      "reported_percent": 1.156983,
+      "average_ns": 4600,
+      "minimum_ns": 2187,
+      "maximum_ns": 38958
+    },
+    {
+      "kernel": "gemm_f16f16f32_nocopy_tn_16x16_4x2x4",
+      "calls": 59514,
+      "total_ns": 1810803927,
+      "reported_percent": 1.083171,
+      "average_ns": 30426,
+      "minimum_ns": 22812,
+      "maximum_ns": 62395
+    },
+    {
+      "kernel": "strata::sycl_backend::for_each<strata::kernels::copy_rows_from_mapped(float*, float const*, long, long, int const*, int const*, void*)::{lambda(unsigned long)#1}>(long, void*, strata::kernels::copy_rows_from_mapped(float*, float const*, long, long, int const*, int const*, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "calls": 2640,
+      "total_ns": 1558159518,
+      "reported_percent": 0.932046,
+      "average_ns": 590211,
+      "minimum_ns": 23020,
+      "maximum_ns": 4886145
+    },
+    {
+      "kernel": "strata::kernels::kv_stream_resolve_with_copy_groups(strata::kernels::KvStreamMap const&, strata::kernels::QsaAttnPools const&, strata::kernels::KvHostPools const&, int, int const*, int const*, long, long, strata::kernels::QsaShapes const&, void*, unsigned int)::{lambda()#1}",
+      "calls": 660,
+      "total_ns": 1294606604,
+      "reported_percent": 0.774396,
+      "average_ns": 1961525,
+      "minimum_ns": 704062,
+      "maximum_ns": 4734583
+    },
+    {
+      "kernel": "strata::sycl_backend::for_each<strata::prefill::gather_rows16(unsigned short const*, int const*, unsigned short*, long, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::gather_rows16(unsigned short const*, int const*, unsigned short*, long, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "calls": 91880,
+      "total_ns": 1264392422,
+      "reported_percent": 0.756323,
+      "average_ns": 13761,
+      "minimum_ns": 1666,
+      "maximum_ns": 298020
+    },
+    {
+      "kernel": "zeCommandListAppendMemoryCopy(H2D)",
+      "calls": 1305,
+      "total_ns": 1152160431,
+      "reported_percent": 0.689189,
+      "average_ns": 882881,
+      "minimum_ns": 6562,
+      "maximum_ns": 17344375
+    },
+    {
+      "kernel": "strata::sycl_backend::for_each<strata::prefill::(anonymous namespace)::mix<true>(float const*, float const*, float const*, float const*, float*, unsigned short*, long, void*, unsigned short*, unsigned short*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::(anonymous namespace)::mix<true>(float const*, float const*, float const*, float const*, float*, unsigned short*, long, void*, unsigned short*, unsigned short*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "calls": 881,
+      "total_ns": 1072869726,
+      "reported_percent": 0.64176,
+      "average_ns": 1217786,
+      "minimum_ns": 4687,
+      "maximum_ns": 1367604
+    },
+    {
+      "kernel": "strata::sycl_backend::for_each<strata::prefill::gr_write(float*, float const*, float const*, long, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::gr_write(float*, float const*, float const*, long, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "calls": 864,
+      "total_ns": 972992344,
+      "reported_percent": 0.582016,
+      "average_ns": 1126148,
+      "minimum_ns": 527291,
+      "maximum_ns": 1756770
+    },
+    {
+      "kernel": "gemm_bf16bf16f32_nocopy_tn_32x64_8x4",
+      "calls": 1287,
+      "total_ns": 942202161,
+      "reported_percent": 0.563598,
+      "average_ns": 732091,
+      "minimum_ns": 192187,
+      "maximum_ns": 5681041
+    },
+    {
+      "kernel": "gemm_bf16bf16f32_nocopy_tn_64x40_4x8",
+      "calls": 867,
+      "total_ns": 850910671,
+      "reported_percent": 0.50899,
+      "average_ns": 981442,
+      "minimum_ns": 433645,
+      "maximum_ns": 1953333
+    },
+    {
+      "kernel": "strata::prefill::(anonymous namespace)::norm<true>(float const*, float const*, float, float*, unsigned short*, long, void*, unsigned short*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "calls": 881,
+      "total_ns": 683918909,
+      "reported_percent": 0.409101,
+      "average_ns": 776298,
+      "minimum_ns": 6458,
+      "maximum_ns": 1299791
+    },
+    {
+      "kernel": "strata::sycl_backend::for_each<strata::prefill::moe_combine(float const*, int const*, float const*, float const*, float const*, float*, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::moe_combine(float const*, int const*, float const*, float const*, float const*, float*, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "calls": 432,
+      "total_ns": 655960860,
+      "reported_percent": 0.392377,
+      "average_ns": 1518427,
+      "minimum_ns": 726250,
+      "maximum_ns": 1756145
+    },
+    {
+      "kernel": "strata::kernels::qsa_block_topk(float const*, int const*, long, long, long, strata::kernels::QsaShapes const&, int*, void*, long)::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "calls": 2292,
+      "total_ns": 548972372,
+      "reported_percent": 0.328379,
+      "average_ns": 239516,
+      "minimum_ns": 2708,
+      "maximum_ns": 918854
+    },
+    {
+      "kernel": "gemm_f16f16f32_nocopy_tn_32x48_8x4",
+      "calls": 6312,
+      "total_ns": 460812677,
+      "reported_percent": 0.275645,
+      "average_ns": 73005,
+      "minimum_ns": 31250,
+      "maximum_ns": 246979
+    },
+    {
+      "kernel": "gemm_f16f16f32_nocopy_tn_16x16_8x4",
+      "calls": 44042,
+      "total_ns": 458299380,
+      "reported_percent": 0.274141,
+      "average_ns": 10405,
+      "minimum_ns": 8333,
+      "maximum_ns": 41041
+    },
+    {
+      "kernel": "gemm_f16f16f32_nocopy_tn_16x32_8x4",
+      "calls": 12668,
+      "total_ns": 415636185,
+      "reported_percent": 0.248622,
+      "average_ns": 32809,
+      "minimum_ns": 13541,
+      "maximum_ns": 92604
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::conv(float const*, float*, float const*, float const*, float*, int, int, float, int, int, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "calls": 2304,
+      "total_ns": 393602745,
+      "reported_percent": 0.235442,
+      "average_ns": 170834,
+      "minimum_ns": 2604,
+      "maximum_ns": 2688229
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::down_esimd(strata::kernels::FusedGrArgs, void*)::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "calls": 21369,
+      "total_ns": 389352936,
+      "reported_percent": 0.2329,
+      "average_ns": 18220,
+      "minimum_ns": 9791,
+      "maximum_ns": 64479
+    },
+    {
+      "kernel": "strata::sycl_backend::for_each<strata::prefill::swiglu_interleaved(float const*, unsigned short*, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::swiglu_interleaved(float const*, unsigned short*, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "calls": 91880,
+      "total_ns": 376106949,
+      "reported_percent": 0.224976,
+      "average_ns": 4093,
+      "minimum_ns": 1250,
+      "maximum_ns": 83541
+    },
+    {
+      "kernel": "gemm_f16f16f32_nocopy_tn_32x64_8x2x2",
+      "calls": 4372,
+      "total_ns": 353140998,
+      "reported_percent": 0.211239,
+      "average_ns": 80773,
+      "minimum_ns": 59791,
+      "maximum_ns": 148958
+    },
+    {
+      "kernel": "gemm_bf16bf16f32_nocopy_tn_16x16_1x4x8",
+      "calls": 1296,
+      "total_ns": 330703948,
+      "reported_percent": 0.197818,
+      "average_ns": 255172,
+      "minimum_ns": 56250,
+      "maximum_ns": 373958
+    },
+    {
+      "kernel": "strata::kernels::kv_stream_resolve_with_copy_groups(strata::kernels::KvStreamMap const&, strata::kernels::QsaAttnPools const&, strata::kernels::KvHostPools const&, int, int const*, int const*, long, long, strata::kernels::QsaShapes const&, void*, unsigned int)::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "calls": 660,
+      "total_ns": 318449841,
+      "reported_percent": 0.190488,
+      "average_ns": 482499,
+      "minimum_ns": 6354,
+      "maximum_ns": 6886770
+    },
+    {
+      "kernel": "gemm_f16f16f32_nocopy_tn_32x32_4x2x4",
+      "calls": 6773,
+      "total_ns": 318238844,
+      "reported_percent": 0.190361,
+      "average_ns": 46986,
+      "minimum_ns": 39375,
+      "maximum_ns": 78750
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::projection<false, 8>(strata::kernels::(anonymous namespace)::Meta, unsigned char const*, float const*, float*, void*)::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "calls": 162,
+      "total_ns": 290528891,
+      "reported_percent": 0.173786,
+      "average_ns": 1793388,
+      "minimum_ns": 1761875,
+      "maximum_ns": 2342395
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::launch<strata::kernels::(anonymous namespace)::SmallTraits<strata::kernels::(anonymous namespace)::IQ4NLBlock, 4>, 4, 4>(void const*, void const*, float*, int, int, int, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "calls": 2585,
+      "total_ns": 267681640,
+      "reported_percent": 0.160119,
+      "average_ns": 103551,
+      "minimum_ns": 43437,
+      "maximum_ns": 205104
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::up_esimd(strata::kernels::FusedGrArgs, void*)::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "calls": 21369,
+      "total_ns": 262215321,
+      "reported_percent": 0.15685,
+      "average_ns": 12270,
+      "minimum_ns": 7187,
+      "maximum_ns": 53437
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::projection<true, 8>(strata::kernels::(anonymous namespace)::Meta, unsigned char const*, float const*, float*, void*)::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "calls": 162,
+      "total_ns": 258689200,
+      "reported_percent": 0.15474,
+      "average_ns": 1596846,
+      "minimum_ns": 1580000,
+      "maximum_ns": 2075833
+    },
+    {
+      "kernel": "gemm_f16f16f32_nocopy_tn_16x16_4x4x2",
+      "calls": 7452,
+      "total_ns": 257230974,
+      "reported_percent": 0.153868,
+      "average_ns": 34518,
+      "minimum_ns": 29166,
+      "maximum_ns": 50833
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::launch<strata::kernels::(anonymous namespace)::IQ4XSTraits, 4, 4>(void const*, void const*, float*, int, int, int, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "calls": 2268,
+      "total_ns": 215094874,
+      "reported_percent": 0.128664,
+      "average_ns": 94839,
+      "minimum_ns": 23541,
+      "maximum_ns": 603854
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::launch<strata::kernels::(anonymous namespace)::SmallTraits<strata::kernels::(anonymous namespace)::Q80Block, 8>, 1, 4>(void const*, void const*, float*, int, int, int, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "calls": 1565,
+      "total_ns": 189159234,
+      "reported_percent": 0.11315,
+      "average_ns": 120868,
+      "minimum_ns": 21562,
+      "maximum_ns": 547395
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::launch<1, false>(float const*, strata::kernels::QsaAttnPools, int const*, int const*, long, strata::kernels::QsaShapes, float*, float*, long, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "calls": 822,
+      "total_ns": 183416110,
+      "reported_percent": 0.109714,
+      "average_ns": 223133,
+      "minimum_ns": 46770,
+      "maximum_ns": 740833
+    },
+    {
+      "kernel": "zeCommandListAppendMemoryCopy(D2D)",
+      "calls": 66712,
+      "total_ns": 162942135,
+      "reported_percent": 0.097467,
+      "average_ns": 2442,
+      "minimum_ns": 625,
+      "maximum_ns": 1035416
+    },
+    {
+      "kernel": "strata::kernels::native_q4_k_esimd(void const*, void const*, float*, int, int, int, void*)::{lambda(sycl::_V1::nd_item<2>)#1}",
+      "calls": 2538,
+      "total_ns": 162378896,
+      "reported_percent": 0.09713,
+      "average_ns": 63979,
+      "minimum_ns": 16666,
+      "maximum_ns": 396666
+    },
+    {
+      "kernel": "gemm_f16f16f32_nocopy_tn_16x1_4x1",
+      "calls": 22924,
+      "total_ns": 160062876,
+      "reported_percent": 0.095745,
+      "average_ns": 6982,
+      "minimum_ns": 4062,
+      "maximum_ns": 13750
+    },
+    {
+      "kernel": "gemm_f16f16f32_nocopy_tn_16x64_16x2",
+      "calls": 5895,
+      "total_ns": 140854842,
+      "reported_percent": 0.084255,
+      "average_ns": 23893,
+      "minimum_ns": 22083,
+      "maximum_ns": 41354
+    },
+    {
+      "kernel": "strata::kernels::native_quantize_q8_1(float const*, void*, int, int, void*)::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "calls": 19884,
+      "total_ns": 138584317,
+      "reported_percent": 0.082897,
+      "average_ns": 6969,
+      "minimum_ns": 1875,
+      "maximum_ns": 40833
+    },
+    {
+      "kernel": "strata::prefill::mmq::quantize(float const*, int const*, void*, int, long, long, long, void*)::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "calls": 68,
+      "total_ns": 134454345,
+      "reported_percent": 0.080427,
+      "average_ns": 1977269,
+      "minimum_ns": 17500,
+      "maximum_ns": 5364479
+    },
+    {
+      "kernel": "strata::sycl_backend::for_each<strata::kernels::window_ids(int*, int, int, int*, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::kernels::window_ids(int*, int, int, int*, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "calls": 162,
+      "total_ns": 123011593,
+      "reported_percent": 0.073582,
+      "average_ns": 759330,
+      "minimum_ns": 751458,
+      "maximum_ns": 984062
+    },
+    {
+      "kernel": "strata::prefill::rms_rows(float*, float const*, long, long, long, float, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "calls": 375,
+      "total_ns": 121381396,
+      "reported_percent": 0.072607,
+      "average_ns": 323683,
+      "minimum_ns": 1354,
+      "maximum_ns": 1402812
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::grouped<20>(bool, strata::kernels::NativeExpertLayout, unsigned long long const*, int const*, int const*, int const*, int const*, int, int, void const*, float*, float*, float*, void*)::{lambda(sycl::_V1::nd_item<2>)#1}",
+      "calls": 4290,
+      "total_ns": 107111772,
+      "reported_percent": 0.064071,
+      "average_ns": 24967,
+      "minimum_ns": 5520,
+      "maximum_ns": 211770
+    },
+    {
+      "kernel": "strata::sycl_backend::for_each<strata::prefill::copy_i32(int*, int const*, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::copy_i32(int*, int const*, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "calls": 1152,
+      "total_ns": 103884698,
+      "reported_percent": 0.062141,
+      "average_ns": 90177,
+      "minimum_ns": 27500,
+      "maximum_ns": 2026145
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::grouped_projection<strata::kernels::(anonymous namespace)::IQ2STraits, false>(strata::kernels::NativeExpertLayout const&, unsigned long long const*, int const*, int const*, int const*, int const*, int, int, strata::kernels::(anonymous namespace)::Q81Block const*, float*, float*, float*, int, sycl::_V1::queue&)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<2>)#1}",
+      "calls": 2160,
+      "total_ns": 103602575,
+      "reported_percent": 0.061972,
+      "average_ns": 47964,
+      "minimum_ns": 38020,
+      "maximum_ns": 218541
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::native<4>(float const*, long, unsigned short const*, float*, long, long, long, int, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "calls": 6480,
+      "total_ns": 97004796,
+      "reported_percent": 0.058025,
+      "average_ns": 14969,
+      "minimum_ns": 6354,
+      "maximum_ns": 56458
+    },
+    {
+      "kernel": "strata::sycl_backend::for_each<strata::prefill::gate_attn(float const*, float const*, unsigned short*, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::gate_attn(float const*, float const*, unsigned short*, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "calls": 108,
+      "total_ns": 86039018,
+      "reported_percent": 0.051466,
+      "average_ns": 796657,
+      "minimum_ns": 376458,
+      "maximum_ns": 859479
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::grouped_projection<strata::kernels::(anonymous namespace)::IQ3XXSTraits, false>(strata::kernels::NativeExpertLayout const&, unsigned long long const*, int const*, int const*, int const*, int const*, int, int, strata::kernels::(anonymous namespace)::Q81Block const*, float*, float*, float*, int, sycl::_V1::queue&)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<2>)#1}",
+      "calls": 1836,
+      "total_ns": 84147038,
+      "reported_percent": 0.050334,
+      "average_ns": 45831,
+      "minimum_ns": 37812,
+      "maximum_ns": 133229
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::batched_head<4>(unsigned char const*, unsigned char const*, float*, int, void*)::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "calls": 918,
+      "total_ns": 84063488,
+      "reported_percent": 0.050284,
+      "average_ns": 91572,
+      "minimum_ns": 59583,
+      "maximum_ns": 203541
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::native<1>(float const*, long, unsigned short const*, float*, long, long, long, int, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "calls": 1636,
+      "total_ns": 81684425,
+      "reported_percent": 0.048861,
+      "average_ns": 49929,
+      "minimum_ns": 2916,
+      "maximum_ns": 332187
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::launch<strata::kernels::(anonymous namespace)::Q5KTraits, 1, 4>(void const*, void const*, float*, int, int, int, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "calls": 990,
+      "total_ns": 72047102,
+      "reported_percent": 0.043097,
+      "average_ns": 72774,
+      "minimum_ns": 15937,
+      "maximum_ns": 376041
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::launch(strata::kernels::FusedGrArgs, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "calls": 21369,
+      "total_ns": 71626603,
+      "reported_percent": 0.042845,
+      "average_ns": 3351,
+      "minimum_ns": 2291,
+      "maximum_ns": 35000
+    },
+    {
+      "kernel": "strata::kernels::gdn_ab_multi(float const*, unsigned short const*, unsigned short const*, float const*, float const*, float*, float*, int, int, int, void*)::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "calls": 1980,
+      "total_ns": 71043126,
+      "reported_percent": 0.042496,
+      "average_ns": 35880,
+      "minimum_ns": 15416,
+      "maximum_ns": 71770
+    },
+    {
+      "kernel": "strata::sycl_backend::for_each<strata::prefill::split_q(float const*, float*, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::split_q(float const*, float*, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "calls": 108,
+      "total_ns": 64433076,
+      "reported_percent": 0.038542,
+      "average_ns": 596602,
+      "minimum_ns": 286562,
+      "maximum_ns": 787604
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::launch<1, false>(float const*, strata::kernels::QsaAttnPools, int const*, int const*, long, strata::kernels::QsaShapes, float*, float*, long, void*)::{lambda(sycl::_V1::id<1>)#1}",
+      "calls": 822,
+      "total_ns": 63719841,
+      "reported_percent": 0.038115,
+      "average_ns": 77518,
+      "minimum_ns": 13854,
+      "maximum_ns": 391875
+    },
+    {
+      "kernel": "strata::kernels::iq_embed_rows(int, void const*, unsigned long, int const*, long, long, float*, void*)::{lambda(sycl::_V1::id<2>)#1}",
+      "calls": 295,
+      "total_ns": 50041123,
+      "reported_percent": 0.029933,
+      "average_ns": 169630,
+      "minimum_ns": 51250,
+      "maximum_ns": 4674270
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::launch<false>(float const*, int, int, int const*, int, strata::kernels::SamplerParams, strata::kernels::SamplerParams const*, int const*, int const*, int*, float*, int*, int, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "calls": 217,
+      "total_ns": 49928549,
+      "reported_percent": 0.029866,
+      "average_ns": 230085,
+      "minimum_ns": 169895,
+      "maximum_ns": 477500
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::grouped_projection<strata::kernels::(anonymous namespace)::IQ3STraits, false>(strata::kernels::NativeExpertLayout const&, unsigned long long const*, int const*, int const*, int const*, int const*, int, int, strata::kernels::(anonymous namespace)::Q81Block const*, float*, float*, float*, int, sycl::_V1::queue&)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<2>)#1}",
+      "calls": 1080,
+      "total_ns": 48418961,
+      "reported_percent": 0.028963,
+      "average_ns": 44832,
+      "minimum_ns": 37812,
+      "maximum_ns": 115416
+    },
+    {
+      "kernel": "gemm_bf16bf16f32_nocopy_tn_32x48_8x4",
+      "calls": 164,
+      "total_ns": 46777748,
+      "reported_percent": 0.027981,
+      "average_ns": 285230,
+      "minimum_ns": 97187,
+      "maximum_ns": 398645
+    },
+    {
+      "kernel": "strata::kernels::native_router_top10_multi(float const*, int*, float*, int, void*)::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "calls": 3234,
+      "total_ns": 44887789,
+      "reported_percent": 0.026851,
+      "average_ns": 13879,
+      "minimum_ns": 7604,
+      "maximum_ns": 97500
+    },
+    {
+      "kernel": "gemm_bf16bf16f32_nocopy_tn_32x32_2x2x8",
+      "calls": 576,
+      "total_ns": 43897906,
+      "reported_percent": 0.026258,
+      "average_ns": 76211,
+      "minimum_ns": 65625,
+      "maximum_ns": 97395
+    },
+    {
+      "kernel": "strata::sycl_backend::for_each<strata::prefill::swiglu_pair(float const*, float const*, unsigned short*, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::swiglu_pair(float const*, float const*, unsigned short*, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "calls": 432,
+      "total_ns": 34690035,
+      "reported_percent": 0.020751,
+      "average_ns": 80301,
+      "minimum_ns": 25312,
+      "maximum_ns": 90729
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::norm(sycl::_V1::queue&, float const*, float const*, float*, int, bool)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "calls": 678,
+      "total_ns": 33321615,
+      "reported_percent": 0.019932,
+      "average_ns": 49146,
+      "minimum_ns": 2291,
+      "maximum_ns": 1980000
+    },
+    {
+      "kernel": "strata::sycl_backend::for_each<strata::kernels::copy_from_mapped(float*, float const*, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::kernels::copy_from_mapped(float*, float const*, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "calls": 6926,
+      "total_ns": 30337842,
+      "reported_percent": 0.018147,
+      "average_ns": 4380,
+      "minimum_ns": 520,
+      "maximum_ns": 517187
+    },
+    {
+      "kernel": "strata::sycl_backend::for_each<strata::kernels::copy_i32_from_mapped(int*, int const*, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::kernels::copy_i32_from_mapped(int*, int const*, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "calls": 6040,
+      "total_ns": 28537026,
+      "reported_percent": 0.01707,
+      "average_ns": 4724,
+      "minimum_ns": 520,
+      "maximum_ns": 51666
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::convolve(sycl::_V1::queue&, float const*, float const*, unsigned short const*, float const*, float const*, float*, float*, int, bool)::{lambda(sycl::_V1::id<1>)#1}",
+      "calls": 226,
+      "total_ns": 28071711,
+      "reported_percent": 0.016792,
+      "average_ns": 124211,
+      "minimum_ns": 3020,
+      "maximum_ns": 5704270
+    },
+    {
+      "kernel": "zeCommandListAppendMemoryFill(D)",
+      "calls": 5627,
+      "total_ns": 25083284,
+      "reported_percent": 0.015004,
+      "average_ns": 4457,
+      "minimum_ns": 729,
+      "maximum_ns": 393229
+    },
+    {
+      "kernel": "strata::prefill::rope(float*, long, long, long, long, long, strata::kernels::RopeScaling const&, void*)::{lambda(sycl::_V1::id<2>)#1}",
+      "calls": 316,
+      "total_ns": 23114543,
+      "reported_percent": 0.013826,
+      "average_ns": 73147,
+      "minimum_ns": 2812,
+      "maximum_ns": 212395
+    },
+    {
+      "kernel": "strata::sycl_backend::for_each<strata::prefill::gr_silu(float const*, unsigned short*, long, void*, unsigned short*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::gr_silu(float const*, unsigned short*, long, void*, unsigned short*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "calls": 881,
+      "total_ns": 20965208,
+      "reported_percent": 0.012541,
+      "average_ns": 23797,
+      "minimum_ns": 1562,
+      "maximum_ns": 52604
+    },
+    {
+      "kernel": "strata::kernels::doorbell_ring(unsigned int*, void*)::{lambda()#1}",
+      "calls": 2640,
+      "total_ns": 20384762,
+      "reported_percent": 0.012194,
+      "average_ns": 7721,
+      "minimum_ns": 2083,
+      "maximum_ns": 53958
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::launch<strata::kernels::(anonymous namespace)::SmallTraits<strata::kernels::(anonymous namespace)::Q80Block, 8>, 4, 4>(void const*, void const*, float*, int, int, int, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "calls": 217,
+      "total_ns": 16288045,
+      "reported_percent": 0.009743,
+      "average_ns": 75060,
+      "minimum_ns": 55000,
+      "maximum_ns": 203541
+    },
+    {
+      "kernel": "sycl::_V1::detail::RoundedRangeKernel<sycl::_V1::item<1, true>, 1, strata::sycl_backend::for_each<strata::prefill::copy_i32(int*, int const*, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::copy_i32(int*, int const*, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}>",
+      "calls": 144,
+      "total_ns": 15040677,
+      "reported_percent": 0.008997,
+      "average_ns": 104449,
+      "minimum_ns": 12500,
+      "maximum_ns": 933750
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::grouped_projection<strata::kernels::(anonymous namespace)::IQ4XSTraits, false>(strata::kernels::NativeExpertLayout const&, unsigned long long const*, int const*, int const*, int const*, int const*, int, int, strata::kernels::(anonymous namespace)::Q81Block const*, float*, float*, float*, int, sycl::_V1::queue&)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<2>)#1}",
+      "calls": 108,
+      "total_ns": 13730574,
+      "reported_percent": 0.008213,
+      "average_ns": 127134,
+      "minimum_ns": 38229,
+      "maximum_ns": 502395
+    },
+    {
+      "kernel": "sycl::_V1::detail::RoundedRangeKernel<sycl::_V1::item<1, true>, 1, strata::sycl_backend::for_each<strata::kernels::gather_rows(unsigned char const*, long, int const*, long, unsigned char*, void*)::{lambda(unsigned long)#1}>(long, void*, strata::kernels::gather_rows(unsigned char const*, long, int const*, long, unsigned char*, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}>",
+      "calls": 1,
+      "total_ns": 10725312,
+      "reported_percent": 0.006416,
+      "average_ns": 10725312,
+      "minimum_ns": 10725312,
+      "maximum_ns": 10725312
+    },
+    {
+      "kernel": "strata::sycl_backend::for_each<strata::kernels::add_streams_broadcast(float const*, float const*, float*, long, int, int, void*)::{lambda(unsigned long)#1}>(long, void*, strata::kernels::add_streams_broadcast(float const*, float const*, float*, long, int, int, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "calls": 233,
+      "total_ns": 9915005,
+      "reported_percent": 0.005931,
+      "average_ns": 42553,
+      "minimum_ns": 1145,
+      "maximum_ns": 672708
+    },
+    {
+      "kernel": "strata::sycl_backend::for_each<strata::kernels::f32_to_bf16_bulk(float const*, unsigned short*, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::kernels::f32_to_bf16_bulk(float const*, unsigned short*, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "calls": 2802,
+      "total_ns": 9599660,
+      "reported_percent": 0.005742,
+      "average_ns": 3426,
+      "minimum_ns": 1145,
+      "maximum_ns": 19791
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::combine(float const*, float const*, float const*, float*, long, long, int, void*, bool)::{lambda(sycl::_V1::id<1>)#1}",
+      "calls": 2802,
+      "total_ns": 9502590,
+      "reported_percent": 0.005684,
+      "average_ns": 3391,
+      "minimum_ns": 2708,
+      "maximum_ns": 34479
+    },
+    {
+      "kernel": "strata::kernels::native_rope_apply(float const*, float*, int, int, int, strata::kernels::RopeScaling const&, int const*, void*)::{lambda(sycl::_V1::id<2>)#1}",
+      "calls": 2517,
+      "total_ns": 8907540,
+      "reported_percent": 0.005328,
+      "average_ns": 3538,
+      "minimum_ns": 1875,
+      "maximum_ns": 22604
+    },
+    {
+      "kernel": "gemm_bf16bf16f32_nocopy_tn_32x32_4x4x2",
+      "calls": 96,
+      "total_ns": 8560586,
+      "reported_percent": 0.005121,
+      "average_ns": 89172,
+      "minimum_ns": 86250,
+      "maximum_ns": 92291
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::gate(sycl::_V1::queue&, float const*, float const*, float*, int, bool)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "calls": 226,
+      "total_ns": 8384039,
+      "reported_percent": 0.005015,
+      "average_ns": 37097,
+      "minimum_ns": 1666,
+      "maximum_ns": 1035520
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::broadcast(sycl::_V1::queue&, float const*, float const*, float*, int)::{lambda(sycl::_V1::id<1>)#1}",
+      "calls": 226,
+      "total_ns": 8230637,
+      "reported_percent": 0.004923,
+      "average_ns": 36418,
+      "minimum_ns": 729,
+      "maximum_ns": 1575312
+    },
+    {
+      "kernel": "strata::sycl_backend::for_each<strata::prefill::gr_broadcast(float const*, float*, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::gr_broadcast(float const*, float*, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "calls": 9,
+      "total_ns": 6827288,
+      "reported_percent": 0.004084,
+      "average_ns": 758587,
+      "minimum_ns": 332708,
+      "maximum_ns": 1185104
+    },
+    {
+      "kernel": "strata::kernels::native_qsa_rms_norm_weighted(float const*, float const*, float*, int, int, float, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "calls": 2949,
+      "total_ns": 6327942,
+      "reported_percent": 0.003785,
+      "average_ns": 2145,
+      "minimum_ns": 1041,
+      "maximum_ns": 9687
+    },
+    {
+      "kernel": "strata::kernels::native_expert_grouped(strata::kernels::NativeExpertLayout const&, unsigned long long const*, int const*, int const*, int const*, int const*, long, long, void const*, void*, float*, void*, long)::{lambda(sycl::_V1::id<1>)#1}",
+      "calls": 5280,
+      "total_ns": 5232526,
+      "reported_percent": 0.00313,
+      "average_ns": 991,
+      "minimum_ns": 625,
+      "maximum_ns": 2812
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::grouped_xmx<10, true>(strata::kernels::NativeExpertLayout const&, unsigned long long const*, int const*, int const*, int const*, int const*, int, int, void const*, float*, float*, float*, void*)::{lambda(sycl::_V1::nd_item<2>)#1}",
+      "calls": 990,
+      "total_ns": 5131387,
+      "reported_percent": 0.003069,
+      "average_ns": 5183,
+      "minimum_ns": 1041,
+      "maximum_ns": 53125
+    },
+    {
+      "kernel": "strata::sycl_backend::for_each<strata::kernels::moe_hit_add(float*, float const*, int const*, int const*, long, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::kernels::moe_hit_add(float*, float const*, int const*, int const*, long, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "calls": 2640,
+      "total_ns": 5119598,
+      "reported_percent": 0.003062,
+      "average_ns": 1939,
+      "minimum_ns": 833,
+      "maximum_ns": 5000
+    },
+    {
+      "kernel": "strata::sycl_backend::for_each<strata::kernels::gdn_conv_commit(float*, float const*, int, int const*, void*)::{lambda(unsigned long)#1}>(long, void*, strata::kernels::gdn_conv_commit(float*, float const*, int, int const*, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "calls": 1980,
+      "total_ns": 4038250,
+      "reported_percent": 0.002416,
+      "average_ns": 2039,
+      "minimum_ns": 1666,
+      "maximum_ns": 2604
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::scale(sycl::_V1::queue&, float*, float const*, int, int)::{lambda(sycl::_V1::id<1>)#1}",
+      "calls": 2802,
+      "total_ns": 3257818,
+      "reported_percent": 0.001949,
+      "average_ns": 1162,
+      "minimum_ns": 937,
+      "maximum_ns": 31770
+    },
+    {
+      "kernel": "strata::kernels::row_top_prob(float const*, int, int, int const*, float*, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "calls": 162,
+      "total_ns": 2791894,
+      "reported_percent": 0.00167,
+      "average_ns": 17233,
+      "minimum_ns": 17083,
+      "maximum_ns": 19895
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::swiglu(sycl::_V1::queue&, float*, float const*, unsigned long, bool)::{lambda(sycl::_V1::id<1>)#1}",
+      "calls": 2802,
+      "total_ns": 2363039,
+      "reported_percent": 0.001414,
+      "average_ns": 843,
+      "minimum_ns": 625,
+      "maximum_ns": 1979
+    },
+    {
+      "kernel": "strata::sycl_backend::for_each<strata::prefill::gdn_gates(float const*, float const*, float const*, float*, float*, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::gdn_gates(float const*, float const*, float const*, float*, float*, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "calls": 324,
+      "total_ns": 2358866,
+      "reported_percent": 0.001411,
+      "average_ns": 7280,
+      "minimum_ns": 3541,
+      "maximum_ns": 14062
+    },
+    {
+      "kernel": "strata::sycl_backend::for_each<strata::prefill::to_bf16(float const*, unsigned short*, long, void*, unsigned short*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::to_bf16(float const*, unsigned short*, long, void*, unsigned short*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "calls": 9,
+      "total_ns": 2346663,
+      "reported_percent": 0.001404,
+      "average_ns": 260740,
+      "minimum_ns": 136979,
+      "maximum_ns": 289270
+    },
+    {
+      "kernel": "strata::sycl_backend::for_each<strata::kernels::quantize_q8_0_scaled(float const*, unsigned char*, float*, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::kernels::quantize_q8_0_scaled(float const*, unsigned char*, float*, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "calls": 324,
+      "total_ns": 2315473,
+      "reported_percent": 0.001385,
+      "average_ns": 7146,
+      "minimum_ns": 6458,
+      "maximum_ns": 9791
+    },
+    {
+      "kernel": "gemm_bf16bf16f32_nocopy_tn_16x16_4x4x2",
+      "calls": 72,
+      "total_ns": 2113303,
+      "reported_percent": 0.001264,
+      "average_ns": 29351,
+      "minimum_ns": 17083,
+      "maximum_ns": 41666
+    },
+    {
+      "kernel": "strata::kernels::native_iq4_xs_esimd(void const*, void const*, float*, int, int, int, void*)::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "calls": 42,
+      "total_ns": 1669357,
+      "reported_percent": 0.000999,
+      "average_ns": 39746,
+      "minimum_ns": 8437,
+      "maximum_ns": 209791
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::scalar_gate(sycl::_V1::queue&, float const*, unsigned short const*, unsigned short const*, float*, int, int, bool)::{lambda(sycl::_V1::id<1>)#1}",
+      "calls": 2802,
+      "total_ns": 1632925,
+      "reported_percent": 0.000977,
+      "average_ns": 582,
+      "minimum_ns": 520,
+      "maximum_ns": 15729
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::gate<true, float>(float const*, float const*, long, long, float*, void*)::{lambda(sycl::_V1::id<1>)#1}",
+      "calls": 822,
+      "total_ns": 1323853,
+      "reported_percent": 0.000792,
+      "average_ns": 1610,
+      "minimum_ns": 1250,
+      "maximum_ns": 3229
+    },
+    {
+      "kernel": "strata::kernels::moe_group_resident(int const*, int, int, unsigned char const*, long, unsigned long long*, int*, int*, int*, int*, void*)::{lambda()#1}",
+      "calls": 162,
+      "total_ns": 1295617,
+      "reported_percent": 0.000775,
+      "average_ns": 7997,
+      "minimum_ns": 7916,
+      "maximum_ns": 10312
+    },
+    {
+      "kernel": "strata::kernels::native_q4_k_esimd(void const*, void const*, float*, int, int, int, void*)::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "calls": 47,
+      "total_ns": 1211852,
+      "reported_percent": 0.000725,
+      "average_ns": 25784,
+      "minimum_ns": 6041,
+      "maximum_ns": 119583
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::norm(float const*, float const*, float*, int, int, float, bool, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "calls": 379,
+      "total_ns": 1147479,
+      "reported_percent": 0.000686,
+      "average_ns": 3027,
+      "minimum_ns": 1979,
+      "maximum_ns": 5729
+    },
+    {
+      "kernel": "strata::kernels::native_q5_head_esimd(void const*, void const*, float*, int, int, void*)::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "calls": 17,
+      "total_ns": 1081036,
+      "reported_percent": 0.000647,
+      "average_ns": 63590,
+      "minimum_ns": 36354,
+      "maximum_ns": 110729
+    },
+    {
+      "kernel": "sycl::_V1::detail::RoundedRangeKernel<sycl::_V1::item<2, true>, 2, strata::kernels::iq_embed_rows(int, void const*, unsigned long, int const*, long, long, float*, void*)::{lambda(sycl::_V1::id<2>)#1}>",
+      "calls": 2,
+      "total_ns": 843749,
+      "reported_percent": 0.000505,
+      "average_ns": 421874,
+      "minimum_ns": 412291,
+      "maximum_ns": 431458
+    },
+    {
+      "kernel": "strata::sycl_backend::for_each<strata::kernels::native_gr_post(float const*, float const*, float const*, float*, int, int, void*)::{lambda(unsigned long)#1}>(long, void*, strata::kernels::native_gr_post(float const*, float const*, float const*, float*, int, int, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "calls": 596,
+      "total_ns": 828916,
+      "reported_percent": 0.000496,
+      "average_ns": 1390,
+      "minimum_ns": 937,
+      "maximum_ns": 2916
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::history_advance(sycl::_V1::queue&, float*, float const*, int)::{lambda(sycl::_V1::id<1>)#1}",
+      "calls": 226,
+      "total_ns": 670560,
+      "reported_percent": 0.000401,
+      "average_ns": 2967,
+      "minimum_ns": 2500,
+      "maximum_ns": 6979
+    },
+    {
+      "kernel": "strata::sycl_backend::for_each<strata::kernels::native_gr_pre_gated(float const*, float*, float*, int, int, bool, void*)::{lambda(unsigned long)#1}>(long, void*, strata::kernels::native_gr_pre_gated(float const*, float*, float*, int, int, bool, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "calls": 379,
+      "total_ns": 638942,
+      "reported_percent": 0.000382,
+      "average_ns": 1685,
+      "minimum_ns": 1145,
+      "maximum_ns": 2812
+    },
+    {
+      "kernel": "strata::sycl_backend::for_each<strata::prefill::gdn_conv(float*, float const*, float const*, float*, long, float, void*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::gdn_conv(float*, float const*, float const*, float*, long, float, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "calls": 324,
+      "total_ns": 505890,
+      "reported_percent": 0.000303,
+      "average_ns": 1561,
+      "minimum_ns": 1250,
+      "maximum_ns": 7395
+    },
+    {
+      "kernel": "gemm_bf16bf16f32_nocopy_tn_16x32_8x4",
+      "calls": 12,
+      "total_ns": 502495,
+      "reported_percent": 0.000301,
+      "average_ns": 41874,
+      "minimum_ns": 41458,
+      "maximum_ns": 42291
+    },
+    {
+      "kernel": "sycl::_V1::detail::RoundedRangeKernel<sycl::_V1::item<2, true>, 2, strata::prefill::rope(float*, long, long, long, long, long, strata::kernels::RopeScaling const&, void*)::{lambda(sycl::_V1::id<2>)#1}>",
+      "calls": 25,
+      "total_ns": 401448,
+      "reported_percent": 0.00024,
+      "average_ns": 16057,
+      "minimum_ns": 12708,
+      "maximum_ns": 20000
+    },
+    {
+      "kernel": "strata::sycl_backend::for_each<strata::kernels::mtp_select(float const*, long, int const*, int const*, float*, int*, int*, int, void*, float const*, float*)::{lambda(unsigned long)#1}>(long, void*, strata::kernels::mtp_select(float const*, long, int const*, int const*, float*, int*, int*, int, void*, float const*, float*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "calls": 216,
+      "total_ns": 364555,
+      "reported_percent": 0.000218,
+      "average_ns": 1687,
+      "minimum_ns": 1458,
+      "maximum_ns": 1979
+    },
+    {
+      "kernel": "strata::sycl_backend::for_each<strata::kernels::copy_indexed(float*, float const*, long, int const*, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::kernels::copy_indexed(float*, float const*, long, int const*, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "calls": 55,
+      "total_ns": 278932,
+      "reported_percent": 0.000167,
+      "average_ns": 5071,
+      "minimum_ns": 4583,
+      "maximum_ns": 5520
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::grouped<22>(bool, strata::kernels::NativeExpertLayout, unsigned long long const*, int const*, int const*, int const*, int const*, int, int, void const*, float*, float*, float*, void*)::{lambda(sycl::_V1::nd_item<2>)#1}",
+      "calls": 40,
+      "total_ns": 265191,
+      "reported_percent": 0.000159,
+      "average_ns": 6629,
+      "minimum_ns": 3229,
+      "maximum_ns": 51875
+    },
+    {
+      "kernel": "strata::sycl_backend::for_each<strata::kernels::map_ids(int*, int const*, int, void*)::{lambda(unsigned long)#1}>(long, void*, strata::kernels::map_ids(int*, int const*, int, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "calls": 162,
+      "total_ns": 255644,
+      "reported_percent": 0.000153,
+      "average_ns": 1578,
+      "minimum_ns": 1458,
+      "maximum_ns": 1770
+    },
+    {
+      "kernel": "strata::sycl_backend::for_each<strata::kernels::native_gr_down_silu(float*, int, int, void*)::{lambda(unsigned long)#1}>(long, void*, strata::kernels::native_gr_down_silu(float*, int, int, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "calls": 379,
+      "total_ns": 253306,
+      "reported_percent": 0.000152,
+      "average_ns": 668,
+      "minimum_ns": 520,
+      "maximum_ns": 1250
+    },
+    {
+      "kernel": "strata::kernels::kv_stream_reset(strata::kernels::KvStreamMap const&, void*)::{lambda(sycl::_V1::id<1>)#1}",
+      "calls": 36,
+      "total_ns": 168421,
+      "reported_percent": 0.000101,
+      "average_ns": 4678,
+      "minimum_ns": 1875,
+      "maximum_ns": 6770
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::grouped<18>(bool, strata::kernels::NativeExpertLayout, unsigned long long const*, int const*, int const*, int const*, int const*, int, int, void const*, float*, float*, float*, void*)::{lambda(sycl::_V1::nd_item<2>)#1}",
+      "calls": 34,
+      "total_ns": 145295,
+      "reported_percent": 8.7e-05,
+      "average_ns": 4273,
+      "minimum_ns": 3125,
+      "maximum_ns": 8437
+    },
+    {
+      "kernel": "strata::sycl_backend::for_each<strata::kernels::(anonymous namespace)::run(strata::kernels::(anonymous namespace)::Meta, unsigned char const*, float const*, void*, float*, void*)::{lambda(unsigned long)#1}>(long, void*, strata::kernels::(anonymous namespace)::run(strata::kernels::(anonymous namespace)::Meta, unsigned char const*, float const*, void*, float*, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "calls": 162,
+      "total_ns": 143891,
+      "reported_percent": 8.6e-05,
+      "average_ns": 888,
+      "minimum_ns": 729,
+      "maximum_ns": 1250
+    },
+    {
+      "kernel": "strata::sycl_backend::for_each<strata::kernels::broadcast_streams(float const*, float*, long, int, int, void*)::{lambda(unsigned long)#1}>(long, void*, strata::kernels::broadcast_streams(float const*, float*, long, int, int, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "calls": 55,
+      "total_ns": 114362,
+      "reported_percent": 6.8e-05,
+      "average_ns": 2079,
+      "minimum_ns": 1979,
+      "maximum_ns": 4375
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::grouped<21>(bool, strata::kernels::NativeExpertLayout, unsigned long long const*, int const*, int const*, int const*, int const*, int, int, void const*, float*, float*, float*, void*)::{lambda(sycl::_V1::nd_item<2>)#1}",
+      "calls": 20,
+      "total_ns": 68013,
+      "reported_percent": 4.1e-05,
+      "average_ns": 3400,
+      "minimum_ns": 2916,
+      "maximum_ns": 4062
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::grouped<23>(bool, strata::kernels::NativeExpertLayout, unsigned long long const*, int const*, int const*, int const*, int const*, int, int, void const*, float*, float*, float*, void*)::{lambda(sycl::_V1::nd_item<2>)#1}",
+      "calls": 2,
+      "total_ns": 46249,
+      "reported_percent": 2.8e-05,
+      "average_ns": 23124,
+      "minimum_ns": 3333,
+      "maximum_ns": 42916
+    },
+    {
+      "kernel": "gemm_bf16bf16f32_nocopy_tn_16x8_2x4x4",
+      "calls": 1,
+      "total_ns": 29583,
+      "reported_percent": 1.8e-05,
+      "average_ns": 29583,
+      "minimum_ns": 29583,
+      "maximum_ns": 29583
+    },
+    {
+      "kernel": "gemm_bf16bf16f32_nocopy_tn_32x32_4x2x4",
+      "calls": 1,
+      "total_ns": 29270,
+      "reported_percent": 1.8e-05,
+      "average_ns": 29270,
+      "minimum_ns": 29270,
+      "maximum_ns": 29270
+    },
+    {
+      "kernel": "strata::sycl_backend::for_each<strata::prefill::mmq::iota(int*, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::mmq::iota(int*, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "calls": 8,
+      "total_ns": 20832,
+      "reported_percent": 1.2e-05,
+      "average_ns": 2604,
+      "minimum_ns": 2500,
+      "maximum_ns": 2708
+    },
+    {
+      "kernel": "binary_test",
+      "calls": 1,
+      "total_ns": 6041,
+      "reported_percent": 4e-06,
+      "average_ns": 6041,
+      "minimum_ns": 6041,
+      "maximum_ns": 6041
+    },
+    {
+      "kernel": "strata::kernels::kv_ring_table(int*, long, long, void*)::{lambda(sycl::_V1::id<1>)#1}",
+      "calls": 1,
+      "total_ns": 3020,
+      "reported_percent": 2e-06,
+      "average_ns": 3020,
+      "minimum_ns": 3020,
+      "maximum_ns": 3020
+    },
+    {
+      "kernel": "sycl::_V1::detail::RoundedRangeKernel<sycl::_V1::item<1, true>, 1, strata::sycl_backend::for_each<strata::prefill::mmq::iota(int*, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::mmq::iota(int*, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}>",
+      "calls": 1,
+      "total_ns": 2708,
+      "reported_percent": 2e-06,
+      "average_ns": 2708,
+      "minimum_ns": 2708,
+      "maximum_ns": 2708
+    },
+    {
+      "kernel": "strata::core::device_code_error[abi:cxx11]()::{lambda()#1}",
+      "calls": 1,
+      "total_ns": 1770,
+      "reported_percent": 1e-06,
+      "average_ns": 1770,
+      "minimum_ns": 1770,
+      "maximum_ns": 1770
+    },
+    {
+      "kernel": "zeCommandListAppendBarrier",
+      "calls": 9,
+      "total_ns": 936,
+      "reported_percent": 1e-06,
+      "average_ns": 104,
+      "minimum_ns": 0,
+      "maximum_ns": 208
+    }
+  ],
+  "properties": [
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::launch<1, false, false>(float const*, strata::kernels::QsaAttnPools, int const*, int const*, long, strata::kernels::QsaShapes, float*, long, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "compiled": "JIT",
+      "SIMD": 16,
+      "arguments": 21,
+      "SLM_bytes_per_group": 4096,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::kernels::iq_dequant_gu_f16(int, void const*, void const*, long, long, unsigned short*, void*)::{lambda(sycl::_V1::id<2>)#1}",
+      "compiled": "JIT",
+      "SIMD": 16,
+      "arguments": 7,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 16640,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::dequant<unsigned short>(int, void const*, long, unsigned short*, void*)::{lambda(sycl::_V1::id<1>)#1}",
+      "compiled": "JIT",
+      "SIMD": 16,
+      "arguments": 4,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 16640,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::prompt_product<strata::kernels::(anonymous namespace)::SmallTraits<strata::kernels::(anonymous namespace)::Q80Block, 8> >(strata::kernels::NativeMmq, sycl::_V1::queue&)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 5,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "gemm_f16f16f32_nocopy_tn_64x40_4x8",
+      "compiled": "AOT",
+      "SIMD": 16,
+      "arguments": 21,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 256
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::recurrence(float*, float const*, float const*, float const*, int, float const*, float const*, float const*, float const*, float, float*, int, int, int, int const*, bool, int, void*, unsigned short*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 22,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 8576,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::append<1>(strata::kernels::(anonymous namespace)::Pools, int const*, int const*, long, long, float const*, float const*, strata::kernels::QsaShapes const&, void*, strata::kernels::KvHostPools, strata::kernels::KvHostPools)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 11,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::launch<strata::kernels::(anonymous namespace)::Q6KTraits, 1, 4>(void const*, void const*, float*, int, int, int, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 7,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "gemm_f16f16f32_nocopy_tn_32x64_8x4",
+      "compiled": "AOT",
+      "SIMD": 16,
+      "arguments": 21,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 256
+    },
+    {
+      "kernel": "strata::kernels::qsa_block_scores(float const*, float const*, float const*, int const*, long, long, strata::kernels::QsaShapes const&, float*, void*, long)::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 7,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::append(sycl::_V1::queue&, float const*, int const*, int, int, float const*, float, strata::kernels::QsaIndexerBuffers, int, strata::kernels::(anonymous namespace)::Angles)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 11,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 10496,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "gemm_f16f16f32_nocopy_tn_16x16_4x2x4",
+      "compiled": "AOT",
+      "SIMD": 16,
+      "arguments": 17,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 256
+    },
+    {
+      "kernel": "strata::sycl_backend::for_each<strata::kernels::copy_rows_from_mapped(float*, float const*, long, long, int const*, int const*, void*)::{lambda(unsigned long)#1}>(long, void*, strata::kernels::copy_rows_from_mapped(float*, float const*, long, long, int const*, int const*, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 1,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::kernels::kv_stream_resolve_with_copy_groups(strata::kernels::KvStreamMap const&, strata::kernels::QsaAttnPools const&, strata::kernels::KvHostPools const&, int, int const*, int const*, long, long, strata::kernels::QsaShapes const&, void*, unsigned int)::{lambda()#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 6,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::sycl_backend::for_each<strata::prefill::gather_rows16(unsigned short const*, int const*, unsigned short*, long, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::gather_rows16(unsigned short const*, int const*, unsigned short*, long, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 1,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::sycl_backend::for_each<strata::prefill::(anonymous namespace)::mix<true>(float const*, float const*, float const*, float const*, float*, unsigned short*, long, void*, unsigned short*, unsigned short*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::(anonymous namespace)::mix<true>(float const*, float const*, float const*, float const*, float*, unsigned short*, long, void*, unsigned short*, unsigned short*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 1,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::sycl_backend::for_each<strata::prefill::gr_write(float*, float const*, float const*, long, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::gr_write(float*, float const*, float const*, long, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 1,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "gemm_bf16bf16f32_nocopy_tn_32x64_8x4",
+      "compiled": "AOT",
+      "SIMD": 16,
+      "arguments": 21,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 256
+    },
+    {
+      "kernel": "gemm_bf16bf16f32_nocopy_tn_64x40_4x8",
+      "compiled": "AOT",
+      "SIMD": 16,
+      "arguments": 21,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 256
+    },
+    {
+      "kernel": "strata::prefill::(anonymous namespace)::norm<true>(float const*, float const*, float, float*, unsigned short*, long, void*, unsigned short*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 7,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::sycl_backend::for_each<strata::prefill::moe_combine(float const*, int const*, float const*, float const*, float const*, float*, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::moe_combine(float const*, int const*, float const*, float const*, float const*, float*, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 1,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::kernels::qsa_block_topk(float const*, int const*, long, long, long, strata::kernels::QsaShapes const&, int*, void*, long)::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 6,
+      "SLM_bytes_per_group": 4096,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "gemm_f16f16f32_nocopy_tn_32x48_8x4",
+      "compiled": "AOT",
+      "SIMD": 16,
+      "arguments": 15,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 256
+    },
+    {
+      "kernel": "gemm_f16f16f32_nocopy_tn_16x16_8x4",
+      "compiled": "AOT",
+      "SIMD": 16,
+      "arguments": 15,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 256
+    },
+    {
+      "kernel": "gemm_f16f16f32_nocopy_tn_16x32_8x4",
+      "compiled": "AOT",
+      "SIMD": 16,
+      "arguments": 15,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 256
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::conv(float const*, float*, float const*, float const*, float*, int, int, float, int, int, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 10,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::down_esimd(strata::kernels::FusedGrArgs, void*)::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "compiled": "JIT",
+      "SIMD": "ANY",
+      "arguments": 1,
+      "SLM_bytes_per_group": 1024,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::sycl_backend::for_each<strata::prefill::swiglu_interleaved(float const*, unsigned short*, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::swiglu_interleaved(float const*, unsigned short*, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 1,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "gemm_f16f16f32_nocopy_tn_32x64_8x2x2",
+      "compiled": "AOT",
+      "SIMD": 16,
+      "arguments": 17,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 256
+    },
+    {
+      "kernel": "gemm_bf16bf16f32_nocopy_tn_16x16_1x4x8",
+      "compiled": "AOT",
+      "SIMD": 16,
+      "arguments": 21,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 256
+    },
+    {
+      "kernel": "strata::kernels::kv_stream_resolve_with_copy_groups(strata::kernels::KvStreamMap const&, strata::kernels::QsaAttnPools const&, strata::kernels::KvHostPools const&, int, int const*, int const*, long, long, strata::kernels::QsaShapes const&, void*, unsigned int)::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 2,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 5632,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "gemm_f16f16f32_nocopy_tn_32x32_4x2x4",
+      "compiled": "AOT",
+      "SIMD": 16,
+      "arguments": 17,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 256
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::projection<false, 8>(strata::kernels::(anonymous namespace)::Meta, unsigned char const*, float const*, float*, void*)::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 4,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 256,
+      "spill_bytes_per_thread": 1408,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::launch<strata::kernels::(anonymous namespace)::SmallTraits<strata::kernels::(anonymous namespace)::IQ4NLBlock, 4>, 4, 4>(void const*, void const*, float*, int, int, int, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 7,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 4096,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::up_esimd(strata::kernels::FusedGrArgs, void*)::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "compiled": "JIT",
+      "SIMD": "ANY",
+      "arguments": 1,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::projection<true, 8>(strata::kernels::(anonymous namespace)::Meta, unsigned char const*, float const*, float*, void*)::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 4,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 256,
+      "spill_bytes_per_thread": 832,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "gemm_f16f16f32_nocopy_tn_16x16_4x4x2",
+      "compiled": "AOT",
+      "SIMD": 16,
+      "arguments": 17,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 256
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::launch<strata::kernels::(anonymous namespace)::IQ4XSTraits, 4, 4>(void const*, void const*, float*, int, int, int, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 7,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 4096,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::launch<strata::kernels::(anonymous namespace)::SmallTraits<strata::kernels::(anonymous namespace)::Q80Block, 8>, 1, 4>(void const*, void const*, float*, int, int, int, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 7,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::launch<1, false>(float const*, strata::kernels::QsaAttnPools, int const*, int const*, long, strata::kernels::QsaShapes, float*, float*, long, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 13,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::kernels::native_q4_k_esimd(void const*, void const*, float*, int, int, int, void*)::{lambda(sycl::_V1::nd_item<2>)#1}",
+      "compiled": "JIT",
+      "SIMD": "ANY",
+      "arguments": 6,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "gemm_f16f16f32_nocopy_tn_16x1_4x1",
+      "compiled": "AOT",
+      "SIMD": 16,
+      "arguments": 15,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 256
+    },
+    {
+      "kernel": "gemm_f16f16f32_nocopy_tn_16x64_16x2",
+      "compiled": "AOT",
+      "SIMD": 16,
+      "arguments": 15,
+      "SLM_bytes_per_group": 24576,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 256
+    },
+    {
+      "kernel": "strata::kernels::native_quantize_q8_1(float const*, void*, int, int, void*)::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 3,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::prefill::mmq::quantize(float const*, int const*, void*, int, long, long, long, void*)::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 6,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::sycl_backend::for_each<strata::kernels::window_ids(int*, int, int, int*, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::kernels::window_ids(int*, int, int, int*, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 1,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::prefill::rms_rows(float*, float const*, long, long, long, float, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 6,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::grouped<20>(bool, strata::kernels::NativeExpertLayout, unsigned long long const*, int const*, int const*, int const*, int const*, int, int, void const*, float*, float*, float*, void*)::{lambda(sycl::_V1::nd_item<2>)#1}",
+      "compiled": "JIT",
+      "SIMD": "ANY",
+      "arguments": 16,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::sycl_backend::for_each<strata::prefill::copy_i32(int*, int const*, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::copy_i32(int*, int const*, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 1,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::grouped_projection<strata::kernels::(anonymous namespace)::IQ2STraits, false>(strata::kernels::NativeExpertLayout const&, unsigned long long const*, int const*, int const*, int const*, int const*, int, int, strata::kernels::(anonymous namespace)::Q81Block const*, float*, float*, float*, int, sycl::_V1::queue&)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<2>)#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 13,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 192,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::native<4>(float const*, long, unsigned short const*, float*, long, long, long, int, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 9,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::sycl_backend::for_each<strata::prefill::gate_attn(float const*, float const*, unsigned short*, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::gate_attn(float const*, float const*, unsigned short*, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 1,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::grouped_projection<strata::kernels::(anonymous namespace)::IQ3XXSTraits, false>(strata::kernels::NativeExpertLayout const&, unsigned long long const*, int const*, int const*, int const*, int const*, int, int, strata::kernels::(anonymous namespace)::Q81Block const*, float*, float*, float*, int, sycl::_V1::queue&)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<2>)#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 13,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::batched_head<4>(unsigned char const*, unsigned char const*, float*, int, void*)::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "compiled": "JIT",
+      "SIMD": "ANY",
+      "arguments": 4,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::native<1>(float const*, long, unsigned short const*, float*, long, long, long, int, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 7,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::launch<strata::kernels::(anonymous namespace)::Q5KTraits, 1, 4>(void const*, void const*, float*, int, int, int, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 7,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 768,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::launch(strata::kernels::FusedGrArgs, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 3,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::kernels::gdn_ab_multi(float const*, unsigned short const*, unsigned short const*, float const*, float const*, float*, float*, int, int, int, void*)::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 10,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::sycl_backend::for_each<strata::prefill::split_q(float const*, float*, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::split_q(float const*, float*, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 1,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::launch<1, false>(float const*, strata::kernels::QsaAttnPools, int const*, int const*, long, strata::kernels::QsaShapes, float*, float*, long, void*)::{lambda(sycl::_V1::id<1>)#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 6,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::kernels::iq_embed_rows(int, void const*, unsigned long, int const*, long, long, float*, void*)::{lambda(sycl::_V1::id<2>)#1}",
+      "compiled": "JIT",
+      "SIMD": 16,
+      "arguments": 7,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 16640,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::launch<false>(float const*, int, int, int const*, int, strata::kernels::SamplerParams, strata::kernels::SamplerParams const*, int const*, int const*, int*, float*, int*, int, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 13,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::grouped_projection<strata::kernels::(anonymous namespace)::IQ3STraits, false>(strata::kernels::NativeExpertLayout const&, unsigned long long const*, int const*, int const*, int const*, int const*, int, int, strata::kernels::(anonymous namespace)::Q81Block const*, float*, float*, float*, int, sycl::_V1::queue&)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<2>)#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 13,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "gemm_bf16bf16f32_nocopy_tn_32x48_8x4",
+      "compiled": "AOT",
+      "SIMD": 16,
+      "arguments": 15,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 256
+    },
+    {
+      "kernel": "strata::kernels::native_router_top10_multi(float const*, int*, float*, int, void*)::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 3,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "gemm_bf16bf16f32_nocopy_tn_32x32_2x2x8",
+      "compiled": "AOT",
+      "SIMD": 16,
+      "arguments": 23,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 256
+    },
+    {
+      "kernel": "strata::sycl_backend::for_each<strata::prefill::swiglu_pair(float const*, float const*, unsigned short*, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::swiglu_pair(float const*, float const*, unsigned short*, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 1,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::norm(sycl::_V1::queue&, float const*, float const*, float*, int, bool)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 7,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::sycl_backend::for_each<strata::kernels::copy_from_mapped(float*, float const*, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::kernels::copy_from_mapped(float*, float const*, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 1,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::sycl_backend::for_each<strata::kernels::copy_i32_from_mapped(int*, int const*, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::kernels::copy_i32_from_mapped(int*, int const*, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 1,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::convolve(sycl::_V1::queue&, float const*, float const*, unsigned short const*, float const*, float const*, float*, float*, int, bool)::{lambda(sycl::_V1::id<1>)#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 8,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::prefill::rope(float*, long, long, long, long, long, strata::kernels::RopeScaling const&, void*)::{lambda(sycl::_V1::id<2>)#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 9,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 7168,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::sycl_backend::for_each<strata::prefill::gr_silu(float const*, unsigned short*, long, void*, unsigned short*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::gr_silu(float const*, unsigned short*, long, void*, unsigned short*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 1,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::kernels::doorbell_ring(unsigned int*, void*)::{lambda()#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 1,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::launch<strata::kernels::(anonymous namespace)::SmallTraits<strata::kernels::(anonymous namespace)::Q80Block, 8>, 4, 4>(void const*, void const*, float*, int, int, int, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 7,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 4096,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "sycl::_V1::detail::RoundedRangeKernel<sycl::_V1::item<1, true>, 1, strata::sycl_backend::for_each<strata::prefill::copy_i32(int*, int const*, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::copy_i32(int*, int const*, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}>",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 2,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::grouped_projection<strata::kernels::(anonymous namespace)::IQ4XSTraits, false>(strata::kernels::NativeExpertLayout const&, unsigned long long const*, int const*, int const*, int const*, int const*, int, int, strata::kernels::(anonymous namespace)::Q81Block const*, float*, float*, float*, int, sycl::_V1::queue&)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<2>)#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 13,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "sycl::_V1::detail::RoundedRangeKernel<sycl::_V1::item<1, true>, 1, strata::sycl_backend::for_each<strata::kernels::gather_rows(unsigned char const*, long, int const*, long, unsigned char*, void*)::{lambda(unsigned long)#1}>(long, void*, strata::kernels::gather_rows(unsigned char const*, long, int const*, long, unsigned char*, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}>",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 2,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::sycl_backend::for_each<strata::kernels::add_streams_broadcast(float const*, float const*, float*, long, int, int, void*)::{lambda(unsigned long)#1}>(long, void*, strata::kernels::add_streams_broadcast(float const*, float const*, float*, long, int, int, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 1,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::sycl_backend::for_each<strata::kernels::f32_to_bf16_bulk(float const*, unsigned short*, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::kernels::f32_to_bf16_bulk(float const*, unsigned short*, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 1,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::combine(float const*, float const*, float const*, float*, long, long, int, void*, bool)::{lambda(sycl::_V1::id<1>)#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 7,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::kernels::native_rope_apply(float const*, float*, int, int, int, strata::kernels::RopeScaling const&, int const*, void*)::{lambda(sycl::_V1::id<2>)#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 9,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 6912,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "gemm_bf16bf16f32_nocopy_tn_32x32_4x4x2",
+      "compiled": "AOT",
+      "SIMD": 16,
+      "arguments": 23,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 256
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::gate(sycl::_V1::queue&, float const*, float const*, float*, int, bool)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 8,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::broadcast(sycl::_V1::queue&, float const*, float const*, float*, int)::{lambda(sycl::_V1::id<1>)#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 3,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::sycl_backend::for_each<strata::prefill::gr_broadcast(float const*, float*, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::gr_broadcast(float const*, float*, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 1,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::kernels::native_qsa_rms_norm_weighted(float const*, float const*, float*, int, int, float, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 7,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::kernels::native_expert_grouped(strata::kernels::NativeExpertLayout const&, unsigned long long const*, int const*, int const*, int const*, int const*, long, long, void const*, void*, float*, void*, long)::{lambda(sycl::_V1::id<1>)#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 3,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::grouped_xmx<10, true>(strata::kernels::NativeExpertLayout const&, unsigned long long const*, int const*, int const*, int const*, int const*, int, int, void const*, float*, float*, float*, void*)::{lambda(sycl::_V1::nd_item<2>)#1}",
+      "compiled": "JIT",
+      "SIMD": "ANY",
+      "arguments": 10,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::sycl_backend::for_each<strata::kernels::moe_hit_add(float*, float const*, int const*, int const*, long, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::kernels::moe_hit_add(float*, float const*, int const*, int const*, long, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 1,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::sycl_backend::for_each<strata::kernels::gdn_conv_commit(float*, float const*, int, int const*, void*)::{lambda(unsigned long)#1}>(long, void*, strata::kernels::gdn_conv_commit(float*, float const*, int, int const*, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 1,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::scale(sycl::_V1::queue&, float*, float const*, int, int)::{lambda(sycl::_V1::id<1>)#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 3,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::kernels::row_top_prob(float const*, int, int, int const*, float*, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 5,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::swiglu(sycl::_V1::queue&, float*, float const*, unsigned long, bool)::{lambda(sycl::_V1::id<1>)#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 3,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::sycl_backend::for_each<strata::prefill::gdn_gates(float const*, float const*, float const*, float*, float*, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::gdn_gates(float const*, float const*, float const*, float*, float*, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 1,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::sycl_backend::for_each<strata::prefill::to_bf16(float const*, unsigned short*, long, void*, unsigned short*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::to_bf16(float const*, unsigned short*, long, void*, unsigned short*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 1,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::sycl_backend::for_each<strata::kernels::quantize_q8_0_scaled(float const*, unsigned char*, float*, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::kernels::quantize_q8_0_scaled(float const*, unsigned char*, float*, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "compiled": "JIT",
+      "SIMD": 16,
+      "arguments": 1,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "gemm_bf16bf16f32_nocopy_tn_16x16_4x4x2",
+      "compiled": "AOT",
+      "SIMD": 16,
+      "arguments": 23,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 256
+    },
+    {
+      "kernel": "strata::kernels::native_iq4_xs_esimd(void const*, void const*, float*, int, int, int, void*)::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "compiled": "JIT",
+      "SIMD": "ANY",
+      "arguments": 5,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::scalar_gate(sycl::_V1::queue&, float const*, unsigned short const*, unsigned short const*, float*, int, int, bool)::{lambda(sycl::_V1::id<1>)#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 1,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::gate<true, float>(float const*, float const*, long, long, float*, void*)::{lambda(sycl::_V1::id<1>)#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 4,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::kernels::moe_group_resident(int const*, int, int, unsigned char const*, long, unsigned long long*, int*, int*, int*, int*, void*)::{lambda()#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 10,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::kernels::native_q4_k_esimd(void const*, void const*, float*, int, int, int, void*)::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "compiled": "JIT",
+      "SIMD": "ANY",
+      "arguments": 5,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::norm(float const*, float const*, float*, int, int, float, bool, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 8,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::kernels::native_q5_head_esimd(void const*, void const*, float*, int, int, void*)::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "compiled": "JIT",
+      "SIMD": "ANY",
+      "arguments": 4,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "sycl::_V1::detail::RoundedRangeKernel<sycl::_V1::item<2, true>, 2, strata::kernels::iq_embed_rows(int, void const*, unsigned long, int const*, long, long, float*, void*)::{lambda(sycl::_V1::id<2>)#1}>",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 2,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 38400,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::sycl_backend::for_each<strata::kernels::native_gr_post(float const*, float const*, float const*, float*, int, int, void*)::{lambda(unsigned long)#1}>(long, void*, strata::kernels::native_gr_post(float const*, float const*, float const*, float*, int, int, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 1,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::history_advance(sycl::_V1::queue&, float*, float const*, int)::{lambda(sycl::_V1::id<1>)#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 3,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::sycl_backend::for_each<strata::kernels::native_gr_pre_gated(float const*, float*, float*, int, int, bool, void*)::{lambda(unsigned long)#1}>(long, void*, strata::kernels::native_gr_pre_gated(float const*, float*, float*, int, int, bool, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 1,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::sycl_backend::for_each<strata::prefill::gdn_conv(float*, float const*, float const*, float*, long, float, void*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::gdn_conv(float*, float const*, float const*, float*, long, float, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 1,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "gemm_bf16bf16f32_nocopy_tn_16x32_8x4",
+      "compiled": "AOT",
+      "SIMD": 16,
+      "arguments": 15,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 256
+    },
+    {
+      "kernel": "sycl::_V1::detail::RoundedRangeKernel<sycl::_V1::item<2, true>, 2, strata::prefill::rope(float*, long, long, long, long, long, strata::kernels::RopeScaling const&, void*)::{lambda(sycl::_V1::id<2>)#1}>",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 2,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 7680,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::sycl_backend::for_each<strata::kernels::mtp_select(float const*, long, int const*, int const*, float*, int*, int*, int, void*, float const*, float*)::{lambda(unsigned long)#1}>(long, void*, strata::kernels::mtp_select(float const*, long, int const*, int const*, float*, int*, int*, int, void*, float const*, float*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 1,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::sycl_backend::for_each<strata::kernels::copy_indexed(float*, float const*, long, int const*, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::kernels::copy_indexed(float*, float const*, long, int const*, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 1,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::grouped<22>(bool, strata::kernels::NativeExpertLayout, unsigned long long const*, int const*, int const*, int const*, int const*, int, int, void const*, float*, float*, float*, void*)::{lambda(sycl::_V1::nd_item<2>)#1}",
+      "compiled": "JIT",
+      "SIMD": "ANY",
+      "arguments": 16,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::sycl_backend::for_each<strata::kernels::map_ids(int*, int const*, int, void*)::{lambda(unsigned long)#1}>(long, void*, strata::kernels::map_ids(int*, int const*, int, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 1,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::sycl_backend::for_each<strata::kernels::native_gr_down_silu(float*, int, int, void*)::{lambda(unsigned long)#1}>(long, void*, strata::kernels::native_gr_down_silu(float*, int, int, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 1,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::kernels::kv_stream_reset(strata::kernels::KvStreamMap const&, void*)::{lambda(sycl::_V1::id<1>)#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 1,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::grouped<18>(bool, strata::kernels::NativeExpertLayout, unsigned long long const*, int const*, int const*, int const*, int const*, int, int, void const*, float*, float*, float*, void*)::{lambda(sycl::_V1::nd_item<2>)#1}",
+      "compiled": "JIT",
+      "SIMD": "ANY",
+      "arguments": 16,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::sycl_backend::for_each<strata::kernels::(anonymous namespace)::run(strata::kernels::(anonymous namespace)::Meta, unsigned char const*, float const*, void*, float*, void*)::{lambda(unsigned long)#1}>(long, void*, strata::kernels::(anonymous namespace)::run(strata::kernels::(anonymous namespace)::Meta, unsigned char const*, float const*, void*, float*, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 1,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::sycl_backend::for_each<strata::kernels::broadcast_streams(float const*, float*, long, int, int, void*)::{lambda(unsigned long)#1}>(long, void*, strata::kernels::broadcast_streams(float const*, float*, long, int, int, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 1,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::grouped<21>(bool, strata::kernels::NativeExpertLayout, unsigned long long const*, int const*, int const*, int const*, int const*, int, int, void const*, float*, float*, float*, void*)::{lambda(sycl::_V1::nd_item<2>)#1}",
+      "compiled": "JIT",
+      "SIMD": "ANY",
+      "arguments": 16,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::kernels::(anonymous namespace)::grouped<23>(bool, strata::kernels::NativeExpertLayout, unsigned long long const*, int const*, int const*, int const*, int const*, int, int, void const*, float*, float*, float*, void*)::{lambda(sycl::_V1::nd_item<2>)#1}",
+      "compiled": "JIT",
+      "SIMD": "ANY",
+      "arguments": 16,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "gemm_bf16bf16f32_nocopy_tn_16x8_2x4x4",
+      "compiled": "AOT",
+      "SIMD": 16,
+      "arguments": 17,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 256
+    },
+    {
+      "kernel": "gemm_bf16bf16f32_nocopy_tn_32x32_4x2x4",
+      "compiled": "AOT",
+      "SIMD": 16,
+      "arguments": 23,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 256
+    },
+    {
+      "kernel": "strata::sycl_backend::for_each<strata::prefill::mmq::iota(int*, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::mmq::iota(int*, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 1,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "binary_test",
+      "compiled": "AOT",
+      "SIMD": 16,
+      "arguments": 8,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::kernels::kv_ring_table(int*, long, long, void*)::{lambda(sycl::_V1::id<1>)#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 2,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "sycl::_V1::detail::RoundedRangeKernel<sycl::_V1::item<1, true>, 1, strata::sycl_backend::for_each<strata::prefill::mmq::iota(int*, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::mmq::iota(int*, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}>",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 2,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    },
+    {
+      "kernel": "strata::core::device_code_error[abi:cxx11]()::{lambda()#1}",
+      "compiled": "JIT",
+      "SIMD": 32,
+      "arguments": 0,
+      "SLM_bytes_per_group": 0,
+      "private_bytes_per_thread": 0,
+      "spill_bytes_per_thread": 0,
+      "GRF_bytes_per_thread": 128
+    }
+  ],
+  "scope": "One instrumented actual model process; startup+prefill+decode aggregate. Source-specialized prompt kernel and660 decode resolver calls are identified. Shared kernels/copies are not split by phase; device sum is not busy-union or exclusive wall. Concurrent CPU service is not serial critical-path time.",
+  "passed": true,
+  "source_receipt_sha256": "3d3cca42f09102f045d2e92c06dccaf2175dc5e8ef7d921ff498842c3af4a62b",
+  "roles": {
+    "prefill_selected_int8_attention": {
+      "kernel": "strata::kernels::(anonymous namespace)::launch<1, false, false>(float const*, strata::kernels::QsaAttnPools, int const*, int const*, long, strata::kernels::QsaShapes, float*, long, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "calls": 108,
+      "total_ns": 44066063496,
+      "reported_percent": 26.359047,
+      "average_ns": 408019106,
+      "minimum_ns": 202404687,
+      "maximum_ns": 465451354
+    },
+    "prefill_GU_dequant": {
+      "kernel": "strata::kernels::iq_dequant_gu_f16(int, void const*, void const*, long, long, unsigned short*, void*)::{lambda(sycl::_V1::id<2>)#1}",
+      "calls": 91880,
+      "total_ns": 22413195562,
+      "reported_percent": 13.406927,
+      "average_ns": 243939,
+      "minimum_ns": 214687,
+      "maximum_ns": 413854
+    },
+    "generic_f16_dequant_multiple_consumers": {
+      "kernel": "strata::kernels::(anonymous namespace)::dequant<unsigned short>(int, void const*, long, unsigned short*, void*)::{lambda(sycl::_V1::id<1>)#1}",
+      "calls": 94580,
+      "total_ns": 12073214518,
+      "reported_percent": 7.221849,
+      "average_ns": 127650,
+      "minimum_ns": 88854,
+      "maximum_ns": 6281145
+    },
+    "block_scores_shared_prefill_decode": {
+      "kernel": "strata::kernels::qsa_block_scores(float const*, float const*, float const*, int const*, long, long, strata::kernels::QsaShapes const&, float*, void*, long)::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "calls": 2292,
+      "total_ns": 2801861532,
+      "reported_percent": 1.675993,
+      "average_ns": 1222452,
+      "minimum_ns": 18854,
+      "maximum_ns": 3356666
+    },
+    "GDN_recurrence_shared_prefill_decode": {
+      "kernel": "strata::kernels::(anonymous namespace)::recurrence(float*, float const*, float const*, float const*, int, float const*, float const*, float const*, float const*, float, float*, int, int, int, int const*, bool, int, void*, unsigned short*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "calls": 4284,
+      "total_ns": 3680105152,
+      "reported_percent": 2.201333,
+      "average_ns": 859034,
+      "minimum_ns": 16666,
+      "maximum_ns": 23632395
+    },
+    "KV_ordered_resolver": {
+      "kernel": "strata::kernels::kv_stream_resolve_with_copy_groups(strata::kernels::KvStreamMap const&, strata::kernels::QsaAttnPools const&, strata::kernels::KvHostPools const&, int, int const*, int const*, long, long, strata::kernels::QsaShapes const&, void*, unsigned int)::{lambda()#1}",
+      "calls": 660,
+      "total_ns": 1294606604,
+      "reported_percent": 0.774396,
+      "average_ns": 1961525,
+      "minimum_ns": 704062,
+      "maximum_ns": 4734583
+    },
+    "KV_copy": {
+      "kernel": "strata::kernels::kv_stream_resolve_with_copy_groups(strata::kernels::KvStreamMap const&, strata::kernels::QsaAttnPools const&, strata::kernels::KvHostPools const&, int, int const*, int const*, long, long, strata::kernels::QsaShapes const&, void*, unsigned int)::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "calls": 660,
+      "total_ns": 318449841,
+      "reported_percent": 0.190488,
+      "average_ns": 482499,
+      "minimum_ns": 6354,
+      "maximum_ns": 6886770
+    }
+  },
+  "actual_input_tokens": 34603,
+  "generated": 128,
+  "same_reference_ids": true,
+  "decode_coverage": {
+    "attempted": "55",
+    "verified": "55",
+    "run_rows": "217",
+    "W": "55",
+    "R": "217",
+    "D": "162",
+    "A": "76",
+    "C": "131",
+    "E": "128",
+    "rejected": "86",
+    "commit_unemitted": "3",
+    "dispatch_attempts": "2640",
+    "active_T": "4",
+    "active_window": "0",
+    "wait_commit": "1",
+    "context_limit": "0",
+    "cpu_jobs": "68781",
+    "cpu_rows": "101036",
+    "route_entries": "104160"
+  },
+  "CPU_thread_service_ns": {
+    "total": 35614643554,
+    "GU_by_type": {
+      "18": 9357296491,
+      "22": 9459810415,
+      "21": 6329042311,
+      "23": 258398482
+    },
+    "Down_by_type": {
+      "20": 8672812550,
+      "42": 1432876972
+    },
+    "activation_quant": 104406333
+  },
+  "next_priority": [
+    "Prefill selected attention44.066s, preceding QSA score-GEMM2.802s/GDN3.680s experiments in priority",
+    "Prefill native GU dequant22.413s and generic f16dequant12.073s; generic total is not all Down",
+    "Decode CPU GU recurrence/cache feasibility after positive streaming predecode repetitions",
+    "KV ordered resolver1.295s is measured but lower priority than above; copy0.318s"
+  ],
+  "model_performance_qualified": false,
+  "quality_qualified": false,
+  "adopted": false,
+  "physical_262144_qualified": false,
+  "restore_qualified": false
+}

@@ -16,12 +16,9 @@ def parse(text):
         if len(fields) == 7 and fields[1].isdigit() and fields[2].isdigit():
             rows.append(dict(kernel=fields[0], calls=int(fields[1]), total_ns=int(fields[2]),
                 reported_percent=float(fields[3]), average_ns=int(fields[4]), minimum_ns=int(fields[5]), maximum_ns=int(fields[6])))
-        elif len(fields) == 9 and fields[1] in ['JIT', 'AOT']:
-            properties.append(dict(kernel=fields[0], compiled=fields[1], SIMD=int(fields[2]),
-                arguments=int(fields[3]), SLM_bytes_per_group=int(fields[4]), private_bytes_per_thread=int(fields[5]),
-                spill_bytes_per_thread=int(fields[6]), GRF_bytes_per_thread=int(fields[7])))
         elif len(fields) == 8 and fields[1] in ['JIT', 'AOT']:
-            properties.append(dict(kernel=fields[0], compiled=fields[1], SIMD=int(fields[2]),
+            # Library kernels can report SIMD=ANY; retain that provider value.
+            properties.append(dict(kernel=fields[0], compiled=fields[1], SIMD=int(fields[2]) if fields[2].isdigit() else fields[2],
                 arguments=int(fields[3]), SLM_bytes_per_group=int(fields[4]), private_bytes_per_thread=int(fields[5]),
                 spill_bytes_per_thread=int(fields[6]), GRF_bytes_per_thread=int(fields[7])))
     device = re.search(r'Total Device Time for L0 backend \(ns\):\s+(\d+)', text)
