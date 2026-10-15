@@ -90,3 +90,11 @@ R690のsource snapshot093af5f…はalias適用後、測定binary5de4…は適用
 R691はNativeDense componentのsourceレビューのみで、Mainの全caller再compileはまだ予定である。
 R693はGDN単独では600を説明しないと正しく限定している。既知profileではGDN約3.54秒に対し
 attention約44秒であり、現在の容量/hidden転送削減とattention最適化を優先する。
+
+## ログの保持
+
+閉じたallocation v1/v2の全UR history124485 Bを、必要なalloc/copy/free/drain/release、
+全API件数、失敗点、個別carveとcanary結果へ抽出・照合して削除した。
+`prefill-scratch-allocation-log-evidence-v1.json`89432 Bと
+`prefill-scratch-allocation-log-retention-v1.json`に保存した。
+元FAILED/PASS receiptのbytes/status/hashは不変。controllerが参照する原receiptは残す。
