@@ -82,5 +82,7 @@ Solの`prefill-scratch-alias-v1`は四つのN-wide bufferを一つにするsourc
 Mainは全読書き箇所、PLEのl==1境界、samequeue、half/BF16のGEMM入力分離と
 count/carveの変更を確認した。R688の独立レビューも明確な衝突を見つけていない。
 削減量はC8192で251659008 B（payload240 MiBとguard768 B）。
-短入力も同じ配置で動く設計だが、まだ未適用・未build・未実行である。
-mode1 Direct比較とともに、次のserial検証候補として保存する。
+短入力も同じ配置で動く設計である。Mainはdefault OFFのまま適用し、production TUの
+通常11条件とASan/UBSan11条件、さらに実GPUでowned/borrowed/relayoutを確認した。
+詳細と容量差分は`prefill-scratch-alias-main-review.ja.md`にある。実model出力・RESTORE・
+物理最大contextとclean性能はまだ未合格なので、通常運用で有効にはしない。

@@ -1,0 +1,77 @@
+# Prefill容量: scratch aliasとKV stage所有の独立確認（Round 692）
+
+対象: `feature/sycl` の現在の `src/prefill/prefill.cpp`。確認時SHA256は
+`093af5fbe3605da6f94c55f6da38a0b4afbb5cc95df5d12ce7eec98475c9c41e`（依頼指定値と一致）。
+対象PCはArc B570 10 GiB / Ryzen 5600X / RAM 128 GiB。これは既存容量計算とコードの照合であり、
+変更、build、test、GPU実行をしていない。
+
+## 既存値と今回の差分
+
+前提・配賦内訳は `prefill-capacity-plan.ja.md` と `prefill-capacity-metadata-v2.json` を継承。
+同資料の主ケースは実際のpacked expertとdenseを合わせた最大一層bank **1,440,161,792 B**。
+最大resident層、chunk work、固定GDN state等を控除した後のKV+hidden予算（alias OFF）は、
+C4096で7,168,243,456 B、C8192で5,892,438,656 B。
+C8の差が大きいのは一層work領域も大きくなるため。
+
+現在sourceではaliasは既定OFF。SYCLで環境値が厳密に`1`のとき、`take_scratch_prefix`が
+`emb`を`mixed`と`bo`にも使い、さらに`ple_emb`も`emb`にする。これは同一順序queueかつ
+PLEの読取りがlayer 1のmixed書込み前に終わる設計に依存する。C8で削るcarveは
+**251,659,008 B**、C4では**125,829,888 B**（それぞれpayload 3×T×2560×4 Bと
+省略される3個分の256 B guard）。workspaceからこれを引くのではなく、KV+hiddenに使える予算へ
+加える。従ってalias ON時の計算予算はC4 **7,294,073,344 B**、C8 **6,209,109,248 B**。
+
+一層bank案で再計算した理論容量は以下。context上限はKV容量と同じ行数の全FP16 hiddenを置く値で、
+4-token page単位に切り下げ。最後の列は262,144容量の全QSA stateを確保したままのFP16 hidden行数。
+
+| chunk | KV | alias OFF: context / hidden rows | alias ON: context / hidden rows | 増分 |
+|---:|---|---:|---:|---:|
+| 4096 | K8V8 | 205,060 / 164,716 | **208,660 / 170,861** | +3,600 / +6,145 |
+| 4096 | K8V4 | 223,472 / 201,580 | **227,396 / 207,725** | +3,924 / +6,145 |
+| 8192 | K8V8 | 170,424 / 105,596 | **177,624 / 117,884** | +7,200 / +12,288 |
+| 8192 | K8V4 | 185,724 / 142,460 | **193,572 / 154,748** | +7,848 / +12,288 |
+
+隠れ状態は1 tokenあたり4×2560×2 = **20,480 B**。従ってC4の予算増分は6,144行分を少し上回り、256K KV後のfloor除算では+6,145行。
+C8はちょうど12,288行分。表は同じ式（残bytesを20,480 B/rowでfloor）を使い、
+context列はQSA式`34,956*C+43,200`（K8V8）または`32,076*C+43,200`（K8V4）を4行単位でfloorした。
+これは既存metadata値からの再計算であり、capacity scriptを改変・実行した結果ではない。
+
+いずれのalias案でも256K全hiddenは全QSA state常駐と同時には収まらない。K8V8は5 GiB hiddenに加え
+全state 3,794,839,744 B、K8V4仮定は3,039,865,024 Bを要する。K8V4は現configured SYCL routeで
+動作確認された方式ではなく仮定値。FP16 hiddenの品質・実行、262144物理確保、speedは未qualified。
+
+## stage所有と常駐stateの二重計上
+
+`take_stage`はprimary QSA stateを読み、`q0.kv_mode != 1`なら即returnする。`kv_mode == 1`時だけ
+一層分の全page staging poolをcarveする。したがって全resident条件（primaryを含む全QSA stateが
+residentで、主容量式が全12層stateを計上）ではprefill作業領域に一層分のfull-context KV stageを
+加えない。metadataの主workspaceも`kv_mode:0`で、C4096のstreamed観測値からstage payload
+276,824,064 Bと4個のguard 1,024 Bを除いた値と一致する。`bytes_needed()`は末尾に8 MiB alignment
+slackを返すが、`carve()`はこのslackをallocationしない。従って両者を同じ実carve値として扱わず、
+容量表で8 MiBを再控除しない。
+
+この判断の適用条件は「full resident KVのstate allocationが実際に成功し、KVのmodeがresidentである」こと。
+`take_stage`自体はprimary stateしか検査しないため、混在modeを許す構成ではそのmode選定を別途確認する。
+`stage_own()`で専用確保するのはstreamed時だけであり、full-resident時に別ownerが隠れて確保される
+経路はこの関数にない。
+
+容量metadataは全QSA state byte式の中にKV、各QSA indexer/pooling/page state、shared RoPE等を含め、
+別に全36層GDN state **117,669,888 B**、PLE history **368,640 B**を固定控除している。
+RoPEをQSA式と別に再度控除したり、stream stageをfull-resident列へ二重加算するのは誤り。
+ただし、計算上の「FP16 hidden bank」は現sessionが既に所有するhidden allocationではない。
+現在の実装済み所有として扱わず、新しいlayer-major residency設計の仮定としてのみ数える。
+またmetadataはNativeDense proposalの追加RAM snapshotをVRAMから控除していない（packed RAM複製はdevice容量ではない）。
+
+## 実装状態と確認限界
+
+現working treeのscratch aliasは実装済みsource差分だがdefault OFF。依頼記載の誤ったallocation fixtureは
+`bytes_needed == carve`を要求してallocate前に失敗し、GPU faultなしだった。したがってalias ONのcarve節約は
+コード上の正確な差分であって、GPU実allocation/reclaim実測値ではない。Mainがfixtureを直してGPU確認する予定。
+容量metadata自体も`GPU_executed=false`, `GPU_allocation_probe_executed=false`,
+`physical_admission_qualified=false`, `quality_qualified=false`, `performance_qualified=false`。
+NativeDense one-layer bank提案（`prefill-native-dense-layer-bank-v1`）はunused/unapplied/uncompiled/
+unexecutedで、ここで用いた1,440,161,792 Bの一層bankを実現するコードではない。
+
+確認した主要箇所: `src/prefill/prefill.cpp` の`take_stage`, `take_scratch_prefix`, `Prefill::carve`,
+`Prefill::bytes_needed`; `prefill-capacity-plan.ja.md`; `prefill-capacity-metadata-v2.json`;
+`prefill-no-workspace-review.ja.md`; `prefill-native-dense-layer-bank-v1/source-review.md`;
+`research-index.json`。source上の関数名と検索結果を照合済み。外部資料は不要のためbrowseなし。

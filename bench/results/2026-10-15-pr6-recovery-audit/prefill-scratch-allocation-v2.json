@@ -1,0 +1,346 @@
+{
+  "passed": true,
+  "complete": true,
+  "active": false,
+  "GPU_executed": true,
+  "commands": [
+    {
+      "label": "journal-before",
+      "argv": [
+        "journalctl",
+        "-k",
+        "-b",
+        "-n",
+        "0",
+        "--show-cursor",
+        "--no-pager"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-15T11:12:58.228319+00:00",
+      "wall_seconds": 60,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1372424,
+          "start_ticks": 41154235,
+          "sid": 1372424,
+          "pgid": 1372424
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 411542.349822187,
+      "pid": 1372424,
+      "spawn_return_monotonic": 411542.351713475,
+      "direct_identity": {
+        "pid": 1372424,
+        "state": "R",
+        "ppid": 1372334,
+        "pgid": 1372424,
+        "sid": 1372424,
+        "start_ticks": 41154235,
+        "rss_bytes": 471040
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-15T11:12:58.352160+00:00",
+      "elapsed_seconds": 0.12361344398232177,
+      "logs": {
+        "journal-before.stdout": {
+          "bytes": 156,
+          "sha256": "69b5f0a1ffc60017dfb364e0b5cc313ee14e66cb80df64e9d2ebca2feb9116e3"
+        },
+        "journal-before.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "actual-scratch-allocation",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prefill-scratch-allocation-build-root-v2/scratch-allocation",
+        "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s"
+      ],
+      "environment": {
+        "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+        "OMP_NUM_THREADS": "1",
+        "GIT_TERMINAL_PROMPT": "0",
+        "GIT_SSH_COMMAND": "ssh -oBatchMode=yes",
+        "RUBYLIB": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/lib/ruby/vendor_ruby:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/chef-utils-16.12.3/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/kramdown-2.4.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/kramdown-parser-gfm-1.1.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mdl-0.13.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-cli-2.1.6/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-config-3.0.6/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-shellout-3.2.5/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/tomlrb-1.3.0/lib",
+        "GEM_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all:/usr/share/rubygems-integration/all:/usr/lib/ruby/gems/3.2.0",
+        "CPLUS_INCLUDE_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include",
+        "PYTHONPATH": "/home/yayoi/orca/workspaces/Strata/sycl/tools:/home/yayoi/orca/workspaces/Strata/sycl",
+        "PIP_CONFIG_FILE": "/dev/null",
+        "PYTHONUNBUFFERED": "1",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prefill-scratch-allocation-root-v2/cache",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+        "STRATA_SYCL_MMQ_XMX": "1",
+        "STRATA_SYCL_MMQ_XMX_TILE": "8",
+        "STRATA_SYCL_MMQ_XMX_EXACT": "1",
+        "STRATA_SYCL_MMQ_XMX_PACK": "0",
+        "STRATA_SYCL_MMQ_XMX_COMPACT": "1",
+        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+        "STRATA_PREFILL_RING": "8",
+        "STRATA_PREFILL_MMQ": "0",
+        "STRATA_PREFILL_MOE_COMPACT_FP16": "1",
+        "STRATA_WATCHDOG_S": "480",
+        "STRATA_SYCL_PROMPT_DIRECT": "0",
+        "STRATA_PREFILL_LAYER_MAJOR": "1",
+        "STRATA_PREFILL_LAYER_MAJOR_R_DTYPE": "fp32",
+        "STRATA_PREFILL_LAYER_MAJOR_R_GPU": "0",
+        "STRATA_PREFILL_RELEASE_MTP_EXPERTS": "1",
+        "STRATA_PREFILL_PHASE_AUDIT": "0",
+        "STRATA_PREFILL_BOUNDARY_AUDIT": "0",
+        "STRATA_SYCL_KV_COPY_GROUPS": "0",
+        "STRATA_CPU_GU_REUSE_OBSERVER": "0",
+        "STRATA_DECODE_ROUTE_LEDGER": "0",
+        "STRATA_DECODE_SERVICE_CPU": "0",
+        "STRATA_IQ_SINGLE_EXACT": "0",
+        "STRATA_SYCL_PARALLEL_IQ_DEQUANT": "1",
+        "STRATA_PREFILL_LAYER_MAJOR_SHAPE_CENSUS": "0",
+        "STRATA_IQ_TIMING_PROGRESS": "0",
+        "STRATA_SYCL_PREFILL_SCRATCH_ALIAS": "1",
+        "STRATA_GR_UNFUSED": "0",
+        "STRATA_PREFILL_BF16X2": "0",
+        "STRATA_PF_FUSED": "0",
+        "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+        "UR_LOG_TRACING": "level:info;flush:info;output:stderr"
+      },
+      "started_utc": "2026-10-15T11:12:58.353111+00:00",
+      "wall_seconds": 240,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1372441,
+          "start_ticks": 41154247,
+          "sid": 1372441,
+          "pgid": 1372441
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 411542.474642351,
+      "pid": 1372441,
+      "spawn_return_monotonic": 411542.476386452,
+      "direct_identity": {
+        "pid": 1372441,
+        "state": "R",
+        "ppid": 1372334,
+        "pgid": 1372441,
+        "sid": 1372441,
+        "start_ticks": 41154247,
+        "rss_bytes": 294912
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 42795008,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-15T11:12:58.693289+00:00",
+      "elapsed_seconds": 0.3399261760059744,
+      "logs": {
+        "actual-scratch-allocation.stdout": {
+          "bytes": 459,
+          "sha256": "80c7d87d95f8d0355e0c43523f7d8126f9e5288901296659e43f5ef02afe028a"
+        },
+        "actual-scratch-allocation.stderr": {
+          "bytes": 116883,
+          "sha256": "c9f8eb2c3bccee4dd217b85b93a947a4b589622eba1da2c88be95304a21d8eba"
+        }
+      }
+    },
+    {
+      "label": "journal-final",
+      "argv": [
+        "journalctl",
+        "-k",
+        "-b",
+        "--after-cursor",
+        "s=9944479cfd1a45c28a589619cb8f2881;i=c2371c4;b=cfda0b6a7c134fe2bdf58f9202770840;m=5fd14c8919;t=65ddf20c660c7;x=6ef9d93210ab44d9",
+        "--no-pager",
+        "-o",
+        "json"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-15T11:12:58.696638+00:00",
+      "wall_seconds": 60,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1372594,
+          "start_ticks": 41154281,
+          "sid": 1372594,
+          "pgid": 1372594
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 411542.818353939,
+      "pid": 1372594,
+      "spawn_return_monotonic": 411542.820396772,
+      "direct_identity": {
+        "pid": 1372594,
+        "state": "R",
+        "ppid": 1372334,
+        "pgid": 1372594,
+        "sid": 1372594,
+        "start_ticks": 41154281,
+        "rss_bytes": 647168
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-15T11:12:58.809962+00:00",
+      "elapsed_seconds": 0.11290493898559362,
+      "logs": {
+        "journal-final.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "journal-final.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "recipe_sha256": "1fe7c0c1db6f2ebddf06140fd303580ecfaaa4f3e0d2f6ba0b2df09e5d259223",
+  "references": {
+    "build": "613d311e068d013460815ba6966eefdd22e1a42aa2dfee3296ebfa6c70b7fb1a",
+    "host": "d760ac7c32d43f5ee4979a984d63fe6f7ff342294b41ac87db1ba0034739b01a",
+    "prior": "ef2b5ff7aa80c3764d86fb7e640a91629b291f2a71f789c33582461240cbe134"
+  },
+  "prior_failed_receipt_sha256": "6c87856430fa69a46118980e43a65b3b69d3d0171733268c1c0aa118cb61d428",
+  "binary_sha256": "85b2516bd0e6ee5eb1389570524d6e989cbc51a060acbfe22f9f7bb67d6c34f9",
+  "fixture_sha256": "1fecafac8361162ba3d1117d283a3bb3a3eecccc94b7087208cef88c273c4350",
+  "environment": {
+    "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+    "HOME": "/home/yayoi",
+    "LANG": "C.UTF-8",
+    "LC_ALL": "C.UTF-8",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+    "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+    "OMP_NUM_THREADS": "1",
+    "GIT_TERMINAL_PROMPT": "0",
+    "GIT_SSH_COMMAND": "ssh -oBatchMode=yes",
+    "RUBYLIB": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/lib/ruby/vendor_ruby:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/chef-utils-16.12.3/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/kramdown-2.4.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/kramdown-parser-gfm-1.1.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mdl-0.13.0/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-cli-2.1.6/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-config-3.0.6/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/mixlib-shellout-3.2.5/lib:/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all/gems/tomlrb-1.3.0/lib",
+    "GEM_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.lint/distro/usr/share/rubygems-integration/all:/usr/share/rubygems-integration/all:/usr/lib/ruby/gems/3.2.0",
+    "CPLUS_INCLUDE_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include",
+    "PYTHONPATH": "/home/yayoi/orca/workspaces/Strata/sycl/tools:/home/yayoi/orca/workspaces/Strata/sycl",
+    "PIP_CONFIG_FILE": "/dev/null",
+    "PYTHONUNBUFFERED": "1",
+    "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+    "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+    "SYCL_CACHE_PERSISTENT": "0",
+    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prefill-scratch-allocation-root-v2/cache",
+    "NEOReadDebugKeys": "1",
+    "EnableDirectSubmission": "0",
+    "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+    "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+    "STRATA_SYCL_MMQ_XMX": "1",
+    "STRATA_SYCL_MMQ_XMX_TILE": "8",
+    "STRATA_SYCL_MMQ_XMX_EXACT": "1",
+    "STRATA_SYCL_MMQ_XMX_PACK": "0",
+    "STRATA_SYCL_MMQ_XMX_COMPACT": "1",
+    "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+    "STRATA_PREFILL_RING": "8",
+    "STRATA_PREFILL_MMQ": "0",
+    "STRATA_PREFILL_MOE_COMPACT_FP16": "1",
+    "STRATA_WATCHDOG_S": "480",
+    "STRATA_SYCL_PROMPT_DIRECT": "0",
+    "STRATA_PREFILL_LAYER_MAJOR": "1",
+    "STRATA_PREFILL_LAYER_MAJOR_R_DTYPE": "fp32",
+    "STRATA_PREFILL_LAYER_MAJOR_R_GPU": "0",
+    "STRATA_PREFILL_RELEASE_MTP_EXPERTS": "1",
+    "STRATA_PREFILL_PHASE_AUDIT": "0",
+    "STRATA_PREFILL_BOUNDARY_AUDIT": "0",
+    "STRATA_SYCL_KV_COPY_GROUPS": "0",
+    "STRATA_CPU_GU_REUSE_OBSERVER": "0",
+    "STRATA_DECODE_ROUTE_LEDGER": "0",
+    "STRATA_DECODE_SERVICE_CPU": "0",
+    "STRATA_IQ_SINGLE_EXACT": "0",
+    "STRATA_SYCL_PARALLEL_IQ_DEQUANT": "1",
+    "STRATA_PREFILL_LAYER_MAJOR_SHAPE_CENSUS": "0",
+    "STRATA_IQ_TIMING_PROGRESS": "0",
+    "STRATA_SYCL_PREFILL_SCRATCH_ALIAS": "1",
+    "STRATA_GR_UNFUSED": "0",
+    "STRATA_PREFILL_BF16X2": "0",
+    "STRATA_PF_FUSED": "0",
+    "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+    "UR_LOG_TRACING": "level:info;flush:info;output:stderr"
+  },
+  "pack_metadata_sha256": {
+    "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/index.txt": "b2a014878c3b61d6a6f915e194055a5e68ede34f9465dd1cb13249d902f008ac",
+    "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/native_experts.txt": "d9ac2dfa3ee63c55c9c6a6db26f72da0cec0ee41733f007e5cbbbba71617aa5d",
+    "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/conversions.json": "51df3cd6ffd0d38c2da8e2d3a95a604b4a96c20b06fc639a9bf477282a42b86a",
+    "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/chat_template.jinja": "12827f24b742ea4e80cdc12dbcf9622227056b9f797252a3149263d4f9aaadce",
+    "/home/yayoi/orca/workspaces/Strata/sycl/data/expert-profile.bin": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf"
+  },
+  "boot_id": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+  "limits": {
+    "wall_seconds": 240,
+    "RSS_bytes": 17179869184,
+    "text_bytes": 67108864,
+    "job_bytes": 268435456
+  },
+  "quality_qualified": false,
+  "performance_qualified": false,
+  "restore_qualified": false,
+  "corrected_fixture_assumption": "bytes_needed=actual alias carve+8388608 slack; exact carve and carve-minus-one are tested separately; original failed receipt unchanged.",
+  "physical_model_262144_qualified": false,
+  "scope": "Actual production Prefill C8192 owned and exact-carve-sized borrowed allocation, C4096 relayout, canaries and guarded rejections. Real262144 single-layer staging allocation, metadata-only session. No inference/model/state/math/quality or max-context qualification.",
+  "retention_consumer": "First alias-owned/borrowed/relayout allocation/retirement comparison; after outcome extraction retire full successful API history.",
+  "journal_before_cursor": "s=9944479cfd1a45c28a589619cb8f2881;i=c2371c4;b=cfda0b6a7c134fe2bdf58f9202770840;m=5fd14c8919;t=65ddf20c660c7;x=6ef9d93210ab44d9",
+  "stdout": "allocation_plan C8192=2596783616 C4096=1511835904 carve8192=2588395008 carve4096=1503447296 loan_slack=8388608\nowned_cycle chunk=8192 free_before=10623217664 free_allocated=7940370432 free_retired=9792364544 total=10666115072\nborrowed_cycle init8192=PASS relayout4096=PASS both_end_canaries=PASS\nborrowed_short_loan rejection=PASS both_end_canaries=PASS\nscratch_allocation PASS owned borrowed relayout short_loan null_queue unordered_queue split no_inference\n",
+  "component_exit_code": 0,
+  "runtime_errors": [],
+  "carve_lines": [
+    "strata prefill: FP16 MoE compact requested=1 effective=1, chunk=8192, scratch rows=8192, accounted=2588395008, shared region=1180698624 bytes",
+    "strata prefill: FP16 MoE compact requested=1 effective=1, chunk=8192, scratch rows=8192, accounted=2588395008, shared region=1180698624 bytes",
+    "strata prefill: FP16 MoE compact requested=1 effective=1, chunk=4096, scratch rows=4096, accounted=1503447296, shared region=607128320 bytes",
+    "strata prefill: FP16 MoE compact requested=1 effective=1, chunk=4096, scratch rows=4096, accounted=1499252736, shared region=607128320 bytes"
+  ],
+  "native_log_sha256": "c9f8eb2c3bccee4dd217b85b93a947a4b589622eba1da2c88be95304a21d8eba",
+  "fresh_faults": [],
+  "boot_unchanged": true,
+  "driver_dump_exists": false,
+  "finished_utc": "2026-10-15T11:12:58.810630+00:00"
+}
