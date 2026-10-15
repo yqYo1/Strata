@@ -1,0 +1,1 @@
+R811は1,799語・6 URLで範囲内。固定版TLA/LLVM資料で2D面の単位・形状制限と、stride記述16B対assertion4Bの差を確認。loadのzero-fill以外、store/prefetch端処理やBMG実機挙動・性能は未確定。本文は保留し、R810の実コードで該当経路が確認された時だけ指定節を参照。今は追加調査不要。
