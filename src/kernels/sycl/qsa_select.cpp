@@ -119,8 +119,20 @@ sycl::event submit_topk(sycl::queue &queue, const float *scores,
       });
 }
 
-int selection_mapping() {
-  // Experimental, default off. Set before exec; process environment must
+int64_t validate_topk(const float *scores, const int32_t *steps, int64_t nq,
+                      int64_t blocks, int64_t cap, const QsaShapes &s,
+                      int32_t *ids, int64_t active) {
+  const int64_t launched = validate(nq, blocks, active, s);
+  if (cap <= 0 || cap > INT_MAX)
+    throw std::invalid_argument("invalid SYCL block selection capacity");
+  validate_spans({{ids, checked_count(nq, cap) * 4}},
+                 {{scores, checked_count(nq, blocks) * 4},
+                  {steps, checked_count(nq, kStepCount) * 4}});
+  return launched;
+}
+
+int prefill_selection_mapping() {
+  // Dedicated layer-major prefill only, default off. Set before exec; environment must
   // remain immutable once runtime/provider initialization starts.
   static const int mapping = [] {
     const char *r = std::getenv("STRATA_SYCL_SELECT_RADIX4");
@@ -183,14 +195,17 @@ bool qsa_block_scores_tc(const float *, const float *, const float *,
 void qsa_block_topk(const float *scores, const int32_t *steps, int64_t nq,
                     int64_t blocks, int64_t cap, const QsaShapes &s,
                     int32_t *ids, void *stream, int64_t active) {
-  const int64_t launched = validate(nq, blocks, active, s);
-  if (cap <= 0 || cap > INT_MAX)
-    throw std::invalid_argument("invalid SYCL block selection capacity");
-  validate_spans({{ids, checked_count(nq, cap) * 4}},
-                 {{scores, checked_count(nq, blocks) * 4},
-                  {steps, checked_count(nq, kStepCount) * 4}});
+  const int64_t launched = validate_topk(scores, steps, nq, blocks, cap, s, ids, active);
   auto &queue = queue_for(stream);
-  const int mapping = selection_mapping();
+  const auto event = submit_topk<0>(queue, scores, steps, nq, blocks, cap, ids, launched);
+  finish(stream, event);
+}
+void qsa_block_topk_prefill(const float *scores, const int32_t *steps, int64_t nq,
+                    int64_t blocks, int64_t cap, const QsaShapes &s,
+                    int32_t *ids, void *stream, int64_t active) {
+  const int64_t launched = validate_topk(scores, steps, nq, blocks, cap, s, ids, active);
+  auto &queue = queue_for(stream);
+  const int mapping = prefill_selection_mapping();
   const auto event = mapping == 2
       ? submit_topk<2>(queue, scores, steps, nq, blocks, cap, ids, launched)
       : mapping == 1 ? submit_topk<1>(queue, scores, steps, nq, blocks, cap, ids, launched)

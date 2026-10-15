@@ -1,0 +1,287 @@
+{
+  "passed": true,
+  "complete": true,
+  "active": false,
+  "GPU_executed": true,
+  "commands": [
+    {
+      "label": "journal-before",
+      "argv": [
+        "journalctl",
+        "-k",
+        "-b",
+        "-n",
+        "0",
+        "--show-cursor",
+        "--no-pager"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-15T17:23:04.797113+00:00",
+      "wall_seconds": 30,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2999132,
+          "start_ticks": 43374891,
+          "sid": 2999132,
+          "pgid": 2999132
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 433748.918630768,
+      "pid": 2999132,
+      "spawn_return_monotonic": 433748.920485095,
+      "direct_identity": {
+        "pid": 2999132,
+        "state": "R",
+        "ppid": 2999127,
+        "pgid": 2999132,
+        "sid": 2999132,
+        "start_ticks": 43374891,
+        "rss_bytes": 663552
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-15T17:23:04.906406+00:00",
+      "elapsed_seconds": 0.10903649701504037,
+      "logs": {
+        "journal-before.stdout": {
+          "bytes": 156,
+          "sha256": "8555578e4e6436c6b0e814f29af421d823b153081e475b022f0472b669f16689"
+        },
+        "journal-before.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "component",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-canonical-bank-profile-build-root-v1/build/sycl_qsa_select_radix_test",
+        "--dump",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-qsa-select-scope-full-varied-a0-r0-root-v2/output.f32"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+        "OMP_NUM_THREADS": "1",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-qsa-select-scope-full-varied-a0-r0-root-v2/cache",
+        "STRATA_SYCL_SELECT_RADIX4": "0",
+        "STRATA_SYCL_SELECT_CYCLIC": "0",
+        "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+        "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+        "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr"
+      },
+      "started_utc": "2026-10-15T17:23:04.907022+00:00",
+      "wall_seconds": 180,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2999137,
+          "start_ticks": 43374902,
+          "sid": 2999137,
+          "pgid": 2999137
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 433749.028504479,
+      "pid": 2999137,
+      "spawn_return_monotonic": 433749.030390787,
+      "direct_identity": {
+        "pid": 2999137,
+        "state": "D",
+        "ppid": 2999127,
+        "pgid": 2999137,
+        "sid": 2999137,
+        "start_ticks": 43374902,
+        "rss_bytes": 139264
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 109113344,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-15T17:23:05.913852+00:00",
+      "elapsed_seconds": 1.0066192480153404,
+      "logs": {
+        "component.stdout": {
+          "bytes": 1907,
+          "sha256": "f00cb164474086a6ad73c0e86923e437b12031326ef0b0feb335fde84a9acaf5"
+        },
+        "component.stderr": {
+          "bytes": 305585,
+          "sha256": "dd1bf0a5c5873edf7ee0a6638cab15e7b6619fcf81facb6380865e85eb222830"
+        }
+      }
+    },
+    {
+      "label": "journal-final",
+      "argv": [
+        "journalctl",
+        "-k",
+        "-b",
+        "--after-cursor",
+        "s=9944479cfd1a45c28a589619cb8f2881;i=c2513df;b=cfda0b6a7c134fe2bdf58f9202770840;m=64fcf3b9a7;t=65de44c6d9155;x=402833591a50f4fa",
+        "--no-pager",
+        "-o",
+        "json"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8"
+      },
+      "started_utc": "2026-10-15T17:23:05.963437+00:00",
+      "wall_seconds": 30,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 2999210,
+          "start_ticks": 43375008,
+          "sid": 2999210,
+          "pgid": 2999210
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 433750.085123652,
+      "pid": 2999210,
+      "spawn_return_monotonic": 433750.086856341,
+      "direct_identity": {
+        "pid": 2999210,
+        "state": "R",
+        "ppid": 2999127,
+        "pgid": 2999210,
+        "sid": 2999210,
+        "start_ticks": 43375008,
+        "rss_bytes": 491520
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-15T17:23:06.081030+00:00",
+      "elapsed_seconds": 0.11718508298508823,
+      "logs": {
+        "journal-final.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "journal-final.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "mode": "full",
+  "pattern": "varied",
+  "arm": 0,
+  "index": 0,
+  "argv": [
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-canonical-bank-profile-build-root-v1/build/sycl_qsa_select_radix_test",
+    "--dump",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-qsa-select-scope-full-varied-a0-r0-root-v2/output.f32"
+  ],
+  "environment": {
+    "PATH": "/usr/bin:/bin",
+    "HOME": "/home/yayoi",
+    "LANG": "C.UTF-8",
+    "LC_ALL": "C.UTF-8",
+    "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+    "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+    "OMP_NUM_THREADS": "1",
+    "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+    "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+    "SYCL_CACHE_PERSISTENT": "0",
+    "NEOReadDebugKeys": "1",
+    "EnableDirectSubmission": "0",
+    "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+    "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+    "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-qsa-select-scope-full-varied-a0-r0-root-v2/cache",
+    "STRATA_SYCL_SELECT_RADIX4": "0",
+    "STRATA_SYCL_SELECT_CYCLIC": "0",
+    "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+    "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+    "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+    "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+    "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr"
+  },
+  "references": {
+    "own-prefill-select-scope-build-v1.json": "9a6a218ce5b05fb5a088bdf04063d98f8784b5eb9e1276d264c523ee3beffdaf",
+    "own-qsa-select-model-a2-v1.json": "68702ba892832843610bf6d2af2e3db1c539d3cce07dc4cd1bed3574175fb44c",
+    "own-prefill-select-scope-main-review-v1.json": "3e2665e95d4aedc904e337a9c25d4964362f649fcf05fdeda465458f1a869b41"
+  },
+  "recipe_sha256": "6ae95d6fccbe7e97c1e1ce186691438722ad1cac226c1dba30df1b0e4f520462",
+  "binary_sha256": "aa1360cc30db3d5ea2bf14233ced9db5dc1e4a0834248e2d5197e3f375f318a0",
+  "compiled_source_receipt": {
+    "path": "own-prefill-select-scope-build-v1.json",
+    "sha256": "9a6a218ce5b05fb5a088bdf04063d98f8784b5eb9e1276d264c523ee3beffdaf"
+  },
+  "boot_id": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+  "limits": {
+    "wall_seconds": 180,
+    "RSS_bytes": 8589934592,
+    "text_bytes": 67108864,
+    "total_bytes": 134217728,
+    "file_bytes": 67108864
+  },
+  "performance_qualified": false,
+  "quality_qualified": false,
+  "physical_262144_qualified": false,
+  "restore_qualified": false,
+  "scope": "Actual dedicated-prefill selector component mapping0/1/2,public/ref alwaysoriginal checkedoutside timing: full674query17batch exact expanded oracle inclphysical boundaries, or clean nq256x5 synthetic78453 varied/equal withall256query full oracle/guards/unchanged inputs. Cross-process exact dump comparison separate. Not model PP/quality/physical-context qualification.",
+  "stdout": "STRATA_SYCL_SELECT_RADIX4=0\nSTRATA_SYCL_SELECT_CYCLIC=0\nPASS public_original_and_ref label=small_pattern_0 nq=75\nPASS label=small_pattern_0 nq=75 cap=2051\nPASS public_original_and_ref label=long_mixed_pattern_0 nq=8\nPASS label=long_mixed_pattern_0 nq=8 cap=2051\nPASS public_original_and_ref label=small_pattern_1 nq=75\nPASS label=small_pattern_1 nq=75 cap=2051\nPASS public_original_and_ref label=long_mixed_pattern_1 nq=8\nPASS label=long_mixed_pattern_1 nq=8 cap=2051\nPASS public_original_and_ref label=small_pattern_2 nq=75\nPASS label=small_pattern_2 nq=75 cap=2051\nPASS public_original_and_ref label=long_mixed_pattern_2 nq=8\nPASS label=long_mixed_pattern_2 nq=8 cap=2051\nPASS public_original_and_ref label=small_pattern_3 nq=75\nPASS label=small_pattern_3 nq=75 cap=2051\nPASS public_original_and_ref label=long_mixed_pattern_3 nq=8\nPASS label=long_mixed_pattern_3 nq=8 cap=2051\nPASS public_original_and_ref label=small_pattern_4 nq=75\nPASS label=small_pattern_4 nq=75 cap=2051\nPASS public_original_and_ref label=long_mixed_pattern_4 nq=8\nPASS label=long_mixed_pattern_4 nq=8 cap=2051\nPASS public_original_and_ref label=small_pattern_5 nq=75\nPASS label=small_pattern_5 nq=75 cap=2051\nPASS public_original_and_ref label=long_mixed_pattern_5 nq=8\nPASS label=long_mixed_pattern_5 nq=8 cap=2051\nPASS public_original_and_ref label=small_pattern_6 nq=75\nPASS label=small_pattern_6 nq=75 cap=2051\nPASS public_original_and_ref label=long_mixed_pattern_6 nq=8\nPASS label=long_mixed_pattern_6 nq=8 cap=2051\nPASS public_original_and_ref label=small_pattern_7 nq=75\nPASS label=small_pattern_7 nq=75 cap=2051\nPASS public_original_and_ref label=long_mixed_pattern_7 nq=8\nPASS label=long_mixed_pattern_7 nq=8 cap=2051\nPASS public_original_and_ref label=mixed_invalid_steps nq=10\nPASS label=mixed_invalid_steps nq=10 cap=16\nPASS host_validation api=public_original\nPASS host_validation api=dedicated_prefill\nPASS cases=17\n",
+  "stderr_sha256": "dd1bf0a5c5873edf7ee0a6638cab15e7b6619fcf81facb6380865e85eb222830",
+  "stderr_bytes": 305585,
+  "exit_code": 0,
+  "dump": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-qsa-select-scope-full-varied-a0-r0-root-v2/output.f32",
+    "bytes": 5450408,
+    "sha256": "bb4ce7079a6f8c5e1fe7a194f63fde4638e75443f183345b1d074ca10914a180",
+    "consumer": "Main baseline/radix4/cyclic exact component comparator",
+    "budget_bytes": 8388608,
+    "next_review": "after full and timing cross-arm comparison"
+  },
+  "fresh_faults": [],
+  "boot_unchanged": true,
+  "driver_dump_exists": false,
+  "finished_utc": "2026-10-15T17:23:06.081671+00:00"
+}

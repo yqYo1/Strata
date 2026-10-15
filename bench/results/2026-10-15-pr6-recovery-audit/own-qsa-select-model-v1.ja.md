@@ -43,9 +43,19 @@ R739のdpkg一覧にあった`/usr/lib`の2.40.13を、実使用版とみなす�
 SYCL/URとZE driverの実pathも記録した。今後のdump/資源解析は実path/hashに合わせる。
 filenameの観測は独自ビルドのsource commitやdump flag動作の証明ではない。
 
-## 次
+## Arm2 cyclic閉鎖と適用範囲の修正
 
-同じnativeでarm2 cyclicを起動済み。終了まではsource/build/test/cleanupを重ねない。
-完了後に同じ768行・lifecycle・faultを比較し、selection/attention区間も記録する。
-R741はFP16 residualの次の品質gate、R742は実IGC resolverと既存AOT/cache経路を読み取り専用で調査中。
-XeStrataの実装は使わず、研究・実装・実行検証の担当を分ける。
+`own-qsa-select-model-a2-v1.json`も正常閉鎖。768行/7864320値は旧FP32 referenceと全byte一致・finite。
+752store/752next-input、48層activation→Full復元、native/server exit0、全owned退去、同boot、
+新規fault0、dumpなし。診断1回のPP348.0、wrapper224178ms、selection17097.5ms、
+attention69692.5ms。arm1との差から優劣やばらつきを確定しない。
+比較済みの重複raw・成功ログ26 files / 32,464,092Bを退役し、全個別結果を保持した。
+
+Mainのcallsite再確認で、このbinaryの実験flagはprefillのほかdecode/verifyの共有APIにも
+効くことが判明した。両runは共有dispatch下の診断として保持し、prefill専用の採用結果にしない。
+続く独立したhost dispatch修正は`own-prefill-selector-scope-v2.ja.md`参照。
+現在は長文layer-major prefill専用APIだけがflagを読み、従来API・reference・短文・decode・verifyは
+Mapping0を維持する。この修正後のモデル全体・clean反復は未実施。
+
+R741/R742はFINAL受領済み。Main補足は`main-review-round741-742.ja.md`参照。
+XeStrataは性能参考のみで、実装の移植・翻案・そのsourceを下敷きにした再実装は行わない。

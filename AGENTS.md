@@ -22,7 +22,12 @@ including helpers, diagnostics, tests and archived source proposals. Audit
 existing derived code and remove it from the active tree while preserving
 independent safety fixes and compact provenance/results in Git. Changing names
 or removing copyright notices does not remove a derivation. Other engines may
-be implementation references only after their provenance and license are checked. Upstream
+be implementation references only after their provenance and license are checked.
+Record source provenance for delegated proposals before integration, including
+helpers and tests. Newly authored project files follow the repository's `LICENSE`;
+do not introduce another license through a copied header or template. Hold an
+uncertain proposal out of the active implementation until its origin is resolved.
+Upstream
 contributions are not currently planned. CUDA/HIP implementation and validation
 are outside this work's scope.
 

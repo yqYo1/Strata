@@ -44,6 +44,18 @@ void qsa_block_topk(const float* scores, const int32_t* steps, int64_t nq, int64
                                                    ///< --max-context otherwise sends every short prompt to the slow one).
                                                    ///< CUDA uses the bound only on sm_75; HIP keeps its existing policy.
                                                    ///< Omit it for captured graphs whose context can grow after capture.
+#if defined(STRATA_ENABLE_SYCL)
+/// Dedicated layer-major long-prefill selector. Geometry, active-block bound,
+/// output and validation contracts match qsa_block_topk. This is the only SYCL
+/// entrypoint that reads STRATA_SYCL_SELECT_RADIX4 / STRATA_SYCL_SELECT_CYCLIC:
+/// exact "1" enables an arm; both enabled is invalid; otherwise Mapping0.
+/// Set flags before exec and keep the environment immutable after runtime init.
+/// Short prefill, decode, verification and reference callers use qsa_block_topk
+/// or qsa_block_topk_ref, which always retain Mapping0 and read neither flag.
+void qsa_block_topk_prefill(const float* scores, const int32_t* steps, int64_t nq,
+                           int64_t max_blocks, int64_t cap, const QsaShapes& s,
+                           int32_t* ids, void* stream, int64_t active_blocks = -1);
+#endif
 /// The same ids on a thread-block cluster of 8 CTAs per query (sm_90+, CUDA; S19). qsa_block_topk takes it for calls
 /// of up to 16 queries unless STRATA_QSA_CLUSTER=0. False (nothing launched) where it cannot run: HIP, a card or a
 /// build below sm_90, or a capacity whose keys do not fit one cluster's shared memory. Capturable.

@@ -157,34 +157,35 @@ void run(const std::string &label, const std::vector<Row> &rows,
   ds.put(scores); dt.put(steps);
   out.put(std::vector<int32_t>(output_size, sentinel));
   auto invoke = [&] {
-    qsa_block_topk(ds.data() + guard, dt.data(), nq, blocks, cap,
+    qsa_block_topk_prefill(ds.data() + guard, dt.data(), nq, blocks, cap,
                    qsa_real_shapes(), out.data() + guard,
                    &runtime->compute(), active);
   };
   invoke();
   runtime->wait(); // Completed warmup; no pending work enters timing.
   const auto first = out.get();
-  auto validate = [&](const std::vector<int32_t> &actual) {
+  auto validate = [&](const std::vector<int32_t> &actual,
+                      const std::vector<std::vector<int32_t>> &references) {
     check(actual.size() == output_size, label + ": output size");
     for (int g = 0; g < guard; ++g)
       check(actual[size_t(g)] == sentinel &&
             actual[actual.size() - 1 - size_t(g)] == sentinel,
             label + ": outer canary");
     for (int64_t q = 0; q < nq; ++q) {
-      const auto &ref = expected[size_t(q)];
+      const auto &ref = references[size_t(q)];
       const auto *got = actual.data() + guard + q * cap;
       for (int64_t j = 0; j < cap; ++j) {
         if (j < int64_t(ref.size())) {
           check(got[j] == ref[size_t(j)], label + ": oracle ID q=" +
                 std::to_string(q) + " j=" + std::to_string(j));
-          check(got[j] >= 0 && got[j] < rows[size_t(q)].n,
+          check(got[j] >= 0 && got[j] < steps[size_t(q) * kStepCount + kStepNKv],
                 label + ": ID range");
           if (j) check(got[j] > got[j - 1], label + ": ascending unique IDs");
         } else check(got[j] == sentinel, label + ": row tail/invalid canary");
       }
     }
   };
-  validate(first);
+  validate(first, expected);
   if (repetitions) {
     // CPU oracle and copies are outside this submission-plus-drain interval.
     runtime->wait();
@@ -194,12 +195,38 @@ void run(const std::string &label, const std::vector<Row> &rows,
     const double ms = std::chrono::duration<double, std::milli>(
         std::chrono::steady_clock::now() - begin).count();
     const auto repeated = out.get();
-    validate(repeated);
+    validate(repeated, expected);
     check(repeated == first, label + ": repeated output changed");
     std::cout << "selector_component label=" << label << " nq=" << nq
               << " n=78453 cap=" << cap << " repeats=" << repetitions
               << " total_submit_drain_ms=" << ms << '\n';
   }
+  // Public decode/verification/short-prefill API and the reference entrypoint
+  // must keep the original result under each pre-exec candidate environment.
+  // Reuse output storage and keep these full-oracle/guard checks outside timing.
+  out.put(std::vector<int32_t>(output_size, sentinel));
+  qsa_block_topk(ds.data() + guard, dt.data(), nq, blocks, cap,
+                 qsa_real_shapes(), out.data() + guard,
+                 &runtime->compute(), active);
+  runtime->wait();
+  const auto original = out.get();
+  validate(original, expected);
+  check(original == first, label + ": public original differs from prefill");
+  // _ref has no active-block argument. An invalid-active-bound row can be
+  // valid at its full capacity; compute its actual contract's oracle separately.
+  auto reference_expected = expected;
+  for (int64_t q = 0; q < nq; ++q) {
+    if (rows[size_t(q)].invalid != 3) continue;
+    const auto *st = steps.data() + q * kStepCount;
+    reference_expected[size_t(q)] = oracle(scores.data() + guard + q * blocks,
+                                          st[kStepNKv], st[kStepWidth]);
+  }
+  out.put(std::vector<int32_t>(output_size, sentinel));
+  qsa_block_topk_ref(ds.data() + guard, dt.data(), nq, blocks, cap,
+                     qsa_real_shapes(), out.data() + guard, &runtime->compute());
+  runtime->wait();
+  validate(out.get(), reference_expected);
+  std::cout << "PASS public_original_and_ref label=" << label << " nq=" << nq << '\n';
   const auto scores_after = ds.get();
   check(std::memcmp(scores_after.data(), scores.data(),
                     scores.size() * sizeof(float)) == 0, label + ": scores changed");
@@ -208,7 +235,8 @@ void run(const std::string &label, const std::vector<Row> &rows,
   ++cases;
   std::cout << "PASS label=" << label << " nq=" << nq << " cap=" << cap << '\n';
 }
-void validation() {
+void validation(bool dedicated_prefill) {
+  const auto select = dedicated_prefill ? qsa_block_topk_prefill : qsa_block_topk;
   auto shapes = qsa_real_shapes();
   Buffer<float> scores(8);
   Buffer<int32_t> steps(kStepCount), ids(8);
@@ -218,7 +246,7 @@ void validation() {
   ids.put(std::vector<int32_t>(8, sentinel));
   auto call = [&](int64_t nq, int64_t blocks, int64_t cap,
                   const QsaShapes &s, int64_t active = -1) {
-    qsa_block_topk(scores.data(), steps.data(), nq, blocks, cap, s,
+    select(scores.data(), steps.data(), nq, blocks, cap, s,
                    ids.data(), &runtime->compute(), active);
   };
   auto reject = [&](auto f) {
@@ -243,25 +271,26 @@ void validation() {
     if (which == 4) bad.idx_top_k = int64_t(INT_MAX) - 2;
     reject([&] { call(1, 8, 8, bad); });
   }
-  reject([&] { qsa_block_topk(nullptr, steps.data(), 1, 8, 8, shapes,
-                              ids.data(), &runtime->compute()); });
-  reject([&] { qsa_block_topk(scores.data(), nullptr, 1, 8, 8, shapes,
-                              ids.data(), &runtime->compute()); });
-  reject([&] { qsa_block_topk(scores.data(), steps.data(), 1, 8, 8, shapes,
-                              nullptr, &runtime->compute()); });
-  reject([&] { qsa_block_topk(scores.data(), steps.data(), 1, 8, 8, shapes,
-                              steps.data(), &runtime->compute()); });
-  reject([&] { qsa_block_topk(scores.data(), steps.data(), 1, 8, 8, shapes,
+  reject([&] { select(nullptr, steps.data(), 1, 8, 8, shapes,
+                              ids.data(), &runtime->compute(), -1); });
+  reject([&] { select(scores.data(), nullptr, 1, 8, 8, shapes,
+                              ids.data(), &runtime->compute(), -1); });
+  reject([&] { select(scores.data(), steps.data(), 1, 8, 8, shapes,
+                              nullptr, &runtime->compute(), -1); });
+  reject([&] { select(scores.data(), steps.data(), 1, 8, 8, shapes,
+                              steps.data(), &runtime->compute(), -1); });
+  reject([&] { select(scores.data(), steps.data(), 1, 8, 8, shapes,
                        reinterpret_cast<int32_t *>(scores.data()),
-                       &runtime->compute()); });
-  reject([&] { qsa_block_topk(scores.data(), steps.data(), 1, 8, 8, shapes,
+                       &runtime->compute(), -1); });
+  reject([&] { select(scores.data(), steps.data(), 1, 8, 8, shapes,
                        reinterpret_cast<int32_t *>(
                            reinterpret_cast<char *>(ids.data()) + 1),
-                       &runtime->compute()); });
+                       &runtime->compute(), -1); });
   runtime->wait();
   check(ids.get() == std::vector<int32_t>(8, sentinel),
         "rejected host calls changed IDs");
-  std::cout << "PASS host_validation\n";
+  std::cout << "PASS host_validation api="
+            << (dedicated_prefill ? "dedicated_prefill" : "public_original") << '\n';
 }
 int integer(const char *text) {
   char *end = nullptr;
@@ -318,7 +347,8 @@ int main(int argc, char **argv) {
       std::vector<Row> invalid = {{8, 3, 0}, {0, 0, 1}, {7, 7, 2}, {9, 0, 3}};
       for (int kind = 1; kind <= 6; ++kind) invalid.push_back({8, 3, kind, kind});
       run("mixed_invalid_steps", invalid, 16, 0, 3);
-      validation();
+      validation(false);
+      validation(true);
     }
     runtime->wait();
     if (dump.is_open()) {

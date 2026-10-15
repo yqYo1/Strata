@@ -2321,6 +2321,12 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                                                                              m.cs, active))
                             strata::kernels::qsa_block_scores(st.idx_pooled, st.idx_dead, m.q_idx + t0 * 512, steps0, nb,
                                                               m.max_blocks, s, m.sel_scores, m.cs, active);
+#if defined(STRATA_ENABLE_SYCL)
+                        if (m.layer_major_active)
+                            strata::kernels::qsa_block_topk_prefill(m.sel_scores, steps0, nb, m.max_blocks, m.cap, s,
+                                                            m.sel_ids + t0 * m.cap, m.cs, active);
+                        else
+#endif
                         strata::kernels::qsa_block_topk(m.sel_scores, steps0, nb, m.max_blocks, m.cap, s,
                                                         m.sel_ids + t0 * m.cap, m.cs, active);
                     }
@@ -2368,6 +2374,12 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                             const int32_t* steps0 = m.steps_dev + t0 * strata::kernels::kStepCount;
                             strata::kernels::qsa_block_scores(pooled16, dead16, m.q_idx + t0 * 512, steps0, nb,
                                                               m.max_blocks, s, m.sel_scores, m.cs);
+#if defined(STRATA_ENABLE_SYCL)
+                            if (m.layer_major_active)
+                                strata::kernels::qsa_block_topk_prefill(m.sel_scores, steps0, nb, m.max_blocks, m.cap, s,
+                                                                ids16 + t0 * m.cap, m.cs);
+                            else
+#endif
                             strata::kernels::qsa_block_topk(m.sel_scores, steps0, nb, m.max_blocks, m.cap, s,
                                                             ids16 + t0 * m.cap, m.cs);
                         }
