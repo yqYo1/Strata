@@ -2239,6 +2239,66 @@
       "human_review": "research-scope-review-round795-v1.ja.md",
       "human_review_sha256": "f40e8445c1c5526b5245ebc135dc1eba3b2ffc593cb55a7184c35b0933cd7604",
       "status": "Operational digest/retrieval metadata received; original research report remains unread by Main."
+    },
+    {
+      "round": 797,
+      "path": "research-round797-v1.txt",
+      "sha256": "9cb28db4f46280410fe0b7155126766d9de8e6ea6e54eae3d10209c437531ec2",
+      "model": "Orca gpt-6-luna",
+      "purpose_class": "decision support",
+      "review": "research-scope-review-round800-v1.json",
+      "main_body_read": false,
+      "status": "Reviewed. Original regression timeout remains FAIL; later same-queue-only follow-up does not resolve the separate-queue failure.",
+      "reviewer_retrieval_metadata": {
+        "main_original_needed_now": true,
+        "section_pointer": [
+          "Intended dependency graph and the reuse question",
+          "What the public contracts say",
+          "Ranked hypotheses (not findings)",
+          "Narrow next diagnostic for Main"
+        ],
+        "key_correction": "GDB/host disassembly localize the original FAIL to pipeline(q,true); omitting that one call lets remaining numerical and same-queue cases pass, but the original remains FAIL and the event/runtime/root cause is unknown. No GPU fault or driver bug is established.",
+        "retrieval_brief": "Use the source-level slot DAG and UR/L0 issue-versus-completion contracts when designing a Main-owned follow-up. API contracts and stack location do not reveal the producer event or exact adapter progress path."
+      },
+      "review_sha256": "9bc57ba4ff303aff57fa1afca9703963b2d8ccc31be6f234ce9bd05f545fe141",
+      "outcome": "succeeded",
+      "main_selected_sections_read": [
+        "## Intended dependency graph and the reuse question \u2014 full section",
+        "## What the public contracts say \u2014 full section",
+        "## Ranked hypotheses (not findings) \u2014 full section",
+        "## Narrow next diagnostic for Main \u2014 full section"
+      ],
+      "main_read_limit": "Only four named decision-support sections; rootcause unproven."
+    },
+    {
+      "round": 800,
+      "path": "research-scope-review-round800-v1.json",
+      "sha256": "9bc57ba4ff303aff57fa1afca9703963b2d8ccc31be6f234ce9bd05f545fe141",
+      "model": "native Codex gpt-6-luna",
+      "reasoning_effort": "max",
+      "human_review": "research-scope-review-round800-v1.ja.md",
+      "human_review_sha256": "925dabda5eff0caf6e5395d4a4fbd6c5bf0a1ce2e04ca94f2dfd4040e211e7d7"
+    },
+    {
+      "round": 798,
+      "path": "research-round798-v1.txt",
+      "sha256": "234873f806b0eb363c59380696eb7644421b954155ae81274a4966593f1c7359",
+      "model": "Orca gpt-6-luna",
+      "purpose_class": "knowledge collection",
+      "review": "research-scope-review-round801-v1.json",
+      "review_sha256": "122952c2efda6dd6c97d0dd53b4fb6d19880d33411aec7a74dcb223441e06092",
+      "main_body_read": false,
+      "outcome": "succeeded",
+      "main_original_needed_now": false
+    },
+    {
+      "round": 801,
+      "path": "research-scope-review-round801-v1.json",
+      "sha256": "122952c2efda6dd6c97d0dd53b4fb6d19880d33411aec7a74dcb223441e06092",
+      "model": "native Codex gpt-6-luna",
+      "reasoning_effort": "max",
+      "human_review": "research-scope-review-round801-v1.ja.md",
+      "human_review_sha256": "f3a4fd0b40b09d2fda5e84c70cfe1b26867d1ea386b4f5c9a1686506c91f3eeb"
     }
   ],
   "main_initial_findings": [
@@ -3663,10 +3723,7 @@
     "engine_build_status": "Fresh v2 complete build+host gates+68GEMM PASS. Original full regression FAIL at separate-queue pipeline timeout; narrow same-queue followup PASS. Same-source paired129-token model mechanics running.",
     "new_kernel_test": "own-native16-gemm-correctness-v2.json",
     "implementation_round787": "Full source/provenance review completed; unadopted/unbuilt. Need actualallocation extent/context guard consideration before production integration.",
-    "research_next": [
-      797,
-      798
-    ],
+    "research_next": [],
     "registry_lifetime_failure": "own-native16-registry-lifetime-v1.ja.md",
     "regression": "own-native16-regression-followup2-correctness-v2.json",
     "original_regression": "own-native16-regression-correctness-v2.json FAIL remains unchanged; separate-queue mechanism unresolved",
@@ -3675,13 +3732,17 @@
     "clean_first_fp32": "346.5tok/s n1",
     "attention_main_review": "own-native16-attention-main-review-v1.ja.md",
     "implementation_next": [
-      802,
-      803
+      803,
+      804
     ],
     "clean_first_bf16": "123.8tok/s n1, same request/binary/GPU32768 residual rows; -64.27% throughput",
     "initial_long_comparison": "own-native16-first-long-comparison-v1.json",
     "performance_adopted": false,
     "next": "Coarse native16 profile and paired GEMM operator benchmark; natural-input precision screen remains required",
-    "onednn_candidate": "R799 returned incomplete gated source proposal. RNE and actual L0 implementation/backend contracts unqualified; no execution/adoption."
+    "onednn_candidate": "R799 returned incomplete gated source proposal. RNE and actual L0 implementation/backend contracts unqualified; no execution/adoption.",
+    "retention": "closed-native16-first-wave-retention-v1.json:366files/124263459logicalbytes retired; all statuses unchanged; currentv2build, oldoneGEMMexecutable, oldFP32NLLcontrols preserved.",
+    "natural_input": "own-native16-natural-input-v1.json:32863 thinkingON,64 positions, no repeatedpadding, no GPU executed",
+    "coarse_profile": "run_owned_native16_coarse_profile_v1.py active, >=32K; separate diagnostic, not clean speed",
+    "quality_source": "R802 full source reviewed, hostfixture/GPU UNRUN. Needs current cohort closure and four host validation groups before execution."
   }
 }

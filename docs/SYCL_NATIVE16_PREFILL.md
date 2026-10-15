@@ -56,9 +56,18 @@ and [paired model receipt](../bench/results/2026-10-15-pr6-recovery-audit/own-na
 An earlier new allocation-registry destruction-order error was reproduced and
 fixed separately; the fixed model processes exit normally.
 
-Natural-input quality, paired long-input speed, physical 262144-context and
-RESTORE qualification remain required. Do not enable this experiment as the
-default based on the component and synthetic-model checks.
+The first official `bench.sh` comparison on the B570 used the same binary and
+78,453-token request, thinking on, chunk 8192 and 32,768 GPU residual rows.
+FP32 measured 346.5 tok/s; BF16 measured 123.8 tok/s (one process per arm).
+The BF16 GPU residual fell from 1,280 to 640 MiB, but this implementation's
+throughput fell 64.3%. It is rejected for default/performance adoption pending
+operator diagnosis and improvement. See the
+[individual-sample comparison](../bench/results/2026-10-15-pr6-recovery-audit/own-native16-first-long-comparison-v1.json).
+This is a first screening pair, not a repeated variance study or evidence that
+the datatype alone caused the slowdown.
+
+Natural-input quality, improved long-input speed, physical 262144-context and
+RESTORE qualification remain required. Keep the default FP32 route.
 
 The architecture references are the
 [vLLM XPU MoE dtype policy](https://github.com/vllm-project/vllm-xpu-kernels/blob/6b30c9b92cc525c32729df988b5f918e7c5661a5/csrc/xpu/grouped_gemm/collective/gemm/moe_dtype_policy.hpp)
