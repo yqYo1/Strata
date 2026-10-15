@@ -99,6 +99,10 @@ K8V4でも1.1551 GiBが不足する。C8192はworkspace増加分だけさらに�
 ただし容量が足りないことと、全hiddenをRAMで47回往復させる必要があることは同義ではない。
 **prefill中のQSA KVも現在の一層だけGPUへ置く**別案では、256K hidden全体5 GiBをGPUに残せる計算になる。
 C4096ならK8V8でも余裕約1.3241 GiB、C8192なら約0.1965 GiB（後者は余裕が小さい）。
+この数字はKV payloadだけでなくindexer/page stateも**現在の一層分だけ**GPUへ置く場合である。
+他の11層のindexer/page stateをGPUに残すなら、追加372021936 Bを引く必要がある。
+その場合C4096は1049759296 B（約0.9777 GiB）余るが、C8192は161033920 B不足する。
+従って「一層分のKV payloadにすればC8192も全indexer常駐のまま収まる」とは言えない。
 過去層KVは層完了時に一回RAMへ保存し、decode前に必要な配置へ戻す必要がある。
 KV/indexerとhiddenの入替費用は別途実測するが、層をまたぐhiddenの反復転送を減らす設計として検討できる。
 これは現layer-majorのall-state所有をそのまま使う案ではない。

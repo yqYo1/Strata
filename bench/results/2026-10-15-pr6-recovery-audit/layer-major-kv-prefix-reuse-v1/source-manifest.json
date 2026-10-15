@@ -1,0 +1,51 @@
+{
+  "schema": 1,
+  "status": "source_only_unexecuted",
+  "root": "/home/yayoi/orca/workspaces/Strata/sycl",
+  "flag": "STRATA_PREFILL_LAYER_MAJOR_KV_REUSE=1",
+  "default_enabled": false,
+  "precision_changes": false,
+  "host_and_resident_mirrors_changed": false,
+  "capacity_savings_claimed": false,
+  "files": [
+    {
+      "path": "include/strata/prefill/prefill.hpp",
+      "base_sha256": "2a2fc2930ce4e24dde9c67fd65592887241d8c62659031613e7f47365763e81c",
+      "proposed_sha256": "ffeef6ba99c7806d6d476f1d56492319c8a71b5871e5d0c5a1847e64e5dc3c2a",
+      "proposed_bytes": 8089
+    },
+    {
+      "path": "src/prefill/prefill.cpp",
+      "base_sha256": "aca7a33b1019e4637ffc6738a957c0eac4d051ce8a9cf957a446524b45df51e4",
+      "proposed_sha256": "6609772618d7282aa13e8ee941f89e9b5fa8d342e4ba312b1016965031d49155",
+      "proposed_bytes": 201950
+    },
+    {
+      "path": "src/prefill/layer_major.inc",
+      "base_sha256": "1a79f1d66fdddb6ad3715fc784f2d15fecbf4288fd6cabc335005287d8d1c36c",
+      "proposed_sha256": "a7ab1f71baf5cfd778131915536ef247c17e4328e8c7af324a2e4b65e1058e77",
+      "proposed_bytes": 29691
+    },
+    {
+      "path": "CMakeLists.txt",
+      "base_sha256": "01dde67c9af61c88f5aa22b0ea0e639f9f37cb2a31f9c7785fddd7233c34216d",
+      "proposed_sha256": "9872f82234c5efa1f11f7f87c59cd0016072e710aa37ca0b55d3ab5c06cbcb01",
+      "proposed_bytes": 74006
+    },
+    {
+      "path": "include/strata/prefill/layer_major_kv_prefix_reuse.hpp",
+      "base_sha256": null,
+      "proposed_sha256": "236b59d28b07e2c39069f458d62d4d470b69263e079eec33987fdbceda585aab",
+      "proposed_bytes": 4708
+    },
+    {
+      "path": "src/prefill/layer_major_kv_prefix_reuse_test.cpp",
+      "base_sha256": null,
+      "proposed_sha256": "3dd85a3da3657369b9b8ee4d8ac7c42b2cc9744f45a2ee038e61c57690efce1e",
+      "proposed_bytes": 7253
+    }
+  ],
+  "source_diff_sha256": "2f431778bfe168f2d912deed6855a57e94aca2245df40bbeb5208e9b77e1e0ce",
+  "overlapping_unapplied_proposal": "bf16-prefill-storage-v2; deliberate composition required",
+  "active_callback_proof": "carve/take_stage partition + complete runtime address disjointness checks; draft_kv uses operator region and own drafter KV; own-pass fallback owns separate buffers; reentrant layout mutation guarded"
+}

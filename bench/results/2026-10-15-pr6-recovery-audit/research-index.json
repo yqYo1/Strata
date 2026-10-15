@@ -1032,6 +1032,38 @@
       "sha256": "ea40ff0caa2298a444a55bd7a89dd51579ecb572e719e886523d3d31006172ee",
       "main_review": "prefill-capacity-plan.ja.md",
       "status": "Corrected FINAL/Main independent Alloc count matches actual1662831872 and derives fullresident1386006784/2596783616. No new GPU allocation."
+    },
+    {
+      "round": 678,
+      "path": "research-one-layer-kv-lifetime-round678-v1.txt",
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "sha256": "5343600681202f5ba1cbcfc6df9d3c00de9c597dbf0b9d4dddb7d95b59bc7d72",
+      "status": "Main source review complete; lower-invasive prefix-reuse source proposal received, unapplied; no capacity saving."
+    },
+    {
+      "round": 679,
+      "path": "research-layer-major-offload-primary-round679-v1.txt",
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "sha256": "09ed0cc4383994a3912b4c0710aaf28c28e73195dfb76e43a2a88f933860655b",
+      "status": "Main reviewed primary references; one-active-indexer capacity caveat recorded; architecture proposal only."
+    },
+    {
+      "round": 680,
+      "path": "research-qsa-indexer-batch-contract-round680-v1.txt",
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "sha256": "32bbca35db55d3a94fc5cba9ecb6ffe0e25b3a26305902f5570f9a12b21b12ec",
+      "status": "Main verified actual native batch host loop; compact profile validated, batched34602 rows corrected in Main review; separate Sol candidate assigned."
+    },
+    {
+      "round": 681,
+      "path": "research-prefill-copy-accounting-round681-v1.txt",
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "sha256": "a760fa73cd2192cd81ef886658fa5bb612ec59f3ed76d0177c6f91651c845381",
+      "status": "Main independently verified histograms; corrected residual row-count text and classified remaining PLE H2D; original report preserved."
     }
   ],
   "main_initial_findings": [
@@ -1588,7 +1620,9 @@
     "work_C4096": 1386006784,
     "work_C8192": 2596783616,
     "main_K8V4_C4096_fullKV_hidden_rows": 201580,
-    "model_headers_only": true
+    "model_headers_only": true,
+    "one_active_KV_all_indexers_C4096_remaining_bytes": 1049759296,
+    "one_active_KV_all_indexers_C8192_shortfall_bytes": 161033920
   },
   "prefill_head_release_candidate": {
     "proposal": "prefill-head-release-v1",
@@ -1596,14 +1630,35 @@
     "source_diff_sha256": "737b9a346e719aec22fc069915e86da97e5caebe4ec4ca27ffa5308ed49262bc"
   },
   "prefill_bf16_storage_candidate": {
-    "proposal": "bf16-prefill-storage-v1",
-    "state": "Sol FINAL source only; not applied/tested/reviewed fully. No quality/performance claim.",
-    "source_diff_sha256": "5a1329044f5cbc19b60ba872d0cf07d1c1d6dc9c69fb0b21b21d0020627ee8e0"
+    "proposal": "bf16-prefill-storage-v2",
+    "original_proposal": "bf16-prefill-storage-v1",
+    "state": "Sol FINAL source only; v2 fixes missed existing CPU audit fixture enum consumer. Unapplied/unbuilt/untested, no numerical/performance qualification.",
+    "source_diff_sha256": "f4d9e7145f7cde09fda1bebfca457657c692676bb508df99c138a2902306b647"
   },
   "prefill_window_profile_recipe": {
-    "recipe": "run_prefill_window_profile_v1.py",
-    "state": "Prepared only; AST parse passed, no execution/host-control/GPU validation. Deferred for user capacity calculation.",
+    "recipe": "run_prefill_window_profile_v4.py",
+    "state": "Actual long34603-token window normally closed; all events/SHA/independent device table checked; GPU fault0. Diagnostic only, not clean or pure-prefill timing.",
+    "receipt": "prefill-window-profile-long-v4.json",
+    "component": "prefill-window-profile-component-v3-compact.json",
+    "interval_summary": "prefill-window-long-interval-summary-v2.json",
+    "independent_validation": "prefill-window-interval-summary-host-v2.json",
+    "gap_API_summary": "prefill-window-gap-api-summary-v1.json",
+    "copy_accounting": "prefill-copy-accounting-main-v1.json",
+    "raw_retention": "prefill-window-raw-retention-v1.json",
+    "review": "main-prefill-window-profile-review.ja.md",
     "request_window_includes_one_output": true
   },
-  "prefill_capacity_proposal_integrity": "prefill-capacity-boundary-proposal-identities-v1.json"
+  "prefill_capacity_proposal_integrity": "prefill-capacity-boundary-proposal-identities-v1.json",
+  "prefill_KV_prefix_reuse_candidate": {
+    "proposal": "layer-major-kv-prefix-reuse-v1",
+    "state": "Sol FINAL source only; Main read helper/diff/callback analysis, no application/build/tests. Retains all mirrors/allocations; no VRAM capacity saving.",
+    "source_diff_sha256": "2f431778bfe168f2d912deed6855a57e94aca2245df40bbeb5208e9b77e1e0ce"
+  },
+  "implementation_pending": [
+    {
+      "proposal": "qsa-indexer-device-batch-v1",
+      "model": "gpt-6.1-sol",
+      "state": "Source-only agent running; Main controls all builds/tests/GPU serially. No source outcome yet."
+    }
+  ]
 }

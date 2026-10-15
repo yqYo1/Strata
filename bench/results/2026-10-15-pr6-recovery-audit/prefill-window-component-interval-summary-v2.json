@@ -1,0 +1,3560 @@
+{
+  "schema": "prefill-window-interval-summary-v2",
+  "passed": true,
+  "recipe_sha256": "71752ddda533953d2e533280348833feebedd2d8db1422b2019cab56108b1488",
+  "receipt": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/prefill-window-profile-component-v3-compact.json",
+  "receipt_sha256": "84acb68de4233878c98d2d6d41f0713bcff017017e689be8b94baaea6adceb0a",
+  "trace": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prefill-window-profile-component-root-v3/provider/strata.845103/chrome_trace.json",
+    "bytes": 135949669,
+    "sha256": "d8b932f78bfff1dcd0f6d8f79c01cfbd03be55ccf533e90b07b8833170b88dcd",
+    "events": 806125
+  },
+  "event_counts": [
+    {
+      "phase": "M",
+      "category": null,
+      "count": 5
+    },
+    {
+      "phase": "X",
+      "category": "cpu_op",
+      "count": 318909
+    },
+    {
+      "phase": "s",
+      "category": "Flow_H2D",
+      "count": 97999
+    },
+    {
+      "phase": "t",
+      "category": "Flow_D2H",
+      "count": 95215
+    },
+    {
+      "phase": "X",
+      "category": "gpu_op",
+      "count": 97999
+    },
+    {
+      "phase": "t",
+      "category": "Flow_H2D",
+      "count": 97999
+    },
+    {
+      "phase": "s",
+      "category": "Flow_D2H",
+      "count": 97999
+    }
+  ],
+  "actual_input_tokens": 513,
+  "done": {
+    "generated": 1,
+    "prompt": 513,
+    "prompt_ms": 28654.7,
+    "decode_ms": 4842.3,
+    "finish": "stop",
+    "accepted": 0,
+    "offered": 0,
+    "reused": 0,
+    "read": 513
+  },
+  "metadata": [
+    {
+      "ph": "M",
+      "name": "process_name",
+      "pid": 845103,
+      "ts": 1792054716137339.5,
+      "args": {
+        "name": "HOST<jitakusaba01>"
+      }
+    },
+    {
+      "ph": "M",
+      "name": "process_name",
+      "pid": 4267923999,
+      "ts": 1792054784915169.8,
+      "args": {
+        "name": "DEVICE<jitakusaba01>[Intel(R) Arc(TM) B570 Graphics] 0:5:0:0 #0"
+      }
+    },
+    {
+      "ph": "M",
+      "name": "thread_name",
+      "pid": 4267923999,
+      "tid": 4267923999,
+      "ts": 1792054784915214.8,
+      "args": {
+        "name": "Thread 845103 L0 Compute Engine<0,0>"
+      }
+    },
+    {
+      "ph": "M",
+      "name": "thread_name",
+      "pid": 4267923999,
+      "tid": 4267923998,
+      "ts": 1792054784915304.2,
+      "args": {
+        "name": "Thread 845103 L0 Compute Engine<0,0>"
+      }
+    },
+    {
+      "ph": "M",
+      "name": "thread_name",
+      "pid": 4267923999,
+      "tid": 4267923997,
+      "ts": 1792054789383838.0,
+      "args": {
+        "name": "Thread 845103 L0 Compute Engine<0,0>"
+      }
+    }
+  ],
+  "relative_origin_trace_timestamp_us": 1792054768367956.2,
+  "timed_event_span_us": 33507095.976,
+  "gpu_span_us": 33506707.604,
+  "GPU_service_sum_us": 10023459.838999832,
+  "GPU_busy_union_us": 10012455.359970331,
+  "GPU_gap_within_span_us": 23494252.244029667,
+  "GPU_group_union_us": {
+    "compute": 3469141.798972148,
+    "copy": 6545317.164997912,
+    "fill": 3564.30999998254
+  },
+  "GPU_compute_copy_overlap_us": 5567.913999712095,
+  "GPU_lanes": [
+    {
+      "pid": 4267923999,
+      "tid": 4267923999,
+      "calls": 97472,
+      "union_us": 9878728.211970212
+    },
+    {
+      "pid": 4267923999,
+      "tid": 4267923998,
+      "calls": 519,
+      "union_us": 138067.17499991952
+    },
+    {
+      "pid": 4267923999,
+      "tid": 4267923997,
+      "calls": 8,
+      "union_us": 1673.6419999971986
+    }
+  ],
+  "CPU_API_service_sum_us": 42773316.09700004,
+  "CPU_API_union_us": 29690974.2069964,
+  "CPU_wait_union_us": 8910526.19200007,
+  "CPU_wait_overlap_GPU_busy_us": 8137963.804975987,
+  "CPU_wait_without_visible_GPU_us": 772562.3870240832,
+  "GPU_gaps_top32": [
+    {
+      "duration_us": 7928488.73,
+      "start_us": 18216.77,
+      "end_us": 7946705.5
+    },
+    {
+      "duration_us": 5520734.146,
+      "start_us": 10794874.104,
+      "end_us": 16315608.25
+    },
+    {
+      "duration_us": 4677730.98,
+      "start_us": 28657071.52,
+      "end_us": 33334802.5
+    },
+    {
+      "duration_us": 320444.54200000037,
+      "start_us": 7947006.958,
+      "end_us": 8267451.5
+    },
+    {
+      "duration_us": 306281.45900000073,
+      "start_us": 10195534.791,
+      "end_us": 10501816.25
+    },
+    {
+      "duration_us": 234159.56299999915,
+      "start_us": 9961367.937,
+      "end_us": 10195527.5
+    },
+    {
+      "duration_us": 209283.91699999943,
+      "start_us": 9049138.333,
+      "end_us": 9258422.25
+    },
+    {
+      "duration_us": 169825.27099999972,
+      "start_us": 8366782.729,
+      "end_us": 8536608.0
+    },
+    {
+      "duration_us": 154491.29199999943,
+      "start_us": 28443475.208,
+      "end_us": 28597966.5
+    },
+    {
+      "duration_us": 122835.125,
+      "start_us": 10671864.125,
+      "end_us": 10794699.25
+    },
+    {
+      "duration_us": 122456.5,
+      "start_us": 28316811.25,
+      "end_us": 28439267.75
+    },
+    {
+      "duration_us": 103379.66699999943,
+      "start_us": 8584387.083,
+      "end_us": 8687766.75
+    },
+    {
+      "duration_us": 96753.81299999915,
+      "start_us": 9258937.437,
+      "end_us": 9355691.25
+    },
+    {
+      "duration_us": 88867.5,
+      "start_us": 10506459.5,
+      "end_us": 10595327.0
+    },
+    {
+      "duration_us": 65710.95899999887,
+      "start_us": 27782141.041,
+      "end_us": 27847852.0
+    },
+    {
+      "duration_us": 62592.56300000008,
+      "start_us": 8267639.937,
+      "end_us": 8330232.5
+    },
+    {
+      "duration_us": 60490.95899999887,
+      "start_us": 20985715.541,
+      "end_us": 21046206.5
+    },
+    {
+      "duration_us": 59970.25,
+      "start_us": 17826773.25,
+      "end_us": 17886743.5
+    },
+    {
+      "duration_us": 55428.20899999887,
+      "start_us": 25567679.291,
+      "end_us": 25623107.5
+    },
+    {
+      "duration_us": 54695.70899999887,
+      "start_us": 18667444.041,
+      "end_us": 18722139.75
+    },
+    {
+      "duration_us": 51215.81300000101,
+      "start_us": 26598812.937,
+      "end_us": 26650028.75
+    },
+    {
+      "duration_us": 50492.31300000101,
+      "start_us": 19798037.187,
+      "end_us": 19848529.5
+    },
+    {
+      "duration_us": 50385.56300000101,
+      "start_us": 22038983.687,
+      "end_us": 22089369.25
+    },
+    {
+      "duration_us": 46212.56300000101,
+      "start_us": 24156198.187,
+      "end_us": 24202410.75
+    },
+    {
+      "duration_us": 43993.25,
+      "start_us": 23280115.75,
+      "end_us": 23324109.0
+    },
+    {
+      "duration_us": 41570.20900000073,
+      "start_us": 16542805.041,
+      "end_us": 16584375.25
+    },
+    {
+      "duration_us": 40913.75,
+      "start_us": 21582108.25,
+      "end_us": 21623022.0
+    },
+    {
+      "duration_us": 38012.5,
+      "start_us": 22798906.25,
+      "end_us": 22836918.75
+    },
+    {
+      "duration_us": 36517.45899999887,
+      "start_us": 19098482.541,
+      "end_us": 19135000.0
+    },
+    {
+      "duration_us": 34034.666999999434,
+      "start_us": 8536943.833,
+      "end_us": 8570978.5
+    },
+    {
+      "duration_us": 31132.355000000447,
+      "start_us": 25917792.645,
+      "end_us": 25948925.0
+    },
+    {
+      "duration_us": 29395.605000000447,
+      "start_us": 27353245.895,
+      "end_us": 27382641.5
+    }
+  ],
+  "role_service": {
+    "provider_memory_fill": {
+      "calls": 183,
+      "duration_us": 3567.101
+    },
+    "other_compute": {
+      "calls": 82204,
+      "duration_us": 2034620.8610000105
+    },
+    "provider_memory_copy": {
+      "calls": 11111,
+      "duration_us": 6545361.475999801
+    },
+    "generic_f16_dequant_multiple_consumers": {
+      "calls": 253,
+      "duration_us": 276578.75299999997
+    },
+    "GDN_recurrence_shared": {
+      "calls": 108,
+      "duration_us": 58118.08299999987
+    },
+    "prefill_GU_dequant": {
+      "calls": 4068,
+      "duration_us": 997736.7190000198
+    },
+    "QSA_block_scores_shared": {
+      "calls": 36,
+      "duration_us": 1193.84
+    },
+    "prefill_selected_int8_attention": {
+      "calls": 12,
+      "duration_us": 101334.683
+    },
+    "KV_resolver_shared": {
+      "calls": 24,
+      "duration_us": 4948.323
+    }
+  },
+  "GPU_operations": [
+    {
+      "name": "zeCommandListAppendMemoryCopy(H2D)",
+      "role": "provider_memory_copy",
+      "calls": 10803,
+      "duration_us": 6544734.185999801,
+      "min_us": 233.854,
+      "max_us": 11584.687,
+      "first_us": 8707868.5,
+      "last_us": 28307093.645,
+      "provider_requested_bytes": 22135726080,
+      "sized_calls": 10803,
+      "distinct_launch_geometries": 0,
+      "launch_geometries_top32": [],
+      "size_histogram_top32": [
+        {
+          "bytes": 2176000,
+          "calls": 3368
+        },
+        {
+          "bytes": 1971200,
+          "calls": 3316
+        },
+        {
+          "bytes": 2329600,
+          "calls": 1975
+        },
+        {
+          "bytes": 1510400,
+          "calls": 1046
+        },
+        {
+          "bytes": 1715200,
+          "calls": 686
+        },
+        {
+          "bytes": 1868800,
+          "calls": 235
+        },
+        {
+          "bytes": 2662400,
+          "calls": 176
+        },
+        {
+          "bytes": 5242880,
+          "calls": 1
+        }
+      ],
+      "distinct_sizes": 8
+    },
+    {
+      "name": "strata::kernels::iq_dequant_gu_f16(int, void const*, void const*, long, long, unsigned short*, void*)::{lambda(sycl::_V1::id<2>)#1}",
+      "role": "prefill_GU_dequant",
+      "calls": 4068,
+      "duration_us": 997736.7190000198,
+      "min_us": 234.062,
+      "max_us": 521.666,
+      "first_us": 8717028.25,
+      "last_us": 28063446.541,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 1,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD16 {5; 5; 1} {2; 256; 1}]",
+          "calls": 4068
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::kernels::(anonymous namespace)::parallel_iq_launch<22, true>(void const*, void const*, unsigned long, unsigned long, unsigned short*, void*)::{lambda(sycl::_V1::id<1>)#1}",
+      "role": "other_compute",
+      "calls": 4383,
+      "duration_us": 565152.2410000026,
+      "min_us": 122.395,
+      "max_us": 222.291,
+      "first_us": 9403847.25,
+      "last_us": 26120528.604,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 1,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD32 {3200; 1; 1} {1024; 1; 1}]",
+          "calls": 4383
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::kernels::(anonymous namespace)::parallel_iq_launch<20, false>(void const*, void const*, unsigned long, unsigned long, unsigned short*, void*)::{lambda(sycl::_V1::id<1>)#1}",
+      "role": "other_compute",
+      "calls": 8942,
+      "duration_us": 361391.6040000054,
+      "min_us": 39.479,
+      "max_us": 84.166,
+      "first_us": 8691604.25,
+      "last_us": 28316323.229,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 1,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD32 {1600; 1; 1} {1024; 1; 1}]",
+          "calls": 8942
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::kernels::(anonymous namespace)::parallel_iq_launch<21, true>(void const*, void const*, unsigned long, unsigned long, unsigned short*, void*)::{lambda(sycl::_V1::id<1>)#1}",
+      "role": "other_compute",
+      "calls": 2218,
+      "duration_us": 294510.101,
+      "min_us": 129.479,
+      "max_us": 168.854,
+      "first_us": 19856801.25,
+      "last_us": 27772537.479,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 1,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD32 {3200; 1; 1} {1024; 1; 1}]",
+          "calls": 2218
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::kernels::(anonymous namespace)::dequant<unsigned short>(int, void const*, long, unsigned short*, void*)::{lambda(sycl::_V1::id<1>)#1}",
+      "role": "generic_f16_dequant_multiple_consumers",
+      "calls": 253,
+      "duration_us": 276578.75299999997,
+      "min_us": 96.666,
+      "max_us": 6204.479,
+      "first_us": 8351609.75,
+      "last_us": 28099865.916,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 6,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD16 {25; 1; 1} {256; 1; 1}]",
+          "calls": 96
+        },
+        {
+          "geometry": "[SIMD16 {120; 1; 1} {512; 1; 1}]",
+          "calls": 84
+        },
+        {
+          "geometry": "[SIMD16 {200; 1; 1} {512; 1; 1}]",
+          "calls": 36
+        },
+        {
+          "geometry": "[SIMD16 {10; 1; 1} {512; 1; 1}]",
+          "calls": 24
+        },
+        {
+          "geometry": "[SIMD16 {240; 1; 1} {512; 1; 1}]",
+          "calls": 12
+        },
+        {
+          "geometry": "[SIMD16 {100; 1; 1} {512; 1; 1}]",
+          "calls": 1
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "gemm_f16f16f32_nocopy_tn_16x16_4x2x4",
+      "role": "other_compute",
+      "calls": 9663,
+      "duration_us": 149409.6600000056,
+      "min_us": 10.625,
+      "max_us": 37.916,
+      "first_us": 8719512.5,
+      "last_us": 28316410.27,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 1,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD16 {20; 1; 1} {64; 2; 4}]",
+          "calls": 9663
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::kernels::(anonymous namespace)::launch<1, false, false>(float const*, strata::kernels::QsaAttnPools, int const*, int const*, long, strata::kernels::QsaShapes, float*, long, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "role": "prefill_selected_int8_attention",
+      "calls": 12,
+      "duration_us": 101334.683,
+      "min_us": 7715.208,
+      "max_us": 15378.333,
+      "first_us": 16315608.25,
+      "last_us": 28096098.708,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 1,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD16 {1024; 1; 1} {128; 1; 1}]",
+          "calls": 12
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::kernels::(anonymous namespace)::parallel_iq_launch<42, false>(void const*, void const*, unsigned long, unsigned long, unsigned short*, void*)::{lambda(sycl::_V1::id<1>)#1}",
+      "role": "other_compute",
+      "calls": 1977,
+      "duration_us": 76946.63299999945,
+      "min_us": 37.708,
+      "max_us": 60.0,
+      "first_us": 9404058.75,
+      "last_us": 25311295.479,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 1,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD32 {1600; 1; 1} {1024; 1; 1}]",
+          "calls": 1977
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "gemm_f16f16f32_nocopy_tn_32x64_8x4",
+      "role": "other_compute",
+      "calls": 317,
+      "duration_us": 70062.67699999982,
+      "min_us": 40.104,
+      "max_us": 1149.583,
+      "first_us": 8362855.75,
+      "last_us": 28304575.187,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 2,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD16 {10; 2; 1} {128; 4; 1}]",
+          "calls": 233
+        },
+        {
+          "geometry": "[SIMD16 {20; 1; 1} {128; 4; 1}]",
+          "calls": 84
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::kernels::(anonymous namespace)::recurrence(float*, float const*, float const*, float const*, int, float const*, float const*, float const*, float const*, float, float*, int, int, int, int const*, bool, int, void*, unsigned short*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "role": "GDN_recurrence_shared",
+      "calls": 108,
+      "duration_us": 58118.08299999987,
+      "min_us": 16.979,
+      "max_us": 3090.833,
+      "first_us": 8571932.0,
+      "last_us": 33502044.312,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 1,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD32 {48; 1; 1} {512; 1; 1}]",
+          "calls": 108
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::kernels::(anonymous namespace)::prompt_product<strata::kernels::(anonymous namespace)::SmallTraits<strata::kernels::(anonymous namespace)::Q80Block, 8> >(strata::kernels::NativeMmq, sycl::_V1::queue&)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "role": "other_compute",
+      "calls": 4,
+      "duration_us": 51474.78999999999,
+      "min_us": 1296.041,
+      "max_us": 36573.541,
+      "first_us": 28598687.0,
+      "last_us": 28654134.541,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 3,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD32 {32768; 1; 1} {128; 1; 1}]",
+          "calls": 2
+        },
+        {
+          "geometry": "[SIMD32 {163840; 1; 1} {128; 1; 1}]",
+          "calls": 1
+        },
+        {
+          "geometry": "[SIMD32 {655360; 1; 1} {128; 1; 1}]",
+          "calls": 1
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "gemm_f16f16f32_nocopy_tn_16x16_8x4",
+      "role": "other_compute",
+      "calls": 5428,
+      "duration_us": 46784.548999997976,
+      "min_us": 7.187,
+      "max_us": 26.666,
+      "first_us": 8727012.75,
+      "last_us": 28316432.687,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 1,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD16 {20; 1; 1} {128; 4; 1}]",
+          "calls": 5428
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::kernels::(anonymous namespace)::append<1>(strata::kernels::(anonymous namespace)::Pools, int const*, int const*, long, long, float const*, float const*, strata::kernels::QsaShapes const&, void*, strata::kernels::KvHostPools, strata::kernels::KvHostPools)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "role": "other_compute",
+      "calls": 25,
+      "duration_us": 39682.17499999998,
+      "min_us": 10.312,
+      "max_us": 4309.687,
+      "first_us": 10501816.25,
+      "last_us": 33488990.687,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 2,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD32 {8192; 1; 1} {64; 1; 1}]",
+          "calls": 13
+        },
+        {
+          "geometry": "[SIMD32 {16; 1; 1} {64; 1; 1}]",
+          "calls": 12
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::sycl_backend::for_each<strata::prefill::gather_rows16(unsigned short const*, int const*, unsigned short*, long, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::gather_rows16(unsigned short const*, int const*, unsigned short*, long, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "role": "other_compute",
+      "calls": 10872,
+      "duration_us": 35579.445999999,
+      "min_us": 1.458,
+      "max_us": 40.625,
+      "first_us": 8717647.25,
+      "last_us": 28316352.75,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 384,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD32 {5; 1; 1} {512; 1; 1}]",
+          "calls": 2943
+        },
+        {
+          "geometry": "[SIMD32 {5; 1; 1} {1024; 1; 1}]",
+          "calls": 1690
+        },
+        {
+          "geometry": "[SIMD32 {15; 1; 1} {512; 1; 1}]",
+          "calls": 1052
+        },
+        {
+          "geometry": "[SIMD32 {10; 1; 1} {1024; 1; 1}]",
+          "calls": 703
+        },
+        {
+          "geometry": "[SIMD32 {25; 1; 1} {512; 1; 1}]",
+          "calls": 584
+        },
+        {
+          "geometry": "[SIMD32 {15; 1; 1} {1024; 1; 1}]",
+          "calls": 431
+        },
+        {
+          "geometry": "[SIMD32 {35; 1; 1} {512; 1; 1}]",
+          "calls": 321
+        },
+        {
+          "geometry": "[SIMD32 {20; 1; 1} {1024; 1; 1}]",
+          "calls": 255
+        },
+        {
+          "geometry": "[SIMD32 {45; 1; 1} {512; 1; 1}]",
+          "calls": 189
+        },
+        {
+          "geometry": "[SIMD32 {55; 1; 1} {512; 1; 1}]",
+          "calls": 169
+        },
+        {
+          "geometry": "[SIMD32 {25; 1; 1} {1024; 1; 1}]",
+          "calls": 162
+        },
+        {
+          "geometry": "[SIMD32 {65; 1; 1} {512; 1; 1}]",
+          "calls": 110
+        },
+        {
+          "geometry": "[SIMD32 {35; 1; 1} {1024; 1; 1}]",
+          "calls": 105
+        },
+        {
+          "geometry": "[SIMD32 {30; 1; 1} {1024; 1; 1}]",
+          "calls": 98
+        },
+        {
+          "geometry": "[SIMD32 {75; 1; 1} {512; 1; 1}]",
+          "calls": 84
+        },
+        {
+          "geometry": "[SIMD32 {45; 1; 1} {1024; 1; 1}]",
+          "calls": 74
+        },
+        {
+          "geometry": "[SIMD32 {40; 1; 1} {1024; 1; 1}]",
+          "calls": 67
+        },
+        {
+          "geometry": "[SIMD32 {85; 1; 1} {512; 1; 1}]",
+          "calls": 64
+        },
+        {
+          "geometry": "[SIMD32 {105; 1; 1} {512; 1; 1}]",
+          "calls": 60
+        },
+        {
+          "geometry": "[SIMD32 {50; 1; 1} {1024; 1; 1}]",
+          "calls": 55
+        },
+        {
+          "geometry": "[SIMD32 {95; 1; 1} {512; 1; 1}]",
+          "calls": 50
+        },
+        {
+          "geometry": "[SIMD32 {65; 1; 1} {1024; 1; 1}]",
+          "calls": 47
+        },
+        {
+          "geometry": "[SIMD32 {70; 1; 1} {1024; 1; 1}]",
+          "calls": 42
+        },
+        {
+          "geometry": "[SIMD32 {55; 1; 1} {1024; 1; 1}]",
+          "calls": 41
+        },
+        {
+          "geometry": "[SIMD32 {60; 1; 1} {1024; 1; 1}]",
+          "calls": 41
+        },
+        {
+          "geometry": "[SIMD32 {125; 1; 1} {512; 1; 1}]",
+          "calls": 38
+        },
+        {
+          "geometry": "[SIMD32 {115; 1; 1} {512; 1; 1}]",
+          "calls": 38
+        },
+        {
+          "geometry": "[SIMD32 {155; 1; 1} {512; 1; 1}]",
+          "calls": 35
+        },
+        {
+          "geometry": "[SIMD32 {80; 1; 1} {1024; 1; 1}]",
+          "calls": 33
+        },
+        {
+          "geometry": "[SIMD32 {75; 1; 1} {1024; 1; 1}]",
+          "calls": 30
+        },
+        {
+          "geometry": "[SIMD32 {135; 1; 1} {512; 1; 1}]",
+          "calls": 28
+        },
+        {
+          "geometry": "[SIMD32 {145; 1; 1} {512; 1; 1}]",
+          "calls": 24
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::kernels::(anonymous namespace)::launch<strata::kernels::(anonymous namespace)::Q6KTraits, 1, 4>(void const*, void const*, float*, int, int, int, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "role": "other_compute",
+      "calls": 129,
+      "duration_us": 34830.255000000005,
+      "min_us": 22.291,
+      "max_us": 7861.77,
+      "first_us": 33335031.5,
+      "last_us": 33499476.52,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 7,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD32 {2560; 1; 1} {128; 1; 1}]",
+          "calls": 40
+        },
+        {
+          "geometry": "[SIMD32 {640; 1; 1} {128; 1; 1}]",
+          "calls": 26
+        },
+        {
+          "geometry": "[SIMD32 {10240; 1; 1} {128; 1; 1}]",
+          "calls": 22
+        },
+        {
+          "geometry": "[SIMD32 {512; 1; 1} {128; 1; 1}]",
+          "calls": 21
+        },
+        {
+          "geometry": "[SIMD32 {6144; 1; 1} {128; 1; 1}]",
+          "calls": 14
+        },
+        {
+          "geometry": "[SIMD32 {12288; 1; 1} {128; 1; 1}]",
+          "calls": 5
+        },
+        {
+          "geometry": "[SIMD32 {248320; 1; 1} {128; 1; 1}]",
+          "calls": 1
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::kernels::(anonymous namespace)::parallel_iq_launch<23, true>(void const*, void const*, unsigned long, unsigned long, unsigned short*, void*)::{lambda(sycl::_V1::id<1>)#1}",
+      "role": "other_compute",
+      "calls": 203,
+      "duration_us": 27421.061999999994,
+      "min_us": 133.229,
+      "max_us": 191.979,
+      "first_us": 28128972.75,
+      "last_us": 28315837.854,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 1,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD32 {3200; 1; 1} {1024; 1; 1}]",
+          "calls": 203
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::kernels::(anonymous namespace)::append(sycl::_V1::queue&, float const*, int const*, int, int, float const*, float, strata::kernels::QsaIndexerBuffers, int, strata::kernels::(anonymous namespace)::Angles)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "role": "other_compute",
+      "calls": 6204,
+      "duration_us": 26139.109000000888,
+      "min_us": 2.187,
+      "max_us": 15.625,
+      "first_us": 10595327.0,
+      "last_us": 33502060.75,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 1,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD32 {1; 1; 1} {256; 1; 1}]",
+          "calls": 6204
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "gemm_f16f16f32_nocopy_tn_32x64_8x2x2",
+      "role": "other_compute",
+      "calls": 296,
+      "duration_us": 24139.66700000002,
+      "min_us": 60.208,
+      "max_us": 160.937,
+      "first_us": 8774579.75,
+      "last_us": 28304514.875,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 2,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD16 {5; 3; 1} {128; 2; 2}]",
+          "calls": 159
+        },
+        {
+          "geometry": "[SIMD16 {5; 4; 1} {128; 2; 2}]",
+          "calls": 137
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "gemm_f16f16f32_nocopy_tn_16x32_8x4",
+      "role": "other_compute",
+      "calls": 635,
+      "duration_us": 19578.269999999993,
+      "min_us": 13.333,
+      "max_us": 97.395,
+      "first_us": 8691086.0,
+      "last_us": 28305283.083,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 4,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD16 {20; 1; 1} {128; 4; 1}]",
+          "calls": 277
+        },
+        {
+          "geometry": "[SIMD16 {10; 2; 1} {128; 4; 1}]",
+          "calls": 238
+        },
+        {
+          "geometry": "[SIMD16 {5; 4; 1} {128; 4; 1}]",
+          "calls": 96
+        },
+        {
+          "geometry": "[SIMD16 {4; 4; 1} {128; 4; 1}]",
+          "calls": 24
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "gemm_f16f16f32_nocopy_tn_16x1_4x1",
+      "role": "other_compute",
+      "calls": 4633,
+      "duration_us": 19371.52600000028,
+      "min_us": 3.125,
+      "max_us": 15.52,
+      "first_us": 8722123.25,
+      "last_us": 28315122.187,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 2,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD16 {1; 40; 1} {16; 4; 1}]",
+          "calls": 2943
+        },
+        {
+          "geometry": "[SIMD16 {2; 40; 1} {16; 4; 1}]",
+          "calls": 1690
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::sycl_backend::for_each<strata::prefill::swiglu_interleaved(float const*, unsigned short*, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::swiglu_interleaved(float const*, unsigned short*, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "role": "other_compute",
+      "calls": 10872,
+      "duration_us": 18139.848999999293,
+      "min_us": 1.041,
+      "max_us": 8.125,
+      "first_us": 8719942.5,
+      "last_us": 28316418.166,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 384,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD32 {5; 1; 1} {128; 1; 1}]",
+          "calls": 2943
+        },
+        {
+          "geometry": "[SIMD32 {5; 1; 1} {256; 1; 1}]",
+          "calls": 1690
+        },
+        {
+          "geometry": "[SIMD32 {15; 1; 1} {128; 1; 1}]",
+          "calls": 1052
+        },
+        {
+          "geometry": "[SIMD32 {5; 1; 1} {512; 1; 1}]",
+          "calls": 703
+        },
+        {
+          "geometry": "[SIMD32 {25; 1; 1} {128; 1; 1}]",
+          "calls": 584
+        },
+        {
+          "geometry": "[SIMD32 {15; 1; 1} {256; 1; 1}]",
+          "calls": 431
+        },
+        {
+          "geometry": "[SIMD32 {35; 1; 1} {128; 1; 1}]",
+          "calls": 321
+        },
+        {
+          "geometry": "[SIMD32 {5; 1; 1} {1024; 1; 1}]",
+          "calls": 255
+        },
+        {
+          "geometry": "[SIMD32 {45; 1; 1} {128; 1; 1}]",
+          "calls": 189
+        },
+        {
+          "geometry": "[SIMD32 {55; 1; 1} {128; 1; 1}]",
+          "calls": 169
+        },
+        {
+          "geometry": "[SIMD32 {25; 1; 1} {256; 1; 1}]",
+          "calls": 162
+        },
+        {
+          "geometry": "[SIMD32 {65; 1; 1} {128; 1; 1}]",
+          "calls": 110
+        },
+        {
+          "geometry": "[SIMD32 {35; 1; 1} {256; 1; 1}]",
+          "calls": 105
+        },
+        {
+          "geometry": "[SIMD32 {15; 1; 1} {512; 1; 1}]",
+          "calls": 98
+        },
+        {
+          "geometry": "[SIMD32 {75; 1; 1} {128; 1; 1}]",
+          "calls": 84
+        },
+        {
+          "geometry": "[SIMD32 {45; 1; 1} {256; 1; 1}]",
+          "calls": 74
+        },
+        {
+          "geometry": "[SIMD32 {10; 1; 1} {1024; 1; 1}]",
+          "calls": 67
+        },
+        {
+          "geometry": "[SIMD32 {85; 1; 1} {128; 1; 1}]",
+          "calls": 64
+        },
+        {
+          "geometry": "[SIMD32 {105; 1; 1} {128; 1; 1}]",
+          "calls": 60
+        },
+        {
+          "geometry": "[SIMD32 {25; 1; 1} {512; 1; 1}]",
+          "calls": 55
+        },
+        {
+          "geometry": "[SIMD32 {95; 1; 1} {128; 1; 1}]",
+          "calls": 50
+        },
+        {
+          "geometry": "[SIMD32 {65; 1; 1} {256; 1; 1}]",
+          "calls": 47
+        },
+        {
+          "geometry": "[SIMD32 {35; 1; 1} {512; 1; 1}]",
+          "calls": 42
+        },
+        {
+          "geometry": "[SIMD32 {55; 1; 1} {256; 1; 1}]",
+          "calls": 41
+        },
+        {
+          "geometry": "[SIMD32 {15; 1; 1} {1024; 1; 1}]",
+          "calls": 41
+        },
+        {
+          "geometry": "[SIMD32 {125; 1; 1} {128; 1; 1}]",
+          "calls": 38
+        },
+        {
+          "geometry": "[SIMD32 {115; 1; 1} {128; 1; 1}]",
+          "calls": 38
+        },
+        {
+          "geometry": "[SIMD32 {155; 1; 1} {128; 1; 1}]",
+          "calls": 35
+        },
+        {
+          "geometry": "[SIMD32 {20; 1; 1} {1024; 1; 1}]",
+          "calls": 33
+        },
+        {
+          "geometry": "[SIMD32 {75; 1; 1} {256; 1; 1}]",
+          "calls": 30
+        },
+        {
+          "geometry": "[SIMD32 {135; 1; 1} {128; 1; 1}]",
+          "calls": 28
+        },
+        {
+          "geometry": "[SIMD32 {145; 1; 1} {128; 1; 1}]",
+          "calls": 24
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "gemm_bf16bf16f32_nocopy_tn_32x32_2x2x8",
+      "role": "other_compute",
+      "calls": 97,
+      "duration_us": 17111.004,
+      "min_us": 159.062,
+      "max_us": 385.0,
+      "first_us": 8338476.0,
+      "last_us": 28650612.937,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 1,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD16 {40; 1; 1} {32; 2; 4}]",
+          "calls": 97
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::sycl_backend::for_each<strata::prefill::(anonymous namespace)::mix<true>(float const*, float const*, float const*, float const*, float*, unsigned short*, long, void*, unsigned short*, unsigned short*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::(anonymous namespace)::mix<true>(float const*, float const*, float const*, float const*, float*, unsigned short*, long, void*, unsigned short*, unsigned short*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "role": "other_compute",
+      "calls": 97,
+      "duration_us": 16199.754,
+      "min_us": 159.479,
+      "max_us": 181.25,
+      "first_us": 8350873.25,
+      "last_us": 28650918.5,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 1,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD32 {1280; 1; 1} {1024; 1; 1}]",
+          "calls": 97
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::sycl_backend::for_each<strata::prefill::gr_write(float*, float const*, float const*, long, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::gr_write(float*, float const*, float const*, long, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "role": "other_compute",
+      "calls": 96,
+      "duration_us": 13546.317999999997,
+      "min_us": 136.77,
+      "max_us": 256.354,
+      "first_us": 8581126.5,
+      "last_us": 28316811.25,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 1,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD32 {5120; 1; 1} {1024; 1; 1}]",
+          "calls": 96
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::prefill::(anonymous namespace)::norm<true>(float const*, float const*, float, float*, unsigned short*, long, void*, unsigned short*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "role": "other_compute",
+      "calls": 97,
+      "duration_us": 12399.131999999998,
+      "min_us": 111.354,
+      "max_us": 173.229,
+      "first_us": 8330232.5,
+      "last_us": 28650442.354,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 1,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD32 {2048; 1; 1} {256; 1; 1}]",
+          "calls": 97
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::sycl_backend::for_each<strata::prefill::moe_combine(float const*, int const*, float const*, float const*, float const*, float*, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::moe_combine(float const*, int const*, float const*, float const*, float const*, float*, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "role": "other_compute",
+      "calls": 48,
+      "duration_us": 10981.957,
+      "min_us": 221.875,
+      "max_us": 234.062,
+      "first_us": 9047292.75,
+      "last_us": 28316667.604,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 1,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD32 {1280; 1; 1} {1024; 1; 1}]",
+          "calls": 48
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "gemm_bf16bf16f32_nocopy_tn_32x64_8x4",
+      "role": "other_compute",
+      "calls": 99,
+      "duration_us": 10947.460000000003,
+      "min_us": 98.437,
+      "max_us": 533.854,
+      "first_us": 8348258.75,
+      "last_us": 28650729.958,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 2,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD16 {20; 1; 1} {128; 4; 1}]",
+          "calls": 98
+        },
+        {
+          "geometry": "[SIMD16 {10; 2; 1} {128; 4; 1}]",
+          "calls": 1
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "gemm_f16f16f32_nocopy_tn_32x32_4x2x4",
+      "role": "other_compute",
+      "calls": 277,
+      "duration_us": 10271.651000000003,
+      "min_us": 33.75,
+      "max_us": 84.375,
+      "first_us": 8733720.75,
+      "last_us": 28149505.708,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 1,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD16 {10; 2; 1} {64; 2; 4}]",
+          "calls": 277
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "gemm_f16f16f32_nocopy_tn_16x16_4x4x2",
+      "role": "other_compute",
+      "calls": 398,
+      "duration_us": 8637.543000000007,
+      "min_us": 18.02,
+      "max_us": 46.041,
+      "first_us": 8724961.0,
+      "last_us": 28282721.0,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 1,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD16 {20; 1; 1} {64; 4; 2}]",
+          "calls": 398
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "gemm_bf16bf16f32_nocopy_tn_16x8_2x4x4",
+      "role": "other_compute",
+      "calls": 144,
+      "duration_us": 6738.167999999998,
+      "min_us": 15.0,
+      "max_us": 65.833,
+      "first_us": 8350811.75,
+      "last_us": 28099936.437,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 1,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD16 {1; 16; 1} {32; 4; 4}]",
+          "calls": 144
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::kernels::(anonymous namespace)::conv(float const*, float*, float const*, float const*, float*, int, int, float, int, int, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "role": "other_compute",
+      "calls": 72,
+      "duration_us": 6107.573000000005,
+      "min_us": 2.604,
+      "max_us": 335.833,
+      "first_us": 8536608.0,
+      "last_us": 33487234.458,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 2,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD32 {40960; 1; 1} {128; 1; 1}]",
+          "calls": 36
+        },
+        {
+          "geometry": "[SIMD32 {80; 1; 1} {128; 1; 1}]",
+          "calls": 36
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "gemm_f16f16f32_nocopy_tn_16x64_16x2",
+      "role": "other_compute",
+      "calls": 238,
+      "duration_us": 5709.380000000001,
+      "min_us": 22.083,
+      "max_us": 37.5,
+      "first_us": 8833385.5,
+      "last_us": 28305323.583,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 1,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD16 {10; 2; 1} {256; 2; 1}]",
+          "calls": 238
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "gemm_f16f16f32_nocopy_tn_32x48_8x4",
+      "role": "other_compute",
+      "calls": 159,
+      "duration_us": 5347.64,
+      "min_us": 31.666,
+      "max_us": 49.062,
+      "first_us": 8782777.5,
+      "last_us": 28286959.708,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 1,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD16 {10; 2; 1} {128; 4; 1}]",
+          "calls": 159
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::sycl_backend::for_each<strata::kernels::copy_rows_from_mapped(float*, float const*, long, long, int const*, int const*, void*)::{lambda(unsigned long)#1}>(long, void*, strata::kernels::copy_rows_from_mapped(float*, float const*, long, long, int const*, int const*, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "role": "other_compute",
+      "calls": 48,
+      "duration_us": 5069.464000000001,
+      "min_us": 25.208,
+      "max_us": 1242.916,
+      "first_us": 33338590.5,
+      "last_us": 33491506.145,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 1,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD32 {25; 1; 1} {1024; 1; 1}]",
+          "calls": 48
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "zeCommandListAppendMemoryFill(D)",
+      "role": "provider_memory_fill",
+      "calls": 183,
+      "duration_us": 3567.101,
+      "min_us": 1.145,
+      "max_us": 359.062,
+      "first_us": 345.25,
+      "last_us": 33491461.395,
+      "provider_requested_bytes": 943378432,
+      "sized_calls": 183,
+      "distinct_launch_geometries": 0,
+      "launch_geometries_top32": [],
+      "size_histogram_top32": [
+        {
+          "bytes": 76800,
+          "calls": 96
+        },
+        {
+          "bytes": 16777216,
+          "calls": 24
+        },
+        {
+          "bytes": 524288,
+          "calls": 24
+        },
+        {
+          "bytes": 1536,
+          "calls": 12
+        },
+        {
+          "bytes": 512,
+          "calls": 12
+        },
+        {
+          "bytes": 33555456,
+          "calls": 12
+        },
+        {
+          "bytes": 40960,
+          "calls": 1
+        },
+        {
+          "bytes": 117669888,
+          "calls": 1
+        },
+        {
+          "bytes": 368640,
+          "calls": 1
+        }
+      ],
+      "distinct_sizes": 9
+    },
+    {
+      "name": "strata::kernels::(anonymous namespace)::down_esimd(strata::kernels::FusedGrArgs, void*)::{lambda(sycl::_V1::nd_item<1>)#1}[SIMD_ANY {162; 1; 1} {16; 1; 1}]",
+      "role": "other_compute",
+      "calls": 96,
+      "duration_us": 3504.7519999999995,
+      "min_us": 30.0,
+      "max_us": 46.562,
+      "first_us": 33334942.0,
+      "last_us": 33490122.958,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 0,
+      "launch_geometries_top32": [],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::prefill::mmq::quantize(float const*, int const*, void*, int, long, long, long, void*)::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "role": "other_compute",
+      "calls": 4,
+      "duration_us": 3435.207,
+      "min_us": 296.25,
+      "max_us": 2254.583,
+      "first_us": 28597966.5,
+      "last_us": 28652832.25,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 2,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD32 {5120; 1; 1} {256; 1; 1}]",
+          "calls": 3
+        },
+        {
+          "geometry": "[SIMD32 {20480; 1; 1} {256; 1; 1}]",
+          "calls": 1
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::kernels::kv_stream_resolve_with_copy_groups(strata::kernels::KvStreamMap const&, strata::kernels::QsaAttnPools const&, strata::kernels::KvHostPools const&, int, int const*, int const*, long, long, strata::kernels::QsaShapes const&, void*, unsigned int)::{lambda()#1}",
+      "role": "KV_resolver_shared",
+      "calls": 12,
+      "duration_us": 3034.891,
+      "min_us": 178.125,
+      "max_us": 421.354,
+      "first_us": 33346033.75,
+      "last_us": 33489669.833,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 1,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD32 {1; 1; 1} {1; 1; 1}]",
+          "calls": 12
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::kernels::(anonymous namespace)::launch<strata::kernels::(anonymous namespace)::SmallTraits<strata::kernels::(anonymous namespace)::IQ4NLBlock, 4>, 4, 4>(void const*, void const*, float*, int, int, int, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "role": "other_compute",
+      "calls": 47,
+      "duration_us": 3006.8560000000007,
+      "min_us": 43.02,
+      "max_us": 98.854,
+      "first_us": 33337269.0,
+      "last_us": 33487767.041,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 1,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD32 {640; 1; 1} {128; 1; 1}]",
+          "calls": 47
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::kernels::native_quantize_q8_1(float const*, void*, int, int, void*)::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "role": "other_compute",
+      "calls": 337,
+      "duration_us": 2828.9329999999995,
+      "min_us": 2.083,
+      "max_us": 19.062,
+      "first_us": 33335011.5,
+      "last_us": 33491613.75,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 4,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD32 {10; 1; 1} {256; 1; 1}]",
+          "calls": 145
+        },
+        {
+          "geometry": "[SIMD32 {25; 1; 1} {256; 1; 1}]",
+          "calls": 96
+        },
+        {
+          "geometry": "[SIMD32 {24; 1; 1} {256; 1; 1}]",
+          "calls": 48
+        },
+        {
+          "geometry": "[SIMD32 {3; 1; 1} {256; 1; 1}]",
+          "calls": 48
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::kernels::iq_embed_rows(int, void const*, unsigned long, int const*, long, long, float*, void*)::{lambda(sycl::_V1::id<2>)#1}",
+      "role": "other_compute",
+      "calls": 3,
+      "duration_us": 2796.562,
+      "min_us": 95.625,
+      "max_us": 2399.479,
+      "first_us": 7946705.5,
+      "last_us": 33334927.625,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 2,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD16 {5; 2; 1} {2; 256; 1}]",
+          "calls": 2
+        },
+        {
+          "geometry": "[SIMD16 {1; 1; 1} {10; 1; 1}]",
+          "calls": 1
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::sycl_backend::for_each<strata::prefill::copy_i32(int*, int const*, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::copy_i32(int*, int const*, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "role": "other_compute",
+      "calls": 144,
+      "duration_us": 2661.921999999999,
+      "min_us": 3.229,
+      "max_us": 275.833,
+      "first_us": 8691832.0,
+      "last_us": 28114363.062,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 1,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD32 {5; 1; 1} {1024; 1; 1}]",
+          "calls": 144
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::kernels::(anonymous namespace)::up_esimd(strata::kernels::FusedGrArgs, void*)::{lambda(sycl::_V1::nd_item<1>)#1}[SIMD_ANY {160; 1; 1} {16; 1; 1}]",
+      "role": "other_compute",
+      "calls": 96,
+      "duration_us": 2413.0860000000002,
+      "min_us": 20.625,
+      "max_us": 30.729,
+      "first_us": 33334985.0,
+      "last_us": 33490145.25,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 0,
+      "launch_geometries_top32": [],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::kernels::kv_stream_resolve_with_copy_groups(strata::kernels::KvStreamMap const&, strata::kernels::QsaAttnPools const&, strata::kernels::KvHostPools const&, int, int const*, int const*, long, long, strata::kernels::QsaShapes const&, void*, unsigned int)::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "role": "KV_resolver_shared",
+      "calls": 12,
+      "duration_us": 1913.4319999999998,
+      "min_us": 137.395,
+      "max_us": 193.125,
+      "first_us": 33346456.5,
+      "last_us": 33489831.52,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 1,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD32 {8192; 1; 1} {128; 1; 1}]",
+          "calls": 12
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::prefill::rms_rows(float*, float const*, long, long, long, float, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "role": "other_compute",
+      "calls": 39,
+      "duration_us": 1839.8860000000004,
+      "min_us": 8.958,
+      "max_us": 174.062,
+      "first_us": 9961357.0,
+      "last_us": 28654149.708,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 4,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD32 {1024; 1; 1} {256; 1; 1}]",
+          "calls": 13
+        },
+        {
+          "geometry": "[SIMD32 {12288; 1; 1} {256; 1; 1}]",
+          "calls": 12
+        },
+        {
+          "geometry": "[SIMD32 {2048; 1; 1} {256; 1; 1}]",
+          "calls": 12
+        },
+        {
+          "geometry": "[SIMD32 {512; 1; 1} {256; 1; 1}]",
+          "calls": 2
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::kernels::(anonymous namespace)::native<1>(float const*, long, unsigned short const*, float*, long, long, long, int, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "role": "other_compute",
+      "calls": 124,
+      "duration_us": 1644.8469999999988,
+      "min_us": 2.916,
+      "max_us": 333.854,
+      "first_us": 33336396.0,
+      "last_us": 33491602.666,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 7,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD32 {512; 1; 1} {256; 1; 1}]",
+          "calls": 60
+        },
+        {
+          "geometry": "[SIMD32 {1; 1; 1} {256; 1; 1}]",
+          "calls": 48
+        },
+        {
+          "geometry": "[SIMD32 {128; 1; 1} {256; 1; 1}]",
+          "calls": 12
+        },
+        {
+          "geometry": "[SIMD32 {10240; 1; 1} {256; 1; 1}]",
+          "calls": 1
+        },
+        {
+          "geometry": "[SIMD32 {2560; 1; 1} {256; 1; 1}]",
+          "calls": 1
+        },
+        {
+          "geometry": "[SIMD32 {320; 1; 1} {256; 1; 1}]",
+          "calls": 1
+        },
+        {
+          "geometry": "[SIMD32 {10240; 1; 1} {160; 1; 1}]",
+          "calls": 1
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::sycl_backend::for_each<strata::prefill::gate_attn(float const*, float const*, unsigned short*, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::gate_attn(float const*, float const*, unsigned short*, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "role": "other_compute",
+      "calls": 12,
+      "duration_us": 1491.6619999999998,
+      "min_us": 118.854,
+      "max_us": 168.333,
+      "first_us": 16330998.25,
+      "last_us": 28096225.562,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 1,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD32 {3072; 1; 1} {1024; 1; 1}]",
+          "calls": 12
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "gemm_bf16bf16f32_nocopy_tn_16x32_8x4",
+      "role": "other_compute",
+      "calls": 60,
+      "duration_us": 1440.7060000000001,
+      "min_us": 21.77,
+      "max_us": 52.083,
+      "first_us": 8584335.0,
+      "last_us": 28099371.625,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 1,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD16 {4; 4; 1} {128; 4; 1}]",
+          "calls": 60
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::kernels::qsa_block_scores(float const*, float const*, float const*, int const*, long, long, strata::kernels::QsaShapes const&, float*, void*, long)::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "role": "QSA_block_scores_shared",
+      "calls": 36,
+      "duration_us": 1193.84,
+      "min_us": 18.229,
+      "max_us": 80.0,
+      "first_us": 10671829.75,
+      "last_us": 33489486.666,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 3,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD32 {16640; 1; 1} {32; 1; 1}]",
+          "calls": 12
+        },
+        {
+          "geometry": "[SIMD32 {33024; 1; 1} {32; 1; 1}]",
+          "calls": 12
+        },
+        {
+          "geometry": "[SIMD32 {65538; 1; 1} {32; 1; 1}]",
+          "calls": 12
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "zeCommandListAppendBarrier",
+      "role": "other_compute",
+      "calls": 10803,
+      "duration_us": 1084.0960000002087,
+      "min_us": 0.0,
+      "max_us": 0.312,
+      "first_us": 8712168.5,
+      "last_us": 28307100.354,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 0,
+      "launch_geometries_top32": [],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::kernels::native_router_top10_multi(float const*, int*, float*, int, void*)::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "role": "other_compute",
+      "calls": 96,
+      "duration_us": 1020.385,
+      "min_us": 7.708,
+      "max_us": 27.291,
+      "first_us": 8687766.75,
+      "last_us": 33490166.708,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 2,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD32 {512; 1; 1} {32; 1; 1}]",
+          "calls": 48
+        },
+        {
+          "geometry": "[SIMD32 {1; 1; 1} {32; 1; 1}]",
+          "calls": 48
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::sycl_backend::for_each<strata::prefill::split_q(float const*, float*, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::split_q(float const*, float*, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "role": "other_compute",
+      "calls": 12,
+      "duration_us": 888.952,
+      "min_us": 72.291,
+      "max_us": 88.541,
+      "first_us": 10506134.0,
+      "last_us": 28072140.812,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 1,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD32 {3072; 1; 1} {1024; 1; 1}]",
+          "calls": 12
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "gemm_bf16bf16f32_nocopy_tn_16x16_4x2x4",
+      "role": "other_compute",
+      "calls": 72,
+      "duration_us": 807.0520000000008,
+      "min_us": 5.833,
+      "max_us": 18.75,
+      "first_us": 8366724.0,
+      "last_us": 27777506.687,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 1,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD16 {1; 16; 1} {64; 2; 4}]",
+          "calls": 72
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::kernels::gdn_ab_multi(float const*, unsigned short const*, unsigned short const*, float const*, float const*, float*, float*, int, int, int, void*)::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "role": "other_compute",
+      "calls": 36,
+      "duration_us": 764.0470000000003,
+      "min_us": 15.52,
+      "max_us": 34.375,
+      "first_us": 33335742.5,
+      "last_us": 33487250.979,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 1,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD32 {96; 1; 1} {32; 1; 1}]",
+          "calls": 36
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::kernels::native_q5_head_esimd(void const*, void const*, float*, int, int, void*)::{lambda(sycl::_V1::nd_item<1>)#1}[SIMD_ANY {640; 1; 1} {16; 1; 1}]",
+      "role": "other_compute",
+      "calls": 10,
+      "duration_us": 728.3299999999999,
+      "min_us": 58.854,
+      "max_us": 109.895,
+      "first_us": 33339215.5,
+      "last_us": 33487230.479,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 0,
+      "launch_geometries_top32": [],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::kernels::(anonymous namespace)::launch<strata::kernels::(anonymous namespace)::Q5KTraits, 1, 4>(void const*, void const*, float*, int, int, int, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "role": "other_compute",
+      "calls": 18,
+      "duration_us": 722.911,
+      "min_us": 16.875,
+      "max_us": 99.375,
+      "first_us": 33350915.5,
+      "last_us": 33490563.895,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 3,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD32 {640; 1; 1} {128; 1; 1}]",
+          "calls": 12
+        },
+        {
+          "geometry": "[SIMD32 {2560; 1; 1} {128; 1; 1}]",
+          "calls": 4
+        },
+        {
+          "geometry": "[SIMD32 {512; 1; 1} {128; 1; 1}]",
+          "calls": 2
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::kernels::(anonymous namespace)::launch<1, false>(float const*, strata::kernels::QsaAttnPools, int const*, int const*, long, strata::kernels::QsaShapes, float*, float*, long, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "role": "other_compute",
+      "calls": 12,
+      "duration_us": 661.869,
+      "min_us": 41.458,
+      "max_us": 97.708,
+      "first_us": 33346598.25,
+      "last_us": 33489874.02,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 1,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD32 {66; 1; 1} {256; 1; 1}]",
+          "calls": 12
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::kernels::native_iq4_xs_esimd(void const*, void const*, float*, int, int, int, void*)::{lambda(sycl::_V1::nd_item<1>)#1}[SIMD_ANY {384; 1; 1} {16; 1; 1}]",
+      "role": "other_compute",
+      "calls": 8,
+      "duration_us": 628.331,
+      "min_us": 51.979,
+      "max_us": 111.041,
+      "first_us": 33342698.25,
+      "last_us": 33478646.979,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 0,
+      "launch_geometries_top32": [],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::kernels::native_iq4_xs_esimd(void const*, void const*, float*, int, int, int, void*)::{lambda(sycl::_V1::nd_item<1>)#1}[SIMD_ANY {768; 1; 1} {16; 1; 1}]",
+      "role": "other_compute",
+      "calls": 3,
+      "duration_us": 603.541,
+      "min_us": 186.562,
+      "max_us": 209.479,
+      "first_us": 33345639.5,
+      "last_us": 33383802.812,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 0,
+      "launch_geometries_top32": [],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::kernels::(anonymous namespace)::grouped<20>(bool, strata::kernels::NativeExpertLayout, unsigned long long const*, int const*, int const*, int const*, int const*, int, int, void const*, float*, float*, float*, void*)::{lambda(sycl::_V1::nd_item<2>)#1}[SIMD_ANY {160; 10; 1} {16; 1; 1}]",
+      "role": "other_compute",
+      "calls": 78,
+      "duration_us": 593.294,
+      "min_us": 5.312,
+      "max_us": 16.041,
+      "first_us": 33337434.75,
+      "last_us": 33491477.77,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 0,
+      "launch_geometries_top32": [],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::kernels::(anonymous namespace)::convolve(sycl::_V1::queue&, float const*, float const*, unsigned short const*, float const*, float const*, float*, float*, int, bool)::{lambda(sycl::_V1::id<1>)#1}",
+      "role": "other_compute",
+      "calls": 2,
+      "duration_us": 586.562,
+      "min_us": 6.458,
+      "max_us": 580.104,
+      "first_us": 9356717.5,
+      "last_us": 33339098.208,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 2,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD32 {5120; 1; 1} {1024; 1; 1}]",
+          "calls": 1
+        },
+        {
+          "geometry": "[SIMD32 {10; 1; 1} {1024; 1; 1}]",
+          "calls": 1
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::kernels::(anonymous namespace)::norm(sycl::_V1::queue&, float const*, float const*, float*, int, bool)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "role": "other_compute",
+      "calls": 6,
+      "duration_us": 583.5400000000001,
+      "min_us": 4.687,
+      "max_us": 212.5,
+      "first_us": 9258422.25,
+      "last_us": 33339090.187,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 2,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD32 {2048; 1; 1} {1024; 1; 1}]",
+          "calls": 3
+        },
+        {
+          "geometry": "[SIMD32 {4; 1; 1} {1024; 1; 1}]",
+          "calls": 3
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::kernels::native_q4_k_esimd(void const*, void const*, float*, int, int, int, void*)::{lambda(sycl::_V1::nd_item<1>)#1}[SIMD_ANY {384; 1; 1} {16; 1; 1}]",
+      "role": "other_compute",
+      "calls": 10,
+      "duration_us": 486.143,
+      "min_us": 34.791,
+      "max_us": 73.437,
+      "first_us": 33335778.25,
+      "last_us": 33483320.166,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 0,
+      "launch_geometries_top32": [],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::kernels::(anonymous namespace)::launch(strata::kernels::FusedGrArgs, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "role": "other_compute",
+      "calls": 96,
+      "duration_us": 475.58400000000006,
+      "min_us": 3.645,
+      "max_us": 7.708,
+      "first_us": 33334934.0,
+      "last_us": 33490091.916,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 1,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD32 {4; 1; 1} {1024; 1; 1}]",
+          "calls": 96
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "zeCommandListAppendMemoryCopy(D2D)",
+      "role": "provider_memory_copy",
+      "calls": 290,
+      "duration_us": 450.83799999999985,
+      "min_us": 0.625,
+      "max_us": 123.333,
+      "first_us": 28611006.0,
+      "last_us": 33489435.979,
+      "provider_requested_bytes": 21307392,
+      "sized_calls": 290,
+      "distinct_launch_geometries": 0,
+      "launch_geometries_top32": [],
+      "size_histogram_top32": [
+        {
+          "bytes": 1024,
+          "calls": 288
+        },
+        {
+          "bytes": 20971520,
+          "calls": 1
+        },
+        {
+          "bytes": 40960,
+          "calls": 1
+        }
+      ],
+      "distinct_sizes": 3
+    },
+    {
+      "name": "strata::sycl_backend::for_each<strata::prefill::swiglu_pair(float const*, float const*, unsigned short*, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::swiglu_pair(float const*, float const*, unsigned short*, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "role": "other_compute",
+      "calls": 48,
+      "duration_us": 440.29900000000004,
+      "min_us": 8.541,
+      "max_us": 17.083,
+      "first_us": 8691575.25,
+      "last_us": 28099762.958,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 1,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD32 {320; 1; 1} {1024; 1; 1}]",
+          "calls": 48
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::sycl_backend::for_each<strata::kernels::copy_i32_from_mapped(int*, int const*, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::kernels::copy_i32_from_mapped(int*, int const*, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "role": "other_compute",
+      "calls": 100,
+      "duration_us": 415.90399999999977,
+      "min_us": 0.52,
+      "max_us": 51.875,
+      "first_us": 33334802.5,
+      "last_us": 33500277.75,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 6,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD32 {1; 1; 1} {10; 1; 1}]",
+          "calls": 48
+        },
+        {
+          "geometry": "[SIMD32 {1; 1; 1} {328; 1; 1}]",
+          "calls": 48
+        },
+        {
+          "geometry": "[SIMD32 {1; 1; 1} {1; 1; 1}]",
+          "calls": 1
+        },
+        {
+          "geometry": "[SIMD32 {1; 1; 1} {4; 1; 1}]",
+          "calls": 1
+        },
+        {
+          "geometry": "[SIMD32 {1; 1; 1} {120; 1; 1}]",
+          "calls": 1
+        },
+        {
+          "geometry": "[SIMD32 {1; 1; 1} {6; 1; 1}]",
+          "calls": 1
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::kernels::(anonymous namespace)::launch<false>(float const*, int, int, int const*, int, strata::kernels::SamplerParams, strata::kernels::SamplerParams const*, int const*, int const*, int*, float*, int*, int, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "role": "other_compute",
+      "calls": 1,
+      "duration_us": 406.041,
+      "min_us": 406.041,
+      "max_us": 406.041,
+      "first_us": 33499477.5,
+      "last_us": 33499883.541,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 1,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD32 {1; 1; 1} {256; 1; 1}]",
+          "calls": 1
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::sycl_backend::for_each<strata::prefill::gr_silu(float const*, unsigned short*, long, void*, unsigned short*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::gr_silu(float const*, unsigned short*, long, void*, unsigned short*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "role": "other_compute",
+      "calls": 97,
+      "duration_us": 386.9309999999999,
+      "min_us": 3.437,
+      "max_us": 9.166,
+      "first_us": 8338863.25,
+      "last_us": 28650623.541,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 1,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD32 {160; 1; 1} {1024; 1; 1}]",
+          "calls": 97
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::kernels::native_iq4_xs_esimd(void const*, void const*, float*, int, int, int, void*)::{lambda(sycl::_V1::nd_item<1>)#1}[SIMD_ANY {40; 1; 1} {16; 1; 1}]",
+      "role": "other_compute",
+      "calls": 28,
+      "duration_us": 363.63300000000004,
+      "min_us": 8.333,
+      "max_us": 19.27,
+      "first_us": 33337226.5,
+      "last_us": 33479151.791,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 0,
+      "launch_geometries_top32": [],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::kernels::doorbell_ring(unsigned int*, void*)::{lambda()#1}",
+      "role": "other_compute",
+      "calls": 48,
+      "duration_us": 337.98999999999995,
+      "min_us": 2.187,
+      "max_us": 39.583,
+      "first_us": 33336448.5,
+      "last_us": 33490175.541,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 1,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD32 {1; 1; 1} {1; 1; 1}]",
+          "calls": 48
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::prefill::rope(float*, long, long, long, long, long, strata::kernels::RopeScaling const&, void*)::{lambda(sycl::_V1::id<2>)#1}",
+      "role": "other_compute",
+      "calls": 37,
+      "duration_us": 331.132,
+      "min_us": 3.333,
+      "max_us": 25.833,
+      "first_us": 10195527.5,
+      "last_us": 28654161.02,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 3,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD32 {1; 32; 1} {32; 32; 1}]",
+          "calls": 13
+        },
+        {
+          "geometry": "[SIMD32 {1; 384; 1} {32; 32; 1}]",
+          "calls": 12
+        },
+        {
+          "geometry": "[SIMD32 {1; 64; 1} {32; 32; 1}]",
+          "calls": 12
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::kernels::native_q4_k_esimd(void const*, void const*, float*, int, int, int, void*)::{lambda(sycl::_V1::nd_item<1>)#1}[SIMD_ANY {160; 1; 1} {16; 1; 1}]",
+      "role": "other_compute",
+      "calls": 4,
+      "duration_us": 285.728,
+      "min_us": 66.666,
+      "max_us": 77.5,
+      "first_us": 33346747.5,
+      "last_us": 33381748.875,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 0,
+      "launch_geometries_top32": [],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::kernels::native_q4_k_esimd(void const*, void const*, float*, int, int, int, void*)::{lambda(sycl::_V1::nd_item<1>)#1}[SIMD_ANY {40; 1; 1} {16; 1; 1}]",
+      "role": "other_compute",
+      "calls": 30,
+      "duration_us": 265.9230000000001,
+      "min_us": 6.041,
+      "max_us": 13.958,
+      "first_us": 33337211.25,
+      "last_us": 33490542.479,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 0,
+      "launch_geometries_top32": [],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::kernels::(anonymous namespace)::grouped<22>(bool, strata::kernels::NativeExpertLayout, unsigned long long const*, int const*, int const*, int const*, int const*, int, int, void const*, float*, float*, float*, void*)::{lambda(sycl::_V1::nd_item<2>)#1}[SIMD_ANY {80; 10; 1} {16; 1; 1}]",
+      "role": "other_compute",
+      "calls": 40,
+      "duration_us": 247.69200000000012,
+      "min_us": 3.125,
+      "max_us": 23.645,
+      "first_us": 33341138.75,
+      "last_us": 33469623.375,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 0,
+      "launch_geometries_top32": [],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::sycl_backend::for_each<strata::kernels::f32_to_bf16_bulk(float const*, unsigned short*, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::kernels::f32_to_bf16_bulk(float const*, unsigned short*, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "role": "other_compute",
+      "calls": 48,
+      "duration_us": 213.93600000000015,
+      "min_us": 3.333,
+      "max_us": 7.083,
+      "first_us": 33337182.25,
+      "last_us": 33490524.833,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 1,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD32 {5; 1; 1} {512; 1; 1}]",
+          "calls": 48
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::kernels::native_q5_head_esimd(void const*, void const*, float*, int, int, void*)::{lambda(sycl::_V1::nd_item<1>)#1}[SIMD_ANY {768; 1; 1} {16; 1; 1}]",
+      "role": "other_compute",
+      "calls": 3,
+      "duration_us": 212.499,
+      "min_us": 69.375,
+      "max_us": 73.333,
+      "first_us": 33405265.0,
+      "last_us": 33430812.041,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 0,
+      "launch_geometries_top32": [],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "gemm_bf16bf16f32_nocopy_tn_16x16_4x4x2",
+      "role": "other_compute",
+      "calls": 12,
+      "duration_us": 206.76599999999996,
+      "min_us": 16.77,
+      "max_us": 17.708,
+      "first_us": 9961306.0,
+      "last_us": 28069054.875,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 1,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD16 {2; 8; 1} {64; 4; 2}]",
+          "calls": 12
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::kernels::(anonymous namespace)::grouped<18>(bool, strata::kernels::NativeExpertLayout, unsigned long long const*, int const*, int const*, int const*, int const*, int, int, void const*, float*, float*, float*, void*)::{lambda(sycl::_V1::nd_item<2>)#1}[SIMD_ANY {80; 10; 1} {16; 1; 1}]",
+      "role": "other_compute",
+      "calls": 34,
+      "duration_us": 198.427,
+      "min_us": 3.125,
+      "max_us": 28.437,
+      "first_us": 33337415.0,
+      "last_us": 33488793.333,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 0,
+      "launch_geometries_top32": [],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::kernels::native_q5_head_esimd(void const*, void const*, float*, int, int, void*)::{lambda(sycl::_V1::nd_item<1>)#1}[SIMD_ANY {384; 1; 1} {16; 1; 1}]",
+      "role": "other_compute",
+      "calls": 4,
+      "duration_us": 175.416,
+      "min_us": 36.562,
+      "max_us": 65.104,
+      "first_us": 33381570.75,
+      "last_us": 33487288.875,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 0,
+      "launch_geometries_top32": [],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::sycl_backend::for_each<strata::kernels::copy_from_mapped(float*, float const*, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::kernels::copy_from_mapped(float*, float const*, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "role": "other_compute",
+      "calls": 122,
+      "duration_us": 175.06500000000017,
+      "min_us": 0.625,
+      "max_us": 6.354,
+      "first_us": 33334824.0,
+      "last_us": 33502047.062,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 4,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD32 {5; 1; 1} {512; 1; 1}]",
+          "calls": 49
+        },
+        {
+          "geometry": "[SIMD32 {1; 1; 1} {10; 1; 1}]",
+          "calls": 48
+        },
+        {
+          "geometry": "[SIMD32 {3; 1; 1} {128; 1; 1}]",
+          "calls": 24
+        },
+        {
+          "geometry": "[SIMD32 {90; 1; 1} {1024; 1; 1}]",
+          "calls": 1
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::kernels::(anonymous namespace)::launch<1, false>(float const*, strata::kernels::QsaAttnPools, int const*, int const*, long, strata::kernels::QsaShapes, float*, float*, long, void*)::{lambda(sycl::_V1::id<1>)#1}",
+      "role": "other_compute",
+      "calls": 12,
+      "duration_us": 174.68200000000004,
+      "min_us": 11.145,
+      "max_us": 25.312,
+      "first_us": 33346697.0,
+      "last_us": 33489886.145,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 1,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD32 {6; 1; 1} {1024; 1; 1}]",
+          "calls": 12
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::kernels::(anonymous namespace)::broadcast(sycl::_V1::queue&, float const*, float const*, float*, int)::{lambda(sycl::_V1::id<1>)#1}",
+      "role": "other_compute",
+      "calls": 2,
+      "duration_us": 172.708,
+      "min_us": 2.083,
+      "max_us": 170.625,
+      "first_us": 9355691.25,
+      "last_us": 33339083.833,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 2,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD32 {5120; 1; 1} {1024; 1; 1}]",
+          "calls": 1
+        },
+        {
+          "geometry": "[SIMD32 {10; 1; 1} {1024; 1; 1}]",
+          "calls": 1
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::sycl_backend::for_each<strata::prefill::gr_broadcast(float const*, float*, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::gr_broadcast(float const*, float*, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "role": "other_compute",
+      "calls": 1,
+      "duration_us": 168.75,
+      "min_us": 168.75,
+      "max_us": 168.75,
+      "first_us": 8267451.5,
+      "last_us": 8267620.25,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 1,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD32 {5120; 1; 1} {1024; 1; 1}]",
+          "calls": 1
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::kernels::(anonymous namespace)::combine(float const*, float const*, float const*, float*, long, long, int, void*, bool)::{lambda(sycl::_V1::id<1>)#1}",
+      "role": "other_compute",
+      "calls": 48,
+      "duration_us": 167.69600000000008,
+      "min_us": 2.5,
+      "max_us": 5.937,
+      "first_us": 33338624.5,
+      "last_us": 33491511.354,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 1,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD32 {5; 1; 1} {512; 1; 1}]",
+          "calls": 48
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::kernels::native_iq4_xs_esimd(void const*, void const*, float*, int, int, int, void*)::{lambda(sycl::_V1::nd_item<1>)#1}[SIMD_ANY {640; 1; 1} {16; 1; 1}]",
+      "role": "other_compute",
+      "calls": 2,
+      "duration_us": 165.207,
+      "min_us": 82.291,
+      "max_us": 82.916,
+      "first_us": 33454826.5,
+      "last_us": 33485136.541,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 0,
+      "launch_geometries_top32": [],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::kernels::native_q4_k_esimd(void const*, void const*, float*, int, int, int, void*)::{lambda(sycl::_V1::nd_item<1>)#1}[SIMD_ANY {640; 1; 1} {16; 1; 1}]",
+      "role": "other_compute",
+      "calls": 2,
+      "duration_us": 156.874,
+      "min_us": 55.833,
+      "max_us": 101.041,
+      "first_us": 33378286.25,
+      "last_us": 33474734.333,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 0,
+      "launch_geometries_top32": [],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::sycl_backend::for_each<strata::kernels::add_streams_broadcast(float const*, float const*, float*, long, int, int, void*)::{lambda(unsigned long)#1}>(long, void*, strata::kernels::add_streams_broadcast(float const*, float const*, float*, long, int, int, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "role": "other_compute",
+      "calls": 1,
+      "duration_us": 153.645,
+      "min_us": 153.645,
+      "max_us": 153.645,
+      "first_us": 28650170.25,
+      "last_us": 28650323.895,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 1,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD32 {5120; 1; 1} {1024; 1; 1}]",
+          "calls": 1
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::kernels::(anonymous namespace)::gate(sycl::_V1::queue&, float const*, float const*, float*, int, bool)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "role": "other_compute",
+      "calls": 2,
+      "duration_us": 148.645,
+      "min_us": 3.958,
+      "max_us": 144.687,
+      "first_us": 9258792.75,
+      "last_us": 33339079.958,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 2,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD32 {2048; 1; 1} {512; 1; 1}]",
+          "calls": 1
+        },
+        {
+          "geometry": "[SIMD32 {4; 1; 1} {512; 1; 1}]",
+          "calls": 1
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "zeCommandListAppendMemoryCopy(M2D)",
+      "role": "provider_memory_copy",
+      "calls": 5,
+      "duration_us": 133.017,
+      "min_us": 7.187,
+      "max_us": 61.77,
+      "first_us": 18206.25,
+      "last_us": 28440533.77,
+      "provider_requested_bytes": 12308,
+      "sized_calls": 5,
+      "distinct_launch_geometries": 0,
+      "launch_geometries_top32": [],
+      "size_histogram_top32": [
+        {
+          "bytes": 2048,
+          "calls": 2
+        },
+        {
+          "bytes": 8192,
+          "calls": 1
+        },
+        {
+          "bytes": 4,
+          "calls": 1
+        },
+        {
+          "bytes": 16,
+          "calls": 1
+        }
+      ],
+      "distinct_sizes": 4
+    },
+    {
+      "name": "strata::kernels::native_rope_apply(float const*, float*, int, int, int, strata::kernels::RopeScaling const&, int const*, void*)::{lambda(sycl::_V1::id<2>)#1}",
+      "role": "other_compute",
+      "calls": 36,
+      "duration_us": 123.00899999999996,
+      "min_us": 1.666,
+      "max_us": 6.979,
+      "first_us": 33345596.5,
+      "last_us": 33489460.333,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 3,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD32 {1; 1; 1} {128; 2; 1}]",
+          "calls": 12
+        },
+        {
+          "geometry": "[SIMD32 {1; 3; 1} {128; 8; 1}]",
+          "calls": 12
+        },
+        {
+          "geometry": "[SIMD32 {1; 1; 1} {64; 4; 1}]",
+          "calls": 12
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::kernels::native_q4_k_esimd(void const*, void const*, float*, int, int, int, void*)::{lambda(sycl::_V1::nd_item<1>)#1}[SIMD_ANY {768; 1; 1} {16; 1; 1}]",
+      "role": "other_compute",
+      "calls": 1,
+      "duration_us": 119.583,
+      "min_us": 119.583,
+      "max_us": 119.583,
+      "first_us": 33372746.5,
+      "last_us": 33372866.083,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 0,
+      "launch_geometries_top32": [],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::kernels::qsa_block_topk(float const*, int const*, long, long, long, strata::kernels::QsaShapes const&, int*, void*, long)::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "role": "other_compute",
+      "calls": 36,
+      "duration_us": 111.13099999999997,
+      "min_us": 1.354,
+      "max_us": 6.562,
+      "first_us": 10794699.25,
+      "last_us": 33489489.208,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 2,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD32 {256; 1; 1} {256; 1; 1}]",
+          "calls": 24
+        },
+        {
+          "geometry": "[SIMD32 {1; 1; 1} {256; 1; 1}]",
+          "calls": 12
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::kernels::native_expert_grouped(strata::kernels::NativeExpertLayout const&, unsigned long long const*, int const*, int const*, int const*, int const*, long, long, void const*, void*, float*, void*, long)::{lambda(sycl::_V1::id<1>)#1}",
+      "role": "other_compute",
+      "calls": 96,
+      "duration_us": 106.00499999999987,
+      "min_us": 0.729,
+      "max_us": 1.979,
+      "first_us": 33337424.5,
+      "last_us": 33491468.083,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 1,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD32 {25; 1; 1} {256; 1; 1}]",
+          "calls": 96
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::kernels::(anonymous namespace)::grouped<21>(bool, strata::kernels::NativeExpertLayout, unsigned long long const*, int const*, int const*, int const*, int const*, int, int, void const*, float*, float*, float*, void*)::{lambda(sycl::_V1::nd_item<2>)#1}[SIMD_ANY {80; 10; 1} {16; 1; 1}]",
+      "role": "other_compute",
+      "calls": 20,
+      "duration_us": 91.55499999999998,
+      "min_us": 3.02,
+      "max_us": 28.333,
+      "first_us": 33394549.0,
+      "last_us": 33487048.02,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 0,
+      "launch_geometries_top32": [],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::sycl_backend::for_each<strata::prefill::gdn_gates(float const*, float const*, float const*, float*, float*, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::gdn_gates(float const*, float const*, float const*, float*, float*, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "role": "other_compute",
+      "calls": 36,
+      "duration_us": 86.22999999999995,
+      "min_us": 2.187,
+      "max_us": 4.479,
+      "first_us": 8366778.25,
+      "last_us": 27777515.541,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 1,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD32 {24; 1; 1} {1024; 1; 1}]",
+          "calls": 36
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::sycl_backend::for_each<strata::kernels::gdn_conv_commit(float*, float const*, int, int const*, void*)::{lambda(unsigned long)#1}>(long, void*, strata::kernels::gdn_conv_commit(float*, float const*, int, int const*, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "role": "other_compute",
+      "calls": 36,
+      "duration_us": 74.05199999999996,
+      "min_us": 1.77,
+      "max_us": 2.5,
+      "first_us": 33500279.0,
+      "last_us": 33502001.729,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 1,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD32 {10; 1; 1} {1024; 1; 1}]",
+          "calls": 36
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::kernels::native_qsa_rms_norm_weighted(float const*, float const*, float*, int, int, float, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "role": "other_compute",
+      "calls": 36,
+      "duration_us": 69.35999999999997,
+      "min_us": 1.25,
+      "max_us": 3.333,
+      "first_us": 33345590.5,
+      "last_us": 33489457.25,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 3,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD32 {2; 1; 1} {256; 1; 1}]",
+          "calls": 12
+        },
+        {
+          "geometry": "[SIMD32 {24; 1; 1} {256; 1; 1}]",
+          "calls": 12
+        },
+        {
+          "geometry": "[SIMD32 {4; 1; 1} {256; 1; 1}]",
+          "calls": 12
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::sycl_backend::for_each<strata::kernels::moe_hit_add(float*, float const*, int const*, int const*, long, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::kernels::moe_hit_add(float*, float const*, int const*, int const*, long, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "role": "other_compute",
+      "calls": 48,
+      "duration_us": 62.686999999999934,
+      "min_us": 0.937,
+      "max_us": 2.083,
+      "first_us": 33338621.0,
+      "last_us": 33491507.937,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 1,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD32 {25; 1; 1} {1024; 1; 1}]",
+          "calls": 48
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::kernels::(anonymous namespace)::launch<strata::kernels::(anonymous namespace)::SmallTraits<strata::kernels::(anonymous namespace)::Q80Block, 8>, 4, 4>(void const*, void const*, float*, int, int, int, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "role": "other_compute",
+      "calls": 1,
+      "duration_us": 56.25,
+      "min_us": 56.25,
+      "max_us": 56.25,
+      "first_us": 33490574.5,
+      "last_us": 33490630.75,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 1,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD32 {640; 1; 1} {128; 1; 1}]",
+          "calls": 1
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::kernels::(anonymous namespace)::scale(sycl::_V1::queue&, float*, float const*, int, int)::{lambda(sycl::_V1::id<1>)#1}",
+      "role": "other_compute",
+      "calls": 48,
+      "duration_us": 52.06399999999996,
+      "min_us": 0.729,
+      "max_us": 1.875,
+      "first_us": 33337380.25,
+      "last_us": 33490638.333,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 1,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD32 {5; 1; 1} {512; 1; 1}]",
+          "calls": 48
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::kernels::(anonymous namespace)::swiglu(sycl::_V1::queue&, float*, float const*, unsigned long, bool)::{lambda(sycl::_V1::id<1>)#1}",
+      "role": "other_compute",
+      "calls": 48,
+      "duration_us": 50.71399999999996,
+      "min_us": 0.625,
+      "max_us": 1.979,
+      "first_us": 33337246.75,
+      "last_us": 33490565.479,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 1,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD32 {5; 1; 1} {128; 1; 1}]",
+          "calls": 48
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::sycl_backend::for_each<strata::prefill::gdn_conv(float*, float const*, float const*, float*, long, float, void*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::gdn_conv(float*, float const*, float const*, float*, long, float, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "role": "other_compute",
+      "calls": 36,
+      "duration_us": 50.29599999999999,
+      "min_us": 1.041,
+      "max_us": 7.291,
+      "first_us": 8570978.5,
+      "last_us": 27777687.645,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 1,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD32 {10; 1; 1} {1024; 1; 1}]",
+          "calls": 36
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "zeCommandListAppendMemoryCopy(D2M)",
+      "role": "provider_memory_copy",
+      "calls": 13,
+      "duration_us": 43.434999999999995,
+      "min_us": 2.604,
+      "max_us": 5.52,
+      "first_us": 8331610.25,
+      "last_us": 33507052.854,
+      "provider_requested_bytes": 772,
+      "sized_calls": 13,
+      "distinct_launch_geometries": 0,
+      "launch_geometries_top32": [],
+      "size_histogram_top32": [
+        {
+          "bytes": 64,
+          "calls": 12
+        },
+        {
+          "bytes": 4,
+          "calls": 1
+        }
+      ],
+      "distinct_sizes": 2
+    },
+    {
+      "name": "strata::kernels::kv_stream_reset(strata::kernels::KvStreamMap const&, void*)::{lambda(sycl::_V1::id<1>)#1}",
+      "role": "other_compute",
+      "calls": 12,
+      "duration_us": 40.72399999999999,
+      "min_us": 2.187,
+      "max_us": 5.937,
+      "first_us": 985.25,
+      "last_us": 16879.416,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 1,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD32 {64; 1; 1} {1024; 1; 1}]",
+          "calls": 12
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::kernels::(anonymous namespace)::grouped_xmx<10, true>(strata::kernels::NativeExpertLayout const&, unsigned long long const*, int const*, int const*, int const*, int const*, int, int, void const*, float*, float*, float*, void*)::{lambda(sycl::_V1::nd_item<2>)#1}[SIMD_ANY {10; 10; 1} {16; 1; 1}]",
+      "role": "other_compute",
+      "calls": 18,
+      "duration_us": 38.323,
+      "min_us": 1.041,
+      "max_us": 7.916,
+      "first_us": 33341158.0,
+      "last_us": 33463130.395,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 0,
+      "launch_geometries_top32": [],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::kernels::(anonymous namespace)::scalar_gate(sycl::_V1::queue&, float const*, unsigned short const*, unsigned short const*, float*, int, int, bool)::{lambda(sycl::_V1::id<1>)#1}",
+      "role": "other_compute",
+      "calls": 48,
+      "duration_us": 37.16700000000001,
+      "min_us": 0.52,
+      "max_us": 1.354,
+      "first_us": 33337377.0,
+      "last_us": 33490636.625,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 1,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD32 {1; 1; 1} {1; 1; 1}]",
+          "calls": 48
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::kernels::(anonymous namespace)::gate<true, float>(float const*, float const*, long, long, float*, void*)::{lambda(sycl::_V1::id<1>)#1}",
+      "role": "other_compute",
+      "calls": 12,
+      "duration_us": 19.164999999999996,
+      "min_us": 1.25,
+      "max_us": 2.5,
+      "first_us": 33346723.75,
+      "last_us": 33489888.604,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 1,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD32 {6; 1; 1} {1024; 1; 1}]",
+          "calls": 12
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::kernels::native_iq4_xs_esimd(void const*, void const*, float*, int, int, int, void*)::{lambda(sycl::_V1::nd_item<1>)#1}[SIMD_ANY {32; 1; 1} {16; 1; 1}]",
+      "role": "other_compute",
+      "calls": 1,
+      "duration_us": 17.291,
+      "min_us": 17.291,
+      "max_us": 17.291,
+      "first_us": 33361280.75,
+      "last_us": 33361298.041,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 0,
+      "launch_geometries_top32": [],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::kernels::(anonymous namespace)::history_advance(sycl::_V1::queue&, float*, float const*, int)::{lambda(sycl::_V1::id<1>)#1}",
+      "role": "other_compute",
+      "calls": 2,
+      "duration_us": 15.623999999999999,
+      "min_us": 6.979,
+      "max_us": 8.645,
+      "first_us": 9357376.5,
+      "last_us": 33339111.979,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 1,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD32 {10; 1; 1} {1024; 1; 1}]",
+          "calls": 2
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::sycl_backend::for_each<strata::prefill::to_bf16(float const*, unsigned short*, long, void*, unsigned short*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::to_bf16(float const*, unsigned short*, long, void*, unsigned short*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "role": "other_compute",
+      "calls": 1,
+      "duration_us": 14.687,
+      "min_us": 14.687,
+      "max_us": 14.687,
+      "first_us": 9048496.75,
+      "last_us": 9048511.437,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 1,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD32 {1280; 1; 1} {1024; 1; 1}]",
+          "calls": 1
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::kernels::(anonymous namespace)::grouped<23>(bool, strata::kernels::NativeExpertLayout, unsigned long long const*, int const*, int const*, int const*, int const*, int, int, void const*, float*, float*, float*, void*)::{lambda(sycl::_V1::nd_item<2>)#1}[SIMD_ANY {80; 10; 1} {16; 1; 1}]",
+      "role": "other_compute",
+      "calls": 2,
+      "duration_us": 6.77,
+      "min_us": 3.125,
+      "max_us": 3.645,
+      "first_us": 33490655.25,
+      "last_us": 33491466.125,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 0,
+      "launch_geometries_top32": [],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "binary_test",
+      "role": "other_compute",
+      "calls": 1,
+      "duration_us": 6.145,
+      "min_us": 6.145,
+      "max_us": 6.145,
+      "first_us": 8331492.0,
+      "last_us": 8331498.145,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 1,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD16 {1; 1; 1} {4; 2; 1}]",
+          "calls": 1
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::sycl_backend::for_each<strata::kernels::copy_indexed(float*, float const*, long, int const*, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::kernels::copy_indexed(float*, float const*, long, int const*, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "role": "other_compute",
+      "calls": 1,
+      "duration_us": 5.208,
+      "min_us": 5.208,
+      "max_us": 5.208,
+      "first_us": 33502061.5,
+      "last_us": 33502066.708,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 1,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD32 {90; 1; 1} {1024; 1; 1}]",
+          "calls": 1
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::sycl_backend::for_each<strata::kernels::native_gr_post(float const*, float const*, float const*, float*, int, int, void*)::{lambda(unsigned long)#1}>(long, void*, strata::kernels::native_gr_post(float const*, float const*, float const*, float*, int, int, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "role": "other_compute",
+      "calls": 2,
+      "duration_us": 3.958,
+      "min_us": 1.354,
+      "max_us": 2.604,
+      "first_us": 33338631.75,
+      "last_us": 33491513.604,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 1,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD32 {10; 1; 1} {1024; 1; 1}]",
+          "calls": 2
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::kernels::(anonymous namespace)::norm(float const*, float const*, float*, int, int, float, bool, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+      "role": "other_compute",
+      "calls": 1,
+      "duration_us": 3.541,
+      "min_us": 3.541,
+      "max_us": 3.541,
+      "first_us": 33491514.25,
+      "last_us": 33491517.791,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 1,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD32 {4; 1; 1} {1024; 1; 1}]",
+          "calls": 1
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::sycl_backend::for_each<strata::kernels::broadcast_streams(float const*, float*, long, int, int, void*)::{lambda(unsigned long)#1}>(long, void*, strata::kernels::broadcast_streams(float const*, float*, long, int, int, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "role": "other_compute",
+      "calls": 1,
+      "duration_us": 2.916,
+      "min_us": 2.916,
+      "max_us": 2.916,
+      "first_us": 33334929.5,
+      "last_us": 33334932.416,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 1,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD32 {10; 1; 1} {1024; 1; 1}]",
+          "calls": 1
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::sycl_backend::for_each<strata::prefill::mmq::iota(int*, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::mmq::iota(int*, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "role": "other_compute",
+      "calls": 1,
+      "duration_us": 2.395,
+      "min_us": 2.395,
+      "max_us": 2.395,
+      "first_us": 28439267.75,
+      "last_us": 28439270.145,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 1,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD32 {2; 1; 1} {1024; 1; 1}]",
+          "calls": 1
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::sycl_backend::for_each<strata::kernels::native_gr_pre_gated(float const*, float*, float*, int, int, bool, void*)::{lambda(unsigned long)#1}>(long, void*, strata::kernels::native_gr_pre_gated(float const*, float*, float*, int, int, bool, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "role": "other_compute",
+      "calls": 1,
+      "duration_us": 2.083,
+      "min_us": 2.083,
+      "max_us": 2.083,
+      "first_us": 33491603.5,
+      "last_us": 33491605.583,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 1,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD32 {5; 1; 1} {512; 1; 1}]",
+          "calls": 1
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    },
+    {
+      "name": "strata::sycl_backend::for_each<strata::kernels::native_gr_down_silu(float*, int, int, void*)::{lambda(unsigned long)#1}>(long, void*, strata::kernels::native_gr_down_silu(float*, int, int, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+      "role": "other_compute",
+      "calls": 1,
+      "duration_us": 0.625,
+      "min_us": 0.625,
+      "max_us": 0.625,
+      "first_us": 33491554.5,
+      "last_us": 33491555.125,
+      "provider_requested_bytes": 0,
+      "sized_calls": 0,
+      "distinct_launch_geometries": 1,
+      "launch_geometries_top32": [
+        {
+          "geometry": "[SIMD32 {5; 1; 1} {64; 1; 1}]",
+          "calls": 1
+        }
+      ],
+      "size_histogram_top32": [],
+      "distinct_sizes": 0
+    }
+  ],
+  "CPU_APIs": [
+    {
+      "name": "zeModuleCreate",
+      "calls": 52,
+      "duration_us": 19805360.210000005,
+      "min_us": 70.562,
+      "max_us": 7926921.153
+    },
+    {
+      "name": "zeEventHostSynchronize",
+      "calls": 10902,
+      "duration_us": 18980369.56800007,
+      "min_us": 0.12,
+      "max_us": 16290.449
+    },
+    {
+      "name": "zeCommandListAppendLaunchKernelWithArguments",
+      "calls": 73486,
+      "duration_us": 2441489.689999961,
+      "min_us": 4.859,
+      "max_us": 2423.555
+    },
+    {
+      "name": "zeCommandListHostSynchronize",
+      "calls": 913,
+      "duration_us": 682809.0549999953,
+      "min_us": 0.08,
+      "max_us": 57278.665
+    },
+    {
+      "name": "zeCommandListAppendMemoryCopy",
+      "calls": 11111,
+      "duration_us": 377363.77299999975,
+      "min_us": 1.082,
+      "max_us": 2393.188
+    },
+    {
+      "name": "zeCommandListAppendBarrier",
+      "calls": 10803,
+      "duration_us": 295525.98400000174,
+      "min_us": 3.717,
+      "max_us": 2967.475
+    },
+    {
+      "name": "zeCommandListCreate",
+      "calls": 98,
+      "duration_us": 105123.05699999993,
+      "min_us": 600.556,
+      "max_us": 6522.682
+    },
+    {
+      "name": "zeCommandListAppendLaunchKernel",
+      "calls": 2416,
+      "duration_us": 31790.244999999988,
+      "min_us": 0.932,
+      "max_us": 1436.574
+    },
+    {
+      "name": "zeKernelSuggestGroupSize",
+      "calls": 45232,
+      "duration_us": 14941.60099999956,
+      "min_us": 0.06,
+      "max_us": 35.977
+    },
+    {
+      "name": "zeKernelSetGroupSize",
+      "calls": 75902,
+      "duration_us": 8853.054000002354,
+      "min_us": 0.02,
+      "max_us": 51.837
+    },
+    {
+      "name": "zeMemGetAllocProperties",
+      "calls": 67584,
+      "duration_us": 8274.609000001974,
+      "min_us": 0.03,
+      "max_us": 15.349
+    },
+    {
+      "name": "zeCommandListImmediateAppendCommandListsExp",
+      "calls": 98,
+      "duration_us": 8020.379000000001,
+      "min_us": 18.044,
+      "max_us": 1143.184
+    },
+    {
+      "name": "zeCommandListAppendMemoryFill",
+      "calls": 183,
+      "duration_us": 4231.8489999999965,
+      "min_us": 3.657,
+      "max_us": 696.036
+    },
+    {
+      "name": "zeCommandListCreateImmediate",
+      "calls": 3,
+      "duration_us": 3470.6279999999997,
+      "min_us": 1089.242,
+      "max_us": 1276.744
+    },
+    {
+      "name": "zeKernelSetArgumentValue",
+      "calls": 13032,
+      "duration_us": 2135.6049999998904,
+      "min_us": 0.02,
+      "max_us": 3.006
+    },
+    {
+      "name": "zexCounterBasedEventCreate2",
+      "calls": 6272,
+      "duration_us": 1520.2700000000411,
+      "min_us": 0.11,
+      "max_us": 12.804
+    },
+    {
+      "name": "zeEventQueryStatus",
+      "calls": 99,
+      "duration_us": 1101.811,
+      "min_us": 0.06,
+      "max_us": 145.894
+    },
+    {
+      "name": "zeKernelCreate",
+      "calls": 98,
+      "duration_us": 714.0039999999999,
+      "min_us": 1.493,
+      "max_us": 59.722
+    },
+    {
+      "name": "zeDriverGetExtensionFunctionAddress",
+      "calls": 98,
+      "duration_us": 90.55800000000002,
+      "min_us": 0.581,
+      "max_us": 5.11
+    },
+    {
+      "name": "zeCommandListClose",
+      "calls": 98,
+      "duration_us": 80.63600000000001,
+      "min_us": 0.562,
+      "max_us": 2.064
+    },
+    {
+      "name": "zeKernelGetName",
+      "calls": 196,
+      "duration_us": 22.430000000000003,
+      "min_us": 0.04,
+      "max_us": 0.611
+    },
+    {
+      "name": "zeKernelGetProperties",
+      "calls": 98,
+      "duration_us": 13.636999999999999,
+      "min_us": 0.06,
+      "max_us": 0.341
+    },
+    {
+      "name": "zeKernelSetIndirectAccess",
+      "calls": 98,
+      "duration_us": 8.276,
+      "min_us": 0.03,
+      "max_us": 0.32
+    },
+    {
+      "name": "zeModuleGetProperties",
+      "calls": 33,
+      "duration_us": 2.525,
+      "min_us": 0.03,
+      "max_us": 0.291
+    },
+    {
+      "name": "zeDeviceGetProperties",
+      "calls": 1,
+      "duration_us": 1.903,
+      "min_us": 1.903,
+      "max_us": 1.903
+    },
+    {
+      "name": "zeCommandListIsGraphCaptureEnabledExt",
+      "calls": 2,
+      "duration_us": 0.5,
+      "min_us": 0.24,
+      "max_us": 0.26
+    },
+    {
+      "name": "zeDeviceGetSubDevices",
+      "calls": 1,
+      "duration_us": 0.24,
+      "min_us": 0.24,
+      "max_us": 0.24
+    }
+  ],
+  "limitations": [
+    "Paused startup, external resume before one GEN, pause after DONE; includes prefill, weight/state restore and one output token. Not a pure-prefill-only window, not clean throughput or an official bench.sh performance sample.",
+    "Provider timestamps only; no external monotonic/UTC phase alignment is used.",
+    "Device service sum, busy union and request wall are different quantities.",
+    "Launch geometries are grouped by complete base kernel name, preserving counts, service and top32 geometries; raw trace SHA pins the complete distribution.",
+    "A host wait overlapping useful GPU work is not wholly removable overhead.",
+    "Copy names/size brackets describe the provider operation, not measured PCIe wire bytes; endpoint semantics need provider-source verification.",
+    "Flow_H2D/D2H are causal categories, not transfer payload direction or bytes.",
+    "Unobserved GPU gaps include submission, CPU work, instrumentation and scheduling; no single cause is inferred.",
+    "Clock normalization has provider precision; gaps and overlap are diagnostic rather than cycle-exact."
+  ],
+  "performance_qualified": false,
+  "quality_qualified": false,
+  "physical_262144_qualified": false,
+  "restore_qualified": false
+}
