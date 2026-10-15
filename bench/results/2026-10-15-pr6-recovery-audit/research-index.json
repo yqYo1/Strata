@@ -3724,7 +3724,7 @@
     "new_kernel_test": "own-native16-gemm-correctness-v2.json",
     "implementation_round787": "Full source/provenance review completed; unadopted/unbuilt. Need actualallocation extent/context guard consideration before production integration.",
     "research_next": [
-      807
+      811
     ],
     "registry_lifetime_failure": "own-native16-registry-lifetime-v1.ja.md",
     "regression": "own-native16-regression-followup2-correctness-v2.json",
@@ -3734,19 +3734,24 @@
     "clean_first_fp32": "346.5tok/s n1",
     "attention_main_review": "own-native16-attention-main-review-v1.ja.md",
     "implementation_next": [
-      804
+      809,
+      810
     ],
     "clean_first_bf16": "123.8tok/s n1, same request/binary/GPU32768 residual rows; -64.27% throughput",
     "initial_long_comparison": "own-native16-first-long-comparison-v1.json",
     "performance_adopted": false,
-    "next": "Replace slow GEMM with actual optimized native16 backend; sparse natural quality cohort is active, no other builds/tests/GPU/cleanup until closure.",
+    "next": "R810actualvLLM Xe2 source and R809oneDNN controller pending. Quality closed; Main can build/test next under exclusive lock after full source reviews.",
     "onednn_candidate": "R799 incomplete gated source unadopted; R804 functional faithful-BF16 source returned, Main full C++/CMake/header/fixture read, UNBUILT/UNRUN; exception-lifetime fixture fix required before test.",
     "retention": "closed-native16-first-wave-retention-v1.json:366files/124263459logicalbytes retired; all statuses unchanged; currentv2build, oldoneGEMMexecutable, oldFP32NLLcontrols preserved.",
     "natural_input": "own-native16-natural-input-v1.json:32863 thinkingON,64 positions, no repeatedpadding, no GPU executed",
     "coarse_profile": "Matched FP32/BF16 officialbench long diagnostic PASS; own-native16-coarse-comparison-v1.json; MoE22.0774->166.014s; nonexclusive intervals.",
-    "quality_source": "R802 hostfourgroups PASS; Main-reviewed run_screen.py active v2-v1:32863 actual tokens,64 stratified full-vocabulary rows; FP32-a/FP32-b/BF16; no performance or quality adoption.",
+    "quality_source": "own-native16-quality-screen-v2-v1.json PASS mechanics/capture, all3 normal; 64fullvocab rows finite; FP32controls identical, BF16top1=59/64, meanNLL5.057467->4.886278; NOT quality accepted. Main review own-native16-natural-quality-review-v1.ja.md.",
     "paired_gemm": "own-native16-paired-gemm-summary-v1.json; all6 shape/format cases PASS; native16 GEMM6-31x slower than oldoneMKL within1process/3timedsubmits perroute.",
     "research_805": "Reviewed806; collection body Main UNREAD; actual GEMM measurements now available.",
-    "research_807": "Returned decision-support, settled/released; native Luna-max review808 active; Main body UNREAD pending requested sections."
+    "research_807": "Settled/released, review808 complete. Main read only What the kernel actually does and Smallest viable standalone adaptation for actual kernel selection; then read actual pinned BSD3 primary Xe2 core/grouped helper/launcher145lines and policy (policy not authorized for copying).",
+    "research_808": "research-scope-review-round808-v1.json; no further general GEMM survey needed; actual execution remains UNRUN",
+    "onednn_main_review": "own-native16-onednn-main-review-v1.ja.md; Main full source review completed, qualification controller R809 source-only active.",
+    "vllm_xe2_candidate": "R810 source-only Sol adaptation of actual vLLM Xe2 core; same caller queue, direct native16 output, independent adapter; NOT built/tested/adopted.",
+    "research_811": "Orca Luna read-only knowledge collection: Xe2 block2D surface/prefetch/tail contracts. Main body not required now; review via native Luna-max on return."
   }
 }

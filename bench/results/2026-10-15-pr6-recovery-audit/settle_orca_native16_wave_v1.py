@@ -36,7 +36,10 @@ def main():
              803: 'orca-implement-paired-gemm-bench-round803-launch-v1.json',
              804: 'orca-implement-native16-onednn-functional-round804-launch-v1.json',
              805: 'orca-research-round805-launch-v1.json',
-             807: 'orca-research-round807-launch-v1.json'}
+             807: 'orca-research-round807-launch-v1.json',
+             809: 'orca-implement-onednn-qualification-round809-launch-v1.json',
+             810: 'orca-implement-vllm-xe2-native16-round810-launch-v1.json',
+             811: 'orca-research-round811-launch-v1.json'}
     known = {}
     for n, name in names.items():
         v = json.loads((A / name).read_text())['receipt']['result']

@@ -1,0 +1,141 @@
+{
+  "round": 808,
+  "reviewer": "native Codex gpt-6-luna",
+  "reasoning_effort": "max",
+  "review_purpose": "Read-only decision-support review of R807 scope, source accuracy, implementation seam, dependency and license provenance, and current retrieval need. No build, test, GPU/profiler work, process inspection, Git command, cleanup, or implementation was performed.",
+  "inputs": {
+    "report": {
+      "round": 807,
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/research-round807-v1.txt",
+      "sha256": "f24bf7f5209531335869a6a3eceb9dcaa766528f43d12daeec36d7e6417955ef",
+      "bytes": 11195,
+      "whitespace_word_count": 1329,
+      "purpose_class": "decision support"
+    },
+    "spec": {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/orca-research-round807-spec-v1.txt",
+      "sha256": "ba9f94bbea55c7343a3b624ff9041d526e74a1a9b6ee428a9809c3a20c99086a"
+    },
+    "launch": {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/orca-research-round807-launch-v1.json",
+      "sha256": "6947bf8c255df5ccfe977401e74a430a2fed283a0c85ce4cdf6e527ab907f315",
+      "run_id": "run_c8f478972ec8",
+      "task_id": "task_aa0d5b6fdef2",
+      "dispatch_id": "ctx_c9ac7655ad12",
+      "effective_model": "gpt-6-luna",
+      "state": "ready / input_accepted"
+    },
+    "research_index_snapshot": {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
+      "sha256": "2d21738fe1d6cc879585c8f9a463217d1b7bcd96534dbff1d656e4ea000ddee7",
+      "modified": false,
+      "sections_read": [
+        "native16_activation_pipeline",
+        "report metadata for R782, R783, R793, and R798"
+      ]
+    },
+    "prior_review_metadata_only": {
+      "round": 806,
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/research-scope-review-round806-v1.json",
+      "sha256": "19cc906ca67eb6de4e8eb06c82c80b3d02e45aba60563c7f8460cdaf38091133",
+      "use": "Used scope/retrieval metadata only; no prior knowledge-collection report body was opened."
+    },
+    "current_measurement_context": {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/own-native16-paired-gemm-measure-v1.json",
+      "sha256": "cad2ff5b4096560c88667e139f986033b059bf18833474b59565d088b8bf83aa",
+      "basis": "Main-provided task context: three timed submits per route per process; current native BF16-output path is 6–30x slower than existing oneMKL FP32 on these pairs; no speed improvement adopted. Not independently reanalyzed here."
+    }
+  },
+  "scope_depth_review": {
+    "assessment": "R807 is 1,329 words, within its 1,200–1,800-word budget, and supplies six numbered provenance entries under the seven-source cap. It answers the requested pinned vLLM Xe2/CUTLASS SYCL kernel question with a code-level path, a geometry/dependency table, and a bounded adaptation/qualification outline. The comparison to Strata's measured slow GEMM is context only; it does not diagnose that implementation or infer a winner.",
+    "coverage": "It distinguishes the low-level device tile from the grouped launcher, explains direct 16-bit loads, float accumulation, and independently templated output storage, and names the main layout and integration deltas. No SGLang alternative was required to settle this narrower actual-callable question.",
+    "classification": "decision support"
+  },
+  "novelty_and_redundancy": "R807 is a useful current-code follow-up to the native16 contract/kernel design in R782/R783 and the oneDNN API contract in R793. It also differs from R798/R805's broad tile/layout and evidence-chain material: this report identifies a specific pinned vLLM Xe2 implementation seam and proposed dense adaptation. It does not justify another general GEMM, tile, or B-layout survey.",
+  "main_read_recommendation": {
+    "main_original_needed_now": true,
+    "reason": "The current owned paired GEMM result identifies a repeatable native BF16-output cost on the measured routes, so this concrete kernel candidate can inform the next source decision. The source review still cannot establish a speedup.",
+    "read_only_these_exact_sections": [
+      "## What the kernel actually does",
+      "## Smallest viable standalone adaptation"
+    ],
+    "do_not_ingest_other_archives": "R807 itself is decision support, so these two sections are sufficient for Main's immediate decision. The report's source-pin and license corrections are recorded below; no R805 or other knowledge-collection body needs to be opened."
+  },
+  "strongest_candidate": {
+    "status": "Strongest source candidate; not compiled, measured, or performance-qualified.",
+    "device_entry": "MoE::xe_gemm in vllm-project/vllm-xpu-kernels/csrc/xpu/grouped_gemm/xe_2/gemm_xe2.hpp",
+    "revision_as_reported": "6b30c9b92cc525c32729df988b5f918e7c5661a5",
+    "file_sha256": "359b1f04dfab3ad0850945b5240ec9b16be02b60fb7ab5bcc10d5cf254af99b4",
+    "mechanism": "XE_DPAS_TT<8, float, ElementA> feeds a float accumulator; the tile uses SYCL-TLA/CuTe block-2D copies, prefetch/reorder, barriers and MMA, then stores through a D-typed copy path. The device function accepts a separately typed output tensor, making direct 16-bit output and a mixed input/output instantiation plausible at source level.",
+    "host_launcher": "MoEGEMMLauncher in grouped_gemm_xe2_interface.hpp accepts a sycl::queue and raw buffers, but launches MoEGEMM's grouped expert scheduler. The public dtype dispatch passes output as ElementA, so current public dispatch does not expose FP16-input/BF16-output. There is no ready dense standalone host API; a direct dense grid and a small queue/kernel/layout shim are still required.",
+    "callability_correction": "xe_gemm is a CUTE_DEVICE tile function, not a host-callable function. Calling it from Strata requires compiling its pinned CUTE/TLA helpers and supplying the device-side tensors, copy atoms, tiled MMA, workgroup-local coordinates and supported strides. MoEGEMMLauncher is the nearest existing host seam, but its Torch checks, expert metadata, atomic counter, fixed launch properties, and grouped scheduling are unnecessary or incompatible for a compact dense adapter."
+  },
+  "source_accuracy_and_license_review": {
+    "source_hashes_checked": [
+      {
+        "path": "vllm-xpu-kernels/csrc/xpu/grouped_gemm/xe_2/gemm_xe2.hpp",
+        "sha256": "359b1f04dfab3ad0850945b5240ec9b16be02b60fb7ab5bcc10d5cf254af99b4",
+        "result": "matches report"
+      },
+      {
+        "path": "vllm-xpu-kernels/csrc/xpu/grouped_gemm/xe_2/grouped_gemm_xe2.hpp",
+        "sha256": "7f65c684d8e779c26eebf2eb8283922cc4ce2c1a143738e1c868a4930068096c",
+        "result": "matches report"
+      },
+      {
+        "path": "vllm-xpu-kernels/csrc/xpu/grouped_gemm/xe_2/grouped_gemm_xe2_interface.hpp",
+        "sha256": "6ed8e33939697b857d483046a525e71b1f05dc330ca9820c1f916b75bc902988",
+        "result": "matches report"
+      },
+      {
+        "path": "vllm-xpu-kernels/csrc/xpu/grouped_gemm/xe_2/gemm_xe2_policy.hpp",
+        "sha256": "054d9df282baa42af69e25715cf27735a14d9c53564254b21f7b293c18c091ab",
+        "result": "matches report"
+      },
+      {
+        "path": "vllm-xpu-kernels/CMakeLists.txt",
+        "sha256": "acaa099121ab41784fb45a6b6a565580f837c7acd03068a5487416288d9af2af",
+        "result": "matches report"
+      },
+      {
+        "path": "vllm-xpu-kernels/cmake/utils.cmake",
+        "sha256": "6db2efe400ce4d85518927cf20e637c741bba776093bc96b899973d1221007d5",
+        "result": "matches report"
+      }
+    ],
+    "revision_verification_limit": "The path/file hashes above match the report, but this review did not run Git to independently verify the local checkout revision. The commit attribution remains report-pinned.",
+    "per_file_license": "The three main Xe2 implementation/interface headers have BSD-3-Clause file headers; vLLM's Apache-2.0 root license does not replace them. The report correctly warns to retain notices. gemm_xe2_policy.hpp has no SPDX marker and its origin remains unresolved, so it is a hold point for reuse. SYCL-TLA is reported as BSD-3-Clause. Do not copy code or templates and assume they become Strata-MIT; resolve per-file provenance/notices under the repository policy first.",
+    "dependency_pin_correction": "The vLLM CMake source sets a default CUTLASS_REVISION of 87f6850680a580654b9ea2c80dbc01aeb36ad231 for intel/sycl-tla, but VLLM_CUTLASS_SRC_DIR can override that revision. R807 does not establish the dependency checkout actually used in a built binary. The transitive block-copy, XE_DPAS_TT, and CuTe/CUTLASS headers are not individually path/hash inventoried in the report; pin their exact source set and notices before reuse.",
+    "primary_citation_gap": "The report refers to a current Intel document and an Intel design note for BMG/DPC++ version support, XE_DPAS_TT lowering, and block-2D alignment/stride restrictions, but the provenance list supplies no exact URL, version, retrieval hash, or section for those claims. Treat them as unverified guidance until tied to pinned official sources.",
+    "technical_claims_verified_read_only": "The pinned file content supports the core claim: XE_DPAS_TT is instantiated with float accumulation; xe_gemm uses block-2D copy/prefetch and a D-typed destination tensor; the public W16A16 dispatch makes A, B and D the same scalar type; the grouped helper walks expert rows and takes a global atomic counter."
+  },
+  "blocking_integration_and_numerical_gates": [
+    "Build/dependency: the path is specifically Intel Xe2/BMG, SYCL_INTEL_TARGET and C++20, with subgroup-size 16 and GRF-size 256 properties plus inline Intel ISA. Exact compatibility with Strata's approved LLVM/toolchain and its actual SYCL-TLA/CUTLASS revision is untested. Trimmed headers still leave a material CUTLASS/SYCL-TLA dependency.",
+    "Queue/device interop: MoEGEMMLauncher submits asynchronously on the supplied queue but queries multiprocessor count for device index 0 and assumes a fixed 512 threads/SM. A Strata wrapper must bind launch sizing to the queue's actual device, preserve same-queue ordering and USM lifetime, and remove Torch checks and grouped-only atomics/row-count state. The direct dense grid is a proposal, not an existing entry point.",
+    "Layout/shape: the vLLM wrapper accepts compact A/B/D; it represents logical B[N,K] over a physical [K,N] row-major input, while Strata's W[N,K] is naturally row-major. A row-major B copy/layout needs compile and correctness proof. The current D helper has no ld>N contract, so output stride needs a supported tensor/store layout. N%8 is the wrapper minimum; current workload multiples of 128 satisfy it, but 2D copy width/alignment and all partial M tiles still need validation. The report's 64-byte base/16-byte stride numbers are not independently cited here. K-tail support is also not proven merely because the wrapper lacks a K-modulus check.",
+    "Numerics/semantics: the output D type is independently templated but has no verified FP16-to-BF16 dispatch or rounding result. Compile and compare mixed output against the established FP32 reference with explicit tolerances and edge values. xe_gemm clears the FP32 accumulator and optionally adds bias; it does not load prior C or implement beta. Any required beta term needs a deliberate FP32 epilogue before the single output conversion. If model weights remain FP32, their conversion/residency cost and quality impact are outside this report and must enter whole-path comparison.",
+    "Performance/adoption: source architecture is not performance evidence. The supplied current paired results keep this candidate relevant, but no speed, accuracy, whole-model quality, or long-prefill adoption claim follows from R807."
+  ],
+  "evidence_limits": [
+    "No build, correctness fixture, execution, or performance measurement was run for the candidate.",
+    "The direct row-major B, strided D, mixed output instantiation, partial-tile behavior, alignment, beta semantics and exact current compiler/dependency compatibility remain unverified.",
+    "No kernel speed or model-quality conclusion is justified from code structure, old R803 numbers, or this report."
+  ],
+  "next_scope_recommendation": {
+    "status": "none recommended now",
+    "reason": "R807 is decision support and sufficiently answers the source-selection question. Remaining blockers require an owner-controlled pinned compile/correctness gate, not another broad source survey; Main currently has build/GPU work frozen around the natural-input screen. If that gate exposes a specific TLA API, source-origin, or compiler-version question, dispatch only that finite question with exact immutable inputs."
+  },
+  "index_metadata_proposal": {
+    "round": 807,
+    "path": "research-round807-v1.txt",
+    "sha256": "f24bf7f5209531335869a6a3eceb9dcaa766528f43d12daeec36d7e6417955ef",
+    "purpose_class": "decision support",
+    "review": "research-scope-review-round808-v1.json",
+    "main_body_read": "Only What the kernel actually does and Smallest viable standalone adaptation",
+    "main_original_needed_now": true,
+    "retrieval_brief": "The pinned candidate is MoE::xe_gemm via an own dense queue/kernel/layout shim. Source demonstrates float accumulation and a separately typed D tensor; public dispatch forces same-type A/B/D. Read only the named two sections. Build/toolchain, queue device selection, row-major B/strided D/tails, beta, mixed-output rounding, license/dependency and speed gates remain open.",
+    "main_correction_to_retain": "xe_gemm is a device tile, not a standalone host API; MoEGEMMLauncher is grouped and device-0/Torch-coupled. CMake's TLA revision is overridable. The source does not implement beta, and mixed FP16-to-BF16 output is not publicly dispatched or verified.",
+    "outcome": "Successful decision-support report; source-only candidate, no adoption or performance qualification."
+  },
+  "operational_digest_ja_400_chars": "R807は1,329語で範囲内。最有力はvLLM Xe2のMoE::xe_gemm（XE_DPAS_TT<8,float,ElementA>、FP32蓄積）だが、既存の単体dense APIではなく、public dispatchは混合FP16→BF16未対応。Mainは「What the kernel actually does」「Smallest viable standalone adaptation」の2節のみ参照。toolchain/dependency、queueとdevice0、beta/ld/tail/alignment、mixed-output roundingのcompile/correctness gatesが残る。性能優位は未実証。現時点で追加調査は不要。"
+}
