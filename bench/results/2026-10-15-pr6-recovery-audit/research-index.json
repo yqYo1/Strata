@@ -1175,6 +1175,24 @@
       "sha256": "15af6903cb0dad50bdadff080612317c16f1d3122adf2709a224e41fc11cda60",
       "main_review": "main-review-round696-698.ja.md",
       "status": "FINAL/Main source review complete. Terminal verifier commit seam identified; Main adds adapt-thread join and pre-mutation first-window guard requirements. Source-only; producer not implemented."
+    },
+    {
+      "round": 701,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-prefill-grouped-gemm-round701-v1.txt",
+      "sha256": "433856926a798356d1b6d231dfb3e2d99e82e0d38f8bbc11fd8c86c6eafe5012",
+      "main_review": "main-review-round701-702.ja.md",
+      "status": "FINAL/Main report and source review complete. No new runtime or speed qualification. Main distinguishes byte-identical Dm retention from a possible low-memory reordered FP32 accumulator requiring quality gates."
+    },
+    {
+      "round": 702,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-prefill-expert-major-superchunk-round702-v1.txt",
+      "sha256": "a1030a224102651d76cf209e74891e864a1b77ff2a976bd3307f61f31dd4c5e1",
+      "main_review": "main-review-round701-702.ja.md",
+      "status": "FINAL/Main report and source review complete. No new runtime or speed qualification. Main distinguishes byte-identical Dm retention from a possible low-memory reordered FP32 accumulator requiring quality gates."
     }
   ],
   "main_initial_findings": [
@@ -1361,14 +1379,13 @@
   "retention_v5": "retention-v5-manifest.json",
   "parallel_research_current": {
     "rounds": [
-      699,
-      700
+      701,
+      702
     ],
     "model": "gpt-6-luna",
     "read_only": true,
-    "state": "Both699/700 FINAL received; Main reports/source reviewed. No active research agent. R699 capacity staging agrees, R700 terminal MTP verifier seam retained with Main thread/flag corrections.",
     "prior_report_directory": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit",
-    "main_review": "main-review-round696-698.ja.md"
+    "state": "R701/R702 both FINAL/Main review complete, including2026 official API and installed header checks. No new groupedAPI adoption. Separate6.1Sol native-dense phase proposal remains in progress; Main exclusively owns all tests/build/GPU."
   },
   "phase_audit": {
     "build": "phase-audit-build-v1.json",
@@ -1801,9 +1818,9 @@
     "model_retention": "qsa-device-batch-model-retention-v1.json",
     "clean_recipe": "run_qsa_device_batch_clean_v1.py",
     "clean_comparator": "compare_qsa_device_batch_clean_v1.py",
-    "clean_state": "ACTIVE_SAMPLE_0_R0",
-    "clean_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-device-batch-clean-0-r0-root-v1",
-    "clean_receipt_when_closed": "qsa-device-batch-clean-0-r0-v1.json",
+    "clean_state": "ACTIVE_SAMPLE_1_R0",
+    "clean_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-device-batch-clean-1-r0-root-v1",
+    "clean_receipt_when_closed": "qsa-device-batch-clean-1-r0-v1.json",
     "clean_order": [
       [
         0,
@@ -1830,7 +1847,10 @@
         2
       ]
     ],
-    "clean_completed_samples": 0
+    "clean_completed_samples": 1,
+    "clean_closed_receipts": [
+      "qsa-device-batch-clean-0-r0-v1.json"
+    ]
   },
   "prefill_dense_layer_bank_contract": {
     "research": "research-prefill-dense-layer-bank-contract-round684-v1.txt",
@@ -1906,7 +1926,10 @@
     "state": "Main complete component diff/fixture source review plus R694 caller seam. Unapplied/unbuilt/untested. Main found enter bank non-OOM/null-owner allocation can return false unlike declared fail-stop contract; correct before integration. SessionGraphs/PLE/private overlay seam still required.",
     "proposal": "prefill-native-dense-layer-bank-v1",
     "component_model": "gpt-6.1-sol",
-    "main_review": "main-review-round694-695.ja.md"
+    "main_review": "main-review-round694-695.ja.md",
+    "implementation_in_progress": "prefill-native-dense-phase-v2",
+    "implementation_model": "gpt-6.1-sol",
+    "implementation_state": "Source-only isolated proposal assigned including actual caller retirement/private overlay/restore seams, not applied to product during hash-pinned clean tests; Main must review/build/test."
   },
   "prefill_capacity_current": {
     "report": "prefill-capacity-current.ja.md",
