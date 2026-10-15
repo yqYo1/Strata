@@ -9,6 +9,8 @@
 #include <climits>
 #include <cmath>
 #include <cstdlib>
+#include <stdexcept>
+#include <type_traits>
 #include <sycl/ext/oneapi/matrix/matrix.hpp>
 
 namespace strata::kernels {
@@ -63,16 +65,26 @@ float scale(QsaAttnPools p, int64_t row, int group) {
     return f32_from_f16((Value ? p.v_scale : p.k_scale)[row * 4 + group]);
   return 0;
 }
-template <int Mode, bool Direct, bool Native = false, bool CellMajor = false>
+// One genuine half array: no integer alias or pointer arithmetic across rows.
+struct alignas(4) PaddedK {
+  sycl::half values[HD * 40];
+};
+static_assert(alignof(PaddedK) >= 4 && sizeof(PaddedK) == HD * 40 * sizeof(sycl::half));
+static_assert(std::is_standard_layout_v<PaddedK> && std::is_trivially_copyable_v<PaddedK>);
+static_assert(sycl::is_device_copyable_v<PaddedK>);
+template <int Mode, bool Direct, bool Native = false, int KMapping = 0>
 void launch(const float *query, QsaAttnPools pools, const int32_t *ids,
             const int32_t *steps, int64_t cap, QsaShapes shapes, float *output,
             int64_t queries, void *stream) {
-  static_assert(!CellMajor || (Mode == 1 && Direct && !Native));
+  static_assert(KMapping >= 0 && KMapping <= 2);
+  static_assert(KMapping == 0 || (Mode == 1 && Direct && !Native));
+  constexpr int KP = KMapping == 2 ? 40 : CH;
   constexpr int KG = scale_groups<Mode, false>(),
                 VG = scale_groups<Mode, true>();
   auto event = queue_for(stream).submit([&](sycl::handler &h) {
-    sycl::local_accessor<sycl::half, 1> qhi(16 * HD, h), qlo(16 * HD, h),
-        kv(CH * HD, h);
+    sycl::local_accessor<sycl::half, 1> qhi(16 * HD, h), qlo(16 * HD, h);
+    using KVStorage = std::conditional_t<KMapping == 2, PaddedK, sycl::half>;
+    sycl::local_accessor<KVStorage, 1> kv(KMapping == 2 ? 1 : CH * HD, h);
     sycl::local_accessor<sycl::half, 1> phi(VG * 16 * CH, h),
         plo(VG * 16 * CH, h);
     sycl::local_accessor<float, 1> scores(16 * CH, h), ks(CH * KG, h),
@@ -89,6 +101,16 @@ void launch(const float *query, QsaAttnPools pools, const int32_t *ids,
           const int tid = it.get_local_linear_id(), subgroup = tid / 16;
           const int hb = subgroup / 4, db = subgroup % 4;
           auto sg = it.get_sub_group();
+          const auto kvp = [&]() {
+            if constexpr (KMapping == 2) {
+              // This points into the sole local object's single big half array.
+              // Explicitly retain local address space for joint_matrix_load.
+              return sycl::address_space_cast<sycl::access::address_space::local_space,
+                  sycl::access::decorated::no>(&kv[0].values[0]);
+            } else {
+              return kv.template get_multi_ptr<sycl::access::decorated::no>();
+            }
+          }();
           const float *q =
               query + (batch * shapes.n_head + kvhead * HEADS) * HD;
           float qm = 0;
@@ -142,15 +164,15 @@ void launch(const float *query, QsaAttnPools pools, const int32_t *ids,
               scores[i] = 0;
             it.barrier(sycl::access::fence_space::local_space);
             for (int i = tid; i < HD * CH; i += WG) {
-              if constexpr (CellMajor) {
+              if constexpr (KMapping != 0) {
                 // Read consecutive INT8 dimensions; retain the exact QK tile.
                 const int c = i / HD, dim = i % HD;
-                kv[dim * CH + c] = rows[c] >= 0
+                kvp[dim * KP + c] = rows[c] >= 0
                     ? half_code<Mode, false, Native>(pools, rows[c], dim)
                     : sycl::half(0.f);
               } else {
                 const int dim = i / CH, c = i % CH;
-                kv[i] = rows[c] >= 0
+                kvp[i] = rows[c] >= 0
                             ? half_code<Mode, false, Native>(pools, rows[c], dim)
                             : sycl::half(0.f);
               }
@@ -170,9 +192,8 @@ void launch(const float *query, QsaAttnPools pools, const int32_t *ids,
                 for (int k = g * (HD / KG); k < (g + 1) * (HD / KG); k += 16) {
                   mx::joint_matrix_load(
                       sg, b,
-                      kv.template get_multi_ptr<sycl::access::decorated::no>() +
-                          k * CH + cell,
-                      CH);
+                      kvp + k * KP + cell,
+                      KP);
                   mx::joint_matrix_load(sg, a,
                                         qhi.template get_multi_ptr<
                                             sycl::access::decorated::no>() +
@@ -218,7 +239,7 @@ void launch(const float *query, QsaAttnPools pools, const int32_t *ids,
                           : 0.f;
             for (int i = tid; i < CH * HD; i += WG) {
               const int c = i / HD, dim = i % HD;
-              kv[i] = rows[c] >= 0
+              kvp[i] = rows[c] >= 0
                           ? half_code<Mode, true, Native>(pools, rows[c], dim)
                           : sycl::half(0.f);
             }
@@ -250,8 +271,7 @@ void launch(const float *query, QsaAttnPools pools, const int32_t *ids,
               for (int k = 0; k < CH; k += 16) {
                 mx::joint_matrix_load(
                     sg, b,
-                    kv.template get_multi_ptr<sycl::access::decorated::no>() +
-                        k * HD + dim,
+                    kvp + k * HD + dim,
                     HD);
                 mx::joint_matrix_load(
                     sg, a,
@@ -311,8 +331,16 @@ void dispatch(const float *q, QsaAttnPools p, const int32_t *ids,
     if constexpr (Mode == 1) {
       // Fixed by the owning process before exec; do not mutate runtime env.
       const char *cell_major = std::getenv("STRATA_SYCL_PROMPT_K_CELL_MAJOR");
+      if (cell_major && cell_major[0] == '2' && cell_major[1] == '\0') {
+        // Preserve existing matrix support gate; never silently relabel arm 0/1.
+        if (queue_for(stream).get_device().get_info<sycl::info::device::local_mem_size>() <
+            size_t(60880 + 4096))
+          throw std::runtime_error("prompt K pitch40 requires local memory >=64976 bytes");
+        launch<1, true, false, 2>(q, p, ids, steps, cap, s, out, nq, stream);
+        return;
+      }
       if (cell_major && cell_major[0] == '1' && cell_major[1] == '\0') {
-        launch<1, true, false, true>(q, p, ids, steps, cap, s, out, nq, stream);
+        launch<1, true, false, 1>(q, p, ids, steps, cap, s, out, nq, stream);
         return;
       }
     }

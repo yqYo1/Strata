@@ -1,0 +1,74 @@
+# R738 — exact QSA selection: prefix histogram feasibility
+
+2026-10-16 JST. Read-only research on the configured own SYCL selection source. Root snapshot: `f6fdaeccf968438f638f31f569dcc11c8e33498b`. No source edits, build, tests, process, service, GPU, environment, cleanup, or Git mutations were performed. The prohibited credential record was not read. No XeStrata source was inspected. This is an algorithm proposal and work-bound analysis, not an implementation or performance result.
+
+## Decision
+
+If Main wants one isolated selection experiment, implement a private per-query, 4-bit MSD prefix histogram inside the existing `qsa_block_topk` work-group, retaining its 256 work-items and output path. This is a bounded replacement for the 32 one-bit threshold rounds, not a new kernel and not a score-kernel change. Each query constructs a 16-bin weighted histogram for the next key nibble over blocks matching the already-selected high-bit prefix. It selects the largest nibble whose cumulative cell weight reaches the remaining rank, adds the weight of higher nibbles to `greater`, tightens the prefix, and repeats for the eight nibbles of the 32-bit key. The final exact key threshold feeds the existing greater/equal budget and ascending-ID emission logic.
+
+This is worth a component comparison because the current source rereads each row of scores for 32 threshold rounds and the measured selection queue interval is 24,399.6 ms in the actual request. However, the histogram has a real cost: a straightforward work-group implementation needs 16 histogram reductions per nibble (128 group reductions total) versus 32 reductions today, 16 counters per work-item, and prefix comparisons. It still scans all candidate blocks in the adversarial case. Do not predict a speedup from the interval or operation count; first isolate selector service in matched component measurements and inspect compiler registers/spills and device behavior.
+
+## Actual workload and measured evidence
+
+The closed same-request profile is 78,453 input tokens, 78,452 selected QSA queries per layer, 12 QSA layers, 120 matrix chunks, 941,424 total queries, cap/selection width 2,051, no fallback chunks, and 120 staged chunks. It records selection queue interval 24,399.6 ms and host interval 133.641 ms across 120 sections; attention is separately 69,909.3 ms. These queue intervals are nonexclusive and include queue/submission gaps. The 24.4 s value makes selection a worthwhile distinct experiment but is not kernel service or a speedup bound. The measured interval must be read alongside attention; selection is not the dominant QSA section.
+
+The earlier R731 source accounting describes 256-query batches and 8,192-row chunks: 32 batches per full chunk, one score and one top-k launch per batch, or 64 selection launches per QSA layer/chunk and 7,680 selection launches over 120 intervals. The proposed in-kernel histogram leaves this launch count and score kernel unchanged. It does not address the separately measured attention interval.
+
+For the actual maximum prompt row, `n=78,453`, `nb=floor(n/4)=19,613`; selection sees `B=nb+1=19,614` score slots, with the last slot weighted by `n%4=1`. `chunk=ceil(B/256)=77`, so each work-item scans at most 77 block slots on this request. At the physical 262,144 context boundary, `B=65,537` including the spare slot, and the current partition is at most 257 slots/work-item. Width is `min(n, 2,051)`, not the output buffer capacity. Rows with `n<=2,051` take the current identity branch and do not radix-select; rows above that length emit 2,051 IDs. Thus the task's measured cap is 2,051 even though the broader physical context and score allocation have larger capacities.
+
+The existing selector's per-query work is 32 threshold scans plus one combined greater/equal scan and one emission scan: `34*B` score-key visits plus up to `width` emitted cells, ignoring the cheap identity/empty paths. At `B=19,614`, that is at most 666,876 score-key visits (about 2.54 MiB of logical 4-byte key reads) for the longest actual row. At the 262,144 boundary it is at most 2,228,258 visits (about 8.50 MiB) per query. These are source-level load counts; repeated reads may hit caches and are not measured DRAM traffic.
+
+The 4-bit prefix histogram has eight rounds. Its worst case is eight scans of all `B` slots, followed by the existing two final scans: `10*B` visits plus up to `width` output cells. This gives 196,140 visits (about 0.75 MiB logical score loads) at the actual longest row and 655,370 visits (about 2.50 MiB) at physical context. If each chosen prefix narrows to roughly one sixteenth of the candidates per round, the histogram scans about `B*(1+1/16+...+1/16^7)`, or `1.0667*B`, and the two final scans make about `3.067*B` total. Score distributions are unknown and can have large equal-key groups, so only the worst-case bound is guaranteed. The current one-bit selector uses a fixed 32 scans regardless of distribution.
+
+The existing score matrix has a capacity stride larger than each query's active range; the selector must preserve `scores + qi*blocks` row addressing and read only `b<=nb`. It must not compact/repack scores or assume all queries in a 256-row batch have equal `n_kv`. The histogram adds no persistent global buffer and no launch, but each per-work-item histogram is 16 32-bit counts (64 bytes, nominally 16 integer registers per work-item before other live state). A naïve implementation with 16 scalar `reduce_over_group` calls per nibble uses 128 group reductions. A compiler-supported vector/marray reduction could change that cost, but should only be used after checking the configured SYCL implementation and generated resource report. A shared histogram with atomics is an alternate implementation detail, not the proposed default: highly concentrated keys can create local-atomic contention, and local atomic availability/cost must be measured.
+
+## Exact ordering and tail contract
+
+The source `order(float)` is the required key transform:
+
+1. Bit-cast the score to `uint32_t`.
+2. Map every NaN payload/sign to key 0.
+3. Canonicalize `-0.0` and `+0.0` to positive-zero bits.
+4. For negative non-NaNs, invert all bits; for nonnegative values, set the sign bit. Larger keys are higher scores.
+
+Consequently NaNs sort below `-infinity`; `-infinity`, finite negatives, canonical zero, positives and `+infinity` retain this ascending total order when interpreted as descending selection priority. NaNs all tie at key zero; signed zero ties at one canonical key. Do not use float comparisons for histogram ordering or replace this mapping with a finite-only assumption.
+
+Each completed block contributes weight 4 cells. The final `nb` block contributes `n%4`, including zero when `n` is divisible by four; its score comes from the `dead` spare key and receives the source's `+1e9` priority only when the tail is nonempty. The rank is measured in cells, not blocks. After all eight nibbles, let `greater` be the total weight of keys above the exact threshold and `budget=width-greater`. During final emission, output all cells from greater-key blocks; consume `budget` cells among threshold-equal blocks in increasing block order, and within each block emit increasing cell index. This reproduces the existing lowest-ID tie rule and globally ascending output. The `n==width` identity path, zero-width return, `active` bound, signed 32-bit ID limit, `cap` bound, and step validation remain as-is.
+
+The prefix histogram can be implemented per work-item without atomics: zero 16 counters; scan that worker's existing `[lo,hi)` partition; include only keys matching the already chosen high-bit prefix; increment the current nibble bin by the block's cell weight; perform the 16 work-group reductions; then select the descending bin from the globally combined histogram. Maintain `remaining_rank` or `greater` explicitly so that bins above the chosen digit reduce the rank for subsequent rounds. After round eight, all work-items share the same exact key prefix; run the existing final greater/equal scans and output scans. Histogram counts are bounded by `n<=262,144` for the supported physical contract, well within signed 32-bit count. Validate the supported max before relying on that bound.
+
+## Component fixture design
+
+Build a focused CPU-oracle/component fixture against the current selector, with an independent scalar expansion of blocks into cells and the same documented `order` transform. Compare every output ID byte-for-byte and check exact output length, uniqueness, ascending IDs, in-range IDs, and untouched output guard space. Include:
+
+- `n=0..8`, with `n` around each multiple of four, so the zero-weight spare and tail weights 1/2/3 are exercised.
+- `n=2,050, 2,051, 2,052, 2,053` to cover identity selection and first saturated-width rows; add values around `nb+1` partition transitions, including 255/256/257 score slots.
+- The request's actual longest row (`n=78,453`, width 2,051, tail weight 1) and synthetic query batches mixing short identity rows with long rows, since one call contains different step records.
+- Physical upper-bound rows `262,141..262,144` (or an explicitly justified narrower boundary set), with blocks, spare and capacity canaries; keep physical-context correctness separate from the actual request gate.
+- All scores equal; ties occupying fewer/equal/more cells than the remaining rank; ties crossing work-item partition boundaries and the exact selected boundary; all-equal NaNs; mixed NaNs and infinities; both signed zeros; adjacent representable floats on both sides of threshold; repeated values with a partial final block; and permutations of score storage with corresponding block IDs.
+- Width zero/invalid step/cap/active cases under the component's existing validation contract. Identity path must remain exactly `ids[j]=j`.
+
+The CPU oracle should compute `key`, sort cells by descending key then ascending original cell ID, take the first `width`, and compare the resulting IDs against the device output. This is fixture guidance only; no tests were written or run in this research task.
+
+## Scope, qualifications, and sources
+
+This proposal changes only selection. It preserves FP32 score values and does not change the score reduction order, indexer append, attention, queue behavior, or buffer sizes. Full selection parity on the component does not qualify actual-model correctness; the real 78,453-token request still needs selected-row comparison, clean full-prefill repetitions, fault/teardown, RESTORE and separate physical-262,144 coverage. Since attention is about 69.9 s in the same instrumented QSA breakdown, even a large selector-only win has a limited whole-QSA ceiling and does not establish the 600 tok/s milestone.
+
+Primary references consulted for mechanism constraints:
+
+- Khronos, [SYCL 2020 Specification, revision 12](https://registry.khronos.org/SYCL/specs/sycl-2020/pdf/sycl-2020.pdf), group algorithms and barriers. Group reductions are work-group operations; all work-items must participate consistently.
+- Khronos, [SYCL Reference: group algorithms](https://github.khronos.org/SYCL_Reference/iface/group-algorithms-library.html), including `reduce_over_group` and `exclusive_scan_over_group` signatures/constraints.
+- Khronos, [SYCL Reference: `atomic_ref`](https://github.khronos.org/SYCL_Reference/iface/atomic_ref.html), relevant only to the rejected-as-default local-atomic variant; actual device support/cost is not established here.
+- Shanbhag et al., [RadiK: Scalable and Optimized GPU-Parallel Radix Top-K Selection](https://doi.org/10.1145/3650200.3656596), as a research reference for radix top-k, not a source of code or an adoption claim. Its architecture/performance do not transfer to this one-work-group-per-query SYCL kernel.
+
+## Immutable evidence pins and limits
+
+- Current root: `f6fdaeccf968438f638f31f569dcc11c8e33498b`.
+- Current `src/kernels/sycl/qsa_select.cpp` SHA-256: `45084756ca5e8e36085dae46581049c81366a45cdfde23e8c6f38defbba0c809`.
+- Current `include/strata/kernels/qsa_select.hpp` SHA-256: `c7c6f484c89541f1e64efbdfc942fcd3eeb719637d3cd1a99ee2f4491b3116cc`.
+- Current `src/prefill/prefill.cpp` SHA-256: `a019ef42e2e6fa4553b89f5b319c079fb0dd8161baccaa307cd53887d5cbd75e`.
+- Latest registry: `bench/results/2026-10-15-pr6-recovery-audit/research-index.json`.
+- Actual model receipt SHA-256 `4e1764503030726b7bf310aed7501f790a03da1db0af28e1523cf4317a9b49d3`; comparison SHA-256 `be516c9df4103052ab3244f0431d4eb47403bb2c2401a1d0bf6ce89193bdcbee`; analysis SHA-256 `ad5cba01b8dbf8cc5be6de21494bd429681e7f672d3756b758f9a7ac1c5951d4`.
+- R731 report: `research-measured-qsa-selection-round731-v1.txt` in this registry directory. It already proposed a four-bit threshold/radix alternative; this report advances that into a concrete weighted MSD histogram procedure, exact current nonfinite/tie semantics, work bounds, and fixture matrix. It does not claim a speedup.
+
+Uncertainty: actual selector kernel service time, per-query score distribution/prefix narrowing, configured device local-memory/reduction code generation, register pressure, and any performance advantage are unmeasured. Selection interval instrumentation cannot answer those questions. The proposed experiment should be dropped if a bounded selector-specific comparison shows no material gain or if correctness/resource costs are unfavorable.

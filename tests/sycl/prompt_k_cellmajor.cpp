@@ -307,6 +307,33 @@ void logical_tile() {
     }
     check(old==candidate,"logical K tile exact");
     for(int w:writes) check(w==1,"logical tile unique complete coverage");
+    constexpr int KP = 40;
+    constexpr uint16_t sentinel = 0x7e55;
+    std::vector<uint16_t> padded(HD*KP, sentinel);
+    std::vector<int> padded_writes(HD*KP);
+    for (int tid=0;tid<WG;++tid) for(int i=tid;i<HD*CH;i+=WG) {
+      const int c=i/HD,d=i%HD;
+      padded[d*KP+c]=half(rows[c]>=0 ? float(pool[rows[c]*HD+d]) : 0.f);
+      ++padded_writes[d*KP+c];
+    }
+    for(int d=0;d<HD;++d) for(int c=0;c<KP;++c) {
+      if(c<CH) {
+        check(padded[d*KP+c]==old[d*CH+c], "pitch40 logical tile exact");
+        check(padded_writes[d*KP+c]==1, "pitch40 unique complete coverage");
+      } else {
+        check(padded[d*KP+c]==sentinel && padded_writes[d*KP+c]==0,
+              "pitch40 padding untouched");
+      }
+    }
+    // Enumerate each QK matrix-load footprint: no padding may be consumed.
+    for(int k=0;k<HD;k+=16) for(int cell : {0,16}) {
+      check(((k*KP+cell)*sizeof(uint16_t))%4==0, "QK offset alignment");
+      for(int r=0;r<16;++r) for(int c=0;c<16;++c) {
+        check(cell+c<CH && (k+r)*KP+cell+c<HD*KP, "QK footprint bounds");
+        check(padded[(k+r)*KP+cell+c]==old[(k+r)*CH+cell+c],
+              "QK pitch40 consumed operand exact");
+      }
+    }
   }
 }
 int main(int argc, char **argv) {
