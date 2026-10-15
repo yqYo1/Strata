@@ -1,0 +1,147 @@
+{
+  "round": 788,
+  "reviewed_on": "2026-10-16",
+  "reviewer": "native Codex gpt-6-luna max",
+  "review_purpose": "Review the settled R786 knowledge-collection report for assignment compliance, scope, depth, novelty, attribution limits, and retrieval metadata. Pin source artifacts and recommend only eligible follow-up research. Read-only review; no external source verification, Git action, source edit, build, test, GPU/profiler work, process inspection, or cleanup was performed.",
+  "inputs": {
+    "agents_md": {
+      "path": "AGENTS.md",
+      "sha256": "7f750320bef4146a2872086922d84fc9fa7a8351ae655b7876c912856e3747fe"
+    },
+    "artifact_retention": {
+      "path": "docs/ARTIFACT_RETENTION.md",
+      "sha256": "fdf86d7ea576d6f0400ec7e643b5ddca5c3c577dd053d66c2fd05220e64b1cc1"
+    },
+    "research_index": {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
+      "sha256": "df0c56972cadec5e565bf229e6e447ca2d197b462b7e0d6b2066e7a19b59a2b4",
+      "note": "Hash is for the index read during this review. The index has a collection_round786 placeholder and does not yet contain the completed R786 retrieval record. It was not edited."
+    },
+    "prior_scope_review_780": {
+      "json_path": "bench/results/2026-10-15-pr6-recovery-audit/research-scope-review-round780-v1.json",
+      "json_sha256": "6c073b4aa3c12207cd26e1e5aa8a2de597e87b5d6a48355c12180f6b016d8b4e",
+      "japanese_digest_path": "bench/results/2026-10-15-pr6-recovery-audit/research-scope-review-round780-v1.ja.md",
+      "japanese_digest_sha256": "b25178ededb1cc643118e1931d8179bf514ca63390a8ce51307973b02e0c5076"
+    },
+    "recent_scope_review_785": {
+      "json_path": "bench/results/2026-10-15-pr6-recovery-audit/research-scope-review-round785-v1.json",
+      "json_sha256": "3fae7f1b7c42eba1a1a557f8029e38ddbe4f9bb1880bf7877c71d3d0cd782341",
+      "japanese_digest_path": "bench/results/2026-10-15-pr6-recovery-audit/research-scope-review-round785-v1.ja.md",
+      "japanese_digest_sha256": "36c66b035480f826a895edc34ba78cae1f25b3da1d5254db4966f0073935e2fe",
+      "reason": "Read only to avoid duplicating recent native16 scopes and to identify existing quality-gate evidence."
+    },
+    "report": {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/research-round786-v1.txt",
+      "sha256": "375aeb85b619b686102cf4d5085d2adb71e54dcdc0ef725224fcabc532f0ec8c"
+    },
+    "orca_spec": {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/orca-research-round786-spec-v1.txt",
+      "sha256": "3e55dc8a431cbbd8dba4d6e2dfdc170d541a7533c3f8a232b5e08e474d27e658"
+    },
+    "orca_launch": {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/orca-research-round786-launch-v1.json",
+      "sha256": "c78b1f6ee1f214c865cb800d76d57ca37567fb1a5769f3c3cc342fcbd3a9558e"
+    },
+    "orca_settlement": {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/orca-round786-settlement-v1.json",
+      "sha256": "dc614e29afc92efb0ad407dc7fd2b366a300e96cddf1dbed8c01c4f5c5597f3e"
+    },
+    "orca_release": {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/orca-round786-release-v1.json",
+      "sha256": "76c80c860c54a604a07387210c7faa973a63ab3c12cf4bbd8f85939995f21f8d"
+    },
+    "prior_scope_context": {
+      "source": "R780 review metadata and the current research index; original R759/R763/R778/R779 knowledge-collection report bodies were not read.",
+      "topics_consulted": [
+        "R759: irregular work partitioning and scans",
+        "R763: pipeline and data residency",
+        "R778: sparse storage conversion",
+        "R779: irregular transaction and page behavior"
+      ]
+    }
+  },
+  "dispatch": {
+    "run_id": "run_c8f478972ec8",
+    "task_id": "task_eb0ea9f0f3a7",
+    "dispatch_id": "ctx_9caeec4f3a28",
+    "model": "gpt-6-luna",
+    "purpose_label": "knowledge collection",
+    "settlement": "worker succeeded; dispatch completed",
+    "release": "released; terminal closed"
+  },
+  "main_status_supplied_by_main": {
+    "source": "Review assignment; not independently revalidated.",
+    "current_native16_source": "Committed at 662e3a1e.",
+    "small_independent_gpu_postops_checks": "PASS.",
+    "whole_engine_fresh_build": "Active.",
+    "native16_quality_and_performance": "Not qualified."
+  },
+  "report_review": {
+    "round": 786,
+    "word_count_whitespace_delimited": 1409,
+    "purpose_class": "knowledge collection",
+    "main_original_needed_now": false,
+    "scope_depth_review": "Within the 1,300–1,700-word budget. The report compares four fan-in strategies across sparse/dense frontiers and weak/strong destination skew, distinguishes graph discovery from floating-point sum semantics, and includes local aggregation, segmented reduction, deterministic-order limits, counterexamples, and one discriminating experiment. Its claims remain literature hypotheses, not a local implementation recommendation or Arc performance claim.",
+    "novelty_and_redundancy": "Distinct from the previously reviewed scheduling/scan, pipeline/residency, sparse-format conversion, and cache/page-transaction scopes. It centers destination contention, duplicate keys, reduction order, and determinism. These distinctions were checked against R780 metadata rather than by reopening prior collection report bodies.",
+    "source_attribution": {
+      "source_count": 6,
+      "urls_present": true,
+      "assessment": "The report names and links six substantive source families; the two Intel URLs are chapters of one versioned guide, so the six-source ceiling is met. The sources span SYCL/Intel documentation, historical CUDA graph studies, FPGA evidence, and a CUDA synthetic benchmark, with hardware and applicability limits stated in the report.",
+      "correction": "The NVIDIA Warp guide URL targets the mutable GitHub main branch. Record an immutable revision or retrieval date before relying on its benchmark details. This reviewer did not inspect the cited pages or independently verify any source claim, number, hardware result, or license."
+    },
+    "provenance_limit": "Review covers only the report's own source labels/URLs and stated limits. No source was opened or verified. External results do not establish SYCL/Arc behavior, and the report proposes no code reuse.",
+    "index_retrieval_metadata": {
+      "purpose_class": "knowledge_archive",
+      "main_original_needed_now": false,
+      "retrieval_brief": "Retrieve when a concrete non-LLM graph or scientific aggregation question requires choosing destination ownership, atomics, local duplicate combining, or segmented reduction under skew. Treat the report as source-level comparison only; it contains no Arc result, and its NVIDIA Warp benchmark link needs immutable revision/date pinning before reuse.",
+      "main_correction_to_retain": "Do not infer an Arc strategy or crossover from the cited GPU/FPGA results. Preserve the report's distinction between sparse-frontier traversal and high destination fan-in, and pin the mutable NVIDIA Warp source before using its benchmark values.",
+      "outcome": "Successful knowledge collection; retain for retrieval. No current Main decision requires reading the original."
+    }
+  },
+  "index_update_proposal": {
+    "applied": false,
+    "reason": "Review assignment limited writes to this review JSON and its Japanese digest; the research index was left unchanged.",
+    "report_entry": {
+      "round": 786,
+      "path": "research-round786-v1.txt",
+      "sha256": "375aeb85b619b686102cf4d5085d2adb71e54dcdc0ef725224fcabc532f0ec8c",
+      "model": "Orca gpt-6-luna",
+      "purpose_class": "knowledge collection",
+      "review": "research-scope-review-round788-v1.json",
+      "main_body_read": false,
+      "reviewer_retrieval_metadata": {
+        "purpose_class": "knowledge_archive",
+        "main_original_needed_now": false,
+        "retrieval_brief": "Retrieve for a concrete skewed graph/scientific aggregation decision involving destination contention, duplicate keys, or reduction ordering. The report is a literature comparison, not Arc evidence; pin the mutable NVIDIA Warp guide before using its benchmark figures.",
+        "scope_depth_review": "1,409 words within budget; four strategy families, four frontier/skew cells, counterexamples, semantics, and one experiment are covered.",
+        "provenance_limit": "Six linked source families; no independent source verification in R788. Heterogeneous historical GPU/FPGA claims do not establish Arc behavior. The NVIDIA Warp main-branch link is mutable.",
+        "main_correction_to_retain": "Do not transfer external crossover results to Arc; preserve the sparse-frontier versus hot-destination distinction and pin the mutable benchmark source before reuse."
+      },
+      "outcome": "succeeded"
+    }
+  },
+  "next_research_scopes": [
+    {
+      "priority": 1,
+      "purpose_label": "knowledge collection",
+      "title": "Diagnosing precision drift in long-sequence mixed-precision inference",
+      "finite_question": "For deep residual and recurrent sequence-model inference, compare methods for detecting and localizing precision drift: per-layer activation error distributions and outliers, teacher-forced logit divergence and NLL, persistent-state trajectory drift, and end-task outcomes. When can a local tensor metric miss a downstream decision change, and when can a visible tensor error leave predictions unchanged? Separate storage-rounding effects from local FP32 accumulation, and identify the limits of teacher-forced versus generated-token comparisons. Do not survey mitigation methods or recommend a Strata precision change.",
+      "breadth_and_counterevidence": "Use primary papers and framework/evaluation documentation. Compare local tensor, sequence-output, and task-level evidence, including cases where these indicators disagree. Keep the scope on diagnosis and metric interpretation; do not repeat R782's producer/consumer type contracts, R783's GEMM/API alternatives, or R785's conditional mitigation choices after a measured regression. Do not claim Strata quality, set an acceptance threshold, or infer Arc performance.",
+      "report_budget": "1,300–1,700 words; at most six substantive primary sources with exact URLs, one metric-comparison table, and one bounded prospective evaluation protocol.",
+      "schedulable_now": true,
+      "prerequisites": "Public source access only; no local quality result, device measurement, or implementation decision is required for a metric-method comparison.",
+      "prerequisite_evidence": [
+        "AGENTS.md requires numerical/performance gates and preservation of the FP32 reference for current native-16 precision work.",
+        "The current research index records native16_activation_pipeline.quality_acceptance as UNSET and performance_qualified as false; Main confirms native16 quality and performance are not qualified.",
+        "R782 and R783 cover type/state boundaries and kernel/API choices; R785's precision-quality follow-up is conditional on a measured regression and concerns mitigation choices. The proposed measurement-localization question is distinct and does not depend on that regression."
+      ],
+      "novelty_guard": "Limit the report to how evidence localizes or fails to localize numerical drift. Exclude error-feedback, rounding-policy, precision-allocation, and kernel-layout recommendations, which belong to other scopes or a later decision.",
+      "prior_report_paths_to_avoid_repeating": [
+        "bench/results/2026-10-15-pr6-recovery-audit/research-round782-v1.txt",
+        "bench/results/2026-10-15-pr6-recovery-audit/research-round783-v1.txt",
+        "bench/results/2026-10-15-pr6-recovery-audit/research-scope-review-round785-v1.json"
+      ]
+    }
+  ],
+  "operational_digest_ja_400_chars": "R786原文のMain即時読込は不要（false）。評価、hash、retrieval metadataとindex追記案を記録。外部出典の独立検証は未実施。後続候補は1件で、公開一次資料のみで開始可能（schedulable_now=true、前提根拠を記録）。"
+}

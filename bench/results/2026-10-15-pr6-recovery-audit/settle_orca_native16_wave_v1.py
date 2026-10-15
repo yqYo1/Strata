@@ -22,7 +22,14 @@ def main():
     names = {781: 'orca-implement-query-registers-round781-launch-v1.json',
              782: 'orca-research-round782-launch-v1.json',
              783: 'orca-research-round783-launch-v1.json',
-             784: 'orca-implement-native16-gemm-round784-launch-v1.json'}
+             784: 'orca-implement-native16-gemm-round784-launch-v1.json',
+             786: 'orca-research-round786-launch-v1.json',
+             787: 'orca-implement-native16-attention-round787-launch-v1.json',
+             789: 'orca-research-round789-launch-v1.json',
+             791: 'orca-research-round791-launch-v1.json',
+             793: 'orca-research-round793-launch-v1.json',
+             794: 'orca-research-round794-launch-v1.json',
+             797: 'orca-research-round797-launch-v1.json'}
     known = {}
     for n, name in names.items():
         v = json.loads((A / name).read_text())['receipt']['result']

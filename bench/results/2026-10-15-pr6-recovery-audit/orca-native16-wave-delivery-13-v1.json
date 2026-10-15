@@ -1,0 +1,38 @@
+{
+  "id": "dfc3eacb-baa1-4dba-a908-346b5f7b60cc",
+  "ok": true,
+  "result": {
+    "runId": "run_c8f478972ec8",
+    "deliveryId": "delivery_435cfe7d24c9",
+    "messages": [
+      {
+        "id": "msg_a85cff9f5ed0",
+        "run_id": "run_c8f478972ec8",
+        "delivery_contract": "current_delivery",
+        "from_handle": "term_5fd6c06f-b630-4a59-9d7a-3b89b02f138f",
+        "to_handle": "run:run_c8f478972ec8",
+        "subject": "Native BF16 attention source proposal ready",
+        "body": "Created the immutable-base native BF16 attention proposal, independent FP64/BF16 oracle fixture, and manual CMake target in bench/results/2026-10-15-pr6-recovery-audit/own-native16-attention-v1. The old FP32 source is byte-preserved, the new Mode1 direct kernel requests 32336 bytes SLM with explicit owner-supplied cache bounds, and manifest SHA256 is e5e7d41aa868e3a35dcf6f71f9957f229f63972de599ddf80cf565d477e7c963. Main must review and integrate the patch, then compile and run traced smoke, numerical, performance, model-quality and physical-262144 validation because all execution remains UNRUN.",
+        "type": "worker_done",
+        "priority": "normal",
+        "thread_id": null,
+        "payload": "{\"taskId\":\"task_e31a6f11f5fe\",\"dispatchId\":\"ctx_68e0e5ae905d\",\"outcome\":\"succeeded\",\"filesModified\":[\"bench/results/2026-10-15-pr6-recovery-audit/own-native16-attention-v1/README.md\",\"bench/results/2026-10-15-pr6-recovery-audit/own-native16-attention-v1/base/CMakeLists.txt\",\"bench/results/2026-10-15-pr6-recovery-audit/own-native16-attention-v1/base/cmake/sycl_backend.cmake\",\"bench/results/2026-10-15-pr6-recovery-audit/own-native16-attention-v1/base/include/strata/kernels/qsa_prompt_attn.hpp\",\"bench/results/2026-10-15-pr6-recovery-audit/own-native16-attention-v1/base/src/kernels/sycl/prompt_attention.cpp\",\"bench/results/2026-10-15-pr6-recovery-audit/own-native16-attention-v1/files/CMakeLists.txt\",\"bench/results/2026-10-15-pr6-recovery-audit/own-native16-attention-v1/files/cmake/sycl_backend.cmake\",\"bench/results/2026-10-15-pr6-recovery-audit/own-native16-attention-v1/files/include/strata/kernels/qsa_prompt_attn.hpp\",\"bench/results/2026-10-15-pr6-recovery-audit/own-native16-attention-v1/files/src/kernels/sycl/prompt_attention.cpp\",\"bench/results/2026-10-15-pr6-recovery-audit/own-native16-attention-v1/files/tests/sycl/prompt_native16.cpp\",\"bench/results/2026-10-15-pr6-recovery-audit/own-native16-attention-v1/manifest.json\",\"bench/results/2026-10-15-pr6-recovery-audit/own-native16-attention-v1/proposal.patch\",\"bench/results/2026-10-15-pr6-recovery-audit/own-native16-attention-v1/provenance-sycl_ext_intel_matrix.asciidoc.json\",\"bench/results/2026-10-15-pr6-recovery-audit/own-native16-attention-v1/provenance-sycl_ext_oneapi_matrix.asciidoc.json\",\"bench/results/2026-10-15-pr6-recovery-audit/own-native16-attention-v1/provenance.json\"],\"reportPath\":\"bench/results/2026-10-15-pr6-recovery-audit/own-native16-attention-v1/README.md\"}",
+        "created_at": "2026-10-15T21:39:04Z",
+        "delivered_at": null
+      }
+    ],
+    "count": 1,
+    "replayed": false,
+    "acknowledged": null,
+    "timedOut": false,
+    "cancelled": false,
+    "connectionLost": false,
+    "mutation": {
+      "requestId": "07055b6e-7dc4-4cf9-b123-b794bfb48b78",
+      "replayed": false
+    }
+  },
+  "_meta": {
+    "runtimeId": "e9030fc3-f028-4352-a34d-eb9385c8d79e"
+  }
+}

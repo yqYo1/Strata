@@ -27,7 +27,14 @@ def main():
     with (B / 'owned-v0141-measurement.lock').open('a') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         build = json.loads((A / f'own-native16-prefill-build-{version}.json').read_text())
-        for name in (f'own-native16-gemm-correctness-{version}.json', f'own-native16-regression-correctness-{version}.json'):
+        regression_name = f'own-native16-regression-correctness-{version}.json'
+        original_regression = json.loads((A / regression_name).read_text())
+        if not original_regression['passed']:
+            require(version == 'v2' and not original_regression['active'] and
+                    not original_regression['fresh_faults'] and not original_regression['driver_dump_exists'],
+                    'only known closed separate-queue failure may use a narrower route gate')
+            regression_name = f'own-native16-regression-followup2-correctness-{version}.json'
+        for name in (f'own-native16-gemm-correctness-{version}.json', regression_name):
             v = json.loads((A / name).read_text())
             require(v['passed'] and v['complete'] and not v['active'] and not v['fresh_faults'], 'component gate')
             for c in v['commands']:
@@ -66,6 +73,7 @@ def main():
             if name.startswith('STRATA_MEASUREMENT_') or name in ('STRATA_PREFILL_BOUNDARY_AUDIT', 'STRATA_PREFILL_PHASE_AUDIT'):
                 del env[name]
         env.update(XDG_CACHE_HOME=str(root / 'cache'), STRATA_TRACE='1')
+        require(env['STRATA_SYCL_PREFILL_SAME_QUEUE'] == '1', 'qualified single-queue production route only')
         record = dict(passed=False, complete=False, active=True, GPU_executed=False, commands=[], cases={},
             source_commit=build['source_commit'], source_pins=build['source_pins'], binary_sha256=sha(exe),
             model_identity=old['model_identity'], pack_metadata_sha256=metadata['pack_metadata_sha256'],
@@ -73,6 +81,9 @@ def main():
             tokens=tokens, positions=positions, input_sha256=sha(inp), args=args, environment=env,
             external_expert_profile_sha256=sha(profile), local_profile_initial_sha256=sha(local_profile),
             recipe_sha256=sha(Path(__file__)), boot_id=boot_id(), raw_tensor_budget_bytes=16 << 20,
+            regression_gate=regression_name, regression_gate_sha256=sha(A / regression_name),
+            original_full_regression_passed=original_regression['passed'],
+            regression_limit='Separate-queue original regression timeout is not a PASS. This model run is restricted to the independently tested single-queue route.',
             scope='Synthetic129 input/MTP4, all48 layers/two64 chunks, GPU64+host64 residuals; FP32 control vs nativeBF16 path, finite all128 NLL and independent selected fullvocabulary NLL. No speed/general-quality/fullcontext/RESTORE qualification.',
             performance_qualified=False, model_quality_qualified=False, physical_262144_qualified=False, restore_qualified=False)
         def persist():
