@@ -26,7 +26,6 @@
 // the worker woke for, and a late worker's claim simply fails.  A claim that succeeds belongs to the current
 // batch, whose description the host cannot change until that job's `done` has landed.
 #pragma once
-#include "strata/kernels/cpu/service_budget.hpp"
 
 #include "strata/kernels/cpu/expert.hpp"
 #include "strata/kernels/cpu/native_expert.hpp"
@@ -129,10 +128,6 @@ public:
     ExpertPool(const ExpertPool&) = delete;
     ExpertPool& operator=(const ExpertPool&) = delete;
 
-    // Serialized issuer only. Bind before publishing native jobs; clear after
-    // run_split_multi_native's existing final parked boundary, never from a worker.
-    void service_budget(NativeServiceBudget* value) { service_budget_=value; }
-    NativeServiceBudget* service_budget() const { return service_budget_; }
     int workers() const { return n_; }
     /// Whether the host thread also drains.  Reported at startup, because "the engine adapts to the machine it
     /// is on" is only true if the engine says which adaptation it took.
@@ -208,7 +203,6 @@ private:
     /// Bump `epoch_`, and wake the workers that went to sleep.  Every publish goes through here.
     void publish();
 
-    NativeServiceBudget* service_budget_=nullptr;
     int n_ = 0;
     bool host_works_ = true;
     ExpertJob* jobs_ = nullptr;

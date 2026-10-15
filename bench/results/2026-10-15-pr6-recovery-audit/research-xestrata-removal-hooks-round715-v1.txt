@@ -1,0 +1,35 @@
+# XeStrata由来 decode diagnostics の撤去フック監査（R715）
+
+2026-10-15 JST。read-only調査。書き込みはこの報告のみ。対象は `include/strata/core/decode_service_budget.hpp`、`include/strata/core/decode_route_ledger.hpp`、`include/strata/kernels/cpu/service_budget.hpp` と、それらが導入した全実source caller/dependency。XeStrata clone/sourceおよびXeStrata由来patchは参照していない。出自はown fork treeのSPDX表示、Git履歴および現在の接続から確認。法的ライセンス判断はしない。
+
+## 結論と具体的な撤去範囲
+
+SPDXを削除・言い換えして残す方法はclean化にならない。診断実装とその配線を実際に撤去する。3ヘッダーをそのまま削除するだけでは不十分で、以下の呼び出し・フィールド・診断専用pool instrumentation・fixture/tool consumerを同じ変更境界で除く必要がある。
+
+1. **診断実装本体**: 3つの指定headerを削除。`decode_service_budget.hpp`はrequest scope/receipt/close ownership、`decode_route_ledger.hpp`はroute・MTP window・format/service aggregation/receipt、`service_budget.hpp`はclockとnative worker service countersを含む。3つはいずれも指定ライセンス表示を持つ。`decode_route_ledger.hpp`はNiko/StrataとMistVVK/XeStrataの両方の表示があるため、Niko部分だけを残した形にせず、この診断実装を削除する。
+2. **`src/core/expert_source.cpp`**: 先頭のdecode header include、`joined_decode_requested`, request sequence, `DecodeServiceBudgetScope::snapshot/constructor/destructor/finish` 定義（現行およそ62–195行）、`expert_pool_dispatch_multi`のledger pointer取得/attempt, native poolにbudget bind/unbindする分岐、fail-stop owner wrapper呼び出し、format service開始/終了、dispatch後のroute recordを削除。CPU dispatch本来のnative/non-native呼出しは元の分岐へ戻す。`decode_native_owner_call`のみを残す/単独移植するのもこの撤去目的に反する。独立した `cpu_gu_reuse` observerブロック（bab7bf06由来）は別の候補出自を持ち、撤去の対象3 headerに依存しているため、少なくとも現行の `DecodeServiceBudgetScope`所有者との結合を解く必要がある。別ライセンス問題として同時削除するか、適法な独立実装として保持できるかはこの調査では決めない。名前変更で出自を隠さない。
+3. **`src/program/generate.cpp`**: include、decode sources snapshot/initializer、および `DecodeServiceBudgetScope`生成からfinishまで（現行約6212–6221行と decode終了時のfinish箇所）を削除。通常のdecode計時や本来の生成loopは維持する。decode scopeを別名・別helperに移すのは撤去ではない。
+4. **`include/strata/core/expert_source.hpp`**: 前方宣言 `DecodeRouteLedger`、`ExpertDispatch::decode_route_ledger` memberを削除。`CpuGuReuseObserver`の宣言/memberは別候補のため独立判断。
+5. **`include/strata/kernels/cpu/pool.hpp`**: `service_budget.hpp` include、setter/getter、`service_budget_` memberを削除。
+6. **`src/kernels/cpu/pool.cpp`**: native pool worker `task/counter/task_done` instrumentation、phase begin/end counters、`ServiceClockScope` clocksを除く。`run_phase`の既存 `wait_parked` → mode/publish → `wait_done` → `wait_parked` とnative kernel dispatchをそのまま維持する。現行差分はmode 5/6 (native) 内の条件付き診断に限られる。
+7. **test/tool consumer**: `tests/cpu/decode_joined_mtp4.cpp` を削除（専用のCPU synthetic ledger/clock fixture）。標準CMakeListsにはそのfixtureの登録が見当たらず、audit用 `build_current_diagnostics.py`, `apply_build_boundary_service_v1.py`, `apply_build_cpu_gu_reuse_v2.py`, `apply_build_cpu_gu_reuse_v3.py` が明示的にコンパイルする。`decode-format-service-v2/{make_proposal.py,pins.json,source.diff,review.md}` と `balanced-layer-cache-v1/{source.diff,regenerate.py,README.ja.md,sourcepins.json}` 等の保持artifactも参照consumerとして識別される。過去measurement/research artifactsは履歴記録として保持し、稼働consumerと誤認して本体に残さない。全リポジトリの文字列検索でheader名/fixture名の参照が他にないことを最終差分で確認する必要がある（この監査では実施編集していない）。
+
+## 配線/依存の実測
+
+`rg`で確認した現行consumerは、(a) `src/core/expert_source.cpp` が両core headerをincludeし、request ownerとper-layer dispatchを接続、(b) `src/program/generate.cpp` がservice scopeをrequest decode loopに作成、(c) `expert_source.hpp`がledger pointerを所有者間で受け渡す、(d) `pool.hpp/.cpp`がservice budgetのbindとworker clocks/countersを実行、(e) `tests/cpu/decode_joined_mtp4.cpp` がheader helpersを使用、に限られる。`decode_route_ledger.hpp`はcpu `pool.hpp`と`service_budget.hpp`に依存し、`decode_service_budget.hpp`はledger, `cpu_gu_reuse_observer.hpp`, progressを依存に持つ。CMake標準targetへのdecode fixture登録は見つからず、監査/適用Python scriptsが個別にコンパイルする。`src/core/mtp.cpp`はledger headersを使わず、3指定header撤去だけでは変更不要。
+
+## independent observer / GPU safetyの保持条件
+
+* `0f4ce392` のserve watchdog宣言順序と停止/join（`src/program/generate.cpp`現行5502–5505付近）はdecode ledgerとは別のobserver lifetime修正。維持する。`e3616934` のSYCL cold-start watchdog上限も同ファイルの別修正なので維持。
+* `src/core/expert_source.cpp` の通常native CPU pool呼び出しと既存poolの `wait_done`/`wait_parked`境界は維持する。診断を外すためにwaitを足す/省略する、job/format ownerの寿命を短縮する、native route自体を切り替えることはしない。3指定headers内のowner fail-stopは撤去対象の診断所有者機構だが、通常engine/poolが元から持つstall/fail-stop safetyを一緒に消さない。
+* `src/core/mtp.cpp` の `f5903fdc`差分はこの3-header機能と独立。`NHp/per_row`上限、`n * per_row`とsize_t byte-size overflow検査、計算済み`records`のallocation/copy使用、およびSYCL `DraftUploadGuard`でenqueue可能なrecord uploadをfinal syncまでdrainし、失敗時はupload storageをliveに保ったままabortする部分（同ファイル約747–837行）を保持する。これはGPU非同期source buffer寿命/入力サイズ安全であり、commit全体revertで失われる。
+* `1a9bb4bd`はledger header/testを拡張した診断変更の続きであり、`decode_route_ledger.hpp`とfixtureの追加差分も撤去候補。別に同commitがtouchした `src/core/expert_source.cpp`の2行、prefill boundary auditファイルは個別hunkで扱う。親commit単位で巻き戻さない。
+* `f5903fdc` commitにはdecode診断以外に `include/strata/program/prefill_logits.hpp`, `tests/cpu/prefill_logits.cpp`, `src/core/mtp.cpp`等の変更が混在。prefill logits機能/検査および上記MTP安全修正は本監査範囲外で、単純な全commit revertで削除してはならない。
+
+## own tree出自履歴
+
+`git log -- include/...` は対象headerの初出 `f5903fdc`、decode_route_ledger拡張 `1a9bb4bd`、decode service scopeへのCPU GU reuse observer結合 `bab7bf06` を示す。f5903fdcのsubjectは “feat(sycl): add bounded quality and decode service diagnostics”。各指定fileの現在の先頭SPDXは以下: `decode_service_budget.hpp` MistVVK and XeStrata contributors + LGPL-3.0-or-later; `decode_route_ledger.hpp` Niko1221 and Strata contributors / MistVVK and XeStrata contributors + LGPL-3.0-or-later; `service_budget.hpp` MistVVK and XeStrata contributors + LGPL-3.0-or-later。出自の事実はこれらのown-tree記録とhunksに限定する。
+
+## 安全な適用の形
+
+Main側の実装者はcommit単位revertでなく、列挙した診断header/配線/counter/fixtureだけの削除hunksを作り、MTP upload guard、watchdog lifecycle、native poolの本来のwait境界、prefill logits、別候補の独立observerと既存結果の正常記録を差分で保持する。適用後は全追跡source/scriptで残存include/symbol/fixture参照がないことを検索し、独立変更のdiffをレビューする。今回の依頼制約に従い、この報告では編集/build/test/GPU/service/process操作を行っていない。

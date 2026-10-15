@@ -23,7 +23,6 @@
 #include "strata/core/conversation_memory.hpp"
 #include "strata/core/coupled_draft.hpp"
 #include "strata/core/expert_source.hpp"
-#include "strata/core/decode_service_budget.hpp"
 #include "strata/core/pinned.hpp"
 #include "strata/core/remote_experts.hpp"
 #include "strata/core/on_device.hpp"
@@ -6209,16 +6208,6 @@ int main(int argc, char** argv) {
             const DecSnap ds0 = dec_snap();
             double dt_run = 0, dt_commit = 0, dt_draft = 0;
             int64_t dec_windows = 0, dec_T = 0;
-            const strata::core::DecodeLedgerSources decode_sources{
-                {&ver.ms_wait,&ver.ms_pool,&ver.ms_host,&ver.ms_commit,&drive.d.ms_plan,&drive.d.ms_actq,
-                 &drive.d.ms_jobs,&drive.d.ms_run,&pool.ms_multi_gu,&pool.ms_multi_q,&pool.ms_multi_down,
-                 &dt_run,&dt_commit,&dt_draft},
-                {&ver.windows,&drive.d.multi_misses,&drive.d.multi_entries,&drive.d.cache_hits,&drive.d.pcie_experts,&pool.multi_bytes}};
-            // This root ordinary serve loop has neither batch admission nor a lookup-chain mode.
-            strata::core::DecodeServiceBudgetScope decode_service(drive.d,g.n_layers,K,
-                strata::core::decode_route_ledger_eligible(!geni && native_pack && !multi_gpu && !o.no_pool &&
-                    o.spec_oracle.empty() && o.spec_corrupt==0,0,n_stages,!o.mtp.empty() && mtp.vram_bytes()>0,o.suffix_draft,0,S,o.spec_split),
-                n,max_new,o.max_context,mtp.coupled(),decode_sources);
             const int64_t decode_hits0 = drive.d.cache_hits;
             // CS-T: the RAM and file tiers of this request (the mmap source; 0 with the arena)
             const int64_t ram0 = src.ram_reads(), files0 = src.file_reads();
@@ -6246,7 +6235,7 @@ int main(int argc, char** argv) {
                 }
                 const bool timed_round = !first_window;
                 const Clock::time_point round0 = Clock::now();
-                if (p + T > o.max_context) { decode_service.context_limit(); break; }
+                if (p + T > o.max_context) break;
                 window[0] = x;
                 for (int i = 1; i < T; ++i) window[(size_t) i] = from_sfx ? sbuf[(size_t) i - 1] : drafts[(size_t) i - 1];
                 drive.d.layers = 0;
@@ -6269,12 +6258,10 @@ int main(int argc, char** argv) {
                 }
                 tr("window", p, T);
                 const Clock::time_point tw0 = Clock::now();
-                decode_service.begin_window(T);
                 if (!ver.run(T, window.data(), p, win_pool_fn, win_pool_user, outv.data(), err) || drive.d.failed) {
                     std::printf("ERR %s\n", drive.d.failed && drive.d.fail ? drive.d.fail : err.c_str());
                     return 1;
                 }
-                decode_service.verified(T);
                 int a = 0;
                 while (a < T - 1 && window[(size_t) a + 1] == outv[(size_t) a]) ++a;
                 if (from_sfx) { ++sfx_windows; sfx_drafts += T - 1; sfx_ok += a; }
@@ -6283,20 +6270,17 @@ int main(int argc, char** argv) {
                 bool adapt_ok = true;
                 if (!drive.d.usage.empty() && ((rounds + 1) % o.adapt_every) == 0)
                     adapt_thr = std::thread([&] { adapt_ok = adapt(); });
-                decode_service.commit_attempt();
                 if (!ver.commit(a + 1, err)) {
                     if (adapt_thr.joinable()) adapt_thr.join();
                     std::printf("ERR %s\n", err.c_str());
                     return 1;
                 }
-                decode_service.committed(a,a+1);
                 // the window's first a + 1 tokens are in the session now (the last output is not: it is next x)
                 for (int i = 0; i <= a; ++i) consumed.push_back(window[(size_t) i]);
                 draft_offered += T - 1;
                 draft_accepted += a;
                 first_window = false;
                 bool eos = false;
-                const int64_t decode_emit_start=produced_n;
                 for (int i = 0; i <= a && produced_n < max_new && !eos; ++i) {
                     std::printf("T %d\n", (int) outv[(size_t) i]);
                     strata::core::progress_beat();
@@ -6305,7 +6289,6 @@ int main(int argc, char** argv) {
                     eos = std::find(o.eos_ids.begin(), o.eos_ids.end(), (int64_t) outv[(size_t) i]) != o.eos_ids.end();
                 }
                 std::fflush(stdout);
-                decode_service.emitted(produced_n-decode_emit_start,eos || produced_n>=max_new);
                 ++rounds;
                 const Clock::time_point tw2 = Clock::now();
                 // coupled drafts with penalties: the next window's row-0 history (`consumed` holds this window's
@@ -6339,13 +6322,10 @@ int main(int argc, char** argv) {
             }
             const double decode_ms = std::chrono::duration<double, std::milli>(Clock::now() - d0).count();
             // the last commit (set_commit_async): the session is complete before anything reads or copies it
-            decode_service.final_wait_begin();
             if (!ver.wait_commit(err)) {
-                decode_service.wait_commit_finished(false);
                 std::printf("ERR %s\n", err.c_str());
                 return 1;
             }
-            decode_service.wait_commit_finished(true);
             if (dec_timing && dec_windows > 0) {
                 const DecSnap d1 = dec_snap();
                 const double w = (double) dec_windows, L = (double) g.n_layers;
@@ -6493,7 +6473,6 @@ int main(int argc, char** argv) {
                         (long long) (src.ram_reads() - ram0), (long long) (src.file_reads() - files0),
                         (double) (src.file_read_bytes() - file_bytes0) / 1e6, (long long) read_n);
             std::fflush(stdout);
-            decode_service.finish(finish,produced_n,draft_offered,draft_accepted,decode_ms);
             if (drive.routing != nullptr) std::fflush(drive.routing);   // the routing trace survives a crash and is watchable mid-session
             // "12288 of 98179" when cancelled mid-read (#471), the rate from what was read
             char read_txt[64];

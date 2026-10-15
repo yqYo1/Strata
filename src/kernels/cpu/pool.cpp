@@ -536,13 +536,11 @@ void ExpertPool::drain(int id, ExpertScratch& scratch, uint32_t epoch) {
             // plan v0.3 P6: native layers, 5 = gate/up rows, 6 = down rows
             const int per = mode_ == 5 ? FF : H;
             const int64_t g0 = mrows_ * (int64_t) i / mtasks_, g1 = mrows_ * (int64_t) (i + 1) / mtasks_;
-            if (service_budget_) service_budget_->task(id,mode_-5,g1-g0);
             for (int64_t r = g0; r < g1;) {
                 const int e = (int) (r / per), r0 = (int) (r % per);
                 const int r1 = (int) std::min<int64_t>(per, r0 + (g1 - r));
                 SplitBufMulti& sb = split_multi_[(size_t) e];
                 if (mode_ == 5 && nfmt_->gu_type == 42) {
-                    ServiceClockScope service(service_budget_ ? service_budget_->counter(id,3,mjobs_[e].nt) : nullptr);
                     // a native Q2_0 pack: gate and up rows on the Q2_0 kernels, then SwiGLU
                     thread_local float gbuf[MAXT][FF], ubuf[MAXT][FF];
                     float* gp[MAXT];
@@ -557,10 +555,8 @@ void ExpertPool::drain(int id, ExpertScratch& scratch, uint32_t epoch) {
                 } else if (mode_ == 5) {
                     float* ff[MAXT];
                     for (int t = 0; t < mjobs_[e].nt; ++t) ff[t] = sb.ff[t];
-                    ServiceClockScope service(service_budget_ ? service_budget_->counter(id,0,mjobs_[e].nt) : nullptr);
                     native_gu_rows(*nfmt_, mjobs_[e].blob, mjobs_[e].nact, mjobs_[e].nt, ff, r0, r1);
                 } else if (nfmt_->d_type == 42) {
-                    ServiceClockScope service(service_budget_ ? service_budget_->counter(id,5,mjobs_[e].nt) : nullptr);
                     // Q2_0 down: q2_rows_any selects AVX-512 or AVX2 on the current CPU.
                     const ActQ* a2[MAXT];
                     for (int t = 0; t < mjobs_[e].nt; ++t) a2[t] = &sb.a2[t];
@@ -569,7 +565,6 @@ void ExpertPool::drain(int id, ExpertScratch& scratch, uint32_t epoch) {
                 } else {
                     const void* hq[MAXT];
                     for (int t = 0; t < mjobs_[e].nt; ++t) hq[t] = sb.hq[t];
-                    ServiceClockScope service(service_budget_ ? service_budget_->counter(id,2,mjobs_[e].nt) : nullptr);
                     native_down_rows(*nfmt_, mjobs_[e].blob, hq, mjobs_[e].nt, mjobs_[e].out, r0, r1);
                 }
                 r += r1 - r0;
@@ -594,13 +589,11 @@ void ExpertPool::drain(int id, ExpertScratch& scratch, uint32_t epoch) {
                 r += r1 - r0;
             }
         }
-        if (service_budget_ && mode_>=5) service_budget_->task_done(id,mode_-5,mrows_*(int64_t)(i+1)/mtasks_-mrows_*(int64_t)i/mtasks_);
         done_.fetch_add(1, std::memory_order_release);
     }
 }
 
 void ExpertPool::run_phase(int mode, int n_tasks) {
-    if (service_budget_ && (mode==5 || mode==6)) service_budget_->phase_begin(mode-5,n_tasks,mrows_);
     wait_parked("before a phase");
     mode_ = mode;
     njobs_ = n_tasks;
@@ -608,8 +601,6 @@ void ExpertPool::run_phase(int mode, int n_tasks) {
     if (host_works_) drain(-1, host_scratch_, e);
     wait_done(n_tasks);
     wait_parked("after a phase");
-    if (service_budget_ && (mode==5 || mode==6)) service_budget_->phase_end(mode-5,
-        done_.load(std::memory_order_acquire)==(uint32_t)n_tasks); // parked proof is the existing wait return
     hstate_.store(kIdle, std::memory_order_relaxed);
     hstate_ms_.store(now_ms(), std::memory_order_relaxed);
 }
@@ -686,10 +677,8 @@ void ExpertPool::run_split_multi_native(const NativeFmt& f, ExpertJobMulti* jobs
         for (int e = 0; e < nb; ++e)
             for (int t = 0; t < mjobs_[e].nt; ++t)
                 if (f.d_type == 42) {
-                    ServiceClockScope service(service_budget_ ? service_budget_->counter(-1,4,mjobs_[e].nt) : nullptr);
                     act_quant_any(split_multi_[(size_t) e].ff[t], FF, split_multi_[(size_t) e].a2[t]);
                 } else {
-                    ServiceClockScope service(service_budget_ ? service_budget_->counter(-1,1,mjobs_[e].nt) : nullptr);
                     native_quant_h(f, split_multi_[(size_t) e].ff[t], split_multi_[(size_t) e].hq[t]);
                 }
         const auto c = std::chrono::steady_clock::now();

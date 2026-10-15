@@ -1,0 +1,40 @@
+# R719 — selected CPU source provenance correction
+
+2026-10-15 JST。R718の訂正。調査対象はimmutable revision `0f816385a0b2ed4cc856202ebd9d7c4e53a44a63` のGit tree `b33f4da501246659dc6225e07ac50e219715da2e`。現worktreeにはMainの同時作業差分があるため、内容・blame・CMakeはすべて `0f816385` を明示して取得した。ownhistoryと指定されたprimary audit/docsだけを参照。XeStrata clone/source/patch比較なし。製品/fixture編集、build/test/GPU/process/service、Git mutationなし。`B/prefill-gemm-only-contract-root-v1/record.json`未読。唯一の書込はこの報告。
+
+## 訂正結論
+
+R718は`df4f8742`がcurrent CPU sourceのselected implementationであるかのように扱い、reachable historyとlineageを混同した。この結論は誤りなので撤回する。`df4f8742`は`0f816385`の祖先としてreachableだが、対象current-fileの通常の`git blame --line-porcelain 0f816385 -- <file>`は、`pool.cpp`, `native_expert.cpp`, `expert_layout.cpp`, `iq_avx2.cpp`のいずれにも`df4f8742`または`378770ae`由来行を割り当てない。これら4ファイルは各々のNiko/pipeob0/Pravesh等による選択されたsource historyから構成され、Xe履歴枝の保存だけをcurrent adoptionと数えてはならない。ファイル名、最適化類似性、Xeツリー内に同名ファイルがあったかどうかもこの監査では根拠に使っていない。
+
+また、`0f816385`の`include/`・`src/`を列挙したSPDX検索でMistVVK/XeStrata表記を持つのはR715対象の3診断headerだけだった: `include/strata/core/decode_route_ledger.hpp`, `include/strata/core/decode_service_budget.hpp`, `include/strata/kernels/cpu/service_budget.hpp`。CPU pool/native quant/GUの現行source/headerに同表記はない。これはR715のremove scopeをCPU implementation全域へ広げる根拠がないことと整合する。
+
+## 固定revisionで確認したfile hashとline blame
+
+| file at `0f816385` | Git blob hash | blame author別行数（総行） | `df4f8742` / `378770ae`由来行 |
+|---|---|---|---|
+| `src/kernels/cpu/pool.cpp` | `12f494cf5da9caa54a5a8a68b419bfe429b502bd` | Niko1221 516; Pravesh Khatana 205; Mirtraxxx 26; yqYoi 17; Vistawizard 3 (767) | 0 |
+| `src/kernels/cpu/native_expert.cpp` | `df107d5c36c9021033f72704fe0c7246919dbde9` | Niko1221 135; pipeob0 21; yqYoi 9 (165) | 0 |
+| `src/kernels/cpu/expert_layout.cpp` | `4583b1077c25926ffe4594e00013cda3cb28c67f` | Niko1221 229; pete 11 (240) | 0 |
+| `src/kernels/cpu/iq_avx2.cpp` | `09d178db6b778b824fa880e3121e355fa9ba1e26` | pipeob0 464 (464) | 0 |
+
+Hashは`git rev-parse 0f816385:<path>`。Blame countsはrevision-anchored line metadataをファイルlineごとに集計し、authorとcommit-originの照合を別に行った。Mainが提示したcountsと再確認できた。Blob hashは現在のMain worktreeで削除/変更された3 diagnostic headersを復活させたり、current HEAD hashへ置換したりしないための固定値。
+
+`99f3dbd0b21d1401b3769e0c0d963913607f380b`は`0f816385`の祖先。blameに現れるNiko-authored `f2a08d4b`は“Strata: Qwen3.8-Flash-Next…” source introductionで、Niko lineagesから選択されたCPU filesが入った履歴を示す。より古いfeature ancestryとして99f3があることはcommit ancestryに過ぎず、各行は上表のblame revisionで検証した。
+
+`296b59d2`は当該repositoryでobject/abbreviation解決できなかった。tracked `docs/UPSTREAM_INTEGRATION.md`の0f816版はfull observationを `296b59d2f73c8f04a805df29c2fa97655adace78` / Niko 0.1.44.1と記し、「update observation, not completed evaluation or integration」としている。この観測revisionは本repoでcurrent line ancestryとして確認できず、current sourceの親・実装採用とする証拠はない。短縮hashを推測で別objectへ結びつけない。
+
+## 現行CMake source resolver (`0f816385`)
+
+確認blob: `CMakeLists.txt`=`d432e890058c51ca34f16509b6d6695e8518876e`; `cmake/sycl_backend.cmake`=`b179c17098b3ba37417e5992b4838381e3a631d7`。
+
+Root CMakeのoption `STRATA_ENABLE_SYCL` がONの場合にのみ `cmake/sycl_backend.cmake` をincludeする。SYCL fileには`src/sycl/runtime.cpp`, `compat.cpp`, `device.cpp`, 固定列挙の`src/kernels/sycl/*.cpp`, core/prefill/entrypointが記述される。CPUはroot `CMakeLists.txt`の `strata_kernels_cpu` source listに `src/kernels/cpu/expert.cpp`, `pool.cpp`, `expert_layout.cpp`, `q2_avx2.cpp` を加え、`STRATA_NATIVE_EXPERTS` (default ON) branchが`native_expert.cpp`, `iq_avx512.cpp`, `iq_avx2.cpp`, `iq_single_avx2.cpp`, `kq_avx2.cpp`を明示 `target_sources` する。これを`strata_engine`がlinkし、SYCL backend内のengineも同じCPU targetをlinkする。source listはown root pathの明示ファイルで、XeStrata checkoutのruntime source/engineを参照するresolverではない。source listの事実とcommit provenanceは別軸。
+
+## 履歴保存、選択source、未取得upstreamの区別
+
+`docs/UPSTREAM_INTEGRATION.md`の0f816版は、`Niko1221/Strata`をbase/sole upstream、`XeStrata`をbenchmark/component referenceと明記。primary auditは`5bf0742913584a343975ea7f792c97cefac488fe`をaudited primary sourceとして記録し、native SYCL root CMakeとNiko 0.1.38-based engine lineageを説明する。また同文書は、Xe treeやOct 4–10 source historyのarchive mergeにcommit ancestryがあってもfirst parent/selected-source treeに実装が入ったとは限らず、“history preservation”をintegration/adoption扱いしないよう補正している。`45268002`等のarchive/preservation reachabilityは履歴参照であり、current selected CPU blobの証拠に置換できない。
+
+Current selected CPU sourceはここでのblob hashesとline blame、root CMake source resolverを組み合わせて判定した。特に`iq_avx2.cpp`の行authorsがpipeob0である事実だけから外部起源ともclean provenanceとも断じず、`df4f8742` blameは0行という限定された結論を保つ。`native_expert.cpp`のNiko/pipeob0/own yqYoi線、`expert_layout.cpp`のNiko/pete線、`pool.cpp`のNiko/Pravesh/Mirtra/yqYoi/Vista線についても同様に、source historyそのものを選択根拠とし、古いXe系統がgraph reachabilityで残ることをsource adoptionと取り違えない。
+
+## R718の該当記述に対する修正
+
+R718の「df4f8742のmodified CPU filesはcurrent mixed/unknown candidate」「後続変更のためdf4 diffをselected implementationとしてhunk単位撤去検討」という該当主張を撤回する。代わりに、この固定revisionでは上表4 fileのcurrent linesにdf4f/378770由来行がなく、CPU実装全体をXe-derived removal targetに拡大しないと記録する。current treeのSPDX searchでもCPU source/headerにMistVVK markerはない。これは判定を示す報告であり、R718原文の書換えやCPU source変更を行っていない。

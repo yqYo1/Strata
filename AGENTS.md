@@ -15,9 +15,14 @@ offers the same steps as tools.
 ## Working on the code
 
 This is a personal fork based on **Niko1221/Strata**, optimized for this PC's
-Intel GPU, CPU and RAM. Niko1221/Strata is the only upstream. XeStrata and other
-engines are optional benchmark and implementation references; importing their
-whole engines, feature sets or release workflows is not required. Upstream
+Intel GPU, CPU and RAM. Niko1221/Strata is the only upstream. Because of the
+user's license constraint, **XeStrata is a performance reference only**. Do not
+copy, port, adapt, or use XeStrata code as the basis for a reimplementation,
+including helpers, diagnostics, tests and archived source proposals. Audit
+existing derived code and remove it from the active tree while preserving
+independent safety fixes and compact provenance/results in Git. Changing names
+or removing copyright notices does not remove a derivation. Other engines may
+be implementation references only after their provenance and license are checked. Upstream
 contributions are not currently planned. CUDA/HIP implementation and validation
 are outside this work's scope.
 
@@ -55,7 +60,8 @@ are outside this work's scope.
   candidate origin, actual implementation, measurements and per-component decisions.
 - Import Niko's non-inference functions as requested. Choose inference changes
   per component, including prefill and decode separately; retain the faster
-  existing fork implementation. Evaluate reference-fork ideas under the same gates.
+  existing fork implementation. XeStrata remains excluded from implementation
+  adoption even if its measurements are faster.
 - Trace the configured SYCL build's actual source resolver and entrypoint.
   A feature in the upstream root CUDA generator does not establish that its
   Arc engine implements it. Record existing Arc capabilities and the remaining

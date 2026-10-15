@@ -1,0 +1,30 @@
+# 追加source origin監査 — R718
+
+2026-10-15 JST。own forkのtracked source、導入commit、現行build resolver、保存済みorigin記録のread-only確認。目的は既存XeStrata-derived candidateの棚卸しであり、XeStrata clone/source/patchとの比較はしていない。製品sourceの編集、build/test、GPU、process/service操作、Git変更なし。credential path `b-prefill-gemm-only-contract-root-v1/record.json` は開いていない。結果はこの報告のみ。
+
+## 分類
+
+| 範囲 | 分類 | own-tree根拠 / 限界 |
+|---|---|---|
+| `src/sycl/runtime.cpp`, `src/sycl/device.cpp`, `include/strata/sycl/runtime.hpp` | own fork authored SYCL runtime/device substrate — **明確にown-tree由来** | current first-parent introduction `310432c9` (`feat(sycl): add runtime queues memory and device arena`, yqYoi, Oct 2) がdevice list, USM admission, queue, allocation/arena, runtime testとdocsを追加。`src/sycl/compat.cpp`は`c7653c07` (`connect host engine streams graphs and cache staging`, yqYoi) がSYCL compatibility implementationを追加。以降 `3205987c`, `51ad49e8` 等の変更もown history上のSYCL interface adaptation/failure guards。現行ソース上にXeStrata SPDXは確認できず、3ファイルの履歴は明示的なown implementation。これはコードの普遍的な独自性を保証するものではないが、toolchain位置だけから移植元とは分類できない。
+| root `CMakeLists.txt`, `cmake/sycl_backend.cmake` のSYCL resolver | **現行のsource selectionは明確**。同時にsource provenanceの包括的clean判定ではない | `STRATA_ENABLE_SYCL`時にroot CMakeが`cmake/sycl_backend.cmake`をinclude。そこで`src/sycl/runtime.cpp`, `compat.cpp`, `device.cpp`と固定列挙された`src/kernels/sycl/*.cpp`をlibsへ追加し、`strata_engine`を`strata_kernels_cpu`とリンクし、`strata_prefill`経由で`src/program/generate.cpp`をbuildする。native CPU sourcesはroot CMakeの`STRATA_NATIVE_EXPERTS` (default ON) branchで明示登録。globによる外部source autoloadは見えず、resolverにXeStrata checkout/source pathはない。compiler selectionは`-DCMAKE_CXX_COMPILER=icpx`と`-fsycl` checks。これは「どのtracked own fileをbuildするか」の事実で、各fileのhunk origin判定とは別。
+| `src/kernels/cpu/{expert.cpp,expert_layout.cpp,iq_avx2.cpp,iq_avx512.cpp,native_expert.cpp,pool.cpp,q2_avx2.cpp}`と対応headers/tests | XeStrataとの**明確な共同source/provenance markerがあるcandidate**。しかし現行全体を単一移植だと断言せず、後続の独立/upstream変更を分離する必要あり | current historyの`df4f8742` (Oct 4, author MistVVK) は「CPU expert kernelsをXe configに合わせる」とし、AVX2/AVX-512 kernels, pool, layoutをSYCL engineのmapped expert areaに合わせると説明。変更filesにNiko/StrataおよびMistVVK/XeStrataのcopyright markerが導入された（対象src filesと`include/strata/kernels/cpu/{expert,expert_layout,iq_avx2,iq_avx512,native_expert,pool}.hpp`）。これは性能比較のみという新制約下で明示的に再監査すべきsource hunk群。単にmarkerを消す/関数名を検索して全体cleanと言うことはできない。
+| 同CPU native quant/GU現在実装の一部 | **mixed/unknown at hunk level**。ファイル単位clean認定不可 | `378770ae` (Oct 8) はown commit文面でupstream 0.1.40 AVX2 variantを取り込み、AVX-VNNI / `rows256.hpp` Xe形式をupstream row implementationから作る形へ置き換えたこと、gather/decode/Q8_K等を記す。`e7b415c0`はIQ4_XSの複数token AVX2 kernelを追加。`73d0dc22`は`NativeFmt.n_ff/n_embd`を使うpool geometry修正。後続には多数のown tuning/functional editsがある。したがって現在のCPU sourceはdf4f8742の影響を含むが、最新全文がそのままXe copyであるとも、同名機能がないから全てcleanとも言えない。明確なのはdf4f8742で加わったhunks/attribution、後続の個別lineageはown commitsに紐づく混在、境界の解像度不足はunknown。適法性や著作権判断は本監査の範囲外。
+| IntelLLVM/DPC++ installation under XeStrata worktree path | **toolchain artifact location only; source originの証拠ではない** | R716とR611保存記録のcompiler/runtime環境は`.tools/intel-llvm-v711/install`をMistVVK/XeStrata worktree内から参照し、`PATH`, `LD_LIBRARY_PATH`, `CPLUS_INCLUDE_PATH`, `UR_ADAPTERS_FORCE_LOAD`に登録していた。R611の識別はDPC++ 7.1.0 pre-release / Clang 22.1.0 / LLVM rev `504366f4...`。root CMakeは`icpx`を要求するが、XeStrata checkoutからC++ sourceを取り込む指定はない。再現ability/供給元のpath依存は別途解消対象になり得るが、tool binaryの格納場所からtracked kernel由来を推論しない。
+
+## CPU sourceを「全て明確」または「全てclean」と言わない理由
+
+`df4f8742`のGit diffは単なる追加markerだけでなく、CPU dispatch/layout/pool/AVX implementationの変更を含み、SPDX表示が複数live source/headerに存在する。一方、それ以前のown CPU engine (`73d0dc22`等を含む履歴)、upstreamをexplicitly出典とする`378770ae`以後の書換え、own tuningが同じ現在ファイルに重なっている。レポートやdiffは有力なancestryだが、symbol marker不存在や現在の短いcommit messagesだけで差分を全部識別できない。次の実撤去判断は`df4f8742`のbaseに対する元差分と、各後続commitの適用hunkをown historyだけで再構成し、engine上必要なpreexisting implementation/independent later modificationsを保ったsource hunk単位レビューが必要。著作権表示を消して残す方法はsource removalではない。これはさらに継続する必要がある候補として扱い、ここではコードを変更しない。
+
+## Direct1はDirect-output経路、fallback Qlayoutとは別
+
+R716の「current Direct1 diagnostic = alternate fallback query layout」という解釈は誤り。今回のown source/configを照合すると、実測artifact `native-dense-bank-direct1-v1.json` は `STRATA_SYCL_PROMPT_DIRECT=1` を指定。現行`src/kernels/sycl/prompt_attention.cpp`のdirect selection (約300行) はDirect-outputを選ぶ。originは`cd4d4d97` “perf(sycl): write prompt attention outputs directly” (Oct 4, yqYoi) の`prompt_attention.cpp`実装と記録に繋がる。Direct1はこのprompt-attention output-mode armを表す。
+
+`84374f68` “recover opt-in fallback query layout for prefill” は別のOct 15 own change。これは`src/kernels/sycl/decode_attention.cpp`のsplit/fallback attentionに`qsa_decode_attn_batch_layout` / `TransposeQ` variantを足し、`src/prefill/prefill.cpp`からfallback selectionを追加する。これはDirect-output switchではなく、QSA split decode fallbackのquery layout selector。R561も`STRATA_PREFILL_ATTN_LAYOUT`をfallback-onlyとしてprompt `joint_matrix` pathと区別している。従ってDirect0/Direct1 artifactを84374f68由来Qlayoutの性能結果と扱うのは誤り。これら二つは別のentrypoint, flag, kernel routing, ancestryでレビューする。
+
+## source scopeの確認点と限界
+
+* `cmake/sycl_backend.cmake`の`strata_kernels`固定source listにはdecode/prompt attention両方が含まれる。SYCL backendをbuildする時に両方のtranslation unitがcompileされても、runtime call siteは別 (`qsa_decode_attn_batch[_layout]`対`qsa_prompt_attn_batch`) である。build source presenceだけで一つの測定が両方を実行したとしない。
+* CPU native expertsは`strata_kernels_cpu`に入り、ggml-cpuをactivation quantization / generic type-trait dotの依存として使う。`native_expert.cpp` commentsもこの役割を述べる。これはggml upstream dependencyの存在と、df4f8742由来 hunkの存在を区別する必要がある。
+* `src/sycl`のorigin判定は3 runtime sourceとprincipal loader/compat implementationの履歴に限定。その他のSYCL kernels全体をこの追加監査だけでcleanと宣言しない。R716で確認したDirect1 scope以外のfull-source exhaustiveness auditは未実施。
+* 共有索引、R715 removal-hook report、R716 provenance reportを先に確認。R716はpre-Xe prompt/decode kernel ancestryを示すがDirect1 routingについての記述はこの報告で訂正する。layer-majorのpre-Xe ancestryはR716の範囲なので繰り返さない。

@@ -1235,6 +1235,62 @@
       "path": "research-capacity-workspace-round712-v1.txt",
       "sha256": "40ede4d71ce5db4741594636662cc395951bf081172d9fedd40e3ebc5bf9cedb",
       "status": "Main source review accepted: component allocation is not simultaneous residency proof. Explicit norm/non-layer HC/PLE owner and lifetime constraints added to current capacity report."
+    },
+    {
+      "round": 713,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-canonical-resolver-round713-v1.txt",
+      "sha256": "ee1c3d45cc9902e48711d9e69f726feb688079a21468d635ba01affb12c49764",
+      "status": "Main reviewed source-only canonical PLE/resolver report. Actual persistent82821120B needs its own capacity budget; proposal unapplied and cleanbase reconstruction required."
+    },
+    {
+      "round": 714,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-prefill-attention-roofline-round714-v1.txt",
+      "sha256": "50c7fda4b6bc69fb41ad04f1bf6cc7de89b0dcc429ad95e3afb7db840e60b6a9",
+      "status": "Main read: conditional mode1 cell-major gather/SLM layout hypothesis using non-Xe primary references. No implementation, profiler or performance proof."
+    },
+    {
+      "round": 715,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-xestrata-removal-hooks-round715-v1.txt",
+      "sha256": "1f54b9930eaddd308348bf333ef79cbb9e8d31a05e35b1822bd2d77fd75df369",
+      "status": "Main complete diff review and actual product removal/build PASS. Independent MTP/pool/watchdog safety retained."
+    },
+    {
+      "round": 716,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-xestrata-provenance-round716-v1.txt",
+      "sha256": "b4d9f22fdf04d10dc0c1997c9ca526745ce049d36fcca72db13ffbc303d120a9",
+      "status": "Main correction: Direct1 is pre-Xe prompt Direct-output cd4d4d97;84374f68 is separate fallback Qlayout. Unknown claims are not source adoption proof."
+    },
+    {
+      "round": 717,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-cpu-gu-origin-round717-v1.txt",
+      "sha256": "251da8a7add8ad6612915ca8501a6db745ac4f0747fddcf5c3d49bcaf65da559",
+      "status": "Independent origin unknown; Main removed GU header/fixture/hooks instead of adopting it. Actual recompile PASS."
+    },
+    {
+      "round": 718,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-additional-source-origin-round718-v1.txt",
+      "sha256": "d5badd41be749de65c483706ab68936bec2ae2c88f145f33f81e4715057c2ba5",
+      "status": "CPU current-mixed classification was wrong: confused reachable old lineage with selected blobs. Retracted by Main/R719; original preserved."
+    },
+    {
+      "round": 719,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-selected-cpu-provenance-round719-v1.txt",
+      "sha256": "62bf68dbf9162ed423b00f7694652df9183286172b092a1dbb6cf249d058f98b",
+      "status": "Main and independent fixed0f816 blame/blob/resolver confirm no df4f8742/378770ae lines in4currentCPU files; no unjustified CPU engine rollback."
     }
   ],
   "main_initial_findings": [
@@ -2024,7 +2080,13 @@
     "GPU32768_receipt": "native-dense-bank-gpu32768-v1.json",
     "GPU_rows_comparison": "native-dense-bank-gpu-rows-comparison-v1.json",
     "prepared_next_recipe": "run_native_dense_bank_direct1_v1.py",
-    "prepared_next_state": "NOT_RUN_DIRECT1_SAME_NATIVE_GPU32768"
+    "prepared_next_state": "CLOSED_PASS_78453_DIRECT1_DIAGNOSTIC_ONLY",
+    "Direct1_receipt": "native-dense-bank-direct1-v1.json",
+    "Direct_comparison": "native-dense-bank-direct-comparison-v1.json",
+    "individual_Direct_diagnostic_PP": [
+      251.8,
+      303.2
+    ]
   },
   "prefill_capacity_current": {
     "report": "prefill-capacity-current.ja.md",
@@ -2040,7 +2102,9 @@
     "main_corrections": "main-review-round707.ja.md",
     "implementation": "prefill-canonical-dense-bank-v1",
     "model": "gpt-6.1-sol",
-    "state": "Source-only proposal FINAL; R710 found deterministic C++ startup statements inserted at GpuStage class scope. Unapplied/uncompiled; correction required before qualification."
+    "state": "Unapplied/uncompiled V2 fixes class-scope startup error and retains Main observers, but requires cleanbase reconstruction after prohibited-source retirement. Old full generator mirrors retired; no adoption.",
+    "corrected_source_only_v2": "prefill-canonical-dense-bank-v2",
+    "corrected_diff_sha256": "a4a8258bc087a8e79fbce233866385f36dd6cd9941c1f0a7498acffe77ed77cc"
   },
   "physical_context_consume": {
     "proposal": "physical-context-consume-v3",
@@ -2061,5 +2125,17 @@
     "compact": "native-dense-gpu0-model-compact-v2.json",
     "removed_files": 13,
     "removed_bytes": 32267018
+  },
+  "XeStrata_policy": {
+    "state": "PERFORMANCE_REFERENCE_ONLY_NO_CODE_ADOPTION",
+    "review": "xestrata-performance-only-main-review.ja.md",
+    "known_derived_diagnostics": "REMOVED",
+    "unknown_GU_diagnostics": "REMOVED",
+    "build": "license-clean-prefill-build-v2.json",
+    "retirement": "license-source-retirement-v1.json",
+    "current_native_sha256": "8fdc241d5227f7bde921a8bbdccf9535d6b263d35237751488338cdf438b89de",
+    "model_recipe": "run_license_clean_prefill_model_v1.py",
+    "model_state": "ACTIVE_NOT_YET_QUALIFIED",
+    "model_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-license-clean-prefill-model-root-v1"
   }
 }
