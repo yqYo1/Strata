@@ -240,3 +240,10 @@ NOT_EXERCISED. It does not become PASS for that coverage, and it does not by
 itself fail the other qualification checks. API/runtime/numerical/owner errors
 remain failures. No product or Gemm test was weakened; execution is still UNRUN
 at this review boundary.
+
+The first Main build is an unchanged FAIL in `own-native16-onednn-build-v1.json`:
+the qualified SYCL event wait method is non-const. The next private fixture
+changes its local event to non-const and requires the original failed CPU-only
+job's exact closure; GPU execution was false. Effective compile/link templates
+remain in this manifest. Redundant raw v2 recipe copies are recoverable from
+archive709235b0 and the pinned v2 receipt.

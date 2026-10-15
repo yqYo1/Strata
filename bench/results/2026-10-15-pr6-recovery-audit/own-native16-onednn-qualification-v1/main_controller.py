@@ -352,6 +352,19 @@ def main():
             pin_all()
             _, record['prior'] = receipt_gate(module, options.prior, options.prior_sha256, record['boot_id'])
             remember(options.prior, options.prior_sha256)
+            if manifest.get('closed_failed_cpu_build'):
+                previous = manifest['closed_failed_cpu_build']
+                old = load(previous['path'])
+                require(sha(previous['path']) == previous['sha256'] and old.get('complete') and
+                        not old.get('active') and not old.get('passed') and old.get('GPU_executed') is False and
+                        old.get('boot_id') == record['boot_id'] and not old.get('fresh_faults') and
+                        not old.get('driver_dump_exists'), 'original failed CPU build must be closed without GPU work')
+                for command in old['commands']:
+                    require(module.closed(command), 'failed CPU build ownership closure')
+                    for identity in command['owners']:
+                        now = module.identity(identity['pid'])
+                        require(now is None or now['start_ticks'] != identity['start_ticks'], 'failed CPU build identity still live')
+                record['closed_failed_cpu_build'] = previous
             for name in ['own-native16-prefill-build-v2.json', 'own-native16-gemm-correctness-v2.json']:
                 path = A/name
                 value, proof = receipt_gate(module, path, manifest['input_pins'][str(path)]['sha256'], record['boot_id'])
