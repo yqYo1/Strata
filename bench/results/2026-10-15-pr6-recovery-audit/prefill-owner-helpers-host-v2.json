@@ -1,0 +1,250 @@
+{
+  "passed": false,
+  "complete": false,
+  "active": false,
+  "GPU_executed": false,
+  "root_source_changed": false,
+  "recipe_sha256": "690eec3bf8581eddb7b0eb8e6b4c58646e92b9b1cac1762e2829d4b5d0d41172",
+  "environment": {
+    "PATH": "/usr/bin:/bin",
+    "HOME": "/home/yayoi",
+    "LANG": "C.UTF-8",
+    "LC_ALL": "C.UTF-8",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONNOUSERSITE": "1"
+  },
+  "commands": [
+    {
+      "label": "compile-head-scope-normal",
+      "argv": [
+        "/usr/bin/c++",
+        "-std=c++17",
+        "-UNDEBUG",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-O2",
+        "-I/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/prefill-head-release-v1",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/prefill-head-release-v1/host_scope_fixture_main_v2.cpp",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prefill-owner-helpers-host-root-v2/head-scope-normal"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONNOUSERSITE": "1"
+      },
+      "started_utc": "2026-10-15T09:31:51.168066+00:00",
+      "wall_seconds": 90,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 975888,
+          "start_ticks": 40547528,
+          "sid": 975888,
+          "pgid": 975888
+        },
+        {
+          "pid": 975889,
+          "start_ticks": 40547529,
+          "sid": 975888,
+          "pgid": 975888
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 405475.289488932,
+      "pid": 975888,
+      "spawn_return_monotonic": 405475.291067785,
+      "direct_identity": {
+        "pid": 975888,
+        "state": "R",
+        "ppid": 975846,
+        "pgid": 975888,
+        "sid": 975888,
+        "start_ticks": 40547528,
+        "rss_bytes": 413696
+      },
+      "peak_live_owned_identities": 2,
+      "peak_session_rss_bytes": 66822144,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-15T09:31:51.810812+00:00",
+      "elapsed_seconds": 0.6425759769626893,
+      "logs": {
+        "compile-head-scope-normal.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "compile-head-scope-normal.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "run-head-scope-normal",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prefill-owner-helpers-host-root-v2/head-scope-normal"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONNOUSERSITE": "1"
+      },
+      "started_utc": "2026-10-15T09:31:51.811528+00:00",
+      "wall_seconds": 90,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 975924,
+          "start_ticks": 40547593,
+          "sid": 975924,
+          "pgid": 975924
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 405475.933138627,
+      "pid": 975924,
+      "spawn_return_monotonic": 405475.935287516,
+      "direct_identity": {
+        "pid": 975924,
+        "state": "R",
+        "ppid": 975846,
+        "pgid": 975924,
+        "sid": 975924,
+        "start_ticks": 40547593,
+        "rss_bytes": 307200
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-15T09:31:51.932186+00:00",
+      "elapsed_seconds": 0.12037290201988071,
+      "logs": {
+        "run-head-scope-normal.stdout": {
+          "bytes": 34,
+          "sha256": "4c73d30af9ed05018bc5ee4b28fb7db34eb52439b10cf233c33378a541ba55a6"
+        },
+        "run-head-scope-normal.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "compile-KV-prefix-normal",
+      "argv": [
+        "/usr/bin/c++",
+        "-std=c++17",
+        "-UNDEBUG",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-O2",
+        "-I/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/layer-major-kv-prefix-reuse-v1",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/layer-major-kv-prefix-reuse-v1/layer_major_kv_prefix_reuse_test.cpp",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prefill-owner-helpers-host-root-v2/KV-prefix-normal"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONNOUSERSITE": "1"
+      },
+      "started_utc": "2026-10-15T09:31:51.932993+00:00",
+      "wall_seconds": 90,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 975927,
+          "start_ticks": 40547605,
+          "sid": 975927,
+          "pgid": 975927
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 405476.054478227,
+      "pid": 975927,
+      "spawn_return_monotonic": 405476.056215577,
+      "direct_identity": {
+        "pid": 975927,
+        "state": "R",
+        "ppid": 975846,
+        "pgid": 975927,
+        "sid": 975927,
+        "start_ticks": 40547605,
+        "rss_bytes": 438272
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 1,
+      "finished_utc": "2026-10-15T09:31:52.042720+00:00",
+      "elapsed_seconds": 0.10951201798161492,
+      "logs": {
+        "compile-KV-prefix-normal.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "compile-KV-prefix-normal.stderr": {
+          "bytes": 401,
+          "sha256": "784a3a4adc3dd941bc89fe924e08c505d44ac39ec14d702d643fedd86e02743e"
+        }
+      }
+    }
+  ],
+  "results": [
+    {
+      "case": "head-scope-normal",
+      "stdout": "host head-boundary contract: PASS\n",
+      "stderr": "",
+      "binary_sha256": "3758b45ad25f21502a2340219b2aec0e4565dd1fb7ea166ac9b41549124a2cbd",
+      "sanitizers": false
+    }
+  ],
+  "previous_failed_receipt_sha256": "ef321c056e9583664c9ebc796f11d43fa45d5b78c0902b569a9d77c68d067e67",
+  "fixture_fix": {
+    "original_sha256": "dc9c84e86ea916d48f201e7c77651836b1c96ef79674c5fbc63b665259e26aa7",
+    "new_sha256": "9d22f6d88deff1b0cbff472730e6fc2ccfd8ade3e2dc274c350c7b39b992ba09",
+    "reason": "GCC -Werror=misleading-indentation rejected a one-line if followed by unconditional state writes; split one newline, no logic or warning-policy change."
+  },
+  "source_pins": {
+    "bench/results/2026-10-15-pr6-recovery-audit/prefill-head-release-v1/host_scope_fixture_main_v2.cpp": "9d22f6d88deff1b0cbff472730e6fc2ccfd8ade3e2dc274c350c7b39b992ba09",
+    "bench/results/2026-10-15-pr6-recovery-audit/prefill-head-release-v1/prefill_head_scope.hpp": "2ebabef8e097ec13aa72ccbf503ebd711e60aa03a06e1fcbfee1d3a4bbfa669d",
+    "bench/results/2026-10-15-pr6-recovery-audit/layer-major-kv-prefix-reuse-v1/layer_major_kv_prefix_reuse_test.cpp": "3dd85a3da3657369b9b8ee4d8ac7c42b2cc9744f45a2ee038e61c57690efce1e",
+    "bench/results/2026-10-15-pr6-recovery-audit/layer-major-kv-prefix-reuse-v1/layer_major_kv_prefix_reuse.hpp": "236b59d28b07e2c39069f458d62d4d470b69263e079eec33987fdbceda585aab"
+  },
+  "scope": "Normal and ASan/UBSan CPU execution of the byte-identical proposed helper headers. Does not instantiate production GPU owners or qualify DMA, graph retirement, model parity, capacity, quality, performance, physical262144 or RESTORE.",
+  "retention": {
+    "consumer": "Main proposal integration and actual SYCL build review",
+    "byte_budget": 134217728,
+    "next_review": "After product-source integration/build qualification; retain compact receipts and retire redundant build logs/binaries."
+  },
+  "error": "RuntimeError('compile KV-prefix-normal failed: /home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/layer-major-kv-prefix-reuse-v1/layer_major_kv_prefix_reuse_test.cpp:1:10: fatal error: strata/prefill/layer_major_kv_prefix_reuse.hpp: No such file or directory\\n    1 | #include \"strata/prefill/layer_major_kv_prefix_reuse.hpp\"\\n      |          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\\ncompilation terminated.\\n')",
+  "finished_utc": "2026-10-15T09:31:52.043266+00:00"
+}

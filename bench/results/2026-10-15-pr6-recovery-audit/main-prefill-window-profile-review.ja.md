@@ -101,6 +101,15 @@ BF16 storage v2もSolから受領したが、v1が漏らしていた既存CPU au
 head releaseもsource-onlyであり、744699900 Bのpayload回収を実測済みとは言わない。
 短入力のdecode配置経由prefillと既存FP32 referenceは維持する。
 
+Mainは続いてhead-scope/KV-prefixの**提案したproduction helperそのもの**を
+通常C++17とASan/UBSanで実行し、4組ともPASSした
+（`prefill-owner-helpers-host-v3.json`）。GPU owner本体、graph、DMAはこのfixtureにない。
+head fixtureの元の一行ifはGCCの`-Werror=misleading-indentation`で失敗し、一改行だけを加えた
+Main v2 fixtureを使用した。次の試行ではMainのinclude配置不足でKV fixtureがcompile失敗し、
+提案headerとbyte同一のproduction include path overlayを作って解消した。
+元v1/v2失敗結果とwarning条件は保存し、test logicやWerrorを弱めていない。
+rootへの適用、実SYCL build、モデル/RESTORE/物理最大context検証は未実施のままである。
+
 ## 失敗と保存
 
 collector harness v1は正常INFOをREADYと誤読してGEN前に失敗。v2は513 tokenの正常な
