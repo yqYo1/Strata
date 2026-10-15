@@ -2602,6 +2602,9 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                         if (pe.on) {   // the peer's marks so far are done: the primary waited for its last rows
                             int pd = 0; cudaGetDevice(&pd); cudaSetDevice(pe.dev); cudaStreamSynchronize(m.pp->s); pe.fold(); cudaSetDevice(pd);
                         }
+#if defined(STRATA_ENABLE_SYCL)
+                        sycl_backend::cpu_wait_profile::Host host_group_profile(sycl_backend::cpu_wait_profile::host_group);
+#endif
                         std::fill(m.cnt.begin(), m.cnt.end(), 0);
                         for (int64_t i = 0; i < T * K; ++i) {
                             const int32_t e = ids_h[(size_t) i];
@@ -2667,6 +2670,9 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                         for (int32_t e = 0; e < m.g->n_expert && !on_peer.empty(); ++e)   // the peer-streamed ones last:
                             if (on_peer[(size_t) e] == 2) order_peer.push_back(e);        // their copies get the most time
                         n_order = order.size();
+#if defined(STRATA_ENABLE_SYCL)
+                        host_group_profile.finish();
+#endif
                         if (m.layer26_phase_audit && !m.layer26_phase_audit->capture_grouping(
                                 l, c0, T, ids_h, slot_h, src_h, m.cnt, m.off, order)) {
                             err = "prefill phase audit: grouping capture failed"; return false;

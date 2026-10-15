@@ -370,12 +370,14 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         const uint64_t bytes = layout.blob_bytes(layer);
         // Resolve/copy on the main thread. copy_blob may itself call blob(),
         // whose pointer need only survive until the next blob() call.
+        sycl_backend::cpu_wait_profile::Host source_copy_profile(sycl_backend::cpu_wait_profile::source_copy);
         for (int32_t e = 0; e < NE; ++e) {
             if ((e % 32) == 0 && should_stop && should_stop()) { err = "cancelled"; return false; }
             if (!m.src->copy_blob(layer, e, upload.get() + size_t(e) * size_t(stride))) {
                 err = "prefill layer-major: expert source copy failed"; return false;
             }
         }
+        source_copy_profile.finish();
         if (profile) profile->add(LmProfile::source, load_start);
         const auto upload_start = profile ? LmProfile::Clock::now() : LmProfile::Clock::time_point{};
         if (profile) profile->begin(LmProfile::upload, m.cs);

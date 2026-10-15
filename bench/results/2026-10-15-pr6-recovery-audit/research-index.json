@@ -1574,6 +1574,22 @@
       "path": "research-gpu-grouping-boundary-round754-v1.txt",
       "sha256": "9f08461058ba60b0b17724aa971412242e8d2cb9f5fab16c0e6747fdf0efa6d0",
       "status": "Main read; GPU grouping alone leaves hostcount-dependent perexpertGEMM and synchronization. 451883520logicalbytes/480boundaries and491520GEMM upperbound are geometry, not counters. Implementation deferred until CPU attribution."
+    },
+    {
+      "round": 755,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-cpu-submission-fusion-round755-v1.txt",
+      "sha256": "4f700d04ceced2c73bef598205ec96facd87689cd11231632b1bb3cf97e5ed22",
+      "status": "Main read; exact USM group interface useful candidate, not speed proof. Main corrects Hh FP16: allroutesGU+Hh500MiB/increment450MiB, not600. Differentne canusegroup_size1 inonecall; CPUgroup stillrequired."
+    },
+    {
+      "round": 756,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-mkl-verbose-contract-round756-v1.txt",
+      "sha256": "03f8ee5265bd0a6ea9c05a6d4524c3225f12c76247200806182fdd8f54ff9296",
+      "status": "Main read and opened official2026.0call-descriptionpage; actual2026.1 probe16casesallmatchedGPU0. Paddedstrideonly, notwholemodelfallbackexclusion."
     }
   ],
   "main_initial_findings": [
@@ -2765,6 +2781,46 @@
     "compact": "closed-own-selector-cpu-compact-v1.json",
     "files": 202,
     "logical_bytes": 1618773,
+    "original_status_samples_unchanged": true
+  },
+  "own_prefill_CPU_host_v2": {
+    "report": "own-prefill-host-attribution-v2.ja.md",
+    "build": "own-prefill-host-profile-build-v2.json",
+    "model": "own-prefill-host-profile-model-v2.json",
+    "proposal": "own-prefill-host-profile-v2/source.diff",
+    "source_diff_sha256": "602f6dace013af8a167f17559e480d35d2dedff69d0800aef838f587062cbdee",
+    "source_base_commit": "9b83fbf8e05115fa70b136c083896e7841608ba1",
+    "main_verified_commit_membership": true,
+    "binary_sha256": "850dec38169e0879fdb19ea572f20ba5eedf364b3921c9229b263788a8262705",
+    "host_tests": 17,
+    "component_smoke_cases": 4,
+    "component_full_cases": 12,
+    "observed_GEMM_location": "all16reportedGPU0; ld=N+3 only, notwholemodel",
+    "CPU_seconds": {
+      "unclassified_cpu_s": 37.348200136,
+      "unclassified_wall_s": 42.889923313,
+      "source_copy_cpu_s": 4.856936401,
+      "source_copy_wall_s": 4.867617353,
+      "source_copy_outside_wait_cpu_s": 4.856936401,
+      "source_copy_outside_wait_wall_s": 4.867617353,
+      "host_group_cpu_s": 0.16536261,
+      "host_group_wall_s": 0.168038559,
+      "host_group_outside_wait_cpu_s": 0.16536261,
+      "host_group_outside_wait_wall_s": 0.168038559,
+      "gemm_submit_cpu_s": 6.784368076,
+      "gemm_submit_wall_s": 7.282662714,
+      "gemm_submit_outside_wait_cpu_s": 6.784368076,
+      "gemm_submit_outside_wait_wall_s": 7.282662714
+    },
+    "wait_CPU_seconds": 167.95478794,
+    "gemm_calls": 239458,
+    "main_decision": "Hostgroup0.165CPU seconds lowpriority. Nextsplit37.348unclassified into pageablecopy submits andkernel submits; no optimization adopted fromCPUutilization. KeepmodelCPUfallbackscopeunproven."
+  },
+  "retention_v22": {
+    "manifest": "closed-own-prefill-host-profile-retention-v2.json",
+    "compact": "closed-own-prefill-host-profile-compact-v2.json",
+    "files": 88,
+    "logical_bytes": 1409842,
     "original_status_samples_unchanged": true
   }
 }

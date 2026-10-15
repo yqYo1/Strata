@@ -1,6 +1,7 @@
 #include "strata/prefill/gemm.hpp"
 #include "strata/kernels/iq_kernels.hpp"
 #include "strata/sycl/launch.hpp"
+#include "strata/sycl/cpu_wait_profile.hpp"
 #include <cmath>
 #include <cuda_runtime.h>
 #include <oneapi/mkl/blas.hpp>
@@ -21,11 +22,14 @@ void multiply(const uint16_t *x, const uint16_t *w, float *y, int64_t T,
   shape(T, N, K, ld, beta);
   validate_spans({{y, size_t(T - 1) * ld * 4 + size_t(N) * 4}},
                  {{x, size_t(T) * K * 2}, {w, size_t(N) * K * 2}});
+  auto &gemm_queue = queue_for(stream);
+  cpu_wait_profile::Host gemm_submit_profile(cpu_wait_profile::gemm_submit);
   auto event = oneapi::mkl::blas::row_major::gemm(
-      queue_for(stream), oneapi::mkl::transpose::nontrans,
+      gemm_queue, oneapi::mkl::transpose::nontrans,
       oneapi::mkl::transpose::trans, T, N, K, 1.f,
       reinterpret_cast<const Input *>(x), K, reinterpret_cast<const Input *>(w),
       K, beta, y, ld);
+  gemm_submit_profile.finish();
   finish(stream, event);
 }
 void scratch_valid(uint16_t *scratch, int64_t count) {
