@@ -42,3 +42,23 @@ shared QSA/GDN/MoE regionは既にmax-sizedの同一領域を再利用してお�
 bitwise mapping条件を別々に調べる。既存report/indexを共有し、双方のFINALまで介入しない。
 Mainは同じGPU suiteと実receiptを監視する。目的1000 PP/70 TG、PR6性能回復、品質、
 物理262144/RESTOREとupstream/defaultの残作業は引き続き未完了である。
+
+## R659/R660の独立source契約
+
+両FINALを受領してMainがレビューした。R659はbind_bytes/setup_coupled二箇所/bind/record_forwardの
+subset意味とcopied storageの判定を分離する必要、再bind時のcaptured pointer、NativeHeadの借用寿命を
+確認した。新indexed modeでもNv、dvocab/dinv、sample/remapとaccountingを維持する。提案はまだ
+作成中なので、この調査を新codeのレビュー済み証拠にはしない。R659の非Q6拒否という推奨に対し、
+Mainが実装へ要求した仕様は非Q6/真正no-subsetなら従来modeへの明示fallbackである。新経路が実際に
+有効だったことは将来の実route証拠で区別する。不正なIDを新経路から読むことは認めない。
+
+R660は現在のQ6_K型14がgeneric traitsであり、実full MTPはT1、N2560ではROWS1/NW4/subgroup32と
+確認した。indexed化はcompact出力幅を保ち、元重みのrow addressだけを変える。量子化、dot、warp
+partial merge、XOR還元を変えない。ncols>1のmulti_exact別layoutも同じmode同士で全配列比較する。
+負IDは旧gatherのzero-fill仕様だが、新production bindでは範囲拒否を先に行う。正の範囲外IDを
+旧gatherの未定義readに合わせることはしない。full weightとselected ID、activation/outputの各span、
+no-overlap、明示queue/enqueue-only/graph寿命、capture/replayの実検証はMainの後続gateである。
+両reportは作成中proposalを読まず現rootだけを確認している。Solへの途中介入はしていない。
+
+R657原reportにEOF空行一件のgit whitespace warningがある。原受領bytes/hashを維持するため保存し、
+そのreport以外の変更のdiff --checkと実test/build資格を区別する。
