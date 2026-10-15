@@ -30,6 +30,13 @@ token-ID buffer 16384/32768 Bも差し引いた。
 runtime余裕512 MiB・小owner16 MiBは設計上の仮置きで、実測した最大使用量ではない。
 runtime余裕を1 GiBへ増やした感度分析も構造化結果に残す。
 
+4Kのbyte収支は
+`10666115072 - 1440161792 - 1226622208 - 117669888 - 368640 - 16777216 - 536870912 - 16384 = 7327628032`。
+主表の作業領域は、実GPUで確保したstreamed-modeのslabから、全層KV常駐では使わない
+一層分のKV stage 276825088 Bを除いたsource上の計算である。
+実GPU gateはslabの確保・relayout・guard・不足予約の拒否を確認したもので、
+最大レイヤーと全contextを同時に推論した実測ではない。
+
 保存hiddenはhyperconnection4×2560要素×2 B、**20480 B/token**。
 262144 tokenで**5 GiB**。全層分を同時保存する計算ではなく、一つの全prefix bankを順次更新する。
 FP16とBF16の容量は同じ。品質合格は容量計算からは得られない。
@@ -48,6 +55,8 @@ FP16とBF16の容量は同じ。品質合格は容量計算からは得られな
 右端はhiddenの残りをRAMへ置く既存FP16 plannerの制約。
 RAM tailがある場合は変換用にGPU上のFP16一chunk（4Kで80 MiB、8Kで160 MiB）が別途必要。
 GPU prefixをさらにchunk単位に切り下げる。全hiddenがGPUに入る中央列にはこのstagingは不要。
+4Kで256K KVを保持する場合、K8V8のhiddenはGPU 167936行・RAM 94208行、
+K8V4はGPU 204800行・RAM 57344行となる。
 以前の`prefill-capacity-alias-delta-v1.json`のpartial hidden値はbyte上限であり、
 この変換領域と丸めを含む実planner行数ではなかった。元receiptは変更しない。
 `measure_prefill_capacity_fp16_admission_v1.py`はproduction planner headerを直接compileし、
@@ -56,6 +65,11 @@ partial auto配置、全hidden上限の受理、次4 tokenの拒否を検査す�
 このhost gateは正常終了し、alias OFF/ONとruntime余裕512 MiB/1 GiBの16条件について、
 上記三検査の計48ケースが合格した（`prefill-capacity-fp16-admission-v1.json`）。
 GPU割当やモデル実行をこのhost検査で行ったという意味ではない。
+
+runtime余裕を1 GiBに増やす場合、4KのKV・hidden用予算は6.3244 GiBとなる。
+同じ長さの全KV・全hiddenを持つ上限はK8V8 194264 token / K8V4 211704 token。
+256K KVを先に確保する場合のGPU hiddenは、stagingとchunk丸め込みでそれぞれ
+139264行 / 176128行となる。512 MiB予算の表を物理的な確保保証とは扱わない。
 
 全12層KVと256K hiddenを同時にGPUへ残すには、4KでもK8V8で**1.7098 GiB**、
 K8V4で**1.0067 GiB**不足する。単なるV4化だけでは全体は入らない。
