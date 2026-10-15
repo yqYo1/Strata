@@ -91,12 +91,29 @@ are outside this work's scope.
   and relevant previous reports in every assignment. Prioritize this engine's
   measured bottlenecks, but also investigate general SYCL and transferable
   non-LLM GPU/ASIC optimization, including original technical blogs and papers.
+- Label each research assignment **decision support** or **knowledge
+  collection**. Main must not read knowledge-collection report bodies merely
+  because they arrived. Keep them in the indexed file library for retrieval
+  when a concrete implementation question needs them. Inspect only relevant
+  sections of decision-support reports as needed.
 - Specify a finite question and report budget for each fresh session. Research
-  may write only its named report, with sources, applicability and evidence
+  scopes must be broad enough to compare alternatives, applicability and
+  counterevidence, while remaining one coherent investigation. Do not split
+  into trivial fact lookups or fill reports with known context. Treat report
+  length as a working budget, allowing enough room for substantive findings;
+  review novelty and depth after completion before choosing the next scope.
+  Apply scope corrections to new tasks, without steering running researchers.
+  Research may write only its named report, with sources, applicability and evidence
   limits; it must not run builds, tests, GPU jobs, profilers, process inspection,
   Git commands or product edits. Do not interrupt or steer a running researcher.
-  Read its completed report, record Main's corrections separately, update the
-  index, then assign a fresh bounded task rather than extending a long session.
+- Delegate completed report review for scope, depth, redundancy and indexing to
+  a **native Codex subagent using gpt-6-luna with max reasoning**, rather than
+  Orca. This is the explicit exception to Orca research dispatch. The reviewer
+  reads reports, pins their hashes, records corrections and retrieval metadata,
+  and returns a short operational digest and next-scope recommendations to Main.
+  Main does not load the original collection reports or a long technical digest.
+  A coordinating subagent between Main and researchers is optional. Do not steer
+  active researchers; apply scope changes to fresh bounded sessions.
 - Keep findings in files and commit reviewed reports. Research is not
   implementation adoption. Main implements, or assigns a separate
   **gpt-6.1-sol** implementation task pinned to an immutable source base. Main

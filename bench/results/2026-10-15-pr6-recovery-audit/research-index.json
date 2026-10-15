@@ -1665,6 +1665,45 @@
       "dispatch": "ctx_6a86feeacedb",
       "status": "Main read full completed report and matched accepted worker_done; design/literature only, no adoption",
       "main_review": "orca-research-wave761-763-main-review-v1.ja.md"
+    },
+    {
+      "round": 764,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-residual-storage-quality-round764-v1.txt",
+      "sha256": "968387036b56645d314599444ee73be9cc828b315b0185cae359c16c86e78ade",
+      "orchestration": "Orca",
+      "run": "run_c8f478972ec8",
+      "task": "task_f09f63495a04",
+      "dispatch": "ctx_86421496638f",
+      "status": "Main full report read; source/literature proposal only, no numerical/resource adoption",
+      "main_review": "orca-research-wave764-766-main-review-v1.ja.md"
+    },
+    {
+      "round": 766,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-gpu-liverange-rematerialization-round766-v1.txt",
+      "sha256": "e6a1809eb4488b24eedca13575720b5d01a6053b0383dc42a203f58cdaa38a45",
+      "orchestration": "Orca",
+      "run": "run_c8f478972ec8",
+      "task": "task_11b45f817236",
+      "dispatch": "ctx_c2c11dd8a08e",
+      "status": "Main full report read; source/literature proposal only, no numerical/resource adoption",
+      "main_review": "orca-research-wave764-766-main-review-v1.ja.md"
+    },
+    {
+      "round": 765,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-ur-v2-hostcopy-source-round765-v1.txt",
+      "sha256": "10a6985575d394bf8445f5f7fc5194f75d11bd5574396439e1fc9ae83f20f9e7",
+      "orchestration": "Orca",
+      "run": "run_c8f478972ec8",
+      "task": "task_506ed27cf7ca",
+      "dispatch": "ctx_25041c8781d5",
+      "status": "Main full report read; source version/binary provenance and idlequeue limits distinguished; no inference adoption",
+      "main_review": "orca-research-wave764-766-main-review-v1.ja.md"
     }
   ],
   "main_initial_findings": [
@@ -2534,7 +2573,7 @@
     "raw_byte_budget": 33554432
   },
   "current_next_actions": [
-    "Main ordinary-host versus host-USM transfer component with same queue/safety settings, bounded allocation/lifetime and separate submit/wait/setup accounting. R762 adds mappedcopy_i32 vs explicit queuecopy component design; avoid conflating allocation and copy primitive changes.",
+    "Main integrate reviewed own NLLv3 after verified current-base hunk application; host/build/smallGPU then matchedFP32 repeats/FP16 storage quality, separate allGPU admission. Ordinary-host/hostUSM component closedhealthy; blanketUSM rejected, no presumed CPUcriticalpath savings.",
     "Then qualify own NLLv3/FP16 matchedquality and separate allGPU admission, and own heads8v2 component; proposals remain UNAPPLIED/UNBUILT/UNTESTED, no presumed bandwidth/occupancy/quality win. Preserve physical262144 and RESTORE obligations.",
     "Continue fresh bounded Orca Luna waves across distinct close/broad scopes, share this index, no steering, reports only; Main handles implementation/tests while research runs.",
     "Niko noninference functional ports and fork-default promotion remain outstanding. Next actual upstream check approximately2026-10-16T01:12Z, not newly checked by reading reports."
@@ -2906,7 +2945,17 @@
     "main_parallel_work": true,
     "run": "run_c8f478972ec8",
     "initial_wave": 3,
-    "broader_scope": "General SYCL and non-LLM GPU/ASIC as well as engine bottlenecks"
+    "broader_scope": "General SYCL and non-LLM GPU/ASIC as well as engine bottlenecks",
+    "review_provider": "Native Codex subagent",
+    "review_model": "gpt-6-luna",
+    "review_reasoning_effort": "max",
+    "main_reads_collection_report_bodies_on_arrival": false,
+    "assignment_purposes": [
+      "decision support",
+      "knowledge collection"
+    ],
+    "main_consumption": "short operational reviewer digest; retrieve indexed originals only for a concrete decision; source proposal fullpatch review unchanged",
+    "review_assignment": "review_research_scope_round767"
   },
   "research_review_757_760": "research-rounds757-760-main-review-v1.ja.md",
   "own_prefill_CPU_host_v3": {
@@ -2933,5 +2982,28 @@
     "files": 86,
     "logical_bytes": 1461700,
     "original_FAIL_and_samples_unchanged": true
+  },
+  "own_host_transfer_component_v1": {
+    "receipt": "own-host-transfer-component-v1.json",
+    "report": "own-host-transfer-component-v1.ja.md",
+    "passed": true,
+    "processes": 14,
+    "clean_independent_processes": 12,
+    "individual_eligible_samples": 72,
+    "model_performance_adopted": false,
+    "GBps_320MiB": {
+      "ordinary_H2D": 6.01502209,
+      "ordinary_D2H": 5.539783397,
+      "usm_H2D": 5.094590871,
+      "usm_D2H": 5.646713446
+    },
+    "decision": "Do not adopt blanket hostUSM: caller submission becomes short but wait grows; largeH2D18.1%slower, largeD2H1.9%faster. Advance GPUresident reducedprecision storage quality/admission; no modelgain claim."
+  },
+  "retention_v24": {
+    "manifest": "closed-own-host-transfer-retention-v1.json",
+    "compact": "closed-own-host-transfer-compact-v1.json",
+    "files": 35,
+    "logical_bytes": 444160,
+    "original_samples_and_status_unchanged": true
   }
 }
