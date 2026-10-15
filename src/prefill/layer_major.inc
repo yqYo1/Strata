@@ -55,7 +55,9 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     const char* phase_switch = std::getenv("STRATA_PREFILL_PHASE_AUDIT");
     const bool phase_requested = phase_switch && std::strcmp(phase_switch, "1") == 0;
     if (native16_on) {
-        if (phase_requested || std::getenv("STRATA_PREFILL_BOUNDARY_AUDIT") ||
+        const char* boundary = std::getenv("STRATA_PREFILL_BOUNDARY_AUDIT");
+        const bool boundary_requested = boundary && std::strcmp(boundary, "1") == 0;
+        if (phase_requested || boundary_requested ||
             std::getenv("STRATA_PREFILL_DUMP_R") || gr_unfused() ||
             m.xn16_lo || m.lo16_lo || m.mixed_bf_lo) {
             err = "prefill native16: old float tensor audits/dump, unfused HC and BF16x2 are unsupported"; return false;

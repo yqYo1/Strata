@@ -20,10 +20,12 @@ struct DeviceRegistry {
   std::map<uintptr_t, DeviceSpan> spans;
 };
 DeviceRegistry &device_registry() {
-  // Initialized before runtime_for's owning map on its first allocation. Its
-  // lifetime also covers Allocation destruction at ordinary process teardown.
-  static DeviceRegistry registry;
-  return registry;
+  // compat.cpp's allocations map is constructed before main and may release
+  // owners AFTER function statics have been destroyed. Keep the registry object
+  // for the process lifetime; entries still retire with their Allocation.
+  // A destructible local static here causes use-after-free at ordinary exit.
+  static DeviceRegistry* const registry = new DeviceRegistry;
+  return *registry;
 }
 sycl::device select_device(int ordinal) {
   auto candidates = Runtime::devices();
