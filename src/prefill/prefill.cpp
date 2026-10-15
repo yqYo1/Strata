@@ -583,7 +583,13 @@ void Prefill::release() {
 
 namespace {
 constexpr int64_t GEMM_SCRATCH = 32ll << 20;        // FP16 elements for the largest dequantized dense weight
+#if defined(STRATA_ENABLE_SYCL)
+// The SYCL adapter passes GEMMs to oneMKL without using a caller workspace.
+// Skip the take as well: even a zero-sized take consumes an allocator guard.
+constexpr size_t GEMM_WS = 0;
+#else
 constexpr size_t GEMM_WS = 32u << 20;               // cuBLAS workspace
+#endif
 
 // THE ATTENTION HALF AND THE MoE HALF SHARE THEIR BUFFERS.  A layer runs its attention (GDN or QSA), writes it back
 // into the residual, and only then its MoE, so the three sets of scratch are never live at once: one region the size
@@ -829,7 +835,7 @@ bool Prefill::init(const core::WeightTable& wt, const core::ModelGeometry& g, co
     o.owned = &m.owned;
     {
         uint16_t* gs = o.take<uint16_t>((size_t) GEMM_SCRATCH, ok);
-        void* ws = o.take<uint8_t>(GEMM_WS, ok);
+        void* ws = GEMM_WS ? o.take<uint8_t>(GEMM_WS, ok) : nullptr;
         if (!ok) { err = "prefill: GEMM scratch does not fit"; return false; }
         if (!m.gemm.init_external(stream, gs, GEMM_SCRATCH, ws, GEMM_WS, err)) return false;
     }
@@ -951,7 +957,7 @@ bool Prefill::relayout(int64_t chunk, void* borrow, uint64_t borrow_bytes, std::
     o.cap = borrow_bytes;
     o.owned = &m.owned;
     uint16_t* gs = o.take<uint16_t>((size_t) GEMM_SCRATCH, ok);
-    void* ws = o.take<uint8_t>(GEMM_WS, ok);
+    void* ws = GEMM_WS ? o.take<uint8_t>(GEMM_WS, ok) : nullptr;
     if (ok) m.gemm.rebind(gs, GEMM_SCRATCH, ws, GEMM_WS);
     if (!ok || !carve((size_t) chunk, &o)) {
         err = "prefill: device buffers for a chunk of " + std::to_string(chunk) + " tokens do not fit";
@@ -1251,7 +1257,7 @@ uint64_t Prefill::bytes_needed(const core::ModelGeometry& g, const core::Session
     Alloc o;
     o.count_only = true;
     o.take<uint16_t>((size_t) GEMM_SCRATCH, ok);
-    o.take<uint8_t>(GEMM_WS, ok);
+    if (GEMM_WS) o.take<uint8_t>(GEMM_WS, ok);
     auto f = [&](size_t n) { o.take<float>(n, ok); };
     f(T * N); f(T * D); f(T * D); o.take<uint16_t>(T * D, ok); f(T * LR); o.take<uint16_t>(T * LR, ok);
     f(T * D); f(T * HC); f(T * N); o.take<uint16_t>(T * N, ok); o.take<uint16_t>(T * N, ok); f(T * N);

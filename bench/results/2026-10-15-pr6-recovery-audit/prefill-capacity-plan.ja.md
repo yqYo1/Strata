@@ -1,5 +1,8 @@
 # 長大prefillのVRAM容量計算
 
+同日の後続SYCL workspace削減による差分表とnorm常駐の補足は
+`prefill-no-workspace-review.ja.md`にある。以下は元v2 receiptのsource/仮定を固定した表である。
+
 2026-10-15。GPUでdecodeしない間はdecode用cache/head/MTP full-draft重みを保持しない、という
 ユーザーの仮定に基づく。さらにlayer-majorで**現在の一層の重みだけ**をGPUに置き、
 他層のdense重みも必要な層になってから読む。次層用の二重weight bankは持たない。

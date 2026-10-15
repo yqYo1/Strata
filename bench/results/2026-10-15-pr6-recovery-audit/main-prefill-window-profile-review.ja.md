@@ -184,5 +184,9 @@ raw timeline約1.60 GBは全イベント集計・gap解析・独立表照合の�
 
 プロファイルは旧binaryで取得後、head-releaseのproduct sourceだけを通常無効で統合した。
 BF16/KV-prefix/device-indexer-batchはまだ未適用。
+その後SYCLの未使用workspaceを削除し、実C8192/FP32/R_GPU0の二回診断を正常完了した。
+詳細は`prefill-no-workspace-review.ja.md`。閉じたhead診断の成功API/chunkログ375210 Bは
+compact証拠を検査後に削除した（`prefill-head-diagnostics-retention-v1.json`）。
+単体の47983 B APIログも、上で記したcombined consumerの完了に伴い退役済みである。
 公式bench.shの直前clean結果は実78453入力で219.1/222.3/221.5 tok/s、中央値221.5。
 600/1000 tok/s、品質、物理最大contextの実行、RESTOREの新しい合格はまだ得ていない。
