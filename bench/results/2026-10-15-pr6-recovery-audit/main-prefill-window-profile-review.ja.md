@@ -128,11 +128,40 @@ MTP/verifier/モデル/RESTORE/物理最大context検証は引き続き別の未
 R683の独立sourceレビューでも明確なdangling-owner/default-off退行は見つからなかったが、
 GPUのcompletion/graph lifecycleを証明する実行ではない。
 
-次のcombined gateは`run_prefill_head_lifecycle_v1.py`。
-公式bench.shのprefill-onlyを二回、actual input/read>=32768、thinking ON、24出力上限で行い、
-同じserve内の繰り返しhead退避/復元とMTP subset再構成・decode/終了を観察する。
-parameter validation/warningとSTRATA_TRACEを付けるため**clean性能試験ではない**。
-この準備時点では未実行。別のclean三回測定と実RESTORE/最大contextは後続gateである。
+combined gate `run_prefill_head_lifecycle_v1.py` は正常完了した。
+`prefill-head-lifecycle-c4096-v1.json`に公式bench.shの個別結果を保存した。
+同じserveで実39265入力/read、reuse0を二回処理し、両方24 token生成/finish=length。
+target521472000 Bとdraft223227900 Bの退避を各二回確認した。
+MTP expertの再upload後、full round/step graphを再captureし、実生成と通常終了まで成功した。
+native/server全exit0、全owner退去、同じboot、新規GPU fault0、dumpなし。
+parameter validation/warningとSTRATA_TRACE付きのため**clean性能試験ではない**。
+診断PP209.0/217.3、中央値213.15を性能採用の根拠にはしない。
+
+両head退避済みでMTP expertも退避した時点の実freeは初回3219066880 B、二回目3168231424 B。
+expert復元後の2460565504/2460434432 Bは、外側scopeでheadを復元する前の値である。
+全decode owner復元済みの定常freeとして扱わない。
+expert reload累計379.927 ms、graph recapture累計8.435 msを確認したが、headのD2H/H2Dを
+含む全退避復元の独立時間ではない。実RESTORE、cancel/throw、物理最大context、品質確認と
+別のclean三回測定は未実施の後続gateである。
+
+R684はdense bankの実所有者と次層normの参照を再調査した。
+canonical1538035200 Bとnative2116951040 Bは別ownerであり、単純に一方を破棄すると
+共有WeightRef/graphがdanglingになる。prefill専用viewとdecode復元の境界が必要である。
+さらにfused next-layer normは次層weightを読むため、容量表の厳密な一層bank仮定には
+norm常駐分か次層との重複を追加する必要がある。これは未実装の設計条件である。
+
+R685 v1はNとDを混同した計算を含む。v2のbuffer計算はN2560/D10240へ修正されたが、
+per-row roundtripの一段落には誤記が残る。正しくはFP32が81920 B/行、FP16が40960 B/行、
+差40960 B/行である。C8192のN-wide FP32 buffer一つは83886080 B。
+三つを一つにする仮定で167772160 Bを回収すると、容量上の161033920 B不足に対し
+6738240 B余るだけであり、norm追加やruntime変動をまだ含まない。
+aliasの寿命、短入力fallbackと共通のinit/relayout/count整合は未検証である。
+SYCL GEMMが保持するが使わない32 MiB workspaceは別の単純な削減候補としてMainが調べる。
+R684/R685の原本/hashは残し、これらを実測値や適用済み実装とは呼ばない。
+
+QSA device batch v2を受領した。production kernel/plannerはv1と同一で、
+pos0の2/3/4行seedとinvalid spanの非変更比較fixtureが追加された。
+未適用・未build・未実行である。
 
 ## 失敗と保存
 
@@ -148,7 +177,7 @@ v2は同じrawをbase kernelごとへ集約し、全events/calls/時間を保存
 表との初回joinもSIMD_ANY suffixを扱えず失敗したが、全該当群を合算するadapterで一致を確認した。
 これらの失敗statusは別receiptに保存し、GPUを再実行した結果へ置き換えていない。
 
-raw timeline約1.60 GBは全イベント集計・gap解析・独立表照合の完了後に削除する。
+raw timeline約1.60 GBは全イベント集計・gap解析・独立表照合の完了後に削除済みである。
 `prefill-window-raw-retention-v1.json` が各path/hash/bytes/理由と、残すfixtureのconsumerを記録する。
 原本のrun receiptは変えず、元trace pathが退役したことはこのmanifestで示す。
 大きなtimeline/失敗した4.6 MB中間集計をGitへ追加しない。

@@ -1554,7 +1554,18 @@
     "proposal_model": "gpt-6.1-sol",
     "independent_review": "research-checked-adaptive-event-proposal-round653-v1.txt"
   },
-  "research_pending": [],
+  "research_pending": [
+    {
+      "agent": "research_prefill_dense_norm_residency_round686",
+      "model": "gpt-6-luna",
+      "scope": "Exact persistent next-layer norm bytes and prefill dense view owner contract; no code/tests/GPU."
+    },
+    {
+      "agent": "research_prefill_attention_service_round687",
+      "model": "gpt-6-luna",
+      "scope": "Actual INT8 selected prefill attention service/data reuse and nonduplicate minimal experiment; no code/tests/GPU."
+    }
+  ],
   "mtp_indexed_head_candidate": {
     "proposal": "sycl-mtp-indexed-head-v1",
     "model": "gpt-6.1-sol",
@@ -1642,14 +1653,15 @@
   },
   "prefill_head_release_candidate": {
     "proposal": "prefill-head-release-v1",
-    "state": "Main exact applied/default-off, CPU normal+ASan/UBSan4 arms and fresh complete SYCL build PASS. Actual isolated NativeHead2cycles PASS with all521472000packed bytes and248320logits bitwise equal, address changed, fault0. Combined MTP/verifier lifecycle not yet run; no full-engine capacity/performance/model/RESTORE qualification.",
+    "state": "Main applied/default-off. CPU normal+ASan/UBSan, fresh SYCL build, actual NativeHead exact packed/logit2cycles and combined officialbench2requests PASS. Combined actual39265 inputs twice,24outputs twice, repeated MTP subset restore/full graph recapture and normal shutdown/fault0. Diagnostic only; no clean performance, RESTORE, cancellation or physical256K/quality qualification.",
     "source_diff_sha256": "737b9a346e719aec22fc069915e86da97e5caebe4ec4ca27ffa5308ed49262bc",
     "host_helper_receipt": "prefill-owner-helpers-host-v3.json",
     "build_receipt": "prefill-head-release-build-v1.json",
     "component_build": "prefill-head-component-build-v1.json",
     "component_receipt": "prefill-head-component-v1.json",
     "combined_lifecycle_recipe": "run_prefill_head_lifecycle_v1.py",
-    "combined_lifecycle_state": "prepared only, officialbench2requests >=32768 with validation/progress; not clean speed."
+    "combined_lifecycle_state": "CLOSED_PASS_DIAGNOSTIC_NOT_CLEAN_PERFORMANCE",
+    "combined_lifecycle_receipt": "prefill-head-lifecycle-c4096-v1.json"
   },
   "prefill_bf16_storage_candidate": {
     "proposal": "bf16-prefill-storage-v2",
@@ -1679,10 +1691,23 @@
   },
   "implementation_pending": [],
   "QSA_device_batch_candidate": {
-    "proposal": "qsa-indexer-device-batch-v1",
+    "proposal": "qsa-indexer-device-batch-v2",
     "model": "gpt-6.1-sol",
-    "state": "Sol FINAL source-only received; independent R682 review complete, Main needs to finish review and serial fixtures/build. Unapplied.",
-    "source_diff_sha256": "e8a11fc1ea66123f3d464c6e7ce982aed1ceb246bbf4db079454610889f0b995",
-    "review": "research-qsa-indexer-device-batch-review-round682-v1.txt"
+    "state": "Sol FINAL source only. v2 retains production kernel/planner, adds pos0 seed and invalid span nonmutation fixture cases. Main review and serial host/GPU validation pending; unapplied.",
+    "source_diff_sha256": "6732a090a727a1ede3aa2ca5165bb4c060070f625ec90696a49c533aff5c7c87",
+    "review": "research-qsa-indexer-device-batch-review-round682-v1.txt",
+    "original_proposal": "qsa-indexer-device-batch-v1"
+  },
+  "prefill_dense_layer_bank_contract": {
+    "research": "research-prefill-dense-layer-bank-contract-round684-v1.txt",
+    "state": "Source only; separate canonical/native published pointer owners need dedicated prefill view and decode recapture. Fused next-layer norm requires added persistent norm accounting beyond strict one-layer hypothesis. No implementation."
+  },
+  "prefill_workspace_alias_contract": {
+    "research": [
+      "research-prefill-workspace-alias-contract-round685-v1.txt",
+      "research-prefill-workspace-alias-contract-round685-v2.txt"
+    ],
+    "review": "main-prefill-window-profile-review.ja.md",
+    "state": "v1 N/D arithmetic wrong; v2 fixes buffer arithmetic but leaves one per-row roundtrip paragraph wrong. Main correction FP32/FP16=81920/40960B per row. Source-only alias hypothesis, admission/layout/short-path gates unqualified."
   }
 }
