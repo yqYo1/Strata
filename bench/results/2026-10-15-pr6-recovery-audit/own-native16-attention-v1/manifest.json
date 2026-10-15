@@ -1,0 +1,163 @@
+{
+  "schema_version": 1,
+  "package": "own-native16-attention-v1",
+  "base_commit": "375a6d6ee905859ef176997262e3baef6e739ad2",
+  "task_id": "task_e31a6f11f5fe",
+  "dispatch_id": "ctx_68e0e5ae905d",
+  "created_at_utc": "2026-10-15T21:38:29.763624+00:00",
+  "budget_bytes": 16777216,
+  "observed_bytes_excluding_manifest": 353411,
+  "consumer": "Main complete patch review, integration and exclusive qualification",
+  "next_review": "Before integration/build; no source adoption or result claim from this package alone",
+  "touched_product_paths_if_integrated": [
+    {
+      "path": "cmake/sycl_backend.cmake",
+      "base_sha256": "0eb0b6cc840bf95e5a5dc27fc8c3d0973f869b0547d90ab29902b1e56b2e7a59",
+      "proposed_sha256": "341cbfb929dc09e77bb01d49a3436f5efb3269e8263af68c3c901491c70edf01",
+      "base_presence": "present",
+      "status": "PROPOSAL_ONLY_UNRUN"
+    },
+    {
+      "path": "include/strata/kernels/qsa_prompt_attn.hpp",
+      "base_sha256": "ad662c1dbb166e1c31b933ced070fa65250ffda20b03f86a7f3b38add8138b75",
+      "proposed_sha256": "94f47f825e5fd3dac6c61f4d37973b039ccad1cb2411b09a0db6044d3ce5a4e4",
+      "base_presence": "present",
+      "status": "PROPOSAL_ONLY_UNRUN"
+    },
+    {
+      "path": "src/kernels/sycl/prompt_attention.cpp",
+      "base_sha256": "c88bd802d17ec5f9e1df05eee5581c9f50be86e87b1a454783b5c75aca55be3d",
+      "proposed_sha256": "743e5781346939e952f5196cd1f70d8e7de10700df3cd5ce38bcec37648f1a53",
+      "base_presence": "present",
+      "status": "PROPOSAL_ONLY_UNRUN"
+    },
+    {
+      "path": "tests/sycl/prompt_native16.cpp",
+      "base_sha256": null,
+      "proposed_sha256": "d3791231919fe137cd4e3349d0d97ea1c3df44842d3bd2b6eb78cd9f45f396ab",
+      "base_presence": "new file, absent in pinned commit",
+      "status": "PROPOSAL_ONLY_UNRUN"
+    }
+  ],
+  "unchanged_resolver_context": [
+    "base/CMakeLists.txt",
+    "files/CMakeLists.txt"
+  ],
+  "patch": "proposal.patch",
+  "patch_base": "The stored base bytes from read-only git show at base_commit; source has its complete unchanged base as literal prefix",
+  "entrypoint": "qsa_prompt_attn_bf16_batch(...,n_q,const QsaPromptBf16Bounds&,stream)",
+  "interface_obligation": "Caller supplies actual logical table and physical pool capacity, retaining truthful allocation extents and lifetime; no production caller changed",
+  "calculated_resources": {
+    "declared_local_bytes_per_workgroup": 32336,
+    "device_local_mem_gate_bytes": 36432,
+    "workgroup": 128,
+    "subgroup": 16,
+    "matrix_tuple": "FP16/FP16/FP32/FP32 m8n16k16",
+    "heads_active_per_kv_group": 12,
+    "heads_padded_per_kv_group": 4,
+    "selected_cell_tile": 32,
+    "global_fp32_temporary_bytes": 0
+  },
+  "static_source_review": {
+    "existing_attention_source_prefix": "BYTE_IDENTICAL to provided c88bd802... base; checked as bytes during package generation",
+    "old_entry_dispatch_math": "No deletions or modifications; full original source preserved before appended candidate",
+    "other_product_files": "No live product edits; no prefill/GEMM/HC/GDN/native16 edits",
+    "header": "Only SYCL-guarded explicit entry and bounds struct added",
+    "cmake": "Only EXCLUDE_FROM_ALL manual fixture target and its options added; no targets removed",
+    "origin": "Own MIT source plus original code; external own oracle input hash verified; official API contracts only",
+    "matrix_collectives": "Uniform subgroup operations and work-group barriers; coordinate-aware official apply, no private fragment indexing",
+    "safety": "Full declared spans checked for overlap/alignment and registered USM endpoints; allocation identity/extent still guaranteed by caller",
+    "numerical": "Single FP16 Q/P parts, FP32 accumulation/reductions/normalizer, BF16 RNE output; component tolerance predefined, no measured result",
+    "execution": "No compiler, configure, build, tests, GPU, profiler, services, process inspection, env mutation, Git mutation or cleanup performed"
+  },
+  "required_unrun_gates": [
+    "Main compile/toolchain/device kernel resources",
+    "UR combined tracing+parameter validation flushed smoke in immutable pre-exec environment",
+    "Full BF16 fixture and independent FP64 numerical comparison",
+    "Old FP32 entry/dispatch preservation after merge",
+    "Clean independent nq128/nq256 full dependency samples and artifact SHA256",
+    "Explicit true BF16 producer/consumer integration with correct owner capacities",
+    "Whole-prefill speed, teacher-forced/task quality and fresh fault findings",
+    "Physical 262144-context/shared-state/RESTORE model validation"
+  ],
+  "retention": {
+    "raw_artifacts_created": false,
+    "trace_budget_bytes_for_Main_first_smoke": 67108864,
+    "source_package_budget_bytes": 16777216,
+    "cleanup_performed": false,
+    "policy": "docs/ARTIFACT_RETENTION.md"
+  },
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 13266,
+      "sha256": "8abcf067e6b09fc74eccae725e5b713a57a87c63729e4da34c70227be06f138d"
+    },
+    {
+      "path": "base/CMakeLists.txt",
+      "bytes": 73984,
+      "sha256": "47c283f6a6621b98cc7c1fd1dfce8c6daee73ffbeb9c0bbce97707edb460d200"
+    },
+    {
+      "path": "base/cmake/sycl_backend.cmake",
+      "bytes": 29571,
+      "sha256": "0eb0b6cc840bf95e5a5dc27fc8c3d0973f869b0547d90ab29902b1e56b2e7a59"
+    },
+    {
+      "path": "base/include/strata/kernels/qsa_prompt_attn.hpp",
+      "bytes": 2459,
+      "sha256": "ad662c1dbb166e1c31b933ced070fa65250ffda20b03f86a7f3b38add8138b75"
+    },
+    {
+      "path": "base/src/kernels/sycl/prompt_attention.cpp",
+      "bytes": 19530,
+      "sha256": "c88bd802d17ec5f9e1df05eee5581c9f50be86e87b1a454783b5c75aca55be3d"
+    },
+    {
+      "path": "files/CMakeLists.txt",
+      "bytes": 73984,
+      "sha256": "47c283f6a6621b98cc7c1fd1dfce8c6daee73ffbeb9c0bbce97707edb460d200"
+    },
+    {
+      "path": "files/cmake/sycl_backend.cmake",
+      "bytes": 29894,
+      "sha256": "341cbfb929dc09e77bb01d49a3436f5efb3269e8263af68c3c901491c70edf01"
+    },
+    {
+      "path": "files/include/strata/kernels/qsa_prompt_attn.hpp",
+      "bytes": 4266,
+      "sha256": "94f47f825e5fd3dac6c61f4d37973b039ccad1cb2411b09a0db6044d3ce5a4e4"
+    },
+    {
+      "path": "files/src/kernels/sycl/prompt_attention.cpp",
+      "bytes": 35820,
+      "sha256": "743e5781346939e952f5196cd1f70d8e7de10700df3cd5ce38bcec37648f1a53"
+    },
+    {
+      "path": "files/tests/sycl/prompt_native16.cpp",
+      "bytes": 22386,
+      "sha256": "d3791231919fe137cd4e3349d0d97ea1c3df44842d3bd2b6eb78cd9f45f396ab"
+    },
+    {
+      "path": "proposal.patch",
+      "bytes": 42999,
+      "sha256": "d9d9d0f9e4e8c2a91e2d3b9cc34c8fe53c6b8a2a22e06aff9738419628f1cacb"
+    },
+    {
+      "path": "provenance-sycl_ext_intel_matrix.asciidoc.json",
+      "bytes": 512,
+      "sha256": "9acb8931be27f678d0288ce508091d54c359d6e454eae695f4cd39c403279707"
+    },
+    {
+      "path": "provenance-sycl_ext_oneapi_matrix.asciidoc.json",
+      "bytes": 514,
+      "sha256": "8731716bf0b2a3e07e0a326297e47f78664001f709fd7fa7565dbf9f774d7701"
+    },
+    {
+      "path": "provenance.json",
+      "bytes": 4226,
+      "sha256": "8c167323068336b654b86f5fac27a08f7d39a1d41c1a3be0bb2b22860df74531"
+    }
+  ],
+  "self_hash": "Manifest excludes itself; its SHA256 is the external worker completion receipt"
+}

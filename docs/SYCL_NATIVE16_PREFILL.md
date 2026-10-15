@@ -37,11 +37,28 @@ by 16, with arbitrary positive token counts and strided output. Existing model
 matrices on this path meet those dimensions; scalar injection still uses the
 FP32-output GEMM.
 
-The independent native16 post-operation fixture passed small GPU checks for
-HC4 normalization/mixing/write, MoE activation/combine, guards and immutable
-inputs. This is not model-quality, performance, physical 262144-context or
-RESTORE qualification. The GEMM and complete integration need their own gates.
-Do not enable this experiment as the default based on these component tests.
+On Arc B570, the fresh v2 build passed 68 independent GEMM cases, HC4/MoE
+post-operations, runtime/compatibility checks, the existing single-queue FP32
+GEMM/payload cases, and early/late allocation teardown. Both FP32 and BF16
+completed a 129-token, 48-layer model check normally. All 128 target NLLs were
+finite; three full-vocabulary rows also matched an independent FP64 NLL oracle.
+This establishes mechanics, not model quality: the synthetic comparison had
+mean absolute target-NLL difference 0.596 and maximum 6.56. These differences
+have not been accepted as a quality tolerance.
+
+The original full FP32 regression timed out in its separate-copy-queue pipeline.
+It remains a failure; the narrower single-queue continuation does not turn it
+into a pass. This experimental production route requires the qualified single
+queue. The timeout mechanism remains unresolved, with no fresh kernel GPU fault
+or driver dump. See the
+[diagnostic](../bench/results/2026-10-15-pr6-recovery-audit/own-native16-separate-queue-timeout-v2.ja.md)
+and [paired model receipt](../bench/results/2026-10-15-pr6-recovery-audit/own-native16-model-smoke-v2.json).
+An earlier new allocation-registry destruction-order error was reproduced and
+fixed separately; the fixed model processes exit normally.
+
+Natural-input quality, paired long-input speed, physical 262144-context and
+RESTORE qualification remain required. Do not enable this experiment as the
+default based on the component and synthetic-model checks.
 
 The architecture references are the
 [vLLM XPU MoE dtype policy](https://github.com/vllm-project/vllm-xpu-kernels/blob/6b30c9b92cc525c32729df988b5f918e7c5661a5/csrc/xpu/grouped_gemm/collective/gemm/moe_dtype_policy.hpp)

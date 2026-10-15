@@ -29,7 +29,9 @@ def main():
              791: 'orca-research-round791-launch-v1.json',
              793: 'orca-research-round793-launch-v1.json',
              794: 'orca-research-round794-launch-v1.json',
-             797: 'orca-research-round797-launch-v1.json'}
+             797: 'orca-research-round797-launch-v1.json',
+             798: 'orca-research-round798-launch-v1.json',
+             799: 'orca-implement-native16-onednn-round799-launch-v1.json'}
     known = {}
     for n, name in names.items():
         v = json.loads((A / name).read_text())['receipt']['result']

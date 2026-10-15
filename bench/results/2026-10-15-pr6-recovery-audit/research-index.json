@@ -3662,14 +3662,18 @@
     "engine_build": "own-native16-prefill-build-v2.json",
     "engine_build_status": "Fresh v2 complete build+host gates+68GEMM PASS. Original full regression FAIL at separate-queue pipeline timeout; narrow same-queue followup PASS. Same-source paired129-token model mechanics running.",
     "new_kernel_test": "own-native16-gemm-correctness-v2.json",
-    "implementation_round787": "Returned source-only; unreviewed/unadopted/untested",
+    "implementation_round787": "Full source/provenance review completed; unadopted/unbuilt. Need actualallocation extent/context guard consideration before production integration.",
     "research_next": [
-      797
+      797,
+      798
     ],
     "registry_lifetime_failure": "own-native16-registry-lifetime-v1.ja.md",
     "regression": "own-native16-regression-followup2-correctness-v2.json",
     "original_regression": "own-native16-regression-correctness-v2.json FAIL remains unchanged; separate-queue mechanism unresolved",
-    "model_mechanics": "own-native16-model-smoke-v2.json pending",
-    "clean_performance_controller": "run_owned_native16_clean_v1.py; not yet executed"
+    "model_mechanics": "own-native16-model-smoke-v2.json PASS, both normal, all128 NLL finite plus3 independent full-vocabulary checks; synthetic only, not quality acceptance",
+    "clean_performance_controller": "run_owned_native16_clean_v1.py; not yet executed",
+    "clean_first_fp32": "own-native16-clean-fp32-r0-v2.json PASS 346.5tok/s n1; matched BF16 next, no speed claim yet",
+    "attention_main_review": "own-native16-attention-main-review-v1.ja.md",
+    "implementation_next": 799
   }
 }
