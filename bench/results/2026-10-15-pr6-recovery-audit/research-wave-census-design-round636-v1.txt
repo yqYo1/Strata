@@ -1,0 +1,72 @@
+# R636 —既存layer-major censusから2/4 chunk wave overlapを測る最小設計
+
+2026-10-15 JST。R628/R633と現行`LayerMajorShapeCensus`/hook、保存済み`selective-iq-model-assessment-v2.json`をsource/evidence read-onlyで照合した。新しいraw route ID capture/observerの必要性、bounded field案、現行histogramから導ける厳密な範囲を評価。新しい実行、build/test/GPU/process、Git/cleanup、現行benchmark rawへの操作なし。追加ファイルは本報告のみ。
+
+## 結論
+
+**既存の任意diagnostic censusを拡張すれば、route IDやtoken別rawを保存せず、2/4 chunk waveごとのexpert unionと重複active-expert call数を正確に得られる。** hookには各layer/chunkの正確な`cnt[512]`がすでにある。`cnt[e]>0`のexpertを固定512-bit (64-byte) maskへORすればunion cardinalityが得られる。波ごとに`active chunk-expert incidences - union cardinality`を集計すると、同一expertのcross-chunk重複により最大いくつのper-expert GU/Down callsをまとめられるか、route IDを記録せずに正確に数えられる。
+
+実装せず提案する最小拡張は、diagnostic owner内だけの固定サイズ state: 現chunkの`cnt[512]` copy (2 KiB)、expected/GU-seen/Down-seen bitset (192 B)、2/4用の2個のwave mask (128 B)、各expertのwave内合計route数`wave_ne[512]` (4 KiB)、各layerにq=2/q=4のbounded scalar summariesとexpert-wave rowsの16-bin log2 histogramを置く (2×16×8×48 = 12,288 B)。**新規stateは32 KiB未満、推定総owner sizeは約3.16 MiBで、現行4 MiB static assertion以内** (正確なABI `sizeof` は変更実装なしでは未検証)。出力は各wave幅に対するwave数、union総数/min/max、重複incidence数、partial-wave数、16 row-size binsだけを固定件数で追加する。現在の32K保存census compact JSONは252,809 bytesで、当該sampleでは結果は1 MiB output cap内に余裕をもって収まる想定。現行serializerの全体preflight/1 MiB capは維持し、より大きなcaseがcapを超えれば既存どおりdiagnostic completionをrejectする。
+
+この診断の通常動作overheadは増えない: census ownerは既存`STRATA_PREFILL_LAYER_MAJOR_SHAPE_CENSUS=1`のときだけ確保され、new loops/updatesは既存`if (m.layer_major_census)` hook内のCPU作業だけにする。queue/kernel/route/output semanticsには介入しない。すべてfixed arrays/countersで、waveごとのheap allocationやraw IDs保存は不要。
+
+## 既存hookが持つ情報と実際のexpert work境界
+
+`run_impl`は各chunkのrouter `ids`をhostへ読み、`m.cnt[512]`をゼロから数え、全routeのID rangeとcompact FP16での`cnt[e] <= T`を確認した後、`layer_major_census->counts(l,T,cnt,512)`を一度呼ぶ。正確に`10*T`個のrouted refsが各expertへ数えられる。次にactive expertsをexpert ID順に走査して`order`を構成し、各active expertの`cnt[e]`でroute rowsを連続区間へprefix-packする。つまり現設定の非MMQ compact FP16 pathでは実際のGEMM groupは**1 active expert / call**、その`ne=cnt[e]` rowsであり、16-expert MMQ groupingではない。long layer-major admissionは`STRATA_PREFILL_MMQ=0`かつsingle-GPU compact FP16を要求し、layer-major条件では`stream_all` issuerも使われない。
+
+そのexpert computeは各active expertについてGUとDownを各1回実行する。既存`issue(true,...)`/`issue(false,...)` hookは両GEMMの直前に同じ`e,ne`で呼ばれる。既存censusは`cnt`からne histogramと`ne`別pending数を作り、GU/Down call数を比較するが、同じ`ne`の別expertを識別しないため、histogramだけではID単位のcross-chunk unionは失われる。
+
+拡張では`counts()`で`expected_ne[e]=cnt[e]`をコピーし、`cnt[e]>0`ならcurrent expected bitsetおよび両wave accumulatorへexpert bitを立てる。current chunkの累積`wave_ne[e] += cnt[e]`も行う。`issue()`で`expected_ne[e] == ne`、expected bitの存在、同roleのseen bitが未設定であることを検証してからGU/Down別seen bitを立てる。次の`counts()`または`end(layer)`でGU seenとDown seenの両方がexpected maskと一致することを確認する。これで重複issue、異なるexpertが同じneを持つときの取り違え、GU/Downのexpert-ID非対称を検出する。現在のne pendingは維持してもよいが、expert-ID bitset検証がより直接的。
+
+この契約は現在の非MMQ `order` pathが一active expertにつき一度computeし、同じ`e,ne`をGU/Down双方でissueすることに適合する。もし将来fused/MMQ/peer/別issuerがcensus対象になるなら、静かに推定せず`begin` admissionを拡げた上で該当経路から同等のexpert-ID hookを提供するか、`reject`する必要がある。
+
+## Wave aggregation field plan
+
+Layer-major requestでは各layerの`run_impl`が`c0=0`から`c0+=chunk`でprompt-relative順に進み、`counts()`を各chunk一回だけ呼ぶ。`record.tokens`/`record.chunks`の値から現chunk序数と実際のtail `T`を得られるため`counts()` APIへ`pos0`や新たな`c0`を渡す必要はない。window groupingはabsolute positionではなくこのchunk序数で行う; したがってnonzero `pos0`でもwaveはrequest先頭から2/4 chunks単位になる。現request geometry validationは`n`, `pos`、`chunk`の範囲を確認し、`counts`はexpected final short chunk長も確認済み。
+
+q=2およびq=4それぞれのbounded window stateに次を持たせる:
+
+- `uint64_t wave_mask[8]` (64 B) と`uint32_t wave_ne[512]` (2 KiB)を共有または必要に応じて別保持。`cnt[e]`ごとにpresenceと加算を行う。
+- `window_chunks`, `window_tokens`, `window_active_incidences`。active incidencesは各chunkで`cnt[e]>0`の数を加算。
+- layer `Record`側にq別の`wave_count`, `partial_wave_count`, `union_sum`, `union_min`, `union_max`, `duplicate_incidences`, `max_wave_ne` scalar counters、および16-bin log2 `expert_wave_rows_hist`を保持する。union sumとwave countからmean union、union min/maxから範囲を得る。expert wave row binsは各windowで`wave_ne[e]>0`の合計rowsを16範囲 (1, 2–3, 4–7, 8–15, 16–31, 32–63, 64–127, 128–255, 256–511, 512–1023, 1024–2047, 2048–4095, 4096–8191, 8192–16383, 16384–32767, 32768)で返し、「各expert-waveがどのrows規模か」をboundedに見せる。
+- wave close時は`u=popcount(wave_mask)`、`active_incidences-u`をduplicate calls saved upper opportunityとして加算し、`union_sum += u`、`union_min/max`と`wave_count`を更新する。positive `wave_ne`の値はrow-size histogramへ一度ずつ足した後、512件をclearする。
+- q chunksに到達したらfull windowとしてclose/reset。`end(layer)`で残余1..q-1 chunksがあればpartial final windowとしてclose。`partial_wave_count`とtail chunk/token countsを記録し、summaryのpartial/full countからfinal short windowを区別する。layer endで二つのmask/count vectorsがemptyに戻ったこともverifyする。
+
+scalar summariesの固定出力サイズは小さく、row-size binsは48 layer × 2 widths ×16 =1,536 countersだけ。current chunk/seen/wave scratchと全Recordを加えてもownerは約3.16 MiBで4 MiB static limitを下回る見込み。Unionの全wave順列は出力しないため、chunk=1の最大window数でも波数分のJSONが増殖しない。実装時は既存writerのpreflightを使い、旧ne histogramなど他欄で1 MiBを超えれば不完全診断扱いにする。
+
+`wave_ne[e]`はwave内でそのexpertへ割当たるtoken-route rows総数なので、expert-major GEMMの候補M shapeを広域binで可視化できる。精密なper-wave/per-expert route tableやraw IDsを出力しない。これはestimateを選ぶためのbounded censusであり、kernel latencyや具体的なMMQ group formationを測るものではない。今のlayer-major GEMMは1 expert per callなのでunion opportunityはper-expert dequant+GU/Down call reductionsに直結する。複数expertを一つのgrouped GEMMにする機能や16 expert boundaryは別のkernel candidateであり、R628に従って重ねて提案しない。
+
+## 既存histogramだけで導ける厳密なunion bounds
+
+保存済みassessment rawには`n=32,088`, `position=0`, `configured_chunk=4,096`, 8 chunks/layer、48 layers。last chunkは3,416 (`4096*7=28672`; `32088-28672=3416`). したがってchunk lengthsは7×4096と1×3416。各layer histogramのne>0 bin multiplicityの合計`S_l`は、そのlayerのactive `(chunk,expert)` incidencesであり`gu_calls=down_calls`; 48層合計は82,878. Histogramに含まれるのはne頻度であってexpert IDやchunk所属ではない。
+
+各chunkでは`sum_e cnt[e]=10*T`かつこの admitted compact pathでは`cnt[e] <= T`なので、active experts `A_c`は少なくとも10、最大512。q-chunk waveのunion `U_w`は`max(A_c) <= U_w <= min(512, sum A_c)`。histogramからS_lとchunk数は分かるがwave partitionごとのA_cもexpert identityも欠ける。したがってlayerごとのunion sum `U_q,l`について、histogramだけから保証できるcoarse but rigorous boundsは
+
+`max(10 * ceil(chunks/q), ceil(S_l/q)) <= U_q,l <= min(S_l, 512 * ceil(chunks/q))`.
+
+このlowerは(i) each window at least one chunk and each chunk ≥10 active experts, (ii) one expert contributes at most q active chunk incidences per window; upper is (i) each distinct expert-window costs at least one incidence, (ii) at most 512 experts per window. 48 layer boundsを足した結果:
+
+| Width q | waves per layer | Total active incidences S | Strict lower bound on Σ(layer,wave unions) | Strict upper bound | Implied repeat-incidence interval S−U |
+| ---: | ---: | ---: | ---: | ---: | ---: |
+| 2 | 4 | 82,878 | 41,448 | 80,604 | 2,274–41,430 |
+| 4 | 2 | 82,878 | 20,736 | 48,700 | 34,178–62,142 |
+
+These intervals use per-layer `S_l`, not one global division; the 32K assessment's 8 chunk waves divide evenly for q=2/4. They are bounds, not measured wave union sizes and not necessarily sharp optima under the extra bin-value packing constraints. The aggregate hist also gives total routed rows `10*n` but cannot recover which experts received those rows in which chunks. It cannot supply exact union, per-expert wave `ne`, expert-id locality/order, token-order semantics, reuse timing, GEMM latency, or speedup. Even the algebraically implied repeat interval is only number of duplicate active-expert chunk visits relative to unique expert-wave pairs (and so potential per-role call suppression), not saved bytes/time.
+
+Evidence status matters: `selective-iq-model-assessment-v2.json` has an assessment wrapper with `GPU_executed=false` because its native receipt was reused without replay. It preserves the original receipt's `passed=false`, `complete=false` due the collector using full prompt length while native uses `n_prompt-1`. The stored nested census validation is complete for its 32,088-prefix data and can support these arithmetic bounds, but this is not a clean new run or new runtime result.
+
+## Boundedness, overhead and validation conditions
+
+- Constructor and `begin/counts/issue/end` retain existing checks: at most 262,144 prompt tokens, 48 layers, 512 experts, `chunk <=8192` for the admitted path, per-layer exact sequence, ne range, rows conservation, format/residency, and exact GU/Down totals. Add checked adds for every new `uint64_t` aggregate/hist bin. `wave_ne[e]` is `uint32_t`, safe because max is q×8192=32,768; still reject on `wave_ne[e] > UINT32_MAX - cnt[e]` before addition.
+- Repeated count values are not a problem for the bitmap: one bit per expert ID, not one per ne. Expected bitmap is built once from `cnt>0`; duplicated `issue(e)` is rejected by role-specific seen bit before it can inflate metrics. GU and Down seen bitsets must each equal expected at every chunk boundary.
+- Final partial chunk length is already validated by `counts()` against `n - r.tokens`; final q-wave is flushed in `end(layer)` and tagged partial when its chunk count is less than q. `pos0` is emitted/validated request metadata but must not shift wave phase.
+- New observer work is host-only in the optional existing hook. Do not add synchronization, queue operations, kernel writes, timer regions or per-chunk heap allocation. Keep normal no-census path as the existing single null-pointer branch; do not query environment inside the runtime.
+- Keep `LayerMajorShapeCensus::output_cap = 1 MiB`, writer's two-pass size preflight, `static_assert(sizeof(...) <= 4 MiB)`, and layer-major host admission that adds `sizeof(LayerMajorShapeCensus)` before allocation. No weakening to make a larger record pass. The current compact census payload uses 252,809 bytes for the historical sample; the proposed scalar summaries and fixed row bins add bounded output there. The old ne histogram can theoretically densify with larger chunk bounds, so output-cap success remains an explicit completeness gate.
+
+## Source and evidence anchors
+
+- Existing bounded census: `include/strata/prefill/layermajor_shape_census.hpp:10-177` (4 MiB owner assertion, 1 MiB serializer cap, count/issuer reconciliation, end-layer conservation).
+- Optional owner/admission/borrowing and lifecycle: `src/prefill/layer_major.inc:171-200,279-326,386-409`.
+- Actual route count and order construction: `src/prefill/prefill.cpp:2424-2510`; active expert compute and paired issue hooks: `:2780-2900`; layer-major guards/MMQ exclusion: `src/prefill/layer_major.inc:16-70`.
+- Saved receipt and assessment: `bench/results/2026-10-15-pr6-recovery-audit/selective-iq-model-assessment-v2.json`; stored raw compact JSON length 252,809 bytes measured from that retained file, not a GPU/process operation.
+- Prior reports: `research-census-gemm-scheduling-round628-v1.txt`; `research-bounded-expert-wave-round633-v1.txt`.
