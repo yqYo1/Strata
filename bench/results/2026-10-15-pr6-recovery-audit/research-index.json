@@ -1130,6 +1130,42 @@
       "sha256": "822d477426369c7134cd57ed834fc64cc495e4208144db6caad350ff4f9d7310",
       "main_review": "main-review-round694-695.ja.md",
       "status": "FINAL/Main source review complete; no new GPU or performance qualification by research."
+    },
+    {
+      "round": 696,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-prefill-direct-attention-model-gate-round696-v1.txt",
+      "sha256": "cd1bf331a26379ad4874b6d6c57f76373f7c664e4bed035e3a0199e79ea4a5e8",
+      "main_review": "main-review-round696-698.ja.md",
+      "status": "FINAL received and Main source review complete; corrections recorded separately; no new runtime or performance qualification."
+    },
+    {
+      "round": 697,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-prefill-gpu-hidden-admission-round697-v1.txt",
+      "sha256": "8e5b8aa3b3b4af233400fdc7a4fadc3bfbf767ab12d4c8396df76a4052a123d4",
+      "main_review": "main-review-round696-698.ja.md",
+      "status": "FINAL received and Main source review complete; corrections recorded separately; no new runtime or performance qualification."
+    },
+    {
+      "round": 698,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-physical-model-context-harness-round698-v1.txt",
+      "sha256": "165afabc8ee004a32d42d1271fe07aeccff5f9714b4a09282887e3819eafce6d",
+      "main_review": "main-review-round696-698.ja.md",
+      "status": "FINAL received and Main source review complete; corrections recorded separately; no new runtime or performance qualification."
+    },
+    {
+      "round": 699,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-prefill-fp16-partial-capacity-round699-v1.txt",
+      "sha256": "31bf09b1ae60459004e36a01415499a9db06ad7d3ecf7a589c42039bce10638e",
+      "main_review": "prefill-capacity-current.ja.md",
+      "status": "FINAL/Main report and production source review complete; independent four partial-FP16 capacity counts agree. Source-only, not physical admission or numeric quality."
     }
   ],
   "main_initial_findings": [
@@ -1316,12 +1352,14 @@
   "retention_v5": "retention-v5-manifest.json",
   "parallel_research_current": {
     "rounds": [
-      676,
-      677
+      699,
+      700
     ],
     "model": "gpt-6-luna",
     "read_only": true,
-    "state": "Both FINAL/Main source and actual model-header/count review; R677v1 corrected separatelyv2; reports indexed with hashes. No active research/GPU job at capacity boundary."
+    "state": "R699 FINAL/Main read complete: four partial-FP16 counts and one-chunk staging agree. R700 MTP terminal full-context research remains running; no intervention.",
+    "prior_report_directory": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit",
+    "main_review": "main-review-round696-698.ja.md"
   },
   "phase_audit": {
     "build": "phase-audit-build-v1.json",
@@ -1824,5 +1862,11 @@
     "proposal": "prefill-native-dense-layer-bank-v1",
     "component_model": "gpt-6.1-sol",
     "main_review": "main-review-round694-695.ja.md"
+  },
+  "prefill_capacity_current": {
+    "report": "prefill-capacity-current.ja.md",
+    "byte_budget": "prefill-capacity-alias-delta-v1.json",
+    "partial_FP16_host_recipe": "measure_prefill_capacity_fp16_admission_v1.py",
+    "state": "Hypothetical active-layer bank. Main found partial byte ceilings omit host-tail conversion stage and chunk rounding; prepared actual production planner host gate. No full-model admission or quality qualification."
   }
 }
