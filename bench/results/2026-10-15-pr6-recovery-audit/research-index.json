@@ -1193,6 +1193,24 @@
       "sha256": "a1030a224102651d76cf209e74891e864a1b77ff2a976bd3307f61f31dd4c5e1",
       "main_review": "main-review-round701-702.ja.md",
       "status": "FINAL/Main report and source review complete. No new runtime or speed qualification. Main distinguishes byte-identical Dm retention from a possible low-memory reordered FP32 accumulator requiring quality gates."
+    },
+    {
+      "round": 703,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-native-dense-phase-owner-review-round703-v1.txt",
+      "sha256": "d4c2671e013d1e1513be43280f90d40e4dc040eecbecbae3c9df161cdf97b95d",
+      "main_review": "native-dense-phase-main-review.ja.md",
+      "status": "FINAL/Main report and source review complete; no concrete source defect under exclusive-reader contract, actual generator/driver gates unqualified."
+    },
+    {
+      "round": 704,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-native-dense-phase-reader-review-round704-v1.txt",
+      "sha256": "2e46569756cbe09bef11d097875bb002edac4c424ec89ef92c1ddef06a68c991",
+      "main_review": "native-dense-phase-main-review.ja.md",
+      "status": "FINAL/Main report and source review complete; no concrete source defect under exclusive-reader contract, actual generator/driver gates unqualified."
     }
   ],
   "main_initial_findings": [
@@ -1379,13 +1397,13 @@
   "retention_v5": "retention-v5-manifest.json",
   "parallel_research_current": {
     "rounds": [
-      701,
-      702
+      703,
+      704
     ],
     "model": "gpt-6-luna",
     "read_only": true,
     "prior_report_directory": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit",
-    "state": "R701/R702 both FINAL/Main review complete, including2026 official API and installed header checks. No new groupedAPI adoption. Separate6.1Sol native-dense phase proposal remains in progress; Main exclusively owns all tests/build/GPU."
+    "state": "703/704 both FINAL/Main review done. No active researcher.6.1Sol physical-context-consume source proposal in progress; Main exclusively owns all tests/build/GPU."
   },
   "phase_audit": {
     "build": "phase-audit-build-v1.json",
@@ -1818,9 +1836,9 @@
     "model_retention": "qsa-device-batch-model-retention-v1.json",
     "clean_recipe": "run_qsa_device_batch_clean_v1.py",
     "clean_comparator": "compare_qsa_device_batch_clean_v1.py",
-    "clean_state": "ACTIVE_SAMPLE_1_R1",
-    "clean_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-device-batch-clean-1-r1-root-v1",
-    "clean_receipt_when_closed": "qsa-device-batch-clean-1-r1-v1.json",
+    "clean_state": "ACTIVE_SAMPLE_0_R2",
+    "clean_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-device-batch-clean-0-r2-root-v1",
+    "clean_receipt_when_closed": "qsa-device-batch-clean-0-r2-v1.json",
     "clean_order": [
       [
         0,
@@ -1847,10 +1865,12 @@
         2
       ]
     ],
-    "clean_completed_samples": 2,
+    "clean_completed_samples": 4,
     "clean_closed_receipts": [
       "qsa-device-batch-clean-0-r0-v1.json",
-      "qsa-device-batch-clean-1-r0-v1.json"
+      "qsa-device-batch-clean-1-r0-v1.json",
+      "qsa-device-batch-clean-1-r1-v1.json",
+      "qsa-device-batch-clean-0-r1-v1.json"
     ]
   },
   "prefill_dense_layer_bank_contract": {
@@ -1927,10 +1947,13 @@
     "state": "Main complete component diff/fixture source review plus R694 caller seam. Unapplied/unbuilt/untested. Main found enter bank non-OOM/null-owner allocation can return false unlike declared fail-stop contract; correct before integration. SessionGraphs/PLE/private overlay seam still required.",
     "proposal": "prefill-native-dense-layer-bank-v1",
     "component_model": "gpt-6.1-sol",
-    "main_review": "main-review-round694-695.ja.md",
+    "main_review": "native-dense-phase-main-review.ja.md",
     "implementation_in_progress": "prefill-native-dense-phase-v2",
     "implementation_model": "gpt-6.1-sol",
-    "implementation_state": "Source-only isolated proposal assigned including actual caller retirement/private overlay/restore seams, not applied to product during hash-pinned clean tests; Main must review/build/test."
+    "implementation_state": "6.1Sol FINAL caller-connected proposal, Main full diff/fixture and703/704 reviewed. Proposed host43cases PASS; original fake integer-handle compile FAIL preserved. Actual product unapplied, fullcaller SYCL compile/GPU/model not run, head-release1 excluded.",
+    "implementation_diff_sha256": "03a385d0ef0b771d4aa89df18090fe7c602bd81eaa14c9bfa74a8e092f0caffd",
+    "host_original": "native-dense-phase-host-v1.json",
+    "host_corrected": "native-dense-phase-host-v2.json"
   },
   "prefill_capacity_current": {
     "report": "prefill-capacity-current.ja.md",
