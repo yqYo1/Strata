@@ -43,3 +43,8 @@ GPUの安全性、品質、RESTORE、速度の証拠ではない。wave機会数
 別スコープのLuna調査R639（top-k順を維持したwave Dm削減）とR640（適応MTPの実装可能性）を
 再開した。共有先はこのauditディレクトリの過去全report。途中介入せずFINALを待ち、Mainは
 この検証手順を並行で準備した。実装・テストの採用判断はMainが行う。
+
+後続source reviewで、旧full OFF producerはreceipt直下に`finished_utc`を書かず、
+各commandにだけ終了時刻を書くと確認した。未実行のMain qualifierを修正し、各commandの
+終了時刻/reap/session空とPID/start消失を確認するようにした。旧receiptは改変しない。
+この訂正も未実行であり、測定終了やCPU test PASSを意味しない。

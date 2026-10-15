@@ -20,9 +20,12 @@ def main():
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         previous_path = A / 'selective-iq-clean-bench-full-0-v1.json'
         previous = json.loads(previous_path.read_text())
-        require(not previous['active'] and previous.get('finished_utc'), 'full OFF has not closed')
+        # The historical producer stores completion timestamps on its commands,
+        # not at receipt top level. Preserve that original receipt unchanged.
+        require(not previous['active'] and previous.get('commands'), 'full OFF has not closed')
         for c in previous['commands']:
-            require(c.get('direct_child_reaped') and c.get('session_empty') and not c.get('survivors'), 'earlier owner not retired')
+            require(c.get('finished_utc') and c.get('direct_child_reaped') and
+                    c.get('session_empty') and not c.get('survivors'), 'earlier owner not retired')
             for identity in c.get('owners', []):
                 current = module.identity(identity['pid'])
                 require(current is None or current['start_ticks'] != identity['start_ticks'], 'earlier identity still present')
