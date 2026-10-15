@@ -38,6 +38,7 @@
 #if defined(STRATA_ENABLE_SYCL)
 #include "strata/sycl/launch.hpp"
 #include "strata/sycl/cpu_wait_profile.hpp"
+#include "strata/prefill/native16.hpp"
 #endif
 #include "strata/core/conversation_memory.hpp"
 
@@ -476,6 +477,15 @@ struct Prefill::Impl {
     const void* layer_major_host_input = nullptr;
     uint16_t* layer_major_fp16_stage = nullptr;
     detail::LayerMajorResidualPlan layer_major_residual;
+#if defined(STRATA_ENABLE_SYCL)
+    bool native16_active = false;
+    // Mutually exclusive with the FP32 operations of run_impl. These views
+    // borrow untyped USM arena ranges; a short request still uses FP32 views.
+    uint16_t *R16 = nullptr, *lo_b16 = nullptr, *gated_b16 = nullptr, *bo_b16 = nullptr;
+    uint16_t *GU_b16 = nullptr, *Dm_b16 = nullptr, *sgate_b16 = nullptr,
+             *sup_b16 = nullptr, *shared_b16 = nullptr;
+    std::function<bool(const uint16_t*, int64_t, int64_t, std::string&)> on_chunk16;
+#endif
     float *logits = nullptr, *w = nullptr, *GU = nullptr, *Dm = nullptr, *sgate = nullptr, *sup = nullptr,
           *shared = nullptr, *sg = nullptr;
     int32_t *ids = nullptr, *slot_dev = nullptr, *src_dev = nullptr;
@@ -925,6 +935,15 @@ bool Prefill::carve(size_t T, void* alloc) {
     m.gated = p.gated; m.inj = p.inj; m.mixed = p.mixed;
     m.mixed_bf = p.mixed_bf; m.mixed_h = p.mixed_h; m.bo = p.bo;
     m.xn16_lo = p.xn16_lo; m.lo16_lo = p.lo16_lo; m.mixed_bf_lo = p.mixed_bf_lo;
+#if defined(STRATA_ENABLE_SYCL)
+    // Reuse the reserved FP32 arena, retaining the original short-input layout.
+    // R16 and gated_b16 occupy disjoint halves of the old gated allocation.
+    (void)native16::requested(); // validate the immutable startup setting
+    m.R16 = reinterpret_cast<uint16_t*>(m.gated);
+    m.gated_b16 = m.R16 + T * D;
+    m.lo_b16 = reinterpret_cast<uint16_t*>(m.lo);
+    m.bo_b16 = reinterpret_cast<uint16_t*>(m.bo);
+#endif
     m.steps_dev = o.take<int32_t>(T * strata::kernels::kStepCount, ok);
     strata::kernels::QsaShapes s = strata::kernels::qsa_real_shapes();
     s.n_head = g.n_head; s.n_head_kv = g.n_head_kv; s.head_dim = g.head_dim; s.idx_n_head = g.idx_q_heads;
@@ -965,6 +984,13 @@ bool Prefill::carve(size_t T, void* alloc) {
         m.Dm = c.take<float>(T * K * N, ok);
         m.sgate = c.take<float>(T * 640, ok); m.sup = c.take<float>(T * 640, ok); m.sh_h = c.take<uint16_t>(T * 640, ok);
         m.shared = c.take<float>(T * N, ok); m.sg = c.take<float>(T, ok);
+#if defined(STRATA_ENABLE_SYCL)
+        m.GU_b16 = reinterpret_cast<uint16_t*>(m.GU);
+        m.Dm_b16 = reinterpret_cast<uint16_t*>(m.Dm);
+        m.sgate_b16 = reinterpret_cast<uint16_t*>(m.sgate);
+        m.sup_b16 = reinterpret_cast<uint16_t*>(m.sup);
+        m.shared_b16 = reinterpret_cast<uint16_t*>(m.shared);
+#endif
         if (mp.any) {
             m.Xq = c.take<uint8_t>(mb.xq, ok);
             m.H = c.take<float>(mb.h, ok);
@@ -1387,6 +1413,34 @@ bool bf16_proj(Gemm& gm, const core::WeightRef* w, const uint16_t* X, float* Y, 
     if (X_lo) gm.bf16(X_lo, (const uint16_t*) w->data, Y, T, w->ne1 > 0 ? w->ne1 : 1, w->ne0, ldy, 1.0f);
     return true;
 }
+#if defined(STRATA_ENABLE_SYCL)
+bool bf16_proj16(Gemm& gm, const core::WeightRef* w, const uint16_t* x, uint16_t* y,
+                 int64_t rows, const std::string& name, std::string& err) {
+    if (w->kind != core::WeightKind::Bf16InF32 || !w->data) {
+        err = "prefill native16: " + name + " is not a resident BF16 tensor"; return false;
+    }
+    gm.bf16_out16(x, static_cast<const uint16_t*>(w->data), y, rows,
+                  w->ne1 > 0 ? w->ne1 : 1, w->ne0, true);
+    return true;
+}
+bool native_proj16(Gemm& gm, const core::WeightRef* w, const uint16_t* x, uint16_t* y,
+                   int64_t rows, const std::string& name, std::string& err) {
+    if (!w->native_data || w->ne0 <= 0 || w->ne1 <= 0 ||
+        !strata::kernels::iq_row_bytes(w->native_type, w->ne0) || gm.scratch_elems() < w->ne0) {
+        err = "prefill native16: unsupported native weight " + name; return false;
+    }
+    const int64_t k = w->ne0, n = w->ne1, block = gm.scratch_elems() / k;
+    const size_t row_bytes = strata::kernels::iq_row_bytes(w->native_type, k);
+    for (int64_t r = 0; r < n; r += block) {
+        const int64_t count = std::min(block, n - r);
+        strata::kernels::iq_dequant_f16(w->native_type,
+            static_cast<const uint8_t*>(w->native_data) + size_t(r) * row_bytes,
+            count * k, gm.scratch(), gm.stream());
+        gm.f16_out16(x, gm.scratch(), y + r, rows, count, k, true, n);
+    }
+    return true;
+}
+#endif
 
 }  // namespace
 
@@ -1797,7 +1851,13 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                 sycl_backend::cpu_wait_profile::Host input_cpu_profile(span.device
                     ? sycl_backend::cpu_wait_profile::residual_input_device
                     : sycl_backend::cpu_wait_profile::residual_input_host);
-                if (m.layer_major_residual.dtype == detail::LayerMajorResidualDtype::fp16) {
+                if (m.native16_active) {
+                    if (m.layer_major_residual.dtype != detail::LayerMajorResidualDtype::bf16 ||
+                        cudaMemcpyAsync(m.R16, base + size_t(span.offset_bytes), size_t(span.bytes),
+                            span.device ? cudaMemcpyDeviceToDevice : cudaMemcpyHostToDevice, m.cs) != cudaSuccess) {
+                        err = "prefill native16: BF16 residual input copy failed"; return false;
+                    }
+                } else if (m.layer_major_residual.dtype == detail::LayerMajorResidualDtype::fp16) {
                     const uint16_t* packed = reinterpret_cast<const uint16_t*>(base + size_t(span.offset_bytes));
                     if (!span.device) {
                         if (!m.layer_major_fp16_stage || span.bytes > m.layer_major_residual.staging_bytes ||
@@ -1877,7 +1937,13 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                 return false;
             }
         }
-        if (!residual_input) gr_broadcast(m.emb, m.R, T, m.cs);
+        if (!residual_input) {
+#if defined(STRATA_ENABLE_SYCL)
+            if (m.native16_active) native16::broadcast(m.emb, m.R16, T, m.cs);
+            else
+#endif
+                gr_broadcast(m.emb, m.R, T, m.cs);
+        }
         // ---- the PLE rows of the whole chunk, one batched SSD request on a thread (see ple_gather).  A later chunk's
         // were read ahead during the previous chunk; the first chunk's are read beside layer 0 - they are needed from
         // layer 1 on, and gathering them here first left the GPU idle for the whole read (~0.4 s of a 32K prompt)
@@ -2116,6 +2182,12 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
             core::progress_at("reading the prompt (batched): layer", l, p0);   // #251: a stall names layer and chunk
             const core::LayerView v(*m.wt, l, m.native_dense_overlay);
             if (l == std::max<int64_t>(LB, 1) && !ple_land()) return false;   // the PLE rows, read from layer 1 on
+#if defined(STRATA_ENABLE_SYCL)
+            // A single explicit bridge for the existing PLE block at layer 1.
+            // HC and interlayer stores never unpack the BF16 residual.
+            if (m.native16_active && l == 1 && ple_on)
+                native16::restore(m.R16, m.R, T * D, m.cs);
+#endif
             // ---- the PLE block at layer 1, token by token (its conv reads the previous tokens' rows)
             if (l == 1 && ple_on && ple_batch) {
                 // the whole chunk at once, in sub-batches carved from the idle scratch region: the key and value
@@ -2171,6 +2243,10 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                 }
                 stats_.ms_ple += ms_since(tp);
             }
+#if defined(STRATA_ENABLE_SYCL)
+            if (m.native16_active && l == 1 && ple_on)
+                native16::pack(m.R, m.R16, T * D, m.cs);
+#endif
             for (int half = 0; half < 2; ++half) {
                 // ---- the hyper-connection read of this half
                 const char* pre = half == 0 ? "hc_attn_" : "hc_ffn_";
@@ -2180,6 +2256,17 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                                       *wu = need(v, su.c_str(), err), *wi = need(v, si.c_str(), err);
                 if (!wn || !wd || !wu || !wi) return false;
                 pt.mark(kPfHc, cs);
+#if defined(STRATA_ENABLE_SYCL)
+                if (m.native16_active) {
+                    native16::norm(m.R16, static_cast<const float*>(wn->data), EPS, m.grs, m.xn16, T, m.cs);
+                    if (!bf16_proj16(m.gemm, wd, m.xn16, m.lo_b16, T, sd, err)) return false;
+                    native16::silu(m.lo_b16, m.lo16, T, m.cs);
+                    if (!bf16_proj16(m.gemm, wu, m.lo16, m.gated_b16, T, su, err) ||
+                        !bf16_proj(m.gemm, wi, m.xn16, m.inj, T, si, err)) return false;
+                    native16::mix(m.R16, m.grs, static_cast<const float*>(wn->data), m.gated_b16,
+                                   m.mixed_bf, m.mixed_h, T, m.cs);
+                } else {
+#endif
                 if (gr_unfused()) gr_norm(m.R, (const float*) wn->data, EPS, m.xn, m.xn16, T, m.cs, m.xn16_lo);
                 else if (!normed) gr_norm_rs(m.R, (const float*) wn->data, EPS, m.grs, m.xn16, T, m.cs, m.xn16_lo);
                 normed = false;
@@ -2190,6 +2277,9 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                 if (gr_unfused()) gr_mix(m.xn, m.gated, m.mixed, m.mixed_bf, T, m.cs, m.mixed_h, m.mixed_bf_lo);
                 else gr_mix_r(m.R, m.grs, (const float*) wn->data, m.gated, m.mixed, m.mixed_bf, T, m.cs, m.mixed_h,
                               m.mixed_bf_lo);
+#if defined(STRATA_ENABLE_SYCL)
+                }
+#endif
 
                 if (half == 0 && !core::is_qsa_layer(g, l)) {
                     if (m.layer26_phase_audit && !m.layer26_phase_audit->capture(
@@ -2217,7 +2307,12 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                     pt.mark(kPfGdnRec, cs);
                     gdn_recurrence(state, m.hbuf, m.gate, m.beta, m.z, (const float*) wnm->data, EPS, m.y, m.y_h, T, m.cs);
                     pt.mark(kPfGdnOut, cs);
-                    if (!native_proj(m.gemm, wo, m.y_h, m.bo, T, v.name("ssm_out.weight"), err)) return false;
+#if defined(STRATA_ENABLE_SYCL)
+                    if (m.native16_active) {
+                        if (!native_proj16(m.gemm, wo, m.y_h, m.bo_b16, T, v.name("ssm_out.weight"), err)) return false;
+                    } else
+#endif
+                        if (!native_proj(m.gemm, wo, m.y_h, m.bo, T, v.name("ssm_out.weight"), err)) return false;
                     if (m.layer_major_profile) m.layer_major_profile->end(detail::LayerMajorCoarseProfile::gdn, m.cs);
                     if (m.layer26_phase_audit && !m.layer26_phase_audit->capture(
                             detail::Layer26PhaseAudit::gdn_out, l, c0, T, m.bo, m.layer_major_audit_copy)) {
@@ -2466,7 +2561,12 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                     if (qp) qp->end(QsaProfile::attention, m.cs);
                     if (qp) qp->begin(QsaProfile::output_projection, m.cs);
                     gate_attn(m.attn, m.Qf, m.attn_h, T, m.cs);
-                    if (!native_proj(m.gemm, wo, m.attn_h, m.bo, T, v.name("attn_output.weight"), err)) return false;
+#if defined(STRATA_ENABLE_SYCL)
+                    if (m.native16_active) {
+                        if (!native_proj16(m.gemm, wo, m.attn_h, m.bo_b16, T, v.name("attn_output.weight"), err)) return false;
+                    } else
+#endif
+                        if (!native_proj(m.gemm, wo, m.attn_h, m.bo, T, v.name("attn_output.weight"), err)) return false;
                     if (qp) qp->end(QsaProfile::output_projection, m.cs);
                     ++qsa_index;
                     if (m.layer_major_profile) m.layer_major_profile->end(detail::LayerMajorCoarseProfile::qsa, m.cs);
@@ -2501,10 +2601,21 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                         }
                     }
                     // the shared expert and its scalar gate
+#if defined(STRATA_ENABLE_SYCL)
+                    if (m.native16_active) {
+                        if (!native_proj16(m.gemm, wsg, m.mixed_h, m.sgate_b16, T, v.name("ffn_gate_shexp.weight"), err) ||
+                            !native_proj16(m.gemm, wsu, m.mixed_h, m.sup_b16, T, v.name("ffn_up_shexp.weight"), err)) return false;
+                        native16::swiglu_pair(m.sgate_b16, m.sup_b16, m.sh_h, T, m.cs);
+                        if (!native_proj16(m.gemm, wsd, m.sh_h, m.shared_b16, T, v.name("ffn_down_shexp.weight"), err)) return false;
+                    } else {
+#endif
                     if (!native_proj(m.gemm, wsg, m.mixed_h, m.sgate, T, v.name("ffn_gate_shexp.weight"), err)) return false;
                     if (!native_proj(m.gemm, wsu, m.mixed_h, m.sup, T, v.name("ffn_up_shexp.weight"), err)) return false;
                     swiglu_pair(m.sgate, m.sup, m.sh_h, T, m.cs);
                     if (!native_proj(m.gemm, wsd, m.sh_h, m.shared, T, v.name("ffn_down_shexp.weight"), err)) return false;
+#if defined(STRATA_ENABLE_SYCL)
+                    }
+#endif
                     if (wgi->kind != core::WeightKind::Bf16InF32) { err = "prefill: shared gate is not BF16"; return false; }
                     m.gemm.bf16(m.mixed_bf, (const uint16_t*) wgi->data, m.sg, T, 1, N);
                     if (m.mixed_bf_lo) m.gemm.bf16(m.mixed_bf_lo, (const uint16_t*) wgi->data, m.sg, T, 1, N, 0, 1.0f);
@@ -3074,13 +3185,28 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                             ro.gu(ne, slot);
                             if (m.layer_major_census) m.layer_major_census->issue(true, l, ne, e,
                                 m.host_res ? m.host_res[size_t(l * NE + e)] : -1, slot);
+#if defined(STRATA_ENABLE_SYCL)
+                            if (m.native16_active) {
+                                m.gemm.f16_out16(m.Xs + scratch_row * N, m.dq_gu[q],
+                                    m.GU_b16 + scratch_row * 1280, ne, 1280, N, true);
+                                native16::swiglu(m.GU_b16 + scratch_row * 1280, m.Hh + scratch_row * 640, ne, m.cs);
+                            } else {
+#endif
                             m.gemm.f16(m.Xs + scratch_row * N, m.dq_gu[q], m.GU + scratch_row * 1280, ne, 1280, N);
                             swiglu_interleaved(m.GU + scratch_row * 1280, m.Hh + scratch_row * 640, ne, m.cs);
+#if defined(STRATA_ENABLE_SYCL)
+                            }
+#endif
                             pt.mark(kPfGemmD, cs);
                             ro.down(ne);
                             if (m.layer_major_census) m.layer_major_census->issue(false, l, ne, e,
                                 m.host_res ? m.host_res[size_t(l * NE + e)] : -1, slot);
-                            m.gemm.f16(m.Hh + scratch_row * 640, m.dq_d[q], m.Dm + o0 * N, ne, N, 640);
+#if defined(STRATA_ENABLE_SYCL)
+                            if (m.native16_active)
+                                m.gemm.f16_out16(m.Hh + scratch_row * 640, m.dq_d[q], m.Dm_b16 + o0 * N, ne, N, 640, true);
+                            else
+#endif
+                                m.gemm.f16(m.Hh + scratch_row * 640, m.dq_d[q], m.Dm + o0 * N, ne, N, 640);
                             return true;
                         };
                         if (!stream_all) {
@@ -3151,7 +3277,12 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                     }
                     pt.mark(kPfCombine, cs);
                     if (peer_now) cudaStreamWaitEvent(m.cs, m.pp->ev_done, 0);   // multi-GPU: the peer's rows are in Dm
-                    moe_combine(m.Dm, m.slot_dev, m.w, m.shared, m.sg, m.bo, T, m.cs);
+#if defined(STRATA_ENABLE_SYCL)
+                    if (m.native16_active)
+                        native16::combine(m.Dm_b16, m.slot_dev, m.w, m.shared_b16, m.sg, m.bo_b16, T, T * K, m.cs);
+                    else
+#endif
+                        moe_combine(m.Dm, m.slot_dev, m.w, m.shared, m.sg, m.bo, T, m.cs);
                     if (m.layer26_phase_audit && !m.layer26_phase_audit->capture(
                             detail::Layer26PhaseAudit::moe_out, l, c0, T, m.bo, m.layer_major_audit_copy)) {
                         err = "prefill phase audit: MoE output copy/drain failed"; return false;
@@ -3185,7 +3316,11 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                 // touches R in between (not the stage's last half, not before the PLE block of layer 1, not under a
                 // control vector)
                 const int64_t nl = half == 0 ? l : l + 1;
-                const bool fuse = !gr_unfused() && nl < LE && !(half == 1 && nl == 1 && ple_on) &&
+                const bool fuse =
+#if defined(STRATA_ENABLE_SYCL)
+                                  !m.native16_active &&
+#endif
+                                  !gr_unfused() && nl < LE && !(half == 1 && nl == 1 && ple_on) &&
                                   !(half == 1 && strata::kernels::cvec().covers(l));
                 const core::WeightRef* wnn = nullptr;
                 if (fuse) {
@@ -3193,6 +3328,12 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                     wnn = need(vn, half == 0 ? "hc_ffn_norm.weight" : "hc_attn_norm.weight", err);
                     if (!wnn) return false;
                 }
+#if defined(STRATA_ENABLE_SYCL)
+                if (m.native16_active) {
+                    native16::write(m.R16, m.bo_b16, m.inj, T, m.cs);
+                    normed = false;
+                } else
+#endif
                 if (wnn) {
                     gr_write_norm_rs(m.R, m.bo, m.inj, HC, (const float*) wnn->data, EPS, m.grs, m.xn16, T, m.cs,
                                      m.xn16_lo);
@@ -3262,7 +3403,11 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                 std::fclose(f);
             }
         }
-        if (on_chunk || on_stage_chunk) {
+        if (on_chunk || on_stage_chunk
+#if defined(STRATA_ENABLE_SYCL)
+            || m.on_chunk16
+#endif
+            ) {
             const auto toc = Clock::now();
             if (cudaStreamSynchronize(m.cs) != cudaSuccess) {
                 err = std::string("prefill: ") + cudaGetErrorString(cudaGetLastError());
@@ -3276,7 +3421,12 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                 if (m.layer_major_qsa_profile) m.layer_major_qsa_profile->chunk_retired();
             }
             if (on_stage_chunk && !on_stage_chunk(p0 + T, err)) return false;
-            if (on_chunk && !on_chunk(m.R, T, p0, err)) return false;
+#if defined(STRATA_ENABLE_SYCL)
+            if (m.native16_active) {
+                if (!m.on_chunk16 || !m.on_chunk16(m.R16, T, p0, err)) return false;
+            } else
+#endif
+                if (on_chunk && !on_chunk(m.R, T, p0, err)) return false;
             host_sync_ms += std::chrono::duration<double, std::milli>(toc2 - toc).count();
             host_chunk_ms += ms_since(toc2);
         }

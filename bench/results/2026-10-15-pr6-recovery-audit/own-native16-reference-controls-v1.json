@@ -25,5 +25,26 @@
     "fp16-matched": "UNRUN; storage-only experiment superseded by user request native16 producer-consumer",
     "fp16-all-gpu": "UNRUN; defer until native16 path is validated"
   },
-  "new_comparison_constraint": "New native16 source/binary intentionally differ: use explicit matched FP32 control built from same new revision, pinned old controls as historical reference; do not relax/rewrite old same-source recipe invariants"
+  "new_comparison_constraint": "New native16 source/binary intentionally differ: use explicit matched FP32 control built from same new revision, pinned old controls as historical reference; do not relax/rewrite old same-source recipe invariants",
+  "differing_rows": [
+    {
+      "row": 15055,
+      "chunk": 1,
+      "offset": 6863,
+      "target": 45366,
+      "a": 6.322249181086632,
+      "b": 7.06035849753292,
+      "delta": 0.7381093164462875
+    },
+    {
+      "row": 69856,
+      "chunk": 8,
+      "offset": 4320,
+      "target": 8028,
+      "a": 2.610493418656518,
+      "b": 3.5053204240888785,
+      "delta": 0.8948270054323606
+    }
+  ],
+  "variation_cause": "UNRESOLVED; only two local isolated losses differ. Do not adopt their maximum as a candidate tolerance. Canonical raw losses retained."
 }

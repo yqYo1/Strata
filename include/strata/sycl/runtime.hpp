@@ -46,6 +46,12 @@ private:
   sycl::queue compute_, transfer_;
 };
 
+// Reject a span outside one live Strata Allocation(MemoryKind::Device),
+// including wrong-context/device, host USM and foreign USM pointers. Does not
+// submit work or wait. Caller must retain allocation ownership through use.
+void validate_device_span(const void *pointer, size_t bytes,
+                          const sycl::queue &queue);
+
 enum class MemoryKind { Device, Host };
 
 // The engine uses one runtime per device so its arenas and launches share a

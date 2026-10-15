@@ -4,12 +4,27 @@
 
 #include <cstdio>
 #include <map>
+#include <iterator>
+#include <cstdint>
 #include <stdexcept>
 #include <thread>
 #include <utility>
 
 namespace strata::sycl_backend {
 namespace {
+// This registry covers both engine arenas and CUDA-adapter device buffers.
+// Entries refer to their Allocation's retained Runtime; moves keep addresses.
+struct DeviceSpan { size_t bytes; const Runtime *runtime; };
+struct DeviceRegistry {
+  std::mutex mutex;
+  std::map<uintptr_t, DeviceSpan> spans;
+};
+DeviceRegistry &device_registry() {
+  // Initialized before runtime_for's owning map on its first allocation. Its
+  // lifetime also covers Allocation destruction at ordinary process teardown.
+  static DeviceRegistry registry;
+  return registry;
+}
 sycl::device select_device(int ordinal) {
   auto candidates = Runtime::devices();
   if (ordinal < 0 || static_cast<size_t>(ordinal) >= candidates.size())
@@ -29,6 +44,7 @@ std::vector<sycl::device> Runtime::devices() {
 }
 
 std::shared_ptr<Runtime> runtime_for(int ordinal) {
+  (void)device_registry();
   static std::mutex mutex;
   static std::map<int, std::shared_ptr<Runtime>> runtimes;
   std::lock_guard lock(mutex);
@@ -147,6 +163,24 @@ sycl::event Runtime::copy(void *dst, const void *src, size_t bytes,
   });
 }
 
+void validate_device_span(const void *pointer, size_t bytes,
+                          const sycl::queue &queue) {
+  const auto address = reinterpret_cast<uintptr_t>(pointer);
+  if (!pointer || !bytes || bytes > UINTPTR_MAX - address)
+    throw std::invalid_argument("invalid registered SYCL device span");
+  auto &registry = device_registry();
+  std::lock_guard lock(registry.mutex);
+  auto next = registry.spans.upper_bound(address);
+  if (next == registry.spans.begin())
+    throw std::invalid_argument("unregistered SYCL device span");
+  const auto &[base, entry] = *std::prev(next);
+  const size_t offset = address - base;
+  if (offset > entry.bytes || bytes > entry.bytes - offset ||
+      queue.get_context() != entry.runtime->context() ||
+      queue.get_device() != entry.runtime->device())
+    throw std::invalid_argument("SYCL device span exceeds allocation or queue domain");
+}
+
 Allocation::Allocation(std::shared_ptr<Runtime> runtime, size_t bytes,
                        MemoryKind kind)
     : runtime_(std::move(runtime)), bytes_(bytes) {
@@ -165,6 +199,19 @@ Allocation::Allocation(std::shared_ptr<Runtime> runtime, size_t bytes,
               : sycl::malloc_host(bytes, runtime_->context());
   if (!data_)
     throw std::bad_alloc();
+  if (kind == MemoryKind::Device) {
+    try {
+      auto &registry = device_registry();
+      std::lock_guard lock(registry.mutex);
+      if (!registry.spans.emplace(reinterpret_cast<uintptr_t>(data_),
+                                  DeviceSpan{bytes_, runtime_.get()}).second)
+        throw std::runtime_error("duplicate SYCL device allocation");
+    } catch (...) {
+      sycl::free(data_, runtime_->context());
+      data_ = nullptr;
+      throw;
+    }
+  }
 }
 
 Allocation::~Allocation() { release(); }
@@ -185,7 +232,12 @@ void Allocation::release() noexcept {
   if (!data_)
     return;
   checked_cleanup([&] { runtime_->wait(); },
-                  [&] { sycl::free(data_, runtime_->context()); },
+                  [&] {
+                    auto &registry = device_registry();
+                    std::lock_guard lock(registry.mutex);
+                    sycl::free(data_, runtime_->context());
+                    registry.spans.erase(reinterpret_cast<uintptr_t>(data_));
+                  },
                   "allocation completion check failed");
   data_ = nullptr;
   bytes_ = 0;

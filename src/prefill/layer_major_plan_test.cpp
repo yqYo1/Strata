@@ -58,12 +58,19 @@ int main() {
 
     check(layer_major_residual_dtype(nullptr) == LayerMajorResidualDtype::fp32 &&
           layer_major_residual_dtype("fp32") == LayerMajorResidualDtype::fp32 &&
-          layer_major_residual_dtype("fp16") == LayerMajorResidualDtype::fp16,
-          "dtype defaults to FP32 and accepts only explicit FP32/FP16");
-    for (const char* value : {"", "FP16", "bf16", "fp8", " fp16", "fp16 "})
+          layer_major_residual_dtype("fp16") == LayerMajorResidualDtype::fp16 &&
+          layer_major_residual_dtype("bf16") == LayerMajorResidualDtype::bf16,
+          "dtype defaults to FP32 and accepts explicit FP32/FP16/BF16");
+    for (const char* value : {"", "FP16", "BF16", "fp8", " fp16", "fp16 "})
         rejected([&] { layer_major_residual_dtype(value); }, "invalid storage dtype rejected");
     rejected([&] { layer_major_storage_bytes(static_cast<LayerMajorResidualDtype>(99)); },
              "invalid typed format rejected");
+    const auto bf = LayerMajorResidualPlan::make(262144, 8192, 10240, 8192ull * 10240 * 2,
+                                               8192, LayerMajorResidualDtype::bf16);
+    check(bf.total_bytes == 5368709120ull && bf.gpu_rows == 8192 && bf.staging_bytes == 0 &&
+          bf.host_bytes == 5368709120ull - bf.gpu_bytes &&
+          bf.span(253952, 8192).offset_bytes + bf.span(253952, 8192).bytes == bf.host_bytes,
+          "native BF16 has direct typed chunk IO, no extra staging, and exact physical262144 last span");
     for (const auto dtype : {LayerMajorResidualDtype::fp32, LayerMajorResidualDtype::fp16}) {
         const bool half = dtype == LayerMajorResidualDtype::fp16;
         const uint64_t rb = 10240 * layer_major_storage_bytes(dtype);

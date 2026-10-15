@@ -33,6 +33,24 @@ public:
     void f16(const uint16_t* X, const uint16_t* W, float* Y, int64_t T, int64_t N, int64_t K, int64_t ldy = 0,
              float beta = 0.0f);
 
+#if defined(STRATA_ENABLE_SYCL)
+    /// SYCL native matrix units: X[T,K] . W[N,K]^T -> 16-bit Y[T,N].
+    /// Inputs/weights share the named format; output_bf16 chooses Y's format.
+    /// Accumulator and beta epilogue are FP32; one final RNE output rounding.
+    /// T > 0; N,K > 0 and multiples of 16; ldy=0 means N, otherwise ldy>=N.
+    /// All spans must be 2-byte aligned registered Strata device allocations in
+    /// this stream's context/device. Y must not overlap X or W. beta is finite.
+    /// No implicit scratch, fallback, clamp, or allocation. Unsupported devices
+    /// and geometry throw before submission. Caller retains buffers until the
+    /// in-order stream completes; null stream follows synchronous finish().
+    void f16_out16(const uint16_t* X, const uint16_t* W, uint16_t* Y,
+                   int64_t T, int64_t N, int64_t K, bool output_bf16 = false,
+                   int64_t ldy = 0, float beta = 0.0f);
+    void bf16_out16(const uint16_t* X, const uint16_t* W, uint16_t* Y,
+                    int64_t T, int64_t N, int64_t K, bool output_bf16 = false,
+                    int64_t ldy = 0, float beta = 0.0f);
+#endif
+
     /// W given as native GGUF blocks of `ggml_type`, dequantized to FP16 in the scratch, X in FP16.
     void native(const uint16_t* X, int ggml_type, const void* W_blocks, float* Y, int64_t T, int64_t N, int64_t K,
                 int64_t ldy = 0, float beta = 0.0f);
@@ -45,6 +63,12 @@ public:
     void* stream() const { return stream_; }
 
 private:
+#if defined(STRATA_ENABLE_SYCL)
+    // Bit 0: queried; bits 1/2: native half/BF16 with FP32 C and D;
+    // bit 3: FP16 scalar output. Calls on a single Gemm require serialized
+    // host ownership, as do init/rebind.
+    uint8_t out16_support_ = 0;
+#endif
     void* handle_ = nullptr;
     void* stream_ = nullptr;
     uint16_t* scratch_ = nullptr;

@@ -110,10 +110,17 @@ target_link_libraries(strata_engine PUBLIC strata_core strata_kernels strata_ker
 set(MKL_LINK dynamic)
 set(MKL_THREADING sequential)
 find_package(MKL CONFIG REQUIRED)
-add_library(strata_prefill STATIC src/prefill/prefill.cpp src/prefill/sycl/gemm.cpp src/prefill/sycl/postops.cpp src/prefill/sycl/blob.cpp src/prefill/sycl/moe_mmq.cpp src/prefill/sycl/moe_fused.cpp)
+add_library(strata_prefill STATIC src/prefill/prefill.cpp src/prefill/sycl/gemm.cpp src/prefill/sycl/gemm16.cpp src/prefill/sycl/native16.cpp src/prefill/sycl/postops.cpp src/prefill/sycl/blob.cpp src/prefill/sycl/moe_mmq.cpp src/prefill/sycl/moe_fused.cpp)
 target_link_libraries(strata_prefill PUBLIC strata_engine MKL::MKL_SYCL::BLAS)
 target_compile_definitions(strata_prefill PRIVATE STRATA_PREFILL_MMQ=1 STRATA_PREFILL_FUSED=1)
 target_compile_options(strata_prefill PRIVATE -fno-fast-math -ffp-contract=off)
+# Manual native FP16/BF16 I/O fixture: never in the default build or CTest.
+add_executable(sycl_gemm16_test EXCLUDE_FROM_ALL tests/sycl/gemm16.cpp)
+target_link_libraries(sycl_gemm16_test PRIVATE strata_prefill)
+target_compile_options(sycl_gemm16_test PRIVATE -fno-fast-math -ffp-contract=off)
+add_executable(sycl_native16_prefill_test EXCLUDE_FROM_ALL tests/sycl/native16_prefill.cpp)
+target_link_libraries(sycl_native16_prefill_test PRIVATE strata_prefill)
+target_compile_options(sycl_native16_prefill_test PRIVATE -fno-fast-math -ffp-contract=off)
 # Standalone synthetic hot-operand row/column oneMKL descriptor diagnostic.
 add_executable(sycl_gemm_orientation_bench EXCLUDE_FROM_ALL tools/sycl/gemm_orientation_bench.cpp)
 target_link_libraries(sycl_gemm_orientation_bench PRIVATE strata_prefill)

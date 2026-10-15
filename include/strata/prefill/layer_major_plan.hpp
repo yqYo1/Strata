@@ -45,19 +45,21 @@ inline int64_t layer_major_requested_rows(const char* value) {
     return int64_t(rows);
 }
 
-// Storage format only: the live residual stays FP32; operator precision is unchanged.
-enum class LayerMajorResidualDtype { fp32, fp16 };
+// FP16 is the legacy storage-only experiment. BF16 is used by native16 kernels.
+enum class LayerMajorResidualDtype { fp32, fp16, bf16 };
 
 inline LayerMajorResidualDtype layer_major_residual_dtype(const char* value) {
     if (!value || std::strcmp(value, "fp32") == 0) return LayerMajorResidualDtype::fp32;
     if (std::strcmp(value, "fp16") == 0) return LayerMajorResidualDtype::fp16;
-    throw std::invalid_argument("STRATA_PREFILL_LAYER_MAJOR_R_DTYPE must be fp32 or fp16");
+    if (std::strcmp(value, "bf16") == 0) return LayerMajorResidualDtype::bf16;
+    throw std::invalid_argument("STRATA_PREFILL_LAYER_MAJOR_R_DTYPE must be fp32, fp16 or bf16");
 }
 
 inline uint64_t layer_major_storage_bytes(LayerMajorResidualDtype dtype) {
     switch (dtype) {
     case LayerMajorResidualDtype::fp32: return 4;
     case LayerMajorResidualDtype::fp16: return 2;
+    case LayerMajorResidualDtype::bf16: return 2;
     }
     throw std::invalid_argument("invalid layer-major residual dtype");
 }
@@ -66,6 +68,7 @@ inline const char* layer_major_dtype_name(LayerMajorResidualDtype dtype) {
     switch (dtype) {
     case LayerMajorResidualDtype::fp32: return "fp32";
     case LayerMajorResidualDtype::fp16: return "fp16";
+    case LayerMajorResidualDtype::bf16: return "bf16";
     }
     throw std::invalid_argument("invalid layer-major residual dtype");
 }

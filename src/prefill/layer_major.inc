@@ -42,10 +42,29 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     const core::OnDevice on_device(m.device);
     const auto& g = *m.g;
     auto& ss = *m.ss;
-    const auto residual_dtype = detail::layer_major_residual_dtype(
-        std::getenv("STRATA_PREFILL_LAYER_MAJOR_R_DTYPE"));
+    const bool native16_on = native16::requested();
+    const char* residual_option = std::getenv("STRATA_PREFILL_LAYER_MAJOR_R_DTYPE");
+    if (native16_on && residual_option && std::strcmp(residual_option, "bf16")) {
+        err = "prefill native16: residual storage must be bf16 (or leave R_DTYPE unset)"; return false;
+    }
+    const auto residual_dtype = native16_on ? detail::LayerMajorResidualDtype::bf16 :
+        detail::layer_major_residual_dtype(residual_option);
+    if (!native16_on && residual_dtype == detail::LayerMajorResidualDtype::bf16) {
+        err = "prefill: BF16 residuals require STRATA_SYCL_PREFILL_NATIVE16=bf16"; return false;
+    }
     const char* phase_switch = std::getenv("STRATA_PREFILL_PHASE_AUDIT");
     const bool phase_requested = phase_switch && std::strcmp(phase_switch, "1") == 0;
+    if (native16_on) {
+        if (phase_requested || std::getenv("STRATA_PREFILL_BOUNDARY_AUDIT") ||
+            std::getenv("STRATA_PREFILL_DUMP_R") || gr_unfused() ||
+            m.xn16_lo || m.lo16_lo || m.mixed_bf_lo) {
+            err = "prefill native16: old float tensor audits/dump, unfused HC and BF16x2 are unsupported"; return false;
+        }
+        for (int64_t l = 0; l < g.n_layers; ++l)
+            if (strata::kernels::cvec().covers(l)) {
+                err = "prefill native16: control vector requires the FP32 reference"; return false;
+            }
+    }
     if (phase_requested && residual_dtype != detail::LayerMajorResidualDtype::fp32) {
         err = "prefill phase audit: FP16 saved residual storage is outside this diagnostic"; return false;
     }
@@ -277,6 +296,7 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         bool active; const void* gpu_input; const void* host_input; uint16_t* fp16_stage;
         detail::LayerMajorResidualPlan plan;
         decltype(on_chunk) chunk; decltype(on_stage_chunk) stage;
+        bool native16_on; decltype(m.on_chunk16) chunk16;
         ~Restore() noexcept {
             m.native_dense_overlay = overlay;
             p.stage_lb_ = lb; p.stage_le_ = le; p.hand_in_ = input;
@@ -286,11 +306,13 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
             m.layer_major_gpu_input = gpu_input; m.layer_major_host_input = host_input;
             m.layer_major_fp16_stage = fp16_stage; m.layer_major_residual = plan;
             p.on_chunk = std::move(chunk); p.on_stage_chunk = std::move(stage);
+            m.native16_active = native16_on; m.on_chunk16 = std::move(chunk16);
         }
     } restore{*this, m, m.native_dense_overlay, stage_lb_, stage_le_, hand_in_, m.cache, m.host_res,
               m.layer26_phase_audit, m.layer_major_audit, m.layer_major_audit_copy,
               m.layer_major_active, m.layer_major_gpu_input, m.layer_major_host_input,
-              m.layer_major_fp16_stage, m.layer_major_residual, on_chunk, on_stage_chunk};
+              m.layer_major_fp16_stage, m.layer_major_residual, on_chunk, on_stage_chunk,
+              m.native16_active, m.on_chunk16};
     cudaError_t compute_drain = cudaSuccess, copy_drain = cudaSuccess;
     auto drain = [&]() noexcept {
         const auto profile_drain_start = profile ? LmProfile::Clock::now() : LmProfile::Clock::time_point{};
@@ -337,6 +359,7 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     }
     m.layer_major_fp16_stage = reinterpret_cast<uint16_t*>(fp16_stage.get());
     m.layer_major_active = true;
+    m.native16_active = native16_on;
     m.layer_major_residual = plan;
     m.cache = &layer_cache;
     m.host_res = residency.data();
@@ -355,6 +378,10 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
                              "underflow -> signed zero, NaN -> quiet NaN; "
                              "one pack/unpack per interlayer boundary, live residual FP32, "
                              "operator/state precision unchanged\n");
+    if (native16_on)
+        std::fprintf(stderr, "strata prefill: native16 BF16 HC residual/projection IO and MoE outputs; "
+                             "FP32 local accumulations/router/recurrent state; PLE and final callbacks bridge FP32; "
+                             "QSA/GDN internal tensors remain FP32; reserved scratch arena unchanged; unqualified\n");
     for (; layer < g.n_layers; ++layer) {
         if (profile) profile->layer = int(layer);
         if (qsa_profile) qsa_profile->layer = int(layer);
@@ -491,6 +518,45 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
             }
             return true;
         };
+        if (native16_on) m.on_chunk16 = [&](const uint16_t* residual, int64_t count, int64_t position, std::string& error) {
+            if (position < pos0 || position - pos0 >= n) {
+                error = "prefill native16: output position exceeds request"; return false;
+            }
+            const int64_t row = position - pos0;
+            cursor.accept(row, count);
+            if (layer + 1 == g.n_layers) {
+                // Existing MTP/decode/NLL consumers own a float interface. Only
+                // the final layer expands it; intermediate layers copy BF16.
+                native16::restore(residual, m.R, count * D, m.cs);
+                if (!drain()) { error = "prefill native16: final bridge drain failed"; return false; }
+                ++logical_chunks;
+                return !restore.chunk || restore.chunk(m.R, count, position, error);
+            }
+            const auto start = profile ? LmProfile::Clock::now() : LmProfile::Clock::time_point{};
+            const auto span = plan.span(row, count);
+            if (profile) {
+                profile->rows[layer].store_bytes[int(span.device)] += span.bytes;
+                profile->begin(LmProfile::store, m.cs, span.device);
+            }
+            uint8_t* dst = (span.device ? device_rows.get() : rows.get()) + size_t(span.offset_bytes);
+            sycl_backend::cpu_wait_profile::Host cpu_profile(span.device
+                ? sycl_backend::cpu_wait_profile::residual_store_device
+                : sycl_backend::cpu_wait_profile::residual_store_host);
+            const auto status = cudaMemcpyAsync(dst, residual, size_t(span.bytes),
+                span.device ? cudaMemcpyDeviceToDevice : cudaMemcpyDeviceToHost, m.cs);
+            cpu_profile.finish();
+            if (profile) profile->end(LmProfile::store, m.cs);
+            const auto drain_start = profile ? LmProfile::Clock::now() : LmProfile::Clock::time_point{};
+            if (status != cudaSuccess || !drain()) {
+                error = "prefill native16: BF16 store copy/drain failed"; return false;
+            }
+            if (profile) {
+                profile->add(span.device ? LmProfile::store_drain_device : LmProfile::store_drain_host, drain_start);
+                profile->add(span.device ? LmProfile::store_wall_device : LmProfile::store_wall_host, start);
+                profile->retired(LmProfile::store);
+            }
+            return true;
+        };
         if (!run_impl(tokens, n, pos0, err)) return false;
         if (!drain()) { err = "prefill layer-major: pass drain failed"; return false; }
         m.native_dense_overlay = nullptr; // checked pass drain completed
@@ -503,7 +569,7 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         }
         // No callback retains the per-pass cursor/layer references past this
         // checked boundary. Owners and saved caller callbacks remain leased.
-        on_chunk = {}; on_stage_chunk = {};
+        on_chunk = {}; on_stage_chunk = {}; m.on_chunk16 = {};
     }
     if (!stage_delivered || logical_chunks != 1 + (n - 1) / m.T) {
         err = "prefill layer-major: incomplete final callback sequence"; return false;
