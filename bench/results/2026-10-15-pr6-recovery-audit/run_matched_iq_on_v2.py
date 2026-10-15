@@ -35,7 +35,7 @@ def main():
     with (B / 'owned-v0141-measurement.lock').open('a') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         off_path = A / 'selective-iq-clean-bench-full-0-v1.json'
-        host_path = A / 'bench-input-tools-host-v1.json'
+        host_path = A / 'bench-input-tools-host-v2.json'
         proof_path = A / 'selective-iq-full0-workload-provenance-v1.json'
         build_path = A / 'selective-iq-native-build-v1.json'
         off, host, proof, build = [json.loads(p.read_text()) for p in (off_path, host_path, proof_path, build_path)]

@@ -1,0 +1,329 @@
+{
+  "schema": "main-checked-pcie-fetch-host-v1",
+  "active": false,
+  "passed": true,
+  "complete": true,
+  "GPU_executed": false,
+  "product_applied": false,
+  "performance_qualified": false,
+  "quality_qualified": false,
+  "physical_262144_qualified": false,
+  "restore_qualified": false,
+  "source_pins": {
+    "bench/results/2026-10-15-pr6-recovery-audit/checked-pcie-fetch-v1/pins.json": "41646eb274f60b69d02523e092a9ed351dc92e955438a0020835b3de2adfad92",
+    "bench/results/2026-10-15-pr6-recovery-audit/checked-pcie-fetch-v1/artifact-sha256.json": "4824b1871ff7b6fd962bec6ef8e6e5b57442d2646a4fccc5001b672139b5ec27",
+    "src/core/verify.cpp": "640e0270be833ddff0218331a7db18043605af3ced2682787f6b06abdcf6316c",
+    "include/strata/core/verify.hpp": "1f8f43ed9f7278ce260a2681b70f3dbfa18b07ff87a90ddb520a60406fb92787",
+    "src/core/expert_source.cpp": "2b252e49025178349f327eb54205e1a19b2deb0724945a8deb6a8ec72bf04ae5",
+    "include/strata/core/expert_source.hpp": "38bbbad222b62e8cd5ae7bbdcc2760371ea042ded3db67db40fe6872ddb827a1",
+    "src/sycl/compat.cpp": "225e2021b5ce67b3bb58f116a4a15cd5d592a33dbdf2c9837940a3e89155dca7",
+    "src/kernels/sycl/sequence.cpp": "14ed9efceafac9828d495e0265d5831e0e2f5eea071e9edb159df94580c730b8",
+    "include/strata/sycl/checked_cleanup.hpp": "c2c9bdee7b3a6eac9fb9ae9d965cec237b2971a83ec7a3a8f9ff274b3e53f683",
+    "bench/results/2026-10-15-pr6-recovery-audit/research-pcie-miss-routing-round641-v2.txt": "a5b8b7fa06e302d95decf14ee903361d9b1b08989e82a401f7404186209383fb",
+    "bench/results/2026-10-15-pr6-recovery-audit/checked-pcie-fetch-v1/source.diff": "ed48c8fa4258a72226b0808d889288059a53ea0c19057f432f80a86a161ec72b",
+    "bench/results/2026-10-15-pr6-recovery-audit/checked-pcie-fetch-v1/README.ja.md": "2140e7dde2a2904ae40d9941d5d5f913e3d49d0deafa6bb985b19165d1d1fe43",
+    "bench/results/2026-10-15-pr6-recovery-audit/checked-pcie-fetch-v1/cpu_fault_fixture.cpp": "a9da61a8cf64d2a3ab1e8c9e45cdb6df7aad0805223dae6f4b18769711c14f28",
+    "bench/results/2026-10-15-pr6-recovery-audit/checked-pcie-fetch-v1/files/include/strata/core/verify.hpp": "4d3f3243d6d0e822f1707ede170bfc12d3d0a5d2088a340aeaa7cbe96532c185",
+    "bench/results/2026-10-15-pr6-recovery-audit/checked-pcie-fetch-v1/files/include/strata/core/checked_pcie_fetch.hpp": "85204cfaccd1bdda6d86e4aa6333d9b51d62b10411e361955907db0840d76cb5",
+    "bench/results/2026-10-15-pr6-recovery-audit/checked-pcie-fetch-v1/files/src/core/verify.cpp": "20547c78e12da4be1e516b35dce50b1e83731aa6f2e0efd521ba3231032dbfe5",
+    "bench/results/2026-10-15-pr6-recovery-audit/checked-pcie-fetch-v1/research-context.json": "ccbb5167a00ef23f5ce1d946d5b4778cb787179b911161637b7d578768533ab4",
+    "bench/results/2026-10-15-pr6-recovery-audit/qualify_checked_pcie_fetch_host_v1.py": "0ca457b8edee933e62c9d1c61d21a4fad2f6c37c583f39477452284046117126",
+    "bench/results/2026-10-14-niko-main-service-port/direct_owner.py": "a29d8257eecc77c4ad9ae6671d092b56f4c09a35c4247c125fed3a8c8bc1f95f",
+    "bench/results/2026-10-15-pr6-recovery-audit/owned-stall-stack-probe-v1/owned_stack_probe.py": "888cef227ebc306d5e43308db8da1b431cd9ceeba3da49baf0d10e7197d0eaee"
+  },
+  "compiler": "/usr/bin/x86_64-linux-gnu-g++-13",
+  "compiler_sha256": "1353e9bdd29a7295c7226bf6c63abccce056d8cac31f112e5cdbecc3f28c2769",
+  "commands": [
+    {
+      "label": "normal-build",
+      "argv": [
+        "/usr/bin/c++",
+        "-std=c++17",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-UNDEBUG",
+        "-O2",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/checked-pcie-fetch-v1/cpu_fault_fixture.cpp",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-checked-pcie-fetch-host-root-v1/checked-pcie-fetch-normal"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-checked-pcie-fetch-host-root-v1",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "ASAN_OPTIONS": "detect_leaks=1:halt_on_error=1",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+      },
+      "started_utc": "2026-10-15T06:44:27.160067+00:00",
+      "wall_seconds": 120,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 311547,
+          "start_ticks": 39543128,
+          "sid": 311547,
+          "pgid": 311547
+        },
+        {
+          "pid": 311548,
+          "start_ticks": 39543128,
+          "sid": 311547,
+          "pgid": 311547
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 395431.281576773,
+      "pid": 311547,
+      "spawn_return_monotonic": 395431.283413357,
+      "direct_identity": {
+        "pid": 311547,
+        "state": "R",
+        "ppid": 311504,
+        "pgid": 311547,
+        "sid": 311547,
+        "start_ticks": 39543128,
+        "rss_bytes": 475136
+      },
+      "peak_live_owned_identities": 2,
+      "peak_session_rss_bytes": 67837952,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-15T06:44:27.655613+00:00",
+      "elapsed_seconds": 0.4953255240106955,
+      "logs": {
+        "normal-build.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "normal-build.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "normal-run",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-checked-pcie-fetch-host-root-v1/checked-pcie-fetch-normal"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-checked-pcie-fetch-host-root-v1",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "ASAN_OPTIONS": "detect_leaks=1:halt_on_error=1",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+      },
+      "started_utc": "2026-10-15T06:44:27.656127+00:00",
+      "wall_seconds": 120,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 311594,
+          "start_ticks": 39543177,
+          "sid": 311594,
+          "pgid": 311594
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 395431.777597012,
+      "pid": 311594,
+      "spawn_return_monotonic": 395431.779368564,
+      "direct_identity": {
+        "pid": 311594,
+        "state": "R",
+        "ppid": 311504,
+        "pgid": 311594,
+        "sid": 311594,
+        "start_ticks": 39543177,
+        "rss_bytes": 274432
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-15T06:44:27.773561+00:00",
+      "elapsed_seconds": 0.11723953497130424,
+      "logs": {
+        "normal-run.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "normal-run.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "asan-build",
+      "argv": [
+        "/usr/bin/c++",
+        "-std=c++17",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-UNDEBUG",
+        "-O1",
+        "-g",
+        "-fsanitize=address,undefined",
+        "-fno-omit-frame-pointer",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/checked-pcie-fetch-v1/cpu_fault_fixture.cpp",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-checked-pcie-fetch-host-root-v1/checked-pcie-fetch-asan"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-checked-pcie-fetch-host-root-v1",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "ASAN_OPTIONS": "detect_leaks=1:halt_on_error=1",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+      },
+      "started_utc": "2026-10-15T06:44:27.774427+00:00",
+      "wall_seconds": 120,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 311601,
+          "start_ticks": 39543189,
+          "sid": 311601,
+          "pgid": 311601
+        },
+        {
+          "pid": 311602,
+          "start_ticks": 39543189,
+          "sid": 311601,
+          "pgid": 311601
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 395431.895922522,
+      "pid": 311601,
+      "spawn_return_monotonic": 395431.897696609,
+      "direct_identity": {
+        "pid": 311601,
+        "state": "R",
+        "ppid": 311504,
+        "pgid": 311601,
+        "sid": 311601,
+        "start_ticks": 39543189,
+        "rss_bytes": 327680
+      },
+      "peak_live_owned_identities": 2,
+      "peak_session_rss_bytes": 94629888,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-15T06:44:28.649688+00:00",
+      "elapsed_seconds": 0.8750319429673254,
+      "logs": {
+        "asan-build.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "asan-build.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "asan-run",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-checked-pcie-fetch-host-root-v1/checked-pcie-fetch-asan"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-checked-pcie-fetch-host-root-v1",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "ASAN_OPTIONS": "detect_leaks=1:halt_on_error=1",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+      },
+      "started_utc": "2026-10-15T06:44:28.650201+00:00",
+      "wall_seconds": 120,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 311650,
+          "start_ticks": 39543277,
+          "sid": 311650,
+          "pgid": 311650
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 395432.771731854,
+      "pid": 311650,
+      "spawn_return_monotonic": 395432.773530447,
+      "direct_identity": {
+        "pid": 311650,
+        "state": "R",
+        "ppid": 311504,
+        "pgid": 311650,
+        "sid": 311650,
+        "start_ticks": 39543277,
+        "rss_bytes": 315392
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-15T06:44:28.756451+00:00",
+      "elapsed_seconds": 0.10599070903845131,
+      "logs": {
+        "asan-run.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "asan-run.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "prior_terminal_sha256": "074add305acecde2cd94cf8dbae0186ab0d3f602cc9a2dff7891d1fbcd314286",
+  "scope": "Actual production helper with fake enqueue/drain APIs and asserted fault cases. No real Verifier/SYCL queue, device error, source pin registration, model or speed qualification.",
+  "stage": "commands",
+  "owner_initialized": true,
+  "variants": [
+    {
+      "name": "normal",
+      "binary_sha256": "8334bf3590ffbcb02b7be9719a7171c9fab47a573cd3073847d3c18190dbbf93",
+      "source_sha256": "a9da61a8cf64d2a3ab1e8c9e45cdb6df7aad0805223dae6f4b18769711c14f28",
+      "asserted": true,
+      "normal_exit": true
+    },
+    {
+      "name": "asan",
+      "binary_sha256": "237ce574123e9ea1fac07f31a38bcacc5036f41694712781ea6f963c94b995d3",
+      "source_sha256": "a9da61a8cf64d2a3ab1e8c9e45cdb6df7aad0805223dae6f4b18769711c14f28",
+      "asserted": true,
+      "normal_exit": true
+    }
+  ],
+  "finished_utc": "2026-10-15T06:44:28.775710+00:00",
+  "ownership_state": "closed"
+}

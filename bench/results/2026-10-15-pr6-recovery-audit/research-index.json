@@ -807,7 +807,7 @@
     "PR6 performance patch changes historic sycl/src/prefill/prefill.cpp, not current root src/prefill/prefill.cpp. Current root rg finds compact scratch but no layer-major selector. History preservation is not adoption.",
     "Original645.85 PP and later449.7 full-context/MTP measures need separate source/config reconciliation; different protocol does not justify discarding the old improvement."
   ],
-  "next": "Continue exact live full OFF handle16956; 3x32K and 3x6 agent turns complete, code3/prose2 long outputs complete; final prose answering at last live poll. No concurrent tests/build/GPU/cleanup. At actual closure recover old nonce, qualify comparison tools/wave/checked PCIe helper serially, then matched IQ ON on real gates. Profile-only held-out pilot is a later separate arm, with bench.sh and actual body hashes. Positive adaptive/PCIe screens need their separate lifetime/integration gates first. PR6 recovery, physical256K/RESTORE/quality/upstream/default and 1000/70 remain unmet.",
+  "next": "Full OFF is actually closed and retired. Actual input tools/wave/checked PCIe helper host qualifications complete. Use real host-v2 receipt and applied reviewed client to start matched IQ ON with original nonce/native/config; retain each long sample including prose4.6, then compare actual fixed request journals and separate natural agent feedback. Do not overlap tests/build/GPU/cleanup. Other component implementations/native builds/profile pilot, PR6 recovery, physical256K/RESTORE/task quality/upstream/default and1000/70 remain incomplete.",
   "main_review": "main-review-round559-560.ja.md",
   "subsequent_main_review": "main-review-round561-562.ja.md",
   "public_history_reverification": "public-history-reverification.json",
@@ -817,7 +817,7 @@
     "main_review": "qsa-layout-recovery-v1/main-review.ja.md",
     "status": "Build/host and20GPU parity/oracle cases PASS/fault0. Component40sample screen closedPASS; layout1 median4.09%slower in one int8case, no adoption. No whole-model/full256K/RESTORE/quality qualification."
   },
-  "latest_main_review": "main-review-round651-654.ja.md",
+  "latest_main_review": "full-off-closed-host-qualification.ja.md",
   "component_summary": "qsa-layout-screen-summary.json",
   "gemm_orientation_probe": {
     "report": "gemm-orientation-probe-v1/implementation.txt",
@@ -1185,27 +1185,33 @@
     "component_full": "selective-iq-component-full-v1.json",
     "model_original": "selective-iq-model-v1.json",
     "model_assessment": "selective-iq-model-assessment-v2.json",
-    "state": "DefaultOFF selective GU21/22/23 and Down20/42 only; IQ3_XXS18 kept legacy. Model original FAILED collector expected full input; separate v2 PASS assessment of stored census for n_prompt-1 is GPU_executed=false, not replay or clean speed. Full OFF job16956 LIVE at last direct handle poll; final status belongs to its owner.",
+    "state": "Full OFF closed PASS: 3xnominal32K actual32089 at200.5/199.8/199.5 PP; agent3x6; long code9.8/9.7/9.8 and prose6.2/6.4/4.6, all eligible; classification both confirmed. Owner normal/retired/fault0. Matched ON not started. No speed/quality adoption.",
     "live_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-selective-iq-clean-bench-full-0-root-v1",
-    "live_handle": 16956,
+    "live_handle": null,
     "observation_utc": "2026-10-15T05:10:42.418770+00:00",
-    "retention": "selective-iq-diagnostics-retention-v1.json"
+    "retention": "selective-iq-diagnostics-retention-v1.json",
+    "full_off": "selective-iq-clean-bench-full-0-v1.json",
+    "closed_review": "full-off-closed-host-qualification.ja.md"
   },
   "wave_census_current": {
     "proposal": "layermajor-wave-census-v2",
     "qualification_source": "qualify_wave_census_host_v2.py",
     "review": "main-review-round643-644.ja.md",
-    "state": "Source-only NOT_BUILT/NOT_TESTED/NOT_RUN/unapplied. Independent C++/Python summaries and buffered flush-failure fixture prepared. Generic exact-int validation hardened; now four validator tests. Original model gate and 4MiB/1MiB limits unchanged; durable external completion acknowledgement not solved."
+    "state": "Main actual host normal+ASan/UBSan contract/serialization and four validator tests PASS; source product observer unapplied and not native built/GPU executed. Synthetic boundary262144 is not physical model qualification.",
+    "host_qualification": "wave-census-host-v2.json"
   },
   "bench_input_comparison_current": {
     "fixed_workload": "bench-fixed-workload-v1",
     "comparator": "bench-request-identity-v2",
     "provenance_source": "recover_bench_nonce_v1.py",
-    "host_source": "qualify_bench_input_tools_v1.py",
+    "host_source": "qualify_bench_input_tools_v2.py",
     "on_source": "run_matched_iq_on_v2.py",
-    "state": "Source-only NOT_RUN. Old client/native unchanged while full OFF is live. Recover tag before client edit. V2 pins and reuses full bounded journal reader; all order/parameters/fixed actual bodies must match, later natural agent feedback body differences remain explicit nonpaired observations. Actual static agent file/task metadata plus unchanged builder/tools and turn0 evidence required separately. Host six fixed-ID plus eleven comparator tests not executed.",
-    "review": "main-review-round647-648.ja.md",
-    "independent_review": "research-bench-feedback-v2-contract-round647-v1.txt"
+    "state": "Actual fixed-ID6 + comparator11 host tests PASS in v2; v1 failed owner8MiB file cap at deliberate8MiB+1 fixture, original failure preserved. Execution cap16MiB only; comparator8MiB rejection unchanged. Actual reviewed client now applied SHA7be3ab66...; old nonce recovered against two wire body hashes. Matched ON not started.",
+    "review": "full-off-closed-host-qualification.ja.md",
+    "independent_review": "research-bench-feedback-v2-contract-round647-v1.txt",
+    "host_receipt": "bench-input-tools-host-v2.json",
+    "original_failed_host": "bench-input-tools-host-v1.json",
+    "workload_provenance": "selective-iq-full0-workload-provenance-v1.json"
   },
   "mtp_width_candidate": {
     "research": "research-mtp-adaptive-decode-round640-v1.txt",
@@ -1217,10 +1223,11 @@
     "proposal": "checked-pcie-fetch-v1",
     "model": "gpt-6.1-sol",
     "review": "main-review-round645-646.ja.md",
-    "state": "Unapplied checked-copy proposal after R643 API/detail corrections. R646 independently reviewed two-TU/include/depfile/map plan; real archive non-extraction unproven. Sol moved deterministic preparation before mkdir and protected Owner/persist initialization failures. Main reviewed source only; helper tests/build/GPU all NOT_RUN; base binary unchanged.",
+    "state": "Actual production helper fake API fault tests normal+ASan/UBSan PASS; both commands retired/silent. Still unapplied/not integration-built/no real Verifier or positive PCIe fraction/GPU/performance qualification.",
     "host_qualification_source": "qualify_checked_pcie_fetch_host_v1.py",
     "isolated_build_source": "build_checked_pcie_fetch_v1.py",
-    "preflight_review": "checked-pcie-qualification-preflight-review-v1.ja.md"
+    "preflight_review": "checked-pcie-qualification-preflight-review-v1.ja.md",
+    "host_qualification": "checked-pcie-fetch-host-v1.json"
   },
   "long_setting_calibration": {
     "research": "research-long-workload-calibration-round642-v1.txt",
