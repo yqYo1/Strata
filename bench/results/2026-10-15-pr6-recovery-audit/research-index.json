@@ -282,6 +282,46 @@
       "path": "research-profile-safe-control-round591-v1.txt",
       "sha256": "951ef9444746b3dad043fd6dc17da7afe06e830641f1ec9ad0fa1b7f19191134",
       "status": "FINAL Main reviewed with corrections/next action in phase-audit-main-review.ja.md; no runtime qualification."
+    },
+    {
+      "round": 592,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-pr6-gdn-recovery-round592-v1.txt",
+      "sha256": "78f41c8a407c09319516c845da0051a1caf0f45c682a59e6a06a7127eaf19183",
+      "status": "FINAL received and Main reviewed in phase-audit-closure.ja.md; candidates unqualified."
+    },
+    {
+      "round": 593,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-qsa-score-candidate-safety-round593-v1.txt",
+      "sha256": "156b65bedfe6d99aa3b8aacca2aa482b6cd485041828ab2301c5b0680776edb5",
+      "status": "FINAL received and Main reviewed in phase-audit-closure.ja.md; candidates unqualified."
+    },
+    {
+      "round": 594,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-phase-vram-cache-round594-v1.txt",
+      "sha256": "02b3313607f0eb42f04fa6bbd22b4c4204415abd9d82673c8597e37ced9d7aa4",
+      "status": "FINAL received and Main reviewed in phase-audit-closure.ja.md; candidates unqualified."
+    },
+    {
+      "round": 595,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-lossless-cpu-predecode-round595-v1.txt",
+      "sha256": "bb270000348835467977d82eaf7cc9dd9209d47fb79c9ce8796ffeab4fee0109",
+      "status": "FINAL received and Main reviewed in phase-audit-closure.ja.md; candidates unqualified."
+    },
+    {
+      "round": 596,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-layer26-sync-masking-round596-v1.txt",
+      "sha256": "75eed41101d889133ef2687e5aa4fe72b34ab4b2bab141692cefafa6a7cd49a5",
+      "status": "FINAL received and Main reviewed in phase-audit-closure.ja.md; candidates unqualified."
     }
   ],
   "main_initial_findings": [
@@ -444,11 +484,11 @@
     },
     {
       "directory": "layer26-phase-audit-v1",
-      "state": "Main normal+ASan/UBSan CPU fixture and13 comparator cases PASS; not product-applied or GPU-built. phase-audit-host-v1.json."
+      "state": "DefaultOFF product integrated ad38cfb0; CPU/build/small3arm/34Kfixed-auto PASS. See phase-audit-closure; not bugfix or speed adoption."
     },
     {
       "directory": "bounded-kv-copy-groups-v1",
-      "state": "FINAL received; Main review/CPU/GPU pending; unapplied"
+      "state": "Superseded byv2 env-immutable/owner-held fixture; not applied."
     },
     {
       "directory": "owned-decode-profile-window-v1",
@@ -483,23 +523,27 @@
     "order": "phase-order-v1.json",
     "review": "phase-audit-main-review.ja.md",
     "recipe": "check_phase_audit_v1.py",
-    "state": "DefaultOFF source integrated; CPU normal+ASan/UBSan and actualSYCLbuildPASS. Smallsamebinary3arm ownedGPUlive; pairedlongpending."
+    "state": "Small3arms+34Kfixed/auto phaseON PASS/fault0. Same-binary phaseOFF autoalsoPASS. Oldb683FAIL remains unresolved; no causalrepairclaim.",
+    "closure": "phase-audit-closure.ja.md",
+    "paired": "layer26-phase-pair-v1.json",
+    "controls": "phase-boundary-controls-v1.json"
   },
   "parallel_implementations_current": [
     {
       "directory": "bounded-kv-copy-groups-v2",
-      "scope": "remove runtime env mutation and qualify lifetime",
-      "state": "Solproposal running"
+      "state": "FINAL Mainreviewdone, next serialCPU/build/GPU tests"
     },
     {
       "directory": "qsa-score-gemm-candidate-v1",
-      "scope": "FP16/BF16 score-only GEMM proposal",
-      "state": "Solproposal running"
+      "state": "FINAL with R593 review, unapplied/unbuilt/untested"
     },
     {
       "directory": "external-session-decode-profile-v2",
-      "scope": "official profiler session with bounded diagnostic handshake",
-      "state": "Solproposal running"
+      "state": "FINAL reviewed, unapplied; smallprovider graphsmokeproposal running"
+    },
+    {
+      "directory": "cpu-predecode-probe-v1",
+      "state": "Solcomponentprototype running; Main onlytests"
     }
   ]
 }
