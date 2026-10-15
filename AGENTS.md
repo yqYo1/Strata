@@ -56,6 +56,14 @@ Its files live in `.claude/skills/strata-upstream-sync`, exposed by the relative
 
 Follow [docs/ARTIFACT_RETENTION.md](docs/ARTIFACT_RETENTION.md) for every measurement and investigation.
 
+- Set SYCL, Level Zero, driver, profiler and experiment environment variables in
+  the native child's environment before `exec`. Keep the process environment
+  immutable after runtime/provider initialization. For comparisons, use separate
+  owned processes or an explicit test parameter; do not switch arms with
+  `setenv`/`unsetenv` while runtime or collector threads may read the environment.
+  Review legacy fixtures that switch variables before reusing them. Floating-point
+  state operations such as `std::fesetenv` are separate from process environment variables.
+
 - Commit source, commands, environment, individual measurement samples, correctness/fault results and
   decisions at each work boundary. Resume from committed reports, without separate progress backups.
 - After a run closes, delete successful full API traces, repeated polling/synchronization logs, raw

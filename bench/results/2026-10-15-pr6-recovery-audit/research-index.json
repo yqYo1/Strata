@@ -410,6 +410,14 @@
       "path": "research-cpu-census-gpu-cache-round607-v1.txt",
       "sha256": "fe8db9e63b7f06c9aeb25aa0a888e572aefa580698799544f23d067c68785506",
       "status": "FINAL Main independentlyrecomputed in cpu-gpu-cache-opportunity-v1.json. Rowceilings12.20/20.08/32.09% match; global128bytes/tie-dependentjobs differ, use explicitMainranking. Conditional routecount opportunity, no speed/admission."
+    },
+    {
+      "round": 608,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-agent-cache-settings-round608-v1.txt",
+      "sha256": "911843a6ae9c28c4f56d0c6e352e3465b30cd0d2e4142a34a17f5db78bf32d9a",
+      "status": "FINAL/Main source review complete in main-review-round608.ja.md; cold-agent limit and LM periodic mixed-position path confirmed by source, RESTORE runtime unqualified; memory MiB/refill-order corrections recorded."
     }
   ],
   "main_initial_findings": [
@@ -594,7 +602,20 @@
     "report": "existing-exact-setting.ja.md"
   },
   "retention_v5": "retention-v5-manifest.json",
-  "parallel_research_current": [],
+  "parallel_research_current": [
+    {
+      "round": 609,
+      "model": "gpt-6-luna",
+      "path": "research-checkpoint-cost-round609-v1.txt",
+      "state": "Running readonly; caller segmentation extra expert traffic versus one-pass per-layer-prefix running-state capture, bounded ownership/cancel contract."
+    },
+    {
+      "round": 610,
+      "model": "gpt-6-luna",
+      "path": "research-prefill-gu-hotpath-round610-v1.txt",
+      "state": "Running readonly; actual hot GU/genericF16dequant source/traffic and primary external implementations, distinct from attention headsplit and rejected CPUcoldcache."
+    }
+  ],
   "phase_audit": {
     "build": "phase-audit-build-v1.json",
     "host": "phase-audit-host-v1.json",
@@ -621,7 +642,7 @@
     },
     {
       "directory": "cpu-predecode-probe-v1",
-      "state": "Sol FINAL received; source review and Main CPU tests pending; not applied."
+      "state": "Main normal+ASan correctness and four-process expanded/GGML cost measurements closed; actual GU reuse measured; coldwholeGUcache rejected; proposal source not productcache."
     },
     {
       "directory": "checked-prefill-retire-v1",
@@ -629,12 +650,34 @@
     },
     {
       "directory": "cpu-gu-reuse-observer-v1",
-      "state": "SolFINAL; Mainsource reviewdone; CPUmock/productapply/build/realmodel gates pending."
+      "state": "Superseded byv2; defaultOFF product integrated and build/smallOFFON/34K128 PASS/fault0; see cpu_gu_reuse actual receipts."
     },
     {
       "directory": "int8-prompt-head-split-v1",
       "model": "gpt-6.1-sol",
-      "state": "Proposal-only directory authoring; product source frozen during clean benchmark. Main owns all later builds/tests; FINAL awaited, no intervention."
+      "state": "SolFINAL received; Mainkernelreview plausible but GPUfixture BLOCKED from execution because setenv/unsetenv after runtime init. Originalproposal preserved; v2 immutableprocess revision requested afterFINAL.",
+      "main_review": "int8-prompt-head-split-v1/main-review.ja.md"
+    },
+    {
+      "directory": "int8-prompt-head-split-v2",
+      "model": "gpt-6.1-sol",
+      "state": "SolFINAL received; kernel byte-identical tov1, separate immutable-arm native captures/offline comparator; Main review pending; neither applied nor built/tested."
+    },
+    {
+      "directory": "decode-host-phase-observer-v1",
+      "model": "gpt-6.1-sol",
+      "state": "SolFINAL/Main source review complete; blocked application pendingv2 collision nonowned-pointer and band/layer conservation corrections. No execution.",
+      "main_review": "decode-host-phase-observer-v1/main-review.ja.md"
+    },
+    {
+      "directory": "decode-host-phase-observer-v2",
+      "model": "gpt-6.1-sol",
+      "state": "Authoring proposal-only followup afterv1FINAL. Main requested nonowned-slot no dereference and full band/layer conservation; no build/test/GPU."
+    },
+    {
+      "directory": "layer-major-checkpoint-coherence-v1",
+      "model": "gpt-6.1-sol",
+      "state": "SolFINAL received; periodic checkpoint at coherent whole-segment boundary with MTP/loan refill; Main review pending; not applied/built/tested."
     }
   ],
   "kv_copy_groups": {
@@ -663,7 +706,8 @@
     "paired": "prompt-direct-profile-pair-v1.json",
     "review": "prompt-direct-profile.ja.md",
     "clean_recipe": "check_prompt_direct_bench_v1.py",
-    "clean_state": "OFF arm officialbench --long --think --long-generation --runs3 is live, root main-primary-prompt-direct-bench-full-0-root-v1. Check authoritative handle/process before treating terminal; ON not started."
+    "clean_state": "OFF arm officialbench --long --think --long-generation --runs3 is live, root main-primary-prompt-direct-bench-full-0-root-v1. Check authoritative handle/process before treating terminal; ON not started.",
+    "agent_setting_limit": "CurrentsamebinaryDirect0/1 comparison inherits prompt-cache0/turn-token-1/short-read0 fromcensus, hence cold-agent re-read and zero reuse; not optimizedagent performance. Cacheenabled separate setting screen planned aftersourceaudit and activearms close."
   },
   "retention_v6": "retention-v6-manifest.json",
   "cpu_gu_reuse": {
@@ -678,5 +722,11 @@
     "review": "cpu-gu-reuse-long.ja.md",
     "GPU_cache_opportunity": "cpu-gpu-cache-opportunity-v1.json"
   },
-  "retention_v7": "retention-v7-manifest.json"
+  "retention_v7": "retention-v7-manifest.json",
+  "agent_cache_checkpoint": {
+    "source_review": "agent-cache-source-review-v1.json",
+    "main_review": "main-review-round608.ja.md",
+    "research": "research-agent-cache-settings-round608-v1.txt",
+    "state": "Source confirms LM intermediate on_chunk periodic save can mix layer positions; cache0 current matched runs unaffected. Coherent segment proposal FINAL, low-traffic architecture research running; all RESTORE/physical256K qualification pending."
+  }
 }

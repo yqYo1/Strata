@@ -1,0 +1,81 @@
+{
+  "date_jst": "2026-10-15",
+  "status": "UNAPPLIED_UNBUILT_UNTESTED_GPU_UNQUALIFIED",
+  "write_root": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/int8-prompt-head-split-v1",
+  "actual_product_edits": false,
+  "actual_cmake_edits": false,
+  "actual_existing_fixture_edits": false,
+  "actual_build_test_gpu_server_profiler_git_cleanup": false,
+  "operations_performed": [
+    "Read project source/reports/policy",
+    "Author proposal files under write_root",
+    "Run source/probe-text generators only",
+    "Compute source/artifact SHA256 receipts"
+  ],
+  "candidate": {
+    "mode": 1,
+    "direct_exact": "1",
+    "selector": "STRATA_SYCL_PROMPT_HEAD_SPLIT",
+    "values_exact": [
+      "32",
+      "64"
+    ],
+    "wg": 64,
+    "local_rows": 8,
+    "head_tiles": [
+      8,
+      4
+    ],
+    "common_q_scale_source_heads": 12,
+    "existing_launcher_preserved": true,
+    "legacy_dispatch_preserved_unless_exact_opt_in": true,
+    "ch32_bitwise": "Expected for finite inputs; UNPROVEN",
+    "ch64_gate": "Tolerance and model quality required; UNMEASURED",
+    "packed_local_bytes": {
+      "32": 31088,
+      "64": 53872
+    },
+    "dynamic_slm_measured": false
+  },
+  "fixture": {
+    "status": "SOURCE_PROPOSAL_ONLY",
+    "correctness_cases": 28,
+    "isolation_pairs": 23,
+    "oracle": "FP64 scalar independent attention",
+    "oracle_and_ch64_pair_abs_rel": 1e-05,
+    "all_24_heads": true,
+    "tails": [
+      0,
+      1,
+      31,
+      32,
+      33,
+      63,
+      64,
+      65,
+      2051
+    ],
+    "logical_cap": 262144,
+    "selected_logical_id": 262143,
+    "high_cap_active_width": 65,
+    "full_physical_256k_proved": false,
+    "restore_proved": false,
+    "model_quality_proved": false
+  },
+  "prior_profile": {
+    "source": "../prompt-direct-profile.ja.md",
+    "calls_per_arm": 108,
+    "indirect_device_aggregate_seconds": 44.066063496,
+    "direct_device_aggregate_seconds": 29.805022972,
+    "same_generated_ids": 128,
+    "clean_benchmark": false,
+    "head_split_measurement": false,
+    "parent_clean_direct_benchmark": "Active/incomplete at task assignment; not reclassified here"
+  },
+  "retention": {
+    "consumer": "Main serial head-split review/build/component/model gates",
+    "next_review": "First compile/host/device result or source rejection",
+    "raw_captures_created": false,
+    "deletions": []
+  }
+}

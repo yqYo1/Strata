@@ -1,0 +1,37 @@
+{
+  "schema": "proposal-only-controller-plan-v1",
+  "status": "UNAPPLIED_UNBUILT_UNTESTED_GPU_UNQUALIFIED",
+  "executable_controller": false,
+  "owner": "Main",
+  "prerequisites": [
+    "Current official Direct0 thinking3runs benchmark is terminal and owned processes are safely retired",
+    "Main holds the existing exclusive measurement lock shared with all GPU/build/test/cleanup work",
+    "Review input/output SHA256 manifests and source.diff; resolve source drift before application"
+  ],
+  "jobs_in_serial_order": [
+    {"job": "review_and_apply", "engine_diff": "source.diff", "fixture_source": "files/tools/sycl/int8_prompt_head_split_probe.cpp", "manual_cmake_fragment": "probe-target.cmake"},
+    {"job": "build", "targets": ["sycl_int8_prompt_head_split_probe", "sycl_prompt_attention_test"], "proposed_wall_limit_seconds": 1200, "proposed_text_budget_bytes": 8388608},
+    {"job": "help", "argv_suffix": ["--help"], "runtime_expected": false, "proposed_wall_limit_seconds": 30, "proposed_text_budget_bytes": 4194304},
+    {"job": "host", "argv_suffix": ["--host-only"], "runtime_expected": false, "proposed_wall_limit_seconds": 60, "proposed_text_budget_bytes": 4194304},
+    {"job": "ch32_correctness", "argv_suffix": ["--validate32"], "runtime_expected": true, "proposed_wall_limit_seconds": 900, "proposed_text_budget_bytes": 4194304, "correctness_cases": 28, "matrix_calls_in_correctness": 56, "isolation_pairs": 23, "matrix_calls_in_isolation": 46},
+    {"job": "ch64_correctness", "argv_suffix": ["--validate"], "runtime_expected": true, "proposed_wall_limit_seconds": 900, "proposed_text_budget_bytes": 4194304, "correctness_cases": 28, "matrix_calls_in_correctness": 84, "isolation_pairs": 23, "matrix_calls_in_isolation": 46},
+    {"job": "existing_hook_legacy", "binary": "sycl_prompt_attention_test", "environment": {"STRATA_SYCL_PROMPT_HEAD_SPLIT": null}, "proposed_wall_limit_seconds": 180, "proposed_text_budget_bytes": 4194304},
+    {"job": "existing_hook_ch32", "binary": "sycl_prompt_attention_test", "environment": {"STRATA_SYCL_PROMPT_HEAD_SPLIT": "32"}, "proposed_wall_limit_seconds": 180, "proposed_text_budget_bytes": 4194304},
+    {"job": "bounded_route_resource_diagnostic", "requires_separate_main_recipe": true, "require_observed_candidate_kernel_names": true, "packed_local_accessor_bytes": {"ch32": 31088, "ch64": 53872}, "dynamic_slm_measured": false},
+    {"job": "component_timing", "requires_new_reviewed_fixture_version": true, "candidate_pairs": ["legacy_direct_vs_split32", "legacy_direct_vs_split64"], "nq": [32, 256], "width": 2051, "sample_order": "ABBA", "samples_per_pair_shape": 40, "calls_per_sample": 4, "exclusive_kernel_time": false},
+    {"job": "official_model_gates", "requires_separate_main_recipe": true, "thinking": true, "minimum_actual_input": 32768, "standard_bench_actual_input_must_be_reported": true, "runs_per_arm_minimum": 3, "agent_session": true, "default_change_authorized_by_this_proposal": false},
+    {"job": "physical_256k_state_restore", "requires_separate_main_recipe": true, "proved_by_logical_fixture": false, "status": "PENDING"}
+  ],
+  "correctness_policy": {
+    "oracle": "Independent FP64 dot/max/exp/sum/value over stored codes and FP16 scale bits",
+    "all_outputs_and_input_guards": true,
+    "ch32_bitwise_against_legacy_direct": true,
+    "ch64_bitwise_required": false,
+    "oracle_and_ch64_baseline_abs_rel_tolerance": 1e-5,
+    "decline": "UNMEASURED_DECLINED; no fallback; output must be unchanged",
+    "exit_code": {"0": "All requested cases admitted and passed", "1": "Caught failure; sticky completion can fail-stop outside this mapping", "2": "At least one requested call declined"},
+    "equal_outputs_prove_dispatch": false
+  },
+  "receipt_required": ["source/diff/SHA256", "binary SHA256", "compiler/flags/AOT/resource metadata", "device/runtime/driver", "exact argv and targeted effective env", "input identity and actual sizes", "per-arm actual admission", "all individual results/samples", "PID/start time/boot ID/deadline/normal or abnormal exit/retirement", "fresh kernel-journal fault boundary/result", "decision and unmeasured limits"],
+  "retention": {"consumer": "Main serial head-split review and validation", "next_review": "First compile/host/device outcome or source rejection", "delete_original_proposal": false, "cleanup_performed": false}
+}
