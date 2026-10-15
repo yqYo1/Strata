@@ -330,6 +330,22 @@
       "path": "research-kv-resolver-parallel-round597-v1.txt",
       "sha256": "60031d15ed4a335aa411e57772f7783ab8a0e22a87f149ba2f0e77e00ace4d1e",
       "status": "Main reviewed. Ordered read-only prefetch proposal only; R597 int8 all-hit arm labels reversed, authoritative receipt has base1952.73us/candidate1948.18us. Actual kernel service still unmeasured; do not implement before profile."
+    },
+    {
+      "round": 598,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-cpu-predecode-tradeoff-round598-v1.txt",
+      "sha256": "58076d349f7b201ac38e205bf7a2c98d58ff4fa778de0e5ada7fec2931d221e4",
+      "status": "Main reviewed; see cpu-predecode-main-review.ja.md for actual subsequent test evidence."
+    },
+    {
+      "round": 599,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-prefill-scratch-retire-round599-v1.txt",
+      "sha256": "283c0267bdd02a77f35041c73fa7b679e6a700f291ad70f835376c3bf8ab7e7a",
+      "status": "Main reviewed owner proposal. Sol checked retirement proposal FINAL, not applied/built/tested. Accounted1.55GiB is not measured reclaim."
     }
   ],
   "main_initial_findings": [
@@ -357,12 +373,10 @@
     "profile": "unitrace-gemm-evidence-v1.json"
   },
   "profiler": {
-    "canonical": "../2026-10-14-primary-vtune/README.md",
-    "provider": "Existing qualified PTI build6c0d6b0b reused; no new build",
-    "VTune": "RyzenCPU unsupported forxpu-offload; v1/v2 FAIL preserved, no GPU fault. Do not repeat the same unsupported collector.",
-    "unitrace": "Current complete operation mapping PASS, externalUTC remains false; use internal order/durations only.",
-    "raw_review": "After current model pair closes, retire current GEMM raw trace using verified compact evidence under measurement lock; keep historical clock trace only until source-clock question closes.",
-    "clock_source": "CPU32sample domain mismatch reproduced, separate32sample RAW-mode header check PASS; unitrace-clock-source.ja.md. HistoricalUTCfalse unchanged; provider binary unmodified. Retire raw timelines only at next exclusive idle boundary."
+    "component": "kv-resolver-profile-v1.json",
+    "summary": "kv-resolver-profile-summary-v1.json",
+    "model_recipe": "check_model_device_profile_v1.py",
+    "state": "Official pinned unitrace device table collected;756resolve/378+378copy counts match full graph fixture. Model34K128 profile active, no model result yet."
   },
   "implementation_next": {
     "agent": "gpt-6.1-sol",
@@ -513,18 +527,7 @@
     "report": "existing-exact-setting.ja.md"
   },
   "retention_v5": "retention-v5-manifest.json",
-  "parallel_research_current": [
-    {
-      "round": 598,
-      "scope": "Lossless CPU predecode tradeoff and arithmetic review",
-      "agent": "/root/research_cpu_predecode_tradeoff_round598"
-    },
-    {
-      "round": 599,
-      "scope": "Checked prefill scratch retirement for decode capacity",
-      "agent": "/root/research_prefill_scratch_retire_round599"
-    }
-  ],
+  "parallel_research_current": [],
   "phase_audit": {
     "build": "phase-audit-build-v1.json",
     "host": "phase-audit-host-v1.json",
@@ -560,5 +563,11 @@
     "summary": "kv-copy-groups-summary-v1.json",
     "report": "kv-copy-groups-closure.ja.md",
     "state": "Correctness PASS; no speed adoption, legacy default retained. Host spans not exclusive device time."
+  },
+  "cpu_predecode": {
+    "proposal": "cpu-predecode-probe-v1",
+    "receipt": "cpu-predecode-probe-v1.json",
+    "review": "cpu-predecode-main-review.ja.md",
+    "state": "Main normal+ASan6276cases eachPASS;1296nt1samples, streaming ratios promising but variable. Independent64expert repeats queued; no productcache/adoption."
   }
 }
