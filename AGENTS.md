@@ -79,6 +79,29 @@ are outside this work's scope.
   Arc engine implements it. Record existing Arc capabilities and the remaining
   shared CLI/API port obligations separately; neither requires a CUDA/HIP engine import.
 
+### Parallel research
+
+- Create research workers through **Orca**, using its bundled `orchestration`
+  and `orca-cli` guides, rather than Codex's built-in subagent tools. Repeat
+  bounded, independent **gpt-6-luna** tasks throughout tuning while Main
+  continues implementation, analysis and serialized measurement. Respect
+  actual concurrency/resource limits; aim for roughly five researchers only
+  when capacity permits, otherwise fill the available slots.
+- Shift scopes and share `bench/results/2026-10-15-pr6-recovery-audit/research-index.json`
+  and relevant previous reports in every assignment. Prioritize this engine's
+  measured bottlenecks, but also investigate general SYCL and transferable
+  non-LLM GPU/ASIC optimization, including original technical blogs and papers.
+- Specify a finite question and report budget for each fresh session. Research
+  may write only its named report, with sources, applicability and evidence
+  limits; it must not run builds, tests, GPU jobs, profilers, process inspection,
+  Git commands or product edits. Do not interrupt or steer a running researcher.
+  Read its completed report, record Main's corrections separately, update the
+  index, then assign a fresh bounded task rather than extending a long session.
+- Keep findings in files and commit reviewed reports. Research is not
+  implementation adoption. Main implements, or assigns a separate
+  **gpt-6.1-sol** implementation task pinned to an immutable source base. Main
+  reviews the complete patch and exclusively manages all testing and GPU work.
+
 Use the project-only [strata-upstream-sync skill](.agents/skills/strata-upstream-sync/SKILL.md).
 Its files live in `.claude/skills/strata-upstream-sync`, exposed by the relative
 `.agents/skills` link. Do not install it in user-wide skill directories.

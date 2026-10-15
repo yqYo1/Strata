@@ -11,7 +11,9 @@
 #endif
 
 namespace strata::sycl_backend::cpu_wait_profile {
-enum HostKind { source_copy, host_group, gemm_submit, host_kinds };
+enum HostKind { source_copy, host_group, gemm_submit, route_exchange,
+    upload_submit, residual_input_host, residual_input_device,
+    residual_store_host, residual_store_device, host_kinds };
 enum Kind { compute_queue, transfer_queue, event, compat_queue, direct_queue, kinds };
 struct Stamp { double wall = 0, cpu = 0; bool valid = false; };
 inline Stamp stamp() noexcept {
@@ -135,7 +137,7 @@ public:
     ~Scope() noexcept {
         if (!enabled_) return;
         if (nested_) {
-            std::fputs("strata prefill cpu wait: version=2 available=0 complete=0 nested_scope=1\n", stderr);
+            std::fputs("strata prefill cpu wait: version=3 available=0 complete=0 nested_scope=1\n", stderr);
             return;
         }
         const auto end = stamp();
@@ -159,7 +161,7 @@ public:
         const bool available = begin_.valid && end.valid && !state_.invalid &&
             !state_.depth && host_valid && duration(cpu) && duration(wall) &&
             duration(wc) && duration(ww) && duration(cpu - wc - hc) && duration(wall - ww - hw);
-        std::fprintf(stderr, "strata prefill cpu wait: version=2 available=%d complete=%d "
+        std::fprintf(stderr, "strata prefill cpu wait: version=3 available=%d complete=%d "
             "clock_or_accounting_error=%d open_waits=%u wait_throws=%llu wall_s=%.9f main_cpu_s=%.9f "
             "wait_cpu_s=%.9f wait_wall_s=%.9f outside_wait_cpu_s=%.9f wait_count=%llu "
             "compute_count=%llu transfer_count=%llu event_count=%llu compat_count=%llu direct_count=%llu "
@@ -174,10 +176,12 @@ public:
             available ? state_.wall[0] : -1., available ? state_.wall[1] : -1., available ? state_.wall[2] : -1.,
             available ? state_.wall[3] : -1., available ? state_.wall[4] : -1.);
         // One bounded extra line; no per-call output or dynamic allocation.
-        std::fprintf(stderr, "strata prefill cpu host: version=2 available=%d open_regions=%u "
+        std::fprintf(stderr, "strata prefill cpu host: version=3 available=%d open_regions=%u "
             "unclassified_cpu_s=%.9f unclassified_wall_s=%.9f",
             int(available), state_.host_depth, available ? cpu - wc - hc : -1., available ? wall - ww - hw : -1.);
-        const char* names[host_kinds] = {"source_copy", "host_group", "gemm_submit"};
+        const char* names[host_kinds] = {"source_copy", "host_group", "gemm_submit", "route_exchange",
+            "upload_submit", "residual_input_host", "residual_input_device",
+            "residual_store_host", "residual_store_device"};
         for (int k = 0; k < host_kinds; ++k)
             std::fprintf(stderr, " %s_count=%llu %s_throws=%llu %s_cpu_s=%.9f %s_wall_s=%.9f "
                 "%s_outside_wait_cpu_s=%.9f %s_outside_wait_wall_s=%.9f",

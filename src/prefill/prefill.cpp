@@ -1794,6 +1794,9 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                     ? m.layer_major_gpu_input : m.layer_major_host_input);
                 if (!base) { err = "prefill layer-major: missing residual input store"; return false; }
 #if defined(STRATA_ENABLE_SYCL)
+                sycl_backend::cpu_wait_profile::Host input_cpu_profile(span.device
+                    ? sycl_backend::cpu_wait_profile::residual_input_device
+                    : sycl_backend::cpu_wait_profile::residual_input_host);
                 if (m.layer_major_residual.dtype == detail::LayerMajorResidualDtype::fp16) {
                     const uint16_t* packed = reinterpret_cast<const uint16_t*>(base + size_t(span.offset_bytes));
                     if (!span.device) {
@@ -1813,6 +1816,9 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                     span.device ? cudaMemcpyDeviceToDevice : cudaMemcpyHostToDevice, m.cs) != cudaSuccess) {
                     err = "prefill layer-major: residual input copy failed"; return false;
                 }
+#if defined(STRATA_ENABLE_SYCL)
+                input_cpu_profile.finish();
+#endif
                 if (m.layer_major_profile) {
                     m.layer_major_profile->end(detail::LayerMajorCoarseProfile::input, m.cs);
                     m.layer_major_profile->add(span.device ? detail::LayerMajorCoarseProfile::input_submit_device : detail::LayerMajorCoarseProfile::input_submit_host, profile_input_start);
@@ -2587,9 +2593,17 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                         int32_t* ids_h = grp_mapped ? m.grp_host : m.ids_host.data();
                         int32_t* slot_h = grp_mapped ? m.grp_host + m.grp_tk : m.slot_host.data();
                         int32_t* src_h = grp_mapped ? m.grp_host + 2 * m.grp_tk : m.src_host.data();
+#if defined(STRATA_ENABLE_SYCL)
+                        // Includes retirement of all earlier queue work, not just
+                        // ID movement. Report the wait overlap separately.
+                        sycl_backend::cpu_wait_profile::Host route_cpu_profile(sycl_backend::cpu_wait_profile::route_exchange);
+#endif
                         if (grp_mapped) copy_i32(m.grp_dev, m.ids, T * K, m.cs);
                         else cudaMemcpyAsync(m.ids_host.data(), m.ids, (size_t) T * K * 4, cudaMemcpyDeviceToHost, m.cs);
                         cudaStreamSynchronize(m.cs);
+#if defined(STRATA_ENABLE_SYCL)
+                        route_cpu_profile.finish();
+#endif
                         pt.fold();
 #if defined(STRATA_ENABLE_SYCL)
                         // A larger prompt chunk need not delay STOP until its last layer.

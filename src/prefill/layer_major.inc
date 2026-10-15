@@ -381,11 +381,13 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         if (profile) profile->add(LmProfile::source, load_start);
         const auto upload_start = profile ? LmProfile::Clock::now() : LmProfile::Clock::time_point{};
         if (profile) profile->begin(LmProfile::upload, m.cs);
+        sycl_backend::cpu_wait_profile::Host upload_cpu_profile(sycl_backend::cpu_wait_profile::upload_submit);
         for (int32_t e = 0; e < NE; ++e) {
             if (!layer_cache.fill_slot(e, upload.get() + size_t(e) * size_t(stride), m.copy, err, int64_t(bytes)))
                 return false;
             ++stats_.experts_streamed;
         }
+        upload_cpu_profile.finish();
         if (profile) {
             profile->end(LmProfile::upload, m.cs);
             profile->add(LmProfile::upload_submit, upload_start);
@@ -454,6 +456,9 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
             }
             uint8_t* destination = (span.device ? device_rows.get() : rows.get()) + size_t(span.offset_bytes);
             cudaError_t status = cudaSuccess;
+            sycl_backend::cpu_wait_profile::Host store_cpu_profile(span.device
+                ? sycl_backend::cpu_wait_profile::residual_store_device
+                : sycl_backend::cpu_wait_profile::residual_store_host);
             if (plan.dtype == detail::LayerMajorResidualDtype::fp16) {
                 uint16_t* packed = span.device ? reinterpret_cast<uint16_t*>(destination)
                                               : m.layer_major_fp16_stage;
@@ -469,6 +474,7 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
                 status = cudaMemcpyAsync(destination, residual, size_t(span.bytes),
                     span.device ? cudaMemcpyDeviceToDevice : cudaMemcpyDeviceToHost, m.cs);
             }
+            store_cpu_profile.finish();
             if (profile) profile->end(LmProfile::store, m.cs);
             const auto store_drain_start = profile ? LmProfile::Clock::now() : LmProfile::Clock::time_point{};
             if (status != cudaSuccess || !drain()) {
