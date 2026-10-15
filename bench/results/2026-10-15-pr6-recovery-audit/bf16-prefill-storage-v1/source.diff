@@ -1,0 +1,713 @@
+--- a/include/strata/prefill/layer_major_plan.hpp
++++ b/include/strata/prefill/layer_major_plan.hpp
+@@ -46,18 +46,20 @@
+ }
+ 
+ // Storage format only: the live residual stays FP32; operator precision is unchanged.
+-enum class LayerMajorResidualDtype { fp32, fp16 };
++enum class LayerMajorResidualDtype { fp32, fp16, bf16 };
+ 
+ inline LayerMajorResidualDtype layer_major_residual_dtype(const char* value) {
+     if (!value || std::strcmp(value, "fp32") == 0) return LayerMajorResidualDtype::fp32;
+     if (std::strcmp(value, "fp16") == 0) return LayerMajorResidualDtype::fp16;
+-    throw std::invalid_argument("STRATA_PREFILL_LAYER_MAJOR_R_DTYPE must be fp32 or fp16");
++    if (std::strcmp(value, "bf16") == 0) return LayerMajorResidualDtype::bf16;
++    throw std::invalid_argument("STRATA_PREFILL_LAYER_MAJOR_R_DTYPE must be fp32, fp16 or bf16");
+ }
+ 
+ inline uint64_t layer_major_storage_bytes(LayerMajorResidualDtype dtype) {
+     switch (dtype) {
+     case LayerMajorResidualDtype::fp32: return 4;
+     case LayerMajorResidualDtype::fp16: return 2;
++    case LayerMajorResidualDtype::bf16: return 2;
+     }
+     throw std::invalid_argument("invalid layer-major residual dtype");
+ }
+@@ -66,6 +68,7 @@
+     switch (dtype) {
+     case LayerMajorResidualDtype::fp32: return "fp32";
+     case LayerMajorResidualDtype::fp16: return "fp16";
++    case LayerMajorResidualDtype::bf16: return "bf16";
+     }
+     throw std::invalid_argument("invalid layer-major residual dtype");
+ }
+@@ -83,7 +86,7 @@
+ 
+     // gpu_budget includes the optional host-tail conversion staging allocation.
+     // A fully device-resident store needs no staging. Otherwise reserve one
+-    // FP16 chunk before choosing an automatic whole-chunk device prefix.
++    // two-byte chunk before choosing an automatic whole-chunk device prefix.
+     static LayerMajorResidualPlan make(int64_t n, int64_t c, int64_t width,
+                                        uint64_t gpu_budget, int64_t requested,
+                                        LayerMajorResidualDtype dtype = LayerMajorResidualDtype::fp32) {
+@@ -97,10 +100,10 @@
+             if (p.total_bytes <= gpu_budget) {
+                 p.gpu_rows = n;
+             } else {
+-                const uint64_t reserve = dtype == LayerMajorResidualDtype::fp16
++                const uint64_t reserve = layer_major_storage_bytes(dtype) == 2
+                     ? layer_major_mul(uint64_t(std::min(c, n)), p.row_bytes) : 0;
+                 if (reserve > gpu_budget)
+-                    throw std::invalid_argument("layer-major FP16 staging exceeds free VRAM with headroom");
++                    throw std::invalid_argument("layer-major two-byte staging exceeds free VRAM with headroom");
+                 const int64_t want = int64_t(std::min<uint64_t>(uint64_t(n),
+                     (gpu_budget - reserve) / p.row_bytes));
+                 p.gpu_rows = (want / c) * c;
+@@ -110,7 +113,7 @@
+         }
+         p.gpu_bytes = layer_major_mul(uint64_t(p.gpu_rows), p.row_bytes);
+         p.host_bytes = p.total_bytes - p.gpu_bytes;
+-        if (dtype == LayerMajorResidualDtype::fp16 && p.host_bytes)
++        if (layer_major_storage_bytes(dtype) == 2 && p.host_bytes)
+             p.staging_bytes = layer_major_mul(uint64_t(std::min(c, n - p.gpu_rows)), p.row_bytes);
+         if (layer_major_add(p.gpu_bytes, p.staging_bytes) > gpu_budget)
+             throw std::invalid_argument("requested layer-major GPU residual prefix plus staging exceeds free VRAM with headroom");
+--- a/include/strata/prefill/kernels.hpp
++++ b/include/strata/prefill/kernels.hpp
+@@ -91,6 +91,10 @@
+ #if defined(STRATA_ENABLE_SYCL)
+ /// Exact FP16 bits -> FP32, including subnormals/Inf/NaN. Layer-major storage restore only.
+ void from_f16(const uint16_t* x, float* y, int64_t n, void* stream);
++/// Boundary-only BF16 storage: shared bf16_from_f32 RNE with NaN preservation;
++/// exact f32_from_bf16 expansion. These do not change activation hi/lo images.
++void residual_pack_bf16(const float* x, uint16_t* y, int64_t n, void* stream);
++void residual_unpack_bf16(const uint16_t* x, float* y, int64_t n, void* stream);
+ #endif
+ void to_bf16(const float* x, uint16_t* y, int64_t n, void* stream, uint16_t* ylo = nullptr);
+ /// y = fp32(fp16(x)): what an FP16 store of x would read back (the FP16 indexer-key experiment)
+--- a/src/prefill/sycl/postops.cpp
++++ b/src/prefill/sycl/postops.cpp
+@@ -1,4 +1,5 @@
+ #include "strata/kernels/f16_bits.hpp"
++#include "strata/kernels/bf16_bits.hpp"
+ #include "strata/kernels/native_router.hpp"
+ #include "strata/kernels/router_top10.hpp"
+ #include "strata/prefill/kernels.hpp"
+@@ -135,6 +136,18 @@
+   for_each(n, stream,
+            [=](size_t i) { y[i] = strata::kernels::f32_from_f16(x[i]); });
+ }
++void residual_pack_bf16(const float *x, uint16_t *y, int64_t n, void *stream) {
++  auto z = count(n, 1);
++  validate_spans({{y, z * 2}}, {{x, z * 4}});
++  for_each(n, stream,
++           [=](size_t i) { y[i] = strata::kernels::bf16_from_f32(x[i]); });
++}
++void residual_unpack_bf16(const uint16_t *x, float *y, int64_t n, void *stream) {
++  auto z = count(n, 1);
++  validate_spans({{y, z * 4}}, {{x, z * 2}});
++  for_each(n, stream,
++           [=](size_t i) { y[i] = strata::kernels::f32_from_bf16(x[i]); });
++}
+ void to_bf16(const float *x, uint16_t *y, int64_t n, void *stream,
+              uint16_t *lo) {
+   auto z = count(n, 1);
+--- a/src/prefill/layer_major.inc
++++ b/src/prefill/layer_major.inc
+@@ -31,7 +31,7 @@
+     const char* phase_switch = std::getenv("STRATA_PREFILL_PHASE_AUDIT");
+     const bool phase_requested = phase_switch && std::strcmp(phase_switch, "1") == 0;
+     if (phase_requested && residual_dtype != detail::LayerMajorResidualDtype::fp32) {
+-        err = "prefill phase audit: FP16 saved residual storage is outside this diagnostic"; return false;
++        err = "prefill phase audit: non-FP32 saved residual storage is outside this diagnostic"; return false;
+     }
+     const char* mmq = std::getenv("STRATA_PREFILL_MMQ");
+     if (m.layer_major_active || stage_lb_ != 0 || stage_le_ != g.n_layers || next_ || hand_in_ ||
+@@ -157,9 +157,9 @@
+     std::vector<int32_t> residency(size_t(g.n_layers * NE), -1);
+     auto free_device = [](uint8_t* p) { if (p) (void) cudaFree(p); };
+     std::unique_ptr<uint8_t, decltype(free_device)> device_rows(nullptr, free_device);
+-    // Allocated only for an FP16 host tail. One in-order queue serializes
++    // Allocated only for an FP16/BF16 host tail. One in-order queue serializes
+     // H2D -> unpack -> model -> pack -> D2H, and the outer lease owns it all.
+-    std::unique_ptr<uint8_t, decltype(free_device)> fp16_stage(nullptr, free_device);
++    std::unique_ptr<uint8_t, decltype(free_device)> two_byte_stage(nullptr, free_device);
+ 
+     // Declare before Restore/lease: diagnostic DMA host owners survive checked retirement.
+     std::unique_ptr<detail::LayerMajorBoundaryAudit> audit;
+@@ -172,7 +172,7 @@
+             err = "prefill boundary audit: diagnostic storage exceeds RAM headroom"; return false;
+         }
+         audit.reset(new detail::LayerMajorBoundaryAudit(n, pos0, D, g.n_layers, m.T,
+-            plan.dtype == detail::LayerMajorResidualDtype::fp16));
++            plan.dtype));
+     }
+     // This owner precedes Restore and the checked lease, just like boundary audit.
+     // Reserve BOTH optional owners cumulatively; no file/raw bytes are held in RAM.
+@@ -213,7 +213,7 @@
+         detail::Layer26PhaseAudit* phase;
+         detail::LayerMajorBoundaryAudit* audit;
+         detail::LayerMajorBoundaryAudit::Copy audit_copy;
+-        bool active; const void* gpu_input; const void* host_input; uint16_t* fp16_stage;
++        bool active; const void* gpu_input; const void* host_input; uint16_t* two_byte_stage;
+         detail::LayerMajorResidualPlan plan;
+         decltype(on_chunk) chunk; decltype(on_stage_chunk) stage;
+         ~Restore() noexcept {
+@@ -222,13 +222,13 @@
+             m.layer26_phase_audit = phase;
+             m.layer_major_audit = audit; m.layer_major_audit_copy = std::move(audit_copy);
+             m.layer_major_gpu_input = gpu_input; m.layer_major_host_input = host_input;
+-            m.layer_major_fp16_stage = fp16_stage; m.layer_major_residual = plan;
++            m.layer_major_two_byte_stage = two_byte_stage; m.layer_major_residual = plan;
+             p.on_chunk = std::move(chunk); p.on_stage_chunk = std::move(stage);
+         }
+     } restore{*this, m, stage_lb_, stage_le_, hand_in_, m.cache, m.host_res,
+               m.layer26_phase_audit, m.layer_major_audit, m.layer_major_audit_copy,
+               m.layer_major_active, m.layer_major_gpu_input, m.layer_major_host_input,
+-              m.layer_major_fp16_stage, m.layer_major_residual, on_chunk, on_stage_chunk};
++              m.layer_major_two_byte_stage, m.layer_major_residual, on_chunk, on_stage_chunk};
+     cudaError_t compute_drain = cudaSuccess, copy_drain = cudaSuccess;
+     auto drain = [&]() noexcept {
+         compute_drain = cudaStreamSynchronize(m.cs);
+@@ -265,11 +265,11 @@
+     if (plan.staging_bytes) {
+         uint8_t* p = nullptr;
+         if (cudaMalloc(reinterpret_cast<void**>(&p), size_t(plan.staging_bytes)) != cudaSuccess) {
+-            err = "prefill layer-major: FP16 residual staging allocation failed"; return false;
+-        }
+-        fp16_stage.reset(p);
+-    }
+-    m.layer_major_fp16_stage = reinterpret_cast<uint16_t*>(fp16_stage.get());
++            err = "prefill layer-major: two-byte residual staging allocation failed"; return false;
++        }
++        two_byte_stage.reset(p);
++    }
++    m.layer_major_two_byte_stage = reinterpret_cast<uint16_t*>(two_byte_stage.get());
+     m.layer_major_active = true;
+     m.layer_major_residual = plan;
+     m.cache = &layer_cache;
+@@ -289,6 +289,13 @@
+                              "underflow -> signed zero, NaN -> quiet NaN; "
+                              "one pack/unpack per interlayer boundary, live residual FP32, "
+                              "operator/state precision unchanged\n");
++    if (plan.dtype == detail::LayerMajorResidualDtype::bf16)
++        std::fprintf(stderr, "strata prefill: BF16 residual storage is experimental/unqualified; "
++                             "shared bf16_from_f32 RNE, finite overflow -> signed Inf, "
++                             "BF16 subnormals preserved, underflow -> signed zero, "
++                             "NaN sign/retained payload preserved and quieted; "
++                             "exact f32_from_bf16 expansion, one pack/unpack per interlayer boundary, "
++                             "live residual FP32, operator/state precision unchanged\n");
+     for (; layer < g.n_layers; ++layer) {
+         if (should_stop && should_stop()) { err = "cancelled"; return false; }
+         if (!drain()) { err = "prefill layer-major: layer boundary drain failed"; return false; }
+@@ -356,22 +363,30 @@
+             const auto span = plan.span(row, count);
+             uint8_t* destination = (span.device ? device_rows.get() : rows.get()) + size_t(span.offset_bytes);
+             cudaError_t status = cudaSuccess;
+-            if (plan.dtype == detail::LayerMajorResidualDtype::fp16) {
++            if (plan.dtype == detail::LayerMajorResidualDtype::fp16 ||
++                plan.dtype == detail::LayerMajorResidualDtype::bf16) {
+                 uint16_t* packed = span.device ? reinterpret_cast<uint16_t*>(destination)
+-                                              : m.layer_major_fp16_stage;
++                                              : m.layer_major_two_byte_stage;
+                 if (!packed || (!span.device && span.bytes > plan.staging_bytes)) {
+-                    error = "prefill layer-major: FP16 residual staging bounds exceeded"; return false;
++                    error = "prefill layer-major: two-byte residual staging bounds exceeded"; return false;
+                 }
+-                // to_f16 uses shared RNE bits, without hsat/clamping. Neither
+-                // placement rounds twice; final-layer callbacks stay FP32.
+-                to_f16(residual, packed, int64_t(span.bytes / 2), m.cs);
++                // Exactly one shared RNE pack in either placement; final callbacks
++                // stay FP32. BF16 never routes through FP16 or activation hi/lo.
++                if (plan.dtype == detail::LayerMajorResidualDtype::fp16)
++                    to_f16(residual, packed, int64_t(span.bytes / 2), m.cs);
++                else if (plan.dtype == detail::LayerMajorResidualDtype::bf16)
++                    residual_pack_bf16(residual, packed, int64_t(span.bytes / 2), m.cs);
+                 if (!span.device)
+                     status = cudaMemcpyAsync(destination, packed, size_t(span.bytes), cudaMemcpyDeviceToHost, m.cs);
+-            } else {
++            } else if (plan.dtype == detail::LayerMajorResidualDtype::fp32) {
+                 status = cudaMemcpyAsync(destination, residual, size_t(span.bytes),
+                     span.device ? cudaMemcpyDeviceToDevice : cudaMemcpyDeviceToHost, m.cs);
+-            }
+-            if (status != cudaSuccess || !drain()) {
++            } else {
++                error = "prefill layer-major: invalid residual store dtype"; return false;
++            }
++            // Prove retirement even if a copy submission returned an API error.
++            const bool retired = drain();
++            if (status != cudaSuccess || !retired) {
+                 error = "prefill layer-major: residual store copy/drain failed"; return false;
+             }
+             if (audit && !audit->stored(layer, row, count, destination, span.device,
+--- a/src/prefill/prefill.cpp
++++ b/src/prefill/prefill.cpp
+@@ -463,7 +463,7 @@
+     detail::LayerMajorBoundaryAudit::Copy layer_major_audit_copy;
+     const void* layer_major_gpu_input = nullptr;
+     const void* layer_major_host_input = nullptr;
+-    uint16_t* layer_major_fp16_stage = nullptr;
++    uint16_t* layer_major_two_byte_stage = nullptr;
+     detail::LayerMajorResidualPlan layer_major_residual;
+     float *logits = nullptr, *w = nullptr, *GU = nullptr, *Dm = nullptr, *sgate = nullptr, *sup = nullptr,
+           *shared = nullptr, *sg = nullptr;
+@@ -1670,24 +1670,32 @@
+                     ? m.layer_major_gpu_input : m.layer_major_host_input);
+                 if (!base) { err = "prefill layer-major: missing residual input store"; return false; }
+ #if defined(STRATA_ENABLE_SYCL)
+-                if (m.layer_major_residual.dtype == detail::LayerMajorResidualDtype::fp16) {
++                if (m.layer_major_residual.dtype == detail::LayerMajorResidualDtype::fp16 ||
++                    m.layer_major_residual.dtype == detail::LayerMajorResidualDtype::bf16) {
+                     const uint16_t* packed = reinterpret_cast<const uint16_t*>(base + size_t(span.offset_bytes));
+                     if (!span.device) {
+-                        if (!m.layer_major_fp16_stage || span.bytes > m.layer_major_residual.staging_bytes ||
+-                            cudaMemcpyAsync(m.layer_major_fp16_stage, packed, size_t(span.bytes),
++                        if (!m.layer_major_two_byte_stage || span.bytes > m.layer_major_residual.staging_bytes ||
++                            cudaMemcpyAsync(m.layer_major_two_byte_stage, packed, size_t(span.bytes),
+                                             cudaMemcpyHostToDevice, m.cs) != cudaSuccess) {
+-                            err = "prefill layer-major: FP16 residual staging upload failed"; return false;
++                            err = "prefill layer-major: two-byte residual staging upload failed"; return false;
+                         }
+-                        packed = m.layer_major_fp16_stage;
++                        packed = m.layer_major_two_byte_stage;
+                     }
+                     // Same in-order queue as H2D and the unchanged FP32 model.
+                     // Exactly one restoration, with no intermediate F32 store.
+-                    from_f16(packed, m.R, int64_t(span.bytes / 2), m.cs);
++                    if (m.layer_major_residual.dtype == detail::LayerMajorResidualDtype::fp16)
++                        from_f16(packed, m.R, int64_t(span.bytes / 2), m.cs);
++                    else if (m.layer_major_residual.dtype == detail::LayerMajorResidualDtype::bf16)
++                        residual_unpack_bf16(packed, m.R, int64_t(span.bytes / 2), m.cs);
+                 } else
+ #endif
+-                if (cudaMemcpyAsync(m.R, base + size_t(span.offset_bytes), size_t(span.bytes),
+-                    span.device ? cudaMemcpyDeviceToDevice : cudaMemcpyHostToDevice, m.cs) != cudaSuccess) {
+-                    err = "prefill layer-major: residual input copy failed"; return false;
++                if (m.layer_major_residual.dtype == detail::LayerMajorResidualDtype::fp32) {
++                    if (cudaMemcpyAsync(m.R, base + size_t(span.offset_bytes), size_t(span.bytes),
++                        span.device ? cudaMemcpyDeviceToDevice : cudaMemcpyHostToDevice, m.cs) != cudaSuccess) {
++                        err = "prefill layer-major: residual input copy failed"; return false;
++                    }
++                } else {
++                    err = "prefill layer-major: unsupported residual input dtype"; return false;
+                 }
+                 if (m.layer_major_audit && !m.layer_major_audit->input(LB, c0, T, m.R, span.device,
+                                                                       m.layer_major_audit_copy)) {
+--- a/include/strata/prefill/layer_major_boundary_audit.hpp
++++ b/include/strata/prefill/layer_major_boundary_audit.hpp
+@@ -1,6 +1,8 @@
+ #pragma once
+ // Diagnostic only. No GPU ownership: caller's checked queue lease outlives us.
+ #include "strata/kernels/f16_bits.hpp"
++#include "strata/kernels/bf16_bits.hpp"
++#include "strata/prefill/layer_major_plan.hpp"
+ #include <algorithm>
+ #include <charconv>
+ #include <cmath>
+@@ -23,7 +25,8 @@
+     std::vector<uint16_t> packed_, actual_packed_;
+     std::vector<int64_t> generation_;
+     int64_t n_, pos_, width_, layers_, chunk_;
+-    bool half_, mismatch_ = false;
++    LayerMajorResidualDtype dtype_;
++    bool mismatch_ = false;
+     uint64_t text_bytes_ = 0, raw_bytes_ = 0, outputs_ = 0, stores_ = 0, inputs_ = 0;
+     static constexpr uint64_t text_limit = 8ull << 20, raw_limit = 48ull << 20;
+     static File exclusive(const std::string& path) {
+@@ -66,7 +69,7 @@
+             "storage=%s source=%s width=%lld bytes=%zu fnv64=%016llx expected_fnv64=%016llx "
+             "memcmp=%s first_byte=%lld max_abs=%.17g nonfinite=%llu\n",
+             phase, (long long)layer, (long long)(start / chunk_), (long long)start, (long long)count,
+-            (long long)row, (long long)(pos_ + row), half_ ? "fp16" : "fp32", device ? "GPU" : "RAM",
++            (long long)row, (long long)(pos_ + row), layer_major_dtype_name(dtype_), device ? "GPU" : "RAM",
+             (long long)width_, bytes, (unsigned long long)hash(a, bytes),
+             (unsigned long long)(expected ? hash(e, bytes) : 0), expected ? (equal ? "equal" : "different") : "NA",
+             equal ? -1ll : (long long)first, maximum, (unsigned long long)nonfinite);
+@@ -77,7 +80,8 @@
+     // copy(dst,src,bytes,device_source) must checked-drain the SAME compute queue.
+     using Copy = std::function<bool(void*, const void*, size_t, bool)>;
+     LayerMajorBoundaryAudit(int64_t n, int64_t pos, int64_t width, int64_t layers,
+-                           int64_t chunk, bool half): n_(n), pos_(pos), width_(width), layers_(layers), chunk_(chunk), half_(half) {
++                           int64_t chunk, LayerMajorResidualDtype dtype): n_(n), pos_(pos), width_(width), layers_(layers), chunk_(chunk), dtype_(dtype) {
++        (void)layer_major_storage_bytes(dtype_); // Reject invalid enum before creating files.
+         if (n <= 0 || n > 262144 || pos < 0 || pos > 262144 || n > 262144-pos ||
+             width != 10240 || layers != 48 || chunk <= 0 || chunk > 8192)
+             throw std::invalid_argument("boundary audit unsupported shape");
+@@ -114,7 +118,13 @@
+         std::snprintf(shape, sizeof(shape), "tokens=%lld pos0=%lld width=%lld layers=%lld chunk=%lld selected=%zu\n",
+                       (long long)n_, (long long)pos_, (long long)width_, (long long)layers_, (long long)chunk_, rows_.size());
+         line(shape);
+-        line("boundary_audit_v1 status=incomplete raw_order=layer_then_callback_then_CSV_selection raw_dtype=fp32 hash=FNV1a64_noncryptographic final_layer=47_not_stored first_input=embedding_not_audited text_limit=8388608 raw_limit=50331648\n");
++        line("boundary_audit_v2 status=incomplete raw_order=layer_then_callback_then_CSV_selection raw_dtype=fp32 hash=FNV1a64_noncryptographic final_layer=47_not_stored first_input=embedding_not_audited text_limit=8388608 raw_limit=50331648\n");
++        if (dtype_ == LayerMajorResidualDtype::bf16)
++            line("storage=bf16 pack_oracle=bf16_from_f32_RNE_NaN_quiet_preserve_sign_payload unpack_oracle=f32_from_bf16_exact_shift16\n");
++        else if (dtype_ == LayerMajorResidualDtype::fp16)
++            line("storage=fp16 pack_oracle=f16_from_f32_RNE unpack_oracle=f32_from_f16\n");
++        else if (dtype_ == LayerMajorResidualDtype::fp32)
++            line("storage=fp32 pack_oracle=identity unpack_oracle=identity\n");
+     }
+     bool source(int64_t layer, int64_t start, int64_t count, const float* r, const Copy& copy) {
+         if (layer < 0 || layer >= layers_ || start < 0 || count <= 0 || count > chunk_ || start % chunk_ || start > n_ - count)
+@@ -134,9 +144,14 @@
+             float* e = expected_.data() + s*size_t(width_);
+             if (layer + 1 < layers_) {
+                 if (generation_[s] != -1) throw std::runtime_error("boundary audit previous input not consumed");
+-                if (half_) for (int64_t i = 0; i < width_; ++i)
+-                    e[i] = strata::kernels::f32_from_f16(strata::kernels::f16_from_f32(scratch_[size_t(i)]));
+-                else std::memcpy(e, scratch_.data(), size_t(width_)*4);
++                if (dtype_ == LayerMajorResidualDtype::fp16)
++                    for (int64_t i = 0; i < width_; ++i)
++                        e[i] = strata::kernels::f32_from_f16(strata::kernels::f16_from_f32(scratch_[size_t(i)]));
++                else if (dtype_ == LayerMajorResidualDtype::bf16)
++                    for (int64_t i = 0; i < width_; ++i)
++                        e[i] = strata::kernels::f32_from_bf16(strata::kernels::bf16_from_f32(scratch_[size_t(i)]));
++                else if (dtype_ == LayerMajorResidualDtype::fp32)
++                    std::memcpy(e, scratch_.data(), size_t(width_)*4);
+                 generation_[s] = layer;
+             }
+         }
+@@ -147,11 +162,16 @@
+             const int64_t row = rows_[s]; if (row < start || row >= start + count) continue;
+             if (generation_[s] != layer) throw std::runtime_error("boundary audit store sequence");
+             const float* e = expected_.data() + s*size_t(width_);
+-            if (half_) {
+-                for (int64_t i = 0; i < width_; ++i) packed_[size_t(i)] = strata::kernels::f16_from_f32(e[i]);
++            if (dtype_ == LayerMajorResidualDtype::fp16 || dtype_ == LayerMajorResidualDtype::bf16) {
++                for (int64_t i = 0; i < width_; ++i) {
++                    if (dtype_ == LayerMajorResidualDtype::fp16)
++                        packed_[size_t(i)] = strata::kernels::f16_from_f32(e[i]);
++                    else if (dtype_ == LayerMajorResidualDtype::bf16)
++                        packed_[size_t(i)] = strata::kernels::bf16_from_f32(e[i]);
++                }
+                 if (!copy(actual_packed_.data(), static_cast<const uint8_t*>(store) + size_t(row-start)*size_t(width_)*2,
+                           size_t(width_)*2, device)) return false;
+-                record("stored_RNE_packed_bits", layer, row, start, count, device,
++                record(dtype_ == LayerMajorResidualDtype::bf16 ? "stored_bf16_RNE_packed_bits" : "stored_RNE_packed_bits", layer, row, start, count, device,
+                        actual_packed_.data(), packed_.data(), size_t(width_)*2);
+             } else {
+                 if (!copy(scratch_.data(), static_cast<const float*>(store) + size_t(row-start)*width_, size_t(width_)*4, device)) return false;
+@@ -167,7 +187,8 @@
+             if (generation_[s] != layer-1) throw std::runtime_error("boundary audit input sequence");
+             const float* e = expected_.data() + s*size_t(width_);
+             if (!copy(scratch_.data(), r + size_t(row-start)*width_, size_t(width_)*4, true)) return false;
+-            record(half_ ? "next_input_decoded_expected" : "next_input", layer, row, start, count,
++            record(dtype_ == LayerMajorResidualDtype::bf16 ? "next_input_bf16_exact_expected" :
++                   dtype_ == LayerMajorResidualDtype::fp16 ? "next_input_decoded_expected" : "next_input", layer, row, start, count,
+                    device, scratch_.data(), e, size_t(width_)*4, scratch_.data(), e);
+             generation_[s] = -1; ++inputs_;
+         }
+--- a/src/prefill/layer_major_plan_test.cpp
++++ b/src/prefill/layer_major_plan_test.cpp
+@@ -58,32 +58,37 @@
+ 
+     check(layer_major_residual_dtype(nullptr) == LayerMajorResidualDtype::fp32 &&
+           layer_major_residual_dtype("fp32") == LayerMajorResidualDtype::fp32 &&
+-          layer_major_residual_dtype("fp16") == LayerMajorResidualDtype::fp16,
+-          "dtype defaults to FP32 and accepts only explicit FP32/FP16");
+-    for (const char* value : {"", "FP16", "bf16", "fp8", " fp16", "fp16 "})
++          layer_major_residual_dtype("fp16") == LayerMajorResidualDtype::fp16 &&
++          layer_major_residual_dtype("bf16") == LayerMajorResidualDtype::bf16 &&
++          std::string(layer_major_dtype_name(LayerMajorResidualDtype::bf16)) == "bf16",
++          "dtype defaults to FP32 and accepts only explicit FP32/FP16/BF16");
++    for (const char* value : {"", "FP16", "BF16", "fp8", " fp16", "fp16 ", " bf16", "bf16 ", "bf16x"})
+         rejected([&] { layer_major_residual_dtype(value); }, "invalid storage dtype rejected");
+     rejected([&] { layer_major_storage_bytes(static_cast<LayerMajorResidualDtype>(99)); },
+              "invalid typed format rejected");
+-    for (const auto dtype : {LayerMajorResidualDtype::fp32, LayerMajorResidualDtype::fp16}) {
+-        const bool half = dtype == LayerMajorResidualDtype::fp16;
++    rejected([&] { layer_major_dtype_name(static_cast<LayerMajorResidualDtype>(99)); },
++             "invalid typed format name rejected");
++    for (const auto dtype : {LayerMajorResidualDtype::fp32, LayerMajorResidualDtype::fp16,
++                            LayerMajorResidualDtype::bf16}) {
++        const bool half = layer_major_storage_bytes(dtype) == 2;
+         const uint64_t rb = 10240 * layer_major_storage_bytes(dtype);
+         const uint64_t reserve = half ? 8192 * rb : 0;
+         const uint64_t full_bytes = half ? 5368709120ull : 10737418240ull;
+         const auto host = LayerMajorResidualPlan::make(262144, 8192, 10240, reserve, 0, dtype);
+         check(host.total_bytes == full_bytes && host.host_bytes == full_bytes &&
+-              host.staging_bytes == reserve, "262144 physical rows: 10/5 GiB plus exact staging");
++              host.staging_bytes == reserve, "262144 planned rows: 10/5 GiB plus exact staging, no physical admission proof");
+         const auto exact = LayerMajorResidualPlan::make(262144, 8192, 10240, full_bytes, -1, dtype);
+         check(exact.gpu_rows == 262144 && !exact.host_bytes && !exact.staging_bytes,
+               "exact full-store budget needs no host staging");
+         const auto below = LayerMajorResidualPlan::make(262144, 8192, 10240, full_bytes - 1, -1, dtype);
+         check(below.gpu_rows == (half ? 245760 : 253952) &&
+               below.gpu_bytes + below.staging_bytes <= full_bytes - 1,
+-              "one byte below physical boundary reserves staging before auto prefix");
++              "one byte below planned boundary reserves staging before auto prefix");
+         const auto prefix = LayerMajorResidualPlan::make(262144, 8192, 10240,
+             2 * 8192 * rb + reserve, -1, dtype);
+         check(prefix.gpu_rows == 16384 && prefix.span(16384, 8192).offset_bytes == 0 &&
+               prefix.span(253952, 8192).bytes == 8192 * rb,
+-              "physical boundary mixed store has exact first/last host spans");
++              "planned boundary mixed store has exact first/last host spans");
+         const uint64_t odd_stage = half ? 257 * rb : 0;
+         const auto odd = LayerMajorResidualPlan::make(513, 257, 10240,
+             257 * rb + odd_stage, 257, dtype);
+@@ -99,7 +104,7 @@
+         const auto final_gpu = LayerMajorResidualPlan::make(19, 4, 10240, 19 * rb, 19, dtype);
+         check(final_gpu.span(16, 3).device && final_gpu.span(16, 3).bytes == 3 * rb &&
+               !final_gpu.host_bytes && !final_gpu.staging_bytes,
+-              "explicit all-GPU odd tail has no staging in either format");
++              "explicit all-GPU odd tail has no staging in all formats");
+         const uint64_t odd_budget = 4 * rb + (half ? 4 * rb : 0);
+         const auto tail = LayerMajorResidualPlan::make(19, 4, 10240, odd_budget, 4, dtype);
+         check(!tail.span(16, 3).device && tail.span(16, 3).offset_bytes == 12 * rb &&
+@@ -107,7 +112,7 @@
+         rejected([&] { LayerMajorResidualPlan::make(19, 4, 10240, odd_budget - 1, 4, dtype); },
+                  "explicit prefix budget includes full staging extent");
+         rejected([&] { LayerMajorResidualPlan::make(INT64_MAX, 4, 10240, 0, 0, dtype); },
+-                 "total multiplication checked for either format");
++                 "total multiplication checked for all formats");
+     }
+     rejected([&] { LayerMajorResidualPlan::make(19, 4, 10240, 4 * 10240 * 2 - 1, -1,
+                                               LayerMajorResidualDtype::fp16); },
+@@ -116,6 +121,20 @@
+                                                      LayerMajorResidualDtype::fp16);
+     check(partial.gpu_rows == 16 && partial.staging_bytes == 3 * 10240 * 2,
+           "explicit final partial host chunk fits prefix plus exact small staging");
++
++    for (const auto dtype : {LayerMajorResidualDtype::fp16, LayerMajorResidualDtype::bf16}) {
++        rejected([&] { LayerMajorResidualPlan::make(19, 4, 10240, 4 * 10240 * 2 - 1, -1, dtype); },
++                 "each two-byte host-tail format requires complete conversion staging");
++        const auto tail = LayerMajorResidualPlan::make(19, 4, 10240, 19 * 10240 * 2, 16, dtype);
++        check(tail.gpu_rows == 16 && tail.staging_bytes == 3 * 10240 * 2,
++              "each two-byte final partial host chunk uses exact small staging");
++        rejected([&] { LayerMajorResidualPlan::make(19, 4, INT64_MAX, UINT64_MAX, 19, dtype); },
++                 "two-byte row width respects addressable byte limit");
++        rejected([&] { LayerMajorResidualPlan::make(3, INT64_MAX, INT64_MAX / 2, UINT64_MAX, 0, dtype); },
++                 "huge two-byte staging extent and geometry remain checked");
++    }
++    rejected([&] { LayerMajorResidualPlan::make(19, 4, 10240, UINT64_MAX, 19,
++                    static_cast<LayerMajorResidualDtype>(99)); }, "planner rejects unknown storage enum");
+ 
+     LayerMajorChunkCursor cursor{19, 4};
+     int64_t delivered = 0;
+--- a/cmake/sycl_backend.cmake
++++ b/cmake/sycl_backend.cmake
+@@ -238,6 +238,13 @@
+   target_compile_options(sycl_prefill_postops_test PRIVATE -fno-fast-math -ffp-contract=off)
+   add_test(NAME sycl_prefill_postops COMMAND sycl_prefill_postops_test)
+   set_tests_properties(sycl_prefill_postops PROPERTIES TIMEOUT 90)
++  add_executable(sycl_prefill_bf16_storage_test tests/sycl/prefill_bf16_storage.cpp)
++  target_link_libraries(sycl_prefill_bf16_storage_test PRIVATE strata_prefill)
++  target_compile_options(sycl_prefill_bf16_storage_test PRIVATE -fno-fast-math -ffp-contract=off)
++  add_test(NAME sycl_prefill_bf16_conversion COMMAND sycl_prefill_bf16_storage_test conversion)
++  set_tests_properties(sycl_prefill_bf16_conversion PROPERTIES TIMEOUT 90)
++  # fullgpu/fullhost/mixedstore require separate caller-owned audit paths and
++  # immutable pre-exec environment. Run serially with the documented fixture consumer.
+   add_executable(sycl_gemm_test tests/sycl/gemm.cpp)
+   target_link_libraries(sycl_gemm_test PRIVATE strata_prefill)
+   target_compile_options(sycl_gemm_test PRIVATE -fno-fast-math -ffp-contract=off)
+--- /dev/null
++++ b/tests/sycl/prefill_bf16_storage.cpp
+@@ -0,0 +1,219 @@
++// Synthetic BF16 boundary mechanics only. No model quality/performance claim.
++// Run each mode in a separate process. Configure runtime variables before exec.
++#include "strata/kernels/bf16_bits.hpp"
++#include "strata/prefill/kernels.hpp"
++#include "strata/prefill/layer_major_boundary_audit.hpp"
++#include "strata/prefill/layer_major_plan.hpp"
++#include "strata/prefill/draft_uploads.hpp"
++#include "strata/sycl/checked_cleanup.hpp"
++#include "strata/sycl/runtime.hpp"
++#include <bit>
++#include <cstdlib>
++#include <cstring>
++#include <iostream>
++#include <iterator>
++#include <stdexcept>
++#include <string>
++#include <vector>
++
++namespace p = strata::prefill;
++namespace d = strata::prefill::detail;
++namespace sb = strata::sycl_backend;
++static std::shared_ptr<sb::Runtime> rt;
++static void need(bool b, const char* message) {
++    if (!b) throw std::runtime_error(message);
++}
++// Fail stop with DMA operands live if submission/completion cannot be proved.
++static void copy_checked(void* dst, const void* src, size_t bytes) {
++    if (!bytes) return;
++    try { rt->wait(rt->compute().memcpy(dst, src, bytes)); }
++    catch (...) { sb::cleanup_fail_stop("BF16 fixture copy failed with owners live"); }
++}
++static bool drain() noexcept {
++    try { rt->wait(); return true; } catch (...) { return false; }
++}
++static void fatal() noexcept { sb::cleanup_fail_stop("BF16 fixture queue retirement failed"); }
++
++struct Case { uint32_t input; uint16_t packed; };
++// Literal integer oracle independent of the helper: even/odd retained-bit ties,
++// both signs, finite overflow, all relevant subnormal edges, sNaN/qNaN payloads.
++static constexpr Case cases[] = {
++    {0x00000000,0x0000},{0x80000000,0x8000},
++    {0x3f800000,0x3f80},{0xbf800000,0xbf80},
++    {0x3f808000,0x3f80},{0x3f818000,0x3f82},
++    {0xbf808000,0xbf80},{0xbf818000,0xbf82},
++    {0x7f800000,0x7f80},{0xff800000,0xff80},
++    {0x7f7f0000,0x7f7f},{0x7f7f7fff,0x7f7f},
++    {0x7f7f8000,0x7f80},{0xff7f8000,0xff80},{0x7f7fffff,0x7f80},
++    {0x00010000,0x0001},{0x80010000,0x8001},
++    {0x00008000,0x0000},{0x80008000,0x8000},
++    {0x00008001,0x0001},{0x80008001,0x8001},
++    {0x00018000,0x0002},{0x80018000,0x8002},
++    {0x00000001,0x0000},{0x80000001,0x8000},
++    {0x007fffff,0x0080},{0x807fffff,0x8080},
++    {0x00800000,0x0080},{0x80800000,0x8080},
++    {0x7f800001,0x7fc0},{0xff800001,0xffc0},
++    {0x7fffffff,0x7fff},{0xffffffff,0xffff},
++    {0x7fc12345,0x7fc1},{0xffa10001,0xffe1}
++};
++
++static void conversion() {
++    const size_t n = std::size(cases); // Deliberately odd scalar count.
++    std::vector<float> input(n), output(n);
++    std::vector<uint16_t> actual(n);
++    sb::Allocation x(rt,n*4,sb::MemoryKind::Device), y(rt,n*2,sb::MemoryKind::Device),
++                   z(rt,n*4,sb::MemoryKind::Device);
++    d::DraftUploadGuard lease(drain,fatal); lease.arm();
++    auto rejects=[](auto&& call) {
++        bool rejected=false;
++        try { call(); } catch (const std::invalid_argument&) { rejected=true; }
++        need(rejected,"invalid boundary conversion must reject before enqueue");
++    };
++    rejects([&]{p::residual_pack_bf16(x.as<float>(),y.as<uint16_t>(),-1,&rt->compute());});
++    rejects([&]{p::residual_unpack_bf16(y.as<uint16_t>(),z.as<float>(),-1,&rt->compute());});
++    rejects([&]{p::residual_pack_bf16(x.as<float>(),y.as<uint16_t>(),INT64_MAX,&rt->compute());});
++    rejects([&]{p::residual_unpack_bf16(y.as<uint16_t>(),z.as<float>(),INT64_MAX,&rt->compute());});
++    rejects([&]{p::residual_pack_bf16(x.as<float>(),x.as<uint16_t>(),int64_t(n),&rt->compute());});
++    rejects([&]{p::residual_unpack_bf16(z.as<uint16_t>(),z.as<float>(),int64_t(n),&rt->compute());});
++    // The API must reject an unordered queue before submitting a kernel.
++    sycl::queue unordered(rt->context(),rt->device());
++    auto unordered_drain=[&]() noexcept {
++        try { unordered.wait_and_throw(); return true; } catch (...) { return false; }
++    };
++    d::DraftUploadGuard unordered_lease(unordered_drain,fatal); unordered_lease.arm();
++    rejects([&]{p::residual_pack_bf16(x.as<float>(),y.as<uint16_t>(),int64_t(n),&unordered);});
++    rejects([&]{p::residual_unpack_bf16(y.as<uint16_t>(),z.as<float>(),int64_t(n),&unordered);});
++    need(unordered_drain(),"unordered rejection queue drained"); unordered_lease.retire();
++    uint64_t nan_inputs=0, signed_zeros=0, infinities=0, finite_overflows=0,
++             subnormal_results=0, underflows_to_zero=0;
++    for (size_t i=0;i<n;++i) {
++        input[i]=std::bit_cast<float>(cases[i].input);
++        need(strata::kernels::bf16_from_f32(input[i])==cases[i].packed,"literal host BF16 pack oracle");
++        const uint32_t magnitude=cases[i].input&0x7fffffffu;
++        const uint16_t packed_magnitude=cases[i].packed&0x7fffu;
++        nan_inputs+=magnitude>0x7f800000u;
++        signed_zeros+=magnitude==0;
++        infinities+=magnitude==0x7f800000u;
++        finite_overflows+=magnitude<0x7f800000u && packed_magnitude==0x7f80u;
++        subnormal_results+=packed_magnitude>0 && packed_magnitude<0x0080u;
++        underflows_to_zero+=magnitude>0 && magnitude<0x7f800000u && packed_magnitude==0;
++    }
++    copy_checked(x.data(),input.data(),n*4);
++    p::residual_pack_bf16(x.as<float>(),y.as<uint16_t>(),int64_t(n),&rt->compute());
++    p::residual_unpack_bf16(y.as<uint16_t>(),z.as<float>(),int64_t(n),&rt->compute());
++    copy_checked(actual.data(),y.data(),n*2); copy_checked(output.data(),z.data(),n*4);
++    for (size_t i=0;i<n;++i) {
++        need(actual[i]==cases[i].packed,"literal device BF16 RNE/NaN pack bits");
++        need(std::bit_cast<uint32_t>(output[i])==uint32_t(cases[i].packed)<<16,"exact BF16 expansion");
++    }
++    // All 65,536 encodings, including signaling NaNs, must expand by bit shift.
++    // Do not use FP arithmetic/comparisons on the restored NaN values.
++    std::vector<uint16_t> codes(65536);
++    std::vector<float> decoded(codes.size());
++    sb::Allocation packed(rt,codes.size()*2,sb::MemoryKind::Device),
++                   restored(rt,codes.size()*4,sb::MemoryKind::Device);
++    // These new owners follow the first lease. A second lease must retire them
++    // before unwinding them on any later failure.
++    d::DraftUploadGuard exhaustive_lease(drain,fatal); exhaustive_lease.arm();
++    for (size_t i=0;i<codes.size();++i) codes[i]=uint16_t(i);
++    copy_checked(packed.data(),codes.data(),codes.size()*2);
++    p::residual_unpack_bf16(packed.as<uint16_t>(),restored.as<float>(),int64_t(codes.size()),&rt->compute());
++    copy_checked(decoded.data(),restored.data(),decoded.size()*4);
++    for(size_t i=0;i<codes.size();++i)
++        need(std::bit_cast<uint32_t>(decoded[i])==uint32_t(i)<<16,"all BF16 expansion encodings exact");
++    need(drain(),"conversion final checked drain"); exhaustive_lease.retire(); lease.retire();
++    std::cout << "{\"version\":1,\"arm\":\"bf16_boundary_storage\",\"mode\":\"conversion\","
++        "\"residual_dtype\":\"bf16\",\"residual_element_bytes\":2,\"pack_cases\":" << n <<
++        ",\"nan_inputs\":" << nan_inputs << ",\"signed_zeros\":" << signed_zeros <<
++        ",\"infinities\":" << infinities << ",\"finite_overflows\":" << finite_overflows <<
++        ",\"subnormal_results\":" << subnormal_results << ",\"underflows_to_zero\":" << underflows_to_zero <<
++        ",\"pack_oracle\":\"literal_bits_and_bf16_from_f32_RNE_NaN_preserving\","
++        "\"unpack_oracle\":\"all_65536_exact_shift16\","
++        "\"invalid_geometry_or_queue_rejections\":8,"
++        "\"expansion_cases\":65536,\"packed_bits_equal\":true,\"restored_bits_equal\":true,"
++        "\"status\":\"complete\",\"quality_qualified\":false,\"performance_qualified\":false,"
++        "\"physical_262144_qualified\":false}\n";
++}
++
++static void store(const std::string& mode) {
++    constexpr int64_t rows=19, chunk=4, width=10240, layers=48;
++    const int64_t prefix=mode=="fullgpu"?rows:mode=="fullhost"?0:8;
++    constexpr uint64_t row_bytes=width*2;
++    const uint64_t budget=(uint64_t(prefix)+(prefix<rows?chunk:0))*row_bytes;
++    const auto plan=d::LayerMajorResidualPlan::make(rows,chunk,width,budget,prefix,d::LayerMajorResidualDtype::bf16);
++    // The caller supplies immutable environment before exec, never setenv here.
++    const char* selected=std::getenv("STRATA_PREFILL_BOUNDARY_ROWS");
++    need(selected && std::strcmp(selected,"0,3,4,7,8,15,16,18")==0,"fixture requires documented row selection");
++    need(!std::getenv("STRATA_PREFILL_BOUNDARY_ROWS_ABSOLUTE"),"fixture uses relative rows");
++    d::LayerMajorBoundaryAudit audit(rows,0,width,layers,chunk,plan.dtype);
++    // Every host buffer outlives the checked lease, including audit Copy targets.
++    std::vector<uint8_t> host(size_t(plan.host_bytes));
++    std::vector<float> input(size_t(chunk*width)), output(input.size());
++    std::vector<uint16_t> observed(input.size());
++    sb::Allocation gpu, stage;
++    if(plan.gpu_bytes) gpu=sb::Allocation(rt,size_t(plan.gpu_bytes),sb::MemoryKind::Device);
++    if(plan.staging_bytes) stage=sb::Allocation(rt,size_t(plan.staging_bytes),sb::MemoryKind::Device);
++    sb::Allocation live(rt,input.size()*4,sb::MemoryKind::Device);
++    d::DraftUploadGuard lease(drain,fatal); lease.arm();
++    d::LayerMajorBoundaryAudit::Copy copy=[](void* dst,const void* src,size_t bytes,bool device) {
++        if(device) copy_checked(dst,src,bytes); else std::memcpy(dst,src,bytes);
++        return true;
++    };
++    uint64_t packs=0,unpacks=0,packed_scalars=0;
++    for(int64_t layer=0;layer<layers;++layer) {
++        for(int64_t row=0;row<rows;row+=chunk) {
++            const int64_t count=std::min(chunk,rows-row);
++            const auto span=plan.span(row,count);
++            auto* base=span.device?gpu.as<uint8_t>():host.data();
++            auto* location=base+size_t(span.offset_bytes);
++            uint16_t* packed=span.device?reinterpret_cast<uint16_t*>(location):stage.as<uint16_t>();
++            const size_t n=size_t(count*width);
++            if(layer) {
++                if(!span.device) copy_checked(packed,location,size_t(span.bytes));
++                p::residual_unpack_bf16(packed,live.as<float>(),int64_t(n),&rt->compute()); ++unpacks;
++                need(audit.input(layer,row,count,live.as<float>(),span.device,copy),"audit restored input");
++                copy_checked(output.data(),live.data(),n*4);
++                for(size_t i=0;i<n;++i) {
++                    const auto& c=cases[(size_t(row*width)+i+size_t(layer-1))%std::size(cases)];
++                    need(std::bit_cast<uint32_t>(output[i])==uint32_t(c.packed)<<16,"restored row bit oracle");
++                }
++            }
++            // An explicit synthetic layer result injects every edge case again;
++            // no model operators or model quality are being simulated.
++            for(size_t i=0;i<n;++i)
++                input[i]=std::bit_cast<float>(cases[(size_t(row*width)+i+size_t(layer))%std::size(cases)].input);
++            copy_checked(live.data(),input.data(),n*4);
++            need(audit.source(layer,row,count,live.as<float>(),copy),"audit output source");
++            if(layer+1==layers) continue; // Final callback remains FP32.
++            need(packed && (span.device || span.bytes<=plan.staging_bytes),"packed stage bounds");
++            p::residual_pack_bf16(live.as<float>(),packed,int64_t(n),&rt->compute()); ++packs;
++            if(!span.device) copy_checked(location,packed,size_t(span.bytes));
++            need(drain(),"stored boundary checked drain");
++            need(audit.stored(layer,row,count,location,span.device,copy),"audit stored bits");
++            copy(observed.data(),location,size_t(span.bytes),span.device);
++            for(size_t i=0;i<n;++i)
++                need(observed[i]==cases[(size_t(row*width)+i+size_t(layer))%std::size(cases)].packed,"stored row bit oracle");
++            packed_scalars+=n;
++        }
++    }
++    need(packs==235 && unpacks==packs && packed_scalars==47*19*10240,"all non-final boundary chunks exactly once");
++    need(drain(),"store final checked drain"); audit.complete(); lease.retire();
++    std::cout << "{\"version\":1,\"arm\":\"bf16_boundary_storage\",\"mode\":\"" << mode <<
++        "\",\"residual_dtype\":\"bf16\",\"residual_element_bytes\":2,\"rows\":19,\"chunk\":4,\"layers\":48,"
++        "\"row_bytes\":" << plan.row_bytes << ",\"residual_total\":" << plan.total_bytes <<
++        ",\"residual_gpu_rows\":" << plan.gpu_rows << ",\"residual_gpu\":" << plan.gpu_bytes <<
++        ",\"residual_host\":" << plan.host_bytes << ",\"residual_staging\":" << plan.staging_bytes <<
++        ",\"pack_calls\":" << packs << ",\"unpack_calls\":" << unpacks <<
++        ",\"packed_scalars\":" << packed_scalars <<
++        ",\"packed_bits_equal\":true,\"restored_bits_equal\":true,\"status\":\"complete\","
++        "\"quality_qualified\":false,\"performance_qualified\":false,\"physical_262144_qualified\":false}\n";
++}
++int main(int argc,char** argv) {
++    try {
++        need(argc==2,"usage: sycl_prefill_bf16_storage_test conversion|fullgpu|fullhost|mixedstore");
++        const std::string mode=argv[1];
++        need(mode=="conversion"||mode=="fullgpu"||mode=="fullhost"||mode=="mixedstore","invalid fixture mode");
++        rt=sb::runtime_for(); // No process environment mutation after this point.
++        if(mode=="conversion") conversion(); else store(mode);
++    } catch(const std::exception& e) { std::cerr<<e.what()<<'\n'; return 1; }
++}

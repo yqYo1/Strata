@@ -967,8 +967,8 @@
       "read_only": true,
       "path": "research-prefill-gpu-local-routing-contract-round671-v1.txt",
       "sha256": "c09023b5d3f851a15005b611d891596be184d0eb56d5e0af87998ae3affeea22",
-      "status": "FINAL received; hostoneMKL M dependency and compiled grouping candidate reported; Main source review/native tests pending.",
-      "main_review": "prefill-only-host-and-priority-transition.ja.md"
+      "status": "FINAL/Main source review complete; host M wait remains for current oneMKL, head release must support warm serve. No runtime/adoption.",
+      "main_review": "main-review-round671-675.ja.md"
     },
     {
       "round": 672,
@@ -976,15 +976,69 @@
       "read_only": true,
       "path": "research-prefill-head-owner-deferral-round672-v1.txt",
       "sha256": "155c2e9af10858208fcdff55e7b25d3c14e5ae1d825e89596bf65867263b7a41",
-      "status": "FINAL received; potential standalone head deferral/lifetime obligations reported, Main review/implementation/native qualification pending.",
-      "main_review": "prefill-only-host-and-priority-transition.ja.md"
+      "status": "FINAL/Main source review complete; host M wait remains for current oneMKL, head release must support warm serve. No runtime/adoption.",
+      "main_review": "main-review-round671-675.ja.md"
+    },
+    {
+      "round": 673,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-prefill-head-release-graph-contract-round673-v1.txt",
+      "sha256": "bc86d0b084bfc9467426cb130c4bac705efbcba9196168fa92b59f2bd5271f20",
+      "main_review": "main-review-round671-675.ja.md",
+      "status": "Main reviewed graph families/commit/owners; separate Sol source proposal complete, unapplied/untested."
+    },
+    {
+      "round": 674,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-bf16-prefill-storage-contract-round674-v1.txt",
+      "sha256": "c3fbcaf0d4563e9c1843cc8ef4f8f2612df3afcb7a0e2c4556892189342937a7",
+      "main_review": "main-review-round671-675.ja.md",
+      "status": "Main checked shared BF16 helper vs local converter; separate Sol source proposal complete, no quality/adoption."
+    },
+    {
+      "round": 675,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-prefill-unitrace-window-contract-round675-v1.txt",
+      "sha256": "d1a94892ee4ce3ee90109e6761c13ded3515ee504ef58a335c9b87da23cfd4bf",
+      "main_review": "main-review-round671-675.ja.md",
+      "status": "Main checked pinned BUILD_WITH_ITT=0 and external named control; request-window recipe prepared, not executed. Capacity request now takes priority."
+    },
+    {
+      "round": 676,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-prefill-kv-capacity-contract-round676-v1.txt",
+      "sha256": "1560c0c5d8a99c7f9f4fbacfddb792ca36705d69edccf2c7f6a4a212b539eb05",
+      "main_review": "prefill-capacity-plan.ja.md",
+      "status": "Main actual arithmetic crosscheck complete. K8V4/2-byte capacity hypothesis; correct original FP16-not-implemented wording: FP16 exists, quality unqualified."
+    },
+    {
+      "round": 677,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-prefill-layer-capacity-contract-round677-v1.txt",
+      "sha256": "e77622de85b349737f2386c2a0d95bba1306608b2f8b61ce1370c0399a0e2dce",
+      "main_review": "prefill-capacity-plan.ja.md",
+      "status": "SUPERSEDED by v2: scratch is64MiB, observed carve includes streamed KV stage; fullresident label wrong. Original preserved."
+    },
+    {
+      "round": 677,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-prefill-layer-capacity-contract-round677-v2.txt",
+      "sha256": "ea40ff0caa2298a444a55bd7a89dd51579ecb572e719e886523d3d31006172ee",
+      "main_review": "prefill-capacity-plan.ja.md",
+      "status": "Corrected FINAL/Main independent Alloc count matches actual1662831872 and derives fullresident1386006784/2596783616. No new GPU allocation."
     }
   ],
   "main_initial_findings": [
     "PR6 performance patch changes historic sycl/src/prefill/prefill.cpp, not current root src/prefill/prefill.cpp. Current root rg finds compact scratch but no layer-major selector. History preservation is not adoption.",
     "Original645.85 PP and later449.7 full-context/MTP measures need separate source/config reconciliation; different protocol does not justify discarding the old improvement."
   ],
-  "next": "Old IQ ON10041 deliberately interrupted to prioritize prefill; native/server normal0,fault0,owner retired; fullsuite remains incomplete. Officialbench prefill-only mode actually applied;31hostchecks passed across preserved failed-v1/fixed-v2. New clean >=65536 actual input/runs3 recipe prepared on unchangedb1/C4096/FP32/RGPU4096/IQ1. Next start/observe exact ownedrecipe; no newdecode tuning and no blind8K arm. Review R671GPU grouping/R672head lifetime alongside liveGPU; no concurrenttest/build/cleanup.",
+  "next": "User priority: capacity calculation now complete from actual model headers and independent source counts matched to closed C4096 run. No GPU job active. Explain one-layer-only hypothetical budget before implementation. Head-release/BF16 source proposals FINAL but unapplied/unbuilt/untested; profile request-window recipe unexecuted. Continue dedicated long-prefill placement/scheduling with Main-controlled serial gates; no new decode tuning. Upstream due about2026-10-16T01:12UTC.",
   "main_review": "main-review-round559-560.ja.md",
   "subsequent_main_review": "main-review-round561-562.ja.md",
   "public_history_reverification": "public-history-reverification.json",
@@ -994,7 +1048,7 @@
     "main_review": "qsa-layout-recovery-v1/main-review.ja.md",
     "status": "Build/host and20GPU parity/oracle cases PASS/fault0. Component40sample screen closedPASS; layout1 median4.09%slower in one int8case, no adoption. No whole-model/full256K/RESTORE/quality qualification."
   },
-  "latest_main_review": "prefill-only-host-and-priority-transition.ja.md",
+  "latest_main_review": "prefill-capacity-plan.ja.md",
   "component_summary": "qsa-layout-screen-summary.json",
   "gemm_orientation_probe": {
     "report": "gemm-orientation-probe-v1/implementation.txt",
@@ -1164,10 +1218,12 @@
   "retention_v5": "retention-v5-manifest.json",
   "parallel_research_current": {
     "rounds": [
-      619,
-      620
+      676,
+      677
     ],
-    "state": "Both FINAL, Main read reports/source. R619 type18 subgroup candidate and R620 boundedcurrentLMcensus delegated to separateSol proposalagents; no tests by agents."
+    "model": "gpt-6-luna",
+    "read_only": true,
+    "state": "Both FINAL/Main source and actual model-header/count review; R677v1 corrected separatelyv2; reports indexed with hashes. No active research/GPU job at capacity boundary."
   },
   "phase_audit": {
     "build": "phase-audit-build-v1.json",
@@ -1254,6 +1310,16 @@
       "directory": "owned-stall-stack-probe-v1",
       "model": "gpt-6.1-sol",
       "state": "CLOSED: three exact32089-input/gen24 diagnostic requests all48layers PASS/fault0; precedingchat/agentomitted, originalfullsuitefailure unresolved. CPU explicit+automaticGDB gatesPASS. NoGPUhangclaim or speedadoption."
+    },
+    {
+      "proposal": "bf16-prefill-storage-v1",
+      "model": "gpt-6.1-sol",
+      "state": "Source-only FINAL, base/artifact hashes checked; full Main code review/integration/build/tests pending. Capacity request prioritized."
+    },
+    {
+      "proposal": "prefill-head-release-v1",
+      "model": "gpt-6.1-sol",
+      "state": "Source-only FINAL, base/artifact hashes checked; full Main code review/integration/build/tests pending. Capacity request prioritized."
     }
   ],
   "kv_copy_groups": {
@@ -1475,13 +1541,28 @@
     "proposal": "bench-prefill-only-v1",
     "host_receipt": "bench-prefill-only-host-v2.json",
     "original_failed_host": "bench-prefill-only-host-v1.json",
-    "state": "ACTUALLY_APPLIED_HOST31_PASS; engine source/binary unchanged; realbenchmark notyetstarted at commit",
+    "state": "ACTUAL_OFFICIALBENCH_CLOSED_PASS_3_ELIGIBLE",
     "recipe": "run_prefill_only_clean_v1.py",
     "planned_receipt": "prefill-only-clean-iq1-c4096-v1.json",
     "minimum_actual_input": 65536,
     "runs": 3,
     "thinking": true,
-    "output_cap": 24
+    "output_cap": 24,
+    "receipt": "prefill-only-clean-iq1-c4096-v1.json",
+    "actual_inputs": [
+      78453,
+      78453,
+      78453
+    ],
+    "prompt_tps_samples": [
+      219.1,
+      222.3,
+      221.5
+    ],
+    "median_prompt_tps": 221.5,
+    "owner_retired": true,
+    "fresh_faults": 0,
+    "performance_adopted": false
   },
   "closed_iq_on": {
     "receipt": "selective-iq-clean-bench-full-1-v2.json",
@@ -1493,5 +1574,36 @@
     "new_faults": 0,
     "owner_retired": true,
     "performance_adopted": false
-  }
+  },
+  "dedicated_prefill_capacity": {
+    "report": "prefill-capacity-plan.ja.md",
+    "receipt": "prefill-capacity-metadata-v2.json",
+    "original": "prefill-capacity-metadata-v1.json",
+    "GPU_executed": false,
+    "physical_admission_qualified": false,
+    "quality_qualified": false,
+    "scenario": "one active layer combined weights bank; fullresident12QSA; FP16 boundary hidden, currentFP32 operator scratch; no decode/MTP weights during targetprefill",
+    "largest_layer_zero_based": 47,
+    "largest_layer_bytes": 1440161792,
+    "work_C4096": 1386006784,
+    "work_C8192": 2596783616,
+    "main_K8V4_C4096_fullKV_hidden_rows": 201580,
+    "model_headers_only": true
+  },
+  "prefill_head_release_candidate": {
+    "proposal": "prefill-head-release-v1",
+    "state": "Sol FINAL source only; not applied/tested/reviewed fully. No capacity recovery claimed.",
+    "source_diff_sha256": "737b9a346e719aec22fc069915e86da97e5caebe4ec4ca27ffa5308ed49262bc"
+  },
+  "prefill_bf16_storage_candidate": {
+    "proposal": "bf16-prefill-storage-v1",
+    "state": "Sol FINAL source only; not applied/tested/reviewed fully. No quality/performance claim.",
+    "source_diff_sha256": "5a1329044f5cbc19b60ba872d0cf07d1c1d6dc9c69fb0b21b21d0020627ee8e0"
+  },
+  "prefill_window_profile_recipe": {
+    "recipe": "run_prefill_window_profile_v1.py",
+    "state": "Prepared only; AST parse passed, no execution/host-control/GPU validation. Deferred for user capacity calculation.",
+    "request_window_includes_one_output": true
+  },
+  "prefill_capacity_proposal_integrity": "prefill-capacity-boundary-proposal-identities-v1.json"
 }

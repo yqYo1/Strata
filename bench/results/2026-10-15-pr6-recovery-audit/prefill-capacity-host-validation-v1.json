@@ -1,0 +1,25 @@
+{
+  "schema": "prefill-capacity-host-validation-v1",
+  "GPU_executed": false,
+  "checks": {
+    "python_AST_parse_passed": [
+      "bench/results/2026-10-15-pr6-recovery-audit/measure_prefill_capacity_v1.py",
+      "bench/results/2026-10-15-pr6-recovery-audit/measure_prefill_capacity_v2.py",
+      "bench/results/2026-10-15-pr6-recovery-audit/run_prefill_window_profile_v1.py"
+    ],
+    "capacity_v1_command_exit": 0,
+    "capacity_v2_command_exit": 0,
+    "index_update_initial_attempt_exit": 1,
+    "index_update_initial_failure": "Legacy reports array includes plain-string entries; guarded mapping entries in retry; no file changed by failed attempt."
+  },
+  "commands": [
+    "python3 -B bench/results/2026-10-15-pr6-recovery-audit/measure_prefill_capacity_v1.py",
+    "python3 -B bench/results/2026-10-15-pr6-recovery-audit/measure_prefill_capacity_v2.py"
+  ],
+  "records": {
+    "prefill-capacity-metadata-v1.json": "b47297f9cdfb3c215ecef055fb3b2a2a1012023185250cacae07fadd324d5e38",
+    "prefill-capacity-metadata-v2.json": "2360925d1d65abbb28eb118105b70d29f7d3e6cf04958aed7eaca57c3759ea94",
+    "prefill-only-clean-iq1-c4096-v1.json": "9b874a46d0c58c827215912a7cc63a9820263af9df43c6ba472f8ded639bfabb"
+  },
+  "scope": "Actual host metadata/Alloc arithmetic and page/row-boundary checks only. No profiler or new native/GPU run. V1 PLE assumption superseded byV2; original receipt preserved."
+}

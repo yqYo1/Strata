@@ -1,0 +1,36 @@
+# Long-prefill KV and FP16 residual capacity contract (R676)
+
+Read-only source/capacity arithmetic for the long-prefill budget. This report is not an admission or performance result. It does not include model weights, the largest streamed layer, its kernel workspace, GDN/session state, shared allocations, driver/runtime overhead, or free-memory uncertainty; those are separate reservations and must be deducted by the caller before applying the formulas below. No build, test, compiler, GPU, process, environment mutation, Git mutation, or cleanup was performed.
+
+## Geometry and per-context storage
+
+`include/strata/core/layout.hpp:27-59` fixes the current geometry at `n_embd=2560`, `n_layers=48`, `qsa_interval=4`, `n_head_kv=2`, `head_dim=256`, `idx_key_dim=128`, `hc=4`: 12 QSA layers and 36 GDN layers. The gated residual width is `hc*n_embd=10,240` scalars per token. A hypothetical two-byte FP16 boundary store therefore costs 20,480 bytes per token. It is a future storage scenario: R674 documents the current layer-major residual as FP32 and the conversion/quality gates required before adopting a two-byte format.
+
+For QSA, `include/strata/kernels/qsa.hpp:108-117` defines four-token index blocks and four-token pages. `src/core/layer.cpp:501-518,520-529,537-552` establishes resident pages, pooled rows (`floor(C/4)+2`), page table, optional shared RoPE table and fixed state overhead. At capacities divisible by four, the per-token totals for all 12 QSA layers are:
+
+- K8V8: 12 * 1,056 B KV (`include/strata/kernels/kv_q8.hpp:22-27`) + 12 * 128 B pooled indexer rows + 12 B page-table entries + 256 B shared RoPE = 14,476 B/token, plus 43,200 B fixed overhead.
+- K8V4: 12 * 816 B KV (K8 = 512 B codes + 16 B scales; V Q4 = 288 B, using `include/strata/kernels/kv_q4.hpp:30-38`) plus the same indexer/page/RoPE terms = 11,596 B/token, plus 43,200 B fixed overhead.
+
+These are full-resident QSA allocations, not just KV payload. They assume one shared RoPE table across QSA states, no KV host streaming, no page slop, no cross-session sharing, and all twelve QSA states present. `qsa_state_bytes` is the source formula; it should be recalculated if any of those conditions change.
+
+## Combined capacity scenarios
+
+Let `B` be the GPU bytes left after model weights, the maximum one-layer weight/workspace reservation, GDN/session and other persistent owners, allocator/runtime reserve, and any other live buffers have already been deducted. Let `C` be logical context capacity. At 32,768 / 65,536 / 262,144 tokens:
+
+| C | K8V8 QSA state | FP16 residual | Combined K8V8 + FP16 | K8V4 QSA state | Combined K8V4 + FP16 |
+|---:|---:|---:|---:|---:|---:|
+| 32,768 | 474,392,768 B | 671,088,640 B (640 MiB) | 1,145,481,408 B | 380,020,928 B | 1,051,109,568 B |
+| 65,536 | 948,742,336 B | 1,342,177,280 B (1.25 GiB) | 2,290,919,616 B | 759,998,656 B | 2,102,175,936 B |
+| 262,144 | 3,794,839,744 B | 5,368,709,120 B (5 GiB) | 9,163,548,864 B | 3,039,865,024 B | 8,408,574,144 B |
+
+The 32K and 64K rows are useful long-input planning points; 262,144 is the distinct physical maximum-context correctness/admission case. These arithmetic totals do not prove the current runtime can admit them or that FP16 storage is numerically acceptable. The R674 evidence explicitly leaves long quality/performance and physical 256K unqualified.
+
+For a post-reservation budget `B`, maximum capacity is `min(262144, max(0, floor((B-43,200)/34,956)))` for K8V8 plus hypothetical FP16 residual; for K8V4 plus FP16 it is `min(262144, max(0, floor((B-43,200)/32,076)))`. At the requested full 262,144 K8V4 capacity, bytes remaining for hidden rows are `max(0, B - 3,039,865,024)` and the number of complete FP16 residual rows that fit is `min(262144, floor(max(0, B - 3,039,865,024)/20,480))`. `B` must exclude all non-KV/residual owners exactly once; do not feed a prior free-memory sample taken after a context/workspace allocation as if it were a fresh total budget.
+
+## Backend and path caveat
+
+Do not make K8V4 an assumed SYCL capacity option based solely on the shared CLI/planner: `src/program/generate.cpp:1699-1719` recognizes the option but disallows KV streaming for it, while `src/core/layer.cpp:907-913` implements its append path with CUDA-named FWHT and Q8/Q4 step calls. The reviewed SYCL KV implementation `src/kernels/sycl/kv.cpp:14-20,28-33,81-84` has format dispatch for FP16, INT8, and Q4, without a distinct hybrid K8V4 format. Thus K8V4 numbers above are a source-derived storage scenario pending confirmation that the configured SYCL resolver reaches a working hybrid append/gather implementation. Do not report K8V4 admission or performance for this engine without that route evidence and a correct run. K8V8/INT8 arithmetic likewise describes allocation, not a measured long-prefill result.
+
+## Decision
+
+Use the caller's measured post-reservation budget to evaluate the formulas, with recurrent GDN/session state and all non-shared allocations explicitly included. Keep current FP32 residual and existing K8V8 route as the evidence-backed baseline. Treat two-byte residual savings as a capacity hypothesis until conversion, repeated-boundary numerical quality, full-device/host/mixed placement, 32K/64K performance, and separate physical-262144 admission/correctness gates pass. The storage arithmetic alone does not warrant a format or backend adoption decision.
