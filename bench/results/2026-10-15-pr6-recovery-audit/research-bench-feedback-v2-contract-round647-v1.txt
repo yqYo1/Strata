@@ -1,0 +1,34 @@
+# R647 — static audit of the v2 agent-feedback comparison contract
+
+Date: 2026-10-15 JST. Scope: source-only review of `bench-request-identity-v2`, the updated host qualification recipe, matched runner and nonce recovery wrapper. No tests, `py_compile`, build, GPU/native process, Git action, cleanup, or proposal/product edit was performed. Job 16956 and raw outputs were not inspected. Main review context: `main-review-round645-646.ja.md`.
+
+## Result
+
+No concrete pre-run blocker found in the revised contract. Fixed phases and agent turn 0 remain exact-body inputs. Only corresponding agent turns numbered 1 or greater may have different body hashes; their request keys, order, run/turn, token limit and thinking setting remain blocking comparisons. The comparator retains `inputs_match=false` when such feedback differs, while exposing `fixed_inputs_match` and `input_pair_qualified` independently. The runner uses those separate fields, labels exact-body pairing separately, and checks actual task metadata before passing. Its result makes no quality claim and does not treat a different natural answer as a quality failure.
+
+## Evidence
+
+- The v2 comparator imports the v1 reader from the adjacent proposal and calls `legacy.read_suite` on both journals (`bench-request-identity-v2/compare_requests.py:17-22,60-67`). It reuses v1 `FIELDS`, byte/row limits and digest verifier. Every positional row is compared on those fields (`:72-78`); the only exception is `request_sha256` when *both* rows are agent feedback turns (`:24-26,77-80`). Missing/extra rows, duplicate keys, absent fixed inputs, or any remaining ordered difference set errors and prevent pair qualification (`:81-93`).
+- The v2 unittest file imports the original six-test class and patches its `utility` reference to the v2 module (`test_compare_requests.py:17-26`). Five new tests cover feedback body divergence without quality/performance qualification, turn-zero body mismatch, other turn parameters, and static task metadata acceptance/rejection (`:32-92`). The updated recipe pins source/manifests and demands exactly six fixed-workload tests and eleven v2 tests (`qualify_bench_input_tools_v1.py:55-66,83-91`). Source-only, eleven tests are the stated expected count; none were executed in this audit.
+- Agent metadata comparison requires both real results to contain `comparison_identity` fields for thinking, reasoning budget, temperature, model, quantization, context, file identities and agent token limit; it validates nonempty file hash pairs and equality of every listed field (`compare_requests.py:29-55`). The runner gates on `input_pair_qualified`, exact fixed-input match and agent protocol match, accepts only the two intended statuses, and separately compares metadata from the actual OFF/ON results (`run_matched_iq_on_v2.py:163-178`). The separate `input_match_qualified=inputs['inputs_match']` remains false for divergent generated histories; `fixed_input_pair_qualified` is true only after the comparator gate. Agent speed is explicitly recorded as nonpaired and performance/quality qualification false (`:111-119` and result output at `:215-218`).
+- The independent static task proof described by Main is coherent in combination: old and new actual result metadata supplies file hashes/settings; the host AST gate admits only reviewed constructor/provenance/CLI/comparison changes, requires all prior `Suite` methods other than `__init__` to remain AST-identical, and requires the added identity method (`qualify_bench_input_tools_v1.py:18-33`); pinned client/tools and recovered nonce are checked by the matched runner (`run_matched_iq_on_v2.py:179-183` and earlier source checks). Turn-zero full body equality is still supplied by the journal comparator. These gates add no journal fields and avoid claiming identical generated-history inputs.
+- The nonce recovery wrapper is source-consistent with that contract: it requires a closed/retired original run, pinned benchmark source, valid journal, two exact calibration start hashes and one unique timestamp nonce matching both actual request bodies; it explicitly says this recovers provenance, not performance qualification (`recover_bench_nonce_v1.py:24-83`).
+
+## Non-blocking test gap and limits
+
+The new test named `test_agent_feedback_does_not_exempt_parameters_or_order` mutates `max_tokens`, `thinking`, `turn`, or `run`, but does not actually reorder agent rows (`test_compare_requests.py:82-93`). The comparator's positional matching and v1 inherited order fixture provide source-level protection, so this is not a demonstrated contract defect; an explicit agent-row reorder assertion would make the focused test clearer. This review does not establish that host tests pass, that a future native run completes, that outputs match in quality, or that any speed comparison is qualified.
+
+## Source identities
+
+| File | SHA-256 |
+|---|---|
+| `bench-request-identity-v2/compare_requests.py` | `23ca776f18b2f5a64425095dc73685a3a549ee0de2ac0b10bebb533577fc6935` |
+| `bench-request-identity-v2/test_compare_requests.py` | `f4275b9958edf0293e30761cc977480cc60c804696cd592a78f05a32f3ba44fc` |
+| `bench-request-identity-v2/README.ja.md` | `637a521481cf154c455e0e8199fe76da3c82cef7d401af4c7084f32f8e307ba2` |
+| `bench-request-identity-v2/pins.json` | `a74ee9af9d4e3982ac983d8e24465f4e4ee90ebe2d88780c10a6b2a95d17601a` |
+| `qualify_bench_input_tools_v1.py` | `f06eae9674a39cdc9ddcd7de63b3d6e8c7861181ad82526c53cf9a2c5eb52b08` |
+| `run_matched_iq_on_v2.py` | `0ada007f7b23cb1e05068d28ea8a3cdf64d6de24bb14ea69ba1ece818b72bbae` |
+| `recover_bench_nonce_v1.py` | `06e424cef0e8fa4ea7c4b3bfb512fd026665c52580038118aeb54f5abb14018e` |
+| `main-review-round645-646.ja.md` | `f6a154c25180f034f2249aa6011412f44360140e2a1ae807afb7cc6647c437dc` |
+
+Report SHA-256 is to be recorded in the handoff after writing.

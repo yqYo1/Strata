@@ -90,6 +90,14 @@ class RequestIdentityTests(original.RequestIdentityTests):
                 report = utility.compare(left, self.fixture(key, rows))
                 self.assertFalse(report['input_pair_qualified'])
                 self.assertTrue(report['errors'])
+        rows = copy.deepcopy(original.requests())
+        positions = [i for i, row in enumerate(rows) if row['phase'] == 'agent' and row['turn'] in (1, 2)]
+        self.assertEqual(len(positions), 2)
+        i, j = positions
+        rows[i], rows[j] = rows[j], rows[i]
+        report = utility.compare(left, self.fixture('agent-reordered', rows))
+        self.assertFalse(report['input_pair_qualified'])
+        self.assertTrue(report['errors'])
 
 
 if __name__ == '__main__':
