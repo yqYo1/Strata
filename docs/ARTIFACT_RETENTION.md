@@ -62,6 +62,18 @@ warning/error logging and `STRATA_TRACE=1` without the additional UR tracing
 layer. Save the exact effective environment. Detailed logging and validation
 affect timing; obtain speed samples from separate clean processes.
 
+For a small traced first check, use the qualified combined layer configuration:
+
+```sh
+UR_ENABLE_LAYERS=UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION
+UR_LOG_TRACING='level:info;flush:info;output:stderr'
+```
+
+Layer names use commas, as specified by the
+[UR loader documentation](https://oneapi-src.github.io/unified-runtime/core/INTRO.html#ur-enable-layers).
+Keep this separate from the semicolon-separated logger options. Pin the exact
+effective values before exec, preferably from an already qualified recipe.
+
 Retained failure excerpts normally fit within **256 KiB per distinct case**.
 Select the relevant error/progress window; do not preserve a large arbitrary
 tail of repeated `NOT_READY` polling. If the complete allocation/command history

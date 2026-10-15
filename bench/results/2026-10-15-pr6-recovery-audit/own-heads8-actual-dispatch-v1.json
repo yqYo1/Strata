@@ -1,0 +1,137 @@
+{
+  "source": "closed correctness v2 smoke traces",
+  "GPU_driver_allocated_SLM_or_occupancy_proven": false,
+  "scope": "Actual UR kernel names, requested workgroup/local args and device local memory capability; not a percore occupancy measurement.",
+  "arms": {
+    "0": {
+      "kernel_name": "_ZTSZZN6strata7kernels12_GLOBAL__N_16launchILi1ELb1ELb0ELi0ELi16EEEvPKfNS0_12QsaAttnPoolsEPKiS7_lNS0_9QsaShapesEPflPvENKUlRN4sycl3_V17handlerEE_clESE_EUlNSC_7nd_itemILi1EEEE_",
+      "local_work_size": 128,
+      "local_argument_bytes": 44496,
+      "local_arguments": [
+        [
+          1,
+          16384
+        ],
+        [
+          3,
+          8192
+        ],
+        [
+          4,
+          8192
+        ],
+        [
+          5,
+          64
+        ],
+        [
+          6,
+          64
+        ],
+        [
+          11,
+          256
+        ],
+        [
+          12,
+          2048
+        ],
+        [
+          13,
+          512
+        ],
+        [
+          14,
+          64
+        ],
+        [
+          15,
+          512
+        ],
+        [
+          16,
+          16
+        ],
+        [
+          17,
+          4096
+        ],
+        [
+          18,
+          4096
+        ]
+      ],
+      "kernel_create": "   <--- urKernelCreate(.hProgram = 0x274f2eb0, .pKernelName = 0x429c30 (_ZTSZZN6strata7kernels12_GLOBAL__N_16launchILi1ELb1ELb0ELi0ELi16EEEvPKfNS0_12QsaAttnPoolsEPKiS7_lNS0_9QsaShapesEPflPvENKUlRN4sycl3_V17handlerEE_clESE_EUlNSC_7nd_itemILi1EEEE_), .phKernel = 0x7fff19f17cc0 (0x2c032500)) -> UR_RESULT_SUCCESS;",
+      "first_launch": "   <--- urEnqueueKernelLaunchWithArgsExp(.hQueue = 0x274b7000, .hKernel = 0x2c032500, .workDim = 1, .pGlobalWorkOffset = nullptr, .pGlobalWorkSize = 0x7fff19f18cf0 (256), .pLocalWorkSize = 0x7fff19f18d08 (128), .numArgs = 20, .pArgs = 0x27d6b5b0 {(struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 0, .size = 72, .value = (union ur_exp_kernel_arg_value_t){.value = 0x275333d8}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 1, .size = 16384, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 2, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffffffff650000}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 3, .size = 8192, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 4, .size = 8192, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 5, .size = 64, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 6, .size = 64, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 7, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffffffff640000}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 8, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.value = 0x275334d0}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 9, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffffffff630000}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 10, .size = 72, .value = (union ur_exp_kernel_arg_value_t){.value = 0x275334e0}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 11, .size = 256, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 12, .size = 2048, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 13, .size = 512, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 14, .size = 64, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 15, .size = 512, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 16, .size = 16, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 17, .size = 4096, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 18, .size = 4096, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 19, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffffffff660040}}}, .launchPropList = nullptr, .numEventsInWaitList = 0, .phEventWaitList = nullptr, .phEvent = 0x7fff19f17f20 (0x27501aa0)) -> UR_RESULT_SUCCESS;",
+      "device_local_mem_query": [
+        "   <--- urDeviceGetInfo(.hDevice = 0x274af9b0, .propName = UR_DEVICE_INFO_LOCAL_MEM_SIZE, .propSize = 8, .pPropValue = 0x7fff19f19060 (131072), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;"
+      ],
+      "trace_success_returns": 774
+    },
+    "1": {
+      "kernel_name": "_ZTSZZN6strata7kernels12_GLOBAL__N_16launchILi1ELb1ELb0ELi0ELi8EEEvPKfNS0_12QsaAttnPoolsEPKiS7_lNS0_9QsaShapesEPflPvENKUlRN4sycl3_V17handlerEE_clESE_EUlNSC_7nd_itemILi1EEEE_",
+      "local_work_size": 64,
+      "local_argument_bytes": 31088,
+      "local_arguments": [
+        [
+          1,
+          16384
+        ],
+        [
+          3,
+          4096
+        ],
+        [
+          4,
+          4096
+        ],
+        [
+          5,
+          32
+        ],
+        [
+          6,
+          32
+        ],
+        [
+          11,
+          256
+        ],
+        [
+          12,
+          1024
+        ],
+        [
+          13,
+          512
+        ],
+        [
+          14,
+          32
+        ],
+        [
+          15,
+          512
+        ],
+        [
+          16,
+          16
+        ],
+        [
+          17,
+          2048
+        ],
+        [
+          18,
+          2048
+        ]
+      ],
+      "kernel_create": "   <--- urKernelCreate(.hProgram = 0x377d6eb0, .pKernelName = 0x429a24 (_ZTSZZN6strata7kernels12_GLOBAL__N_16launchILi1ELb1ELb0ELi0ELi8EEEvPKfNS0_12QsaAttnPoolsEPKiS7_lNS0_9QsaShapesEPflPvENKUlRN4sycl3_V17handlerEE_clESE_EUlNSC_7nd_itemILi1EEEE_), .phKernel = 0x7ffe35aa5290 (0x3d8df8a0)) -> UR_RESULT_SUCCESS;",
+      "first_launch": "   <--- urEnqueueKernelLaunchWithArgsExp(.hQueue = 0x3779b000, .hKernel = 0x3d8df8a0, .workDim = 1, .pGlobalWorkOffset = nullptr, .pGlobalWorkSize = 0x7ffe35aa62c0 (256), .pLocalWorkSize = 0x7ffe35aa62d8 (64), .numArgs = 20, .pArgs = 0x37e68130 {(struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 0, .size = 72, .value = (union ur_exp_kernel_arg_value_t){.value = 0x378173d8}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 1, .size = 16384, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 2, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffffffff650000}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 3, .size = 4096, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 4, .size = 4096, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 5, .size = 32, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 6, .size = 32, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 7, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffffffff640000}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 8, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.value = 0x378174d0}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 9, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffffffff630000}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_VALUE, .index = 10, .size = 72, .value = (union ur_exp_kernel_arg_value_t){.value = 0x378174e0}}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 11, .size = 256, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 12, .size = 1024, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 13, .size = 512, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 14, .size = 32, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 15, .size = 512, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 16, .size = 16, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 17, .size = 2048, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_LOCAL, .index = 18, .size = 2048, .value = (union ur_exp_kernel_arg_value_t){<unknown>}, (struct ur_exp_kernel_arg_properties_t){.stype = UR_STRUCTURE_TYPE_EXP_KERNEL_ARG_PROPERTIES, .pNext = nullptr, .type = UR_EXP_KERNEL_ARG_TYPE_POINTER, .index = 19, .size = 8, .value = (union ur_exp_kernel_arg_value_t){.pointer = 0xffffffffff660040}}}, .launchPropList = nullptr, .numEventsInWaitList = 0, .phEventWaitList = nullptr, .phEvent = 0x7ffe35aa54f0 (0x377e5aa0)) -> UR_RESULT_SUCCESS;",
+      "device_local_mem_query": [
+        "   <--- urDeviceGetInfo(.hDevice = 0x377939b0, .propName = UR_DEVICE_INFO_LOCAL_MEM_SIZE, .propSize = 8, .pPropValue = 0x7ffe35aa6630 (131072), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;"
+      ],
+      "trace_success_returns": 774
+    }
+  }
+}

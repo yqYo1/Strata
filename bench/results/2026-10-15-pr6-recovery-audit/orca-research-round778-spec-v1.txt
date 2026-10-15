@@ -1,0 +1,51 @@
+Purpose: knowledge collection. Existing project /home/yayoi/orca/workspaces/Strata/sycl, primary feature/sycl.
+Read AGENTS.md, docs/ARTIFACT_RETENTION.md and /home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-index.json first.
+Read the relevant previous reports and Main corrections to avoid duplication;
+Main does not read collection report bodies on arrival. A native Codex Luna-max
+reviewer will assess depth/novelty/redundancy, pin hashes and index retrieval metadata.
+This is a fresh bounded read-only session. Do not spawn children. Write only your
+named report. No product edits, Git commands, builds, tests, GPU/profiler jobs,
+process inspection, cleanup, services or environment changes. Main continues
+independent work; do not request steering. No XeStrata source, helpers or archives.
+Use primary documentation, papers and original technical blogs; at most six
+substantive sources. Search current sources, distinguish measured facts from
+inference, and identify device/version/license limits and counterevidence.
+Do not repeat generic background. Compare alternatives deeply enough to be useful;
+the budget is a working limit, not a demand for filler or a tiny fact lookup.
+Return a file report with precise URLs, applicability limits, new findings and
+one concrete future experiment. In the final response supply only the report
+path, its hash and a <=150-character operational completion notice, without
+technical findings. Report completion with your live exact Task/Dispatch via
+Orca worker_done, list filesModified, then end. Do not message Main findings.
+Current evidence: clean PP349.3 median versus control339.2, not >600/1000 yet.
+Actual 78452-row CPU diagnostic: main218.681 CPU s/wall225.874; explicit waits
+165.704 CPU s; residual host copy call CPU25.793s, versus hostgroup.19649s.
+Route-ID exchange inclusive131.610wall includes previous GPU work and is not
+removable pure copy latency. Recent idle 320MiB transfer component: ordinary
+H2D6.015GB/s versus HostUSM5.095GB/s; USM faster submission but slower completion.
+Blanket pinning rejected; no model end-to-end claim. FP16 residual remains
+unqualified for quality/admission. Default-OFF full-vocab NLL observer now built,
+host tested and synthetic129-input paired-GPU tested, fault0; this is not model
+quality evidence. Preserve the existing FP32 path and physical262144 requirement.
+
+Current FP32-a78444-token NLL diagnostic still LIVE; no new long-quality or speed conclusion. Do not inspect live state directories. Safety flags pinned preexec: UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD=1,EnableDirectSubmission=0,samequeue1. No reset/env mutation/build/tests.
+
+Scope eligibility metadata:
+{
+  "priority": 2,
+  "purpose_label": "knowledge collection",
+  "title": "Sparse storage-format crossovers for skewed scientific GPU kernels",
+  "finite_question": "For non-LLM scientific GPU sparse matrix-vector and sparse matrix-matrix workloads, compare CSR/COO, ELL or blocked formats, and SELL-C-sigma or similar sliced formats when row lengths are skewed. How do padding, coalescing, row reordering, preprocessing, output restoration, and repeated-use count change the crossover, and what counterexamples favor a simple format?",
+  "breadth_and_counterevidence": "Use current SYCL or vendor primary documentation and original non-LLM GPU/ASIC papers or engineering blogs. Compare at least three storage formats across uniform, heavy-tailed, and changing sparsity; include preprocessing amortization and the cost of permuting inputs/outputs. Distinguish measured architecture-specific results from transferable design constraints. Keep the investigation on storage representation and conversion break-even, not load-balancing schedulers, expert grouping, GEMM tile-size tuning, or adaptive sparse-accelerator control. Avoid R759's irregular scheduling/scan survey, R763's graph/pipeline residency examples, and R773's chunk/GEMM tiling treatment. Do not propose a Strata change or claim Arc performance.",
+  "report_budget": "1,300–1,800 words; at most 7 substantive primary sources, exact links, a format/crossover table, and explicit hardware limits.",
+  "schedulable_now": true,
+  "prerequisites": "None beyond public-source access; this is a bounded, broader non-LLM GPU/ASIC knowledge collection and needs no local measurements.",
+  "prerequisite_evidence": "AGENTS.md requests transferable general SYCL and non-LLM GPU/ASIC research alongside current engine bottlenecks. The reviewed R759 covers irregular scheduling, scans, and persistent workers; R763 covers graph/data reuse and pipeline residency; R773 covers prompt chunk and GEMM/tile interactions. None of those scopes compares sparse matrix storage-format conversion and reuse break-even as the central question.",
+  "prior_report_paths_to_avoid_repeating": [
+    "bench/results/2026-10-15-pr6-recovery-audit/research-nonllm-gpu-round759-v1.txt",
+    "bench/results/2026-10-15-pr6-recovery-audit/research-nonllm-pipeline-residency-round763-v1.txt",
+    "bench/results/2026-10-15-pr6-recovery-audit/research-knowledge-round773-v1.txt",
+    "bench/results/2026-10-15-pr6-recovery-audit/research-prefill-grouped-gemm-round701-v1.txt"
+  ]
+}
+Output only: /home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-round778-v1.txt
