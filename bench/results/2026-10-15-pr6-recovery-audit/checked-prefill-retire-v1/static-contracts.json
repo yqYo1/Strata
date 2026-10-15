@@ -1,0 +1,13 @@
+{
+  "status": "PROPOSED_NOT_EXECUTED",
+  "scope": "SYCL single-device static expert cache, existing owned or borrowed Prefill layout",
+  "default": "exact getenv value 1 only; original CUDA/HIP/default release remains",
+  "success_order": ["all prompt segments and synchronous callbacks return", "checkpoint work finishes", "cache tail refill completes", "checked residency publication", "stager workers stop and join", "global checked drain", "query exact phase memory", "checked owned frees with per-success nulling", "checked events and host frees", "fresh Impl swap", "query exact phase memory", "first decode window"],
+  "cancel_order": ["run locals join/unwind", "checked global drain before refill may overwrite loaned scratch", "existing final cache refill", "checked residency publication", "cancelled-prompt-teardown retirement", "existing cancellation protocol"],
+  "recreation": ["apply RESTORE/checkpoint state", "first batched segment lend entry", "init maximum configured chunk and original maximum loan", "apply exact request loan/relayout", "run"],
+  "no_batch_request": "no lend, no recreate after prior retirement",
+  "keep_owners": ["SessionState and block", "target and draft KV/page tables/full physical 256K host backing", "GDN recurrence/conv", "PLE persistent history", "ExpertCache and residency", "Verifier arena/R/graphs/hits/commit", "MTP normal/coupled graphs/experts/head/dense/window_R", "conversation snapshots/checkpoints", "caller queue"],
+  "retire_owners": ["Impl::owned device allocations only", "Prefill copied/used and PLE events", "Prefill pinned grouping/PLE host staging", "Stager worker threads/events/pinned buffers", "old Impl host vectors/Gemm external bindings/mmq context"],
+  "failure": "any unknown drain/free/exception immediately _Exit, no destructor retry, caller queue destruction or continuation; already successful frees remain null and remaining registry owners stay reachable",
+  "forbidden_claims": ["1.55 GiB actual reclaimed", "cache enlargement", "performance improvement", "physical256K qualification", "mock proves SYCL safety", "full goal complete"]
+}
