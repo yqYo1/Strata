@@ -24,6 +24,18 @@ are outside this work's scope.
 - The primary branch is **`feature/sycl`**. Use its existing worktree. Create a
   child from its current commit only when isolation is needed; read-only research
   needs no branch.
+- Current tuning priority (2026-10-15): concentrate on the dedicated long-input
+  prefill path until repeated long-input measurements exceed **600 tok/s**;
+  continue toward **1000 tok/s**. Keep short-input prefill through the decode
+  weight/cache layout available. Defer its dispatch threshold and new decode
+  optimization until the prefill milestone; this does not defer long-prefill
+  chunk-size, placement or scheduling tuning. Preserve shared state and the
+  physical 262144-context correctness requirements.
+- Check Niko upstream approximately every **48 hours** during ongoing work,
+  using the project-only upstream sync skill. Record the actual check time,
+  exact revision and integration status separately. Continue required functional
+  imports and component-level inference decisions; do not claim a new check
+  merely by rereading a previous observation. No background scheduler is implied.
 - Integrate completed child source, tests, skills and reports into the actual
   `feature/sycl` tree, then push. Update the fork's remote default through a PR
   at each completed boundary; the ghq root remains the default mirror and only pulls.
