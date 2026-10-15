@@ -1,0 +1,110 @@
+{
+  "schema": "native-direct-clean-cohort-closure-v1",
+  "closed": true,
+  "active": false,
+  "comparison_complete": false,
+  "performance_adopted": false,
+  "all_six_passed": false,
+  "safe_to_build": true,
+  "references": {
+    "native-direct-clean-0-r0-v1.json": "0c50ea1e26638c3a2951174d734644c0ed451fd6893f751e029fdf623ff33495",
+    "native-direct-clean-1-r0-v1.json": "3d7ffba077b6279030b3a7213d5dea6a215ea23d9bdf28c8c1724df958011d1e",
+    "native-direct-clean-1-r1-v1.json": "b4079d432e79e20ec68cab806b6655abcaf1dcbe376ab36283fe8eeb4a0816a7",
+    "native-direct-clean-0-r1-v1.json": "21bad084e9e9313b16e1aba5195f92b04d5bbacd7c6f051f65eb78891163c8c7"
+  },
+  "samples": [
+    {
+      "receipt": "native-direct-clean-0-r0-v1.json",
+      "order": 0,
+      "arm": 0,
+      "repetition": 0,
+      "passed": true,
+      "complete": true,
+      "native_exit": 0,
+      "prefill": {
+        "median": 278.2,
+        "min": 278.2,
+        "max": 278.2,
+        "n": 1
+      },
+      "boot_id": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+      "finished_utc": "2026-10-15T14:44:44.664347+00:00"
+    },
+    {
+      "receipt": "native-direct-clean-1-r0-v1.json",
+      "order": 1,
+      "arm": 1,
+      "repetition": 0,
+      "passed": true,
+      "complete": true,
+      "native_exit": 0,
+      "prefill": {
+        "median": 273.9,
+        "min": 273.9,
+        "max": 273.9,
+        "n": 1
+      },
+      "boot_id": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+      "finished_utc": "2026-10-15T14:51:41.154506+00:00"
+    },
+    {
+      "receipt": "native-direct-clean-1-r1-v1.json",
+      "order": 2,
+      "arm": 1,
+      "repetition": 1,
+      "passed": true,
+      "complete": true,
+      "native_exit": 0,
+      "prefill": {
+        "median": 298.4,
+        "min": 298.4,
+        "max": 298.4,
+        "n": 1
+      },
+      "boot_id": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+      "finished_utc": "2026-10-15T14:57:55.108012+00:00"
+    },
+    {
+      "receipt": "native-direct-clean-0-r1-v1.json",
+      "order": 3,
+      "arm": 0,
+      "repetition": 1,
+      "passed": false,
+      "complete": false,
+      "native_exit": 1,
+      "prefill": null,
+      "boot_id": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+      "finished_utc": "2026-10-15T15:00:42.152902+00:00"
+    }
+  ],
+  "unattempted": [
+    {
+      "arm": 0,
+      "repetition": 2
+    },
+    {
+      "arm": 1,
+      "repetition": 2
+    }
+  ],
+  "failure_mechanism": "explicit GPU residual placement rejected at preallocation headroom admission; engine exit1, no fresh GPU fault/dump, all owned processes retired",
+  "error_excerpt": "strata serve: prefill layer-major: requested layer-major GPU residual prefix plus staging exceeds free VRAM with headroom",
+  "engine_log_sha256": "61ea4779323ded4228d66af53a33a4e817c80e08579dc1ae06a56a65115fc1e7",
+  "engine_selected_lines": [
+    "strata serve: 967 MiB of VRAM free with everything loaded",
+    "strata verify: capture 1 tokens 7066.088 ms, free VRAM 679.6 MiB",
+    "strata verify: capture 4 tokens 547.402 ms, free VRAM 547.0 MiB",
+    "strata serve: prompt 74 tokens = 0 reused + 74 read in 67124 ms (1.1 tok/s), 24 generated in 19665 ms (1.2 tok/s), drafts accepted 18 of 18, 0 checkpoints",
+    "strata mtp: prompt expert phase=before-detach free_bytes=2412937216 total_bytes=10666115072",
+    "strata mtp: prompt expert phase=after-detach free_bytes=3120730112 total_bytes=10666115072",
+    "strata mtp: prompt expert phase=after-restore free_bytes=2412867584 total_bytes=10666115072",
+    "strata serve: prefill layer-major: requested layer-major GPU residual prefix plus staging exceeds free VRAM with headroom"
+  ],
+  "required_gpu_bytes": 3242196992,
+  "reported_free_gpu_bytes": 3120730112,
+  "admission_shortfall_bytes": 121466880,
+  "external_client_observation": [],
+  "external_scope": "Post-failure fdinfo observation. WebKit started after third native launch and before fourth; consistent with free-memory drift, not exclusive causal proof. No foreign process/service action.",
+  "no_automatic_retry": true,
+  "finished_utc": "2026-10-15T15:09:56.367161+00:00"
+}

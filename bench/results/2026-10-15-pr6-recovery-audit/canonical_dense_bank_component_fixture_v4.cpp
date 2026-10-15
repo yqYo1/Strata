@@ -10,8 +10,19 @@
 #include <cstring>
 #include <fstream>
 #include <vector>
-#ifdef STRATA_CANONICAL_ALLOC_FAULT
+#if defined(STRATA_CANONICAL_ALLOC_FAULT) || defined(STRATA_CANONICAL_NATIVE_ALLOC_FAULT)
 static const char* fault_mode=nullptr;
+#endif
+#ifdef STRATA_CANONICAL_NATIVE_ALLOC_FAULT
+// NativeDense alone is compiled through the existing native allocator shim.
+// This tests reservation failure while the canonical Prepared owners live.
+static bool native_allocation_armed=false;
+cudaError_t strata_dense_fixture_malloc(void** p,size_t n) {
+    if(!native_allocation_armed) return cudaMalloc(p,n);
+    native_allocation_armed=false;*p=nullptr;return cudaErrorMemoryAllocation;
+}
+#endif
+#ifdef STRATA_CANONICAL_ALLOC_FAULT
 static int armed=0;
 static cudaError_t canonical_fixture_alloc(void** p,size_t n) {
     if(!armed || --armed) return cudaMalloc(p,n);
@@ -87,7 +98,7 @@ static void source_reference(const std::string& pack,const EngineSnapshot::Row& 
     need(out.empty() || !std::memcmp(out.data(),expected,out.size()),"independent converted source differs");
 }
 int main(int argc,char** argv) {
-#ifdef STRATA_CANONICAL_ALLOC_FAULT
+#if defined(STRATA_CANONICAL_ALLOC_FAULT) || defined(STRATA_CANONICAL_NATIVE_ALLOC_FAULT)
     need(argc>=4,"MODE PACK GGUF...");fault_mode=argv[1];--argc;++argv;
 #endif
     need(argc>=3,"PACK GGUF...");std::string err,pack=argv[1];std::vector<std::string> shards(argv+2,argv+argc);
@@ -116,6 +127,35 @@ int main(int argc,char** argv) {
         // This fixture's target census is the pinned current IQ3_S pack.
         need(bank.arena_bytes()==1538035200ULL && bank.bank_bytes()==32284672ULL && bank.persistent_bytes()==82821120ULL,"target canonical inventory/capacity differs");
         const auto original_arena=arena;
+        // Exercise the actual prepared-allocation rollback before any owner
+        // withdrawal. No model reader or graph is running in this component.
+        need(bank.prepare(queue,err) && native.prepare_layer_bank(err),err);
+        need(bank.state()==CanonicalDenseBank::State::Prepared && arena==original_arena &&
+             native.residency()==NativeDense::Residency::Full,"prepare changed published full owners");
+        native.cancel_prepared_bank();bank.cancel_prepared();
+        need(bank.state()==CanonicalDenseBank::State::Full && arena==original_arena &&
+             native.residency()==NativeDense::Residency::Full,"cancel changed published full owners");
+        for(const auto& [name,saved]:bank.snapshot().rows)
+            need(wt.find(name) && wt.find(name)->data==saved.original.data,"cancel changed canonical publication");
+        for(const auto& saved:native.packed_sources())
+            need(wt.find(saved.name) && wt.find(saved.name)->native_data==saved.original.native_data,
+                 "cancel changed native publication");
+#ifdef STRATA_CANONICAL_NATIVE_ALLOC_FAULT
+        need(!std::strcmp(fault_mode,"native-reserve-oom-null"),"declared native reservation arm");
+        need(bank.prepare(queue,err),err);native_allocation_armed=true;
+        need(!native.prepare_layer_bank(err) && !native_allocation_armed,
+             "native reservation did not consume injected OOM");
+        need(bank.state()==CanonicalDenseBank::State::Prepared && arena==original_arena &&
+             native.residency()==NativeDense::Residency::Full,"native OOM withdrew owners");
+        native.cancel_prepared_bank();bank.cancel_prepared();
+        need(bank.state()==CanonicalDenseBank::State::Full && arena==original_arena &&
+             native.residency()==NativeDense::Residency::Full,"combined OOM rollback changed owners");
+        for(const auto& [name,saved]:bank.snapshot().rows)
+            need(wt.find(name) && wt.find(name)->data==saved.original.data,"native OOM changed canonical publication");
+        for(const auto& saved:native.packed_sources())
+            need(wt.find(saved.name) && wt.find(saved.name)->native_data==saved.original.native_data,
+                 "native OOM changed native publication");
+#endif
 #ifdef STRATA_CANONICAL_ALLOC_FAULT
         const bool restoring=std::strstr(fault_mode,"restore")!=nullptr;
         if(!restoring){armed=std::strstr(fault_mode,"second")?2:1;const bool ok=bank.prepare(queue,err);

@@ -53,3 +53,53 @@ coarse queue intervalはhost submission gapも含み、pure kernel/exclusive cri
 
 次は全clean比較の閉鎖・証拠commit、その後Main serial下でcanonical候補の実ABI buildと
 host/component/fault gates。600/1000目標、natural長入力のFP16品質、実262144/RESTOREは未達。
+
+## Source-only結合案のMain準備
+
+別実装agentからcoarse profile v1を受領し、Mainが全文を読んだ。v1のshort拒否は
+公式benchの74token warmupを壊すため採用しない。別v2でshort/defaultを元の経路へ流し、
+GDN blockのpairを足した。v2 source.diff80ccb01e06005d8ed1cc20a8aeaf151092d3820b54e1549852643fb2704d1f18。
+Mainはv2の全差分/header、own compatのCreate/Record/Query/Elapsed/Destroy実装を読んだ。
+12eventを固定再利用し、timestamp取得は既存のchecked drain後のみ。旧perexpert timerは有効にしない。
+NativeDensePhaseのhost-only entry/run/restoreも追加。新たなGPU APIやqueue drainはない。
+run区間はMTP解放・prefill/callback・MTP復元を含み、pure prefillやdevice serviceとは呼ばない。
+OFFはclock/events/logなし。これは未compile・未実行のsource reviewであり、actual API合格ではない。
+
+Main fixture v4に実Prepared cancelと、canonical Prepared後のnative reserve OOM/null→取消し→
+通常48層enter/restoreを追加した。既存native専用allocation shimを別targetだけで使い、
+canonical-inline allocatorとは分ける。runtimeのstaging/copy/drain/graph失敗やactual generator guardsの
+全注入をこれで網羅したとは扱わない。
+
+assemble_prefill_bank_profile_v1.pyはimmutable9177のblobと両提案をRAM内で結合した。
+15file/61proposal hunk、combined source.diff25ffa24bd9f4bc195a87836e853a6a529e74f7e5711d13e3657d03b993b4b556。
+2箇所だけ明示context調整した。canonical enter/PLE bind完了後へentry_endを置き、
+canonical/private overlay callbackを保持したままrun_beginを追加する。その他は一意exact context。
+初回assemblyはcallback contextの不一致で出力前に停止した。Mainが明示contextを加え再生成した。
+actual product/原提案/測定は変更なし。Fullsource mirrorは増やさずcombineddiffとhash ledgerを保持する。
+4つのmanual EXCLUDE_FROM_ALL target（policy/canonical/canonical allocation fault/native reserve fault）を含む。
+
+build_prefill_bank_profile_v1.pyは未実行のMain supervisor。六clean比較完了、全owner退去、
+sameboot/fault0、Mainによるexact15source適用を前提に、新build rootで全ABI callersを再buildする。
+旧8fdc参照binaryは保存し、CUDA/HIP OFF、既存compiler/znver3設定・own resolverを固定する。
+この準備にGPU/build/testは一切含まない。profile host fault/lifetime/output bound qualification、
+実componentとモデル/quality/262144/RESTOREは後続Main直列のgateとして残る。
+
+## Clean cohortの失敗閉鎖（上記実行中planを置換）
+
+事前順の4回目Direct0/r1は150042UTCに閉鎖FAIL。長promptの演算前に、指定R_GPU32768と
+expert cache/512MiB余裕のadmissionが拒否された。必要3242196992B、報告free3120730112B、
+不足121466880B。engine exit1、server0、全owned process退去、sameboot/newfault0/dumpなし。
+元FAIL receiptは不変でnative-direct-clean-cohort-closure-v1.jsonに機序と閉鎖を記録した。
+残り2回は未実行、自動再試行なし。3成功値はDirect0=278.2、Direct1=273.9/298.4で、
+各3回の比較未完了、ばらつき除去・優劣・性能採用の主張はしない。
+
+4回目はstartupfree967MiBに対し先3回1180MiB。Mainの失敗後/proc fdinfo読み取りでは、
+B570の別client WebKitWebProces(pid2325671/start_ticks42493913)がVRAM252436KiBを保持していた。
+第3native開始42466754の後、第4native開始42504212の前に作られたclientであり、free低下と整合する。
+これはexclusiveな原因証明ではない。閉鎖json作成時にはclientは既に消えており、その時点の観測は空。
+他process/serviceに対するkill/停止/設定変更やGPU resetはしていない。GPUハングとは扱わない。
+
+source freezeはこのcohortの失敗閉鎖で終了。build supervisorの前提を「全6成功」から
+「この確定admission失敗を含む全4processの安全閉鎖」へ明示変更した。性能gateを合格へ変えず、
+未完了比較を採用せず、独立したdefaultOFF実装のcompileを許す判断である。
+新配置で空きを増やす検討は継続し、後の比較では同じ設定・必要な余裕・新しい独立反復を揃える。
