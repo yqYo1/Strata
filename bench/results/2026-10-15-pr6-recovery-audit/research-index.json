@@ -1397,13 +1397,18 @@
   "retention_v5": "retention-v5-manifest.json",
   "parallel_research_current": {
     "rounds": [
-      703,
-      704
+      705,
+      706
     ],
     "model": "gpt-6-luna",
     "read_only": true,
     "prior_report_directory": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit",
-    "state": "703/704 both FINAL/Main review done. No active researcher.6.1Sol physical-context-consume v1 source proposal FINAL delivered; Main review pending, full-resident-only scope does not cover current streamed KV mode1. Main exclusively owns all tests/build/GPU."
+    "state": "705/706 both FINAL; Main reviewed sources/primary documentation and corrected R705 old/mixed capacity cases in main-review-round705-706.ja.md. No active researcher. Sol physical-context-consume-v2 source-only implementation active; Main exclusively owns all builds/tests/GPU.",
+    "reports": [
+      "research-single-qsa-residency-round705-v1.txt",
+      "research-hidden16-quality-round706-v1.txt"
+    ],
+    "main_review": "main-review-round705-706.ja.md"
   },
   "phase_audit": {
     "build": "phase-audit-build-v1.json",
@@ -1819,7 +1824,7 @@
   "QSA_device_batch_candidate": {
     "proposal": "qsa-indexer-device-batch-v2",
     "model": "gpt-6.1-sol",
-    "state": "Default OFF. Component/build/dispatch gates PASS. Same-native78453-input OFF/ON diagnostic pair PASS, all768 selected FP32 boundary rows exact/finite and752 stored/reloaded perarm exact. Native/server0/fault0/owners retired. Six independent-process clean samples prepared; task quality, realRESTORE, physical262144 and clean performance adoption pending.",
+    "state": "Default OFF. Actual build/component/dispatch and selected-row long-model parity PASS. Six independent clean processes PASS, OFF median225.7 ON241.4tok/s (+6.9969%); use ON as next tuning candidate. Task quality, actualRESTORE and fullmodel physical262144 remain unqualified.",
     "source_diff_sha256": "6732a090a727a1ede3aa2ca5165bb4c060070f625ec90696a49c533aff5c7c87",
     "review": "research-qsa-indexer-device-batch-review-round682-v1.txt",
     "original_proposal": "qsa-indexer-device-batch-v1",
@@ -1836,7 +1841,7 @@
     "model_retention": "qsa-device-batch-model-retention-v1.json",
     "clean_recipe": "run_qsa_device_batch_clean_v1.py",
     "clean_comparator": "compare_qsa_device_batch_clean_v1.py",
-    "clean_state": "ACTIVE_FINAL_SAMPLE_1_R2",
+    "clean_state": "CLOSED_PASS_6_INDEPENDENT_PROCESSES",
     "clean_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa-device-batch-clean-1-r2-root-v1",
     "clean_receipt_when_closed": "qsa-device-batch-clean-1-r2-v1.json",
     "clean_order": [
@@ -1865,14 +1870,27 @@
         2
       ]
     ],
-    "clean_completed_samples": 5,
+    "clean_completed_samples": 6,
     "clean_closed_receipts": [
       "qsa-device-batch-clean-0-r0-v1.json",
       "qsa-device-batch-clean-1-r0-v1.json",
       "qsa-device-batch-clean-1-r1-v1.json",
       "qsa-device-batch-clean-0-r1-v1.json",
-      "qsa-device-batch-clean-0-r2-v1.json"
-    ]
+      "qsa-device-batch-clean-0-r2-v1.json",
+      "qsa-device-batch-clean-1-r2-v1.json"
+    ],
+    "clean_comparison": "qsa-device-batch-clean-comparison-v1.json",
+    "clean_OFF_PP": [
+      227.6,
+      219.8,
+      225.7
+    ],
+    "clean_ON_PP": [
+      241.4,
+      244.6,
+      239.9
+    ],
+    "clean_median_change_percent": 6.99688275828958
   },
   "prefill_dense_layer_bank_contract": {
     "research": "research-prefill-dense-layer-bank-contract-round684-v1.txt",
@@ -1954,7 +1972,9 @@
     "implementation_state": "6.1Sol FINAL caller-connected proposal, Main full diff/fixture and703/704 reviewed. Proposed host43cases PASS; original fake integer-handle compile FAIL preserved. Actual product unapplied, fullcaller SYCL compile/GPU/model not run, head-release1 excluded.",
     "implementation_diff_sha256": "03a385d0ef0b771d4aa89df18090fe7c602bd81eaa14c9bfa74a8e092f0caffd",
     "host_original": "native-dense-phase-host-v1.json",
-    "host_corrected": "native-dense-phase-host-v2.json"
+    "host_corrected": "native-dense-phase-host-v2.json",
+    "prepared_build_recipe": "apply_build_native_dense_phase_v1.py",
+    "build_receipt_when_closed": "native-dense-phase-build-v1.json"
   },
   "prefill_capacity_current": {
     "report": "prefill-capacity-current.ja.md",

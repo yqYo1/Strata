@@ -92,3 +92,20 @@ alias1、C8192、FP32/R_GPU0、Direct0を固定し、QSA batch flagだけを別p
 全layer/chunk完了・必要なhead/memory/配置行とhashを`qsa-device-batch-model-compact-v1.json`へ保存し、
 64244151 Bのpath/size/hash/理由を`qsa-device-batch-model-retention-v1.json`へ記録した。
 元receipt/comparisonのstatusとbyteは変更しない。
+
+## 独立process各3回のclean比較
+
+`qsa-device-batch-clean-comparison-v1.json`は固定順0,1,1,0,0,1の全6processを照合してPASSした。
+各requestは同じbody/hash、実read78453・reuse0、thinking ON・24出力で、native/server0、
+owner退去、同boot、fresh fault0、dumpなし。source/native/linked librariesと設定はQSA flag以外同一。
+
+| QSA batch | 個別PP (tok/s) | 中央値 | 最小–最大 |
+| --- | --- | ---: | ---: |
+| OFF | 227.6 / 219.8 / 225.7 | 225.7 | 219.8–227.6 |
+| ON | 241.4 / 244.6 / 239.9 | 241.4 | 239.9–244.6 |
+
+prompt_msから再計算した中央値比は+6.9969%。中央値TTFTは348.317→325.565秒。
+各3標本で統計的有意性を確定したという主張はしない。
+次の長大prefillチューニングではONを候補設定に用いるが、product defaultはOFFのまま。
+24出力のdecode速度、task品質、実RESTORE、全model物理262144の合格には読み替えない。
+別binary/配置で得た過去239.2中央値との単純比較で、この変更の効果を取り消したり上乗せしたりしない。
