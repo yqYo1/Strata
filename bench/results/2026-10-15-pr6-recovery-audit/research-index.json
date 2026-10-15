@@ -1839,6 +1839,85 @@
       "reasoning_effort": "max",
       "human_review": "research-available-scopes-round772-v1.ja.md",
       "status": "Scope/redundancy review complete; all3 next scopes eligible. Main consumed only short operational digest and file identities, not review body."
+    },
+    {
+      "round": 773,
+      "path": "research-knowledge-round773-v1.txt",
+      "sha256": "21622c897b4c74b3ad75466cca27b62254c521131b2afcee1296bb5429e8bff2",
+      "model": "Orca gpt-6-luna",
+      "purpose_class": "knowledge collection",
+      "review": "research-scope-review-round776-v1.json",
+      "review_sha256": "9b9d5dd22847830d2b602a559b921e8c987db57665348b8a060e131421400716",
+      "main_body_read": false,
+      "reviewer_retrieval_metadata": {
+        "round": 773,
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/research-knowledge-round773-v1.txt",
+        "sha256": "21622c897b4c74b3ad75466cca27b62254c521131b2afcee1296bb5429e8bff2",
+        "purpose_class": "knowledge collection",
+        "main_original_needed_now": false,
+        "retrieval_brief": "Retrieve for a later causal/recurrent prefill chunk-size or tail decision. It compares smaller, current, larger, and workload-selected chunks, plus exact/masked tails; it supplies arithmetic and shape questions, not an Arc tuning result.",
+        "scope_depth_review": "1,692 words within the 1,300–1,800 budget. The report covers the requested chunk, tile-utilization, live-workspace, short-tail, and shared-state tradeoffs with counterexamples. The seven URLs represent five substantive references because the three Intel pages belong to one guide; the report stays within the six-source limit in its Orca spec. Its focus is distinct from R769's fixed 8,192-row residency and queue schedules and from R701/R702's grouping/superchunk proposals.",
+        "provenance_limit": "The cited sources and their claims were not independently verified in this review. The source mix spans SYCL/Intel guidance, NVIDIA A100/CUDA, a GPU GEMM paper, and a custom sparse accelerator; none establishes Strata/oneMKL/Arc performance or a preferred chunk size. No code or B570 measurement was produced.",
+        "main_correction_to_retain": "The one-array FP32 workspace values are shape arithmetic, not peak allocation or admission totals. The proposed experiment is anchored to the prior 78,452-row fixture, while Main's supplied current diagnostic is 78,444 tokens; re-pin the active fixture and exact tail behavior before any future experiment. A padded tail must not advance recurrent state or write causal outputs for invalid rows.",
+        "outcome": "Successful knowledge collection; retain for retrieval. No current Main decision requires the original report."
+      },
+      "outcome": "succeeded"
+    },
+    {
+      "round": 774,
+      "path": "research-knowledge-round774-v1.txt",
+      "sha256": "5cf6ac696547787d99ad3e7d7969ac6a4c973052514574c563bc564b61880495",
+      "model": "Orca gpt-6-luna",
+      "purpose_class": "knowledge collection",
+      "review": "research-scope-review-round776-v1.json",
+      "review_sha256": "9b9d5dd22847830d2b602a559b921e8c987db57665348b8a060e131421400716",
+      "main_body_read": false,
+      "reviewer_retrieval_metadata": {
+        "round": 774,
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/research-knowledge-round774-v1.txt",
+        "sha256": "5cf6ac696547787d99ad3e7d7969ac6a4c973052514574c563bc564b61880495",
+        "purpose_class": "knowledge collection",
+        "main_original_needed_now": false,
+        "retrieval_brief": "Retrieve if a controlled wait-policy comparison becomes relevant. It contrasts active polling, blocking/low-power waits, interrupt notification, and adaptive spin-then-sleep, with CPU time, wake latency, setup, and scheduling tradeoffs.",
+        "scope_depth_review": "1,680 words within the 1,200–1,700 budget, with six sources and the requested strategy matrix and empirical counterexample. The oversubscribed CUDA/NAMD/GROMACS results add evidence beyond R751's source/API survey. Some opening material repeats R751's UR/Level Zero busy-poll and low-power-event contracts; this is useful setup but not a new Strata finding. Queue-depth effects are correctly labeled as inference rather than a measured study result.",
+        "provenance_limit": "The sources were not independently verified. The strongest quantitative comparison is a CUDA 10.1/P100 KVM workload under vCPU overcommit, so it is not evidence for a dedicated Arc B570 host. No local wait path, adapter capability, CPU/wall distribution, or Strata gain was measured.",
+        "main_correction_to_retain": "R751 already establishes that default Level Zero busy polling is plausible and that no generic installed-stack environment toggle is established. R774's low-power support is experimental and capability-gated; its proposed Arc test must query support for the exact adapter and preserve the same command/event boundaries. Do not treat the report as identifying the current wait stack or as a policy change recommendation.",
+        "outcome": "Successful knowledge collection; retain for retrieval. No current Main decision requires the original report."
+      },
+      "outcome": "succeeded"
+    },
+    {
+      "round": 775,
+      "path": "research-knowledge-round775-v1.txt",
+      "sha256": "feb1bfaaafab90636d14ec06e71890d171b62a8b2131256b4ec381eced1acd3c",
+      "model": "Orca gpt-6-luna",
+      "purpose_class": "knowledge collection",
+      "review": "research-scope-review-round776-v1.json",
+      "review_sha256": "9b9d5dd22847830d2b602a559b921e8c987db57665348b8a060e131421400716",
+      "main_body_read": false,
+      "reviewer_retrieval_metadata": {
+        "round": 775,
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/research-knowledge-round775-v1.txt",
+        "sha256": "feb1bfaaafab90636d14ec06e71890d171b62a8b2131256b4ec381eced1acd3c",
+        "purpose_class": "knowledge collection",
+        "main_original_needed_now": false,
+        "retrieval_brief": "Retrieve for a transfer-granularity or staging decision involving segmented data. It compares direct copies, exact range merging, persistent host packing, and GPU gather, including reuse, lifetime, logical bytes, and dependency-path accounting.",
+        "scope_depth_review": "1,482 words within the 1,300–1,800 budget. Four sources support a coherent comparison with crossover conditions, a compact cost model, and explicit cases where packing/gathering loses. It adds transfer segmentation and packing crossovers beyond R762's mapped-host versus explicit-copy choice and R765's UR host-copy source path; R763's reuse/pipeline discussion is adjacent but not a treatment of these four granularity choices. The future matrix spans 144 strategy/size/span/reuse combinations before five repetitions, so it is not a small single screening run as written; narrow it to representative payloads and span patterns before any local experiment.",
+        "provenance_limit": "No source was independently verified. The reported 451,883,520 bytes are logical payload arithmetic, not link-counter traffic; 25.793 seconds is residual copy-call CPU including hidden runtime work and does not prove packing will help. CUDA/Open MPI measurements do not predict Arc/UR performance.",
+        "main_correction_to_retain": "The cost equations are a comparison framework, not exact additive timing laws when queue work overlaps. Do not infer a granularity bottleneck from caller CPU or logical bytes; the experiment needs a smaller workload screen, a fixed dependency boundary, and evidence for any claimed physical transfer bytes.",
+        "outcome": "Successful knowledge collection; retain for retrieval. No current Main decision requires the original report."
+      },
+      "outcome": "succeeded"
+    },
+    {
+      "round": 776,
+      "path": "research-scope-review-round776-v1.json",
+      "sha256": "9b9d5dd22847830d2b602a559b921e8c987db57665348b8a060e131421400716",
+      "model": "native Codex gpt-6-luna",
+      "reasoning_effort": "max",
+      "human_review": "research-scope-review-round776-v1.ja.md",
+      "human_review_sha256": "802fcb01778d6dc43182f676a26d91e9f4c0ed45843ff143cef5c3387e005d71",
+      "status": "Complete; Main consumed short operational digest/scope eligibility and file identities, not collection report or review bodies."
     }
   ],
   "main_initial_findings": [
@@ -2025,36 +2104,21 @@
   "retention_v5": "retention-v5-manifest.json",
   "parallel_research_current": {
     "wave": [
-      773,
-      774,
-      775
+      777,
+      778,
+      779
     ],
-    "purpose": "knowledge collection",
-    "state": "All3 Orca Luna workers accepted; report bodies go to native Luna-max review after settlement, not to Main on arrival.",
-    "scope_review": "research-available-scopes-round772-v1.json",
-    "review_provider": "native Codex gpt-6-luna max on completion",
+    "state": "Orca launch in progress; eligible reviewed profiling decision support plus2 broader collection questions. Main continues same owned NLL control.",
+    "purposes": {
+      "777": "decision support",
+      "778": "knowledge collection",
+      "779": "knowledge collection"
+    },
+    "scope_review": "research-scope-review-round776-v1.json",
+    "third_scope_origin": "Main bounded irregular resident gather/TLB/layout question with public-source-only prerequisites",
     "no_steering": true,
-    "main_parallel_work": "Owned FP32-a 78444-token dense NLL diagnostic, single GPU process; not a speed cohort",
-    "launches": [
-      {
-        "round": 773,
-        "task": "task_8ff53c3aba6d",
-        "dispatch": "ctx_d46fd606dc20",
-        "model": "gpt-6-luna"
-      },
-      {
-        "round": 774,
-        "task": "task_134090c6cdf6",
-        "dispatch": "ctx_4d746d5dcab8",
-        "model": "gpt-6-luna"
-      },
-      {
-        "round": 775,
-        "task": "task_805507e6778c",
-        "dispatch": "ctx_06019b755e34",
-        "model": "gpt-6-luna"
-      }
-    ]
+    "collection_bodies_read_by_Main": false,
+    "review_provider": "native Codex gpt-6-luna max after settlement"
   },
   "phase_audit": {
     "build": "phase-audit-build-v1.json",
@@ -3121,8 +3185,8 @@
     ],
     "main_consumption": "short operational reviewer digest; retrieve indexed originals only for a concrete decision; source proposal fullpatch review unchanged",
     "review_assignment": "review_research_scope_round767",
-    "completed_native_review": "research-scope-review-round771-v1.json",
-    "collection_retrieval_metadata_file": "research-scope-review-round771-v1.json",
+    "completed_native_review": "research-scope-review-round776-v1.json",
+    "collection_retrieval_metadata_file": "research-scope-review-round776-v1.json",
     "coherent_next_scopes_location": "next_three_research_scopes in reviewer JSON; use metadata without loading report bodies",
     "scope_eligibility": "Only dispatch schedulable_now=true with recorded prerequisite evidence; unmet conditional scopes stay indexed, not launched."
   },
@@ -3203,5 +3267,14 @@
     "live_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-own-residual-quality-root-v1/fp32-a",
     "controller_session_id": 29361,
     "source_freeze": true
+  },
+  "own_residual_placement_budget_v2": {
+    "calculation": "own-residual-placement-budget-v2.json",
+    "report": "own-residual-placement-budget-v2.ja.md",
+    "scope": "Source-derived state+staging only; no wholeVRAM admission/quality/speed claim.",
+    "FP32_GPU32768_state_MiB": 1280,
+    "FP16_GPU32768_state_plus_staging_MiB": 800,
+    "FP16_all78443_state_MiB": 1532.08984375,
+    "quality_pending": true
   }
 }

@@ -1,0 +1,221 @@
+{
+  "round": 776,
+  "reviewed_on": "2026-10-16",
+  "review_purpose": "Native Codex review of three completed knowledge-collection reports for scope, depth, redundancy, evidence limits, hashes, retrieval metadata, and next-scope eligibility. No new research, measurements, or product work was done.",
+  "inputs": {
+    "agents_md": {
+      "path": "AGENTS.md",
+      "sha256": "6851b3dd2c05794a3c51370bc01424625271e9e65782201b226746efb0c3328c"
+    },
+    "artifact_retention": {
+      "path": "docs/ARTIFACT_RETENTION.md",
+      "sha256": "577bed900716a76d3e443a481f46caad9cccd34b10fb86e0676a7122eaa083db"
+    },
+    "research_index": {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
+      "sha256": "7264766a94daea003296c84c85bf47ed4e5a89c9f631ad55855edf1404b39bd6"
+    },
+    "scope_review_round771": {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/research-scope-review-round771-v1.json",
+      "sha256": "d5f8794b0ab215e6e20efb00f60c47a15a73327b14dd3f10ff656e7409ca41a1"
+    },
+    "available_scopes_round772": {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/research-available-scopes-round772-v1.json",
+      "sha256": "462dca63707a9b27ca340ec7e381b85d630317e8ddd1c3d6979a175ee871b761"
+    },
+    "orca_specs": [
+      {
+        "round": 773,
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/orca-research-round773-spec-v1.txt",
+        "sha256": "12a193eac134801cf8ba3b925115d264797aa9fb8a914b9645e16302886390f5"
+      },
+      {
+        "round": 774,
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/orca-research-round774-spec-v1.txt",
+        "sha256": "0092dfe24e60538679cd45d87bcec13ee56316bd09e9bc2f30e2d6b1dece479f"
+      },
+      {
+        "round": 775,
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/orca-research-round775-spec-v1.txt",
+        "sha256": "769353940dcc48a8c4d67278ceda5dd4153f8d83f5cd983dd2b226d753ea1db5"
+      }
+    ],
+    "orca_settlement_state": {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/orca-wave773-775-settlement-state-v1.json",
+      "sha256": "bd7d242741f16890aa0ca107fe9b5b262ba9156b2c2dd0c648a797d07812391a",
+      "status": "All three exact report/task settlements are marked succeeded with release receipts; no intervention was needed."
+    },
+    "spot_checked_prior_reports": [
+      {
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/research-knowledge-round769-v1.txt",
+        "sha256": "7c8c2c91d82c406fa5ea7ab733f0145006c2b006d3d897d608845e17f25b0337",
+        "reason": "Bound R773 against the fixed-size buffer and scheduling comparison; it does not compare prompt chunk sizes."
+      },
+      {
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/research-nonllm-pipeline-residency-round763-v1.txt",
+        "sha256": "593e7cc4e9232ec3854ee79dc2ac2eae30b2cced1759732946bc0003cd9dc219",
+        "reason": "Compare R773/R775 with pipeline residency, data reuse, and graph/database examples."
+      },
+      {
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/research-prefill-grouped-gemm-round701-v1.txt",
+        "sha256": "433856926a798356d1b6d231dfb3e2d99e82e0d38f8bbc11fd8c86c6eafe5012",
+        "reason": "Check R773 against grouped-GEMM constraints and distinguish chunk size from expert grouping."
+      },
+      {
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/research-prefill-expert-major-superchunk-round702-v1.txt",
+        "sha256": "a1030a224102651d76cf209e74891e864a1b77ff2a976bd3307f61f31dd4c5e1",
+        "reason": "Check R773 against the earlier expert-major superchunk proposal."
+      },
+      {
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/research-cpu-wait-runtime-round751-v1.txt",
+        "sha256": "0d62563d356d7d2165438fff4b11c83845c9ace48796a245350821251b30f206",
+        "reason": "Identify overlap between R774's wait-policy survey and existing UR/Level Zero API and diagnostic coverage."
+      },
+      {
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/research-mapped-host-vs-dma-round762-v1.txt",
+        "sha256": "7b4e26167ff885c40a1cac909768943a4fff9ac6e1cc469cd98d4ded56e20e73",
+        "reason": "Bound R775's packing and granularity comparison against mapped-host versus explicit-copy analysis."
+      },
+      {
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/research-ur-v2-hostcopy-source-round765-v1.txt",
+        "sha256": "10a6985575d394bf8445f5f7fc5194f75d11bd5574396439e1fc9ae83f20f9e7",
+        "reason": "Distinguish R775's copy-granularity scope from the UR v2 host-copy source audit."
+      },
+      {
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/research-usm-copy-policy-round757-v1.txt",
+        "sha256": "eacc132396a41fc6027f30f36dba3634b28e4cdaecdd0115ae40b8fe00e413db",
+        "reason": "Check R775 against allocation, pointer type, and copy-policy discussion."
+      },
+      {
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/research-nonllm-gpu-round759-v1.txt",
+        "sha256": "4c81d833c2a690e9b3f5fb54d579288acc949790e30ab15457f24d65cc0aad5f",
+        "reason": "Check the proposed broader non-LLM scope against earlier irregular scheduling, scan, persistent-worker, and SLM coverage."
+      },
+      {
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/research-prefill-unitrace-window-contract-round675-v1.txt",
+        "sha256": "d1a94892ee4ce3ee90109e6761c13ded3515ee504ef58a335c9b87da23cfd4bf",
+        "reason": "Check existing PTI/unitrace request-window limits relevant to QSA device-time attribution."
+      },
+      {
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/research-layermajor-profile-scope-round726-v1.txt",
+        "sha256": "ed2344e03ade9127a53818c25c62f114fc3eb2f82640930f388b18c10cc1be0c",
+        "reason": "Bound the QSA follow-up against existing source-level queue-marker and host-boundary instrumentation proposals."
+      },
+      {
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/research-qsa-subprofile-safety-round733-v1.txt",
+        "sha256": "b3392534c7ce77a6a593880fd01a489594937e7d2a59cb5665f0a064d929ab8f",
+        "reason": "Check existing observer event lifetime, nonexclusive interval meaning, and parser safety."
+      },
+      {
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/research-profile-counters-round748-v1.txt",
+        "sha256": "ab24673915a52a96de33e2096070e98098c62b207a1ed72faad5122661da2582",
+        "reason": "Check the known non-root PTI/Level Zero counter availability limitation before recommending a new attribution scope."
+      }
+    ],
+    "current_status_supplied_by_main": {
+      "source": "Review assignment and current research index; not independently revalidated",
+      "active_nll_diagnostic": "Owned FP32-a full-78,444-token loss diagnostic is running; no result is available in the supplied status. No FP16 quality/admission/speed has been accepted.",
+      "qsa_attribution_need": "An earlier diagnostic has an approximately 69.9-second QSA attention interval and 24.4-second selection interval; these are queue intervals, not exclusive kernel time or occupancy evidence.",
+      "tuning_priority": "Long-input prefill remains the active priority; repeated performance and physical-context correctness remain Main-owned gates."
+    }
+  },
+  "main_originals_needed_now": [],
+  "reports": [
+    {
+      "round": 773,
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/research-knowledge-round773-v1.txt",
+      "sha256": "21622c897b4c74b3ad75466cca27b62254c521131b2afcee1296bb5429e8bff2",
+      "purpose_class": "knowledge collection",
+      "main_original_needed_now": false,
+      "retrieval_brief": "Retrieve for a later causal/recurrent prefill chunk-size or tail decision. It compares smaller, current, larger, and workload-selected chunks, plus exact/masked tails; it supplies arithmetic and shape questions, not an Arc tuning result.",
+      "scope_depth_review": "1,692 words within the 1,300–1,800 budget. The report covers the requested chunk, tile-utilization, live-workspace, short-tail, and shared-state tradeoffs with counterexamples. The seven URLs represent five substantive references because the three Intel pages belong to one guide; the report stays within the six-source limit in its Orca spec. Its focus is distinct from R769's fixed 8,192-row residency and queue schedules and from R701/R702's grouping/superchunk proposals.",
+      "provenance_limit": "The cited sources and their claims were not independently verified in this review. The source mix spans SYCL/Intel guidance, NVIDIA A100/CUDA, a GPU GEMM paper, and a custom sparse accelerator; none establishes Strata/oneMKL/Arc performance or a preferred chunk size. No code or B570 measurement was produced.",
+      "main_correction_to_retain": "The one-array FP32 workspace values are shape arithmetic, not peak allocation or admission totals. The proposed experiment is anchored to the prior 78,452-row fixture, while Main's supplied current diagnostic is 78,444 tokens; re-pin the active fixture and exact tail behavior before any future experiment. A padded tail must not advance recurrent state or write causal outputs for invalid rows.",
+      "outcome": "Successful knowledge collection; retain for retrieval. No current Main decision requires the original report."
+    },
+    {
+      "round": 774,
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/research-knowledge-round774-v1.txt",
+      "sha256": "5cf6ac696547787d99ad3e7d7969ac6a4c973052514574c563bc564b61880495",
+      "purpose_class": "knowledge collection",
+      "main_original_needed_now": false,
+      "retrieval_brief": "Retrieve if a controlled wait-policy comparison becomes relevant. It contrasts active polling, blocking/low-power waits, interrupt notification, and adaptive spin-then-sleep, with CPU time, wake latency, setup, and scheduling tradeoffs.",
+      "scope_depth_review": "1,680 words within the 1,200–1,700 budget, with six sources and the requested strategy matrix and empirical counterexample. The oversubscribed CUDA/NAMD/GROMACS results add evidence beyond R751's source/API survey. Some opening material repeats R751's UR/Level Zero busy-poll and low-power-event contracts; this is useful setup but not a new Strata finding. Queue-depth effects are correctly labeled as inference rather than a measured study result.",
+      "provenance_limit": "The sources were not independently verified. The strongest quantitative comparison is a CUDA 10.1/P100 KVM workload under vCPU overcommit, so it is not evidence for a dedicated Arc B570 host. No local wait path, adapter capability, CPU/wall distribution, or Strata gain was measured.",
+      "main_correction_to_retain": "R751 already establishes that default Level Zero busy polling is plausible and that no generic installed-stack environment toggle is established. R774's low-power support is experimental and capability-gated; its proposed Arc test must query support for the exact adapter and preserve the same command/event boundaries. Do not treat the report as identifying the current wait stack or as a policy change recommendation.",
+      "outcome": "Successful knowledge collection; retain for retrieval. No current Main decision requires the original report."
+    },
+    {
+      "round": 775,
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/research-knowledge-round775-v1.txt",
+      "sha256": "feb1bfaaafab90636d14ec06e71890d171b62a8b2131256b4ec381eced1acd3c",
+      "purpose_class": "knowledge collection",
+      "main_original_needed_now": false,
+      "retrieval_brief": "Retrieve for a transfer-granularity or staging decision involving segmented data. It compares direct copies, exact range merging, persistent host packing, and GPU gather, including reuse, lifetime, logical bytes, and dependency-path accounting.",
+      "scope_depth_review": "1,482 words within the 1,300–1,800 budget. Four sources support a coherent comparison with crossover conditions, a compact cost model, and explicit cases where packing/gathering loses. It adds transfer segmentation and packing crossovers beyond R762's mapped-host versus explicit-copy choice and R765's UR host-copy source path; R763's reuse/pipeline discussion is adjacent but not a treatment of these four granularity choices. The future matrix spans 144 strategy/size/span/reuse combinations before five repetitions, so it is not a small single screening run as written; narrow it to representative payloads and span patterns before any local experiment.",
+      "provenance_limit": "No source was independently verified. The reported 451,883,520 bytes are logical payload arithmetic, not link-counter traffic; 25.793 seconds is residual copy-call CPU including hidden runtime work and does not prove packing will help. CUDA/Open MPI measurements do not predict Arc/UR performance.",
+      "main_correction_to_retain": "The cost equations are a comparison framework, not exact additive timing laws when queue work overlaps. Do not infer a granularity bottleneck from caller CPU or logical bytes; the experiment needs a smaller workload screen, a fixed dependency boundary, and evidence for any claimed physical transfer bytes.",
+      "outcome": "Successful knowledge collection; retain for retrieval. No current Main decision requires the original report."
+    }
+  ],
+  "cross_report_assessment": {
+    "novelty_and_redundancy": "The three reports are separate investigations: chunk-size/tail geometry (R773), wait-policy CPU/latency tradeoffs (R774), and segmented-copy packing/merge/gather crossovers (R775). R774 has limited API-contract repetition with R751; its independent value is the empirical shared-vCPU counterexample. R775 is adjacent to host-copy policy and data reuse reports but shifts the question to granularity and packing. None is a duplicate of another report.",
+    "applicability_and_evidence_limits": "All three are literature and design references only. They establish no B570 timing, host bottleneck, copy-engine behavior, performance/quality outcome, or adoption case. Reported historical Strata numbers remain context from prior artifacts, not new evidence from these research sessions. No originals are needed for the currently running FP32-a loss diagnostic.",
+    "dispatch_correction": "A genuine attribution gap remains for the earlier 69.9-second QSA attention and 24.4-second selection queue intervals: existing source markers are nonexclusive; R675's PTI window is request-scoped; R726's phase aggregation does not isolate per-kernel service; and R748 found the non-root PMU path blocked. Recommend one bounded decision-support scope comparing safe per-kernel attribution options, without broad API logging, new queue drains, privileged counters, or a Strata performance claim. Preserve command replay as conditional until a fresh closed attribution proves host command submission is material outside waits."
+  },
+  "next_three_research_scopes": [
+    {
+      "priority": 1,
+      "purpose_label": "decision support",
+      "title": "Safe per-kernel attribution inside long-prefill QSA intervals",
+      "finite_question": "Given the existing approximately 69.9-second QSA attention and 24.4-second selection queue intervals, which supported, lowest-intrusion method can separate individual kernel execution from host submission gaps and idle portions of those intervals on the configured UR v2/Level Zero stack? Compare existing source event spans, bounded PTI device timing, and a kernel-only trace. State exactly what each can establish and the least evidence needed to associate a kernel with the QSA phase.",
+      "breadth_and_counterevidence": "Use official Intel PTI, UR, Level Zero, and SYCL primary documentation at the relevant version, plus original profiler-method evidence only if needed. Compare at least three capture/attribution choices by version support, timebase/phase association, overhead, trace volume, failure modes, and whether they require source or queue changes. Account for the existing event intervals being nonexclusive and for the R748 PMU gate. Exclude broad API-call tracing, new queue drains or per-kernel barriers, privilege/sysctl changes, hang-prone collection, and any occupancy inference from time spans. R675 documents a request-wide trace window; R726 documents aggregate source markers; R733 documents observer semantics; R748 documents unavailable counters; do not restate them. No device query, profiler run, or local performance claim.",
+      "report_budget": "1,300–1,800 words; at most 6 substantive primary sources, exact URLs, a capture-method comparison table, and a bounded recommendation with evidence limits.",
+      "schedulable_now": true,
+      "prerequisites": "Public-source review only; the closed QSA interval evidence and prior stack/profile constraints are already recorded. Before dispatch, pin the exact QSA receipt and the version metadata for the binary being discussed; do not treat older version metadata as current automatically.",
+      "prerequisite_evidence": "The assignment identifies the historical 69.9 s versus 24.4 s QSA intervals and explicitly limits them to nonexclusive queue spans. R733 confirms the existing fine observer uses whole-section barrier intervals; R675's bounded PTI method is request-wide rather than prefill-phase exact; R726 says source phase totals include queue gaps; R748 reports non-root metric access blocked. These records leave a focused method-selection gap without requiring another run before research.",
+      "prior_report_paths_to_avoid_repeating": [
+        "bench/results/2026-10-15-pr6-recovery-audit/research-prefill-unitrace-window-contract-round675-v1.txt",
+        "bench/results/2026-10-15-pr6-recovery-audit/research-layermajor-profile-scope-round726-v1.txt",
+        "bench/results/2026-10-15-pr6-recovery-audit/research-qsa-subprofile-safety-round733-v1.txt",
+        "bench/results/2026-10-15-pr6-recovery-audit/research-profile-counters-round748-v1.txt",
+        "bench/results/2026-10-15-pr6-recovery-audit/research-cpu-wait-runtime-round751-v1.txt",
+        "bench/results/2026-10-15-pr6-recovery-audit/research-attention-roofline-round746-v1.txt"
+      ]
+    },
+    {
+      "priority": 2,
+      "purpose_label": "knowledge collection",
+      "title": "Sparse storage-format crossovers for skewed scientific GPU kernels",
+      "finite_question": "For non-LLM scientific GPU sparse matrix-vector and sparse matrix-matrix workloads, compare CSR/COO, ELL or blocked formats, and SELL-C-sigma or similar sliced formats when row lengths are skewed. How do padding, coalescing, row reordering, preprocessing, output restoration, and repeated-use count change the crossover, and what counterexamples favor a simple format?",
+      "breadth_and_counterevidence": "Use current SYCL or vendor primary documentation and original non-LLM GPU/ASIC papers or engineering blogs. Compare at least three storage formats across uniform, heavy-tailed, and changing sparsity; include preprocessing amortization and the cost of permuting inputs/outputs. Distinguish measured architecture-specific results from transferable design constraints. Keep the investigation on storage representation and conversion break-even, not load-balancing schedulers, expert grouping, GEMM tile-size tuning, or adaptive sparse-accelerator control. Avoid R759's irregular scheduling/scan survey, R763's graph/pipeline residency examples, and R773's chunk/GEMM tiling treatment. Do not propose a Strata change or claim Arc performance.",
+      "report_budget": "1,300–1,800 words; at most 7 substantive primary sources, exact links, a format/crossover table, and explicit hardware limits.",
+      "schedulable_now": true,
+      "prerequisites": "None beyond public-source access; this is a bounded, broader non-LLM GPU/ASIC knowledge collection and needs no local measurements.",
+      "prerequisite_evidence": "AGENTS.md requests transferable general SYCL and non-LLM GPU/ASIC research alongside current engine bottlenecks. The reviewed R759 covers irregular scheduling, scans, and persistent workers; R763 covers graph/data reuse and pipeline residency; R773 covers prompt chunk and GEMM/tile interactions. None of those scopes compares sparse matrix storage-format conversion and reuse break-even as the central question.",
+      "prior_report_paths_to_avoid_repeating": [
+        "bench/results/2026-10-15-pr6-recovery-audit/research-nonllm-gpu-round759-v1.txt",
+        "bench/results/2026-10-15-pr6-recovery-audit/research-nonllm-pipeline-residency-round763-v1.txt",
+        "bench/results/2026-10-15-pr6-recovery-audit/research-knowledge-round773-v1.txt",
+        "bench/results/2026-10-15-pr6-recovery-audit/research-prefill-grouped-gemm-round701-v1.txt"
+      ]
+    },
+    {
+      "priority": 3,
+      "purpose_label": "decision support",
+      "title": "Reusable command submission for a dynamic long-prefill graph",
+      "finite_question": "If a fresh closed full-boundary attribution shows repeated host command or copy submission is material outside waits, compare direct per-command submission with reusable SYCL/Level Zero command lists or graph-like replay for a chunked prefill DAG. Which approach can reduce repeated host work while preserving dynamic pointers, event dependencies, cancellation, asynchronous error reporting, and safe resource retirement?",
+      "breadth_and_counterevidence": "Use official SYCL, UR, oneAPI, and Level Zero references plus original non-LLM GPU command-replay or launch-overhead studies. Compare at least two replay mechanisms against ordinary submission; include re-record/update overhead, dynamic-argument limits, queue ordering, portability, and cases where GPU work or completion waits dominate. Do not repeat R751's wait-policy survey, R765's UR host-copy source audit, R769's transfer/compute residency schedules, or R774's empirical wait tradeoffs. No source proposal or Strata performance claim.",
+      "report_budget": "1,200–1,700 words; at most 6 substantive primary sources, exact links, and a capability/applicability matrix.",
+      "schedulable_now": false,
+      "prerequisites": "A fresh, closed attribution after current source integration must show repeated command/copy submission is a material part of the active long-prefill critical path separately from busy completion waits and host computation.",
+      "prerequisite_evidence": "The current index records historical residual copy-call CPU and explicit wait totals, but no fresh post-integration full-boundary attribution for this condition. The current owned FP32-a loss diagnostic is still running. Do not dispatch from historical CPU totals alone; retain this scope until the named prerequisite is evidenced.",
+      "prior_report_paths_to_avoid_repeating": [
+        "bench/results/2026-10-15-pr6-recovery-audit/research-cpu-wait-runtime-round751-v1.txt",
+        "bench/results/2026-10-15-pr6-recovery-audit/research-ur-v2-hostcopy-source-round765-v1.txt",
+        "bench/results/2026-10-15-pr6-recovery-audit/research-knowledge-round769-v1.txt",
+        "bench/results/2026-10-15-pr6-recovery-audit/research-knowledge-round774-v1.txt"
+      ]
+    }
+  ]
+}

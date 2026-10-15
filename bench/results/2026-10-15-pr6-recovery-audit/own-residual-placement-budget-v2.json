@@ -1,0 +1,100 @@
+{
+  "status": "SOURCE_DERIVED_CAPACITY_ONLY",
+  "recipe": "N=2560;HC=4;D=N*HC; row=D*elementbytes; mixedFP16 staging=min(chunk,hostrows)*row;47 interlayer boundaries.",
+  "source_pins": {
+    "src/prefill/prefill.cpp": "b08e553741e08102560a6eec9bc2fa6fb30402ebccacc2b6067c6952cd9aabe9",
+    "src/prefill/layer_major.inc": "6d8fb23dbb7026b8a80eabc6a43655b2ec50084910d3bc9b514607961cac94a2",
+    "src/prefill/sycl/postops.cpp": "f048a75d8c18dad5981a93206dcff107085714741326adc6d4cfd77c6927a78f",
+    "include/strata/prefill/layer_major_plan.hpp": "f067cd631a6900864723b2049a95cb207ea5ac03055e2691b7d67f2706ef3721"
+  },
+  "input_receipt_sha256": "9ebc8d551d22ce9036c2e36a30b2f9d1908e71d492f5095bf6efde930f050089",
+  "live_FP32_control_source_commit": "dfca0e14",
+  "cases": [
+    {
+      "input": "current-NLL",
+      "rows": 78443,
+      "dtype": "fp32",
+      "GPU_rows": 32768,
+      "bytes_per_row": 40960,
+      "total_bytes": 3213025280,
+      "GPU_state_bytes": 1342177280,
+      "GPU_staging_bytes": 0,
+      "GPU_state_plus_staging_bytes": 1342177280,
+      "host_bytes": 1870848000,
+      "logical_residual_H2D_bytes": 87929856000,
+      "logical_residual_D2H_bytes": 87929856000
+    },
+    {
+      "input": "current-NLL",
+      "rows": 78443,
+      "dtype": "fp16",
+      "GPU_rows": 32768,
+      "bytes_per_row": 20480,
+      "total_bytes": 1606512640,
+      "GPU_state_bytes": 671088640,
+      "GPU_staging_bytes": 167772160,
+      "GPU_state_plus_staging_bytes": 838860800,
+      "host_bytes": 935424000,
+      "logical_residual_H2D_bytes": 43964928000,
+      "logical_residual_D2H_bytes": 43964928000
+    },
+    {
+      "input": "current-NLL",
+      "rows": 78443,
+      "dtype": "fp16",
+      "GPU_rows": 78443,
+      "bytes_per_row": 20480,
+      "total_bytes": 1606512640,
+      "GPU_state_bytes": 1606512640,
+      "GPU_staging_bytes": 0,
+      "GPU_state_plus_staging_bytes": 1606512640,
+      "host_bytes": 0,
+      "logical_residual_H2D_bytes": 0,
+      "logical_residual_D2H_bytes": 0
+    },
+    {
+      "input": "physical-row-capacity-only",
+      "rows": 262144,
+      "dtype": "fp32",
+      "GPU_rows": 32768,
+      "bytes_per_row": 40960,
+      "total_bytes": 10737418240,
+      "GPU_state_bytes": 1342177280,
+      "GPU_staging_bytes": 0,
+      "GPU_state_plus_staging_bytes": 1342177280,
+      "host_bytes": 9395240960,
+      "logical_residual_H2D_bytes": 441576325120,
+      "logical_residual_D2H_bytes": 441576325120
+    },
+    {
+      "input": "physical-row-capacity-only",
+      "rows": 262144,
+      "dtype": "fp16",
+      "GPU_rows": 32768,
+      "bytes_per_row": 20480,
+      "total_bytes": 5368709120,
+      "GPU_state_bytes": 671088640,
+      "GPU_staging_bytes": 167772160,
+      "GPU_state_plus_staging_bytes": 838860800,
+      "host_bytes": 4697620480,
+      "logical_residual_H2D_bytes": 220788162560,
+      "logical_residual_D2H_bytes": 220788162560
+    },
+    {
+      "input": "physical-row-capacity-only",
+      "rows": 262144,
+      "dtype": "fp16",
+      "GPU_rows": 262144,
+      "bytes_per_row": 20480,
+      "total_bytes": 5368709120,
+      "GPU_state_bytes": 5368709120,
+      "GPU_staging_bytes": 0,
+      "GPU_state_plus_staging_bytes": 5368709120,
+      "host_bytes": 0,
+      "logical_residual_H2D_bytes": 0,
+      "logical_residual_D2H_bytes": 0
+    }
+  ],
+  "scope": "Residual persistent storage plus its own staging only; no totalVRAM admission, quality, physical262144 execution or PCIe/performance inference.",
+  "GPU_executed": false
+}
