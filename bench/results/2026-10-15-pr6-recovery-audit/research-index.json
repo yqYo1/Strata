@@ -2080,6 +2080,50 @@
       "human_review": "research-scope-review-round785-v1.ja.md",
       "human_review_sha256": "36c66b035480f826a895edc34ba78cae1f25b3da1d5254db4966f0073935e2fe",
       "status": "Complete; short operational digest received; only pointed decision-support sections retrieved"
+    },
+    {
+      "round": 786,
+      "path": "research-round786-v1.txt",
+      "sha256": "375aeb85b619b686102cf4d5085d2adb71e54dcdc0ef725224fcabc532f0ec8c",
+      "model": "Orca gpt-6-luna",
+      "purpose_class": "knowledge collection",
+      "main_body_read": false,
+      "main_original_needed_now": false,
+      "review": "research-scope-review-round788-v1.json",
+      "review_sha256": "2c709a1be87034151326e0916db23dd2be9ed61e0840e941eabd373eb817c31d",
+      "reviewer_retrieval_metadata": {
+        "round": 786,
+        "word_count_whitespace_delimited": 1409,
+        "purpose_class": "knowledge collection",
+        "main_original_needed_now": false,
+        "scope_depth_review": "Within the 1,300–1,700-word budget. The report compares four fan-in strategies across sparse/dense frontiers and weak/strong destination skew, distinguishes graph discovery from floating-point sum semantics, and includes local aggregation, segmented reduction, deterministic-order limits, counterexamples, and one discriminating experiment. Its claims remain literature hypotheses, not a local implementation recommendation or Arc performance claim.",
+        "novelty_and_redundancy": "Distinct from the previously reviewed scheduling/scan, pipeline/residency, sparse-format conversion, and cache/page-transaction scopes. It centers destination contention, duplicate keys, reduction order, and determinism. These distinctions were checked against R780 metadata rather than by reopening prior collection report bodies.",
+        "source_attribution": {
+          "source_count": 6,
+          "urls_present": true,
+          "assessment": "The report names and links six substantive source families; the two Intel URLs are chapters of one versioned guide, so the six-source ceiling is met. The sources span SYCL/Intel documentation, historical CUDA graph studies, FPGA evidence, and a CUDA synthetic benchmark, with hardware and applicability limits stated in the report.",
+          "correction": "The NVIDIA Warp guide URL targets the mutable GitHub main branch. Record an immutable revision or retrieval date before relying on its benchmark details. This reviewer did not inspect the cited pages or independently verify any source claim, number, hardware result, or license."
+        },
+        "provenance_limit": "Review covers only the report's own source labels/URLs and stated limits. No source was opened or verified. External results do not establish SYCL/Arc behavior, and the report proposes no code reuse.",
+        "index_retrieval_metadata": {
+          "purpose_class": "knowledge_archive",
+          "main_original_needed_now": false,
+          "retrieval_brief": "Retrieve when a concrete non-LLM graph or scientific aggregation question requires choosing destination ownership, atomics, local duplicate combining, or segmented reduction under skew. Treat the report as source-level comparison only; it contains no Arc result, and its NVIDIA Warp benchmark link needs immutable revision/date pinning before reuse.",
+          "main_correction_to_retain": "Do not infer an Arc strategy or crossover from the cited GPU/FPGA results. Preserve the report's distinction between sparse-frontier traversal and high destination fan-in, and pin the mutable NVIDIA Warp source before using its benchmark values.",
+          "outcome": "Successful knowledge collection; retain for retrieval. No current Main decision requires reading the original."
+        }
+      },
+      "outcome": "succeeded"
+    },
+    {
+      "round": 788,
+      "path": "research-scope-review-round788-v1.json",
+      "sha256": "2c709a1be87034151326e0916db23dd2be9ed61e0840e941eabd373eb817c31d",
+      "model": "native Codex gpt-6-luna",
+      "reasoning_effort": "max",
+      "human_review": "research-scope-review-round788-v1.ja.md",
+      "human_review_sha256": "a7cad9447d4efaf8da3e4bad3bac92c0bb2c2b1acfc33f07e082c31d1ab5c1ec",
+      "status": "Collection report remains unread by Main; retrieval metadata only."
     }
   ],
   "main_initial_findings": [
@@ -3497,6 +3541,16 @@
     "precision_decision": "BF16 HC residual and bulk HC/MoE outputs; FP32 inject coefficients/router/localaccum/recurrentstate. GDN/QSA internals and PLE/finalcallbacks remain explicit FP32 boundaries.",
     "source_state": "Main integration source in progress; isolated postops build active; no native16 correctness/performance/adoption result",
     "review": "research-scope-review-round785-v1.json",
-    "collection_round786": "Active knowledge collection; Main will not read original on arrival"
+    "collection_round786": "Active knowledge collection; Main will not read original on arrival",
+    "source_commit": "7755a537",
+    "engine_build": "own-native16-prefill-build-v1.json",
+    "engine_build_status": "v1 build+host+68GEMM+existingcomponent checks PASS; v1 model FP32 exitedSIGABRT at teardown; BF16UNRUN. Small real-adapter late-static-owner repro confirmed newregistry use-after-destruction; source7755fix pending v2qualification.",
+    "new_kernel_test": "own-native16-gemm-correctness-v1.json PASS, no model adoption",
+    "implementation_round787": "Running typed16 QSA attention source proposal; no steering; not adopted",
+    "research_next": [
+      789,
+      791
+    ],
+    "registry_lifetime_failure": "own-native16-registry-lifetime-v1.ja.md"
   }
 }

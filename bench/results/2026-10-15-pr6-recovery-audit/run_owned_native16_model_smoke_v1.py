@@ -21,11 +21,13 @@ DEVICE = Path('/sys/bus/pci/devices/0000:05:00.0')
 
 
 def main():
+    require(len(sys.argv) == 2 and sys.argv[1] in ('v2', 'v3'), 'new fixed build version; v1 failure is immutable')
+    version = sys.argv[1]
     module = load_owner(P / 'bench/results/2026-10-14-niko-main-service-port/direct_owner.py')
     with (B / 'owned-v0141-measurement.lock').open('a') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        build = json.loads((A / 'own-native16-prefill-build-v1.json').read_text())
-        for name in ('own-native16-gemm-correctness-v1.json', 'own-native16-regression-correctness-v1.json'):
+        build = json.loads((A / f'own-native16-prefill-build-{version}.json').read_text())
+        for name in (f'own-native16-gemm-correctness-{version}.json', f'own-native16-regression-correctness-{version}.json'):
             v = json.loads((A / name).read_text())
             require(v['passed'] and v['complete'] and not v['active'] and not v['fresh_faults'], 'component gate')
             for c in v['commands']:
@@ -44,8 +46,8 @@ def main():
         for name, v in old['model_identity'].items():
             st = Path(name).stat()
             require(st.st_size == v['bytes'] and st.st_mtime_ns == v['mtime_ns'], 'model stat identity')
-        root = B / 'main-own-native16-model-smoke-root-v1'
-        target = A / 'own-native16-model-smoke-v1.json'
+        root = B / f'main-own-native16-model-smoke-root-{version}'
+        target = A / f'own-native16-model-smoke-{version}.json'
         require(not root.exists() and not target.exists(), 'fresh model job')
         root.mkdir(mode=0o700)
         tokens, positions = old['tokens'], old['positions']

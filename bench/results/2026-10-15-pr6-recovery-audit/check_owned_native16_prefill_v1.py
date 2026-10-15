@@ -71,7 +71,9 @@ def main():
                 ('runtime', 'sycl_runtime_test', [], False),
                 ('compat', 'sycl_compat_test', [], False),
                 ('FP32-gemm', 'sycl_gemm_test', [], False),
-                ('typed-HC-MoE', 'sycl_native16_prefill_test', [], False)]
+                ('typed-HC-MoE', 'sycl_native16_prefill_test', [], False),
+                ('early-owner-release', 'sycl_allocation_teardown_test', ['--early'], False),
+                ('late-static-owner-release', 'sycl_allocation_teardown_test', [], False)]
             # Native graph capture is deliberately not a new test dependency;
             # the allocation change does not require enabling that excluded route.
             for label, name, args, trace in jobs:
@@ -86,7 +88,8 @@ def main():
                     require('GEMM16 tuple ' in stderr and 'urEnqueueKernelLaunch' in stderr, 'actual tuple and first launch trace')
                     require(not re.search(r'(?:UR|ZE)_RESULT_ERROR_|terminate called|retirement failed|Strata SYCL cleanup:', stderr), 'native runtime error')
                 else:
-                    require('PASS' in stdout or 'passed' in stdout, 'explicit regression result')
+                    require('PASS' in stdout or 'passed' in stdout or
+                            (name == 'sycl_allocation_teardown_test' and 'main complete' in stdout), 'explicit regression result')
                 record['checks'][label] = dict(stdout=stdout, stderr_sha256=sha(err), environment=current,
                     stderr_evidence=[l for l in stderr.splitlines() if l.startswith('GEMM16 device=') or l.startswith('GEMM16 tuple ')])
                 persist()

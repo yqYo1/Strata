@@ -72,7 +72,8 @@ def main():
             record['configure_argv'] = configure; persist()
             run('configure', configure, wall=300, cpu=1800, rss=8 << 30)
             targets = ['strata', 'sycl_gemm16_test', 'sycl_native16_prefill_test', 'sycl_runtime_test',
-                'sycl_compat_test', 'sycl_gemm_test', 'prefill_layer_major_plan_test', 'dense_prefill_nll_host_test']
+                'sycl_compat_test', 'sycl_gemm_test', 'prefill_layer_major_plan_test', 'dense_prefill_nll_host_test',
+                'sycl_allocation_teardown_test']
             run('build', ['cmake', '--build', str(build), '--target', *targets, '--parallel', '2'])
             for name in ('prefill_layer_major_plan_test', 'dense_prefill_nll_host_test'):
                 out, err = run('host-' + name, [str(build / name)], wall=60, cpu=120, rss=2 << 30)
