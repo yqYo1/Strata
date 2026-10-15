@@ -26,6 +26,15 @@ headの復元、MTP full graph再capture、生成、通常終了まで成功し�
 clean速度値にはしない。後続のclean三回用は
 `run_prefill_clean_c8192_r0_v1.py`で、元cleanと同じ固定workload ID、65536以上、thinking ON。
 この比較はchunk/head退避/保存配置の組合せであり、chunkだけの効果とは呼ばない。
+clean三回も正常完了した（`prefill-clean-c8192-r0-v1.json`）。
+実入力/readは全て78453、reuse0、thinking ON、24出力/finish=length。
+PP235.3/239.5/239.2 tok/s、中央値239.2。TTFT334.139/328.175/328.634秒。
+元C4096/R_GPU4096の219.1/222.3/221.5、中央値221.5に対して中央値は7.99097%向上した。
+同じworkload IDの三request body SHA256は各sampleで完全一致した。
+native/server全exit0、全owner退去、同じboot、新規fault0、dumpなし、request journal9行valid/complete。
+`prefill-c4096-c8192-clean-comparison-v1.json`に元receiptのhashと個別照合を保存した。
+同一serve内の三反復であり、独立process間の分散やchunk単独の因果は測っていない。
+600/1000 tok/sには未達である。
 実RESTORE、cancel/throw、物理262144、品質と速度採用は未合格である。
 `retire_prefill_head_diagnostics_v1.py`で閉じた単体/C4096/C8192の成功API/chunk/journalログ
 375210 Bを削除した。全層の順序・完了chunk数、必要なAPI/memory結果とlog hashを

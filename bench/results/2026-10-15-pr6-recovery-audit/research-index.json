@@ -1554,7 +1554,13 @@
     "proposal_model": "gpt-6.1-sol",
     "independent_review": "research-checked-adaptive-event-proposal-round653-v1.txt"
   },
-  "research_pending": [],
+  "research_pending": [
+    {
+      "agent": "research_pr6_prefill_operator_work_round690",
+      "model": "gpt-6-luna",
+      "scope": "Historical exact arithmetic/operator work beyond previously known schedule/timer/context differences; read-only."
+    }
+  ],
   "mtp_indexed_head_candidate": {
     "proposal": "sycl-mtp-indexed-head-v1",
     "model": "gpt-6.1-sol",
@@ -1678,7 +1684,13 @@
     "source_diff_sha256": "2f431778bfe168f2d912deed6855a57e94aca2245df40bbeb5208e9b77e1e0ce",
     "host_helper_receipt": "prefill-owner-helpers-host-v3.json"
   },
-  "implementation_pending": [],
+  "implementation_pending": [
+    {
+      "agent": "implement_prefill_native_dense_layer_bank_v1",
+      "model": "gpt-6.1-sol",
+      "scope": "Unused-by-engine component NativeDense owned-original-RAM snapshots/per-layerbank/fullrestore, no generator/prefill.cpp edits, no tests/build/GPU."
+    }
+  ],
   "QSA_device_batch_candidate": {
     "proposal": "qsa-indexer-device-batch-v2",
     "model": "gpt-6.1-sol",
@@ -1717,17 +1729,33 @@
     "removed_carve_bytes": 33554688,
     "binary_sha256": "5de4d2695a3226f037ab8eb9330da0b33b5e9a4761598837c51bb5e93c0fbe99",
     "clean_recipe": "run_prefill_clean_c8192_r0_v1.py",
-    "clean_state": "ACTIVE_OWNED_COHORT_NOT_YET_COMPLETE",
+    "clean_state": "CLOSED_PASS_3_CLEAN_SAMPLES_78453_INPUT",
     "retention": "prefill-head-diagnostics-retention-v1.json",
     "clean_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prefill-clean-c8192-r0-root-v1",
-    "clean_receipt_when_closed": "prefill-clean-c8192-r0-v1.json"
+    "clean_receipt_when_closed": "prefill-clean-c8192-r0-v1.json",
+    "clean_receipt": "prefill-clean-c8192-r0-v1.json",
+    "clean_PP_samples": [
+      235.3,
+      239.5,
+      239.2
+    ],
+    "clean_PP_median": 239.2,
+    "comparison": "prefill-c4096-c8192-clean-comparison-v1.json",
+    "performance_adopted": false
   },
   "prefill_scratch_alias_candidate": {
     "proposal": "prefill-scratch-alias-v1",
     "model": "gpt-6.1-sol",
     "source_diff_sha256": "4b8638e596bb704c98ee3c58ccea9782eda70fd2883daeca9a77e6ff52ed318f",
     "review": "research-prefill-scratch-alias-review-round688-v1.txt",
-    "state": "Sol FINAL source only; Main read/write/planner review and independent Luna review found no concrete conflict. Unapplied/unbuilt/untested. Four Nwide buffers share one fixed samequeue topology on short and long paths; defaultOFF. Main serial gates pending.",
-    "C8192_carve_saving_bytes": 251659008
+    "state": "Unapplied source-only proposal reviewed. Main prepared actual production TU prefix/Alloc fixture and serial build/host gate; not yet executed. New base and exact output verified from committed revision+patch without needing full source mirrors.",
+    "C8192_carve_saving_bytes": 251659008,
+    "host_recipe": "qualify_prefill_scratch_alias_v1.py",
+    "host_fixture": "prefill_scratch_prefix_fixture_v1.cpp"
+  },
+  "prefill_native_dense_bank": {
+    "research": "research-prefill-native-dense-graph-handoff-round689-v1.txt",
+    "model": "gpt-6-luna",
+    "state": "Source-only concrete head pause counterexample: SessionGraphs can retain target native dense pointers; PLE native publication also needs binding. Main reviewed; Sol component implementation pending. Canonical arena remains resident."
   }
 }
