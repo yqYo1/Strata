@@ -114,7 +114,9 @@ def main():
              919: 'orca-qsa-resource-control-sol-launch-v1.json',
              921: 'orca-pr6-shift-compat-sol-launch-v2.json',
              923: 'orca-pr6-shuffle-oracle-sol-launch-v1.json',
-             924: 'orca-research-round924-launch-v1.json'}
+             924: 'orca-research-round924-launch-v1.json',
+             926: 'orca-pr6-harness-gates-sol-launch-v1.json',
+             927: 'orca-qsa-large-resource-control-sol-launch-v1.json'}
     known = {}
     for n, name in names.items():
         receipt = json.loads((A / name).read_text())
@@ -170,7 +172,7 @@ def main():
             assert m['type'] == 'worker_done' and p['outcome'] in ('succeeded', 'failed')
             path = Path(p['reportPath'])
             workspace = (Path('/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-pr6-prefill-restore')
-                         if n in (879, 883, 888, 890, 897, 900, 904, 907, 908, 910, 913, 915, 917, 921, 923) else A.parents[2])
+                         if n in (879, 883, 888, 890, 897, 900, 904, 907, 908, 910, 913, 915, 917, 921, 923, 926) else A.parents[2])
             if not path.is_absolute():
                 path = workspace / path
             if n == 879:
@@ -207,6 +209,10 @@ def main():
                 assert path == workspace / 'bench/results/2026-10-16-pr6-faithful-restore/llvm-shift-compat-v2.md'
             elif n == 923:
                 assert path == workspace / 'bench/results/2026-10-16-pr6-faithful-restore/shuffle-oracle-v1/README.ja.md'
+            elif n == 926:
+                assert path == workspace / 'bench/results/2026-10-16-pr6-faithful-restore/harness-main-gates-v1/README.ja.md'
+            elif n == 927:
+                assert path == A / 'own-qsa-large-resource-control-v1/README.ja.md'
             else:
                 assert path.is_relative_to(A)
             assert path.exists()
@@ -221,7 +227,7 @@ def main():
             release = A / f'orca-round{n}-release-v1.json'
             if not release.exists():
                 release.write_text(json.dumps(call(['worker-release', '--dispatch', p['dispatchId']]), indent=2) + '\n')
-            state['completed'][str(n)] = dict(path=str(path if n in (879, 883, 888, 890, 897, 900, 904, 907, 908, 910, 913, 915, 917, 921, 923) else path.relative_to(A)), outcome=p['outcome'],
+            state['completed'][str(n)] = dict(path=str(path if n in (879, 883, 888, 890, 897, 900, 904, 907, 908, 910, 913, 915, 917, 921, 923, 926) else path.relative_to(A)), outcome=p['outcome'],
                 sha256=hashlib.sha256(path.read_bytes()).hexdigest() if path.is_file() else None)
             state['processed'].append(m['id'])
             statefile.write_text(json.dumps(state, indent=2) + '\n')

@@ -9,6 +9,14 @@ chunk/context, precision, KV format, placement and effective pre-exec environmen
 Use the official benchmark workload and keep instrumented profiles separate from
 repeated clean speed samples. Tiny runs are numerical/collector safety gates.
 
+Check startup values observed inside the executable as well as the initial
+environment supplied before exec. `/proc/PID/environ` records the initial exec
+region and does not generally reflect later environment changes; matching it
+alone does not prove the current process environment stayed unchanged. See the
+[Linux environment documentation](https://man7.org/linux/man-pages/man5/proc_pid_environ.5.html).
+If startup adds a runtime control, identify the observed value and supply it
+before exec for the next qualified run; do not attribute its origin without evidence.
+
 | Resource | Application evidence | Capacity comparison and limits |
 | --- | --- | --- |
 | PCIe | Copy direction, requested bytes, intervals, dependencies and copy/compute overlap | Measure both directions with matching sizes/allocation types. Requested bytes are not wire traffic; topology is not attained bandwidth. A fast busy copy can occupy a small fraction of the request. |
