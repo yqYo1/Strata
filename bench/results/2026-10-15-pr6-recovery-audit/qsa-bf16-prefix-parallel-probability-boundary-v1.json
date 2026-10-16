@@ -34,5 +34,41 @@
   "speed_qualified": false,
   "full_model_physical256K_qualified": false,
   "RESTORE_qualified": false,
-  "next": "Same-binary 8192query/32768cell comparison versus current baseline; pack and barrier cost included in each call, independent3process/10samples, compare output fingerprints and independent oracle. Model baseline remains445.4 tok/s and600/1000 goal is open."
+  "next": "Evaluate independent FP32 score pitch32 versus33, then combine only supported variants and qualify full-engine integration/official32K+ clean runs. No600/1000 milestone or full256K/RESTORE claim.",
+  "timing": {
+    "status": "CLOSED_COMPONENT_GAIN",
+    "cohort": "qsa-bf16-prefix-probability-cohort-v1.json",
+    "sha256": "05866b8721bcd2dcb1788e47232b2c3ac52f84ccec26fe5ea2a96bae02ee6741",
+    "statistics": {
+      "base": {
+        "independent_processes": 3,
+        "process_medians_ms": [
+          390.7248495,
+          390.81101850000005,
+          390.7874015
+        ],
+        "median_ms": 390.7874015,
+        "mean_ms": 390.7744231666667,
+        "sample_sd_ms": 0.04452641903785434,
+        "min_ms": 390.7248495,
+        "max_ms": 390.81101850000005
+      },
+      "parallel": {
+        "independent_processes": 3,
+        "process_medians_ms": [
+          351.97608,
+          351.9238325,
+          351.9877495
+        ],
+        "median_ms": 351.97608,
+        "mean_ms": 351.962554,
+        "sample_sd_ms": 0.034037629606809845,
+        "min_ms": 351.9238325,
+        "max_ms": 351.9877495
+      }
+    },
+    "latency_ratio": 0.9006843072447412,
+    "latency_reduction_percent": 9.931569275525876,
+    "whole_model_gain_qualified": false
+  }
 }
