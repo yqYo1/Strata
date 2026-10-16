@@ -1,0 +1,160 @@
+{
+  "schema": "strata-research-review-v1",
+  "review_id": "R963",
+  "review_type": "native Codex completed-report review",
+  "recorded_utc": "2026-10-16T20:15:25Z",
+  "task_classification": "decision_support",
+  "review_boundary": {
+    "instructions": [
+      {
+        "path": "AGENTS.md",
+        "sha256": "d0c7e1a40a05087803345d23792c468e760aceb3bba2e012efb59dd01175e89c"
+      },
+      {
+        "path": "docs/ARTIFACT_RETENTION.md",
+        "sha256": "fdf86d7ea576d6f0400ec7e643b5ddca5c3c577dd053d66c2fd05220e64b1cc1"
+      }
+    ],
+    "research_index": {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
+      "sha256_at_review": "426cbb03494addefe5d3b2fab33a93068a1b2192db41155355b5678ae7a5eb63",
+      "modified_by_reviewer": false,
+      "research_review_round963_key_present_before_review": false
+    },
+    "assigned_outputs_only": [
+      "bench/results/2026-10-15-pr6-recovery-audit/research-review-round963-v1.json",
+      "bench/results/2026-10-15-pr6-recovery-audit/research-review-round963-v1.ja.md"
+    ],
+    "product_source_modified": false,
+    "build_test_gpu_profiler_process_inspection_or_git_run": false,
+    "extra_agent_or_research_dispatch": false,
+    "active_main_context": "Coordinator-provided: foreign CPU benchmark remains active; current paired profile/census is NOT_RUN. No process inspection or worker interaction was performed."
+  },
+  "reviewed_report": {
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/research-round962-v1.txt",
+    "receipt_path": "bench/results/2026-10-15-pr6-recovery-audit/research-round962-receipt-v1.json",
+    "sha256": "f73672fd730d106bbcf09ca6344233efd1d316959fe2aca327151f18b3c7069a",
+    "bytes": 11958,
+    "words": 1718,
+    "receipt_hash_and_size_match": true,
+    "report_body_read_by_reviewer": true,
+    "report_body_read_by_Main": false,
+    "word_budget": [1400, 1800],
+    "within_budget": true,
+    "classification": "decision_support",
+    "source_only_claim": "The report records no product edits, Git/build/test/GPU/profiler/process inspection, or cleanup."
+  },
+  "source_pin_audit": {
+    "baseline": "bench/results/2026-10-15-pr6-recovery-audit/research-review-round961-v1.json next_scope_eligibility.required_current_source_pins",
+    "required_source_count": 22,
+    "matched_source_count": 22,
+    "mismatched_source_count": 0,
+    "result": "all pinned SHA256 values matched at review time"
+  },
+  "assessment": {
+    "disposition": "accepted_with_lifetime_and_anchor_addenda",
+    "scope_fulfilled": true,
+    "novelty_and_redundancy": "R961 identified a current native16 typed-view/live-range plan as a distinct unanswered source question. R962 answers that question. It does not repeat the already integrated GEMM-workspace removal, the existing FP32 prefix-alias work, or the earlier capacity arithmetic; its dedicated-arena versus temporal-remap comparison, parent max table, state and callback boundaries, and >8192 guards are substantive and within budget.",
+    "verified_claims": [
+      {
+        "claim": "Alloc::take aligns each payload and adds a 256-byte guard; the eight GDN inner takes add 2,048 bytes and the outer shared-region take has its own guard.",
+        "evidence": "src/prefill/prefill.cpp:202-221, 628-642, 967-976"
+      },
+      {
+        "claim": "With no cache borrow, top-level takes call cudaMalloc and are tracked as separate owners; the SYCL compatibility layer maps each device request to sycl::malloc_device. GDN/QSA/MoE layouts are nested in the one shared-region allocation. Borrowed mode slices its supplied cache range. bytes_needed adds 8 MiB count slack; init separately allocates tok_dev and may allocate a mode-1 identity table.",
+        "evidence": "src/prefill/prefill.cpp:208-221, 832-838, 915-929, 967-1006, 1370-1413; src/program/generate.cpp:4916-4931, 6741-6761; src/sycl/compat.cpp:119-129, 225-227; src/sycl/runtime.cpp:192-210"
+      },
+      {
+        "claim": "The prefix, GDN, QSA and compact-MoE arithmetic in report lines 17 and 21-47, including per-take guards and 8 MiB planner slack, matches source. At T=8192, the existing GDN set is 1,180,698,624 B and is the max over QSA and compact MoE.",
+        "evidence": "src/prefill/prefill.cpp:110-118, 628-642, 717-733, 758-772, 967-1006, 1370-1413"
+      },
+      {
+        "claim": "The current recipe is alias=1/no-prefill-borrow. The 335,544,576 B unused-xn count is an alias-OFF planner overcount and is not current physical savings. Typed BF16 views over FP32 owners do not establish released allocation bytes; short FP32 layout and persistent FP32 state remain constraints.",
+        "evidence": "Coordinator-provided current recipe; src/prefill/prefill.cpp:758-772, 934-956, 967-1013, 1370-1413; src/prefill/layer_major.inc:57-64, 467-471"
+      },
+      {
+        "claim": "The report does not claim 16K support, physical 262144 fit, speed, numerical quality, RESTORE, fault qualification, or inference adoption from arithmetic alone.",
+        "evidence": "research-round962-v1.txt:9, 27-29, 61-63"
+      }
+    ],
+    "corrections": [
+      {
+        "id": "qsa16_token_guard_anchor",
+        "severity": "citation",
+        "report_locations": [
+          "research-round962-v1.txt:61",
+          "research-round962-v1.txt:67"
+        ],
+        "correction": "The QSA16 shape guard is src/prefill/sycl/qsa_native16.cpp:34-36 (tokens <= 8192), not lines 25-31; 25-31 validate spans/domains. The stated callers are present at 78-79 (norm/RoPE), 124-125 (gate), and 145 (append). The 8192 limit conclusion is correct; fix retrieval anchors in any downstream citation.",
+        "evidence": "src/prefill/sycl/qsa_native16.cpp:26-36, 71-79, 122-145"
+      },
+      {
+        "id": "shared_region_ple_and_mtp_lifetimes",
+        "severity": "material_for_future_arena_layout",
+        "report_locations": [
+          "research-round962-v1.txt:49-55",
+          "research-round962-v1.txt:59-63"
+        ],
+        "correction": "The prefix discussion covers ple_emb aliasing and the FP32 bridge, but omits two uses of m.region. Layer-1 batched PLE carves temporary buffers from m.region and bounds its subbatch by m.region_bytes/per_token; for the stated 8192 BF16x2-off case per_token is 142,352 B and its full-chunk conservative bound is 1,166,147,584 B, below the current GDN-sized region. The final float callback may call Prefill::draft_kv, which carves its MTP batch workspace from m.region and sizes B from region_bytes. If that fast path cannot run, generate falls back to mtp.prefill only when the error string is empty. This does not invalidate the current max arithmetic, but a future remap must retain/recompute the PLE scratch bound and preserve or explicitly qualify the MTP callback path.",
+        "evidence": "src/prefill/prefill.cpp:1038-1041, 1085-1155, 2211-2250; src/program/generate.cpp:6771-6776"
+      }
+    ],
+    "unqualified": [
+      "Actual free device memory, allocator fragmentation, physical fit, 16K execution, speed, quality, full-context correctness, RESTORE, fault behavior, and production adoption remain unqualified.",
+      "The 262144-cell QSA byte scenario is conditional arithmetic; measured session max_cells, KV mode, MAXBLOB, optional prefix mode, and runtime residual placement remain separate inputs."
+    ],
+    "scope_boundary": "R962 describes the current dual GDN y/y16 allocation at the pinned source snapshot. Main's separate GDN output16-only proposal is not reviewed here; coordinator says it remains unapplied/uncompiled/unmeasured and does not change the arena. Keep that proposal and its qualification separate."
+  },
+  "retrieval_for_Main": {
+    "trigger": "Only if Main makes a concrete shared-region or native16 lifetime/remap decision after current implementation work.",
+    "bounded_report_sections": [
+      "research-round962-v1.txt:23-47 for current parent/max arithmetic",
+      "research-round962-v1.txt:49-63 for typed views, bridges, layout alternatives and 16K gates"
+    ],
+    "targeted_source_sections": [
+      "src/prefill/prefill.cpp:1038-1041, 1085-1155, 2211-2250",
+      "src/program/generate.cpp:6771-6776",
+      "src/prefill/layer_major.inc:345-390, 608-672",
+      "src/prefill/sycl/qsa_native16.cpp:26-36, 71-79, 122-145"
+    ],
+    "instruction": "Do not load the complete research library or unrelated collection bodies; these selected report/source spans answer the identified owner-lifetime question."
+  },
+  "index_entry_proposal": {
+    "key": "research_review_round963",
+    "review_path": "research-review-round963-v1.json",
+    "operational_digest_path": "research-review-round963-v1.ja.md",
+    "operational_digest_sha256": "9a40ee3d036bc13ab4e00953d016bce6046bd36f90d50c280e5e787a178c684a",
+    "source_report_path": "research-round962-v1.txt",
+    "source_report_sha256": "f73672fd730d106bbcf09ca6344233efd1d316959fe2aca327151f18b3c7069a",
+    "source_report_bytes": 11958,
+    "main_collection_report_body_read": false,
+    "reviewer_report_body_read": true,
+    "status": "Completed source-only decision-support review with a corrected QSA16 anchor and a targeted PLE/MTP shared-region lifetime addendum; original report and research index remain unchanged.",
+    "schedulable_now": false,
+    "index_edit_performed": false
+  },
+  "next_scope_eligibility": {
+    "schedulable_now": false,
+    "recommended_now": false,
+    "dispatch_performed": false,
+    "reason": "The R962 source-only arena/lifetime question is complete; no distinct unanswered coherent research scope is currently supported. Main implementation and serialized runtime evidence are next. The paired profile/census is NOT_RUN, and no new survey should be scheduled merely because R962 completed.",
+    "possible_future_question": "If a concrete arena-owner proposal requires an independent byte-plan check, retrieve only the bounded source sections above and derive its current take/high-water plan against that proposal's pinned source snapshot.",
+    "prerequisites_for_future_question": [
+      "A specific Main-owned layout/remap proposal and immutable source snapshot exist.",
+      "The exact current buffer/callback lifetime question is stated; do not infer it from the GDN output16-only source proposal."
+    ],
+    "runtime_claims_not_enabled": [
+      "Physical fit or available-VRAM admission",
+      "Performance or numerical quality",
+      "RESTORE or full 262144-context correctness",
+      "Fault qualification or inference adoption"
+    ]
+  },
+  "operational_digest": {
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/research-review-round963-v1.ja.md",
+    "sha256": "9a40ee3d036bc13ab4e00953d016bce6046bd36f90d50c280e5e787a178c684a",
+    "bytes": 1389,
+    "bullet_count": 5,
+    "byte_budget": 1800
+  }
+}
