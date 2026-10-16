@@ -1,3 +1,6 @@
+// HELD COMPARISON SOURCE: validation entrypoints exclude this protocol (D3).
+// These legacy device operations do not establish a matching atomic host side,
+// atomic-host capability, or a host-visible payload publication contract.
 // include/strata/sycl_doorbell.hpp - the SYCL port: host<->device flag traffic that must bypass the GPU's caches.
 //
 // Strata's decode loop is a handshake through host-mapped memory: the GPU rings a sequence number the host polls,

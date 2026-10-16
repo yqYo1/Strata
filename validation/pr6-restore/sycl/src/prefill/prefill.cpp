@@ -312,7 +312,7 @@ struct Stager {
         finish();
         { std::lock_guard<std::mutex> lk(mu); quit = true; }
         cv.notify_all();
-        for (auto& t : threads) t.join();
+        for (auto& t : threads) detail::bounded_join(t);
         // init may throw while resizing the parallel vectors. Only entries
         // actually constructed can be examined during partial-init cleanup.
         for (auto event : dma_done) if (event) dpct::destroy_event(event);
@@ -1258,6 +1258,12 @@ bool Prefill::draft_kv(core::MtpDrafter& mtp, const float* R_rows, const int32_t
                        std::string& err) {
     Impl& m = *impl_;
     if (!m.ready) { err = "prefill: init must complete before draft_kv"; return false; }
+    if (!m.g || !m.ss || !m.wt ||
+        !core::detail::prefill_admission(R_rows, next_tokens, cell0, n,
+            {core::detail::session_cells(*m.ss, *m.g), mtp.kv_state().max_cells})) {
+        err = "prefill draft: invalid pointers or context/state span"; return false;
+    }
+    if (n == 0) return true; // matches the MTP fallback's admitted empty policy
     static const bool off = [] { const char* v = std::getenv("STRATA_MTP_BATCH"); return v != nullptr && v[0] == '0'; }();
     // A ring (KV streaming: the drafter's window, page p in slot p % n_slots over a host copy) takes the same appends
     // with its own page table and host copy, as a streamed main layer does; the cells written are those the window can
@@ -2613,8 +2619,7 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
             std::atomic<bool>* stop;
             std::thread* t;
             ~IssuerJoin() {
-                detail::RetirementDeadline deadline;
-                if (t->joinable()) { stop->store(true); t->join(); }
+                if (t->joinable()) { stop->store(true); detail::bounded_join(*t); }
             }
         } issuer_join{&a_stop, &issuer};
         const bool threaded_issue = stream_all && issuer_on;
@@ -4034,7 +4039,7 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
         }
         if (!ple_land()) return false;   // a stage that ends before layer 1: the rows land anyway, the next gather starts
         if (issuer.joinable()) {
-            issuer.join();
+            detail::bounded_join(issuer);
             stats_.ms_experts_host += iss_ms;
             stats_.experts_streamed += iss_streamed;
             stats_.experts_dma += iss_dma;

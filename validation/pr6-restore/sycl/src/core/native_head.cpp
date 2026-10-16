@@ -164,6 +164,9 @@ NativeEmbed::~NativeEmbed() {
 
 bool NativeEmbed::load(const std::vector<std::string> &shards, int64_t n_embd,
                        int64_t n_vocab, std::string &err) try {
+    if (!load_attempt_.begin()) {
+        err = "native embedding: load already attempted; use a fresh object"; return false;
+    }
     if (n_embd <= 0 || n_embd > INT32_MAX || n_vocab <= 0 || n_vocab > INT32_MAX) {
         err = "native embedding: dimensions exceed the int32 kernel contract"; return false;
     }

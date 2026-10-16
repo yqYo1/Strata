@@ -20,6 +20,7 @@
 #include "strata/core/layer.hpp"
 #include "strata/kernels/cpu/pool.hpp"
 
+#include "strata/core/validation_control.hpp"
 #include <cstdint>
 #include <string>
 #include <vector>
@@ -87,6 +88,24 @@ struct SessionState {
     /// `ready()` is false is skipped, which is what every caller had before LEDGER L123.
     PleRun ple;
 };
+
+namespace detail {
+// SessionState must still be a caller-owned initialized object. Check every
+// allocated QSA capacity, including a split stage's primary, before indexing.
+inline int64_t session_cells(const SessionState& s, const ModelGeometry& g) noexcept {
+    if (g.n_layers <= 0 || g.n_layers > 262144 || g.qsa_interval <= 0) return 0;
+    const int64_t states = g.n_qsa_layers();
+    if (!s.qsa_states || s.max_cells <= 0 || s.qsa_ord0 < 0 || s.qsa_alloc <= 0 ||
+        s.qsa_ord0 > states || s.qsa_alloc > states - s.qsa_ord0) return 0;
+    int64_t cap = std::min<int64_t>(262144, s.max_cells);
+    for (int64_t i = 0; i < s.qsa_alloc; ++i) {
+        const auto n = s.qsa_states[s.qsa_ord0 + i].max_cells;
+        if (n <= 0) return 0;
+        cap = std::min(cap, n);
+    }
+    return cap;
+}
+} // namespace detail
 
 /// Bytes for a whole session at `max_cells` of context.  Every layer's state is sized at once, because P2.T10
 /// requires ZERO token-path allocations - a `cudaMalloc` that happened on the first token of a longer sequence

@@ -52,3 +52,32 @@ the vendor notice and leaving the external installation untouched. This changes
 synchronization/error handling and uniform queue profiling, so historical
 performance claims do not qualify the corrected route. Its status remains
 `SOURCE_ONLY_UNSAFE_TO_RUN` until Main reviews and executes the separate gates.
+
+V3 repairs the D1 queue-query boolean, D2 position/pointer admission, D4 embedding
+one-attempt load, and D5 normal issuer join deadline at source level. The new
+`pr6_validation_control` and `pr6_bounded_join` ordinary C++ fixtures do not load
+SYCL and have not been executed by the source worker. Empty MTP/draft-KV prefill
+is a no-op only at an admitted nonnegative endpoint; nonempty calls require both
+pointers. Span admission uses physical 262144 and actual session/QSA/draft-state
+capacities, with draft lookahead checked separately. Full physical256K execution
+is still unqualified.
+
+D3 is a hard exclusion, with no environment override. `doorbell_init` refuses
+before allocating; decode `session_loop`, token graph capture/replay and every
+verifier mode (including eager, host-boundary, no-host/all-resident, split and
+commit) refuse before recording or launch. The historical device handshake source
+is preserved as held comparison source; host fences are not an atomic-host proof.
+Verifier construction keeps null queue pointers, so refused init cannot initialize
+or later destroy borrowed DPCT defaults.
+
+The CLI refuses these modes after argument parsing, before device queries or
+allocation. Its retained original `--no-capture --no-pool` route is explicitly a
+GPU-floor decode diagnostic: it has no CPU expert hook and is not full-model
+decode. It uses no doorbell allocation. Ordinary `Prefill::run` and draft-KV math
+remain available to Main's separate prefill harness; the engine CLI is not a
+full native-pack or historical600 reproduction route. No new scheduler or
+handshake is substituted. All native routes, including this fallback, retain
+`SOURCE_ONLY_UNSAFE_TO_RUN` pending Main's source/build/provider/numerical gates.
+See `safety-corrections-v3.md/json/patch` in the results directory for the exact
+base, complete source patch, preservation checks, remaining gates and timing
+changes. No prior report or fixed pin is superseded in place.

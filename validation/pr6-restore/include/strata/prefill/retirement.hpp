@@ -36,6 +36,15 @@ public:
         watcher_.join();
     }
 };
+// The thread and every referenced owner outlive this call. No owner mutex may
+// be held here: joining must allow the worker to finish its own handoffs.
+inline void bounded_join(std::thread& worker) noexcept {
+    if (!worker.joinable()) return;
+    try {
+        RetirementDeadline deadline;
+        worker.join();
+    } catch (...) { retirement_fail_stop("thread join unavailable"); }
+}
 template<class Predicate>
 inline void retirement_until(Predicate ready, const char* reason) noexcept {
     try {

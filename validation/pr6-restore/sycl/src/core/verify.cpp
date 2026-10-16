@@ -2,6 +2,8 @@
 #include <sycl/sycl.hpp>
 #include <dpct/dpct.hpp>
 #include "strata/core/verify.hpp"
+#include "strata/sycl_retirement.hpp"
+#include "strata/prefill/draft_uploads.hpp"
 #if defined(_WIN32)
 #include <intrin.h>
 #endif
@@ -177,6 +179,7 @@ const int64_t g_test_stall = [] {
 }  // namespace
 
 bool Verifier::release_gpu_waits(int timeout_ms) try {
+    if (!detail::concurrent_doorbell_admitted()) return false;
     released_.store(true);
     trace_ev("RELEASE", -1, -1, timeout_ms);
     // the words the spin kernels read (wait_flag_ge, wait_flag_ge_or) are mapped host memory, so a store here
@@ -206,6 +209,7 @@ bool Verifier::release_gpu_waits(int timeout_ms) try {
 }
 
 void Verifier::trace_ev(const char* what, int64_t step, int64_t layer, int64_t aux) const {
+    if (!detail::concurrent_doorbell_admitted()) return;
     if (!g_trace) return;
     auto rd = [](const uint32_t* p) { return p ? *(const volatile uint32_t*) p : 0u; };
     TraceEv& e = g_trace_ring[g_trace_next.fetch_add(1) % kTraceN];
@@ -265,6 +269,7 @@ void Verifier::trace_dump(std::FILE* f) const {
 }
 
 void Verifier::diag(std::FILE* f) const {
+    if (!detail::concurrent_doorbell_admitted()) return;
     auto rd = [](const uint32_t* p) { return p ? *(const volatile uint32_t*) p : 0u; };
     // #251: outside a verify stage these are the LAST window's numbers (it finished), not the stalled work's
     const char* where = progress().where.load();
@@ -306,6 +311,9 @@ Verifier::~Verifier() try {
 bool Verifier::init(const WeightTable &wt, const ModelGeometry &g,
                     SessionState &ss, const VerifyHits &hits,
                     const NativeHead *head, int max_t, std::string &err) try {
+    if (!detail::concurrent_doorbell_admitted()) {
+        err = detail::doorbell_exclusion; return false;
+    }
     g_diag_verifier.store(this);
     diag_verify_fn().store(&diag_active_verifier);
     for (auto& slot : g_live) {
@@ -567,7 +575,10 @@ catch (sycl::exception const &exc) {
   std::exit(1);
 }
 
-const float* Verifier::final_R(int t) const { return R_ + (size_t) t * (size_t) (g_->hc * g_->n_embd); }
+const float* Verifier::final_R(int t) const {
+    if (!detail::concurrent_doorbell_admitted() || !g_ || !R_ || t < 0 || t >= last_t_) return nullptr;
+    return R_ + (size_t) t * (size_t) (g_->hc * g_->n_embd);
+}
 
 // ================================ THE WINDOW, AS CAPTURED ================================
 //
@@ -580,6 +591,9 @@ const float* Verifier::final_R(int t) const { return R_ + (size_t) t * (size_t) 
 // while the GPU combines A and runs A's layer l+1.  B's mixer only needs A's mixer of the same layer (K/V, GDN
 // state), never A's experts, so nothing waits that did not wait before.  Every token's arithmetic is unchanged.
 bool Verifier::record_window(int T, dpct::queue_ptr cs, std::string &err) {
+    if (!detail::concurrent_doorbell_admitted()) {
+        err = detail::doorbell_exclusion; return false;
+    }
     using namespace strata::kernels;
     const ModelGeometry& g = *g_;
     const WeightTable& wt = *wt_;
@@ -1136,6 +1150,9 @@ std::string Verifier::profile_report() {
 }
 
 bool Verifier::capture_boundary(int T, std::string& err) {
+    if (!detail::concurrent_doorbell_admitted()) {
+        err = detail::doorbell_exclusion; return false;
+    }
     if (std::getenv("STRATA_VERIFY_EAGER") != nullptr) return true;
     auto& graphs = boundary_graphs_[T];
     if (graphs.tail) return true;
@@ -1184,6 +1201,9 @@ bool Verifier::capture_boundary(int T, std::string& err) {
 }
 
 bool Verifier::run_boundary(int T, PoolMultiFn pool, void* user, std::string& err) {
+    if (!detail::concurrent_doorbell_admitted()) {
+        err = detail::doorbell_exclusion; return false;
+    }
     const auto& g = *g_;
     const auto& ss = *ss_;
     const int G = split_ && T >= 2 ? 2 : 1;
@@ -1254,6 +1274,9 @@ bool Verifier::run_boundary(int T, PoolMultiFn pool, void* user, std::string& er
 }
 
 bool Verifier::capture(int T, std::string &err) try {
+    if (!detail::concurrent_doorbell_admitted()) {
+        err = detail::doorbell_exclusion; return false;
+    }
     if (host_boundary_) return capture_boundary(T, err);
     if (exec_[T] != nullptr) return true;
     if (std::getenv("STRATA_VERIFY_EAGER") != nullptr) return true;   // SYCL port: no graph, run() replays the body
@@ -1356,6 +1379,9 @@ catch (sycl::exception const &exc) {
 }
 
 bool Verifier::capture_commit(std::string &err) try {
+    if (!detail::concurrent_doorbell_admitted()) {
+        err = detail::doorbell_exclusion; return false;
+    }
     if (commit_exec_ != nullptr) return true;
     using namespace strata::kernels;
     const ModelGeometry& g = *g_;
@@ -1440,16 +1466,18 @@ catch (sycl::exception const &exc) {
 bool Verifier::run(int T, const int32_t *tokens, int64_t pos0, PoolMultiFn pool,
                    void *user, int32_t *out, std::string &err) try {
     using namespace strata::kernels;
-    if (T < 1 || T > max_t_ ||
+    if (!wt_ || !g_ || !ss_ || !cs_ || !out || T < 1 || T > max_t_ || T > 8 ||
+        !detail::prefill_admission(out, tokens, pos0, T, {detail::session_cells(*ss_, *g_)}) ||
         !detail::embedding_tokens(tokens, T, native_embed() ? native_embed()->vocabulary() : n_vocab_)) {
-        err = "verify: token outside the embedding vocabulary"; return false;
+        err = "verify: invalid pointers, token IDs or context span"; return false;
+    }
+    if (!detail::concurrent_doorbell_admitted()) {
+        err = detail::doorbell_exclusion; return false;
     }
     const OnDevice on_device(device_);
-    if (T < 1 || T > max_t_) { err = "verify: window size out of range"; return false; }
     const ModelGeometry& g = *g_;
     SessionState& ss = *ss_;
-    if (released_.load()) { err = "verify: an earlier window never finished on the GPU (#267); restart the engine"; return false; }
-    if (pos0 + T > ss.qsa_states[ss.qsa_primary()].max_cells) { err = "verify: the window runs past the context"; return false; }
+    if (released_.load()) { err = "verify: an earlier window never finished; restart the engine"; return false; }
     if (!capture(T, err) || !capture_commit(err)) return false;
     VDBG("captured; staging\n");
     const Clock::time_point t0 = Clock::now();
@@ -1487,6 +1515,11 @@ bool Verifier::run(int T, const int32_t *tokens, int64_t pos0, PoolMultiFn pool,
     VDBG("staged; launching\n");
     static Clock::time_point t_prev_end;   // SYCL port timing: where does a round's wall clock go?
     const Clock::time_point t_launch = Clock::now();
+    prefill::detail::RetirementDeadline window_deadline;
+    prefill::detail::DraftUploadGuard accepted_work(
+        [&] { strata::retire_queue(*cs_); if (copy_) strata::retire_queue(*copy_); return true; },
+        [] { prefill::detail::retirement_fail_stop("verify work not retired"); });
+    accepted_work.arm();
     const dpct::err0 le = host_boundary_
                               ? (run_boundary(T, pool, user, err) ? 0 : 1)
                               : (std::getenv("STRATA_VERIFY_EAGER") != nullptr)
@@ -1510,7 +1543,6 @@ bool Verifier::run(int T, const int32_t *tokens, int64_t pos0, PoolMultiFn pool,
             std::string("verify: launch: ") + dpct::get_error_string_dummy(le);
         return false;
     }
-    (void)DPCT_CHECK_ERROR(((cs_)->ext_oneapi_empty()));
     VDBG("launched\n");
     volatile uint32_t* const seq = h_seq_;
     volatile uint32_t* const flag = h_flag_;
@@ -1538,38 +1570,23 @@ bool Verifier::run(int T, const int32_t *tokens, int64_t pos0, PoolMultiFn pool,
             const auto now = Clock::now();
             if (now - last_flush > std::chrono::microseconds(2000)) {
                 last_flush = now;
-                const dpct::err0 q =
-                    DPCT_CHECK_ERROR(((cs_)->ext_oneapi_empty()));
-                if (q != 1 && *seq < want) {
-                    trace_ev("NEVER-RANG", k, l, (int64_t) q);
-                    trace_dump(stderr);
-                    err = "verify: layer " + std::to_string(l) +
-                          " never rang (" +
-                          /*
-                          DPCT1009: SYCL reports errors using exceptions and
-                          does not use error codes. Please replace the
-                          "get_error_string_dummy(...)" with a real
-                          error-handling function.
-                          */
-                          (q == 0
-                               ? std::string("graph finished")
-                               : std::string(dpct::get_error_string_dummy(q))) +
-                          ")";
+                const auto progress = detail::ring_progress(
+                    [&] { return cs_->ext_oneapi_empty(); },
+                    [&] { cs_->throw_asynchronous(); }, [&] { return *seq >= want; });
+                if (progress == detail::RingProgress::query_error)
+                    prefill::detail::retirement_fail_stop("verify queue progress unavailable");
+                if (progress == detail::RingProgress::complete_without_ring) {
+                    strata::retire_queue(*cs_);
+                    if (copy_) strata::retire_queue(*copy_);
+                    accepted_work.retire();
+                    err = "verify: layer " + std::to_string(l) + " never rang (graph finished)";
                     return false;
                 }
             }
             if (now - a > std::chrono::seconds(20)) {
-                // #267: the caller ends the engine; no spin kernel may outlive it
-                trace_ev("TIMEOUT", k, l, (int64_t) !cs_->ext_oneapi_empty());   // SYCL port: 1 = still running
-                if (g_trace) {
-                    diag(stderr);   // the words and the breadcrumbs before the release ...
-                    const bool drained = release_gpu_waits(5000);
-                    trace_dump(stderr);   // ... and after it: did the GPU move once its waits were raised?
-                    err = "verify: timed out at layer " + std::to_string(l) + released_note(drained);
-                    return false;
-                }
-                err = "verify: timed out at layer " + std::to_string(l) + released_note(release_gpu_waits(5000));
-                return false;
+                // No unproved volatile release protocol and no ordinary unwind
+                // while accepted graphs may still own buffers.
+                prefill::detail::retirement_fail_stop("verify pending work abandoned");
             }
         }
         const Clock::time_point b = Clock::now();
@@ -1632,6 +1649,9 @@ bool Verifier::run(int T, const int32_t *tokens, int64_t pos0, PoolMultiFn pool,
         err = std::string("verify: ") + dpct::get_error_string_dummy(se);
         return false;
     }
+    strata::retire_queue(*cs_);
+    if (copy_) strata::retire_queue(*copy_);
+    accepted_work.retire();
     if (no_host && std::getenv("STRATA_VERIFY_DEBUG") != nullptr) {   // SYCL port: what the window left behind
         const int Gd = groups_[T] > 0 ? groups_[T] : 1;
         std::vector<uint32_t> sk((size_t) Gd, 0);
@@ -1854,6 +1874,13 @@ void Verifier::publish_plan(void* ctx) {
 
 bool Verifier::window_logprobs(const int32_t* targets, int T, int64_t pos0, int32_t extra_id, std::FILE* out,
                                std::string& err) try {
+    if (!g_ || !ss_ || !out || T < 1 || T > max_t_ || T > last_t_ || T > 8 ||
+        !detail::prefill_admission(out, targets, pos0, T, {detail::session_cells(*ss_, *g_)})) {
+        err = "window_logprobs: invalid pointers or context/window span"; return false;
+    }
+    if (!detail::concurrent_doorbell_admitted()) {
+        err = detail::doorbell_exclusion; return false;
+    }
     if (next_ != nullptr) return next_->window_logprobs(targets, T, pos0, extra_id, out, err);
     const OnDevice on_device(device_);
     if (head_logits_ == nullptr || n_vocab_ <= 0 || T <= 0 || targets == nullptr || out == nullptr) {
@@ -1915,6 +1942,9 @@ namespace { bool g_commit_async = false; }
 void Verifier::set_commit_async(bool on) { g_commit_async = on && std::getenv("STRATA_COMMIT_SYNC") == nullptr; }
 
 bool Verifier::commit(int n_keep, std::string &err, bool wait) try {
+    if (!detail::concurrent_doorbell_admitted()) {
+        err = detail::doorbell_exclusion; return false;
+    }
     const OnDevice on_device(device_);
     if (n_keep < 1 || n_keep > last_t_) { err = "verify: commit count out of range"; return false; }
     if (pending_commit_ != 0 && !commit_finish(err)) return false;
@@ -1958,12 +1988,18 @@ catch (sycl::exception const &exc) {
 }
 
 bool Verifier::warm(std::string &err) {
+    if (!detail::concurrent_doorbell_admitted()) {
+        err = detail::doorbell_exclusion; return false;
+    }
     for (int T = 1; T <= max_t_; ++T)
         if (!capture(T, err)) return false;
     return true;
 }
 
 bool Verifier::commit_finish(std::string &err) try {
+    if (!detail::concurrent_doorbell_admitted()) {
+        err = detail::doorbell_exclusion; return false;
+    }
     if (pending_commit_ == 0) return true;
     const OnDevice on_device(device_);
     const int n_keep = pending_commit_;
@@ -1988,11 +2024,15 @@ catch (sycl::exception const &exc) {
 }
 
 bool Verifier::wait_commit(std::string& err) {
+    if (!detail::concurrent_doorbell_admitted()) {
+        err = detail::doorbell_exclusion; return false;
+    }
     if (!commit_finish(err)) return false;
     return next_ == nullptr || next_->wait_commit(err);
 }
 
 bool Verifier::copy_logits(int t, float* host) const {
+    if (!detail::concurrent_doorbell_admitted()) return false;
     if (next_ != nullptr) return next_->copy_logits(t, host);   // a layer split: the head is on the last stage
     if (head_logits_ == nullptr || host == nullptr || t < 0 || n_vocab_ <= 0) return false;
     try {

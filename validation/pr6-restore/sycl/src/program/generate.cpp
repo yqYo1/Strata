@@ -1605,6 +1605,17 @@ int main(int argc, char **argv) try {
         }
         }
     }
+    // Before device queries, allocation or recording. The only retained CLI
+    // decode fallback is the original explicitly requested GPU-floor diagnostic;
+    // session_token has no CPU-pool hook and cannot replace full model decode.
+    if (!strata::core::detail::concurrent_doorbell_admitted() &&
+        (o.spec != 0 || o.serve || !o.no_capture || !o.no_pool ||
+         !o.dump_layers.empty() || !o.dump_halves.empty() || !o.dump_routing.empty())) {
+        std::fprintf(stderr, "%s\nOnly the original --no-capture --no-pool diagnostic is admitted here; "
+                             "Prefill::run remains available to Main's separate prefill harness.\n",
+                     strata::core::detail::doorbell_exclusion);
+        return 2;
+    }
     strata::core::set_coupled_draft(o.coupled_draft);
     strata::core::set_peer_portable(o.peer_device >= 1);   // multi-GPU: the Portable flag on mapped host buffers only with a peer device (before any allocation)
     if (o.serve && o.conversation_cache_mib > 0 && (o.prompt_cache == 0 || o.conversation_cache_slots == 0))
@@ -2485,11 +2496,9 @@ int main(int argc, char **argv) try {
     }
 
     strata::core::Doorbell db;
-    if (strata::core::doorbell_init(g, K, db) == 0) {
-        std::fprintf(stderr, "strata generate: doorbell_init failed\n");
-        return 1;
-    }
-    ss.db = &db;
+    // The admitted original direct diagnostic uses no doorbell. Ordinary
+    // Prefill has its own CPU expert path; --no-pool only describes decode.
+    ss.db = nullptr;
 
     // ================================ THE PLE ================================
     //

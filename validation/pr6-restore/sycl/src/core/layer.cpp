@@ -7,6 +7,7 @@
 #include "strata/core/layer.hpp"
 #include "strata/core/allocated_fields.hpp"
 #include <limits>
+#include "strata/core/validation_control.hpp"
 #include "strata/core/native_head.hpp"
 #include "strata/kernels/bf16_bits.hpp"
 #include "strata/kernels/bf16_gemv.hpp"
@@ -390,6 +391,9 @@ uint64_t moe_buffers_init(const ModelGeometry& g, int64_t k, void* base, MoEBuff
 bool moe_route(const WeightTable &tables, const ModelGeometry &g, int64_t layer,
                int64_t k, const MoEBuffers &b, const float *x, void *stream,
                std::string &err, const Doorbell *db) try {
+    if (db && !detail::concurrent_doorbell_admitted()) {
+        err = detail::doorbell_exclusion; return false;
+    }
     using namespace strata::kernels; const LayerView v(tables, layer);
     const WeightRef *w_router = v.get("ffn_gate_inp.weight");
     if (w_router == nullptr) {
@@ -1156,6 +1160,7 @@ try {
 namespace {}
 // namespace
 uint64_t doorbell_init(const ModelGeometry& g, int64_t k, Doorbell& db) {
+    if (!detail::concurrent_doorbell_admitted()) return 0; // before all allocations
     // An existing doorbell may still be visible to a graph: never overwrite it.
     if (db.h_x_f || db.h_ids || db.h_weights || db.h_seq || db.h_flag ||
         db.d_x_f || db.d_ids || db.d_weights || db.d_seq || db.d_flag ||

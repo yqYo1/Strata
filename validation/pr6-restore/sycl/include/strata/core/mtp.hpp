@@ -52,6 +52,10 @@ public:
     void set_max_drafts(int k) { max_drafts_ = k; }
     /// SYCL port: capture the round, step and prompt graphs at load rather than on first use (see Verifier::warm)
     bool warm(std::string& err) {
+        if (!wt_ || !g_ || !ss_ || !cs_ || max_t_ < 1 || max_t_ > 8 ||
+            detail::session_cells(*ss_, *g_) <= 0 || st_.max_cells <= 0) {
+            err = "mtp warm: uninitialized or invalid context"; return false;
+        }
         for (int T = 1; T <= max_t_; ++T)
             if (!capture_round(T, false, err) || !capture_prefill(T, err)) return false;
         for (int j = 1; j < std::min(max_t_ - 1, max_drafts_); ++j)

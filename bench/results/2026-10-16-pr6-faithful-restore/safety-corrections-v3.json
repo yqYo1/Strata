@@ -1,0 +1,930 @@
+{
+  "schema_version": 3,
+  "kind": "finite source implementation D1-D5, D3 route exclusion",
+  "status": "SOURCE_ONLY_UNSAFE_TO_RUN",
+  "task_id": "task_08d5d970525c",
+  "dispatch_id": "ctx_fe4210560094",
+  "generated_utc": "2026-10-16T08:19:39.533812+00:00",
+  "base_commit": "185fc2d2642071f8fff43a7b426f936f3a974a09",
+  "source_checkpoint": "2776c37b095e2b84a28f575ad43d888c1c42d254",
+  "branch": "verify/pr6-prefill-restore",
+  "initial_worktree": "CLEAN",
+  "snapshot_kind": "UNCOMMITTED_SOURCE_FIXTURE_DOC_DIFF",
+  "source_checkpoint_to_base_changed_paths": [
+    "bench/results/2026-10-16-pr6-faithful-restore/independent-safety-review-v2.json",
+    "bench/results/2026-10-16-pr6-faithful-restore/independent-safety-review-v2.md"
+  ],
+  "execution": {
+    "configure": "NOT_RUN",
+    "preprocessing": "NOT_RUN",
+    "compiler": "NOT_RUN",
+    "syntax_check": "NOT_RUN",
+    "build": "NOT_RUN",
+    "host_fixtures": "NOT_RUN",
+    "tests": "NOT_RUN",
+    "native": "NOT_RUN",
+    "gpu": "NOT_RUN",
+    "device_queries": "NOT_RUN",
+    "process_inspection": "NOT_RUN",
+    "profiler": "NOT_RUN",
+    "service_queries": "NOT_RUN"
+  },
+  "git_mutations": false,
+  "nested_agents": false,
+  "new_upstream_check": false,
+  "authorization_limits": {
+    "only_validation_sources_fixtures_docs_and_three_new_v3_reports_written": true,
+    "main_engine_changed": false,
+    "shared_dependencies_changed": false,
+    "package_or_permissions_operations": false,
+    "credential_records_accessed": false,
+    "cleanup": false,
+    "external_messages": "Orca lifecycle only"
+  },
+  "tool_notes": [
+    "python command absent, Python3 editing used",
+    "Artifact generator initially applied len to integer translation_units inventory field; corrected to store the integer",
+    "No project/fixture code executed; source diff/hash generation is an identity observation"
+  ],
+  "full_source_patch": {
+    "path": "bench/results/2026-10-16-pr6-faithful-restore/safety-corrections-v3.patch",
+    "sha256": "9bd1300910a1f5eace331eff2c967e89d0f7cbef7ee737787280b8656be48bcf",
+    "git_blob": "e4bbee995a75fefcf4e29964bb6fb2d0cb3fbc11",
+    "bytes": 59318,
+    "base_commit": "185fc2d2642071f8fff43a7b426f936f3a974a09",
+    "tracked_diff_command": [
+      "git",
+      "diff",
+      "--binary",
+      "--full-index",
+      "185fc2d2642071f8fff43a7b426f936f3a974a09",
+      "--",
+      "validation/pr6-restore"
+    ],
+    "new_file_diff_command_template": [
+      "git",
+      "diff",
+      "--no-index",
+      "--binary",
+      "--full-index",
+      "--",
+      "/dev/null",
+      "<each sorted new source path>"
+    ],
+    "new_file_paths": [
+      "validation/pr6-restore/fixtures/bounded_join.cpp",
+      "validation/pr6-restore/fixtures/validation_control.cpp",
+      "validation/pr6-restore/include/strata/core/validation_control.hpp"
+    ],
+    "matches_current_full_diff_bytes": true,
+    "scope": "All validation source/fixture/README changes including new files; only three v3 report artifacts excluded to avoid self-reference",
+    "application": "NOT_RUN"
+  },
+  "changed_files": [
+    {
+      "path": "validation/pr6-restore/README.md",
+      "sha256": "98e39ac8fbe0430c70683a5de4e72bf1accd6a3c8a068ff262aef25ad34978cb",
+      "git_blob": "649c976327f7d2f52bda06549ece5f44e605befa",
+      "bytes": 5395,
+      "base": {
+        "path": "validation/pr6-restore/README.md",
+        "sha256": "eb0f9d75123a9e58b917a586523911ffe03cd59b59977591ec0cb8989b2a4aef",
+        "git_blob": "96aef224d820de0da635e434069e856645c94189",
+        "bytes": 3432
+      }
+    },
+    {
+      "path": "validation/pr6-restore/fixtures/CMakeLists.txt",
+      "sha256": "d726bc46849da25184877d4e18142a652dc5f823dd119cc0c825ff8df1a05c28",
+      "git_blob": "165ca14582616d1651f1585d676d0f9e25a4ebbc",
+      "bytes": 1561,
+      "base": {
+        "path": "validation/pr6-restore/fixtures/CMakeLists.txt",
+        "sha256": "4e0879f5dad82e51d77cfdd89ba272c952f74da26048b2945c216a15baf48078",
+        "git_blob": "5aa9ea6cd81827c4d37b58e0a3a76e54737c6f37",
+        "bytes": 1008
+      }
+    },
+    {
+      "path": "validation/pr6-restore/fixtures/bounded_join.cpp",
+      "sha256": "d4f3138b69f6dd63656913b1bd5e0b0585020bb51bce8eb6a5afe2ff83b49ca1",
+      "git_blob": "2b4a5950837ded999ffd8625f5f4ec78dc73ad61",
+      "bytes": 1644,
+      "base": null
+    },
+    {
+      "path": "validation/pr6-restore/fixtures/validation_control.cpp",
+      "sha256": "fd7baaedaa4a1c9e3714bf2c77bf7b54a1e10d5eff2b8a60c3e495a5dc29f56b",
+      "git_blob": "12633c01bb7bf9827cd8b6ca6755be76bc165ff9",
+      "bytes": 5301,
+      "base": null
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/core/native_head.hpp",
+      "sha256": "f24610f43fc4e891d5d96466f19f2de77f3e34a717ae5265e7f50ae614a5d36c",
+      "git_blob": "756a2fb2b578d51ae764131936a237c71ff75197",
+      "bytes": 3667,
+      "base": {
+        "path": "validation/pr6-restore/include/strata/core/native_head.hpp",
+        "sha256": "04e88314b34833b89335973d22ad903764e8e534780cfdaa790f0258eb60ede2",
+        "git_blob": "097ef5946df4d70ae441d171ea9a3b9ce5011f5a",
+        "bytes": 3493
+      }
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/core/validation_control.hpp",
+      "sha256": "b09ddc148a66cd1423d733f4fa9beb27e5fb8749bb1039d88465da39d12ac2fc",
+      "git_blob": "5c585600be736f5d36fcb23e6015c863e4e2c134",
+      "bytes": 3446,
+      "base": null
+    },
+    {
+      "path": "validation/pr6-restore/include/strata/prefill/retirement.hpp",
+      "sha256": "e440caa8186efcbf33c79ed88f97fd3aa127cb48067d6406b8f541c0f46217ef",
+      "git_blob": "cc241b71471686f6999c45ed53a70db7b6589b27",
+      "bytes": 2344,
+      "base": {
+        "path": "validation/pr6-restore/include/strata/prefill/retirement.hpp",
+        "sha256": "205798bd97533112c1bbbba7d490b25dcc0a2c88ed39bc9337afc1fdaa81ab41",
+        "git_blob": "04efa6bdb1fc34a5c4661d9e4ae82e96703e9c4a",
+        "bytes": 1954
+      }
+    },
+    {
+      "path": "validation/pr6-restore/sycl/include/strata/core/mtp.hpp",
+      "sha256": "306c91e43e536cd574476ab5a1302140beb41d2d237ae35e3d2ff4d84b020a0b",
+      "git_blob": "d5ec6f9ee00adc520233d82058fbd8199b19b2df",
+      "bytes": 11985,
+      "base": {
+        "path": "validation/pr6-restore/sycl/include/strata/core/mtp.hpp",
+        "sha256": "6e948585a01a4bec384af41dacacd1c3531f8bb7ea6b2db9c08bb295afac9971",
+        "git_blob": "1848b322bbcb1c85f66c3025ccc63ea080b6fece",
+        "bytes": 11751
+      }
+    },
+    {
+      "path": "validation/pr6-restore/sycl/include/strata/core/session.hpp",
+      "sha256": "ec390ba42eba0694255a07376c0aeff977c42141593339fbd29dcf4fac6af4a9",
+      "git_blob": "ffe19bc1d6183b6594f3b6bf3c91ffe785e661fe",
+      "bytes": 31475,
+      "base": {
+        "path": "validation/pr6-restore/sycl/include/strata/core/session.hpp",
+        "sha256": "3b98234b00a8a7ad568f7d272c07d59609f777376994277505b16f00b208d659",
+        "git_blob": "3bb6e9d41a2a18befe2b218fc72cc042d17fd21d",
+        "bytes": 30604
+      }
+    },
+    {
+      "path": "validation/pr6-restore/sycl/include/strata/core/verify.hpp",
+      "sha256": "2ba290f8cf6d2df41a6b7532fcff457c72e0e51de22c496b58c3ab073dd4a7b2",
+      "git_blob": "99d0c411efc6c5a6f3efbe8a16d47ac0863eaff6",
+      "bytes": 20288,
+      "base": {
+        "path": "validation/pr6-restore/sycl/include/strata/core/verify.hpp",
+        "sha256": "372fb08904aa24f6bf2f055a82e7479785f46a5bf2c57c2a0768415cb0a8de95",
+        "git_blob": "c7c993d3f5ad4e88ed8bc8e536ab4c01b6262b1f",
+        "bytes": 20328
+      }
+    },
+    {
+      "path": "validation/pr6-restore/sycl/include/strata/sycl_doorbell.hpp",
+      "sha256": "6e52f096214b1eba1077f001a812cdba542c709642495d794fc420d12325a522",
+      "git_blob": "30651b9cd18677fde0faf0037e0c70a38f5ae43f",
+      "bytes": 1962,
+      "base": {
+        "path": "validation/pr6-restore/sycl/include/strata/sycl_doorbell.hpp",
+        "sha256": "887c300d93c423e9fe905dc4f4760e89f9b4dd79c5c8b2e4d0c0b28b9ad53cac",
+        "git_blob": "d801c54e071e8188a66c13ddfed2dbe243c62aa3",
+        "bytes": 1729
+      }
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/core/layer.cpp",
+      "sha256": "44cb1e9f6ff157f453eabaa0c48ff4090df60ce58003a57fc1dd3cbec7192d45",
+      "git_blob": "f507e037258a5fc5ece3ed1c7baac95a6372382b",
+      "bytes": 110377,
+      "base": {
+        "path": "validation/pr6-restore/sycl/src/core/layer.cpp",
+        "sha256": "9af142230c8b28d55731a1e9884e968b4b7f0f2cf5e7de4c689b8e83634b4215",
+        "git_blob": "82e9f3df42150f81a00fa0f5ca3f6c2c1f8496b7",
+        "bytes": 110127
+      }
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/core/mtp.cpp",
+      "sha256": "d1d66753feb50138d72e3638007625dd01cc6db6c3adf78af278cd837d0617f3",
+      "git_blob": "f5409df03fc69f208ba5dddfeaa90da75d153c17",
+      "bytes": 66666,
+      "base": {
+        "path": "validation/pr6-restore/sycl/src/core/mtp.cpp",
+        "sha256": "ac0a15e6e55ef024807810cdc63691002aa9fb5c303b7481767be331a127a0f7",
+        "git_blob": "26820845458e381021b5b8ebc57663b5f0ce6747",
+        "bytes": 64199
+      }
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/core/native_head.cpp",
+      "sha256": "f45d658c199b159b8a43185d5b986f9c74265e52a9adb378e894c5577141fdb7",
+      "git_blob": "cbe713b7e0e651e4e0ba9d6629277de2367ecbd9",
+      "bytes": 14892,
+      "base": {
+        "path": "validation/pr6-restore/sycl/src/core/native_head.cpp",
+        "sha256": "268c6b120d89726d4c786092d0f5a2c767322eda0b71d0dcabb8ddf3fc944323",
+        "git_blob": "4d089246f4117ef7c278f790293925ae7988ba58",
+        "bytes": 14760
+      }
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/core/session.cpp",
+      "sha256": "ed15ed6a115165b69c90b630d11d00db478d18241b8a8fd01767e01f6ce44819",
+      "git_blob": "c266403085dffb7fc862889e072e4a349d6cab67",
+      "bytes": 67731,
+      "base": {
+        "path": "validation/pr6-restore/sycl/src/core/session.cpp",
+        "sha256": "d36b94c8855af556955ba7dac38e6c0852e761d7f2a0dd1e4cc8495d2c2930f7",
+        "git_blob": "0b4187d6a65cc873c5595829fabfe881e230c2de",
+        "bytes": 67034
+      }
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/core/verify.cpp",
+      "sha256": "4d8e43ad252e90c3404238073cd2d9eb8e1b985f04bc6a68129135855648f881",
+      "git_blob": "f13bc363d74f33567dbf6d7baec8bd9467da4607",
+      "bytes": 109629,
+      "base": {
+        "path": "validation/pr6-restore/sycl/src/core/verify.cpp",
+        "sha256": "435a59fe52e0b21c8a7d62752a01d1d62f72dbd0c30c1a94826fd8cd85570d8b",
+        "git_blob": "f446a3e3cce15ea601465f42296998b48ee14a14",
+        "bytes": 108050
+      }
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/prefill/prefill.cpp",
+      "sha256": "334c5ac6f3da31796ff5dcc531d52d8f00eff7e47453735ce68e4a34b6f3063e",
+      "git_blob": "921fc0425b67206c7d0aafa270489054c2a4543e",
+      "bytes": 255672,
+      "base": {
+        "path": "validation/pr6-restore/sycl/src/prefill/prefill.cpp",
+        "sha256": "74fb232fd2f5e1465303c1c5ebc7a4ba38d8610a8efe8585ad090081e2f93b04",
+        "git_blob": "24a17a0c7f95210405b5753832558c147ef71b7d",
+        "bytes": 255317
+      }
+    },
+    {
+      "path": "validation/pr6-restore/sycl/src/program/generate.cpp",
+      "sha256": "2b2462269fc1a3bb3e9dba89b5419ed20538b3ebd726c1c560ffad88fd78d41d",
+      "git_blob": "fa97bfe211365c1a1c857d317ab2f8fa254e2151",
+      "bytes": 535157,
+      "base": {
+        "path": "validation/pr6-restore/sycl/src/program/generate.cpp",
+        "sha256": "8b4738d6a834688645a507a4a2faef21f63df9ac695ecae7f45571064451365b",
+        "git_blob": "58d6370e64c8bf9aab5deb519ce46e87ba938246",
+        "bytes": 534399
+      }
+    }
+  ],
+  "source_snapshot_sha256": "5daebc92a71974e46618c42ad10d0138f8ffeae7c5520bf972c26cd09e3c3aea",
+  "preservation": {
+    "existing_result_files": [
+      {
+        "path": "bench/results/2026-10-16-pr6-faithful-restore/current-source-pins.json",
+        "sha256": "19621ea579db53ccf02d9b89e02cd5ecd92e1dc3d533a7a97e8dd9e75fdd8398",
+        "git_blob": "1aa9c642134380dd742bd4983875fe61832a71a9",
+        "bytes": 52155,
+        "base_sha256": "19621ea579db53ccf02d9b89e02cd5ecd92e1dc3d533a7a97e8dd9e75fdd8398",
+        "byte_identical_to_base": true
+      },
+      {
+        "path": "bench/results/2026-10-16-pr6-faithful-restore/fixed-source-pins.json",
+        "sha256": "9ed5a0761a342a86e36ea4c5a24f4dbac58d23758c0bfce7ca465f00b6aa209d",
+        "git_blob": "f4939474704d00b84e2f1a60a99f92230168d2d5",
+        "bytes": 3639,
+        "base_sha256": "9ed5a0761a342a86e36ea4c5a24f4dbac58d23758c0bfce7ca465f00b6aa209d",
+        "byte_identical_to_base": true
+      },
+      {
+        "path": "bench/results/2026-10-16-pr6-faithful-restore/historical-closure.json",
+        "sha256": "f32257a5005ada8ed1142c4bc6d575d246ac018312764ff2f9ce1203e7d6f3ee",
+        "git_blob": "81d17eb706935efae326577d75caa7be35fb5f5e",
+        "bytes": 110463,
+        "base_sha256": "f32257a5005ada8ed1142c4bc6d575d246ac018312764ff2f9ce1203e7d6f3ee",
+        "byte_identical_to_base": true
+      },
+      {
+        "path": "bench/results/2026-10-16-pr6-faithful-restore/historical-evidence.json",
+        "sha256": "f79415a9344545df0f72e47475c81e29fa6d0d14bc20158a960e203cb75e2d3a",
+        "git_blob": "1816d533a4ecf3bb3ca31a4db2ef123b43c455e1",
+        "bytes": 29459,
+        "base_sha256": "f79415a9344545df0f72e47475c81e29fa6d0d14bc20158a960e203cb75e2d3a",
+        "byte_identical_to_base": true
+      },
+      {
+        "path": "bench/results/2026-10-16-pr6-faithful-restore/independent-safety-review-v1.json",
+        "sha256": "c3a5079fd174e38904fcd6eb97ca8fa3844d12ba60135568819b581c97c3f325",
+        "git_blob": "ba54e7d3d9d355e3ba5fa7c16b3e12b85faa818a",
+        "bytes": 31317,
+        "base_sha256": "c3a5079fd174e38904fcd6eb97ca8fa3844d12ba60135568819b581c97c3f325",
+        "byte_identical_to_base": true
+      },
+      {
+        "path": "bench/results/2026-10-16-pr6-faithful-restore/independent-safety-review-v1.md",
+        "sha256": "8477e7a86161a2fbbe98e8d2093314c1328f2ebef3424e8ff94031e7754ebd6d",
+        "git_blob": "b3345743258ebbd5ce1995a988c67e952fbf8d0d",
+        "bytes": 15559,
+        "base_sha256": "8477e7a86161a2fbbe98e8d2093314c1328f2ebef3424e8ff94031e7754ebd6d",
+        "byte_identical_to_base": true
+      },
+      {
+        "path": "bench/results/2026-10-16-pr6-faithful-restore/independent-safety-review-v2.json",
+        "sha256": "bf7817da1ef440c6ee2e9c0dc0c0255573094d920af72ba27db55b23696dc10a",
+        "git_blob": "e490ab39057728dc2ced134e00803c2fd046d17c",
+        "bytes": 115560,
+        "base_sha256": "bf7817da1ef440c6ee2e9c0dc0c0255573094d920af72ba27db55b23696dc10a",
+        "byte_identical_to_base": true
+      },
+      {
+        "path": "bench/results/2026-10-16-pr6-faithful-restore/independent-safety-review-v2.md",
+        "sha256": "c1503199f01a4fa17afa8d48a851b3015ead1b77393fe5a8b4bf7ad3b920d94f",
+        "git_blob": "3fc8b700e69120ae0ac7a76f1adfa0caad1b8971",
+        "bytes": 23200,
+        "base_sha256": "c1503199f01a4fa17afa8d48a851b3015ead1b77393fe5a8b4bf7ad3b920d94f",
+        "byte_identical_to_base": true
+      },
+      {
+        "path": "bench/results/2026-10-16-pr6-faithful-restore/manifest.json",
+        "sha256": "898b95d087f6b01af0bb7c73cd64627813f904b3fee0e92e87fb017e51ae2ec2",
+        "git_blob": "14aa23732a717a9ac068cb6140c1445515fc36d0",
+        "bytes": 4473,
+        "base_sha256": "898b95d087f6b01af0bb7c73cd64627813f904b3fee0e92e87fb017e51ae2ec2",
+        "byte_identical_to_base": true
+      },
+      {
+        "path": "bench/results/2026-10-16-pr6-faithful-restore/report.ja.md",
+        "sha256": "046f2cef75796c0f9e6506452e0b57c4d6b27d5214311db7aed9797763dd9e70",
+        "git_blob": "0fa9e4820521f3c670f4cf7a6014fb6d98e9060e",
+        "bytes": 35520,
+        "base_sha256": "046f2cef75796c0f9e6506452e0b57c4d6b27d5214311db7aed9797763dd9e70",
+        "byte_identical_to_base": true
+      },
+      {
+        "path": "bench/results/2026-10-16-pr6-faithful-restore/safety-corrections-v2.json",
+        "sha256": "8b2f84fd70ad85dd0d47d5ea5ee0974abb76b7931bf50a2b0c0cf918e94c31a3",
+        "git_blob": "f6801aeb445660adcff47db317b6784ac8650b94",
+        "bytes": 68511,
+        "base_sha256": "8b2f84fd70ad85dd0d47d5ea5ee0974abb76b7931bf50a2b0c0cf918e94c31a3",
+        "byte_identical_to_base": true
+      },
+      {
+        "path": "bench/results/2026-10-16-pr6-faithful-restore/safety-corrections-v2.md",
+        "sha256": "49abc3ac6bb0b9b225d96d6343b665d12f57a0ff4af6aa4b919134045fa045f8",
+        "git_blob": "cf1ec846c58bff5fd9e938f73e6552a399297ef4",
+        "bytes": 19905,
+        "base_sha256": "49abc3ac6bb0b9b225d96d6343b665d12f57a0ff4af6aa4b919134045fa045f8",
+        "byte_identical_to_base": true
+      },
+      {
+        "path": "bench/results/2026-10-16-pr6-faithful-restore/safety-corrections-v2.patch",
+        "sha256": "30de015d8d6678715d272b6c399a1b7455bb07ca94a08b0d6bd66a772717cb72",
+        "git_blob": "50188039fbc60f67675336995ea77e934145cb35",
+        "bytes": 159295,
+        "base_sha256": "30de015d8d6678715d272b6c399a1b7455bb07ca94a08b0d6bd66a772717cb72",
+        "byte_identical_to_base": true
+      }
+    ],
+    "all_original_results_byte_identical": true,
+    "prior_v2_fixed_pins_at_base": [
+      {
+        "path": "validation/pr6-restore/CMakeLists.txt",
+        "v2_recorded_sha256": "b4a912aef2de32a7476da647aec2dab9fedb1a2102bd6369ca1a21903c2a8ad1",
+        "base_sha256": "b4a912aef2de32a7476da647aec2dab9fedb1a2102bd6369ca1a21903c2a8ad1",
+        "base_matches_v2_pin": true,
+        "v3_changed": false,
+        "current_sha256": "b4a912aef2de32a7476da647aec2dab9fedb1a2102bd6369ca1a21903c2a8ad1"
+      },
+      {
+        "path": "validation/pr6-restore/README.md",
+        "v2_recorded_sha256": "eb0f9d75123a9e58b917a586523911ffe03cd59b59977591ec0cb8989b2a4aef",
+        "base_sha256": "eb0f9d75123a9e58b917a586523911ffe03cd59b59977591ec0cb8989b2a4aef",
+        "base_matches_v2_pin": true,
+        "v3_changed": true,
+        "current_sha256": "98e39ac8fbe0430c70683a5de4e72bf1accd6a3c8a068ff262aef25ad34978cb"
+      },
+      {
+        "path": "validation/pr6-restore/checked_dpct.cmake",
+        "v2_recorded_sha256": "5757b9a1954558257fdc88d031aaeab7cbe7369d75191af21d547a890d2995e8",
+        "base_sha256": "5757b9a1954558257fdc88d031aaeab7cbe7369d75191af21d547a890d2995e8",
+        "base_matches_v2_pin": true,
+        "v3_changed": false,
+        "current_sha256": "5757b9a1954558257fdc88d031aaeab7cbe7369d75191af21d547a890d2995e8"
+      },
+      {
+        "path": "validation/pr6-restore/fixtures/CMakeLists.txt",
+        "v2_recorded_sha256": "4e0879f5dad82e51d77cfdd89ba272c952f74da26048b2945c216a15baf48078",
+        "base_sha256": "4e0879f5dad82e51d77cfdd89ba272c952f74da26048b2945c216a15baf48078",
+        "base_matches_v2_pin": true,
+        "v3_changed": true,
+        "current_sha256": "d726bc46849da25184877d4e18142a652dc5f823dd119cc0c825ff8df1a05c28"
+      },
+      {
+        "path": "validation/pr6-restore/fixtures/allocated_fields.cpp",
+        "v2_recorded_sha256": "32f96938d53d9b980bbb49f084db10838f54b9a25cde9fe0160e65a7ae1f450f",
+        "base_sha256": "32f96938d53d9b980bbb49f084db10838f54b9a25cde9fe0160e65a7ae1f450f",
+        "base_matches_v2_pin": true,
+        "v3_changed": false,
+        "current_sha256": "32f96938d53d9b980bbb49f084db10838f54b9a25cde9fe0160e65a7ae1f450f"
+      },
+      {
+        "path": "validation/pr6-restore/fixtures/token_admission.cpp",
+        "v2_recorded_sha256": "1f8ee5677ea435a6b8ee9d164d25fb0e1ae789b708f0c098ef8946f8b958cabd",
+        "base_sha256": "1f8ee5677ea435a6b8ee9d164d25fb0e1ae789b708f0c098ef8946f8b958cabd",
+        "base_matches_v2_pin": true,
+        "v3_changed": false,
+        "current_sha256": "1f8ee5677ea435a6b8ee9d164d25fb0e1ae789b708f0c098ef8946f8b958cabd"
+      },
+      {
+        "path": "validation/pr6-restore/include/strata/core/allocated_fields.hpp",
+        "v2_recorded_sha256": "c97062152c816942c7d13b68b391a704f1e37ef30f34607dcaeb2258fc4b3e72",
+        "base_sha256": "c97062152c816942c7d13b68b391a704f1e37ef30f34607dcaeb2258fc4b3e72",
+        "base_matches_v2_pin": true,
+        "v3_changed": false,
+        "current_sha256": "c97062152c816942c7d13b68b391a704f1e37ef30f34607dcaeb2258fc4b3e72"
+      },
+      {
+        "path": "validation/pr6-restore/include/strata/core/layer.hpp",
+        "v2_recorded_sha256": "4587a24f321d4e0bf5cf76f0355b5b2fcb8ccddd6d9ed7383729483b753c886f",
+        "base_sha256": "4587a24f321d4e0bf5cf76f0355b5b2fcb8ccddd6d9ed7383729483b753c886f",
+        "base_matches_v2_pin": true,
+        "v3_changed": false,
+        "current_sha256": "4587a24f321d4e0bf5cf76f0355b5b2fcb8ccddd6d9ed7383729483b753c886f"
+      },
+      {
+        "path": "validation/pr6-restore/include/strata/core/native_head.hpp",
+        "v2_recorded_sha256": "04e88314b34833b89335973d22ad903764e8e534780cfdaa790f0258eb60ede2",
+        "base_sha256": "04e88314b34833b89335973d22ad903764e8e534780cfdaa790f0258eb60ede2",
+        "base_matches_v2_pin": true,
+        "v3_changed": true,
+        "current_sha256": "f24610f43fc4e891d5d96466f19f2de77f3e34a717ae5265e7f50ae614a5d36c"
+      },
+      {
+        "path": "validation/pr6-restore/include/strata/core/token_admission.hpp",
+        "v2_recorded_sha256": "06d69f2cc411a14764609ab1bdc27e652bd10a7b20e834f1ce791c8ffb31d5a7",
+        "base_sha256": "06d69f2cc411a14764609ab1bdc27e652bd10a7b20e834f1ce791c8ffb31d5a7",
+        "base_matches_v2_pin": true,
+        "v3_changed": false,
+        "current_sha256": "06d69f2cc411a14764609ab1bdc27e652bd10a7b20e834f1ce791c8ffb31d5a7"
+      },
+      {
+        "path": "validation/pr6-restore/include/strata/prefill/retirement.hpp",
+        "v2_recorded_sha256": "205798bd97533112c1bbbba7d490b25dcc0a2c88ed39bc9337afc1fdaa81ab41",
+        "base_sha256": "205798bd97533112c1bbbba7d490b25dcc0a2c88ed39bc9337afc1fdaa81ab41",
+        "base_matches_v2_pin": true,
+        "v3_changed": true,
+        "current_sha256": "e440caa8186efcbf33c79ed88f97fd3aa127cb48067d6406b8f541c0f46217ef"
+      },
+      {
+        "path": "validation/pr6-restore/sycl/include/strata/core/mtp.hpp",
+        "v2_recorded_sha256": "6e948585a01a4bec384af41dacacd1c3531f8bb7ea6b2db9c08bb295afac9971",
+        "base_sha256": "6e948585a01a4bec384af41dacacd1c3531f8bb7ea6b2db9c08bb295afac9971",
+        "base_matches_v2_pin": true,
+        "v3_changed": true,
+        "current_sha256": "306c91e43e536cd574476ab5a1302140beb41d2d237ae35e3d2ff4d84b020a0b"
+      },
+      {
+        "path": "validation/pr6-restore/sycl/include/strata/sycl_async_contract.hpp",
+        "v2_recorded_sha256": "14751664b69dac54067a3721d64196c8696c37f5007b01d7530c9ea0c752ab97",
+        "base_sha256": "14751664b69dac54067a3721d64196c8696c37f5007b01d7530c9ea0c752ab97",
+        "base_matches_v2_pin": true,
+        "v3_changed": false,
+        "current_sha256": "14751664b69dac54067a3721d64196c8696c37f5007b01d7530c9ea0c752ab97"
+      },
+      {
+        "path": "validation/pr6-restore/sycl/include/strata/sycl_queue.hpp",
+        "v2_recorded_sha256": "ed28dbecd3d0fc794c0f744ce131a0476412be5a5ae9dd3a0d88f436ae4aa8d2",
+        "base_sha256": "ed28dbecd3d0fc794c0f744ce131a0476412be5a5ae9dd3a0d88f436ae4aa8d2",
+        "base_matches_v2_pin": true,
+        "v3_changed": false,
+        "current_sha256": "ed28dbecd3d0fc794c0f744ce131a0476412be5a5ae9dd3a0d88f436ae4aa8d2"
+      },
+      {
+        "path": "validation/pr6-restore/sycl/include/strata/sycl_retirement.hpp",
+        "v2_recorded_sha256": "7b73763943e2833d3d126169e91142ceff600e4b08d9ed2692c044da344c24e7",
+        "base_sha256": "7b73763943e2833d3d126169e91142ceff600e4b08d9ed2692c044da344c24e7",
+        "base_matches_v2_pin": true,
+        "v3_changed": false,
+        "current_sha256": "7b73763943e2833d3d126169e91142ceff600e4b08d9ed2692c044da344c24e7"
+      },
+      {
+        "path": "validation/pr6-restore/sycl/src/core/conversation_snapshot.cpp",
+        "v2_recorded_sha256": "8dae319082b3a34d51506f93ebc9e56b814f1b14775aa28d69b2032294040ac0",
+        "base_sha256": "8dae319082b3a34d51506f93ebc9e56b814f1b14775aa28d69b2032294040ac0",
+        "base_matches_v2_pin": true,
+        "v3_changed": false,
+        "current_sha256": "8dae319082b3a34d51506f93ebc9e56b814f1b14775aa28d69b2032294040ac0"
+      },
+      {
+        "path": "validation/pr6-restore/sycl/src/core/conversation_state.cpp",
+        "v2_recorded_sha256": "80aea00e2044791359a4aaad093147a375aa27c1c7e1c3bc6d73bd3bcee6f270",
+        "base_sha256": "80aea00e2044791359a4aaad093147a375aa27c1c7e1c3bc6d73bd3bcee6f270",
+        "base_matches_v2_pin": true,
+        "v3_changed": false,
+        "current_sha256": "80aea00e2044791359a4aaad093147a375aa27c1c7e1c3bc6d73bd3bcee6f270"
+      },
+      {
+        "path": "validation/pr6-restore/sycl/src/core/expert_cache.cpp",
+        "v2_recorded_sha256": "48346608bcdabb66050740e2fa76c3d5e53076eb61e7920d1aa16f2254c8e10d",
+        "base_sha256": "48346608bcdabb66050740e2fa76c3d5e53076eb61e7920d1aa16f2254c8e10d",
+        "base_matches_v2_pin": true,
+        "v3_changed": false,
+        "current_sha256": "48346608bcdabb66050740e2fa76c3d5e53076eb61e7920d1aa16f2254c8e10d"
+      },
+      {
+        "path": "validation/pr6-restore/sycl/src/core/layer.cpp",
+        "v2_recorded_sha256": "9af142230c8b28d55731a1e9884e968b4b7f0f2cf5e7de4c689b8e83634b4215",
+        "base_sha256": "9af142230c8b28d55731a1e9884e968b4b7f0f2cf5e7de4c689b8e83634b4215",
+        "base_matches_v2_pin": true,
+        "v3_changed": true,
+        "current_sha256": "44cb1e9f6ff157f453eabaa0c48ff4090df60ce58003a57fc1dd3cbec7192d45"
+      },
+      {
+        "path": "validation/pr6-restore/sycl/src/core/mtp.cpp",
+        "v2_recorded_sha256": "ac0a15e6e55ef024807810cdc63691002aa9fb5c303b7481767be331a127a0f7",
+        "base_sha256": "ac0a15e6e55ef024807810cdc63691002aa9fb5c303b7481767be331a127a0f7",
+        "base_matches_v2_pin": true,
+        "v3_changed": true,
+        "current_sha256": "d1d66753feb50138d72e3638007625dd01cc6db6c3adf78af278cd837d0617f3"
+      },
+      {
+        "path": "validation/pr6-restore/sycl/src/core/native_dense.cpp",
+        "v2_recorded_sha256": "a8ce71277511c6eebe47e75d069633ccc39a5e8b1304cba22ce6efa565388b58",
+        "base_sha256": "a8ce71277511c6eebe47e75d069633ccc39a5e8b1304cba22ce6efa565388b58",
+        "base_matches_v2_pin": true,
+        "v3_changed": false,
+        "current_sha256": "a8ce71277511c6eebe47e75d069633ccc39a5e8b1304cba22ce6efa565388b58"
+      },
+      {
+        "path": "validation/pr6-restore/sycl/src/core/native_head.cpp",
+        "v2_recorded_sha256": "268c6b120d89726d4c786092d0f5a2c767322eda0b71d0dcabb8ddf3fc944323",
+        "base_sha256": "268c6b120d89726d4c786092d0f5a2c767322eda0b71d0dcabb8ddf3fc944323",
+        "base_matches_v2_pin": true,
+        "v3_changed": true,
+        "current_sha256": "f45d658c199b159b8a43185d5b986f9c74265e52a9adb378e894c5577141fdb7"
+      },
+      {
+        "path": "validation/pr6-restore/sycl/src/core/peer_experts.cpp",
+        "v2_recorded_sha256": "5708f78a7571bb8e6ed883f5d582298fe238145d2a1d224939becc0332cf0360",
+        "base_sha256": "5708f78a7571bb8e6ed883f5d582298fe238145d2a1d224939becc0332cf0360",
+        "base_matches_v2_pin": true,
+        "v3_changed": false,
+        "current_sha256": "5708f78a7571bb8e6ed883f5d582298fe238145d2a1d224939becc0332cf0360"
+      },
+      {
+        "path": "validation/pr6-restore/sycl/src/core/pinned.dp.cpp",
+        "v2_recorded_sha256": "b060a4cba6a96cd9ea4384ce183704d00507364e879f4968fd54a5c31bdb3579",
+        "base_sha256": "b060a4cba6a96cd9ea4384ce183704d00507364e879f4968fd54a5c31bdb3579",
+        "base_matches_v2_pin": true,
+        "v3_changed": false,
+        "current_sha256": "b060a4cba6a96cd9ea4384ce183704d00507364e879f4968fd54a5c31bdb3579"
+      },
+      {
+        "path": "validation/pr6-restore/sycl/src/core/remote_experts.cpp",
+        "v2_recorded_sha256": "d690dd752ba60040880a40ae87bc625e72ab530a26413f7d204ced14ad2e5f52",
+        "base_sha256": "d690dd752ba60040880a40ae87bc625e72ab530a26413f7d204ced14ad2e5f52",
+        "base_matches_v2_pin": true,
+        "v3_changed": false,
+        "current_sha256": "d690dd752ba60040880a40ae87bc625e72ab530a26413f7d204ced14ad2e5f52"
+      },
+      {
+        "path": "validation/pr6-restore/sycl/src/core/session.cpp",
+        "v2_recorded_sha256": "d36b94c8855af556955ba7dac38e6c0852e761d7f2a0dd1e4cc8495d2c2930f7",
+        "base_sha256": "d36b94c8855af556955ba7dac38e6c0852e761d7f2a0dd1e4cc8495d2c2930f7",
+        "base_matches_v2_pin": true,
+        "v3_changed": true,
+        "current_sha256": "ed15ed6a115165b69c90b630d11d00db478d18241b8a8fd01767e01f6ce44819"
+      },
+      {
+        "path": "validation/pr6-restore/sycl/src/core/verify.cpp",
+        "v2_recorded_sha256": "435a59fe52e0b21c8a7d62752a01d1d62f72dbd0c30c1a94826fd8cd85570d8b",
+        "base_sha256": "435a59fe52e0b21c8a7d62752a01d1d62f72dbd0c30c1a94826fd8cd85570d8b",
+        "base_matches_v2_pin": true,
+        "v3_changed": true,
+        "current_sha256": "4d8e43ad252e90c3404238073cd2d9eb8e1b985f04bc6a68129135855648f881"
+      },
+      {
+        "path": "validation/pr6-restore/sycl/src/core/weights.cpp",
+        "v2_recorded_sha256": "b2cf2e9f4e55876e2da40f5803fe403c44350225e3fa907fa02bfcdec76aa185",
+        "base_sha256": "b2cf2e9f4e55876e2da40f5803fe403c44350225e3fa907fa02bfcdec76aa185",
+        "base_matches_v2_pin": true,
+        "v3_changed": false,
+        "current_sha256": "b2cf2e9f4e55876e2da40f5803fe403c44350225e3fa907fa02bfcdec76aa185"
+      },
+      {
+        "path": "validation/pr6-restore/sycl/src/kernels/cuda/cvec.dp.cpp",
+        "v2_recorded_sha256": "4b7c2c6985fc64edb1c363e79aa3a24e70dc1352fe9f34d2e830a05edaa5a4bd",
+        "base_sha256": "4b7c2c6985fc64edb1c363e79aa3a24e70dc1352fe9f34d2e830a05edaa5a4bd",
+        "base_matches_v2_pin": true,
+        "v3_changed": false,
+        "current_sha256": "4b7c2c6985fc64edb1c363e79aa3a24e70dc1352fe9f34d2e830a05edaa5a4bd"
+      },
+      {
+        "path": "validation/pr6-restore/sycl/src/kernels/cuda/fused_gr.dp.cpp",
+        "v2_recorded_sha256": "d52d47802e6073447ce87300776c4a338408b0bd5aabd1388c414cb46218b46f",
+        "base_sha256": "d52d47802e6073447ce87300776c4a338408b0bd5aabd1388c414cb46218b46f",
+        "base_matches_v2_pin": true,
+        "v3_changed": false,
+        "current_sha256": "d52d47802e6073447ce87300776c4a338408b0bd5aabd1388c414cb46218b46f"
+      },
+      {
+        "path": "validation/pr6-restore/sycl/src/kernels/cuda/kv_stream.dp.cpp",
+        "v2_recorded_sha256": "4a22dd041b27bccc97baf80a5c3e089c8a895e31c711e46bb1da111f38af13f2",
+        "base_sha256": "4a22dd041b27bccc97baf80a5c3e089c8a895e31c711e46bb1da111f38af13f2",
+        "base_matches_v2_pin": true,
+        "v3_changed": false,
+        "current_sha256": "4a22dd041b27bccc97baf80a5c3e089c8a895e31c711e46bb1da111f38af13f2"
+      },
+      {
+        "path": "validation/pr6-restore/sycl/src/kernels/cuda/qsa.dp.cpp",
+        "v2_recorded_sha256": "0687f0bdc76c338842129b64176e6f3c9ab828727db293b539fc5782e9ff4b4b",
+        "base_sha256": "0687f0bdc76c338842129b64176e6f3c9ab828727db293b539fc5782e9ff4b4b",
+        "base_matches_v2_pin": true,
+        "v3_changed": false,
+        "current_sha256": "0687f0bdc76c338842129b64176e6f3c9ab828727db293b539fc5782e9ff4b4b"
+      },
+      {
+        "path": "validation/pr6-restore/sycl/src/kernels/cuda/s2_gemv_fast.dp.cpp",
+        "v2_recorded_sha256": "830d04891f9e5744b083b6b60c142f80a15efce602606fb774a30010c5a3eeae",
+        "base_sha256": "830d04891f9e5744b083b6b60c142f80a15efce602606fb774a30010c5a3eeae",
+        "base_matches_v2_pin": true,
+        "v3_changed": false,
+        "current_sha256": "830d04891f9e5744b083b6b60c142f80a15efce602606fb774a30010c5a3eeae"
+      },
+      {
+        "path": "validation/pr6-restore/sycl/src/prefill/prefill.cpp",
+        "v2_recorded_sha256": "74fb232fd2f5e1465303c1c5ebc7a4ba38d8610a8efe8585ad090081e2f93b04",
+        "base_sha256": "74fb232fd2f5e1465303c1c5ebc7a4ba38d8610a8efe8585ad090081e2f93b04",
+        "base_matches_v2_pin": true,
+        "v3_changed": true,
+        "current_sha256": "334c5ac6f3da31796ff5dcc531d52d8f00eff7e47453735ce68e4a34b6f3063e"
+      },
+      {
+        "path": "validation/pr6-restore/sycl/src/program/generate.cpp",
+        "v2_recorded_sha256": "8b4738d6a834688645a507a4a2faef21f63df9ac695ecae7f45571064451365b",
+        "base_sha256": "8b4738d6a834688645a507a4a2faef21f63df9ac695ecae7f45571064451365b",
+        "base_matches_v2_pin": true,
+        "v3_changed": true,
+        "current_sha256": "2b2462269fc1a3bb3e9dba89b5419ed20538b3ebd726c1c560ffad88fd78d41d"
+      },
+      {
+        "path": "bench/results/2026-10-16-pr6-faithful-restore/historical-closure.json",
+        "v2_recorded_sha256": "f32257a5005ada8ed1142c4bc6d575d246ac018312764ff2f9ce1203e7d6f3ee",
+        "base_sha256": "f32257a5005ada8ed1142c4bc6d575d246ac018312764ff2f9ce1203e7d6f3ee",
+        "base_matches_v2_pin": true,
+        "v3_changed": false,
+        "current_sha256": "f32257a5005ada8ed1142c4bc6d575d246ac018312764ff2f9ce1203e7d6f3ee"
+      }
+    ],
+    "all_prior_v2_base_pins_match": true,
+    "unmodified_validation_files_count": 198,
+    "unmodified_validation_identity_manifest_sha256": "0fcb50696de5bb80f9198cf214e3ff00b17efdd5b785c53c56cf9ee5693e52ff",
+    "unmodified_validation_mismatches": [],
+    "kernel_file_count_unchanged": 56,
+    "kernel_identity_manifest_sha256": "9c246c4b776ed92db979c88e6abd8d1f303f3a9302b974bf4c4b80e96656b6cd",
+    "tracked_changes_outside_validation": [],
+    "faithful_anchor": "efba8d47817811d493e28f396ebd0e14e161ca75",
+    "faithful_anchor_file_count": 197,
+    "completed_original_file_count": 198,
+    "historical_translation_units": 84,
+    "inventory": {
+      "path": "bench/results/2026-10-16-pr6-faithful-restore/historical-closure.json",
+      "sha256": "f32257a5005ada8ed1142c4bc6d575d246ac018312764ff2f9ce1203e7d6f3ee",
+      "git_blob": "81d17eb706935efae326577d75caa7be35fb5f5e",
+      "bytes": 110463
+    },
+    "anchor_or_inventory_rewritten": false,
+    "vendor_installation_inspected_or_changed": false
+  },
+  "findings": [
+    {
+      "id": "D1",
+      "status": "SOURCE_REPAIRED_UNEXECUTED_ROUTE_HELD",
+      "helper": "core/validation_control.hpp::ring_progress",
+      "closure": [
+        "bool separate from exceptions/error receipt",
+        "pending continues, completed missing ring retires then fails",
+        "query error/pending abandonment exits86; delivered nonempty async list retains87",
+        "existing lease before graph launch retires actual partial accepted queue work or fail-stops",
+        "60s pre-launch deadline, 20s pending abandonment, final checked retirement"
+      ],
+      "limits": [
+        "D3 still excludes these routes",
+        "No actual provider/error/progress/graph execution",
+        "No whole-route legacy capture/debug/library lifetime qualification"
+      ]
+    },
+    {
+      "id": "D2",
+      "status": "SOURCE_REPAIRED_UNEXECUTED",
+      "helpers": [
+        "position_span",
+        "prefill_admission",
+        "draft_admission",
+        "session_cells"
+      ],
+      "routes": [
+        "MTP prefill E4 and per-group",
+        "MTP draft and draft_first",
+        "MTP kv_restore",
+        "private MTP capture/forward/warm row gates",
+        "alternate Prefill::draft_kv consumer",
+        "Verifier run and window_logprobs also held by D3"
+      ],
+      "physical_limit": 262144,
+      "actual_limits": "Minimum session/every allocated QSA/draft state capacity where used",
+      "empty_policy": "Initialized/bound prefill at admitted endpoint permits n=0 with null token/residual and no upload/capture; draft/verifier T=0 refused",
+      "lookahead": "Separate T catch-up and emitted chain from row a plus one final verifying token, without unchecked p+a; conservative if min_p terminates early",
+      "limits": [
+        "Caller pointers need valid backing extent and lifetime",
+        "Serialized initialized object required",
+        "Full physical256K/kernel/page/indexer execution unqualified"
+      ]
+    },
+    {
+      "id": "D3",
+      "status": "EXCLUDED_UNSUPPORTED_NOT_HANDSHAKE_REPAIR",
+      "admission": "inline constexpr false, no build/env override",
+      "before_allocation_or_recording": [
+        "doorbell_init",
+        "nonnull doorbell session_capture",
+        "all verifier init/capture/record/boundary routes"
+      ],
+      "before_launch": [
+        "nonnull doorbell moe_route",
+        "session_loop",
+        "session_capture_token",
+        "session_run_token",
+        "verifier run/commit/warm/result/release/trace"
+      ],
+      "modes_excluded": [
+        "eager",
+        "host-boundary",
+        "no-host/all-resident",
+        "split",
+        "asynchronous commit",
+        "CLI spec != 0 and serve/captured decode"
+      ],
+      "queue_construction": "Verifier cs/copy null; refusal cannot initialize/destroy borrowed defaults",
+      "legacy_source": "Preserved held; no atomic-host/capability/scope/alignment/payload proof claimed",
+      "fallback": "Original explicit --no-capture --no-pool session_token GPU-floor diagnostic; no CPU expert pool hook or doorbell",
+      "impact": "No full-model decode fallback proved; native-pack CLI unavailable; ordinary Prefill API/math remains source-available, separately reviewed harness needed and not supplied",
+      "limits": [
+        "No raw low-level/external graph authorization",
+        "All native work held",
+        "Later repair requires separate proof, not flipping constant"
+      ]
+    },
+    {
+      "id": "D4",
+      "status": "SOURCE_REPAIRED_UNEXECUTED",
+      "helper": "OneAttemptLoad actual NativeEmbed member, begin first load statement",
+      "closure": "Every initial failure consumes attempt; repeated failure/success calls refuse before metadata mutation; old successful table remains consistent",
+      "limits": [
+        "Actual gate fixture only; no fake model/parser/allocator/DMA evidence",
+        "Serialized use, no concurrent mutation proof"
+      ]
+    },
+    {
+      "id": "D5",
+      "status": "SOURCE_REPAIRED_UNEXECUTED",
+      "helper": "prefill::detail::bounded_join",
+      "calls": [
+        "normal issuer join",
+        "IssuerJoin unwind/destructor",
+        "Stager workers under total destructor deadline"
+      ],
+      "join_seconds": 60,
+      "closure": "watchdog before actual join; borrowed owners live, stop before unwind join, no owner mutex held",
+      "limits": [
+        "No actual hanging provider test",
+        "Original notified watcher join remains control shutdown",
+        "No blanket 60s claim for unrelated CPU pools/futures/runtime",
+        "OS scheduling/external supervision assumptions"
+      ]
+    }
+  ],
+  "new_host_fixtures": [
+    {
+      "path": "validation/pr6-restore/fixtures/validation_control.cpp",
+      "target": "pr6_validation_control",
+      "execution": "NOT_RUN",
+      "runtime_init": false,
+      "cases": [
+        "pending/complete/reached/no-ring/query and async-consumer exception/slow logical progress",
+        "real span helpers: INT64 MIN/MAX/negative/null/zero/exact/one-past/actual smaller capacity/lookahead",
+        "actual one-attempt gate initial failure/success/repeated/fresh",
+        "static doorbell exclusion"
+      ]
+    },
+    {
+      "path": "validation/pr6-restore/fixtures/bounded_join.cpp",
+      "target": "pr6_bounded_join",
+      "execution": "NOT_RUN",
+      "runtime_init": false,
+      "cases": [
+        "absent/normal/already joined",
+        "unlock before join mutex",
+        "exception unwind with borrowed owners live"
+      ],
+      "hanging_provider": false
+    }
+  ],
+  "previous_host_receipt": {
+    "path_as_supplied": "A/own-pr6-host-fixtures-v1.json",
+    "status_as_supplied": "PASS_HOST_HELPERS_ONLY",
+    "independently_read_or_rerun": false,
+    "qualifies_actual_DMA_provider_runtime_graph": false
+  },
+  "exit_contract": {
+    "86": "uncertain completion/submission/retirement/join/deadline, no ordinary unwind/free",
+    "87": "delivered nonempty selected DPCT async list, unchanged",
+    "88": "transactional field cleanup failure, unchanged"
+  },
+  "deadlines_seconds": {
+    "normal_and_unwind_issuer_join": 60,
+    "stager_destructor_total": 60,
+    "helper_event_queue_gate_transfer": 60,
+    "prefill_init": 600,
+    "prefill_request": 7200,
+    "held_pending_ring_abandonment": 20,
+    "new_host_ctest": 15
+  },
+  "preserved_contracts": [
+    "private hash-pinned DPCT generation/license/forced include/ODR/registration",
+    "queue ownership/in-order copy=cs",
+    "Stager actual DMA event/ready/issued and PLE retirement",
+    "source upload leases",
+    "Prefill ready/admission",
+    "original/vendor inventory",
+    "valid FP32 math/weights/layout/QSA/GDN/MoE kernels/layer/chunk order"
+  ],
+  "performance": {
+    "measurement": false,
+    "new600_claim": false,
+    "historical645_requalified": false,
+    "full600_reproduction": false,
+    "control_deltas": [
+      "admission/empty/refused routes",
+      "bounded normal issuer join/watchdog",
+      "held boolean progress/errors",
+      "held pre-launch deadline/accepted-work lease/final barriers",
+      "discarded initial query flush removed",
+      "hard doorbell/verifier exclusion"
+    ],
+    "math": "No current BF16 storage/scheduler/alternative math/bench import; preserved FP32 arithmetic, unexecuted numerics"
+  },
+  "provenance": {
+    "new_helpers_fixtures": "Independent project MIT source against exact base, no copied external implementation/template",
+    "license": {
+      "path": "LICENSE",
+      "sha256": "949b9b0aada7476006469e58ee4ffb0e0f68c2d9137e90a356757b61a09d37f0",
+      "git_blob": "6687a423dde6b7aff1b748c07f5ee93ff788089c",
+      "bytes": 1093
+    },
+    "restored_license": {
+      "path": "validation/pr6-restore/LICENSE",
+      "sha256": "949b9b0aada7476006469e58ee4ffb0e0f68c2d9137e90a356757b61a09d37f0",
+      "git_blob": "6687a423dde6b7aff1b748c07f5ee93ff788089c",
+      "bytes": 1093
+    },
+    "reused_upload_helper": {
+      "path": "validation/pr6-restore/include/strata/prefill/draft_uploads.hpp",
+      "sha256": "2d32126e28c67751d14bde6cd46f1db60b92aa3939b17a6f78fd66bc10955908",
+      "git_blob": "717df032d9033cf025b65d998c61d7d2a4b762f3",
+      "bytes": 3218
+    },
+    "lease_origin": "Existing independent own-fork source per unchanged v2 report; reused unedited",
+    "excluded_source_helpers_tests_archives_consulted": false,
+    "current_native16_or_scheduler_imported": false,
+    "vendor_derivative_edited": false,
+    "external_implementation_import": false
+  },
+  "main_gates": [
+    "Independent complete patch/base/source/admission/exclusion/fallback review, keep SOURCE_ONLY_UNSAFE_TO_RUN",
+    "Main only configure/build/run two new finite host helpers; older four-helper receipt is not provider/DMA/graph qualification",
+    "Pin offline llama/vendor/compiler/runtime/UR/LevelZero/oneMKL; audit configure probes/private generated DPCT hash/target closure/compile commands/preprocessing/ODR/ABI",
+    "Before native: Main-owned finite model-free partial submit/event/queue/error/source lease/capture/cancel/cleanup/borrowed owner/readiness gates, immutable environment and process/fault receipts; D3 remains excluded",
+    "Reviewed no-doorbell prefill harness; tiny/odd-tail/continuation and both MTP branches/draft/subset/round/step numerical/state/quality gates",
+    "Full physical262144 and export/exit/fresh RESTORE/rewind/branch/cold-warm-restored decode unqualified; excluded full decode needs separate repair",
+    "Only after relevant correctness/fault gates clean matched individual speed samples, no historical600 promotion"
+  ],
+  "retention": {
+    "owner": "Main",
+    "raw_logs_tensors_binaries_profiler_created": false,
+    "deleted_artifacts": [],
+    "next_review": "Main source/host/build/provider gates; D3 excluded"
+  },
+  "report": {
+    "path": "bench/results/2026-10-16-pr6-faithful-restore/safety-corrections-v3.md",
+    "sha256": "b460211961fc8b3673faa9ad974fc1dee4131990e6dc21a1f0d6f189942f6f31",
+    "git_blob": "f3399e30b6a482ce2185bb1de75b425b9dd55fe1",
+    "bytes": 16760
+  }
+}

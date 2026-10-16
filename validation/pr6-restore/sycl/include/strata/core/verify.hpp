@@ -238,7 +238,7 @@ private:
     int64_t last_pos0_ = 0;
     int32_t last_tokens_[8] = {};
     int64_t n_vocab_ = 0;
-    dpct::queue_ptr cs_ = &dpct::get_in_order_queue();
+    dpct::queue_ptr cs_ = nullptr;
     float* dbgR_ = nullptr;   ///< SYCL port debug: R (token 0) after every layer, n_layers x n_embd
     float* dbgM_ = nullptr;   ///< SYCL port debug: mixed_ (token 0) after every layer
     dpct::experimental::command_graph_exec_ptr exec_[9] = {};
@@ -263,7 +263,7 @@ private:
                  // wait_commit
     bool commit_pending_ = false;
     dpct::queue_ptr copy_ =
-        &dpct::get_in_order_queue(); // the copy engine's stream (DMA of missed
+        nullptr; // the copy engine's stream (DMA of missed
                                      // experts)
     struct FlagSet { uint32_t* flag; uint32_t value; };
     FlagSet flag_sets_[2 * 64 * 2] = {};                          // host-function arguments, one per (layer, group)

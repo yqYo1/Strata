@@ -1,4 +1,5 @@
 // src/core/mtp.cpp - see include/strata/core/mtp.hpp.
+#include <stdexcept>
 #include <sycl/sycl.hpp>
 #include <dpct/dpct.hpp>
 #include "strata/sycl_retirement.hpp"
@@ -161,6 +162,9 @@ const void* MtpDrafter::q8(const char* name) const {
 bool MtpDrafter::load(const std::string &rt_dir, const ModelGeometry &g,
                       SessionState &ss, int max_t, std::string &err,
                       int64_t window) try {
+    if (detail::session_cells(ss, g) <= 0 || window < 0 || window > 262144) {
+        err = "mtp: invalid session/context or attention window"; return false;
+    }
     device_ =
         dpct::get_current_device_id(); // a layer split's last stage on another
                                        // GPU: the drafter lives there
@@ -574,6 +578,14 @@ catch (sycl::exception const &exc) {
 // The layer for T rows.  full = false stops after the K/V append (the prompt only needs the cache).
 bool MtpDrafter::record_forward(int T, int step_row0, dpct::queue_ptr cs,
                                 std::string &err) {
+    if (!wt_ || !g_ || !ss_ || !cs || max_t_ < 1 || max_t_ > 8 || T < 1 || T > max_t_ ||
+        step_row0 < -2 * max_t_ || step_row0 >= 2 * max_t_) {
+        err = "mtp forward: invalid input/state row span"; return false;
+    }
+    const int admitted_row = step_row0 >= 0 ? step_row0 : -1 - step_row0;
+    if (T > 2 * max_t_ - admitted_row) {
+        err = "mtp forward: row span exceeds state records"; return false;
+    }
     using namespace strata::kernels;
     const ModelGeometry& g = *g_;
     SessionState& ss = *ss_;
@@ -793,6 +805,10 @@ catch (sycl::exception const &exc) {
 }  // namespace
 
 bool MtpDrafter::capture_prefill(int T, std::string &err) try {
+    if (!wt_ || !g_ || !ss_ || !cs_ || max_t_ < 1 || max_t_ > 8 || T < 1 || T > max_t_ ||
+        detail::session_cells(*ss_, *g_) <= 0 || st_.max_cells <= 0) {
+        err = "mtp capture: uninitialized or invalid row/context span"; return false;
+    }
     if (prefill_exec_[T]) return true;
     using namespace strata::kernels;
     if (DPCT_CHECK_ERROR(dpct::experimental::begin_recording(cs_)) != 0) {
@@ -811,6 +827,10 @@ catch (sycl::exception const &exc) {
 }
 
 bool MtpDrafter::capture_prefill_dev(int T, std::string &err) try {
+    if (!wt_ || !g_ || !ss_ || !cs_ || max_t_ < 1 || max_t_ > 8 || T < 1 || T > max_t_ ||
+        detail::session_cells(*ss_, *g_) <= 0 || st_.max_cells <= 0) {
+        err = "mtp capture: uninitialized or invalid row/context span"; return false;
+    }
     if (prefill_dev_exec_[T]) return true;
     if (DPCT_CHECK_ERROR(dpct::experimental::begin_recording(cs_)) != 0) {
         err = "mtp: begin capture"; return false;
@@ -825,6 +845,10 @@ catch (sycl::exception const &exc) {
 }
 
 bool MtpDrafter::capture_round(int T, bool coupled, std::string &err) try {
+    if (!wt_ || !g_ || !ss_ || !cs_ || max_t_ < 1 || max_t_ > 8 || T < 1 || T > max_t_ ||
+        detail::session_cells(*ss_, *g_) <= 0 || st_.max_cells <= 0) {
+        err = "mtp capture: uninitialized or invalid row/context span"; return false;
+    }
     dpct::experimental::command_graph_exec_ptr& exec = coupled ? round_exec_c_[T] : round_exec_[T];
     if (exec) return true;
     using namespace strata::kernels;
@@ -866,6 +890,10 @@ catch (sycl::exception const &exc) {
 // Chain step j (1..max_t-2): one row at the cell staged in step row `max_t + j - 1`, from the previous step's
 // residual and token (left in Rin_[0] / tok_[0] by mtp_select); draft j and its probability to the mapped outputs.
 bool MtpDrafter::capture_step(int j, bool coupled, std::string &err) try {
+    if (!wt_ || !g_ || !ss_ || !cs_ || max_t_ < 1 || max_t_ > 8 || j < 1 || j >= max_t_ ||
+        detail::session_cells(*ss_, *g_) <= 0 || st_.max_cells <= 0) {
+        err = "mtp capture: uninitialized or invalid row/context span"; return false;
+    }
     dpct::experimental::command_graph_exec_ptr& exec = coupled ? step_exec_c_[j] : step_exec_[j];
     if (exec) return true;
     using namespace strata::kernels;
@@ -890,8 +918,11 @@ catch (sycl::exception const &exc) {
 }
 
 void MtpDrafter::kv_restore(int64_t upto) {
+    if (!g_ || !ss_ || !cs_ || !detail::position_span(upto, 0,
+            {detail::session_cells(*ss_, *g_), st_.max_cells}))
+        throw std::invalid_argument("mtp restore: invalid context endpoint");
+    if (st_.kv_mode != 2 || upto == 0) return;
     const OnDevice on_device(device_);
-    if (st_.kv_mode != 2 || upto <= 0) return;
     // the ring's blocks below `upto`, from the host copy: a checkpoint resume may have left later cells in them
     const strata::kernels::QsaShapes s = shapes_of(*g_);
     const int64_t b1 = (upto + s.page_size - 1) / s.page_size, b0 = std::max<int64_t>(0, b1 - st_.n_slots);
@@ -901,10 +932,15 @@ void MtpDrafter::kv_restore(int64_t upto) {
 
 bool MtpDrafter::prefill(const float *R_rows, const int32_t *next_tokens,
                          int64_t n, int64_t cell0, std::string &err) try {
-    if (!wt_ || !g_ || !cs_ || !detail::embedding_tokens(next_tokens, n,
+    if (!wt_ || !g_ || !cs_ || !ss_ || max_t_ < 1 || max_t_ > 8 ||
+        prompt_len_ < 0 || prompt_len_ > 262144 ||
+        !detail::prefill_admission(R_rows, next_tokens, cell0, n,
+                                  {detail::session_cells(*ss_, *g_), st_.max_cells}) ||
+        !detail::embedding_tokens(next_tokens, n,
             native_embed() ? native_embed()->vocabulary() : n_vocab_)) {
-        err = "mtp prefill: token outside the embedding vocabulary"; return false;
+        err = "mtp prefill: invalid pointers, token IDs or context span"; return false;
     }
+    if (n == 0) return true; // admitted no-op; no device selection, upload or capture
     const OnDevice on_device(device_);
     const Clock::time_point t0 = Clock::now();
     const int64_t HCN = g_->hc * g_->n_embd;
@@ -1115,11 +1151,13 @@ catch (sycl::exception const &exc) {
 
 bool MtpDrafter::draft(int T, const int32_t* tokens, int64_t p, int a, int32_t* drafts, std::string& err,
                        float* probs, float min_p, int* n_drafts) {
-    const OnDevice on_device(device_);
-    if (T < 1 || T > max_t_ || a < 0 || a >= T) { err = "mtp: draft arguments out of range"; return false; }
-    if (!detail::embedding_tokens(tokens, T, native_embed() ? native_embed()->vocabulary() : n_vocab_)) {
-        err = "mtp draft: token outside the embedding vocabulary"; return false;
+    if (!wt_ || !g_ || !cs_ || !ss_ ||
+        !detail::draft_admission(window_R_, tokens, drafts, p, T, a, max_t_, max_drafts_,
+                                 {detail::session_cells(*ss_, *g_), st_.max_cells}) ||
+        !detail::embedding_tokens(tokens, T, native_embed() ? native_embed()->vocabulary() : n_vocab_)) {
+        err = "mtp draft: invalid pointers, token IDs, context or lookahead span"; return false;
     }
+    const OnDevice on_device(device_);
     const bool cp = coupled_active_;   // coupled draft sampling for this request: its own graphs
     if (!capture_round(T, cp, err)) return false;
     const Clock::time_point t0 = Clock::now();
@@ -1194,7 +1232,9 @@ bool MtpDrafter::draft(int T, const int32_t* tokens, int64_t p, int a, int32_t* 
 bool MtpDrafter::draft_first(int T, const float *R_row, int32_t token,
                              int64_t cell, int32_t *drafts, std::string &err,
                              float *probs, float min_p, int *n_drafts) try {
-    if (T < 1 || T > max_t_ || !R_row || !window_R_ ||
+    if (!wt_ || !g_ || !cs_ || !ss_ || !window_R_ ||
+        !detail::draft_admission(R_row, &token, drafts, cell, T, 0, max_t_, max_drafts_,
+                                 {detail::session_cells(*ss_, *g_), st_.max_cells}) ||
         !detail::embedding_token(token, native_embed() ? native_embed()->vocabulary() : n_vocab_)) {
         err = "mtp first draft: token outside the embedding vocabulary"; return false;
     }

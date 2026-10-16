@@ -1,0 +1,1086 @@
+diff --git a/validation/pr6-restore/README.md b/validation/pr6-restore/README.md
+index 96aef224d820de0da635e434069e856645c94189..649c976327f7d2f52bda06549ece5f44e605befa 100644
+--- a/validation/pr6-restore/README.md
++++ b/validation/pr6-restore/README.md
+@@ -52,3 +52,32 @@ the vendor notice and leaving the external installation untouched. This changes
+ synchronization/error handling and uniform queue profiling, so historical
+ performance claims do not qualify the corrected route. Its status remains
+ `SOURCE_ONLY_UNSAFE_TO_RUN` until Main reviews and executes the separate gates.
++
++V3 repairs the D1 queue-query boolean, D2 position/pointer admission, D4 embedding
++one-attempt load, and D5 normal issuer join deadline at source level. The new
++`pr6_validation_control` and `pr6_bounded_join` ordinary C++ fixtures do not load
++SYCL and have not been executed by the source worker. Empty MTP/draft-KV prefill
++is a no-op only at an admitted nonnegative endpoint; nonempty calls require both
++pointers. Span admission uses physical 262144 and actual session/QSA/draft-state
++capacities, with draft lookahead checked separately. Full physical256K execution
++is still unqualified.
++
++D3 is a hard exclusion, with no environment override. `doorbell_init` refuses
++before allocating; decode `session_loop`, token graph capture/replay and every
++verifier mode (including eager, host-boundary, no-host/all-resident, split and
++commit) refuse before recording or launch. The historical device handshake source
++is preserved as held comparison source; host fences are not an atomic-host proof.
++Verifier construction keeps null queue pointers, so refused init cannot initialize
++or later destroy borrowed DPCT defaults.
++
++The CLI refuses these modes after argument parsing, before device queries or
++allocation. Its retained original `--no-capture --no-pool` route is explicitly a
++GPU-floor decode diagnostic: it has no CPU expert hook and is not full-model
++decode. It uses no doorbell allocation. Ordinary `Prefill::run` and draft-KV math
++remain available to Main's separate prefill harness; the engine CLI is not a
++full native-pack or historical600 reproduction route. No new scheduler or
++handshake is substituted. All native routes, including this fallback, retain
++`SOURCE_ONLY_UNSAFE_TO_RUN` pending Main's source/build/provider/numerical gates.
++See `safety-corrections-v3.md/json/patch` in the results directory for the exact
++base, complete source patch, preservation checks, remaining gates and timing
++changes. No prior report or fixed pin is superseded in place.
+diff --git a/validation/pr6-restore/fixtures/CMakeLists.txt b/validation/pr6-restore/fixtures/CMakeLists.txt
+index 5aa9ea6cd81827c4d37b58e0a3a76e54737c6f37..165ca14582616d1651f1585d676d0f9e25a4ebbc 100644
+--- a/validation/pr6-restore/fixtures/CMakeLists.txt
++++ b/validation/pr6-restore/fixtures/CMakeLists.txt
+@@ -17,3 +17,13 @@ add_test(NAME pr6_token_admission COMMAND pr6_token_admission)
+ add_executable(pr6_allocated_fields allocated_fields.cpp)
+ target_include_directories(pr6_allocated_fields PRIVATE ../include)
+ add_test(NAME pr6_allocated_fields COMMAND pr6_allocated_fields)
++
++find_package(Threads REQUIRED)
++add_executable(pr6_validation_control validation_control.cpp)
++target_include_directories(pr6_validation_control PRIVATE ../include)
++add_test(NAME pr6_validation_control COMMAND pr6_validation_control)
++add_executable(pr6_bounded_join bounded_join.cpp)
++target_include_directories(pr6_bounded_join PRIVATE ../include)
++target_link_libraries(pr6_bounded_join PRIVATE Threads::Threads)
++add_test(NAME pr6_bounded_join COMMAND pr6_bounded_join)
++set_tests_properties(pr6_validation_control pr6_bounded_join PROPERTIES TIMEOUT 15)
+diff --git a/validation/pr6-restore/include/strata/core/native_head.hpp b/validation/pr6-restore/include/strata/core/native_head.hpp
+index 097ef5946df4d70ae441d171ea9a3b9ce5011f5a..756a2fb2b578d51ae764131936a237c71ff75197 100644
+--- a/validation/pr6-restore/include/strata/core/native_head.hpp
++++ b/validation/pr6-restore/include/strata/core/native_head.hpp
+@@ -1,5 +1,6 @@
+ #pragma once
+ 
++#include "strata/core/validation_control.hpp"
+ #include <cstddef>
+ #include <cstdint>
+ #include <string>
+@@ -48,6 +49,7 @@ public:
+     ~NativeEmbed();
+     NativeEmbed(const NativeEmbed&) = delete;
+     NativeEmbed& operator=(const NativeEmbed&) = delete;
++    // One attempt per object, including failures. Construct a fresh object to retry.
+     bool load(const std::vector<std::string>& shards, int64_t n_embd, int64_t n_vocab, std::string& err);
+     /// Direct device entrypoint: downloads/checks IDs before submitting a gather.
+     /// Graph callers below use a private path after their own host admission.
+@@ -67,6 +69,7 @@ private:
+     // Only these callers may record this: they admit every host input before
+     // submitting a graph, and require sampled/subset IDs to fit this vocabulary.
+     void gather_dev_admitted(const int32_t* tokens, int64_t n_tok, float* out, void* stream) const;
++    detail::OneAttemptLoad load_attempt_;
+     void* host_ = nullptr;
+     const void* dev_ = nullptr;
+     uint64_t bytes_ = 0;
+diff --git a/validation/pr6-restore/include/strata/prefill/retirement.hpp b/validation/pr6-restore/include/strata/prefill/retirement.hpp
+index 04efa6bdb1fc34a5c4661d9e4ae82e96703e9c4a..cc241b71471686f6999c45ed53a70db7b6589b27 100644
+--- a/validation/pr6-restore/include/strata/prefill/retirement.hpp
++++ b/validation/pr6-restore/include/strata/prefill/retirement.hpp
+@@ -36,6 +36,15 @@ public:
+         watcher_.join();
+     }
+ };
++// The thread and every referenced owner outlive this call. No owner mutex may
++// be held here: joining must allow the worker to finish its own handoffs.
++inline void bounded_join(std::thread& worker) noexcept {
++    if (!worker.joinable()) return;
++    try {
++        RetirementDeadline deadline;
++        worker.join();
++    } catch (...) { retirement_fail_stop("thread join unavailable"); }
++}
+ template<class Predicate>
+ inline void retirement_until(Predicate ready, const char* reason) noexcept {
+     try {
+diff --git a/validation/pr6-restore/sycl/include/strata/core/mtp.hpp b/validation/pr6-restore/sycl/include/strata/core/mtp.hpp
+index 1848b322bbcb1c85f66c3025ccc63ea080b6fece..d5ec6f9ee00adc520233d82058fbd8199b19b2df 100644
+--- a/validation/pr6-restore/sycl/include/strata/core/mtp.hpp
++++ b/validation/pr6-restore/sycl/include/strata/core/mtp.hpp
+@@ -52,6 +52,10 @@ public:
+     void set_max_drafts(int k) { max_drafts_ = k; }
+     /// SYCL port: capture the round, step and prompt graphs at load rather than on first use (see Verifier::warm)
+     bool warm(std::string& err) {
++        if (!wt_ || !g_ || !ss_ || !cs_ || max_t_ < 1 || max_t_ > 8 ||
++            detail::session_cells(*ss_, *g_) <= 0 || st_.max_cells <= 0) {
++            err = "mtp warm: uninitialized or invalid context"; return false;
++        }
+         for (int T = 1; T <= max_t_; ++T)
+             if (!capture_round(T, false, err) || !capture_prefill(T, err)) return false;
+         for (int j = 1; j < std::min(max_t_ - 1, max_drafts_); ++j)
+diff --git a/validation/pr6-restore/sycl/include/strata/core/session.hpp b/validation/pr6-restore/sycl/include/strata/core/session.hpp
+index 3bb6e9d41a2a18befe2b218fc72cc042d17fd21d..ffe19bc1d6183b6594f3b6bf3c91ffe785e661fe 100644
+--- a/validation/pr6-restore/sycl/include/strata/core/session.hpp
++++ b/validation/pr6-restore/sycl/include/strata/core/session.hpp
+@@ -20,6 +20,7 @@
+ #include "strata/core/layer.hpp"
+ #include "strata/kernels/cpu/pool.hpp"
+ 
++#include "strata/core/validation_control.hpp"
+ #include <cstdint>
+ #include <string>
+ #include <vector>
+@@ -88,6 +89,24 @@ struct SessionState {
+     PleRun ple;
+ };
+ 
++namespace detail {
++// SessionState must still be a caller-owned initialized object. Check every
++// allocated QSA capacity, including a split stage's primary, before indexing.
++inline int64_t session_cells(const SessionState& s, const ModelGeometry& g) noexcept {
++    if (g.n_layers <= 0 || g.n_layers > 262144 || g.qsa_interval <= 0) return 0;
++    const int64_t states = g.n_qsa_layers();
++    if (!s.qsa_states || s.max_cells <= 0 || s.qsa_ord0 < 0 || s.qsa_alloc <= 0 ||
++        s.qsa_ord0 > states || s.qsa_alloc > states - s.qsa_ord0) return 0;
++    int64_t cap = std::min<int64_t>(262144, s.max_cells);
++    for (int64_t i = 0; i < s.qsa_alloc; ++i) {
++        const auto n = s.qsa_states[s.qsa_ord0 + i].max_cells;
++        if (n <= 0) return 0;
++        cap = std::min(cap, n);
++    }
++    return cap;
++}
++} // namespace detail
++
+ /// Bytes for a whole session at `max_cells` of context.  Every layer's state is sized at once, because P2.T10
+ /// requires ZERO token-path allocations - a `cudaMalloc` that happened on the first token of a longer sequence
+ /// would satisfy every test here and fail that one.
+diff --git a/validation/pr6-restore/sycl/include/strata/core/verify.hpp b/validation/pr6-restore/sycl/include/strata/core/verify.hpp
+index c7c993d3f5ad4e88ed8bc8e536ab4c01b6262b1f..99d0c411efc6c5a6f3efbe8a16d47ac0863eaff6 100644
+--- a/validation/pr6-restore/sycl/include/strata/core/verify.hpp
++++ b/validation/pr6-restore/sycl/include/strata/core/verify.hpp
+@@ -238,7 +238,7 @@ private:
+     int64_t last_pos0_ = 0;
+     int32_t last_tokens_[8] = {};
+     int64_t n_vocab_ = 0;
+-    dpct::queue_ptr cs_ = &dpct::get_in_order_queue();
++    dpct::queue_ptr cs_ = nullptr;
+     float* dbgR_ = nullptr;   ///< SYCL port debug: R (token 0) after every layer, n_layers x n_embd
+     float* dbgM_ = nullptr;   ///< SYCL port debug: mixed_ (token 0) after every layer
+     dpct::experimental::command_graph_exec_ptr exec_[9] = {};
+@@ -263,7 +263,7 @@ private:
+                  // wait_commit
+     bool commit_pending_ = false;
+     dpct::queue_ptr copy_ =
+-        &dpct::get_in_order_queue(); // the copy engine's stream (DMA of missed
++        nullptr; // the copy engine's stream (DMA of missed
+                                      // experts)
+     struct FlagSet { uint32_t* flag; uint32_t value; };
+     FlagSet flag_sets_[2 * 64 * 2] = {};                          // host-function arguments, one per (layer, group)
+diff --git a/validation/pr6-restore/sycl/include/strata/sycl_doorbell.hpp b/validation/pr6-restore/sycl/include/strata/sycl_doorbell.hpp
+index d801c54e071e8188a66c13ddfed2dbe243c62aa3..30651b9cd18677fde0faf0037e0c70a38f5ae43f 100644
+--- a/validation/pr6-restore/sycl/include/strata/sycl_doorbell.hpp
++++ b/validation/pr6-restore/sycl/include/strata/sycl_doorbell.hpp
+@@ -1,3 +1,6 @@
++// HELD COMPARISON SOURCE: validation entrypoints exclude this protocol (D3).
++// These legacy device operations do not establish a matching atomic host side,
++// atomic-host capability, or a host-visible payload publication contract.
+ // include/strata/sycl_doorbell.hpp - the SYCL port: host<->device flag traffic that must bypass the GPU's caches.
+ //
+ // Strata's decode loop is a handshake through host-mapped memory: the GPU rings a sequence number the host polls,
+diff --git a/validation/pr6-restore/sycl/src/core/layer.cpp b/validation/pr6-restore/sycl/src/core/layer.cpp
+index 82e9f3df42150f81a00fa0f5ca3f6c2c1f8496b7..f507e037258a5fc5ece3ed1c7baac95a6372382b 100644
+--- a/validation/pr6-restore/sycl/src/core/layer.cpp
++++ b/validation/pr6-restore/sycl/src/core/layer.cpp
+@@ -7,6 +7,7 @@
+ #include "strata/core/layer.hpp"
+ #include "strata/core/allocated_fields.hpp"
+ #include <limits>
++#include "strata/core/validation_control.hpp"
+ #include "strata/core/native_head.hpp"
+ #include "strata/kernels/bf16_bits.hpp"
+ #include "strata/kernels/bf16_gemv.hpp"
+@@ -390,6 +391,9 @@ uint64_t moe_buffers_init(const ModelGeometry& g, int64_t k, void* base, MoEBuff
+ bool moe_route(const WeightTable &tables, const ModelGeometry &g, int64_t layer,
+                int64_t k, const MoEBuffers &b, const float *x, void *stream,
+                std::string &err, const Doorbell *db) try {
++    if (db && !detail::concurrent_doorbell_admitted()) {
++        err = detail::doorbell_exclusion; return false;
++    }
+     using namespace strata::kernels; const LayerView v(tables, layer);
+     const WeightRef *w_router = v.get("ffn_gate_inp.weight");
+     if (w_router == nullptr) {
+@@ -1156,6 +1160,7 @@ try {
+ namespace {}
+ // namespace
+ uint64_t doorbell_init(const ModelGeometry& g, int64_t k, Doorbell& db) {
++    if (!detail::concurrent_doorbell_admitted()) return 0; // before all allocations
+     // An existing doorbell may still be visible to a graph: never overwrite it.
+     if (db.h_x_f || db.h_ids || db.h_weights || db.h_seq || db.h_flag ||
+         db.d_x_f || db.d_ids || db.d_weights || db.d_seq || db.d_flag ||
+diff --git a/validation/pr6-restore/sycl/src/core/mtp.cpp b/validation/pr6-restore/sycl/src/core/mtp.cpp
+index 26820845458e381021b5b8ebc57663b5f0ce6747..f5409df03fc69f208ba5dddfeaa90da75d153c17 100644
+--- a/validation/pr6-restore/sycl/src/core/mtp.cpp
++++ b/validation/pr6-restore/sycl/src/core/mtp.cpp
+@@ -1,4 +1,5 @@
+ // src/core/mtp.cpp - see include/strata/core/mtp.hpp.
++#include <stdexcept>
+ #include <sycl/sycl.hpp>
+ #include <dpct/dpct.hpp>
+ #include "strata/sycl_retirement.hpp"
+@@ -161,6 +162,9 @@ const void* MtpDrafter::q8(const char* name) const {
+ bool MtpDrafter::load(const std::string &rt_dir, const ModelGeometry &g,
+                       SessionState &ss, int max_t, std::string &err,
+                       int64_t window) try {
++    if (detail::session_cells(ss, g) <= 0 || window < 0 || window > 262144) {
++        err = "mtp: invalid session/context or attention window"; return false;
++    }
+     device_ =
+         dpct::get_current_device_id(); // a layer split's last stage on another
+                                        // GPU: the drafter lives there
+@@ -574,6 +578,14 @@ catch (sycl::exception const &exc) {
+ // The layer for T rows.  full = false stops after the K/V append (the prompt only needs the cache).
+ bool MtpDrafter::record_forward(int T, int step_row0, dpct::queue_ptr cs,
+                                 std::string &err) {
++    if (!wt_ || !g_ || !ss_ || !cs || max_t_ < 1 || max_t_ > 8 || T < 1 || T > max_t_ ||
++        step_row0 < -2 * max_t_ || step_row0 >= 2 * max_t_) {
++        err = "mtp forward: invalid input/state row span"; return false;
++    }
++    const int admitted_row = step_row0 >= 0 ? step_row0 : -1 - step_row0;
++    if (T > 2 * max_t_ - admitted_row) {
++        err = "mtp forward: row span exceeds state records"; return false;
++    }
+     using namespace strata::kernels;
+     const ModelGeometry& g = *g_;
+     SessionState& ss = *ss_;
+@@ -793,6 +805,10 @@ catch (sycl::exception const &exc) {
+ }  // namespace
+ 
+ bool MtpDrafter::capture_prefill(int T, std::string &err) try {
++    if (!wt_ || !g_ || !ss_ || !cs_ || max_t_ < 1 || max_t_ > 8 || T < 1 || T > max_t_ ||
++        detail::session_cells(*ss_, *g_) <= 0 || st_.max_cells <= 0) {
++        err = "mtp capture: uninitialized or invalid row/context span"; return false;
++    }
+     if (prefill_exec_[T]) return true;
+     using namespace strata::kernels;
+     if (DPCT_CHECK_ERROR(dpct::experimental::begin_recording(cs_)) != 0) {
+@@ -811,6 +827,10 @@ catch (sycl::exception const &exc) {
+ }
+ 
+ bool MtpDrafter::capture_prefill_dev(int T, std::string &err) try {
++    if (!wt_ || !g_ || !ss_ || !cs_ || max_t_ < 1 || max_t_ > 8 || T < 1 || T > max_t_ ||
++        detail::session_cells(*ss_, *g_) <= 0 || st_.max_cells <= 0) {
++        err = "mtp capture: uninitialized or invalid row/context span"; return false;
++    }
+     if (prefill_dev_exec_[T]) return true;
+     if (DPCT_CHECK_ERROR(dpct::experimental::begin_recording(cs_)) != 0) {
+         err = "mtp: begin capture"; return false;
+@@ -825,6 +845,10 @@ catch (sycl::exception const &exc) {
+ }
+ 
+ bool MtpDrafter::capture_round(int T, bool coupled, std::string &err) try {
++    if (!wt_ || !g_ || !ss_ || !cs_ || max_t_ < 1 || max_t_ > 8 || T < 1 || T > max_t_ ||
++        detail::session_cells(*ss_, *g_) <= 0 || st_.max_cells <= 0) {
++        err = "mtp capture: uninitialized or invalid row/context span"; return false;
++    }
+     dpct::experimental::command_graph_exec_ptr& exec = coupled ? round_exec_c_[T] : round_exec_[T];
+     if (exec) return true;
+     using namespace strata::kernels;
+@@ -866,6 +890,10 @@ catch (sycl::exception const &exc) {
+ // Chain step j (1..max_t-2): one row at the cell staged in step row `max_t + j - 1`, from the previous step's
+ // residual and token (left in Rin_[0] / tok_[0] by mtp_select); draft j and its probability to the mapped outputs.
+ bool MtpDrafter::capture_step(int j, bool coupled, std::string &err) try {
++    if (!wt_ || !g_ || !ss_ || !cs_ || max_t_ < 1 || max_t_ > 8 || j < 1 || j >= max_t_ ||
++        detail::session_cells(*ss_, *g_) <= 0 || st_.max_cells <= 0) {
++        err = "mtp capture: uninitialized or invalid row/context span"; return false;
++    }
+     dpct::experimental::command_graph_exec_ptr& exec = coupled ? step_exec_c_[j] : step_exec_[j];
+     if (exec) return true;
+     using namespace strata::kernels;
+@@ -890,8 +918,11 @@ catch (sycl::exception const &exc) {
+ }
+ 
+ void MtpDrafter::kv_restore(int64_t upto) {
++    if (!g_ || !ss_ || !cs_ || !detail::position_span(upto, 0,
++            {detail::session_cells(*ss_, *g_), st_.max_cells}))
++        throw std::invalid_argument("mtp restore: invalid context endpoint");
++    if (st_.kv_mode != 2 || upto == 0) return;
+     const OnDevice on_device(device_);
+-    if (st_.kv_mode != 2 || upto <= 0) return;
+     // the ring's blocks below `upto`, from the host copy: a checkpoint resume may have left later cells in them
+     const strata::kernels::QsaShapes s = shapes_of(*g_);
+     const int64_t b1 = (upto + s.page_size - 1) / s.page_size, b0 = std::max<int64_t>(0, b1 - st_.n_slots);
+@@ -901,10 +932,15 @@ void MtpDrafter::kv_restore(int64_t upto) {
+ 
+ bool MtpDrafter::prefill(const float *R_rows, const int32_t *next_tokens,
+                          int64_t n, int64_t cell0, std::string &err) try {
+-    if (!wt_ || !g_ || !cs_ || !detail::embedding_tokens(next_tokens, n,
++    if (!wt_ || !g_ || !cs_ || !ss_ || max_t_ < 1 || max_t_ > 8 ||
++        prompt_len_ < 0 || prompt_len_ > 262144 ||
++        !detail::prefill_admission(R_rows, next_tokens, cell0, n,
++                                  {detail::session_cells(*ss_, *g_), st_.max_cells}) ||
++        !detail::embedding_tokens(next_tokens, n,
+             native_embed() ? native_embed()->vocabulary() : n_vocab_)) {
+-        err = "mtp prefill: token outside the embedding vocabulary"; return false;
++        err = "mtp prefill: invalid pointers, token IDs or context span"; return false;
+     }
++    if (n == 0) return true; // admitted no-op; no device selection, upload or capture
+     const OnDevice on_device(device_);
+     const Clock::time_point t0 = Clock::now();
+     const int64_t HCN = g_->hc * g_->n_embd;
+@@ -1115,11 +1151,13 @@ catch (sycl::exception const &exc) {
+ 
+ bool MtpDrafter::draft(int T, const int32_t* tokens, int64_t p, int a, int32_t* drafts, std::string& err,
+                        float* probs, float min_p, int* n_drafts) {
+-    const OnDevice on_device(device_);
+-    if (T < 1 || T > max_t_ || a < 0 || a >= T) { err = "mtp: draft arguments out of range"; return false; }
+-    if (!detail::embedding_tokens(tokens, T, native_embed() ? native_embed()->vocabulary() : n_vocab_)) {
+-        err = "mtp draft: token outside the embedding vocabulary"; return false;
++    if (!wt_ || !g_ || !cs_ || !ss_ ||
++        !detail::draft_admission(window_R_, tokens, drafts, p, T, a, max_t_, max_drafts_,
++                                 {detail::session_cells(*ss_, *g_), st_.max_cells}) ||
++        !detail::embedding_tokens(tokens, T, native_embed() ? native_embed()->vocabulary() : n_vocab_)) {
++        err = "mtp draft: invalid pointers, token IDs, context or lookahead span"; return false;
+     }
++    const OnDevice on_device(device_);
+     const bool cp = coupled_active_;   // coupled draft sampling for this request: its own graphs
+     if (!capture_round(T, cp, err)) return false;
+     const Clock::time_point t0 = Clock::now();
+@@ -1194,7 +1232,9 @@ bool MtpDrafter::draft(int T, const int32_t* tokens, int64_t p, int a, int32_t*
+ bool MtpDrafter::draft_first(int T, const float *R_row, int32_t token,
+                              int64_t cell, int32_t *drafts, std::string &err,
+                              float *probs, float min_p, int *n_drafts) try {
+-    if (T < 1 || T > max_t_ || !R_row || !window_R_ ||
++    if (!wt_ || !g_ || !cs_ || !ss_ || !window_R_ ||
++        !detail::draft_admission(R_row, &token, drafts, cell, T, 0, max_t_, max_drafts_,
++                                 {detail::session_cells(*ss_, *g_), st_.max_cells}) ||
+         !detail::embedding_token(token, native_embed() ? native_embed()->vocabulary() : n_vocab_)) {
+         err = "mtp first draft: token outside the embedding vocabulary"; return false;
+     }
+diff --git a/validation/pr6-restore/sycl/src/core/native_head.cpp b/validation/pr6-restore/sycl/src/core/native_head.cpp
+index 4d089246f4117ef7c278f790293925ae7988ba58..cbe713b7e0e651e4e0ba9d6629277de2367ecbd9 100644
+--- a/validation/pr6-restore/sycl/src/core/native_head.cpp
++++ b/validation/pr6-restore/sycl/src/core/native_head.cpp
+@@ -164,6 +164,9 @@ NativeEmbed::~NativeEmbed() {
+ 
+ bool NativeEmbed::load(const std::vector<std::string> &shards, int64_t n_embd,
+                        int64_t n_vocab, std::string &err) try {
++    if (!load_attempt_.begin()) {
++        err = "native embedding: load already attempted; use a fresh object"; return false;
++    }
+     if (n_embd <= 0 || n_embd > INT32_MAX || n_vocab <= 0 || n_vocab > INT32_MAX) {
+         err = "native embedding: dimensions exceed the int32 kernel contract"; return false;
+     }
+diff --git a/validation/pr6-restore/sycl/src/core/session.cpp b/validation/pr6-restore/sycl/src/core/session.cpp
+index 0b4187d6a65cc873c5595829fabfe881e230c2de..c266403085dffb7fc862889e072e4a349d6cab67 100644
+--- a/validation/pr6-restore/sycl/src/core/session.cpp
++++ b/validation/pr6-restore/sycl/src/core/session.cpp
+@@ -3,6 +3,8 @@
+ #include <sycl/sycl.hpp>
+ #include <dpct/dpct.hpp>
+ #include "strata/sycl_queue.hpp"
++#include "strata/sycl_retirement.hpp"
++#include "strata/prefill/draft_uploads.hpp"
+ #include "strata/core/session.hpp"
+ #include "strata/kernels/mrope.hpp"
+ #include "strata/core/progress.hpp"
+@@ -198,6 +200,9 @@ void stage_token(const ModelGeometry& g, int64_t pos, int32_t pos_base, SessionS
+ 
+ bool session_capture(const WeightTable& tables, const ModelGeometry& g, SessionState& s, const float* parts,
+                      SessionGraphs& gr, std::string& err, bool split, int64_t layer_lo, int64_t layer_hi) {
++    if (s.db && !detail::concurrent_doorbell_admitted()) {
++        err = detail::doorbell_exclusion; return false;
++    }
+     if (gr.captured) return true;
+     if (layer_hi < 0 || layer_hi > g.n_layers) layer_hi = g.n_layers;
+     if (layer_lo < 0) layer_lo = 0;
+@@ -813,6 +818,9 @@ bool session_loop(const ModelGeometry &g, int64_t pos, int32_t pos_base,
+                   SessionState &s, SessionGraphs &gr, PoolFn pool, HitFn hits,
+                   void *user, bool overlap, void *stream, std::string &err,
+                   float *dump_layers, SessionLoopScratch *scratch) try {
++    if (!detail::concurrent_doorbell_admitted()) {
++        err = detail::doorbell_exclusion; return false;
++    }
+     if (!gr.captured || gr.n != g.n_layers) { err = "session_loop: not captured"; return false; }
+     if (gr.parts_dev == nullptr) { err = "session_loop: the graphs were captured without a parts buffer"; return false; }
+     if (s.db == nullptr) { err = "session_loop: no doorbell; the loop has nothing to poll"; return false; }
+@@ -1206,6 +1214,9 @@ bool session_capture_token(const WeightTable &tables, const ModelGeometry &g,
+                            const float *y_miss_host, size_t parts_bytes,
+                            TokenGraph &tg, std::string &err,
+                            const TokenHits *hits) try {
++    if (!detail::concurrent_doorbell_admitted()) {
++        err = detail::doorbell_exclusion; return false;
++    }
+     if (hits != nullptr && !hits->on()) { err = "session_capture_token: incomplete hit configuration"; return false; }
+     if (tg.captured) return true;
+     if (s.db == nullptr || s.db->d_flag == nullptr || s.db->d_seq == nullptr) {
+@@ -1320,12 +1331,20 @@ catch (sycl::exception const &exc) {
+ bool session_run_token(const ModelGeometry &g, int64_t pos, int32_t pos_base,
+                        SessionState &s, TokenGraph &tg, PoolFn pool, void *user,
+                        float *y_miss_host, void *stream, std::string &err) try {
++    if (!detail::concurrent_doorbell_admitted()) {
++        err = detail::doorbell_exclusion; return false;
++    }
+     if (!tg.captured) { err = "session_run_token: not captured"; return false; }
+     if (y_miss_host != tg.y_src) { err = "session_run_token: the staging buffer is not the captured one"; return false; }
+     dpct::queue_ptr cs = strata::q_of(stream);
+     ++tg.calls;
+     stage_token(g, pos, pos_base, s);
+     doorbell_reset(*s.db);
++    prefill::detail::RetirementDeadline token_deadline;
++    prefill::detail::DraftUploadGuard accepted_work(
++        [&] { strata::retire_queue(*cs); return true; },
++        [] { prefill::detail::retirement_fail_stop("token work not retired"); });
++    accepted_work.arm(); // includes a submission that throws after accepting work
+     const dpct::err0 le = DPCT_CHECK_ERROR(cs->ext_oneapi_graph(*tg.exec));
+     /*
+     DPCT1009: SYCL reports errors using exceptions and does not use error
+@@ -1344,8 +1363,6 @@ bool session_run_token(const ModelGeometry &g, int64_t pos, int32_t pos_base,
+               dpct::get_error_string_dummy(le);
+         return false;
+     }
+-    (void)DPCT_CHECK_ERROR(
+-        (cs->ext_oneapi_empty())); // one flush, so WDDM submits the graph now
+     static const int flush_us = [] {
+         const char* e = std::getenv("STRATA_TG_FLUSH_US");
+         return e ? std::atoi(e) : 2000;   // 24 Sep: 0 flushes run as fast as 5 us ones; this only notices faults
+@@ -1367,26 +1384,20 @@ bool session_run_token(const ModelGeometry &g, int64_t pos, int32_t pos_base,
+                 // A slow ring: flush the submission queue once more, and notice a fault or a finished graph.
+                 last_flush = now;
+                 ++tg.flushes;
+-                const dpct::err0 q = DPCT_CHECK_ERROR((cs->ext_oneapi_empty()));
+-                if (q != 1 && *seq < want) {
+-                    err = "session_run_token: layer " + std::to_string(l) +
+-                          " never rang (" +
+-                          /*
+-                          DPCT1009: SYCL reports errors using exceptions
+-                          and does not use error codes. Please replace the
+-                          "get_error_string_dummy(...)" with a real
+-                          error-handling function.
+-                          */
+-                          (q == 0
+-                               ? std::string("graph finished")
+-                               : std::string(dpct::get_error_string_dummy(q))) +
+-                          ")";
++                const auto progress = detail::ring_progress(
++                    [&] { return cs->ext_oneapi_empty(); },
++                    [&] { cs->throw_asynchronous(); }, [&] { return *seq >= want; });
++                if (progress == detail::RingProgress::query_error)
++                    prefill::detail::retirement_fail_stop("token queue progress unavailable");
++                if (progress == detail::RingProgress::complete_without_ring) {
++                    strata::retire_queue(*cs); // actual accepted work, outside capture
++                    accepted_work.retire();
++                    err = "session_run_token: layer " + std::to_string(l) + " never rang (graph finished)";
+                     return false;
+                 }
+             }
+             if (now - t0 > std::chrono::seconds(20)) {
+-                err = "session_run_token: timed out waiting for layer " + std::to_string(l);
+-                return false;
++                prefill::detail::retirement_fail_stop("token pending work abandoned");
+             }
+         }
+         const auto t1 = Clock::now();
+@@ -1418,6 +1429,8 @@ bool session_run_token(const ModelGeometry &g, int64_t pos, int32_t pos_base,
+               dpct::get_error_string_dummy(se);
+         return false;
+     }
++    strata::retire_queue(*cs);
++    accepted_work.retire();
+     progress_at("decode");
+     progress_beat();
+     return true;
+diff --git a/validation/pr6-restore/sycl/src/core/verify.cpp b/validation/pr6-restore/sycl/src/core/verify.cpp
+index f446a3e3cce15ea601465f42296998b48ee14a14..f13bc363d74f33567dbf6d7baec8bd9467da4607 100644
+--- a/validation/pr6-restore/sycl/src/core/verify.cpp
++++ b/validation/pr6-restore/sycl/src/core/verify.cpp
+@@ -2,6 +2,8 @@
+ #include <sycl/sycl.hpp>
+ #include <dpct/dpct.hpp>
+ #include "strata/core/verify.hpp"
++#include "strata/sycl_retirement.hpp"
++#include "strata/prefill/draft_uploads.hpp"
+ #if defined(_WIN32)
+ #include <intrin.h>
+ #endif
+@@ -177,6 +179,7 @@ const int64_t g_test_stall = [] {
+ }  // namespace
+ 
+ bool Verifier::release_gpu_waits(int timeout_ms) try {
++    if (!detail::concurrent_doorbell_admitted()) return false;
+     released_.store(true);
+     trace_ev("RELEASE", -1, -1, timeout_ms);
+     // the words the spin kernels read (wait_flag_ge, wait_flag_ge_or) are mapped host memory, so a store here
+@@ -206,6 +209,7 @@ bool Verifier::release_gpu_waits(int timeout_ms) try {
+ }
+ 
+ void Verifier::trace_ev(const char* what, int64_t step, int64_t layer, int64_t aux) const {
++    if (!detail::concurrent_doorbell_admitted()) return;
+     if (!g_trace) return;
+     auto rd = [](const uint32_t* p) { return p ? *(const volatile uint32_t*) p : 0u; };
+     TraceEv& e = g_trace_ring[g_trace_next.fetch_add(1) % kTraceN];
+@@ -265,6 +269,7 @@ void Verifier::trace_dump(std::FILE* f) const {
+ }
+ 
+ void Verifier::diag(std::FILE* f) const {
++    if (!detail::concurrent_doorbell_admitted()) return;
+     auto rd = [](const uint32_t* p) { return p ? *(const volatile uint32_t*) p : 0u; };
+     // #251: outside a verify stage these are the LAST window's numbers (it finished), not the stalled work's
+     const char* where = progress().where.load();
+@@ -306,6 +311,9 @@ Verifier::~Verifier() try {
+ bool Verifier::init(const WeightTable &wt, const ModelGeometry &g,
+                     SessionState &ss, const VerifyHits &hits,
+                     const NativeHead *head, int max_t, std::string &err) try {
++    if (!detail::concurrent_doorbell_admitted()) {
++        err = detail::doorbell_exclusion; return false;
++    }
+     g_diag_verifier.store(this);
+     diag_verify_fn().store(&diag_active_verifier);
+     for (auto& slot : g_live) {
+@@ -567,7 +575,10 @@ catch (sycl::exception const &exc) {
+   std::exit(1);
+ }
+ 
+-const float* Verifier::final_R(int t) const { return R_ + (size_t) t * (size_t) (g_->hc * g_->n_embd); }
++const float* Verifier::final_R(int t) const {
++    if (!detail::concurrent_doorbell_admitted() || !g_ || !R_ || t < 0 || t >= last_t_) return nullptr;
++    return R_ + (size_t) t * (size_t) (g_->hc * g_->n_embd);
++}
+ 
+ // ================================ THE WINDOW, AS CAPTURED ================================
+ //
+@@ -580,6 +591,9 @@ const float* Verifier::final_R(int t) const { return R_ + (size_t) t * (size_t)
+ // while the GPU combines A and runs A's layer l+1.  B's mixer only needs A's mixer of the same layer (K/V, GDN
+ // state), never A's experts, so nothing waits that did not wait before.  Every token's arithmetic is unchanged.
+ bool Verifier::record_window(int T, dpct::queue_ptr cs, std::string &err) {
++    if (!detail::concurrent_doorbell_admitted()) {
++        err = detail::doorbell_exclusion; return false;
++    }
+     using namespace strata::kernels;
+     const ModelGeometry& g = *g_;
+     const WeightTable& wt = *wt_;
+@@ -1136,6 +1150,9 @@ std::string Verifier::profile_report() {
+ }
+ 
+ bool Verifier::capture_boundary(int T, std::string& err) {
++    if (!detail::concurrent_doorbell_admitted()) {
++        err = detail::doorbell_exclusion; return false;
++    }
+     if (std::getenv("STRATA_VERIFY_EAGER") != nullptr) return true;
+     auto& graphs = boundary_graphs_[T];
+     if (graphs.tail) return true;
+@@ -1184,6 +1201,9 @@ bool Verifier::capture_boundary(int T, std::string& err) {
+ }
+ 
+ bool Verifier::run_boundary(int T, PoolMultiFn pool, void* user, std::string& err) {
++    if (!detail::concurrent_doorbell_admitted()) {
++        err = detail::doorbell_exclusion; return false;
++    }
+     const auto& g = *g_;
+     const auto& ss = *ss_;
+     const int G = split_ && T >= 2 ? 2 : 1;
+@@ -1254,6 +1274,9 @@ bool Verifier::run_boundary(int T, PoolMultiFn pool, void* user, std::string& er
+ }
+ 
+ bool Verifier::capture(int T, std::string &err) try {
++    if (!detail::concurrent_doorbell_admitted()) {
++        err = detail::doorbell_exclusion; return false;
++    }
+     if (host_boundary_) return capture_boundary(T, err);
+     if (exec_[T] != nullptr) return true;
+     if (std::getenv("STRATA_VERIFY_EAGER") != nullptr) return true;   // SYCL port: no graph, run() replays the body
+@@ -1356,6 +1379,9 @@ catch (sycl::exception const &exc) {
+ }
+ 
+ bool Verifier::capture_commit(std::string &err) try {
++    if (!detail::concurrent_doorbell_admitted()) {
++        err = detail::doorbell_exclusion; return false;
++    }
+     if (commit_exec_ != nullptr) return true;
+     using namespace strata::kernels;
+     const ModelGeometry& g = *g_;
+@@ -1440,16 +1466,18 @@ catch (sycl::exception const &exc) {
+ bool Verifier::run(int T, const int32_t *tokens, int64_t pos0, PoolMultiFn pool,
+                    void *user, int32_t *out, std::string &err) try {
+     using namespace strata::kernels;
+-    if (T < 1 || T > max_t_ ||
++    if (!wt_ || !g_ || !ss_ || !cs_ || !out || T < 1 || T > max_t_ || T > 8 ||
++        !detail::prefill_admission(out, tokens, pos0, T, {detail::session_cells(*ss_, *g_)}) ||
+         !detail::embedding_tokens(tokens, T, native_embed() ? native_embed()->vocabulary() : n_vocab_)) {
+-        err = "verify: token outside the embedding vocabulary"; return false;
++        err = "verify: invalid pointers, token IDs or context span"; return false;
++    }
++    if (!detail::concurrent_doorbell_admitted()) {
++        err = detail::doorbell_exclusion; return false;
+     }
+     const OnDevice on_device(device_);
+-    if (T < 1 || T > max_t_) { err = "verify: window size out of range"; return false; }
+     const ModelGeometry& g = *g_;
+     SessionState& ss = *ss_;
+-    if (released_.load()) { err = "verify: an earlier window never finished on the GPU (#267); restart the engine"; return false; }
+-    if (pos0 + T > ss.qsa_states[ss.qsa_primary()].max_cells) { err = "verify: the window runs past the context"; return false; }
++    if (released_.load()) { err = "verify: an earlier window never finished; restart the engine"; return false; }
+     if (!capture(T, err) || !capture_commit(err)) return false;
+     VDBG("captured; staging\n");
+     const Clock::time_point t0 = Clock::now();
+@@ -1487,6 +1515,11 @@ bool Verifier::run(int T, const int32_t *tokens, int64_t pos0, PoolMultiFn pool,
+     VDBG("staged; launching\n");
+     static Clock::time_point t_prev_end;   // SYCL port timing: where does a round's wall clock go?
+     const Clock::time_point t_launch = Clock::now();
++    prefill::detail::RetirementDeadline window_deadline;
++    prefill::detail::DraftUploadGuard accepted_work(
++        [&] { strata::retire_queue(*cs_); if (copy_) strata::retire_queue(*copy_); return true; },
++        [] { prefill::detail::retirement_fail_stop("verify work not retired"); });
++    accepted_work.arm();
+     const dpct::err0 le = host_boundary_
+                               ? (run_boundary(T, pool, user, err) ? 0 : 1)
+                               : (std::getenv("STRATA_VERIFY_EAGER") != nullptr)
+@@ -1510,7 +1543,6 @@ bool Verifier::run(int T, const int32_t *tokens, int64_t pos0, PoolMultiFn pool,
+             std::string("verify: launch: ") + dpct::get_error_string_dummy(le);
+         return false;
+     }
+-    (void)DPCT_CHECK_ERROR(((cs_)->ext_oneapi_empty()));
+     VDBG("launched\n");
+     volatile uint32_t* const seq = h_seq_;
+     volatile uint32_t* const flag = h_flag_;
+@@ -1538,38 +1570,23 @@ bool Verifier::run(int T, const int32_t *tokens, int64_t pos0, PoolMultiFn pool,
+             const auto now = Clock::now();
+             if (now - last_flush > std::chrono::microseconds(2000)) {
+                 last_flush = now;
+-                const dpct::err0 q =
+-                    DPCT_CHECK_ERROR(((cs_)->ext_oneapi_empty()));
+-                if (q != 1 && *seq < want) {
+-                    trace_ev("NEVER-RANG", k, l, (int64_t) q);
+-                    trace_dump(stderr);
+-                    err = "verify: layer " + std::to_string(l) +
+-                          " never rang (" +
+-                          /*
+-                          DPCT1009: SYCL reports errors using exceptions and
+-                          does not use error codes. Please replace the
+-                          "get_error_string_dummy(...)" with a real
+-                          error-handling function.
+-                          */
+-                          (q == 0
+-                               ? std::string("graph finished")
+-                               : std::string(dpct::get_error_string_dummy(q))) +
+-                          ")";
++                const auto progress = detail::ring_progress(
++                    [&] { return cs_->ext_oneapi_empty(); },
++                    [&] { cs_->throw_asynchronous(); }, [&] { return *seq >= want; });
++                if (progress == detail::RingProgress::query_error)
++                    prefill::detail::retirement_fail_stop("verify queue progress unavailable");
++                if (progress == detail::RingProgress::complete_without_ring) {
++                    strata::retire_queue(*cs_);
++                    if (copy_) strata::retire_queue(*copy_);
++                    accepted_work.retire();
++                    err = "verify: layer " + std::to_string(l) + " never rang (graph finished)";
+                     return false;
+                 }
+             }
+             if (now - a > std::chrono::seconds(20)) {
+-                // #267: the caller ends the engine; no spin kernel may outlive it
+-                trace_ev("TIMEOUT", k, l, (int64_t) !cs_->ext_oneapi_empty());   // SYCL port: 1 = still running
+-                if (g_trace) {
+-                    diag(stderr);   // the words and the breadcrumbs before the release ...
+-                    const bool drained = release_gpu_waits(5000);
+-                    trace_dump(stderr);   // ... and after it: did the GPU move once its waits were raised?
+-                    err = "verify: timed out at layer " + std::to_string(l) + released_note(drained);
+-                    return false;
+-                }
+-                err = "verify: timed out at layer " + std::to_string(l) + released_note(release_gpu_waits(5000));
+-                return false;
++                // No unproved volatile release protocol and no ordinary unwind
++                // while accepted graphs may still own buffers.
++                prefill::detail::retirement_fail_stop("verify pending work abandoned");
+             }
+         }
+         const Clock::time_point b = Clock::now();
+@@ -1632,6 +1649,9 @@ bool Verifier::run(int T, const int32_t *tokens, int64_t pos0, PoolMultiFn pool,
+         err = std::string("verify: ") + dpct::get_error_string_dummy(se);
+         return false;
+     }
++    strata::retire_queue(*cs_);
++    if (copy_) strata::retire_queue(*copy_);
++    accepted_work.retire();
+     if (no_host && std::getenv("STRATA_VERIFY_DEBUG") != nullptr) {   // SYCL port: what the window left behind
+         const int Gd = groups_[T] > 0 ? groups_[T] : 1;
+         std::vector<uint32_t> sk((size_t) Gd, 0);
+@@ -1854,6 +1874,13 @@ void Verifier::publish_plan(void* ctx) {
+ 
+ bool Verifier::window_logprobs(const int32_t* targets, int T, int64_t pos0, int32_t extra_id, std::FILE* out,
+                                std::string& err) try {
++    if (!g_ || !ss_ || !out || T < 1 || T > max_t_ || T > last_t_ || T > 8 ||
++        !detail::prefill_admission(out, targets, pos0, T, {detail::session_cells(*ss_, *g_)})) {
++        err = "window_logprobs: invalid pointers or context/window span"; return false;
++    }
++    if (!detail::concurrent_doorbell_admitted()) {
++        err = detail::doorbell_exclusion; return false;
++    }
+     if (next_ != nullptr) return next_->window_logprobs(targets, T, pos0, extra_id, out, err);
+     const OnDevice on_device(device_);
+     if (head_logits_ == nullptr || n_vocab_ <= 0 || T <= 0 || targets == nullptr || out == nullptr) {
+@@ -1915,6 +1942,9 @@ namespace { bool g_commit_async = false; }
+ void Verifier::set_commit_async(bool on) { g_commit_async = on && std::getenv("STRATA_COMMIT_SYNC") == nullptr; }
+ 
+ bool Verifier::commit(int n_keep, std::string &err, bool wait) try {
++    if (!detail::concurrent_doorbell_admitted()) {
++        err = detail::doorbell_exclusion; return false;
++    }
+     const OnDevice on_device(device_);
+     if (n_keep < 1 || n_keep > last_t_) { err = "verify: commit count out of range"; return false; }
+     if (pending_commit_ != 0 && !commit_finish(err)) return false;
+@@ -1958,12 +1988,18 @@ catch (sycl::exception const &exc) {
+ }
+ 
+ bool Verifier::warm(std::string &err) {
++    if (!detail::concurrent_doorbell_admitted()) {
++        err = detail::doorbell_exclusion; return false;
++    }
+     for (int T = 1; T <= max_t_; ++T)
+         if (!capture(T, err)) return false;
+     return true;
+ }
+ 
+ bool Verifier::commit_finish(std::string &err) try {
++    if (!detail::concurrent_doorbell_admitted()) {
++        err = detail::doorbell_exclusion; return false;
++    }
+     if (pending_commit_ == 0) return true;
+     const OnDevice on_device(device_);
+     const int n_keep = pending_commit_;
+@@ -1988,11 +2024,15 @@ catch (sycl::exception const &exc) {
+ }
+ 
+ bool Verifier::wait_commit(std::string& err) {
++    if (!detail::concurrent_doorbell_admitted()) {
++        err = detail::doorbell_exclusion; return false;
++    }
+     if (!commit_finish(err)) return false;
+     return next_ == nullptr || next_->wait_commit(err);
+ }
+ 
+ bool Verifier::copy_logits(int t, float* host) const {
++    if (!detail::concurrent_doorbell_admitted()) return false;
+     if (next_ != nullptr) return next_->copy_logits(t, host);   // a layer split: the head is on the last stage
+     if (head_logits_ == nullptr || host == nullptr || t < 0 || n_vocab_ <= 0) return false;
+     try {
+diff --git a/validation/pr6-restore/sycl/src/prefill/prefill.cpp b/validation/pr6-restore/sycl/src/prefill/prefill.cpp
+index 24a17a0c7f95210405b5753832558c147ef71b7d..921fc0425b67206c7d0aafa270489054c2a4543e 100644
+--- a/validation/pr6-restore/sycl/src/prefill/prefill.cpp
++++ b/validation/pr6-restore/sycl/src/prefill/prefill.cpp
+@@ -312,7 +312,7 @@ struct Stager {
+         finish();
+         { std::lock_guard<std::mutex> lk(mu); quit = true; }
+         cv.notify_all();
+-        for (auto& t : threads) t.join();
++        for (auto& t : threads) detail::bounded_join(t);
+         // init may throw while resizing the parallel vectors. Only entries
+         // actually constructed can be examined during partial-init cleanup.
+         for (auto event : dma_done) if (event) dpct::destroy_event(event);
+@@ -1258,6 +1258,12 @@ bool Prefill::draft_kv(core::MtpDrafter& mtp, const float* R_rows, const int32_t
+                        std::string& err) {
+     Impl& m = *impl_;
+     if (!m.ready) { err = "prefill: init must complete before draft_kv"; return false; }
++    if (!m.g || !m.ss || !m.wt ||
++        !core::detail::prefill_admission(R_rows, next_tokens, cell0, n,
++            {core::detail::session_cells(*m.ss, *m.g), mtp.kv_state().max_cells})) {
++        err = "prefill draft: invalid pointers or context/state span"; return false;
++    }
++    if (n == 0) return true; // matches the MTP fallback's admitted empty policy
+     static const bool off = [] { const char* v = std::getenv("STRATA_MTP_BATCH"); return v != nullptr && v[0] == '0'; }();
+     // A ring (KV streaming: the drafter's window, page p in slot p % n_slots over a host copy) takes the same appends
+     // with its own page table and host copy, as a streamed main layer does; the cells written are those the window can
+@@ -2613,8 +2619,7 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
+             std::atomic<bool>* stop;
+             std::thread* t;
+             ~IssuerJoin() {
+-                detail::RetirementDeadline deadline;
+-                if (t->joinable()) { stop->store(true); t->join(); }
++                if (t->joinable()) { stop->store(true); detail::bounded_join(*t); }
+             }
+         } issuer_join{&a_stop, &issuer};
+         const bool threaded_issue = stream_all && issuer_on;
+@@ -4034,7 +4039,7 @@ bool Prefill::run_impl(const int64_t *tokens, int64_t n, int64_t pos0,
+         }
+         if (!ple_land()) return false;   // a stage that ends before layer 1: the rows land anyway, the next gather starts
+         if (issuer.joinable()) {
+-            issuer.join();
++            detail::bounded_join(issuer);
+             stats_.ms_experts_host += iss_ms;
+             stats_.experts_streamed += iss_streamed;
+             stats_.experts_dma += iss_dma;
+diff --git a/validation/pr6-restore/sycl/src/program/generate.cpp b/validation/pr6-restore/sycl/src/program/generate.cpp
+index 58d6370e64c8bf9aab5deb519ce46e87ba938246..fa97bfe211365c1a1c857d317ab2f8fa254e2151 100644
+--- a/validation/pr6-restore/sycl/src/program/generate.cpp
++++ b/validation/pr6-restore/sycl/src/program/generate.cpp
+@@ -1605,6 +1605,17 @@ int main(int argc, char **argv) try {
+         }
+         }
+     }
++    // Before device queries, allocation or recording. The only retained CLI
++    // decode fallback is the original explicitly requested GPU-floor diagnostic;
++    // session_token has no CPU-pool hook and cannot replace full model decode.
++    if (!strata::core::detail::concurrent_doorbell_admitted() &&
++        (o.spec != 0 || o.serve || !o.no_capture || !o.no_pool ||
++         !o.dump_layers.empty() || !o.dump_halves.empty() || !o.dump_routing.empty())) {
++        std::fprintf(stderr, "%s\nOnly the original --no-capture --no-pool diagnostic is admitted here; "
++                             "Prefill::run remains available to Main's separate prefill harness.\n",
++                     strata::core::detail::doorbell_exclusion);
++        return 2;
++    }
+     strata::core::set_coupled_draft(o.coupled_draft);
+     strata::core::set_peer_portable(o.peer_device >= 1);   // multi-GPU: the Portable flag on mapped host buffers only with a peer device (before any allocation)
+     if (o.serve && o.conversation_cache_mib > 0 && (o.prompt_cache == 0 || o.conversation_cache_slots == 0))
+@@ -2485,11 +2496,9 @@ int main(int argc, char **argv) try {
+     }
+ 
+     strata::core::Doorbell db;
+-    if (strata::core::doorbell_init(g, K, db) == 0) {
+-        std::fprintf(stderr, "strata generate: doorbell_init failed\n");
+-        return 1;
+-    }
+-    ss.db = &db;
++    // The admitted original direct diagnostic uses no doorbell. Ordinary
++    // Prefill has its own CPU expert path; --no-pool only describes decode.
++    ss.db = nullptr;
+ 
+     // ================================ THE PLE ================================
+     //
+diff --git a/validation/pr6-restore/fixtures/bounded_join.cpp b/validation/pr6-restore/fixtures/bounded_join.cpp
+new file mode 100644
+index 0000000000000000000000000000000000000000..2b4a5950837ded999ffd8625f5f4ec78dc73ad61
+--- /dev/null
++++ b/validation/pr6-restore/fixtures/bounded_join.cpp
+@@ -0,0 +1,46 @@
++// Independent project fixture under repository LICENSE. No SYCL/runtime init.
++#include "strata/prefill/retirement.hpp"
++#ifdef NDEBUG
++#undef NDEBUG
++#endif
++#include <atomic>
++#include <cassert>
++#include <stdexcept>
++
++using strata::prefill::detail::bounded_join;
++
++struct JoinOnExit {
++    std::atomic<bool>& stop;
++    std::thread& worker;
++    ~JoinOnExit() { stop.store(true, std::memory_order_release); bounded_join(worker); }
++};
++
++int main() {
++    std::thread absent;
++    bounded_join(absent);
++    int result = 0;
++    std::mutex owner_mutex;
++    // The worker needs this mutex to finish: joining is outside its lock scope.
++    std::unique_lock<std::mutex> held(owner_mutex);
++    std::thread normal([&] { std::lock_guard<std::mutex> lock(owner_mutex); result = 41; });
++    held.unlock();
++    bounded_join(normal);
++    assert(!normal.joinable() && result == 41);
++    bounded_join(normal); // explicit join followed by owner cleanup is harmless
++
++    std::atomic<bool> stop{false};
++    std::thread issuer;
++    try {
++        // All referenced owners precede the guard, matching the real issuer.
++        JoinOnExit guard{stop, issuer};
++        issuer = std::thread([&] {
++            while (!stop.load(std::memory_order_acquire)) std::this_thread::yield();
++            std::lock_guard<std::mutex> lock(owner_mutex);
++            result = 42;
++        });
++        throw std::runtime_error("owner unwind");
++    } catch (const std::runtime_error&) {}
++    assert(!issuer.joinable() && result == 42);
++    // No hanging provider or deadline injection here. Main must check exit86
++    // with a real owned, externally supervised process before native admission.
++}
+diff --git a/validation/pr6-restore/fixtures/validation_control.cpp b/validation/pr6-restore/fixtures/validation_control.cpp
+new file mode 100644
+index 0000000000000000000000000000000000000000..12633c01bb7bf9827cd8b6ca6755be76bc165ff9
+--- /dev/null
++++ b/validation/pr6-restore/fixtures/validation_control.cpp
+@@ -0,0 +1,104 @@
++// Independent project fixture under repository LICENSE. Main alone builds/runs.
++#include "strata/core/validation_control.hpp"
++#ifdef NDEBUG
++#undef NDEBUG
++#endif
++#include <cassert>
++#include <stdexcept>
++
++using namespace strata::core::detail;
++
++static void progress_cases() {
++    int errors = 0;
++    auto poll = [&](bool complete, bool rang) {
++        return ring_progress([&] { return complete; }, [&] { ++errors; }, [&] { return rang; });
++    };
++    assert(poll(false, false) == RingProgress::pending);
++    assert(poll(true, false) == RingProgress::complete_without_ring);
++    assert(poll(true, true) == RingProgress::reached);
++    assert(poll(false, true) == RingProgress::reached); // later queue work may still be pending
++    assert(errors == 4);
++    bool ring_read = false;
++    assert(ring_progress([]() -> bool { throw std::runtime_error("query"); },
++                         [] {}, [&] { ring_read = true; return true; }) == RingProgress::query_error);
++    assert(!ring_read);
++    assert(ring_progress([] { return false; },
++                         [] { throw std::runtime_error("async consumer"); },
++                         [] { return true; }) == RingProgress::query_error);
++    // A long logical sequence of successful NOT_READY queries must remain
++    // pending. No GPU, provider or wall-clock performance claim is involved.
++    for (int tick = 0; tick < 10001; ++tick) {
++        const auto state = poll(tick == 10000, tick == 10000);
++        assert(state == (tick == 10000 ? RingProgress::reached : RingProgress::pending));
++    }
++}
++
++static void span_cases() {
++    int token = 0;
++    float residual = 0;
++    const auto full = {int64_t(262144), int64_t(262144)};
++    assert(prefill_admission(&residual, &token, 0, 262144, full));
++    assert(prefill_admission(&residual, &token, 262143, 1, full));
++    assert(!prefill_admission(&residual, &token, 262144, 1, full));
++    assert(!prefill_admission(&residual, &token, 0, 262145, full));
++    assert(prefill_admission(nullptr, nullptr, 262144, 0, full));
++    assert(!prefill_admission(nullptr, nullptr, 262145, 0, full));
++    assert(!prefill_admission(nullptr, &token, 0, 1, full));
++    assert(!prefill_admission(&residual, nullptr, 0, 1, full));
++    assert(!prefill_admission(&residual, &token, -1, 1, full));
++    assert(!prefill_admission(&residual, &token, INT64_MIN, 1, full));
++    assert(!prefill_admission(&residual, &token, INT64_MAX, 1, full));
++    assert(!prefill_admission(&residual, &token, 0, INT64_MAX, full));
++    assert(!prefill_admission(&residual, &token, 0, INT64_MIN, full));
++    assert(!prefill_admission(&residual, &token, INT64_MAX - 1, 8, full));
++    assert(!prefill_admission(&residual, &token, 0, -1, full));
++    assert(!position_span(0, 1, {0, 262144}));
++    assert(!position_span(0, 1, {-1, 262144}));
++    assert(position_span(99, 1, {100, 200}));
++    assert(!position_span(100, 1, {100, 200}));
++    assert(!position_span(100, 1, {200, 100}));
++    assert(!position_span(262144, 1, {INT64_MAX, INT64_MAX}));
++    assert(!position_span(0, 1, full, INT64_MAX));
++    assert(!position_span(0, 1, full, -1));
++    // Catch-up at 262140..262141; chain from accepted row 1 writes
++    // 262141..262142, leaving verifying position 262143 in context.
++    assert(draft_admission(&residual, &token, &token, 262140, 2, 1, 4, 2, full));
++    assert(draft_admission(&residual, &token, &token, 262141, 2, 1, 4, 1, full));
++    assert(!draft_admission(&residual, &token, &token, 262142, 2, 1, 4, 1, full));
++    // A valid catch-up span can still lack room for the draft chain/lookahead.
++    assert(!draft_admission(&residual, &token, &token, 262141, 2, 1, 4, 3, full));
++    assert(!draft_admission(&residual, &token, &token, INT64_MAX, 1, 0, 4, 1, full));
++    assert(!draft_admission(&residual, &token, &token, INT64_MIN, 1, 0, 4, 1, full));
++    assert(!draft_admission(&residual, &token, &token, -1, 1, 0, 4, 1, full));
++    assert(!draft_admission(&residual, &token, &token, 0, 0, 0, 4, 1, full));
++    assert(!draft_admission(&residual, &token, &token, 0, 1, -1, 4, 1, full));
++    assert(!draft_admission(&residual, &token, &token, 0, 1, 1, 4, 1, full));
++    assert(!draft_admission(&residual, &token, &token, 0, 1, 0, INT32_MAX, 1, full));
++    assert(!draft_admission(&residual, &token, nullptr, 0, 1, 0, 4, 1, full));
++    assert(!draft_admission(nullptr, &token, &token, 0, 1, 0, 4, 1, full));
++    assert(!draft_admission(&residual, nullptr, &token, 0, 1, 0, 4, 1, full));
++    assert(!draft_admission(&residual, &token, &token, 98, 2, 1, 4, 1, {100, 200}));
++}
++
++static void load_cases() {
++    // The actual NativeEmbed member gate, not a model-shaped stand-in. Failure
++    // at any point after begin consumes the attempt. Payload parsing, allocation
++    // and DMA need separate Main qualification.
++    OneAttemptLoad initial_failure;
++    assert(initial_failure.begin());
++    assert(!initial_failure.begin());
++    assert(!initial_failure.begin());
++    OneAttemptLoad success;
++    assert(success.begin());
++    assert(!success.begin()); // repeated supported reload never reaches mutation
++    assert(!success.begin());
++    OneAttemptLoad fresh;
++    assert(fresh.begin()); // a fresh owner is the only retry path
++}
++
++int main() {
++    static_assert(!concurrent_doorbell_admitted());
++    progress_cases();
++    span_cases();
++    load_cases();
++}
+diff --git a/validation/pr6-restore/include/strata/core/validation_control.hpp b/validation/pr6-restore/include/strata/core/validation_control.hpp
+new file mode 100644
+index 0000000000000000000000000000000000000000..5c585600be736f5d36fcb23e6015c863e4e2c134
+--- /dev/null
++++ b/validation/pr6-restore/include/strata/core/validation_control.hpp
+@@ -0,0 +1,73 @@
++#pragma once
++// Independently authored project code under repository LICENSE.
++#include <algorithm>
++#include <cstdint>
++#include <initializer_list>
++
++namespace strata::core::detail {
++// No environment switch can enable the legacy mixed volatile/device-atomic
++// handshake. Its source remains only for historical comparison.
++inline constexpr bool concurrent_doorbell_admitted() noexcept { return false; }
++inline constexpr const char* doorbell_exclusion =
++    "PR6 validation: concurrent mapped doorbell unsupported (D3); decode host loops, "
++    "token graphs and every verifier mode are excluded; ordinary Prefill remains source-available";
++
++// End is a count, so a final cell at limit-1 is legal. Empty prefill is a
++// no-op at any admitted endpoint, without requiring token/residual pointers.
++inline bool position_span(int64_t first, int64_t count,
++                          std::initializer_list<int64_t> limits,
++                          int64_t lookahead = 0) noexcept {
++    if (first < 0 || count < 0 || lookahead < 0) return false;
++    int64_t cap = 262144;
++    for (const auto limit : limits) {
++        if (limit <= 0) return false;
++        cap = std::min(cap, limit);
++    }
++    if (first > cap || count > cap - first) return false;
++    return lookahead <= cap - first - count;
++}
++inline bool prefill_admission(const void* residual, const void* tokens,
++                             int64_t first, int64_t count,
++                             std::initializer_list<int64_t> limits) noexcept {
++    return position_span(first, count, limits) &&
++           (count == 0 || (residual && tokens));
++}
++// Catch-up rows and the draft chain have different endpoints. Check each
++// subtraction before forming p+a or any sampled counter/position cell+1.
++inline bool draft_admission(const void* residual, const void* tokens, const void* output,
++                            int64_t p, int T, int a, int max_t, int max_drafts,
++                            std::initializer_list<int64_t> limits) noexcept {
++    if (!residual || !tokens || !output || max_t < 2 || max_t > 8 ||
++        T < 1 || T > max_t || a < 0 || a >= T ||
++        !position_span(p, T, limits)) return false;
++    const int chain = std::max(1, std::min(max_t - 1, max_drafts));
++    // a < T; chain <= 7. Reserve a cells before the chain, then the
++    // chain and one verifying token, without forming p+a at admission.
++    return position_span(p, a, limits, int64_t(chain) + 1);
++}
++
++// False completion and provider errors must never be conflated. The caller
++// consumes errors even when the queue query reports pending; delivery uses 87.
++enum class RingProgress { pending, reached, complete_without_ring, query_error };
++template<class Empty, class Errors, class Ring>
++inline RingProgress ring_progress(Empty empty, Errors errors, Ring reached) noexcept {
++    try {
++        const bool complete = empty();
++        errors();
++        if (reached()) return RingProgress::reached;
++        return complete ? RingProgress::complete_without_ring : RingProgress::pending;
++    } catch (...) { return RingProgress::query_error; }
++}
++
++// One attempt, including dimension/model/IO/allocation failures. The gate is
++// taken before metadata mutation; repeated calls preserve the prior state.
++class OneAttemptLoad {
++    bool attempted_ = false;
++public:
++    bool begin() noexcept {
++        if (attempted_) return false;
++        attempted_ = true;
++        return true;
++    }
++};
++} // namespace strata::core::detail

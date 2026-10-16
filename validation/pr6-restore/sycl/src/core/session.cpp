@@ -3,6 +3,8 @@
 #include <sycl/sycl.hpp>
 #include <dpct/dpct.hpp>
 #include "strata/sycl_queue.hpp"
+#include "strata/sycl_retirement.hpp"
+#include "strata/prefill/draft_uploads.hpp"
 #include "strata/core/session.hpp"
 #include "strata/kernels/mrope.hpp"
 #include "strata/core/progress.hpp"
@@ -198,6 +200,9 @@ void stage_token(const ModelGeometry& g, int64_t pos, int32_t pos_base, SessionS
 
 bool session_capture(const WeightTable& tables, const ModelGeometry& g, SessionState& s, const float* parts,
                      SessionGraphs& gr, std::string& err, bool split, int64_t layer_lo, int64_t layer_hi) {
+    if (s.db && !detail::concurrent_doorbell_admitted()) {
+        err = detail::doorbell_exclusion; return false;
+    }
     if (gr.captured) return true;
     if (layer_hi < 0 || layer_hi > g.n_layers) layer_hi = g.n_layers;
     if (layer_lo < 0) layer_lo = 0;
@@ -813,6 +818,9 @@ bool session_loop(const ModelGeometry &g, int64_t pos, int32_t pos_base,
                   SessionState &s, SessionGraphs &gr, PoolFn pool, HitFn hits,
                   void *user, bool overlap, void *stream, std::string &err,
                   float *dump_layers, SessionLoopScratch *scratch) try {
+    if (!detail::concurrent_doorbell_admitted()) {
+        err = detail::doorbell_exclusion; return false;
+    }
     if (!gr.captured || gr.n != g.n_layers) { err = "session_loop: not captured"; return false; }
     if (gr.parts_dev == nullptr) { err = "session_loop: the graphs were captured without a parts buffer"; return false; }
     if (s.db == nullptr) { err = "session_loop: no doorbell; the loop has nothing to poll"; return false; }
@@ -1206,6 +1214,9 @@ bool session_capture_token(const WeightTable &tables, const ModelGeometry &g,
                            const float *y_miss_host, size_t parts_bytes,
                            TokenGraph &tg, std::string &err,
                            const TokenHits *hits) try {
+    if (!detail::concurrent_doorbell_admitted()) {
+        err = detail::doorbell_exclusion; return false;
+    }
     if (hits != nullptr && !hits->on()) { err = "session_capture_token: incomplete hit configuration"; return false; }
     if (tg.captured) return true;
     if (s.db == nullptr || s.db->d_flag == nullptr || s.db->d_seq == nullptr) {
@@ -1320,12 +1331,20 @@ catch (sycl::exception const &exc) {
 bool session_run_token(const ModelGeometry &g, int64_t pos, int32_t pos_base,
                        SessionState &s, TokenGraph &tg, PoolFn pool, void *user,
                        float *y_miss_host, void *stream, std::string &err) try {
+    if (!detail::concurrent_doorbell_admitted()) {
+        err = detail::doorbell_exclusion; return false;
+    }
     if (!tg.captured) { err = "session_run_token: not captured"; return false; }
     if (y_miss_host != tg.y_src) { err = "session_run_token: the staging buffer is not the captured one"; return false; }
     dpct::queue_ptr cs = strata::q_of(stream);
     ++tg.calls;
     stage_token(g, pos, pos_base, s);
     doorbell_reset(*s.db);
+    prefill::detail::RetirementDeadline token_deadline;
+    prefill::detail::DraftUploadGuard accepted_work(
+        [&] { strata::retire_queue(*cs); return true; },
+        [] { prefill::detail::retirement_fail_stop("token work not retired"); });
+    accepted_work.arm(); // includes a submission that throws after accepting work
     const dpct::err0 le = DPCT_CHECK_ERROR(cs->ext_oneapi_graph(*tg.exec));
     /*
     DPCT1009: SYCL reports errors using exceptions and does not use error
@@ -1344,8 +1363,6 @@ bool session_run_token(const ModelGeometry &g, int64_t pos, int32_t pos_base,
               dpct::get_error_string_dummy(le);
         return false;
     }
-    (void)DPCT_CHECK_ERROR(
-        (cs->ext_oneapi_empty())); // one flush, so WDDM submits the graph now
     static const int flush_us = [] {
         const char* e = std::getenv("STRATA_TG_FLUSH_US");
         return e ? std::atoi(e) : 2000;   // 24 Sep: 0 flushes run as fast as 5 us ones; this only notices faults
@@ -1367,26 +1384,20 @@ bool session_run_token(const ModelGeometry &g, int64_t pos, int32_t pos_base,
                 // A slow ring: flush the submission queue once more, and notice a fault or a finished graph.
                 last_flush = now;
                 ++tg.flushes;
-                const dpct::err0 q = DPCT_CHECK_ERROR((cs->ext_oneapi_empty()));
-                if (q != 1 && *seq < want) {
-                    err = "session_run_token: layer " + std::to_string(l) +
-                          " never rang (" +
-                          /*
-                          DPCT1009: SYCL reports errors using exceptions
-                          and does not use error codes. Please replace the
-                          "get_error_string_dummy(...)" with a real
-                          error-handling function.
-                          */
-                          (q == 0
-                               ? std::string("graph finished")
-                               : std::string(dpct::get_error_string_dummy(q))) +
-                          ")";
+                const auto progress = detail::ring_progress(
+                    [&] { return cs->ext_oneapi_empty(); },
+                    [&] { cs->throw_asynchronous(); }, [&] { return *seq >= want; });
+                if (progress == detail::RingProgress::query_error)
+                    prefill::detail::retirement_fail_stop("token queue progress unavailable");
+                if (progress == detail::RingProgress::complete_without_ring) {
+                    strata::retire_queue(*cs); // actual accepted work, outside capture
+                    accepted_work.retire();
+                    err = "session_run_token: layer " + std::to_string(l) + " never rang (graph finished)";
                     return false;
                 }
             }
             if (now - t0 > std::chrono::seconds(20)) {
-                err = "session_run_token: timed out waiting for layer " + std::to_string(l);
-                return false;
+                prefill::detail::retirement_fail_stop("token pending work abandoned");
             }
         }
         const auto t1 = Clock::now();
@@ -1418,6 +1429,8 @@ bool session_run_token(const ModelGeometry &g, int64_t pos, int32_t pos_base,
               dpct::get_error_string_dummy(se);
         return false;
     }
+    strata::retire_queue(*cs);
+    accepted_work.retire();
     progress_at("decode");
     progress_beat();
     return true;

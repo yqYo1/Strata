@@ -1,5 +1,6 @@
 #pragma once
 
+#include "strata/core/validation_control.hpp"
 #include <cstddef>
 #include <cstdint>
 #include <string>
@@ -48,6 +49,7 @@ public:
     ~NativeEmbed();
     NativeEmbed(const NativeEmbed&) = delete;
     NativeEmbed& operator=(const NativeEmbed&) = delete;
+    // One attempt per object, including failures. Construct a fresh object to retry.
     bool load(const std::vector<std::string>& shards, int64_t n_embd, int64_t n_vocab, std::string& err);
     /// Direct device entrypoint: downloads/checks IDs before submitting a gather.
     /// Graph callers below use a private path after their own host admission.
@@ -67,6 +69,7 @@ private:
     // Only these callers may record this: they admit every host input before
     // submitting a graph, and require sampled/subset IDs to fit this vocabulary.
     void gather_dev_admitted(const int32_t* tokens, int64_t n_tok, float* out, void* stream) const;
+    detail::OneAttemptLoad load_attempt_;
     void* host_ = nullptr;
     const void* dev_ = nullptr;
     uint64_t bytes_ = 0;
