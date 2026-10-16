@@ -1,0 +1,419 @@
+{
+  "schema": "strata-qsa-device-events-main-qualification-v1",
+  "status": "UNRUN",
+  "execution_owner": "Main exclusively",
+  "worker_actions_performed": "Only proposal source authoring, source reads, bounded primary-doc reads, source/hash/diff review; no build/test/GPU/profiler execution.",
+  "base_source": "6354f0b4ff3731466795410e11ca9ef785c9d326",
+  "patch_sha256": "67020b56aaf7187968ecf7b870a19b9ad76825af0cc52347e8dd929f162dc7e4",
+  "private_job_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r856-qsa-device-events-v1",
+  "prerequisites": [
+    "Main has closed and recorded its current GPU/numerical diagnostics and holds the existing exclusive measurement lease; the worker never inspected their state.",
+    "Review complete proposal.patch, four current base hashes and own-source provenance; Main independently confirms the declared frozen base or exactly matching hashed snapshot. Report-only HEAD advances are allowed.",
+    "Main runs git apply --check against that exact source, then applies only the reviewed patch. Never replace live files from proposed/; preserve all existing 6354 PASS binaries, build roots and receipts.",
+    "Create a fresh private build/tmp/cache root; no reuse or cleanup of main-vllm-prefill-build-v1/v2 or their PASS products.",
+    "All variables below are set in each native child environment before exec and remain immutable; arms are separate owned processes. No service/driver mutation, reset or global synchronization experiment."
+  ],
+  "build": {
+    "state": "UNRUN",
+    "configure_argv": [
+      "/usr/bin/cmake",
+      "-S",
+      "/home/yayoi/orca/workspaces/Strata/sycl",
+      "-B",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r856-qsa-device-events-v1/build",
+      "-G",
+      "Ninja",
+      "-DCMAKE_CXX_COMPILER=/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+      "-DCMAKE_BUILD_TYPE=Release",
+      "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+      "-DMKL_DIR=/opt/intel/oneapi/mkl/2026.1/lib/cmake/mkl",
+      "-DSTRATA_BUILD_CONVERSATION_TESTS:BOOL=OFF",
+      "-DSTRATA_BUILD_PREFILL_HOST_TESTS:BOOL=ON",
+      "-DSTRATA_BUILD_TESTS:BOOL=OFF",
+      "-DSTRATA_CPU_ARCH:STRING=znver3",
+      "-DSTRATA_ENABLE_CUDA:BOOL=OFF",
+      "-DSTRATA_ENABLE_HIP:BOOL=OFF",
+      "-DSTRATA_ENABLE_SYCL:BOOL=ON",
+      "-DSTRATA_GGML_DIR:PATH=/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",
+      "-DSTRATA_MMQ_KQUANTS:BOOL=OFF",
+      "-DSTRATA_NATIVE_EXPERTS:BOOL=ON",
+      "-DSTRATA_ORCA_Q4KS_MMQ:BOOL=OFF",
+      "-DSTRATA_PORTABLE:BOOL=OFF",
+      "-DSTRATA_PREFILL_MMQ:BOOL=OFF",
+      "-DSTRATA_SYCL_AOT_DOUBLE_GRF:BOOL=OFF",
+      "-DSTRATA_SYCL_TESTS:BOOL=ON",
+      "-DSTRATA_WERROR:BOOL=ON",
+      "-DSTRATA_SYCL_VLLM_XE2_NATIVE16=ON",
+      "-DSTRATA_SYCL_DEVICE_ARCH=",
+      "-DSYCL_TLA_SOURCE_DIR=/home/yayoi/ghq/github.com/intel/sycl-tla/.worktree/strata-native16-87f"
+    ],
+    "notes": [
+      "The configure flags are the qualified 6354 recipe; only -B is replaced here. The historical recipe pointed at an older build-v1 directory: do NOT execute that older -B.",
+      "Main pins actual compiler/runtime/driver/headers/dependency hashes and effective compile/link commands before use. Toolchain binaries are not XeStrata implementation inputs.",
+      "Preserve STRATA_SYCL_VLLM_XE2_NATIVE16=ON and its separate AOT object; no architecture/GRF flag experiments.",
+      "Use Main-owned supervised configure/build receipts with a finite deadline and 64 MiB total raw logs; build warnings under WERROR remain failures."
+    ],
+    "build_argv": [
+      "cmake",
+      "--build",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r856-qsa-device-events-v1/build",
+      "--target",
+      "strata",
+      "sycl_prompt_native16_test",
+      "sycl_prompt_k_cellmajor_test",
+      "sycl_native16_qsa_test",
+      "--parallel",
+      "2"
+    ],
+    "deadline_seconds": 1200,
+    "child_environment": {
+      "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+      "HOME": "/home/yayoi",
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+      "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+      "OMP_NUM_THREADS": "1",
+      "GIT_TERMINAL_PROMPT": "0",
+      "GIT_SSH_COMMAND": "ssh -oBatchMode=yes",
+      "CPLUS_INCLUDE_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include",
+      "PYTHONPATH": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/niko-service-test-deps-v1:/home/yayoi/orca/workspaces/Strata/sycl/tools:/home/yayoi/orca/workspaces/Strata/sycl",
+      "PIP_CONFIG_FILE": "/dev/null",
+      "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+      "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+      "SYCL_CACHE_PERSISTENT": "0",
+      "NEOReadDebugKeys": "1",
+      "EnableDirectSubmission": "0",
+      "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+      "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+      "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+      "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
+      "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r856-qsa-device-events-v1/cache",
+      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r856-qsa-device-events-v1/tmp"
+    }
+  },
+  "host_configuration_gate": {
+    "state": "UNRUN",
+    "why_necessary": "New hard event capacity and rejected-profile settings are correctness/evidence contracts, not tests mirroring inference math.",
+    "method": "Main creates one small private host-only harness calling Profile::capacity (no Runtime/queue construction, GPU API or model), compiled against the candidate header; avoid introducing a general mock backend.",
+    "cases": [
+      {
+        "n": 262144,
+        "chunk": 8192,
+        "expected_records": 384
+      },
+      {
+        "n": 262144,
+        "chunk": 256,
+        "expected_records": 12288
+      },
+      {
+        "n": 1024,
+        "chunk": 1,
+        "expected_records": 12288
+      },
+      {
+        "n": 1025,
+        "chunk": 1,
+        "expected": "reject before allocation/submission"
+      },
+      {
+        "n": 262144,
+        "chunk": 255,
+        "expected": "reject before allocation/submission"
+      },
+      {
+        "n": 262145,
+        "chunk": 8192,
+        "expected": "reject"
+      },
+      {
+        "n": 0,
+        "chunk": 64,
+        "expected": "reject"
+      },
+      {
+        "n": 129,
+        "chunk": 8193,
+        "expected": "reject"
+      }
+    ],
+    "additional_preflight_cases": [
+      "Missing either coarse/QSA profile or layer-major flag fails Prefill::run before inference work.",
+      "On an existing nonprofiling in_order queue (Runtime::make_queue(false), no submitted commands), Profile::check_queue throws; never auto-create a profiling replacement. Record the queue property and zero submitted command count.",
+      "Device queue_profiling support is positively queried on the actual device; unavailable support must be a rejection. If unavailable hardware cannot be exercised, retain that branch as source-reviewed, not a fabricated runtime PASS.",
+      "Resident unrotated INT8 mode and OLD unset are required. Streaming, Q4, hybrid, rotated KV and host mirror are explicit unsupported diagnostics.",
+      "Empty/no-QSA profile construction must reject; short warmups emit zero device rows and no complete=true request summary."
+    ],
+    "deadline_seconds": 60
+  },
+  "component_gate": {
+    "state": "UNRUN",
+    "serialized": true,
+    "pending_main_fixture_work": "Main prepares private diagnostic variants of the existing independently audited oracle fixtures, with an explicit CLI choice and one preowned Submission per attention invocation. The normal existing test targets remain regression checks; setting the prefill flag alone does not instrument these direct kernel callers. Do not edit existing reports/controllers, import XeStrata fixtures or use a setenv-based route switch.",
+    "tiny_cases": [
+      {
+        "route": "fp32_attention",
+        "oracle_source": "tests/sycl/prompt_k_cellmajor.cpp",
+        "case": "INT8 resident, Mapping0/direct, page4, one and three queries, selected widths 1/31/32/33 plus missing/page-boundary/tail masks already covered by this oracle",
+        "expect": "Same output bytes for diagnostic off/on within this route, independent FP64 oracle and every output/guard check unchanged; one returned event per successful nonempty call."
+      },
+      {
+        "route": "typed_bf16_attention",
+        "oracle_source": "tests/sycl/prompt_native16.cpp --smoke",
+        "case": "Existing page4 nq1/nq3 width33 smoke, including its independent FP64/BF16 rounding oracle and masks/guards",
+        "expect": "Same output bytes for diagnostic off/on within this route; all existing FP64/rounding/range/nonfinite checks remain unchanged."
+      }
+    ],
+    "trace_environment": {
+      "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+      "UR_LOG_TRACING": "level:info;flush:info;output:stderr"
+    },
+    "event_requirements": [
+      "Pin queue address/local ID and backend, route and kernel tuple, input/output hashes and independent oracle results. Every nonempty invocation returns exactly one event.",
+      "Keep Submission/event and every allocation live before an existing checked fixture drain; query complete status and command_submit/start/end ONLY after that drain and sticky async-error check succeed. No per-event wait, extra barrier or polling query before drain.",
+      "Require submit<=start<=end; host_API_entry<=host_submit_entry<=host_submit_return<=host_API_return; finite nonnegative wall/CPU deltas when CPU stamps are available. Never subtract raw host and device epochs.",
+      "A successful empty/no-op API call must not generate a successful device event/sample. Unsupported calls produce no event and remain explicitly rejected.",
+      "One private failure exercise throws after a real attention submit/capture while the original checked guard still owns slot/inputs/outputs: checked drain precedes record destruction and no complete=true sample is emitted.",
+      "A synchronous submit/partial-submit or event-copy exception is reviewed against guard ordering. Do not add production fault flags or weaken async failures to force an outcome; inability to force a runtime event-copy throw remains a source-review limitation.",
+      "A truncated log or missing terminal summary/count is incomplete evidence, never PASS."
+    ],
+    "regression_targets": [
+      "sycl_prompt_native16_test --smoke",
+      "sycl_prompt_k_cellmajor_test",
+      "sycl_native16_qsa_test"
+    ],
+    "legacy_fixture_exclusion": "tests/sycl/decode_attention.cpp currently changes setenv after runtime initialization; do not run that comparison fixture unchanged. Use the immutable-environment prompt_k_cellmajor oracle variant.",
+    "per_process_deadline_seconds": 180,
+    "raw_log_budget_bytes": 67108864
+  },
+  "selected_model_gate": {
+    "state": "UNRUN",
+    "baseline_receipt": "bench/results/2026-10-15-pr6-recovery-audit/own-vllm-model-smoke-v1.json",
+    "baseline_receipt_sha256": "03b2bd388a897873bb2dc8c310ec7c0386e6b484828d1e633fb872cd059a14d3",
+    "recipe_source": "bench/results/2026-10-15-pr6-recovery-audit/run_owned_vllm_model_smoke_v1.py",
+    "method": "Main uses a fresh adapted private controller/receipt with updated complete source/binary pins and fresh output paths; never execute the old controller unchanged because it asserts the historical source/build products and paths.",
+    "args_from_receipt": [
+      "--pack",
+      "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+      "--native",
+      "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+      "--max-context",
+      "4096",
+      "--kv",
+      "int8",
+      "--kv-resident",
+      "4096",
+      "--expert-cache",
+      "128",
+      "--expert-profile",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-model-smoke-v1/expert-profile.bin",
+      "--expert-cache-per-layer",
+      "--pool-workers",
+      "5",
+      "--pcie-frac",
+      "0",
+      "--adapt-swaps",
+      "0",
+      "--conversation-cache-mib",
+      "0",
+      "--prompt-cache",
+      "0",
+      "--turn-token",
+      "-1",
+      "--suffix-draft",
+      "0",
+      "--greedy",
+      "--no-spec-split",
+      "--short-read",
+      "0",
+      "--spec",
+      "4",
+      "--mtp",
+      "/home/yayoi/.local/share/strata-sycl/mtp/rt",
+      "--prefill",
+      "64",
+      "--no-prefill-borrow",
+      "--vram-reserve-mib",
+      "700",
+      "--no-coupled-draft",
+      "--tokens-file",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-vllm-model-smoke-v1/tokens.txt",
+      "--max-new",
+      "1",
+      "--stream-token",
+      "--no-token-graph"
+    ],
+    "args_overrides": {
+      "binary": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r856-qsa-device-events-v1/build/strata",
+      "--tokens-file": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r856-qsa-device-events-v1/tokens.txt",
+      "--expert-profile": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r856-qsa-device-events-v1/expert-profile.bin"
+    },
+    "common_child_environment": {
+      "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+      "HOME": "/home/yayoi",
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+      "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+      "OMP_NUM_THREADS": "1",
+      "CPLUS_INCLUDE_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include",
+      "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+      "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+      "SYCL_CACHE_PERSISTENT": "0",
+      "NEOReadDebugKeys": "1",
+      "EnableDirectSubmission": "0",
+      "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+      "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+      "STRATA_SYCL_MMQ_XMX": "1",
+      "STRATA_SYCL_MMQ_XMX_TILE": "8",
+      "STRATA_SYCL_MMQ_XMX_EXACT": "1",
+      "STRATA_SYCL_MMQ_XMX_PACK": "0",
+      "STRATA_SYCL_MMQ_XMX_COMPACT": "1",
+      "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+      "STRATA_PREFILL_RING": "8",
+      "STRATA_PREFILL_MMQ": "0",
+      "STRATA_PREFILL_MOE_COMPACT_FP16": "1",
+      "STRATA_WATCHDOG_S": "480",
+      "STRATA_SYCL_PROMPT_DIRECT": "1",
+      "STRATA_PREFILL_LAYER_MAJOR": "1",
+      "STRATA_PREFILL_LAYER_MAJOR_R_GPU": "64",
+      "STRATA_PREFILL_RELEASE_MTP_EXPERTS": "1",
+      "STRATA_SYCL_KV_COPY_GROUPS": "0",
+      "STRATA_CPU_GU_REUSE_OBSERVER": "0",
+      "STRATA_DECODE_ROUTE_LEDGER": "0",
+      "STRATA_DECODE_SERVICE_CPU": "0",
+      "STRATA_IQ_SINGLE_EXACT": "0",
+      "STRATA_SYCL_PARALLEL_IQ_DEQUANT": "0",
+      "STRATA_PREFILL_LAYER_MAJOR_SHAPE_CENSUS": "0",
+      "STRATA_IQ_TIMING_PROGRESS": "0",
+      "STRATA_PREFILL_RELEASE_HEADS": "0",
+      "STRATA_PREFILL_NATIVE_DENSE_BANK": "1",
+      "STRATA_PREFILL_CANONICAL_DENSE_BANK": "1",
+      "STRATA_SYCL_PREFILL_SCRATCH_ALIAS": "1",
+      "STRATA_SYCL_QSA_INDEXER_DEVICE_BATCH": "1",
+      "STRATA_SYCL_SELECT_RADIX4": "1",
+      "STRATA_SYCL_SELECT_CYCLIC": "0",
+      "STRATA_SYCL_PROMPT_K_CELL_MAJOR": "0",
+      "STRATA_PREFILL_BF16X2": "0",
+      "STRATA_PF_FUSED": "0",
+      "STRATA_PREFILL_LAYER_MAJOR_PROFILE": "1",
+      "STRATA_PREFILL_LAYER_MAJOR_QSA_PROFILE": "1",
+      "STRATA_PREFILL_CPU_WAIT_PROFILE": "1",
+      "STRATA_TRACE": "1",
+      "UR_ENABLE_LAYERS": "UR_LAYER_PARAMETER_VALIDATION",
+      "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+      "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+      "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
+      "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r856-qsa-device-events-v1/cache",
+      "STRATA_ROPE_TABLE": "1",
+      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-r856-qsa-device-events-v1/tmp",
+      "STRATA_PREFILL_QSA_DEVICE_PROFILE": "1"
+    },
+    "arms": [
+      {
+        "name": "fp32_reference_attention",
+        "environment": {
+          "STRATA_PREFILL_LAYER_MAJOR_R_DTYPE": "fp32",
+          "STRATA_SYCL_PREFILL_NATIVE16": "0",
+          "STRATA_SYCL_PREFILL_NATIVE16_BACKEND": "own",
+          "STRATA_SYCL_PREFILL_NATIVE16_VLLM_TILE": "auto",
+          "STRATA_SYCL_PREFILL_NATIVE16_QSA": "0"
+        }
+      },
+      {
+        "name": "vllm_bf16_with_original_attention",
+        "environment": {
+          "STRATA_PREFILL_LAYER_MAJOR_R_DTYPE": "bf16",
+          "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
+          "STRATA_SYCL_PREFILL_NATIVE16_BACKEND": "vllm",
+          "STRATA_SYCL_PREFILL_NATIVE16_VLLM_TILE": "auto",
+          "STRATA_SYCL_PREFILL_NATIVE16_QSA": "0"
+        }
+      },
+      {
+        "name": "vllm_bf16_with_typed_attention",
+        "environment": {
+          "STRATA_PREFILL_LAYER_MAJOR_R_DTYPE": "bf16",
+          "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
+          "STRATA_SYCL_PREFILL_NATIVE16_BACKEND": "vllm",
+          "STRATA_SYCL_PREFILL_NATIVE16_VLLM_TILE": "auto",
+          "STRATA_SYCL_PREFILL_NATIVE16_QSA": "1"
+        }
+      }
+    ],
+    "required_checks": [
+      "Selected model, 129 fixed synthetic input tokens, chunk64, all48 layers, INT8 resident/context4096, session ROPE_TABLE=1, same queue, GPU64+host residuals, MTP4 and existing model/pack/MTP/runtime identities.",
+      "Use the actual Prefill request n from emitted metadata: for teacher forcing 129 supplied tokens often means prefill128 and 24 events; literal n129 would mean 36 events. Require exactly 12*ceil(actual_n/64), never hardcode the supplied-token count as kernel query count.",
+      "All48 source/activation passes complete; twelve QSA layers each contain every chunk, no fallback/staging route, no missing/duplicate/truncated records.",
+      "All128 target NLLs finite and the same three full-vocabulary FP64 NLL oracle rows at positions0,63,127 used by the prior receipt remain checked. Compare diagnostic off/on bytes within each same numerical route against preserved 6354 control output; do not turn cross-dtype differences into an accepted tolerance.",
+      "Coarse and QSA observers usable/complete, new request terminal complete=true/normal_retirement=true; numerical_correctness is independently supplied by Main, never inferred from that flag.",
+      "Normal process exit, no surviving owned child and fresh fault0; preserve failed outcomes exactly. No physical262144/RESTORE/general-quality claim follows from this small test."
+    ],
+    "per_process_deadline_seconds": 480
+  },
+  "official_39k_gate": {
+    "state": "UNRUN",
+    "order": "Only after every earlier required gate passes and Main permits serialized GPU work.",
+    "workloads": "One official 39K workload diagnostic pair: one fresh owned process with original FP32 attention on vLLM BF16 and one with typed BF16 attention. Exactly one request/sample per route; no repeat/variance claim.",
+    "recipe_source": "Use the exact official workload, input/model/runtime identities and settings pinned by the existing own-vllm-profile-bf16-r0-v1.json and own-vllm-profile-qsa-r0-v1.json receipts; replace binary/build/output paths only and add STRATA_PREFILL_QSA_DEVICE_PROFILE=1. Main must hash these receipts and resolve effective argv/environment from them before launch.",
+    "common_flags": {
+      "STRATA_PREFILL_QSA_DEVICE_PROFILE": "1",
+      "STRATA_PREFILL_LAYER_MAJOR": "1",
+      "STRATA_PREFILL_LAYER_MAJOR_PROFILE": "1",
+      "STRATA_PREFILL_LAYER_MAJOR_QSA_PROFILE": "1",
+      "STRATA_PREFILL_CPU_WAIT_PROFILE": "1",
+      "STRATA_TRACE": "1",
+      "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+      "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
+      "STRATA_ROPE_TABLE": "1",
+      "STRATA_SYCL_PREFILL_NATIVE16_BACKEND": "vllm",
+      "STRATA_SYCL_PREFILL_NATIVE16_VLLM_TILE": "auto"
+    },
+    "typed_flag_per_process": [
+      "STRATA_SYCL_PREFILL_NATIVE16_QSA=0",
+      "STRATA_SYCL_PREFILL_NATIVE16_QSA=1"
+    ],
+    "long_trace_policy": "Parameter validation plus warning/error logging and STRATA_TRACE; no repeated full UR API tracing for 39K. Do not use tiny traced runs as speed samples.",
+    "expected_event_count": "12*ceil(actual_Prefill_n/8192); prior profile query_total471132 implies n39261 and 60 events. Verify fresh request metadata/input identity instead of assuming request n.",
+    "reduction_requirements": [
+      "Retain every individual device submit/start/end, host API and submit entry/return/span, optional issuing-thread CPU sample, layer/chunk/absolute token range/logical cache end, queue/backend and kernel tuple.",
+      "Recompute all per-route/layer/query-shape groups and request nonexclusive event-duration sum and same-backend interval union from individual records. Require recorded counts/timestamp order; no clock-domain subtraction.",
+      "Compare request wrapper wall with existing coarse windows only as diagnostic attribution. New intervals cover attention commands only and do not prove exclusive service, occupancy or a complete request critical path.",
+      "Use existing clean nine-process speed results separately for throughput; do not relabel profiled wall as clean speed or claim a new speed improvement. Preserve each individual historical outcome and source/binary identity.",
+      "Keep CPU-wait v3 attribution distinct: submit/API CPU spans include runtime/internal waits; explicit-wait-excluded CPU is not pure host computation.",
+      "Normal checked retirement, output identity/correctness as independently qualified, owned-process cleanup and fresh fault0 required. A diagnostic failure remains failed and does not change the old clean PASS."
+    ],
+    "per_process_deadline_seconds": 600,
+    "raw_log_budget_bytes": 67108864,
+    "new_observer_text_budget_bytes_per_request": 16777216,
+    "frozen_recipe_receipts": [
+      {
+        "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-vllm-profile-bf16-r0-v1.json",
+        "sha256": "17038b329632e6bbe6c2d58d583a2bee9fdabae71b9a445968765663d8c8adcf"
+      },
+      {
+        "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-vllm-profile-qsa-r0-v1.json",
+        "sha256": "b7e3dfbd636811dc63b46ab34c9d4841ebe32eaa408c7d8c2f1ff5be8ef381fc"
+      }
+    ]
+  },
+  "failure_stop_policy": "Stop at the first failed required stage, retain one bounded representative diagnostic and exact failed status. Main controls any follow-up; no automatic reset, repair, rerun, cleanup or global synchronization.",
+  "retention": {
+    "compact_evidence": "Commit source patch/provenance, actual commands/environment, binary/toolchain/device/runtime hashes, individual samples, numerical/fault/closure results and the decision.",
+    "raw": "Follow docs/ARTIFACT_RETENTION.md; successful full traces only until compact extraction and verification. No cleanup during active build/test/GPU jobs.",
+    "exception": "Any required complete trace must name owner/question/consumer/hash/byte budget/next review before retention; no new large tensor capture is requested by this observer."
+  },
+  "qualification_result": {
+    "build": "UNRUN",
+    "host_configuration": "UNRUN",
+    "tiny_oracle_events": "UNRUN",
+    "all48_selected_model": "UNRUN",
+    "official39k": "UNRUN",
+    "performance_claim": false,
+    "numerical_adoption_claim": false,
+    "physical262144_model": "UNRUN",
+    "restore": "UNRUN"
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "schema": 1,
+  "status": "SOURCE_ONLY_UNRUN",
+  "patch": {
+    "path": "proposal.patch",
+    "bytes": 41236,
+    "sha256": "67020b56aaf7187968ecf7b870a19b9ad76825af0cc52347e8dd929f162dc7e4"
+  },
+  "paths": [
+    {
+      "path": "include/strata/kernels/qsa_prompt_attn.hpp",
+      "bytes": 6259,
+      "sha256": "8a7aca39703045aeb2aa6e414331cf1d59721495ba0d407b4735b9d723defef6"
+    },
+    {
+      "path": "include/strata/sycl/qsa_device_profile.hpp",
+      "bytes": 19582,
+      "sha256": "c0a0ad1d8ee2dd7fc83d4a2d8584f58871292fe3ae3415efccdfcfcde8149349"
+    },
+    {
+      "path": "src/kernels/sycl/prompt_attention.cpp",
+      "bytes": 38236,
+      "sha256": "f89a1a3bab0d1397f804490b472f11faff657ed6db08074a8fac0b942f45505f"
+    },
+    {
+      "path": "src/prefill/layer_major.inc",
+      "bytes": 44777,
+      "sha256": "08cc4d046db4d64db32c2752b29a98f269f37988e22679bccf92ab3ae8ab22e0"
+    },
+    {
+      "path": "src/prefill/prefill.cpp",
+      "bytes": 223040,
+      "sha256": "2627033677c19b0f38eaa10e4b500312b2010c3f38a9339ca83c9ae76784ccef"
+    }
+  ],
+  "static_math_source_review": [
+    {
+      "kernel": "FP32_template",
+      "original_cgf_body_sha256": "bcc030203b983f9f2eb250cc7ba93ee9c5cdda319f549170aec5dc1d63d6f8d0",
+      "proposed_cgf_body_sha256": "bcc030203b983f9f2eb250cc7ba93ee9c5cdda319f549170aec5dc1d63d6f8d0",
+      "byte_identical": true,
+      "bytes": 11028
+    },
+    {
+      "kernel": "typed_BF16",
+      "original_cgf_body_sha256": "fa8edd7ebaea968ccaf02ae03810217342452d3ea46516ef5d2d48a38b4c5dbf",
+      "proposed_cgf_body_sha256": "fa8edd7ebaea968ccaf02ae03810217342452d3ea46516ef5d2d48a38b4c5dbf",
+      "byte_identical": true,
+      "bytes": 10156
+    }
+  ],
+  "original_submit_count": 2,
+  "proposed_submit_count": 2,
+  "static_review_only": "Text/hash comparison; no C++/SYCL compilation, tests, GPU work or patch application."
+}

@@ -69,7 +69,8 @@ def main():
              852: 'orca-implement-vllm-selected-quality-round852-launch-v1.json',
              854: 'orca-research-round854-launch-v1.json',
              855: 'orca-research-round855-launch-v1.json',
-             856: 'orca-implement-qsa-device-events-round856-launch-v1.json'}
+             856: 'orca-implement-qsa-device-events-round856-launch-v1.json',
+             860: 'orca-implement-current-unitrace-round860-launch-v1.json'}
     known = {}
     for n, name in names.items():
         v = json.loads((A / name).read_text())['receipt']['result']
