@@ -19,6 +19,7 @@
 #include <stdexcept>
 #include <string>
 #include <time.h>
+#include <unistd.h>
 #include <vector>
 
 using namespace strata;
@@ -29,6 +30,13 @@ constexpr size_t QueryStride = Heads * Dim;
 std::shared_ptr<sycl_backend::Runtime> runtime;
 void require(bool ok, const char *message) {
   if (!ok) throw std::runtime_error(message);
+}
+void main_gate(const char *phase) {
+  std::cout << "QSA_RESOURCE_READY " << phase << '\n';
+  char byte = 0;
+  ssize_t count;
+  do { count = ::read(STDIN_FILENO, &byte, 1); } while (count < 0 && errno == EINTR);
+  require(count == 1 && byte == 'X', "Main inspection gate not released");
 }
 // Every drain guard precedes destruction of asynchronous device AND host owners.
 // On unknown completion, terminate without unwinding those owners.
@@ -408,12 +416,21 @@ int main(int argc, char **argv) {
   try {
     const Options o = options(argc, argv); // All arm controls fixed before runtime.
     reference_environment();
+    const char *gate_control = std::getenv("STRATA_TEST_MAIN_GATES");
+    require(!gate_control || std::string(gate_control) == "0" ||
+                std::string(gate_control) == "1", "invalid Main gate control");
+    const bool gates = gate_control && std::string(gate_control) == "1";
     std::cout << std::setprecision(12) << std::unitbuf;
+    if (gates) main_gate("before-runtime");
     runtime = sycl_backend::runtime_for();
     require(runtime->compute().has_property<sycl::property::queue::in_order>(), "compute queue not in-order");
+    std::cout << "device=" << runtime->device().get_info<sycl::info::device::name>()
+              << " driver=" << runtime->device().get_info<sycl::info::device::driver_version>() << '\n';
+    if (gates) main_gate("runtime-ready");
     if (o.bench) run(o, 0);
     else for (int scenario = 0; scenario < 3; ++scenario) run(o, scenario);
     runtime->wait();
+    if (gates) main_gate("after-cleanup");
     std::cout << "fixture_status=PASS performance_adopted=false\n";
     return 0;
   } catch (const std::exception &e) {
