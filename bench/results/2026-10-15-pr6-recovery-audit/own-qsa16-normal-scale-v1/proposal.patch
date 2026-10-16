@@ -1,0 +1,282 @@
+diff --git a/include/strata/sycl/prompt_bf16_score_scale.hpp b/include/strata/sycl/prompt_bf16_score_scale.hpp
+new file mode 100644
+--- /dev/null
++++ b/include/strata/sycl/prompt_bf16_score_scale.hpp
+@@ -0,0 +1,34 @@
++// SPDX-License-Identifier: MIT
++// Original Strata implementation; see the repository LICENSE.
++#pragma once
++
++#include <cstdint>
++#include <limits>
++#include <sycl/sycl.hpp>
++
++namespace strata::kernels::detail {
++
++static_assert(sizeof(float) == sizeof(uint32_t) &&
++              std::numeric_limits<float>::is_iec559 &&
++              std::numeric_limits<float>::radix == 2 &&
++              std::numeric_limits<float>::digits == 24 &&
++              std::numeric_limits<float>::min_exponent == -125 &&
++              std::numeric_limits<float>::max_exponent == 128);
++
++// The input is the already-rounded value * (K_scale * .0625f), never qdown.
++// A normal binary32 value is sign * (1 + mantissa / 2^23) * 2^(exponent-127).
++// If the target exponent is also 1..254, changing only that field is exact.
++// Test shift bounds BEFORE adding it, including for INT_MIN / INT_MAX.
++// All other inputs/results retain the original ldexp operation and arguments.
++inline float prompt_bf16_score_scale(float value, int shift) {
++  const uint32_t bits = sycl::bit_cast<uint32_t>(value);
++  const int exponent = int((bits >> 23) & 0xffU);
++  if (exponent > 0 && exponent < 255 &&
++      shift >= 1 - exponent && shift <= 254 - exponent) {
++    const uint32_t target = uint32_t(exponent + shift);
++    return sycl::bit_cast<float>((bits & 0x807fffffU) | (target << 23));
++  }
++  return sycl::ldexp(value, shift);
++}
++
++} // namespace strata::kernels::detail
+diff --git a/src/kernels/sycl/prompt_attention.cpp b/src/kernels/sycl/prompt_attention.cpp
+--- a/src/kernels/sycl/prompt_attention.cpp
++++ b/src/kernels/sycl/prompt_attention.cpp
+@@ -450,6 +450,8 @@
+ }
+ } // namespace strata::kernels
+ 
++#include "strata/sycl/prompt_bf16_score_scale.hpp"
++
+ // Native BF16 I/O candidate. Own MIT implementation built on this file's
+ // existing head12+4 / WG128 Mapping0 algorithm; FP32 entry above is unchanged.
+ namespace strata::kernels {
+@@ -500,6 +502,16 @@
+   // The caller still supplies true suballocation capacities from the owners.
+   validate_device_span(span.pointer, span.bytes, queue);
+ }
++bool prompt_bf16_scale_fast_requested() {
++  // Process launch owns the environment. Cache once on the host, before submit;
++  // no getenv or runtime branch enters either device specialization.
++  static const bool enabled = [] {
++    const char *value = std::getenv("STRATA_SYCL_PREFILL_NATIVE16_QSA_SCALE_FAST");
++    return value && value[0] == '1' && value[1] == '\0';
++  }();
++  return enabled;
++}
++template <bool ScaleFast>
+ void launch_prompt_bf16(const uint16_t *query, QsaAttnPools pools,
+                        const int32_t *ids, const int32_t *steps, int64_t cap,
+                        QsaShapes shapes, uint16_t *output, int64_t queries,
+@@ -611,9 +623,15 @@
+                   mx::joint_matrix_mad(sg, part, a, b, part);
+                 }
+                 mi::joint_matrix_apply(sg, part, [=](float &value, size_t r, size_t c) {
+-                  // Apply ldexp last: qdown need not itself be representable.
+-                  scores[(head + r) * CH + cell + c] += sycl::ldexp(
+-                      value * (ks[(cell + c) * KG + g] * .0625f), -shifts[head + r]);
++                  if constexpr (ScaleFast) {
++                    // Preserve both multiplies and their order before rescaling.
++                    scores[(head + r) * CH + cell + c] += detail::prompt_bf16_score_scale(
++                        value * (ks[(cell + c) * KG + g] * .0625f), -shifts[head + r]);
++                  } else {
++                    // Apply ldexp last: qdown need not itself be representable.
++                    scores[(head + r) * CH + cell + c] += sycl::ldexp(
++                        value * (ks[(cell + c) * KG + g] * .0625f), -shifts[head + r]);
++                  }
+                 });
+               }
+             }
+@@ -749,7 +767,12 @@
+                                 void *stream) {
+   if (!qsa_prompt_attn_bf16_validate(q, p, ids, steps, cap, s, out, nq, bounds, stream))
+     return false;
+-  if (nq != 0) launch_prompt_bf16(q, p, ids, steps, cap, s, out, nq, bounds, stream);
++  if (nq != 0) {
++    if (prompt_bf16_scale_fast_requested())
++      launch_prompt_bf16<true>(q, p, ids, steps, cap, s, out, nq, bounds, stream);
++    else
++      launch_prompt_bf16<false>(q, p, ids, steps, cap, s, out, nq, bounds, stream);
++  }
+   return true;
+ }
+ } // namespace strata::kernels
+diff --git a/tests/sycl/prompt_native16.cpp b/tests/sycl/prompt_native16.cpp
+--- a/tests/sycl/prompt_native16.cpp
++++ b/tests/sycl/prompt_native16.cpp
+@@ -3,6 +3,7 @@
+ // in own-prompt-heads8-v2/files/tests/sycl/prompt_heads8.cpp. No head8 kernel used.
+ // Source-only proposal: Main owns compilation, tracing, GPU runs and retention.
+ #include "strata/kernels/qsa_prompt_attn.hpp"
++#include "strata/sycl/prompt_bf16_score_scale.hpp"
+ #include "strata/sycl/runtime.hpp"
+ #include "strata/sycl/checked_cleanup.hpp"
+ #include <algorithm>
+@@ -82,6 +83,157 @@
+                uint16_t *out, int nq, const QsaPromptBf16Bounds &bounds) {
+   check(qsa_prompt_attn_bf16_batch(query,p,ids,steps,cap,shape,out,nq,bounds,
+                                   &runtime->compute()), "BF16 Mode1 matrix attention unavailable");
++}
++// Independent normal-result oracle uses exact FP64 arithmetic, not exponent
++// rewriting. The second device result always calls the old SYCL ldexp directly;
++// fallback checks compare raw bits, including signed zero and NaN payloads.
++struct ScoreScaleInput {
++  uint32_t bits; int shift;
++  bool operator==(const ScoreScaleInput &) const = default;
++};
++struct ScoreScaleOutput { uint32_t fast_bits, old_bits; };
++struct ScoreProductInput {
++  uint32_t value_bits, scale_bits; int shift;
++  bool operator==(const ScoreProductInput &) const = default;
++};
++struct ScoreProductOutput { uint32_t product_bits, fast_bits, old_bits; };
++void score_scale_fixture() {
++  const uint32_t mantissas[] = {
++      0U,1U,0x003fffffU,0x00400000U,0x00555555U,0x002aaaaaU,0x007ffffeU,0x007fffffU};
++  std::vector<ScoreScaleInput> cases;
++  cases.reserve(1100000);
++  for (uint32_t sign : {0U,0x80000000U})
++    for (uint32_t exponent = 1; exponent <= 254; ++exponent)
++      for (uint32_t mantissa : mantissas)
++        for (int target = 1; target <= 254; ++target)
++          cases.push_back({sign | (exponent << 23) | mantissa,target-int(exponent)});
++  const size_t normal_count = cases.size();
++  // Both adjacent excluded exponent fields, gradual underflow through the
++  // minimum-subnormal/halfway-to-zero boundary, farther out and int extremes.
++  // Guard arithmetic must not add an arbitrary shift before testing.
++  for (uint32_t sign : {0U,0x80000000U})
++    for (int exponent = 1; exponent <= 254; ++exponent)
++      for (uint32_t mantissa : mantissas)
++        for (int shift : {-exponent,-1-exponent,-22-exponent,-23-exponent,-24-exponent,
++                          255-exponent,256-exponent,
++                          std::numeric_limits<int>::min(),std::numeric_limits<int>::max()})
++          cases.push_back({sign | (uint32_t(exponent) << 23) | mantissa,shift});
++  const uint32_t special_bits[] = {
++      0x00000000U,0x80000000U,0x00000001U,0x80000001U,
++      0x003fffffU,0x803fffffU,0x007fffffU,0x807fffffU,
++      0x7f800000U,0xff800000U,0x7fc00000U,0xffc00000U,
++      0x7fc12345U,0xffc12345U,0x7f800001U,0xff800001U};
++  const int shifts[] = {
++      std::numeric_limits<int>::min(),-1024,-254,-253,-150,-149,-127,-126,-1,0,
++      1,126,127,149,150,253,254,1024,std::numeric_limits<int>::max()};
++  for (uint32_t bits : special_bits) for (int shift : shifts) cases.push_back({bits,shift});
++  {
++    Buffer<ScoreScaleInput> input(cases.size());
++    Buffer<ScoreScaleOutput> output(cases.size());
++    Drain drain;
++    input.put(cases);
++    const auto *in = input.data(); auto *out = output.data();
++    runtime->wait(runtime->compute().parallel_for(sycl::range<1>(cases.size()),
++        [=](sycl::id<1> index) {
++          const auto item = in[index[0]];
++          const float value = sycl::bit_cast<float>(item.bits);
++          out[index[0]] = {
++              sycl::bit_cast<uint32_t>(detail::prompt_bf16_score_scale(value,item.shift)),
++              sycl::bit_cast<uint32_t>(sycl::ldexp(value,item.shift))};
++        }));
++    const auto results = output.get();
++    check(input.get()==cases,"score-scale inputs immutable");
++    for (size_t i = 0; i < cases.size(); ++i) {
++      if (results[i].fast_bits!=results[i].old_bits)
++        std::cerr << "score_scale_error index=" << i << " input=" << hex(cases[i].bits)
++                  << " shift=" << cases[i].shift << " fast=" << hex(results[i].fast_bits)
++                  << " old=" << hex(results[i].old_bits) << "\n";
++      check(results[i].fast_bits==results[i].old_bits,"score-scale old ldexp exact bits");
++      if (i < normal_count) {
++        const float value = std::bit_cast<float>(cases[i].bits);
++        const double reference = std::ldexp(double(value),cases[i].shift);
++        const float rounded = float(reference);
++        check(std::isnormal(rounded) && double(rounded)==reference,
++              "score-scale independent oracle must be exact normal");
++        if (results[i].fast_bits!=std::bit_cast<uint32_t>(rounded))
++          std::cerr << "score_scale_oracle_error index=" << i
++                    << " input=" << hex(cases[i].bits) << " shift=" << cases[i].shift
++                    << " fast=" << hex(results[i].fast_bits)
++                    << " reference=" << hex(std::bit_cast<uint32_t>(rounded)) << "\n";
++        check(results[i].fast_bits==std::bit_cast<uint32_t>(rounded),
++              "score-scale independent FP64 oracle exact bits");
++      }
++    }
++    std::cout << "score_scale exact_normal=" << normal_count
++              << " fallback=" << cases.size()-normal_count
++              << " input_fnv1a64=" << hex(hash(cases))
++              << " output_fnv1a64=" << hex(hash(results)) << " bits=PASS\n";
++  }
++  // Exercise the exact production multiplication nesting with actual FP16
++  // scale values. For example 2^100 * (2^-24 * 2^-4), then shift -126, is
++  // normal, while moving that shift into the scale product can underflow.
++  const uint32_t value_bits[] = {
++      0x00000000U,0x80000000U,0x00000001U,0x80000001U,0x007fffffU,0x807fffffU,
++      0x00800000U,0x80800000U,0x3f800000U,0xbf800000U,0x3f800001U,0xbf800001U,
++      0x71800000U,0xf1800000U,0x7f7fffffU,0xff7fffffU,
++      0x7f800000U,0xff800000U,0x7fc12345U,0xffc12345U,0x7f800001U,0xff800001U};
++  const float scales[] = {0.f,-0.f,0x1p-24f,-0x1p-24f,0x1p-14f,-0x1p-14f,
++                          1.f,-1.f,65504.f,-65504.f};
++  std::vector<ScoreProductInput> products;
++  for (uint32_t bits : value_bits) for (float scale : scales) for (int shift : shifts)
++    products.push_back({bits,std::bit_cast<uint32_t>(scale),shift});
++  {
++    Buffer<ScoreProductInput> input(products.size());
++    Buffer<ScoreProductOutput> output(products.size());
++    Drain drain;
++    input.put(products);
++    const auto *in = input.data(); auto *out = output.data();
++    runtime->wait(runtime->compute().parallel_for(sycl::range<1>(products.size()),
++        [=](sycl::id<1> index) {
++          const auto item = in[index[0]];
++          const float value = sycl::bit_cast<float>(item.value_bits);
++          const float scale = sycl::bit_cast<float>(item.scale_bits);
++          out[index[0]] = {
++              sycl::bit_cast<uint32_t>(value * (scale * .0625f)),
++              sycl::bit_cast<uint32_t>(detail::prompt_bf16_score_scale(
++                  value * (scale * .0625f),item.shift)),
++              sycl::bit_cast<uint32_t>(sycl::ldexp(value * (scale * .0625f),item.shift))};
++        }));
++    const auto results = output.get();
++    check(input.get()==products,"score-product inputs immutable");
++    for (size_t i = 0; i < products.size(); ++i) {
++      if (results[i].fast_bits!=results[i].old_bits)
++        std::cerr << "score_product_error index=" << i
++                  << " value=" << hex(products[i].value_bits)
++                  << " scale=" << hex(products[i].scale_bits) << " shift=" << products[i].shift
++                  << " product=" << hex(results[i].product_bits)
++                  << " fast=" << hex(results[i].fast_bits) << " old=" << hex(results[i].old_bits) << "\n";
++      check(results[i].fast_bits==results[i].old_bits,"score-product old ldexp exact bits");
++      // Independent exact-domain oracle starts from the GPU's rounded product,
++      // so it cannot silently impose different host multiplication/FTZ rules.
++      const float product = std::bit_cast<float>(results[i].product_bits);
++      if (std::isnormal(product) && products[i].shift >= -253 && products[i].shift <= 253) {
++        const double reference = std::ldexp(double(product),products[i].shift);
++        if (std::fabs(reference)>=double(std::numeric_limits<float>::min()) &&
++            std::fabs(reference)<=double(std::numeric_limits<float>::max())) {
++          const float rounded = float(reference);
++          if (double(rounded)!=reference || results[i].fast_bits!=std::bit_cast<uint32_t>(rounded))
++            std::cerr << "score_product_oracle_error index=" << i
++                      << " value=" << hex(products[i].value_bits)
++                      << " scale=" << hex(products[i].scale_bits) << " shift=" << products[i].shift
++                      << " product=" << hex(results[i].product_bits)
++                      << " fast=" << hex(results[i].fast_bits)
++                      << " reference=" << hex(std::bit_cast<uint32_t>(rounded)) << "\n";
++          check(double(rounded)==reference &&
++                results[i].fast_bits==std::bit_cast<uint32_t>(rounded),
++                "score-product independent FP64 oracle exact bits");
++        }
++      }
++    }
++    std::cout << "score_product cases=" << products.size()
++              << " input_fnv1a64=" << hex(hash(products))
++              << " output_fnv1a64=" << hex(hash(results)) << " bits=PASS\n";
++  }
+ }
+ // Profiles cover distinct rounding/range mechanisms; none changes process env.
+ void run(int page_size, bool masked, int nq, int width, const std::string &profile,
+@@ -403,7 +555,11 @@
+         if (h<12) ++coverage[(kvh*12+h)*dim+d];
+       }
+     for (int writes : coverage) check(writes==1,"head12+4 unique full write coverage");
++    const char *scale_fast = std::getenv("STRATA_SYCL_PREFILL_NATIVE16_QSA_SCALE_FAST");
++    std::cout << "score_scale_fast_requested="
++              << (scale_fast && scale_fast[0]=='1' && scale_fast[1]=='\0') << "\n";
+     runtime = sycl_backend::runtime_for();
++    score_scale_fixture();
+     if (bench) run(4,false,benchmark_nq,2051,"regular");
+     else if (smoke) { run(4,false,1,33,"regular",true); run(4,true,3,33,"regular"); }
+     else {

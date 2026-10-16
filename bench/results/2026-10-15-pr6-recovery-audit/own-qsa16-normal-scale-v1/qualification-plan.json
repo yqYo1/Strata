@@ -1,0 +1,273 @@
+{
+  "schema_version": 1,
+  "status": "UNRUN_MAIN_ONLY",
+  "source_commit": "6354f0b4ff3731466795410e11ca9ef785c9d326",
+  "release_condition": "Main releases qualified-source freeze, reviews complete patch and preimages, and integrates into selected source with no stale file replacement.",
+  "source_root": "/home/yayoi/orca/workspaces/Strata/sycl",
+  "build_dir": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa16-normal-scale-v1/build",
+  "configure_argv": [
+    "/usr/bin/cmake",
+    "-S",
+    "/home/yayoi/orca/workspaces/Strata/sycl",
+    "-B",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa16-normal-scale-v1/build",
+    "-G",
+    "Ninja",
+    "-DCMAKE_CXX_COMPILER=/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+    "-DCMAKE_BUILD_TYPE=Release",
+    "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+    "-DMKL_DIR=/opt/intel/oneapi/mkl/2026.1/lib/cmake/mkl",
+    "-DSTRATA_BUILD_CONVERSATION_TESTS:BOOL=OFF",
+    "-DSTRATA_BUILD_PREFILL_HOST_TESTS:BOOL=ON",
+    "-DSTRATA_BUILD_TESTS:BOOL=OFF",
+    "-DSTRATA_CPU_ARCH:STRING=znver3",
+    "-DSTRATA_ENABLE_CUDA:BOOL=OFF",
+    "-DSTRATA_ENABLE_HIP:BOOL=OFF",
+    "-DSTRATA_ENABLE_SYCL:BOOL=ON",
+    "-DSTRATA_GGML_DIR:PATH=/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",
+    "-DSTRATA_MMQ_KQUANTS:BOOL=OFF",
+    "-DSTRATA_NATIVE_EXPERTS:BOOL=ON",
+    "-DSTRATA_ORCA_Q4KS_MMQ:BOOL=OFF",
+    "-DSTRATA_PORTABLE:BOOL=OFF",
+    "-DSTRATA_PREFILL_MMQ:BOOL=OFF",
+    "-DSTRATA_SYCL_AOT_DOUBLE_GRF:BOOL=OFF",
+    "-DSTRATA_SYCL_TESTS:BOOL=ON",
+    "-DSTRATA_WERROR:BOOL=ON",
+    "-DSTRATA_SYCL_VLLM_XE2_NATIVE16=ON",
+    "-DSTRATA_SYCL_DEVICE_ARCH=",
+    "-DSYCL_TLA_SOURCE_DIR=/home/yayoi/ghq/github.com/intel/sycl-tla/.worktree/strata-native16-87f"
+  ],
+  "build_argv": [
+    "/usr/bin/cmake",
+    "--build",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa16-normal-scale-v1/build",
+    "--target",
+    "sycl_prompt_native16_test",
+    "sycl_prompt_attention_test",
+    "sycl_native16_qsa_test",
+    "strata",
+    "--parallel",
+    "2"
+  ],
+  "child_environment_basis": "Exact recorded environment from own-vllm-engine-build-v2.json; copied below for explicit-env owned exec, not an in-process environment mutation.",
+  "child_environment": {
+    "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+    "HOME": "/home/yayoi",
+    "LANG": "C.UTF-8",
+    "LC_ALL": "C.UTF-8",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+    "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+    "OMP_NUM_THREADS": "1",
+    "GIT_TERMINAL_PROMPT": "0",
+    "GIT_SSH_COMMAND": "ssh -oBatchMode=yes",
+    "CPLUS_INCLUDE_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include",
+    "PYTHONPATH": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/niko-service-test-deps-v1:/home/yayoi/orca/workspaces/Strata/sycl/tools:/home/yayoi/orca/workspaces/Strata/sycl",
+    "PIP_CONFIG_FILE": "/dev/null",
+    "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+    "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+    "SYCL_CACHE_PERSISTENT": "0",
+    "NEOReadDebugKeys": "1",
+    "EnableDirectSubmission": "0",
+    "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+    "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+    "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+    "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
+    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa16-normal-scale-v1/cache",
+    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa16-normal-scale-v1/tmp"
+  },
+  "prospective_processes": [
+    {
+      "name": "smoke-default",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa16-normal-scale-v1/build/sycl_prompt_native16_test",
+        "--smoke",
+        "--dump",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa16-normal-scale-v1/runs/smoke-default/output.bf16"
+      ],
+      "environment_overlay": {
+        "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+        "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa16-normal-scale-v1/runs/smoke-default/cache",
+        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa16-normal-scale-v1/runs/smoke-default/tmp"
+      },
+      "environment_unset": [
+        "STRATA_SYCL_PREFILL_NATIVE16_QSA_SCALE_FAST"
+      ],
+      "dump": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa16-normal-scale-v1/runs/smoke-default/output.bf16",
+      "stdout": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa16-normal-scale-v1/runs/smoke-default/stdout.log",
+      "stderr": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa16-normal-scale-v1/runs/smoke-default/stderr.log",
+      "status": "UNRUN",
+      "expected_after_success": {
+        "score_scale_exact_normal": 1032256,
+        "score_scale_fallback": 36880,
+        "score_product_cases": 4180,
+        "old_attention_case_lines": 2,
+        "fixture_exit": 0,
+        "fixture_final_status": "PASS",
+        "fresh_faults": 0
+      }
+    },
+    {
+      "name": "smoke-off",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa16-normal-scale-v1/build/sycl_prompt_native16_test",
+        "--smoke",
+        "--dump",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa16-normal-scale-v1/runs/smoke-off/output.bf16"
+      ],
+      "environment_overlay": {
+        "STRATA_SYCL_PREFILL_NATIVE16_QSA_SCALE_FAST": "0",
+        "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+        "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa16-normal-scale-v1/runs/smoke-off/cache",
+        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa16-normal-scale-v1/runs/smoke-off/tmp"
+      },
+      "environment_unset": [],
+      "dump": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa16-normal-scale-v1/runs/smoke-off/output.bf16",
+      "stdout": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa16-normal-scale-v1/runs/smoke-off/stdout.log",
+      "stderr": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa16-normal-scale-v1/runs/smoke-off/stderr.log",
+      "status": "UNRUN",
+      "expected_after_success": {
+        "score_scale_exact_normal": 1032256,
+        "score_scale_fallback": 36880,
+        "score_product_cases": 4180,
+        "old_attention_case_lines": 2,
+        "fixture_exit": 0,
+        "fixture_final_status": "PASS",
+        "fresh_faults": 0
+      }
+    },
+    {
+      "name": "smoke-on",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa16-normal-scale-v1/build/sycl_prompt_native16_test",
+        "--smoke",
+        "--dump",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa16-normal-scale-v1/runs/smoke-on/output.bf16"
+      ],
+      "environment_overlay": {
+        "STRATA_SYCL_PREFILL_NATIVE16_QSA_SCALE_FAST": "1",
+        "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+        "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa16-normal-scale-v1/runs/smoke-on/cache",
+        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa16-normal-scale-v1/runs/smoke-on/tmp"
+      },
+      "environment_unset": [],
+      "dump": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa16-normal-scale-v1/runs/smoke-on/output.bf16",
+      "stdout": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa16-normal-scale-v1/runs/smoke-on/stdout.log",
+      "stderr": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa16-normal-scale-v1/runs/smoke-on/stderr.log",
+      "status": "UNRUN",
+      "expected_after_success": {
+        "score_scale_exact_normal": 1032256,
+        "score_scale_fallback": 36880,
+        "score_product_cases": 4180,
+        "old_attention_case_lines": 2,
+        "fixture_exit": 0,
+        "fixture_final_status": "PASS",
+        "fresh_faults": 0
+      }
+    },
+    {
+      "name": "full-off",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa16-normal-scale-v1/build/sycl_prompt_native16_test",
+        "--dump",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa16-normal-scale-v1/runs/full-off/output.bf16"
+      ],
+      "environment_overlay": {
+        "STRATA_SYCL_PREFILL_NATIVE16_QSA_SCALE_FAST": "0",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa16-normal-scale-v1/runs/full-off/cache",
+        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa16-normal-scale-v1/runs/full-off/tmp"
+      },
+      "environment_unset": [],
+      "dump": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa16-normal-scale-v1/runs/full-off/output.bf16",
+      "stdout": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa16-normal-scale-v1/runs/full-off/stdout.log",
+      "stderr": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa16-normal-scale-v1/runs/full-off/stderr.log",
+      "status": "UNRUN",
+      "expected_after_success": {
+        "score_scale_exact_normal": 1032256,
+        "score_scale_fallback": 36880,
+        "score_product_cases": 4180,
+        "old_attention_case_lines": 112,
+        "fixture_exit": 0,
+        "fixture_final_status": "PASS",
+        "fresh_faults": 0
+      }
+    },
+    {
+      "name": "full-on",
+      "argv": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa16-normal-scale-v1/build/sycl_prompt_native16_test",
+        "--dump",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa16-normal-scale-v1/runs/full-on/output.bf16"
+      ],
+      "environment_overlay": {
+        "STRATA_SYCL_PREFILL_NATIVE16_QSA_SCALE_FAST": "1",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa16-normal-scale-v1/runs/full-on/cache",
+        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa16-normal-scale-v1/runs/full-on/tmp"
+      },
+      "environment_unset": [],
+      "dump": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa16-normal-scale-v1/runs/full-on/output.bf16",
+      "stdout": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa16-normal-scale-v1/runs/full-on/stdout.log",
+      "stderr": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa16-normal-scale-v1/runs/full-on/stderr.log",
+      "status": "UNRUN",
+      "expected_after_success": {
+        "score_scale_exact_normal": 1032256,
+        "score_scale_fallback": 36880,
+        "score_product_cases": 4180,
+        "old_attention_case_lines": 112,
+        "fixture_exit": 0,
+        "fixture_final_status": "PASS",
+        "fresh_faults": 0
+      }
+    }
+  ],
+  "process_policy": {
+    "owner": "Main exclusive serialized controller",
+    "configure_build_test_GPU_parallelism": "No overlap with any Main build/test/GPU/profiler/cleanup job",
+    "individual_smoke_deadline_seconds": 180,
+    "individual_full_deadline_seconds": 600,
+    "individual_trace_log_budget_bytes": 67108864,
+    "clean_process_log_budget_bytes": 1048576,
+    "before_exec": "Create each private cache/tmp/output directory, construct final env and record source/binary/driver/runtime hashes and owned PID/start/boot/deadline; immutable thereafter. No process has been launched by R844.",
+    "closure": "Require normal exit, all assertions/guards and fresh fault0 receipt, process closure and absence of owned leftover work."
+  },
+  "exact_comparisons": [
+    {
+      "argv": [
+        "/usr/bin/cmp",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa16-normal-scale-v1/runs/smoke-default/output.bf16",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa16-normal-scale-v1/runs/smoke-off/output.bf16"
+      ],
+      "expected": "exit0; Main must first prove both complete fixtures exited0 with all required case counts. Empty/incomplete equal dumps do not pass.",
+      "status": "UNRUN"
+    },
+    {
+      "argv": [
+        "/usr/bin/cmp",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa16-normal-scale-v1/runs/smoke-off/output.bf16",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa16-normal-scale-v1/runs/smoke-on/output.bf16"
+      ],
+      "expected": "exit0; Main must first prove both complete fixtures exited0 with all required case counts. Empty/incomplete equal dumps do not pass.",
+      "status": "UNRUN"
+    },
+    {
+      "argv": [
+        "/usr/bin/cmp",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa16-normal-scale-v1/runs/full-off/output.bf16",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-qsa16-normal-scale-v1/runs/full-on/output.bf16"
+      ],
+      "expected": "exit0; Main must first prove both complete fixtures exited0 with all required case counts. Empty/incomplete equal dumps do not pass.",
+      "status": "UNRUN"
+    }
+  ],
+  "followup_gates": [
+    "Default unset equals explicit0 source dispatch; smoke dump bit equality",
+    "Full typed attention existing cases/oracles/guards/immutability with flag0 and flag1 in separate child processes; full BF16 dump bit equality",
+    "Old FP32 prompt test and QSA native16 integration test; no old tolerances/cases removed",
+    "Actual compiler lowering/ISA: is ldexp already optimized, do new normal branches reduce total instructions or add divergent cost?",
+    "Matched clean same-binary long-prefill repeated processes flag0/1, full dependency path and actual scale-domain frequency; do not time the scalar fixture as model-speed evidence",
+    "Any quality/physical262144/RESTORE/recurrent/shared-state gates remain independent; no model acceptance follows from exact transform."
+  ]
+}
