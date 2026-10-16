@@ -4456,7 +4456,18 @@
         ],
         "retrieve_when": "A Main-owned engine qualification leaves a concrete subgroup softmax ownership or API/compiler decision."
       },
-      "schedulable_now": false
+      "schedulable_now": false,
+      "main_selected_retrieval": {
+        "lines": [
+          15,
+          34
+        ],
+        "sha256_of_selected_lines": "0431a168032896fddbed624b1236520e1e1348bdb59e06b541a155c3259d0e8c",
+        "purpose": "Concrete prospective subgroup softmax ownership and SYCL collective design after engine qualification; full report body remains unread by Main.",
+        "source_only_candidate": "build_qsa_bf16_prefix_subgroup_v1.py",
+        "built": false,
+        "GPU_executed": false
+      }
     }
   ],
   "main_initial_findings": [
@@ -6862,6 +6873,30 @@
       "R955-C4"
     ],
     "review_sha256": "c181db87527a7509be605c3b505bc311d0995722edb34a1cfc487d196e06c93a",
-    "main_reconciliation": "research-review-round955-main-reconciliation-v1.json"
+    "main_reconciliation": "research-review-round955-main-reconciliation-v1.json",
+    "main_selected_retrieval": {
+      "lines": [
+        15,
+        34
+      ],
+      "sha256_of_selected_lines": "0431a168032896fddbed624b1236520e1e1348bdb59e06b541a155c3259d0e8c",
+      "purpose": "Concrete prospective subgroup softmax ownership and SYCL collective design after engine qualification; full report body remains unread by Main.",
+      "source_only_candidate": "build_qsa_bf16_prefix_subgroup_v1.py",
+      "built": false,
+      "GPU_executed": false
+    }
+  },
+  "qsa_tilepack_model_cohort_current": {
+    "receipt": "qsa-bf16-prefix-tilepack-clean-summary-v2.json",
+    "passed_execution_closure": true,
+    "all_six_individual_samples_retained": true,
+    "medians_tok_s": {
+      "score33_row_major": 459.1,
+      "score33_dense16_VNNI": 459.3
+    },
+    "performance_adopted": false,
+    "concurrency_addendum": "qsa-bf16-prefix-tilepack-cohort-concurrency-v1.json",
+    "reason": "Inconclusive difference and large candidate variance; final pair overlapped user-requested OpenCode functional test, without causal resource attribution. No sample substitution.",
+    "next": "Paired current engine profile plus actual MoE shape census, then new independent timing comparison; no concurrent functional jobs. Full-model physical262144, saved-session RESTORE and general-quality qualifications remain pending."
   }
 }
