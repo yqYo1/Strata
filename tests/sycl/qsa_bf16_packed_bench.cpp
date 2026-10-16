@@ -76,9 +76,17 @@ void run(const std::string &arm,int nq,int repetitions,int Cells) {
   for (int b=0;b<nq;++b) {
     steps[b*kStepCount+kStepPos]=4096+b;steps[b*kStepCount+kStepNKv]=Cells;
     steps[b*kStepCount+kStepWidth]=Cap;
-    for (int c=0;c<Cap;++c) ids[b*Cap+c]=int(int64_t(c)*Cells/Cap);
-    ids[b*Cap+Cap-1]=Cells-1;
+    for (int c=0;c<Cap;++c) ids[b*Cap+c]=int((int64_t(c)*Cells/Cap+int64_t(b)*17)%Cells);
+    if (!b) ids[b*Cap+Cap-1]=Cells-1;
   }
+  std::vector<int32_t> selected_stamp(size_t(Cells),0);
+  for (int b=0;b<nq;++b) for (int c=0;c<Cap;++c) {
+    const int cell=ids[b*Cap+c];
+    require(cell>=0 && cell<Cells && selected_stamp[cell]!=b+1,"complete selected bounds and per-query uniqueness");
+    selected_stamp[cell]=b+1;
+  }
+  const size_t selected_cells=std::count_if(selected_stamp.begin(),selected_stamp.end(),[](int32_t x){return x!=0;});
+  require(nq!=8192 || selected_cells==size_t(Cells),"full physical-context logical coverage in timing cohort");
   // Allocate and initialize every arm's backing in every process. This makes
   // memory pressure identical while keeping unused outputs checked as well.
   Buffer<int8_t> dk(k.size()),dv(v.size());
@@ -134,7 +142,7 @@ void run(const std::string &arm,int nq,int repetitions,int Cells) {
     return out;
   };
   std::cout<<"arm="<<arm<<" nq="<<nq<<" cap="<<Cap<<" workgroups="<<nq*2
-           <<" cells="<<Cells<<" selected_set=shared_uniform_spread_unique"
+           <<" cells="<<Cells<<" global_selected_cells="<<selected_cells<<" selected_set=per_query_rotated_uniform_spread_unique"
            <<" device_bytes="<<bytes<<" packed_scratch_payload_bytes="<<(rows*(D*4+4))
            <<" pack_cost="<<(arm=="packed" ? "IN_TIMED_CALL" : "NONE")<<" warmups=2 repetitions="<<repetitions
            <<" fingerprints=FNV1a64_native_bytes q="<<fingerprint(qb)<<" k="<<fingerprint(k)

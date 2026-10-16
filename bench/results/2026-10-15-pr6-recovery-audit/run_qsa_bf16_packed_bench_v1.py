@@ -23,7 +23,7 @@ def main():
  assert arm in ['base','packed']
  nq=3 if smoke else 8192;repetitions=1 if smoke else 10
  root=B/f'main-qsa-bf16-packed-bench-{mode}-v1';dst=A/f'own-qsa-bf16-packed-bench-{mode}-v1.json';assert not root.exists() and not dst.exists()
- buildpath=A/'own-qsa-bf16-packed-bench-build-v1.json';build=json.loads(buildpath.read_text());assert build['passed'] and build['complete'] and build['ownership_closed']
+ buildpath=A/'own-qsa-bf16-packed-bench-build-v2.json';build=json.loads(buildpath.read_text());assert build['passed'] and build['complete'] and build['ownership_closed']
  gate=json.loads((A/'own-qsa-bf16-packed-component-v1.json').read_text());assert gate['passed'] and gate['complete'] and gate['ownership_closed'] and not gate['fresh_faults']
  if not smoke:
   for candidate in ['base','packed']:

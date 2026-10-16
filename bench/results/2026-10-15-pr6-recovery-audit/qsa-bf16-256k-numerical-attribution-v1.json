@@ -1,0 +1,48 @@
+{
+  "schema": "strata-bf16-threshold-attribution-v1",
+  "created_utc": "2026-10-16T14:34:49.257666+00:00",
+  "receipts": {
+    "own-qsa-bf16-packed-bench-base-262144-0-v1.json": "a5eaec96d9ed77989de5d33a8d8a1b2f312d12dbc92f53cd3fc6923456ed5588",
+    "qsa-bf16-packed-256k-numerical-stop-v1.json": "fee0b554db635b5fc78b9b13bd0fa655535e85484ad227f3241365b5efb0d68a",
+    "own-qsa-bf16-packed-diagnostic-base-v1.json": "66381f8543e8f97cdd555ebe7435d7bbae31ceef4928b7f2626af18a46b52086",
+    "own-qsa-bf16-packed-diagnostic-packed-v1.json": "3cafd58abb7e61db8a347089143deb20c119795530b77ac0917db86fc70ea89e",
+    "own-qsa-bf16-numerical-probe-base-v1.json": "ca2f8e50e7cb8ede1449a6415142c257d67e6bbdacdaccde7fe41659cd1e09b0"
+  },
+  "original_result_status": "FAIL_UNCHANGED",
+  "complete": true,
+  "ownership_closed": true,
+  "fresh_faults": [],
+  "instrumented_output_reproduces_original": true,
+  "probe_metrics": {
+    "score_differences": "1233",
+    "max_score_abs": "1.19209289551e-07",
+    "p_bf16_differences": "2",
+    "score_path_bf16_changes": "2",
+    "same_argument_exp2_bf16_changes": "0",
+    "max_same_argument_exp2_abs": "1.19209289551e-07",
+    "max_same_argument_exp2_ulps": "2"
+  },
+  "coefficient_replay": {
+    "compared": "256",
+    "failed": "0",
+    "exact_differences": "0",
+    "max_abs": "0",
+    "original_failed": "10",
+    "explained": "10",
+    "original_FP64_oracle_status": "UNCHANGED"
+  },
+  "probability_differences": [
+    "probability_difference cell=204 cpu_score=0.263088017702 gpu_score=0.263088017702 cpu_max=0.383504837751 gpu_max=0.383504807949 cpu_p=0.919921815395 gpu_p=0.919921875 host_exp2_gpu_argument=0.919921875 cpu_bf16=16235 gpu_bf16=16236",
+    "probability_difference cell=581 cpu_score=0.263088017702 gpu_score=0.263088017702 cpu_max=0.383504837751 gpu_max=0.383504807949 cpu_p=0.919921815395 gpu_p=0.919921875 host_exp2_gpu_argument=0.919921875 cpu_bf16=16235 gpu_bf16=16236"
+  ],
+  "interpretation": "For this input and captured query2/head13, FP32 QK reduction order changes the online maximum by2.98023223877e-8. Two probabilities cross the BF16 tie. Host exp2 at the same captured GPU argument has the same BF16 rounding in all2051 selected coefficients. Independent decoded-V replay with captured GPU P/alpha/norm exactly reproduces all256 output dimensions and explains all10 original output-oracle failures. This is evidence of FP64-dot-vs-FP32-matrix threshold sensitivity in the reference, not an arbitrary output epsilon choice or proof of full-model accuracy.",
+  "prospective_policy": "Use actual same-model SGLang/vLLM arithmetic contracts, including FP32 matrix reduction-order freedom and BF16 intermediate rounding. Preserve original scalar-oracle discrepancy. Define stage-level checks before rerun; full model, quality, RESTORE and physical256K remain separate. R940 evaluates that gate.",
+  "not_claimed": [
+    "No new pack-induced divergence shown",
+    "No GPU hang or fresh fault",
+    "No full-model performance or quality qualification",
+    "No256K speed samples from stopped original cohort",
+    "No exact text requirement"
+  ],
+  "next": "Qualify active logical-prefix packing without reading unused source rows; then integrate an opt-in path and perform whole-prefill gates."
+}

@@ -1,0 +1,24 @@
+# 256K部品の数値停止と切り分け
+
+元の256K速度fixtureは独立CPU oracleの10要素で停止した。native exit1、測定sample無し。
+元receiptは不合格のまま保存し、別の物理終了監査でprocess終了・所有終了・新fault無しを確認。
+ハングやdriver障害とは観測されていない。
+
+別diagnosticでは既存late-flagsと全物理packの全出力FNVが同じ11533144185761533132で、
+同じquery2/head13の10要素が外れた。計測用instrumented kernelも全出力FNVを再現した。
+QKのFP32積の順序差によりrunning maximumが0.383504837751から0.383504807949に変わり、
+2051個中2個のPがBF16丸めの境界をまたいだ。同じGPU引数をhost exp2に渡した場合、
+BF16 Pの相違は0個だった。GPUから捕捉したP・alpha・normalizerで独立にVをdecodeし
+PVを再計算すると、256次元すべて完全一致し、元の10要素すべてを説明できた。
+
+このinput/headについてはFP64 dotを使うoracleとFP32 matrix積の差がBF16 Pの離散丸めで
+増幅されたと説明できる。新pack固有の変化、全モデル品質、256Kモデル、RESTOREの証明ではない。
+SGLang/vLLMの実際の同モデル算術契約を採用基準とし、原oracleへの一致は診断として残す。
+出力epsilonをこの10点に合わせて緩める変更はしていない。R940へ段階別の検証契約を調査依頼。
+
+32Kプールの別cohortでは8192query・2051selected cells、各arm3process×10sampleを保存。
+pack時間を毎回含めて565.1160635→390.186218ms、30.9547%短縮。部品の値でありモデルPPではない。
+成功時の出力repeat検査はfloat値の比較でsigned zeroを区別しない。各process最終FNVも一致。
+
+再現command/source/binary/env、元の失敗、診断、probeの係数と再計算結果は同名JSONと
+各own-qsa-bf16-*-v1.jsonおよびbuild/run helperに保存。次は使用中prefixのみのpackと本番入口。
