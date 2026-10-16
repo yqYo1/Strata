@@ -1,0 +1,18 @@
+{"kind":"entry","call":39,"api":"zetMetricQueryPoolCreate","data":{"context":108116878202952,"device":108116875516744,"group":108116876737656,"desc":140734609991552,"stype":4,"pNext":0,"type":0,"count":64,"output":108116766073280,"pool":0}}
+(A?):W:[ML]: Paranoid mode check failed: Paranoid mode is not available 
+(A?):W:[ML]: Cannot get kernel metric set 
+(A?):E:[ML]: Invalid condition m_MetricSet != T::ConstantsOs::Tbs::m_Invalid || m_MetricSetInternal != T::ConstantsOs::Tbs::m_Invalid 
+(A?):E:[ML]: Invalid condition m_Tbs.Initialize() 
+(A?):E:[ML]: Invalid condition m_Kernel.Initialize( m_ClientData ) 
+(A?):E:[ML]: Invalid condition IsEnabled() 
+(A?):W:[ML]: Cannot get kernel metric set 
+{"kind":"result","call":39,"api":"zetMetricQueryPoolCreate","code":2013265924,"hex":"0x78000004","name":"ZE_RESULT_ERROR_INVALID_ARGUMENT","output_valid":false,"data":{"context":108116878202952,"device":108116875516744,"group":108116876737656,"desc":140734609991552,"stype":4,"pNext":0,"type":0,"count":64,"output":108116766073280,"pool":0}}
+{"kind":"entry","call":40,"api":"zetContextActivateMetricGroups","data":{"context":108116878202952,"device":108116875516744,"count":0,"groups_ptr":0}}
+{"kind":"result","call":40,"api":"zetContextActivateMetricGroups","code":0,"hex":"0x0","name":"ZE_RESULT_SUCCESS","output_valid":true,"data":{"context":108116878202952,"device":108116875516744,"count":0,"groups_ptr":0}}
+{"kind":"entry","call":41,"api":"zeContextDestroy","data":{"context":108116878202952,"device":108116875516744,"group":108116876737656,"pool":0}}
+{"kind":"result","call":41,"api":"zeContextDestroy","code":0,"hex":"0x0","name":"ZE_RESULT_SUCCESS","output_valid":true,"data":{"context":108116878202952,"device":108116875516744,"group":108116876737656,"pool":0}}
+{"kind":"lifecycle","context_create":"success","activate":"success","pool_create":"error","pool_destroy":"not_attempted","deactivate":"success","context_destroy":"success","unknown_completion_or_output":false}
+{"kind":"probe_summary","operation_status":"INCOMPLETE","reason":"zetMetricQueryPoolCreate","cleanup_status":"COMPLETE","roots_seen":1,"gpu_roots":1,"target_matches":1,"group_matches":1,"collection_qualified":false,"numerical_result":false,"process_hold_status":"PENDING"}
+{"kind":"hold","phase":"post_probe","milliseconds":20000,"ack":"X"}
+{"kind":"hold_result","phase":"post_probe","status":"ACK","poll_result":1,"revents":1,"read_bytes":1}
+{"kind":"process_summary","operation_status":"INCOMPLETE","cleanup_complete":true,"pre_init_hold_status":"ACK","post_probe_hold_status":"ACK","exit_code":125,"diagnostic_complete":false,"collection_qualified":false}

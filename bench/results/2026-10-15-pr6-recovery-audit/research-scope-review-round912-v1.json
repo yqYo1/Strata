@@ -1,0 +1,76 @@
+{
+  "schema": "strata-research-scope-review-v1",
+  "review_round": "R912",
+  "report_round": 911,
+  "reviewed_utc": "2026-10-16T10:05:16Z",
+  "reviewer": "native Codex gpt-6-luna max",
+  "report_path": "research-round911-v1.txt",
+  "report_sha256": "bd247af566482d82bbcd09df74eb2628f057ed56a406114c512fee1933081af2",
+  "spec_path": "orca-research-round911-spec-v1.txt",
+  "spec_sha256": "92e9699b921d5d9997ec4e2cae58d9869f2e769e1b0d44b56dac8a4a6246e99d",
+  "purpose_class": "decision_support",
+  "decision": "accepted_with_caveats",
+  "status": "Accepted as useful source-level decision support. The source trace correctly locates the logged failure at Metrics Library/TBS context initialization before QueryCreate, but the actual denied ioctl operation and cause remain unresolved. Main's v3 syscall receipt adds errno evidence without identifying the Xe OA sub-operation.",
+  "report_index_snapshot_before_review_sha256": "d00e1f4bc068fa7bdd51f1335842e79910d99f8aa527e24474b5a33490a0ddb8",
+  "indexed_report_count_before": 285,
+  "indexed_report_count_after": 286,
+  "highest_indexed_report_round_after": 911,
+  "reviewed_evidence": {
+    "pool_receipt_path": "own-metric-pool-diagnostic-v2.json",
+    "pool_receipt_sha256": "d7edc7e04c2a6c09cdcedd267db2be90a3087efca27851b3f0d656a9b1e68991",
+    "syscall_receipt_path": "own-metric-pool-diagnostic-trace-v3.json",
+    "syscall_receipt_sha256": "b937b178d9e5b7e77b662d59ec92a64a33c25d0c9e676f296237c553df1d2eb2",
+    "syscall_trace_sha256": "001d92eac500859a6afc76aa29d6b7930c71dd5bbca1e896f8c48121a8dc0269",
+    "source_commits_checked": {
+      "compute_runtime": "050536ff3b6f830199ec99cff8ffcac3d804c40a",
+      "metrics_library": "74eac4065c178a2d459b9fba3acbf38a2fef4dc3"
+    },
+    "scope_depth_review": "1,389 whitespace-delimited words. The report follows the bounded registration/order question across Metrics Library, Metrics Discovery, compute-runtime and Linux Xe OA sources, compares permission, missing-registration, UAPI/version and metric-group explanations, and gives a finite discriminator. It is neither a new measurement nor a general counter-availability survey."
+  },
+  "correction_ids": [
+    "R911-C1",
+    "R911-C2",
+    "R911-C3"
+  ],
+  "source_context_corrections": [
+    "R911-C1: The recorded seven Metrics Library lines and the pinned call chain support a TBS/context-initialization failure before QueryCreate, conditional on those messages belonging to this pool call as the receipt records. This establishes the failing API boundary, not the syscall-level cause. The Paranoid-mode message is explicitly a warning from a check that always returns success in the pinned source; observation_paranoid=1 and CapEff=0 are consistent with a permission gate but do not prove that it denied the failing operation.",
+    "R911-C2: Main's trace receipt records two EACCES ioctls on renderD128 and two ENOENT reads of the fixed metrics GUID id path. Strace labels the EACCES ioctl DRM_IOCTL_I915_CMDBUFFER, but the pinned Metrics Library headers use the same ioctl number (0x0b) for DRM_XE_OBSERVATION and DRM_I915_CMDBUFFER, with 32-byte x86_64 layouts. The decoder label and errno alone do not establish that either call was XE_OBSERVATION/ADD_CONFIG. Do not report a proven OA permission denial, wrong-GPU call, or specific driver failure without the actual request/sub-operation and matching installed-kernel source.",
+    "R911-C3: Keep the two configuration stages separate. Successful zetContextActivateMetricGroups is deferred bookkeeping in the captured path. Metrics Library first bootstraps TBS while creating its context; the selected Metrics Discovery event group is a distinct later configuration route. ENOENT proves the fixed GUID id file was absent at those reads, not that every metric group or every counter route is unavailable. The source order and logged initialization failures indicate the selected group's activation may not have been reached, but no completed collection occurred.",
+    "The package/SONAME versions and hashes do not prove the mapped Metrics Discovery/Library binaries were built from the cited source commits. The compute-runtime manifest pins dependencies but does not establish a supported runtime compatibility range or a version-caused failure. Upstream Linux v7.0 is only a comparator; it is not the installed Ubuntu kernel source.",
+    "R911 does not claim all counters are unavailable, and the receipt supports no numerical sample, model result, performance result, or GPU-fault conclusion. Preserve those limits."
+  ],
+  "provenance_limit": "The report pins official source commits and hashes fetched source files. It does not bind the mapped Metrics Discovery/Library binaries to those exact source builds. The Linux v7.0 OA permission behavior is not verified against installed kernel 7.0.0-38-generic. The v3 trace's decoded ioctl name is insufficient to identify its Xe OA sub-operation.",
+  "decision_support_retrieval": {
+    "needed_now": false,
+    "hold_body": true,
+    "main_body_read": false,
+    "sections": [
+      "8-10: TBS initialization boundary and Paranoid warning; retain the syscall-cause caveat.",
+      "14-21: Deferred API activation, Metrics Library bootstrap and later Metrics Discovery group registration; apply R911-C3.",
+      "25-32: Candidate discriminators and their limits; apply R911-C2 to Main's v3 trace.",
+      "36-42: Version/source boundary and the superseded conditional next-step recommendation."
+    ],
+    "keys": [
+      "The logged initialization path fails before MetricsLibrary::createMetricQuery reaches QueryCreate, subject to matching source/binary behavior.",
+      "The Paranoid-mode warning is not itself a failed check or proof of a denied Xe ioctl.",
+      "API activation bookkeeping, TBS bootstrap registration and selected event-group registration are separate stages.",
+      "The v3 trace records EACCES ioctls and missing fixed-GUID reads, but the ioctl decoder label cannot identify the Xe OA operation.",
+      "Version skew and ENOENT do not establish all-counter unavailability or a compatibility defect."
+    ],
+    "retrieval_brief": "Main can use this digest without reading the report. If the source detail becomes necessary, read only the listed sections and retain R911-C1/C2/C3.",
+    "preserve_caveats": [
+      "Do not attribute the EACCES ioctl to DRM_XE_OBSERVATION/ADD_CONFIG from strace's DRM_IOCTL_I915_CMDBUFFER label alone.",
+      "The two ENOENT results apply to the fixed GUID id path at those reads; they do not establish absence of every metric configuration or counter route.",
+      "No permission/policy change, installed-kernel source match, successful query, counter sample or all-counter survey is recorded.",
+      "The report's suggested one bounded syscall trace has already been attempted; its remaining sub-operation ambiguity does not justify another generic dossier while Main has stopped this detour."
+    ]
+  },
+  "next_scope_eligibility": {
+    "recommended_now": false,
+    "schedulable_now": false,
+    "prerequisites_rechecked": true,
+    "dispatch_performed": false,
+    "reason": "Main has supplied the owned v3 syscall trace and has stopped counter-pool plumbing to resume controlled hardware component comparisons. No fresh research question is currently authorized or needed. Reconsider only if a later concrete decision depends on the exact ioctl sub-operation or installed-kernel behavior; first identify the existing evidence gap and pin the relevant kernel/source provenance."
+  },
+  "next_scope_reason": "No additional research scope now. The available evidence narrows the failure boundary but does not warrant another generic permission/version/registration survey or a claim that all counters are unavailable."
+}

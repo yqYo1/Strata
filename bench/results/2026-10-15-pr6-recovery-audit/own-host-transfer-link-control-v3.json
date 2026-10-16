@@ -1,0 +1,1370 @@
+{
+  "schema": "strata-host-transfer-link-control-v3",
+  "passed": true,
+  "complete": true,
+  "active": false,
+  "GPU_executed": true,
+  "commands": [
+    {
+      "label": "journal-before",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "-b",
+        "-n",
+        "0",
+        "--show-cursor",
+        "--no-pager"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-16T09:59:12.113944+00:00",
+      "wall_seconds": 30,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1583566,
+          "start_ticks": 49351623,
+          "sid": 1583566,
+          "pgid": 1583566
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 493516.235750172,
+      "pid": 1583566,
+      "spawn_return_monotonic": 493516.238407345,
+      "direct_identity": {
+        "pid": 1583566,
+        "state": "R",
+        "ppid": 1583396,
+        "pgid": 1583566,
+        "sid": 1583566,
+        "start_ticks": 49351623,
+        "rss_bytes": 479232
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-16T09:59:12.221278+00:00",
+      "elapsed_seconds": 0.10681758297141641,
+      "logs": {
+        "journal-before.stdout": {
+          "bytes": 156,
+          "sha256": "0a59b29d6bb0217cd534db862401a4b3c71a494b6c613378d907b76ad87ffacd"
+        },
+        "journal-before.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "copy-0",
+      "argv": [
+        "/usr/bin/taskset",
+        "-c",
+        "0",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-canonical-bank-profile-build-root-v1/build/sycl_host_transfer_probe",
+        "--host",
+        "ordinary",
+        "--bytes",
+        "4194304",
+        "--repeats",
+        "1"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-host-transfer-link-control-v3/cache",
+        "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+        "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+        "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr"
+      },
+      "started_utc": "2026-10-16T09:59:13.298886+00:00",
+      "wall_seconds": 90,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1583603,
+          "start_ticks": 49351742,
+          "sid": 1583603,
+          "pgid": 1583603
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 493517.420517179,
+      "pid": 1583603,
+      "spawn_return_monotonic": 493517.422361772,
+      "direct_identity": {
+        "pid": 1583603,
+        "state": "R",
+        "ppid": 1583396,
+        "pgid": 1583603,
+        "sid": 1583603,
+        "start_ticks": 49351742,
+        "rss_bytes": 282624
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 31313920,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-16T09:59:13.479148+00:00",
+      "elapsed_seconds": 0.17991205299040303,
+      "logs": {
+        "copy-0.stdout": {
+          "bytes": 1630,
+          "sha256": "0dc12538fcfce9f9b7a29812f40fb62ed5c0fe0f7d675036c6447255a68b0763"
+        },
+        "copy-0.stderr": {
+          "bytes": 16239,
+          "sha256": "6b40beba1e752881bcd60e7ad118ecdaaab3e287347cf2b596542e30ef73de80"
+        }
+      }
+    },
+    {
+      "label": "copy-1",
+      "argv": [
+        "/usr/bin/taskset",
+        "-c",
+        "0",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-canonical-bank-profile-build-root-v1/build/sycl_host_transfer_probe",
+        "--host",
+        "ordinary",
+        "--bytes",
+        "335544320",
+        "--repeats",
+        "3"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-host-transfer-link-control-v3/cache"
+      },
+      "started_utc": "2026-10-16T09:59:14.589824+00:00",
+      "wall_seconds": 90,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1583657,
+          "start_ticks": 49351871,
+          "sid": 1583657,
+          "pgid": 1583657
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 493518.711661139,
+      "pid": 1583657,
+      "spawn_return_monotonic": 493518.71354177,
+      "direct_identity": {
+        "pid": 1583657,
+        "state": "R",
+        "ppid": 1583396,
+        "pgid": 1583657,
+        "sid": 1583657,
+        "start_ticks": 49351871,
+        "rss_bytes": 274432
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 395239424,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-16T09:59:16.674202+00:00",
+      "elapsed_seconds": 2.0838213430251926,
+      "logs": {
+        "copy-1.stdout": {
+          "bytes": 2878,
+          "sha256": "45930d94ba4d11d47e1af66517756783c9b92a7c79b0ff193639391ba8d4a102"
+        },
+        "copy-1.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "copy-2",
+      "argv": [
+        "/usr/bin/taskset",
+        "-c",
+        "0",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-canonical-bank-profile-build-root-v1/build/sycl_host_transfer_probe",
+        "--host",
+        "ordinary",
+        "--bytes",
+        "335544320",
+        "--repeats",
+        "3"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-host-transfer-link-control-v3/cache"
+      },
+      "started_utc": "2026-10-16T09:59:17.618030+00:00",
+      "wall_seconds": 90,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1583770,
+          "start_ticks": 49352174,
+          "sid": 1583770,
+          "pgid": 1583770
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 493521.740018732,
+      "pid": 1583770,
+      "spawn_return_monotonic": 493521.742021704,
+      "direct_identity": {
+        "pid": 1583770,
+        "state": "R",
+        "ppid": 1583396,
+        "pgid": 1583770,
+        "sid": 1583770,
+        "start_ticks": 49352174,
+        "rss_bytes": 454656
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 395272192,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-16T09:59:19.910276+00:00",
+      "elapsed_seconds": 2.2915535339852795,
+      "logs": {
+        "copy-2.stdout": {
+          "bytes": 2878,
+          "sha256": "cd90edc9ba126262927be156aefcc4bab63cb9cb0d986fc853b177e1894d7015"
+        },
+        "copy-2.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "copy-3",
+      "argv": [
+        "/usr/bin/taskset",
+        "-c",
+        "0",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-canonical-bank-profile-build-root-v1/build/sycl_host_transfer_probe",
+        "--host",
+        "ordinary",
+        "--bytes",
+        "335544320",
+        "--repeats",
+        "3"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-host-transfer-link-control-v3/cache"
+      },
+      "started_utc": "2026-10-16T09:59:20.864343+00:00",
+      "wall_seconds": 90,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1583963,
+          "start_ticks": 49352498,
+          "sid": 1583963,
+          "pgid": 1583963
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 493524.986485919,
+      "pid": 1583963,
+      "spawn_return_monotonic": 493524.988314492,
+      "direct_identity": {
+        "pid": 1583963,
+        "state": "R",
+        "ppid": 1583396,
+        "pgid": 1583963,
+        "sid": 1583963,
+        "start_ticks": 49352498,
+        "rss_bytes": 450560
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 395239424,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-16T09:59:23.086876+00:00",
+      "elapsed_seconds": 2.2216781259630807,
+      "logs": {
+        "copy-3.stdout": {
+          "bytes": 2878,
+          "sha256": "b1c138b2d8e145a4504982ca30123303160dfaa923771715546ab94a620c566a"
+        },
+        "copy-3.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "journal-end",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "-b",
+        "-n",
+        "0",
+        "--show-cursor",
+        "--no-pager"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-16T09:59:24.077894+00:00",
+      "wall_seconds": 30,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1584073,
+          "start_ticks": 49352820,
+          "sid": 1584073,
+          "pgid": 1584073
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 493528.200242971,
+      "pid": 1584073,
+      "spawn_return_monotonic": 493528.20201579,
+      "direct_identity": {
+        "pid": 1584073,
+        "state": "R",
+        "ppid": 1583396,
+        "pgid": 1584073,
+        "sid": 1584073,
+        "start_ticks": 49352820,
+        "rss_bytes": 450560
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-16T09:59:24.184801+00:00",
+      "elapsed_seconds": 0.1058405939838849,
+      "logs": {
+        "journal-end.stdout": {
+          "bytes": 156,
+          "sha256": "59b45f250b128008efac4fd45ccf54dcef97c857e9df260308c84fe2aa33d9b3"
+        },
+        "journal-end.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "journal-after",
+      "argv": [
+        "/usr/bin/journalctl",
+        "-k",
+        "-b",
+        "--after-cursor",
+        "s=9944479cfd1a45c28a589619cb8f2881;i=c2838ee;b=cfda0b6a7c134fe2bdf58f9202770840;m=72e453f2c7;t=65df233cdca75;x=ff559000deac72ae",
+        "--no-pager",
+        "-o",
+        "json"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-16T09:59:24.185939+00:00",
+      "wall_seconds": 30,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1584077,
+          "start_ticks": 49352830,
+          "sid": 1584077,
+          "pgid": 1584077
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 493528.308138925,
+      "pid": 1584077,
+      "spawn_return_monotonic": 493528.309812597,
+      "direct_identity": {
+        "pid": 1584077,
+        "state": "R",
+        "ppid": 1583396,
+        "pgid": 1584077,
+        "sid": 1584077,
+        "start_ticks": 49352830,
+        "rss_bytes": 315392
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-16T09:59:24.293730+00:00",
+      "elapsed_seconds": 0.10705043200869113,
+      "logs": {
+        "journal-after.stdout": {
+          "bytes": 739,
+          "sha256": "498b095d45283ddd7b68e94bfed8ffc7599eb7d5403a3b0a32ead0c0bf8d3892"
+        },
+        "journal-after.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "boot_id": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+  "prior_receipt_sha256": "d853e07eeae7ca24fdd4d20b7a42552152c532c8dadcd85c2f9d62bf67444b01",
+  "source": "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/host_transfer_probe.cpp",
+  "source_sha256": "b83038291ab5b904feeb86bebd68993e058c1731230f3c0f5570062f31f0de7c",
+  "binary": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-canonical-bank-profile-build-root-v1/build/sycl_host_transfer_probe",
+  "binary_sha256": "2fccadda6686349ad4dbc081511d99f4f6cb85683055797cc21bb28e15f9894c",
+  "runtime_library_files": [
+    {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libsycl.so.9.0.0-0",
+      "realpath": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libsycl.so.9.0.0-0",
+      "bytes": 5314304,
+      "mtime_ns": 1791665386000000000,
+      "inode": 7459622,
+      "sha256": "74243bafb2766fd1a038cf80fd62632b4aad9ecfdc0d3ce8711e4515a93d7008"
+    },
+    {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0.12.0",
+      "realpath": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0.12.0",
+      "bytes": 2388520,
+      "mtime_ns": 1791665072000000000,
+      "inode": 7454856,
+      "sha256": "05bcafc4a0d45d33f957f16ffb4ba4776da675e79ade1121b93b94b8549335d8"
+    },
+    {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+      "realpath": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+      "bytes": 19267664,
+      "mtime_ns": 1791665177000000000,
+      "inode": 7458158,
+      "sha256": "bb6e1311850e4b1a924e42acae80c2b3610934625a4985aaa67967abe31356fc"
+    },
+    {
+      "path": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395",
+      "realpath": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395",
+      "bytes": 61889928,
+      "mtime_ns": 1789403878000000000,
+      "inode": 7539850,
+      "sha256": "dfa844e5afd8e8f74bf5ce9da3ea2837706d9116bc8efeaed90efba5acaf7b1c"
+    },
+    {
+      "path": "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0",
+      "realpath": "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0",
+      "bytes": 777528,
+      "mtime_ns": 1784135376000000000,
+      "inode": 7539712,
+      "sha256": "b764efda507f173560fa6055d433dd5c76140180b4a7c532e1cea813cde67363"
+    },
+    {
+      "path": "/usr/local/lib/libigc.so.2.41.5+1788943183",
+      "realpath": "/usr/local/lib/libigc.so.2.41.5+1788943183",
+      "bytes": 104543000,
+      "mtime_ns": 1788943430000000000,
+      "inode": 224,
+      "sha256": "40badd8f1ee80ac844a8947f5e91e5654fbcd851caefe343b0e5ec4ce4d1b123"
+    },
+    {
+      "path": "/usr/local/lib/libigdfcl.so.2.41.5+1788943183",
+      "realpath": "/usr/local/lib/libigdfcl.so.2.41.5+1788943183",
+      "bytes": 2554016,
+      "mtime_ns": 1788943430000000000,
+      "inode": 520,
+      "sha256": "ece8bcd533a44cc1684c1f24eeeca3302e4d19307a806fad5f1b83171f9fc1c3"
+    }
+  ],
+  "cases": [
+    {
+      "label": "copy-0",
+      "bytes": 4194304,
+      "repeats": 1,
+      "traced": true,
+      "start_monotonic_ns": 493517420013460,
+      "end_monotonic_ns": 493517600793849,
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-host-transfer-link-control-v3/cache",
+        "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+        "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+        "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr"
+      },
+      "samples": [
+        {
+          "host": "ordinary",
+          "direction": "H2D",
+          "repetition": "-1",
+          "warmup": "1",
+          "bytes": "4194304",
+          "submit_cpu_s": 0.000221526,
+          "submit_wall_s": 0.000227137,
+          "wait_cpu_s": 0.001229706,
+          "wait_wall_s": 0.001229806,
+          "total_cpu_s": 0.001451232,
+          "total_wall_s": 0.001456943,
+          "total_GBps": 2.878838676
+        },
+        {
+          "host": "ordinary",
+          "direction": "D2H",
+          "repetition": "-1",
+          "warmup": "1",
+          "bytes": "4194304",
+          "submit_cpu_s": 0.001212322,
+          "submit_wall_s": 0.001223203,
+          "wait_cpu_s": 1.9216e-05,
+          "wait_wall_s": 1.9367e-05,
+          "total_cpu_s": 0.001231538,
+          "total_wall_s": 0.00124257,
+          "total_GBps": 3.375507223
+        },
+        {
+          "host": "ordinary",
+          "direction": "H2D",
+          "repetition": "0",
+          "warmup": "0",
+          "bytes": "4194304",
+          "submit_cpu_s": 0.000197651,
+          "submit_wall_s": 0.000203202,
+          "wait_cpu_s": 0.000969858,
+          "wait_wall_s": 0.000969927,
+          "total_cpu_s": 0.001167509,
+          "total_wall_s": 0.001173129,
+          "total_GBps": 3.575313499
+        },
+        {
+          "host": "ordinary",
+          "direction": "D2H",
+          "repetition": "0",
+          "warmup": "0",
+          "bytes": "4194304",
+          "submit_cpu_s": 0.001041162,
+          "submit_wall_s": 0.00104599,
+          "wait_cpu_s": 2.2562e-05,
+          "wait_wall_s": 2.2752e-05,
+          "total_cpu_s": 0.001063724,
+          "total_wall_s": 0.001068742,
+          "total_GBps": 3.924524294
+        }
+      ],
+      "checks": [
+        {
+          "direction": "H2D",
+          "repetition": "-1",
+          "full": "PASS",
+          "guards": "PASS",
+          "source": "PASS"
+        },
+        {
+          "direction": "D2H",
+          "repetition": "-1",
+          "full": "PASS",
+          "guards": "PASS",
+          "source": "PASS"
+        },
+        {
+          "direction": "H2D",
+          "repetition": "0",
+          "full": "PASS",
+          "guards": "PASS",
+          "source": "PASS"
+        },
+        {
+          "direction": "D2H",
+          "repetition": "0",
+          "full": "PASS",
+          "guards": "PASS",
+          "source": "PASS"
+        }
+      ],
+      "stdout": "DEVICE name=Intel(R) Arc(TM) B570 Graphics driver=1.17.39395+14\nSETUP host=ordinary bytes=4194304 host_allocation_bytes=4198656 device_bytes=4194560 verification_allocation_bytes=4198656 body_alignment_mod4096=128 allocation_cpu_s=0.000009948 allocation_wall_s=0.000010780 pretouch_cpu_s=0.002860764 pretouch_wall_s=0.002860906\nCOPY host=ordinary direction=H2D repetition=-1 warmup=1 bytes=4194304 submit_cpu_s=0.000221526 submit_wall_s=0.000227137 wait_cpu_s=0.001229706 wait_wall_s=0.001229806 total_cpu_s=0.001451232 total_wall_s=0.001456943 total_GBps=2.878838676\nCHECK direction=H2D repetition=-1 full=PASS guards=PASS source=PASS\nCOPY host=ordinary direction=D2H repetition=-1 warmup=1 bytes=4194304 submit_cpu_s=0.001212322 submit_wall_s=0.001223203 wait_cpu_s=0.000019216 wait_wall_s=0.000019367 total_cpu_s=0.001231538 total_wall_s=0.001242570 total_GBps=3.375507223\nCHECK direction=D2H repetition=-1 full=PASS guards=PASS source=PASS\nCOPY host=ordinary direction=H2D repetition=0 warmup=0 bytes=4194304 submit_cpu_s=0.000197651 submit_wall_s=0.000203202 wait_cpu_s=0.000969858 wait_wall_s=0.000969927 total_cpu_s=0.001167509 total_wall_s=0.001173129 total_GBps=3.575313499\nCHECK direction=H2D repetition=0 full=PASS guards=PASS source=PASS\nCOPY host=ordinary direction=D2H repetition=0 warmup=0 bytes=4194304 submit_cpu_s=0.001041162 submit_wall_s=0.001045990 wait_cpu_s=0.000022562 wait_wall_s=0.000022752 total_cpu_s=0.001063724 total_wall_s=0.001068742 total_GBps=3.924524294\nCHECK direction=D2H repetition=0 full=PASS guards=PASS source=PASS\nDONE host=ordinary repeats=1 warmups=1 scope=transfer_component_not_model\n",
+      "stderr_sha256": "6b40beba1e752881bcd60e7ad118ecdaaab3e287347cf2b596542e30ef73de80"
+    },
+    {
+      "label": "copy-1",
+      "bytes": 335544320,
+      "repeats": 3,
+      "traced": false,
+      "start_monotonic_ns": 493518710948657,
+      "end_monotonic_ns": 493520796013582,
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-host-transfer-link-control-v3/cache"
+      },
+      "samples": [
+        {
+          "host": "ordinary",
+          "direction": "H2D",
+          "repetition": "-1",
+          "warmup": "1",
+          "bytes": "335544320",
+          "submit_cpu_s": 0.043530896,
+          "submit_wall_s": 0.044044257,
+          "wait_cpu_s": 0.033894166,
+          "wait_wall_s": 0.033925915,
+          "total_cpu_s": 0.077425062,
+          "total_wall_s": 0.077970172,
+          "total_GBps": 4.303495958
+        },
+        {
+          "host": "ordinary",
+          "direction": "D2H",
+          "repetition": "-1",
+          "warmup": "1",
+          "bytes": "335544320",
+          "submit_cpu_s": 0.089643772,
+          "submit_wall_s": 0.090292385,
+          "wait_cpu_s": 1.4237e-05,
+          "wait_wall_s": 1.5459e-05,
+          "total_cpu_s": 0.089658009,
+          "total_wall_s": 0.090307844,
+          "total_GBps": 3.715561187
+        },
+        {
+          "host": "ordinary",
+          "direction": "H2D",
+          "repetition": "0",
+          "warmup": "0",
+          "bytes": "335544320",
+          "submit_cpu_s": 0.035188266,
+          "submit_wall_s": 0.036352013,
+          "wait_cpu_s": 0.040429502,
+          "wait_wall_s": 0.040436063,
+          "total_cpu_s": 0.075617768,
+          "total_wall_s": 0.076788076,
+          "total_GBps": 4.369745114
+        },
+        {
+          "host": "ordinary",
+          "direction": "D2H",
+          "repetition": "0",
+          "warmup": "0",
+          "bytes": "335544320",
+          "submit_cpu_s": 0.088314984,
+          "submit_wall_s": 0.08864872,
+          "wait_cpu_s": 1.1792e-05,
+          "wait_wall_s": 1.2474e-05,
+          "total_cpu_s": 0.088326776,
+          "total_wall_s": 0.088661194,
+          "total_GBps": 3.784568026
+        },
+        {
+          "host": "ordinary",
+          "direction": "H2D",
+          "repetition": "1",
+          "warmup": "0",
+          "bytes": "335544320",
+          "submit_cpu_s": 0.033606346,
+          "submit_wall_s": 0.03399238,
+          "wait_cpu_s": 0.050098873,
+          "wait_wall_s": 0.050112494,
+          "total_cpu_s": 0.083705219,
+          "total_wall_s": 0.084104874,
+          "total_GBps": 3.98959423
+        },
+        {
+          "host": "ordinary",
+          "direction": "D2H",
+          "repetition": "1",
+          "warmup": "0",
+          "bytes": "335544320",
+          "submit_cpu_s": 0.086126225,
+          "submit_wall_s": 0.086511155,
+          "wait_cpu_s": 1.1552e-05,
+          "wait_wall_s": 1.2354e-05,
+          "total_cpu_s": 0.086137777,
+          "total_wall_s": 0.086523509,
+          "total_GBps": 3.878071103
+        },
+        {
+          "host": "ordinary",
+          "direction": "H2D",
+          "repetition": "2",
+          "warmup": "0",
+          "bytes": "335544320",
+          "submit_cpu_s": 0.030374863,
+          "submit_wall_s": 0.030720208,
+          "wait_cpu_s": 0.043933431,
+          "wait_wall_s": 0.04393393,
+          "total_cpu_s": 0.074308294,
+          "total_wall_s": 0.074654138,
+          "total_GBps": 4.494651321
+        },
+        {
+          "host": "ordinary",
+          "direction": "D2H",
+          "repetition": "2",
+          "warmup": "0",
+          "bytes": "335544320",
+          "submit_cpu_s": 0.091138915,
+          "submit_wall_s": 0.091511882,
+          "wait_cpu_s": 1.1682e-05,
+          "wait_wall_s": 1.2323e-05,
+          "total_cpu_s": 0.091150597,
+          "total_wall_s": 0.091524205,
+          "total_GBps": 3.666181203
+        }
+      ],
+      "checks": [
+        {
+          "direction": "H2D",
+          "repetition": "-1",
+          "full": "PASS",
+          "guards": "PASS",
+          "source": "PASS"
+        },
+        {
+          "direction": "D2H",
+          "repetition": "-1",
+          "full": "PASS",
+          "guards": "PASS",
+          "source": "PASS"
+        },
+        {
+          "direction": "H2D",
+          "repetition": "0",
+          "full": "PASS",
+          "guards": "PASS",
+          "source": "PASS"
+        },
+        {
+          "direction": "D2H",
+          "repetition": "0",
+          "full": "PASS",
+          "guards": "PASS",
+          "source": "PASS"
+        },
+        {
+          "direction": "H2D",
+          "repetition": "1",
+          "full": "PASS",
+          "guards": "PASS",
+          "source": "PASS"
+        },
+        {
+          "direction": "D2H",
+          "repetition": "1",
+          "full": "PASS",
+          "guards": "PASS",
+          "source": "PASS"
+        },
+        {
+          "direction": "H2D",
+          "repetition": "2",
+          "full": "PASS",
+          "guards": "PASS",
+          "source": "PASS"
+        },
+        {
+          "direction": "D2H",
+          "repetition": "2",
+          "full": "PASS",
+          "guards": "PASS",
+          "source": "PASS"
+        }
+      ],
+      "stdout": "DEVICE name=Intel(R) Arc(TM) B570 Graphics driver=1.17.39395+14\nSETUP host=ordinary bytes=335544320 host_allocation_bytes=335548672 device_bytes=335544576 verification_allocation_bytes=335548672 body_alignment_mod4096=128 allocation_cpu_s=0.000011782 allocation_wall_s=0.000013145 pretouch_cpu_s=0.168001034 pretouch_wall_s=0.168039697\nCOPY host=ordinary direction=H2D repetition=-1 warmup=1 bytes=335544320 submit_cpu_s=0.043530896 submit_wall_s=0.044044257 wait_cpu_s=0.033894166 wait_wall_s=0.033925915 total_cpu_s=0.077425062 total_wall_s=0.077970172 total_GBps=4.303495958\nCHECK direction=H2D repetition=-1 full=PASS guards=PASS source=PASS\nCOPY host=ordinary direction=D2H repetition=-1 warmup=1 bytes=335544320 submit_cpu_s=0.089643772 submit_wall_s=0.090292385 wait_cpu_s=0.000014237 wait_wall_s=0.000015459 total_cpu_s=0.089658009 total_wall_s=0.090307844 total_GBps=3.715561187\nCHECK direction=D2H repetition=-1 full=PASS guards=PASS source=PASS\nCOPY host=ordinary direction=H2D repetition=0 warmup=0 bytes=335544320 submit_cpu_s=0.035188266 submit_wall_s=0.036352013 wait_cpu_s=0.040429502 wait_wall_s=0.040436063 total_cpu_s=0.075617768 total_wall_s=0.076788076 total_GBps=4.369745114\nCHECK direction=H2D repetition=0 full=PASS guards=PASS source=PASS\nCOPY host=ordinary direction=D2H repetition=0 warmup=0 bytes=335544320 submit_cpu_s=0.088314984 submit_wall_s=0.088648720 wait_cpu_s=0.000011792 wait_wall_s=0.000012474 total_cpu_s=0.088326776 total_wall_s=0.088661194 total_GBps=3.784568026\nCHECK direction=D2H repetition=0 full=PASS guards=PASS source=PASS\nCOPY host=ordinary direction=H2D repetition=1 warmup=0 bytes=335544320 submit_cpu_s=0.033606346 submit_wall_s=0.033992380 wait_cpu_s=0.050098873 wait_wall_s=0.050112494 total_cpu_s=0.083705219 total_wall_s=0.084104874 total_GBps=3.989594230\nCHECK direction=H2D repetition=1 full=PASS guards=PASS source=PASS\nCOPY host=ordinary direction=D2H repetition=1 warmup=0 bytes=335544320 submit_cpu_s=0.086126225 submit_wall_s=0.086511155 wait_cpu_s=0.000011552 wait_wall_s=0.000012354 total_cpu_s=0.086137777 total_wall_s=0.086523509 total_GBps=3.878071103\nCHECK direction=D2H repetition=1 full=PASS guards=PASS source=PASS\nCOPY host=ordinary direction=H2D repetition=2 warmup=0 bytes=335544320 submit_cpu_s=0.030374863 submit_wall_s=0.030720208 wait_cpu_s=0.043933431 wait_wall_s=0.043933930 total_cpu_s=0.074308294 total_wall_s=0.074654138 total_GBps=4.494651321\nCHECK direction=H2D repetition=2 full=PASS guards=PASS source=PASS\nCOPY host=ordinary direction=D2H repetition=2 warmup=0 bytes=335544320 submit_cpu_s=0.091138915 submit_wall_s=0.091511882 wait_cpu_s=0.000011682 wait_wall_s=0.000012323 total_cpu_s=0.091150597 total_wall_s=0.091524205 total_GBps=3.666181203\nCHECK direction=D2H repetition=2 full=PASS guards=PASS source=PASS\nDONE host=ordinary repeats=3 warmups=1 scope=transfer_component_not_model\n",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "copy-2",
+      "bytes": 335544320,
+      "repeats": 3,
+      "traced": false,
+      "start_monotonic_ns": 493521739157691,
+      "end_monotonic_ns": 493524032353848,
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-host-transfer-link-control-v3/cache"
+      },
+      "samples": [
+        {
+          "host": "ordinary",
+          "direction": "H2D",
+          "repetition": "-1",
+          "warmup": "1",
+          "bytes": "335544320",
+          "submit_cpu_s": 0.046178224,
+          "submit_wall_s": 0.046788856,
+          "wait_cpu_s": 0.037806252,
+          "wait_wall_s": 0.037807514,
+          "total_cpu_s": 0.083984476,
+          "total_wall_s": 0.08459637,
+          "total_GBps": 3.966415108
+        },
+        {
+          "host": "ordinary",
+          "direction": "D2H",
+          "repetition": "-1",
+          "warmup": "1",
+          "bytes": "335544320",
+          "submit_cpu_s": 0.086056481,
+          "submit_wall_s": 0.086475758,
+          "wait_cpu_s": 1.3315e-05,
+          "wait_wall_s": 1.4037e-05,
+          "total_cpu_s": 0.086069796,
+          "total_wall_s": 0.086489795,
+          "total_GBps": 3.879582787
+        },
+        {
+          "host": "ordinary",
+          "direction": "H2D",
+          "repetition": "0",
+          "warmup": "0",
+          "bytes": "335544320",
+          "submit_cpu_s": 0.038404115,
+          "submit_wall_s": 0.03890985,
+          "wait_cpu_s": 0.04097304,
+          "wait_wall_s": 0.040974667,
+          "total_cpu_s": 0.079377155,
+          "total_wall_s": 0.079884517,
+          "total_GBps": 4.200367387
+        },
+        {
+          "host": "ordinary",
+          "direction": "D2H",
+          "repetition": "0",
+          "warmup": "0",
+          "bytes": "335544320",
+          "submit_cpu_s": 0.095279608,
+          "submit_wall_s": 0.095707773,
+          "wait_cpu_s": 1.3525e-05,
+          "wait_wall_s": 1.4327e-05,
+          "total_cpu_s": 0.095293133,
+          "total_wall_s": 0.0957221,
+          "total_GBps": 3.505400738
+        },
+        {
+          "host": "ordinary",
+          "direction": "H2D",
+          "repetition": "1",
+          "warmup": "0",
+          "bytes": "335544320",
+          "submit_cpu_s": 0.033777814,
+          "submit_wall_s": 0.034237762,
+          "wait_cpu_s": 0.043061326,
+          "wait_wall_s": 0.043062599,
+          "total_cpu_s": 0.07683914,
+          "total_wall_s": 0.077300361,
+          "total_GBps": 4.340785937
+        },
+        {
+          "host": "ordinary",
+          "direction": "D2H",
+          "repetition": "1",
+          "warmup": "0",
+          "bytes": "335544320",
+          "submit_cpu_s": 0.085520509,
+          "submit_wall_s": 0.085981528,
+          "wait_cpu_s": 1.4557e-05,
+          "wait_wall_s": 1.567e-05,
+          "total_cpu_s": 0.085535066,
+          "total_wall_s": 0.085997198,
+          "total_GBps": 3.901805265
+        },
+        {
+          "host": "ordinary",
+          "direction": "H2D",
+          "repetition": "2",
+          "warmup": "0",
+          "bytes": "335544320",
+          "submit_cpu_s": 0.032721317,
+          "submit_wall_s": 0.033149181,
+          "wait_cpu_s": 0.045870904,
+          "wait_wall_s": 0.045877129,
+          "total_cpu_s": 0.078592221,
+          "total_wall_s": 0.07902631,
+          "total_GBps": 4.245982382
+        },
+        {
+          "host": "ordinary",
+          "direction": "D2H",
+          "repetition": "2",
+          "warmup": "0",
+          "bytes": "335544320",
+          "submit_cpu_s": 0.085768122,
+          "submit_wall_s": 0.086198226,
+          "wait_cpu_s": 1.3235e-05,
+          "wait_wall_s": 1.3986e-05,
+          "total_cpu_s": 0.085781357,
+          "total_wall_s": 0.086212212,
+          "total_GBps": 3.89207413
+        }
+      ],
+      "checks": [
+        {
+          "direction": "H2D",
+          "repetition": "-1",
+          "full": "PASS",
+          "guards": "PASS",
+          "source": "PASS"
+        },
+        {
+          "direction": "D2H",
+          "repetition": "-1",
+          "full": "PASS",
+          "guards": "PASS",
+          "source": "PASS"
+        },
+        {
+          "direction": "H2D",
+          "repetition": "0",
+          "full": "PASS",
+          "guards": "PASS",
+          "source": "PASS"
+        },
+        {
+          "direction": "D2H",
+          "repetition": "0",
+          "full": "PASS",
+          "guards": "PASS",
+          "source": "PASS"
+        },
+        {
+          "direction": "H2D",
+          "repetition": "1",
+          "full": "PASS",
+          "guards": "PASS",
+          "source": "PASS"
+        },
+        {
+          "direction": "D2H",
+          "repetition": "1",
+          "full": "PASS",
+          "guards": "PASS",
+          "source": "PASS"
+        },
+        {
+          "direction": "H2D",
+          "repetition": "2",
+          "full": "PASS",
+          "guards": "PASS",
+          "source": "PASS"
+        },
+        {
+          "direction": "D2H",
+          "repetition": "2",
+          "full": "PASS",
+          "guards": "PASS",
+          "source": "PASS"
+        }
+      ],
+      "stdout": "DEVICE name=Intel(R) Arc(TM) B570 Graphics driver=1.17.39395+14\nSETUP host=ordinary bytes=335544320 host_allocation_bytes=335548672 device_bytes=335544576 verification_allocation_bytes=335548672 body_alignment_mod4096=128 allocation_cpu_s=0.000011381 allocation_wall_s=0.000012534 pretouch_cpu_s=0.223443336 pretouch_wall_s=0.223509400\nCOPY host=ordinary direction=H2D repetition=-1 warmup=1 bytes=335544320 submit_cpu_s=0.046178224 submit_wall_s=0.046788856 wait_cpu_s=0.037806252 wait_wall_s=0.037807514 total_cpu_s=0.083984476 total_wall_s=0.084596370 total_GBps=3.966415108\nCHECK direction=H2D repetition=-1 full=PASS guards=PASS source=PASS\nCOPY host=ordinary direction=D2H repetition=-1 warmup=1 bytes=335544320 submit_cpu_s=0.086056481 submit_wall_s=0.086475758 wait_cpu_s=0.000013315 wait_wall_s=0.000014037 total_cpu_s=0.086069796 total_wall_s=0.086489795 total_GBps=3.879582787\nCHECK direction=D2H repetition=-1 full=PASS guards=PASS source=PASS\nCOPY host=ordinary direction=H2D repetition=0 warmup=0 bytes=335544320 submit_cpu_s=0.038404115 submit_wall_s=0.038909850 wait_cpu_s=0.040973040 wait_wall_s=0.040974667 total_cpu_s=0.079377155 total_wall_s=0.079884517 total_GBps=4.200367387\nCHECK direction=H2D repetition=0 full=PASS guards=PASS source=PASS\nCOPY host=ordinary direction=D2H repetition=0 warmup=0 bytes=335544320 submit_cpu_s=0.095279608 submit_wall_s=0.095707773 wait_cpu_s=0.000013525 wait_wall_s=0.000014327 total_cpu_s=0.095293133 total_wall_s=0.095722100 total_GBps=3.505400738\nCHECK direction=D2H repetition=0 full=PASS guards=PASS source=PASS\nCOPY host=ordinary direction=H2D repetition=1 warmup=0 bytes=335544320 submit_cpu_s=0.033777814 submit_wall_s=0.034237762 wait_cpu_s=0.043061326 wait_wall_s=0.043062599 total_cpu_s=0.076839140 total_wall_s=0.077300361 total_GBps=4.340785937\nCHECK direction=H2D repetition=1 full=PASS guards=PASS source=PASS\nCOPY host=ordinary direction=D2H repetition=1 warmup=0 bytes=335544320 submit_cpu_s=0.085520509 submit_wall_s=0.085981528 wait_cpu_s=0.000014557 wait_wall_s=0.000015670 total_cpu_s=0.085535066 total_wall_s=0.085997198 total_GBps=3.901805265\nCHECK direction=D2H repetition=1 full=PASS guards=PASS source=PASS\nCOPY host=ordinary direction=H2D repetition=2 warmup=0 bytes=335544320 submit_cpu_s=0.032721317 submit_wall_s=0.033149181 wait_cpu_s=0.045870904 wait_wall_s=0.045877129 total_cpu_s=0.078592221 total_wall_s=0.079026310 total_GBps=4.245982382\nCHECK direction=H2D repetition=2 full=PASS guards=PASS source=PASS\nCOPY host=ordinary direction=D2H repetition=2 warmup=0 bytes=335544320 submit_cpu_s=0.085768122 submit_wall_s=0.086198226 wait_cpu_s=0.000013235 wait_wall_s=0.000013986 total_cpu_s=0.085781357 total_wall_s=0.086212212 total_GBps=3.892074130\nCHECK direction=D2H repetition=2 full=PASS guards=PASS source=PASS\nDONE host=ordinary repeats=3 warmups=1 scope=transfer_component_not_model\n",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "copy-3",
+      "bytes": 335544320,
+      "repeats": 3,
+      "traced": false,
+      "start_monotonic_ns": 493524985475727,
+      "end_monotonic_ns": 493527209151504,
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-host-transfer-link-control-v3/cache"
+      },
+      "samples": [
+        {
+          "host": "ordinary",
+          "direction": "H2D",
+          "repetition": "-1",
+          "warmup": "1",
+          "bytes": "335544320",
+          "submit_cpu_s": 0.046713465,
+          "submit_wall_s": 0.047380921,
+          "wait_cpu_s": 0.030458914,
+          "wait_wall_s": 0.030459908,
+          "total_cpu_s": 0.077172379,
+          "total_wall_s": 0.077840829,
+          "total_GBps": 4.310646796
+        },
+        {
+          "host": "ordinary",
+          "direction": "D2H",
+          "repetition": "-1",
+          "warmup": "1",
+          "bytes": "335544320",
+          "submit_cpu_s": 0.093164498,
+          "submit_wall_s": 0.093593782,
+          "wait_cpu_s": 1.3565e-05,
+          "wait_wall_s": 1.4417e-05,
+          "total_cpu_s": 0.093178063,
+          "total_wall_s": 0.093608199,
+          "total_GBps": 3.584561221
+        },
+        {
+          "host": "ordinary",
+          "direction": "H2D",
+          "repetition": "0",
+          "warmup": "0",
+          "bytes": "335544320",
+          "submit_cpu_s": 0.036800494,
+          "submit_wall_s": 0.037263279,
+          "wait_cpu_s": 0.039619592,
+          "wait_wall_s": 0.039633582,
+          "total_cpu_s": 0.076420086,
+          "total_wall_s": 0.076896861,
+          "total_GBps": 4.363563292
+        },
+        {
+          "host": "ordinary",
+          "direction": "D2H",
+          "repetition": "0",
+          "warmup": "0",
+          "bytes": "335544320",
+          "submit_cpu_s": 0.083932306,
+          "submit_wall_s": 0.084357409,
+          "wait_cpu_s": 1.3335e-05,
+          "wait_wall_s": 1.4157e-05,
+          "total_cpu_s": 0.083945641,
+          "total_wall_s": 0.084371566,
+          "total_GBps": 3.97698343
+        },
+        {
+          "host": "ordinary",
+          "direction": "H2D",
+          "repetition": "1",
+          "warmup": "0",
+          "bytes": "335544320",
+          "submit_cpu_s": 0.036788875,
+          "submit_wall_s": 0.037272226,
+          "wait_cpu_s": 0.039895529,
+          "wait_wall_s": 0.03990894,
+          "total_cpu_s": 0.076684404,
+          "total_wall_s": 0.077181166,
+          "total_GBps": 4.347489646
+        },
+        {
+          "host": "ordinary",
+          "direction": "D2H",
+          "repetition": "1",
+          "warmup": "0",
+          "bytes": "335544320",
+          "submit_cpu_s": 0.086681408,
+          "submit_wall_s": 0.087108459,
+          "wait_cpu_s": 1.4287e-05,
+          "wait_wall_s": 1.4828e-05,
+          "total_cpu_s": 0.086695695,
+          "total_wall_s": 0.087123287,
+          "total_GBps": 3.851373515
+        },
+        {
+          "host": "ordinary",
+          "direction": "H2D",
+          "repetition": "2",
+          "warmup": "0",
+          "bytes": "335544320",
+          "submit_cpu_s": 0.032432826,
+          "submit_wall_s": 0.032859125,
+          "wait_cpu_s": 0.048626991,
+          "wait_wall_s": 0.048672753,
+          "total_cpu_s": 0.081059817,
+          "total_wall_s": 0.081531878,
+          "total_GBps": 4.115498481
+        },
+        {
+          "host": "ordinary",
+          "direction": "D2H",
+          "repetition": "2",
+          "warmup": "0",
+          "bytes": "335544320",
+          "submit_cpu_s": 0.084179536,
+          "submit_wall_s": 0.08455428,
+          "wait_cpu_s": 1.1271e-05,
+          "wait_wall_s": 1.2043e-05,
+          "total_cpu_s": 0.084190807,
+          "total_wall_s": 0.084566323,
+          "total_GBps": 3.967824401
+        }
+      ],
+      "checks": [
+        {
+          "direction": "H2D",
+          "repetition": "-1",
+          "full": "PASS",
+          "guards": "PASS",
+          "source": "PASS"
+        },
+        {
+          "direction": "D2H",
+          "repetition": "-1",
+          "full": "PASS",
+          "guards": "PASS",
+          "source": "PASS"
+        },
+        {
+          "direction": "H2D",
+          "repetition": "0",
+          "full": "PASS",
+          "guards": "PASS",
+          "source": "PASS"
+        },
+        {
+          "direction": "D2H",
+          "repetition": "0",
+          "full": "PASS",
+          "guards": "PASS",
+          "source": "PASS"
+        },
+        {
+          "direction": "H2D",
+          "repetition": "1",
+          "full": "PASS",
+          "guards": "PASS",
+          "source": "PASS"
+        },
+        {
+          "direction": "D2H",
+          "repetition": "1",
+          "full": "PASS",
+          "guards": "PASS",
+          "source": "PASS"
+        },
+        {
+          "direction": "H2D",
+          "repetition": "2",
+          "full": "PASS",
+          "guards": "PASS",
+          "source": "PASS"
+        },
+        {
+          "direction": "D2H",
+          "repetition": "2",
+          "full": "PASS",
+          "guards": "PASS",
+          "source": "PASS"
+        }
+      ],
+      "stdout": "DEVICE name=Intel(R) Arc(TM) B570 Graphics driver=1.17.39395+14\nSETUP host=ordinary bytes=335544320 host_allocation_bytes=335548672 device_bytes=335544576 verification_allocation_bytes=335548672 body_alignment_mod4096=128 allocation_cpu_s=0.000009007 allocation_wall_s=0.000009899 pretouch_cpu_s=0.223685260 pretouch_wall_s=0.223802332\nCOPY host=ordinary direction=H2D repetition=-1 warmup=1 bytes=335544320 submit_cpu_s=0.046713465 submit_wall_s=0.047380921 wait_cpu_s=0.030458914 wait_wall_s=0.030459908 total_cpu_s=0.077172379 total_wall_s=0.077840829 total_GBps=4.310646796\nCHECK direction=H2D repetition=-1 full=PASS guards=PASS source=PASS\nCOPY host=ordinary direction=D2H repetition=-1 warmup=1 bytes=335544320 submit_cpu_s=0.093164498 submit_wall_s=0.093593782 wait_cpu_s=0.000013565 wait_wall_s=0.000014417 total_cpu_s=0.093178063 total_wall_s=0.093608199 total_GBps=3.584561221\nCHECK direction=D2H repetition=-1 full=PASS guards=PASS source=PASS\nCOPY host=ordinary direction=H2D repetition=0 warmup=0 bytes=335544320 submit_cpu_s=0.036800494 submit_wall_s=0.037263279 wait_cpu_s=0.039619592 wait_wall_s=0.039633582 total_cpu_s=0.076420086 total_wall_s=0.076896861 total_GBps=4.363563292\nCHECK direction=H2D repetition=0 full=PASS guards=PASS source=PASS\nCOPY host=ordinary direction=D2H repetition=0 warmup=0 bytes=335544320 submit_cpu_s=0.083932306 submit_wall_s=0.084357409 wait_cpu_s=0.000013335 wait_wall_s=0.000014157 total_cpu_s=0.083945641 total_wall_s=0.084371566 total_GBps=3.976983430\nCHECK direction=D2H repetition=0 full=PASS guards=PASS source=PASS\nCOPY host=ordinary direction=H2D repetition=1 warmup=0 bytes=335544320 submit_cpu_s=0.036788875 submit_wall_s=0.037272226 wait_cpu_s=0.039895529 wait_wall_s=0.039908940 total_cpu_s=0.076684404 total_wall_s=0.077181166 total_GBps=4.347489646\nCHECK direction=H2D repetition=1 full=PASS guards=PASS source=PASS\nCOPY host=ordinary direction=D2H repetition=1 warmup=0 bytes=335544320 submit_cpu_s=0.086681408 submit_wall_s=0.087108459 wait_cpu_s=0.000014287 wait_wall_s=0.000014828 total_cpu_s=0.086695695 total_wall_s=0.087123287 total_GBps=3.851373515\nCHECK direction=D2H repetition=1 full=PASS guards=PASS source=PASS\nCOPY host=ordinary direction=H2D repetition=2 warmup=0 bytes=335544320 submit_cpu_s=0.032432826 submit_wall_s=0.032859125 wait_cpu_s=0.048626991 wait_wall_s=0.048672753 total_cpu_s=0.081059817 total_wall_s=0.081531878 total_GBps=4.115498481\nCHECK direction=H2D repetition=2 full=PASS guards=PASS source=PASS\nCOPY host=ordinary direction=D2H repetition=2 warmup=0 bytes=335544320 submit_cpu_s=0.084179536 submit_wall_s=0.084554280 wait_cpu_s=0.000011271 wait_wall_s=0.000012043 total_cpu_s=0.084190807 total_wall_s=0.084566323 total_GBps=3.967824401\nCHECK direction=D2H repetition=2 full=PASS guards=PASS source=PASS\nDONE host=ordinary repeats=3 warmups=1 scope=transfer_component_not_model\n",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "link_samples": [],
+  "reason": "Controlled repeat of the preceding4.31/3.93GB/s copy recheck with only the external sysfs sampler disabled, to test observer interference; same binary, environment values, sizes, repetitions and process count.",
+  "scope": "Ordinary RAM H2D/D2H capacity proxy, same320MiB full-residual size and qualified copy-only binary. External sysfs sampler disabled in this control; not a model throughput or implementation adoption.",
+  "retention": {
+    "owner": "Main",
+    "consumer": "Resolve sysfs versus actual copy-capacity discrepancy",
+    "next_review": "After exact samples/checks/link-state summary extraction"
+  },
+  "native_base_environment": {
+    "PATH": "/usr/bin:/bin",
+    "HOME": "/home/yayoi",
+    "LANG": "C.UTF-8",
+    "LC_ALL": "C.UTF-8",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+    "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+    "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+    "SYCL_CACHE_PERSISTENT": "0",
+    "NEOReadDebugKeys": "1",
+    "EnableDirectSubmission": "0",
+    "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+    "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+    "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-host-transfer-link-control-v3/cache"
+  },
+  "journal_before_cursor": "s=9944479cfd1a45c28a589619cb8f2881;i=c2838ee;b=cfda0b6a7c134fe2bdf58f9202770840;m=72e453f2c7;t=65df233cdca75;x=ff559000deac72ae",
+  "external_link_sampler_enabled": false,
+  "control_for": {
+    "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-host-transfer-link-recheck-v2.json",
+    "sha256": "1065e545b65ff13c9a8a399ea43a38921251fa941128a51649e54ab276f40b45"
+  },
+  "summary": {
+    "H2D": {
+      "independent_processes": 3,
+      "timed_samples": 9,
+      "sample_GBps": [
+        4.369745114,
+        3.98959423,
+        4.494651321,
+        4.200367387,
+        4.340785937,
+        4.245982382,
+        4.363563292,
+        4.347489646,
+        4.115498481
+      ],
+      "median_of_process_medians_GBps": 4.347489646
+    },
+    "D2H": {
+      "independent_processes": 3,
+      "timed_samples": 9,
+      "sample_GBps": [
+        3.784568026,
+        3.878071103,
+        3.666181203,
+        3.505400738,
+        3.901805265,
+        3.89207413,
+        3.97698343,
+        3.851373515,
+        3.967824401
+      ],
+      "median_of_process_medians_GBps": 3.89207413
+    }
+  },
+  "link_states": [],
+  "sampling_errors": [],
+  "journal_after_cursor": "s=9944479cfd1a45c28a589619cb8f2881;i=c2839b1;b=cfda0b6a7c134fe2bdf58f9202770840;m=72e7e7d138;t=65df23761a8e6;x=41a68b7e89d97a3b",
+  "fresh_faults": [],
+  "boot_unchanged": true,
+  "driver_dump_entries": [],
+  "ownership_closed": true
+}

@@ -1,0 +1,313 @@
+{
+  "schema": "strata-pr6-compiler-driver-probes-v1",
+  "active": false,
+  "commands": [
+    {
+      "label": "llvm-version",
+      "argv": [
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+        "--version"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-16T09:41:29.124780+00:00",
+      "wall_seconds": 30,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1525935,
+          "start_ticks": 49245324,
+          "sid": 1525935,
+          "pgid": 1525935
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 492453.24630997,
+      "pid": 1525935,
+      "spawn_return_monotonic": 492453.247678085,
+      "direct_identity": {
+        "pid": 1525935,
+        "state": "R",
+        "ppid": 1525892,
+        "pgid": 1525935,
+        "sid": 1525935,
+        "start_ticks": 49245324,
+        "rss_bytes": 331776
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-16T09:41:29.233708+00:00",
+      "elapsed_seconds": 0.10869032196933404,
+      "logs": {
+        "llvm-version.stdout": {
+          "bytes": 340,
+          "sha256": "ba561f4281050819afdc2c0d1ce5cdde5b6b60a1d9c8ca788a913495e02a08b4"
+        },
+        "llvm-version.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "llvm-historical-flags",
+      "argv": [
+        "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+        "-###",
+        "-fsycl",
+        "-qmkl=sequential",
+        "-fp-model=precise",
+        "-fsycl-default-sub-group-size=32",
+        "-std=c++20",
+        "-x",
+        "c++",
+        "/dev/null",
+        "-c"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-16T09:41:30.004102+00:00",
+      "wall_seconds": 30,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1525970,
+          "start_ticks": 49245412,
+          "sid": 1525970,
+          "pgid": 1525970
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 492454.125834198,
+      "pid": 1525970,
+      "spawn_return_monotonic": 492454.12739153,
+      "direct_identity": {
+        "pid": 1525970,
+        "state": "R",
+        "ppid": 1525892,
+        "pgid": 1525970,
+        "sid": 1525970,
+        "start_ticks": 49245412,
+        "rss_bytes": 266240
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 1,
+      "finished_utc": "2026-10-16T09:41:30.107170+00:00",
+      "elapsed_seconds": 0.10280182701535523,
+      "logs": {
+        "llvm-historical-flags.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "llvm-historical-flags.stderr": {
+          "bytes": 862,
+          "sha256": "c385d259d3e0f85625682549234bf3d77c046b7fec9917bd0ff7f2c0f6efbf79"
+        }
+      }
+    },
+    {
+      "label": "icpx-version",
+      "argv": [
+        "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+        "--version"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-16T09:41:30.897489+00:00",
+      "wall_seconds": 30,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1526032,
+          "start_ticks": 49245501,
+          "sid": 1526032,
+          "pgid": 1526032
+        },
+        {
+          "pid": 1526035,
+          "start_ticks": 49245505,
+          "sid": 1526032,
+          "pgid": 1526032
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 492455.019065011,
+      "pid": 1526032,
+      "spawn_return_monotonic": 492455.028161696,
+      "direct_identity": {
+        "pid": 1526032,
+        "state": "R",
+        "ppid": 1525892,
+        "pgid": 1526032,
+        "sid": 1526032,
+        "start_ticks": 49245501,
+        "rss_bytes": 286720
+      },
+      "peak_live_owned_identities": 2,
+      "peak_session_rss_bytes": 24649728,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-16T09:41:31.573735+00:00",
+      "elapsed_seconds": 0.6759519400075078,
+      "logs": {
+        "icpx-version.stdout": {
+          "bytes": 257,
+          "sha256": "119a0a4ee0badbc5231f46aa701b7ad3f97cc23f478eecb25ab2f77a66c92bac"
+        },
+        "icpx-version.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "icpx-historical-flags",
+      "argv": [
+        "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+        "-###",
+        "-fsycl",
+        "-qmkl=sequential",
+        "-fp-model=precise",
+        "-fsycl-default-sub-group-size=32",
+        "-std=c++20",
+        "-x",
+        "c++",
+        "/dev/null",
+        "-c"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-16T09:41:31.578006+00:00",
+      "wall_seconds": 30,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1526060,
+          "start_ticks": 49245570,
+          "sid": 1526060,
+          "pgid": 1526060
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 492455.699704877,
+      "pid": 1526060,
+      "spawn_return_monotonic": 492455.701107938,
+      "direct_identity": {
+        "pid": 1526060,
+        "state": "R",
+        "ppid": 1525892,
+        "pgid": 1526060,
+        "sid": 1526060,
+        "start_ticks": 49245570,
+        "rss_bytes": 262144
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 3190784,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-16T09:41:31.813468+00:00",
+      "elapsed_seconds": 0.2352048609755002,
+      "logs": {
+        "icpx-historical-flags.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "icpx-historical-flags.stderr": {
+          "bytes": 8419,
+          "sha256": "d1346574623402cc3da41a4faa93236ed4a15d7391f02d63e4612d59826e80b8"
+        }
+      }
+    }
+  ],
+  "GPU_executed": false,
+  "legacy_engine_built": false,
+  "scope": "Compiler driver dry-run only: -### never executes frontend/backend/link commands. No legacy source compiled or provider approval.",
+  "outputs": [
+    {
+      "label": "llvm-version",
+      "compiler_path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+      "compiler_realpath": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang-22",
+      "compiler_sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb",
+      "exit_code": 0,
+      "stdout": "DPC++ compiler 7.1.0 (pre-release) build based on:\nclang version 22.1.0 (https://github.com/intel/llvm 504366f4b82ff00bbac7b0c956635eed8bc599d8)\nTarget: x86_64-unknown-linux-gnu\nThread model: posix\nInstalledDir: /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin\n",
+      "stderr": ""
+    },
+    {
+      "label": "llvm-historical-flags",
+      "compiler_path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+      "compiler_realpath": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang-22",
+      "compiler_sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "clang++: error: unknown argument: '-qmkl=sequential'\nclang++: error: unknown argument '-fp-model=precise'; did you mean '-ffp-model=precise'?\nDPC++ compiler 7.1.0 (pre-release) build based on:\nclang version 22.1.0 (https://github.com/intel/llvm 504366f4b82ff00bbac7b0c956635eed8bc599d8)\nTarget: x86_64-unknown-linux-gnu\nThread model: posix\nInstalledDir: /home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin\n\"/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang-offload-bundler\" \"-type=o\" \"-input=/dev/null\" \"-list\" \n\"/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang-offload-bundler\" \"-type=o\" \"-input=/dev/null\" \"-list\" \n"
+    },
+    {
+      "label": "icpx-version",
+      "compiler_path": "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+      "compiler_realpath": "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+      "compiler_sha256": "be7fa7c3c74c2ba2b8e1b50b0a61e37986441727899e25f3545636bde157c083",
+      "exit_code": 0,
+      "stdout": "Intel(R) oneAPI DPC++/C++ Compiler 2026.1.1 (2026.1.1.20260724)\nTarget: x86_64-unknown-linux-gnu\nThread model: posix\nInstalledDir: /opt/intel/oneapi/compiler/2026.1/bin/compiler\nConfiguration file: /opt/intel/oneapi/compiler/2026.1/bin/compiler/../icpx.cfg\n",
+      "stderr": ""
+    },
+    {
+      "label": "icpx-historical-flags",
+      "compiler_path": "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+      "compiler_realpath": "/opt/intel/oneapi/compiler/2026.1/bin/icpx",
+      "compiler_sha256": "be7fa7c3c74c2ba2b8e1b50b0a61e37986441727899e25f3545636bde157c083",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "Intel(R) oneAPI DPC++/C++ Compiler 2026.1.1 (2026.1.1.20260724)\nTarget: x86_64-unknown-linux-gnu\nThread model: posix\nInstalledDir: /opt/intel/oneapi/compiler/2026.1/bin/compiler\nConfiguration file: /opt/intel/oneapi/compiler/2026.1/bin/compiler/../icpx.cfg\n\"/opt/intel/oneapi/compiler/2026.1/bin/compiler/clang-offload-bundler\" \"-type=o\" \"-input=/dev/null\" \"-list\" \n\"/opt/intel/oneapi/compiler/2026.1/bin/compiler/clang-offload-bundler\" \"-type=o\" \"-input=/dev/null\" \"-list\" \n \"/opt/intel/oneapi/compiler/2026.1/bin/compiler/clang\" \"-cc1\" \"-triple\" \"spir64-unknown-unknown\" \"-O2\" \"-aux-triple\" \"x86_64-unknown-linux-gnu\" \"-fsycl-is-device\" \"-fdeclare-spirv-builtins\" \"-fprofile-update=atomic\" \"-mllvm\" \"-sycl-opt\" \"-fenable-sycl-dae\" \"-Wno-sycl-strict\" \"-fsycl-int-header=/tmp/icpx-3eb7ba7d2e/null-header-13f6b3.h\" \"-fsycl-int-footer=/tmp/icpx-3eb7ba7d2e/null-footer-46af01.h\" \"-fsycl-default-sub-group-size\" \"32\" \"-sycl-std=2020\" \"-ffine-grained-bitfield-accesses\" \"-fsycl-unique-prefix=uidc4a35beeb7130076\" \"-D__SYCL_ANY_DEVICE_HAS_ANY_ASPECT__=1\" \"-Wspir-compat\" \"-fno-offload-use-alloca-addrspace-for-srets\" \"-emit-llvm-bc\" \"-emit-llvm-uselists\" \"-disable-free\" \"-clear-ast-before-backend\" \"-disable-llvm-verifier\" \"-discard-value-names\" \"-main-file-name\" \"null\" \"-mrelocation-model\" \"static\" \"-fveclib=SVML\" \"-faltmathlib=LibDeviceIMFAltMathLibrary\" \"-mframe-pointer=all\" \"-fmath-errno\" \"-ffp-contract=on\" \"-fno-rounding-math\" \"-complex-range=full\" \"-mconstructor-aliases\" \"-aux-target-cpu\" \"x86-64\" \"-debugger-tuning=gdb\" \"-fdebug-compilation-dir=/home/yayoi/orca/workspaces/Strata/sycl\" \"-fcoverage-compilation-dir=/home/yayoi/orca/workspaces/Strata/sycl\" \"-fclang-abi-compat=22\" \"-resource-dir\" \"/opt/intel/oneapi/compiler/2026.1/lib/clang/22\" \"-internal-isystem\" \"/opt/intel/oneapi/compiler/2026.1/bin/compiler/../../include/sycl/stl_wrappers\" \"-internal-isystem\" \"/opt/intel/oneapi/compiler/2026.1/bin/compiler/../../include\" \"-internal-isystem\" \"/opt/intel/oneapi/compiler/2026.1/bin/compiler/../../include/sycl/stl_wrappers\" \"-internal-isystem\" \"/opt/intel/oneapi/compiler/2026.1/bin/compiler/../../include\" \"-internal-isystem\" \"/opt/intel/oneapi/compiler/2026.1/bin/compiler/../../opt/compiler/include\" \"-internal-isystem\" \"/usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13\" \"-internal-isystem\" \"/usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/x86_64-linux-gnu/c++/13\" \"-internal-isystem\" \"/usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/backward\" \"-internal-isystem\" \"/usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13\" \"-internal-isystem\" \"/usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/x86_64-linux-gnu/c++/13\" \"-internal-isystem\" \"/usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/backward\" \"-internal-isystem\" \"/opt/intel/oneapi/compiler/2026.1/bin/compiler/../../include/intel64/lp64\" \"-internal-isystem\" \"/opt/intel/oneapi/compiler/2026.1/bin/compiler/../../include\" \"-internal-isystem\" \"/opt/intel/oneapi/compiler/2026.1/lib/clang/22/include\" \"-internal-isystem\" \"/usr/local/include\" \"-internal-isystem\" \"/usr/lib/gcc/x86_64-linux-gnu/13/../../../../x86_64-linux-gnu/include\" \"-internal-externc-isystem\" \"/usr/include/x86_64-linux-gnu\" \"-internal-externc-isystem\" \"/include\" \"-internal-externc-isystem\" \"/usr/include\" \"-internal-isystem\" \"/opt/intel/oneapi/compiler/2026.1/bin/compiler/../../include/intel64/lp64\" \"-internal-isystem\" \"/opt/intel/oneapi/compiler/2026.1/bin/compiler/../../include\" \"-internal-isystem\" \"/opt/intel/oneapi/compiler/2026.1/lib/clang/22/include\" \"-internal-isystem\" \"/usr/local/include\" \"-internal-isystem\" \"/usr/lib/gcc/x86_64-linux-gnu/13/../../../../x86_64-linux-gnu/include\" \"-internal-externc-isystem\" \"/usr/include/x86_64-linux-gnu\" \"-internal-externc-isystem\" \"/include\" \"-internal-externc-isystem\" \"/usr/include\" \"-std=c++20\" \"-fdeprecated-macro\" \"-ferror-limit\" \"19\" \"-fgpu-rdc\" \"-fgnuc-version=4.2.1\" \"-fno-implicit-modules\" \"-fskip-odr-check-in-gmf\" \"-fcxx-exceptions\" \"-fexceptions\" \"-vectorize-loops\" \"-vectorize-slp\" \"-mllvm\" \"-disable-hir-generate-mkl-call\" \"-mllvm\" \"-intel-abi-compatible=true\" \"-fdwarf2-cfi-asm\" \"-fintel-compatibility\" \"-fintel-compatibility-disable=FakeLoad\" \"-fintel-libirc-allowed\" \"-fintel-libimf-allowed\" \"-o\" \"/tmp/icpx-3eb7ba7d2e/null-1c41cc.bc\" \"-x\" \"c++\" \"/dev/null\"\n \"/opt/intel/oneapi/compiler/2026.1/bin/compiler/clang\" \"-cc1\" \"-triple\" \"x86_64-unknown-linux-gnu\" \"-O2\" \"-fsycl-is-host\" \"-include-internal-header\" \"/tmp/icpx-3eb7ba7d2e/null-header-13f6b3.h\" \"-dependency-filter\" \"/tmp/icpx-3eb7ba7d2e/null-header-13f6b3.h\" \"-fsycl-enable-int-header-diags\" \"-include-internal-footer\" \"/tmp/icpx-3eb7ba7d2e/null-footer-46af01.h\" \"-dependency-filter\" \"/tmp/icpx-3eb7ba7d2e/null-footer-46af01.h\" \"-sycl-std=2020\" \"-fsycl-unique-prefix=uidc4a35beeb7130076\" \"-D__SYCL_ANY_DEVICE_HAS_ANY_ASPECT__=1\" \"-emit-obj\" \"-disable-free\" \"-clear-ast-before-backend\" \"-disable-llvm-verifier\" \"-discard-value-names\" \"-main-file-name\" \"null\" \"-mrelocation-model\" \"static\" \"-fveclib=SVML\" \"-faltmathlib=SVMLAltMathLibrary\" \"-mframe-pointer=none\" \"-fmath-errno\" \"-ffp-contract=on\" \"-fno-rounding-math\" \"-complex-range=full\" \"-mconstructor-aliases\" \"-funwind-tables=2\" \"-target-cpu\" \"x86-64\" \"-mllvm\" \"-x86-enable-unaligned-vector-move=true\" \"-tune-cpu\" \"generic\" \"--dependent-lib=sycl-devicelib-host\" \"-debugger-tuning=gdb\" \"-fdebug-compilation-dir=/home/yayoi/orca/workspaces/Strata/sycl\" \"-fcoverage-compilation-dir=/home/yayoi/orca/workspaces/Strata/sycl\" \"-fclang-abi-compat=22\" \"-resource-dir\" \"/opt/intel/oneapi/compiler/2026.1/lib/clang/22\" \"-internal-isystem\" \"/opt/intel/oneapi/compiler/2026.1/bin/compiler/../../include/sycl/stl_wrappers\" \"-internal-isystem\" \"/opt/intel/oneapi/compiler/2026.1/bin/compiler/../../include\" \"-internal-isystem\" \"/opt/intel/oneapi/compiler/2026.1/bin/compiler/../../include/sycl/stl_wrappers\" \"-internal-isystem\" \"/opt/intel/oneapi/compiler/2026.1/bin/compiler/../../include\" \"-internal-isystem\" \"/opt/intel/oneapi/compiler/2026.1/bin/compiler/../../opt/compiler/include\" \"-internal-isystem\" \"/usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13\" \"-internal-isystem\" \"/usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/x86_64-linux-gnu/c++/13\" \"-internal-isystem\" \"/usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/backward\" \"-internal-isystem\" \"/usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13\" \"-internal-isystem\" \"/usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/x86_64-linux-gnu/c++/13\" \"-internal-isystem\" \"/usr/lib/gcc/x86_64-linux-gnu/13/../../../../include/c++/13/backward\" \"-internal-isystem\" \"/opt/intel/oneapi/compiler/2026.1/bin/compiler/../../include/intel64/lp64\" \"-internal-isystem\" \"/opt/intel/oneapi/compiler/2026.1/bin/compiler/../../include\" \"-internal-isystem\" \"/opt/intel/oneapi/compiler/2026.1/lib/clang/22/include\" \"-internal-isystem\" \"/usr/local/include\" \"-internal-isystem\" \"/usr/lib/gcc/x86_64-linux-gnu/13/../../../../x86_64-linux-gnu/include\" \"-internal-externc-isystem\" \"/usr/include/x86_64-linux-gnu\" \"-internal-externc-isystem\" \"/include\" \"-internal-externc-isystem\" \"/usr/include\" \"-internal-isystem\" \"/opt/intel/oneapi/compiler/2026.1/bin/compiler/../../include/intel64/lp64\" \"-internal-isystem\" \"/opt/intel/oneapi/compiler/2026.1/bin/compiler/../../include\" \"-internal-isystem\" \"/opt/intel/oneapi/compiler/2026.1/lib/clang/22/include\" \"-internal-isystem\" \"/usr/local/include\" \"-internal-isystem\" \"/usr/lib/gcc/x86_64-linux-gnu/13/../../../../x86_64-linux-gnu/include\" \"-internal-externc-isystem\" \"/usr/include/x86_64-linux-gnu\" \"-internal-externc-isystem\" \"/include\" \"-internal-externc-isystem\" \"/usr/include\" \"-std=c++20\" \"-fdeprecated-macro\" \"-ferror-limit\" \"19\" \"-fgpu-rdc\" \"-fgnuc-version=4.2.1\" \"-fno-implicit-modules\" \"-fskip-odr-check-in-gmf\" \"-fcxx-exceptions\" \"-fexceptions\" \"-vectorize-loops\" \"-vectorize-slp\" \"-mllvm\" \"-disable-hir-generate-mkl-call\" \"-mllvm\" \"-sycl-host\" \"-mllvm\" \"-loopopt=1\" \"-floopopt-pipeline=light\" \"-mllvm\" \"-intel-abi-compatible=true\" \"-fdwarf2-cfi-asm\" \"-fintel-compatibility\" \"-fintel-libirc-allowed\" \"-fintel-libimf-allowed\" \"-o\" \"/tmp/icpx-3eb7ba7d2e/null-7df73a.o\" \"-x\" \"c++\" \"/dev/null\"\n \"/opt/intel/oneapi/compiler/2026.1/bin/compiler/clang-offload-bundler\" \"-type=o\" \"-targets=sycl-spir64-unknown-unknown,host-x86_64-unknown-linux-gnu\" \"-output=null.o\" \"-input=/tmp/icpx-3eb7ba7d2e/null-1c41cc.bc\" \"-input=/tmp/icpx-3eb7ba7d2e/null-7df73a.o\"\n"
+    }
+  ],
+  "ownership_closed": true,
+  "complete": true
+}

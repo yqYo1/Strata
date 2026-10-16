@@ -3613,6 +3613,158 @@
         ],
         "outcome": "Accepted as decision support with localized hardware SKU caveat and retrieval guardrails."
       }
+    },
+    {
+      "round": 905,
+      "model": "Orca gpt-6-luna",
+      "read_only": true,
+      "path": "research-round905-v1.txt",
+      "title": "Metric query pool creation failure",
+      "status": "R906-reviewed decision support; apply R905-C1/C2; root cause remains unqualified.",
+      "sha256": "052b2a490dc94c0c748698cf58f2afdfab2ba5441386e9ea66f75402f1813199",
+      "classification": "decision_support",
+      "spec_path": "orca-research-round905-spec-v1.txt",
+      "spec_sha256": "263c4977a06420cb6505a7f6cca12f58ca8498f41fade2a85a2ab2f6206d9129",
+      "review_round": "R906",
+      "review_path": "research-scope-review-round906-v1.json",
+      "review_sha256": "a8490715f05246a2c27670faa04ebea13102dcf29721476dad2d10e3e98682dd",
+      "operational_digest_path": "research-scope-review-round906-v1.ja.md",
+      "operational_digest_sha256": "77ee234c2737bcad6f366c656cdd36aab3dbbf1488cb0ad3f561625961430224",
+      "main_body_read": false,
+      "retrieval": {
+        "needed_now": true,
+        "hold_body": false,
+        "main_body_read": false,
+        "sections": [
+          "8-20: Recorded API result, installed package/SONAME versions, process mappings, and source pins; apply R905-C1.",
+          "24-33: Source-proved INVALID_ARGUMENT paths and count semantics; apply R905-C2 to the captured PERFORMANCE type.",
+          "37-39: Activation-context and pool-call-context comparison; keep the implementation/version boundary.",
+          "43-55: Compatibility, OA permission, and bounded diagnostic discussion; preserve all non-causation caveats."
+        ],
+        "keys": [
+          "First pool-create returned INVALID_ARGUMENT after enumeration and activation success; query and numerical oracle did not complete.",
+          "Compute-runtime maps Metrics Library QueryCreate failure and zero report size to the same public error.",
+          "Runtime/loader version alignment and Metrics Discovery/Library package versions are identified, but exact Metrics Discovery/Library source revisions are not established.",
+          "The API pool-call hContext is forwarded but not read in the pinned OA method; the context difference alone is not the cause.",
+          "One small instrumented run can record init, report-size GetParameter, QueryCreate, and allocation-size branch results; no privilege or policy change."
+        ],
+        "retrieve_when": "Main may retrieve only the named lines for the immediate query-pool diagnosis decision; apply R905-C1/C2 first.",
+        "preserve_caveats": [
+          "R905-C1: The report identifies mapped runtime/loader and Metrics Discovery/Library SONAME/package versions, and cites the compute-runtime package source version as matching tag 26.31.39395.14. It does not match the installed Metrics Discovery/Library binaries to exact source commits or builds. The manifest dependencies are build pins, not a published runtime compatibility range.",
+          "R905-C2: For the captured type PERFORMANCE (enum value 0), the pinned create() switch selects createMetricQueryPool(); its unsupported-type default branch is not reachable. Do not include unsupported descriptor type as a candidate cause for this recorded call.",
+          "The API record has no query begin or completed kernel/numerical result. It does not prove a permission failure, context defect, GPU hang, kernel bug, or counter value.",
+          "Count 64 denotes internal slots in the pinned Level Zero header and PTI also initializes a 64-slot performance pool; the same count is still passed to Metrics Library and multiplied into report allocation size.",
+          "The exact source conclusion is pinned to compute-runtime 26.31.39395.14 and does not establish downstream query behavior."
+        ]
+      },
+      "tags": [
+        "Level Zero metrics query pool",
+        "Intel Arc B570",
+        "Metrics Discovery",
+        "Metrics Library",
+        "OA counters",
+        "INVALID_ARGUMENT"
+      ],
+      "correction_ids": [
+        "R905-C1",
+        "R905-C2"
+      ],
+      "reviewer_retrieval_metadata": {
+        "round": 905,
+        "path": "research-round905-v1.txt",
+        "sha256": "052b2a490dc94c0c748698cf58f2afdfab2ba5441386e9ea66f75402f1813199",
+        "spec_path": "orca-research-round905-spec-v1.txt",
+        "spec_sha256": "263c4977a06420cb6505a7f6cca12f58ca8498f41fade2a85a2ab2f6206d9129",
+        "purpose_class": "decision_support",
+        "review_round": "R906",
+        "review_path": "research-scope-review-round906-v1.json",
+        "review_sha256": "a8490715f05246a2c27670faa04ebea13102dcf29721476dad2d10e3e98682dd",
+        "operational_digest_path": "research-scope-review-round906-v1.ja.md",
+        "operational_digest_sha256": "77ee234c2737bcad6f366c656cdd36aab3dbbf1488cb0ad3f561625961430224",
+        "main_original_needed_now": true,
+        "retrieval_brief": "Main may read only the listed R905 lines for the next diagnostic decision. Treat the source/package match as partial and do not attribute the failure to versions, permissions, contexts, or Strata kernels without new evidence.",
+        "scope_depth_review": "1,417 whitespace-delimited words, six primary source families, within the assigned 1,300-1,800-word and six-source limits. The investigation compares multiple source-level failure paths, context handling, version/permission alternatives, and a bounded next diagnostic.",
+        "provenance_limit": "The receipt provides loaded binary mapping paths and SHA-256 values, plus package/version metadata. The report pins and hashes the compute-runtime implementation and manifest, Level Zero header, and PTI source; it does not pin Metrics Discovery/Library source revisions or prove the loaded binaries byte-for-byte match source. The failure remains unqualified.",
+        "source_context_corrections": [
+          "R905-C1: Distinguish installed package/SONAME version identification from exact source identity. Runtime/loader alignment and the named compute-runtime source package tag are useful evidence, but the mapped Metrics Discovery and Metrics Library images have no source commit/build match in this report. The manifest dependency revisions alone do not prove incompatibility or supported compatibility.",
+          "R905-C2: Move unsupported descriptor type out of the failure candidates for the observed PERFORMANCE type=0 call; that source default applies only when the descriptor type is unsupported."
+        ],
+        "outcome": "Accepted as decision support with source-provenance/compatibility and descriptor-path caveats; no new research scope recommended yet."
+      }
+    },
+    {
+      "round": 911,
+      "model": "Orca gpt-6-luna",
+      "read_only": true,
+      "path": "research-round911-v1.txt",
+      "title": "OA metric-set registration and the pool-create failure",
+      "status": "R912-reviewed decision support; the source places failure before QueryCreate, while the syscall cause remains unqualified.",
+      "sha256": "bd247af566482d82bbcd09df74eb2628f057ed56a406114c512fee1933081af2",
+      "classification": "decision_support",
+      "spec_path": "orca-research-round911-spec-v1.txt",
+      "spec_sha256": "92e9699b921d5d9997ec4e2cae58d9869f2e769e1b0d44b56dac8a4a6246e99d",
+      "review_round": "R912",
+      "review_path": "research-scope-review-round912-v1.json",
+      "review_sha256": "def3326fded20f3b78b7d83f202c77b1c03a7d7f537d32bfd332e7321497cde2",
+      "operational_digest_path": "research-scope-review-round912-v1.ja.md",
+      "operational_digest_sha256": "71ba0c3c6439e7dca44dccaef8bdf02103f2a19324ad2e9ade61b1873026b905",
+      "main_body_read": false,
+      "retrieval": {
+        "needed_now": false,
+        "hold_body": true,
+        "main_body_read": false,
+        "sections": [
+          "8-10: TBS initialization boundary and Paranoid warning; retain the syscall-cause caveat.",
+          "14-21: Deferred API activation, Metrics Library bootstrap and later Metrics Discovery group registration; apply R911-C3.",
+          "25-32: Candidate discriminators and their limits; apply R911-C2 to Main's v3 trace.",
+          "36-42: Version/source boundary and the superseded conditional next-step recommendation."
+        ],
+        "keys": [
+          "The logged initialization path fails before MetricsLibrary::createMetricQuery reaches QueryCreate, subject to matching source/binary behavior.",
+          "The Paranoid-mode warning is not itself a failed check or proof of a denied Xe ioctl.",
+          "API activation bookkeeping, TBS bootstrap registration and selected event-group registration are separate stages.",
+          "The v3 trace records EACCES ioctls and missing fixed-GUID reads, but the ioctl decoder label cannot identify the Xe OA operation.",
+          "Version skew and ENOENT do not establish all-counter unavailability or a compatibility defect."
+        ],
+        "retrieval_brief": "Main can use this digest without reading the report. If the source detail becomes necessary, read only the listed sections and retain R911-C1/C2/C3.",
+        "preserve_caveats": [
+          "Do not attribute the EACCES ioctl to DRM_XE_OBSERVATION/ADD_CONFIG from strace's DRM_IOCTL_I915_CMDBUFFER label alone.",
+          "The two ENOENT results apply to the fixed GUID id path at those reads; they do not establish absence of every metric configuration or counter route.",
+          "No permission/policy change, installed-kernel source match, successful query, counter sample or all-counter survey is recorded.",
+          "The report's suggested one bounded syscall trace has already been attempted; its remaining sub-operation ambiguity does not justify another generic dossier while Main has stopped this detour."
+        ]
+      },
+      "tags": [
+        "Intel Arc B570",
+        "Metrics Library",
+        "Metrics Discovery",
+        "Xe OA",
+        "metric-set registration",
+        "query-pool failure"
+      ],
+      "correction_ids": [
+        "R911-C1",
+        "R911-C2",
+        "R911-C3"
+      ],
+      "reviewer_retrieval_metadata": {
+        "review_round": "R912",
+        "review_path": "research-scope-review-round912-v1.json",
+        "review_sha256": "def3326fded20f3b78b7d83f202c77b1c03a7d7f537d32bfd332e7321497cde2",
+        "operational_digest_path": "research-scope-review-round912-v1.ja.md",
+        "operational_digest_sha256": "71ba0c3c6439e7dca44dccaef8bdf02103f2a19324ad2e9ade61b1873026b905",
+        "main_original_needed_now": false,
+        "scope_depth_review": "1,389 whitespace-delimited words. The report follows the bounded registration/order question across Metrics Library, Metrics Discovery, compute-runtime and Linux Xe OA sources, compares permission, missing-registration, UAPI/version and metric-group explanations, and gives a finite discriminator. It is neither a new measurement nor a general counter-availability survey.",
+        "provenance_limit": "The report pins official source commits and hashes fetched source files. It does not bind the mapped Metrics Discovery/Library binaries to those exact source builds. The Linux v7.0 OA permission behavior is not verified against installed kernel 7.0.0-38-generic. The v3 trace's decoded ioctl name is insufficient to identify its Xe OA sub-operation.",
+        "source_context_corrections": [
+          "R911-C1: The recorded seven Metrics Library lines and the pinned call chain support a TBS/context-initialization failure before QueryCreate, conditional on those messages belonging to this pool call as the receipt records. This establishes the failing API boundary, not the syscall-level cause. The Paranoid-mode message is explicitly a warning from a check that always returns success in the pinned source; observation_paranoid=1 and CapEff=0 are consistent with a permission gate but do not prove that it denied the failing operation.",
+          "R911-C2: Main's trace receipt records two EACCES ioctls on renderD128 and two ENOENT reads of the fixed metrics GUID id path. Strace labels the EACCES ioctl DRM_IOCTL_I915_CMDBUFFER, but the pinned Metrics Library headers use the same ioctl number (0x0b) for DRM_XE_OBSERVATION and DRM_I915_CMDBUFFER, with 32-byte x86_64 layouts. The decoder label and errno alone do not establish that either call was XE_OBSERVATION/ADD_CONFIG. Do not report a proven OA permission denial, wrong-GPU call, or specific driver failure without the actual request/sub-operation and matching installed-kernel source.",
+          "R911-C3: Keep the two configuration stages separate. Successful zetContextActivateMetricGroups is deferred bookkeeping in the captured path. Metrics Library first bootstraps TBS while creating its context; the selected Metrics Discovery event group is a distinct later configuration route. ENOENT proves the fixed GUID id file was absent at those reads, not that every metric group or every counter route is unavailable. The source order and logged initialization failures indicate the selected group's activation may not have been reached, but no completed collection occurred.",
+          "The package/SONAME versions and hashes do not prove the mapped Metrics Discovery/Library binaries were built from the cited source commits. The compute-runtime manifest pins dependencies but does not establish a supported runtime compatibility range or a version-caused failure. Upstream Linux v7.0 is only a comparator; it is not the installed Ubuntu kernel source.",
+          "R911 does not claim all counters are unavailable, and the receipt supports no numerical sample, model result, performance result, or GPU-fault conclusion. Preserve those limits."
+        ],
+        "outcome": "Accepted with ioctl-decoder, deferred-registration, binary-source provenance and no-all-counters caveats; no new research scope now."
+      }
     }
   ],
   "main_initial_findings": [
@@ -5419,5 +5571,110 @@
     "status": "Accepted as decision support with the localized R902-C1 SKU-scope retrieval caveat and guardrails C2/C3. Main can retrieve the exact current Mode1 QSA metadata and API interpretation; no SLM/register occupancy, resource bottleneck, performance, adoption, model-quality, RESTORE, or physical 262144-context claim follows.",
     "report_count_after_append": 284,
     "report_index_snapshot_before_review_sha256": "b1471cef658977de93bef5f58ccf44efae1c6f075d19d2ead6e5eb73dec1ddba"
+  },
+  "research_review_round906": {
+    "path": "research-scope-review-round906-v1.json",
+    "sha256": "a8490715f05246a2c27670faa04ebea13102dcf29721476dad2d10e3e98682dd",
+    "operational_digest_path": "research-scope-review-round906-v1.ja.md",
+    "operational_digest_sha256": "77ee234c2737bcad6f366c656cdd36aab3dbbf1488cb0ad3f561625961430224",
+    "report_round": 905,
+    "status": "Accepted as decision support with R905-C1 source-provenance and compatibility limits, and R905-C2 descriptor-path correction. The report does not establish the root cause of the recorded INVALID_ARGUMENT.",
+    "report_count_before_append": 284,
+    "report_count_after_append": 285,
+    "report_index_snapshot_before_review_sha256": "186f4051912372231e884d88b2acafbfa7ec7fa93e0a264d1233833d3f2987e8",
+    "decision_support_retrieval": {
+      "needed_now": true,
+      "hold_body": false,
+      "main_body_read": true,
+      "sections": [
+        "8-20: Recorded API result, installed package/SONAME versions, process mappings, and source pins; apply R905-C1.",
+        "24-33: Source-proved INVALID_ARGUMENT paths and count semantics; apply R905-C2 to the captured PERFORMANCE type.",
+        "37-39: Activation-context and pool-call-context comparison; keep the implementation/version boundary.",
+        "43-55: Compatibility, OA permission, and bounded diagnostic discussion; preserve all non-causation caveats."
+      ],
+      "keys": [
+        "First pool-create returned INVALID_ARGUMENT after enumeration and activation success; query and numerical oracle did not complete.",
+        "Compute-runtime maps Metrics Library QueryCreate failure and zero report size to the same public error.",
+        "Runtime/loader version alignment and Metrics Discovery/Library package versions are identified, but exact Metrics Discovery/Library source revisions are not established.",
+        "The API pool-call hContext is forwarded but not read in the pinned OA method; the context difference alone is not the cause.",
+        "One small instrumented run can record init, report-size GetParameter, QueryCreate, and allocation-size branch results; no privilege or policy change."
+      ],
+      "retrieval_brief": "Main may read only the listed R905 lines for the next diagnostic decision. Treat the source/package match as partial and do not attribute the failure to versions, permissions, contexts, or Strata kernels without new evidence.",
+      "preserve_caveats": [
+        "R905-C1: The report identifies mapped runtime/loader and Metrics Discovery/Library SONAME/package versions, and cites the compute-runtime package source version as matching tag 26.31.39395.14. It does not match the installed Metrics Discovery/Library binaries to exact source commits or builds. The manifest dependencies are build pins, not a published runtime compatibility range.",
+        "R905-C2: For the captured type PERFORMANCE (enum value 0), the pinned create() switch selects createMetricQueryPool(); its unsupported-type default branch is not reachable. Do not include unsupported descriptor type as a candidate cause for this recorded call.",
+        "The API record has no query begin or completed kernel/numerical result. It does not prove a permission failure, context defect, GPU hang, kernel bug, or counter value.",
+        "Count 64 denotes internal slots in the pinned Level Zero header and PTI also initializes a 64-slot performance pool; the same count is still passed to Metrics Library and multiplied into report allocation size.",
+        "The exact source conclusion is pinned to compute-runtime 26.31.39395.14 and does not establish downstream query behavior."
+      ],
+      "actual_main_read_sections": [
+        "8-20",
+        "24-33",
+        "37-39",
+        "43-55"
+      ],
+      "retrieval_record": "main-durable-evidence-followup-v1.json"
+    },
+    "correction_ids": [
+      "R905-C1",
+      "R905-C2"
+    ],
+    "next_scope_eligibility": {
+      "recommended_now": false,
+      "schedulable_now": false,
+      "prerequisites_rechecked": true,
+      "dispatch_performed": false,
+      "reason": "The next evidence must come from a Main-owned, bounded query-pool diagnostic or exact package/source provenance. Fresh research would repeat the same broad error-path question before those results exist."
+    },
+    "next_scope_reason": "No new research scope now. Revisit only if the instrumented API boundaries or exact package/source provenance leave a concrete unresolved upstream question."
+  },
+  "research_review_round912": {
+    "path": "research-scope-review-round912-v1.json",
+    "sha256": "def3326fded20f3b78b7d83f202c77b1c03a7d7f537d32bfd332e7321497cde2",
+    "operational_digest_path": "research-scope-review-round912-v1.ja.md",
+    "operational_digest_sha256": "71ba0c3c6439e7dca44dccaef8bdf02103f2a19324ad2e9ade61b1873026b905",
+    "report_round": 911,
+    "status": "Accepted as useful source-level decision support. The source trace correctly locates the logged failure at Metrics Library/TBS context initialization before QueryCreate, but the actual denied ioctl operation and cause remain unresolved. Main's v3 syscall receipt adds errno evidence without identifying the Xe OA sub-operation.",
+    "report_count_before_append": 285,
+    "report_count_after_append": 286,
+    "report_index_snapshot_before_review_sha256": "d00e1f4bc068fa7bdd51f1335842e79910d99f8aa527e24474b5a33490a0ddb8",
+    "decision_support_retrieval": {
+      "needed_now": false,
+      "hold_body": true,
+      "main_body_read": false,
+      "sections": [
+        "8-10: TBS initialization boundary and Paranoid warning; retain the syscall-cause caveat.",
+        "14-21: Deferred API activation, Metrics Library bootstrap and later Metrics Discovery group registration; apply R911-C3.",
+        "25-32: Candidate discriminators and their limits; apply R911-C2 to Main's v3 trace.",
+        "36-42: Version/source boundary and the superseded conditional next-step recommendation."
+      ],
+      "keys": [
+        "The logged initialization path fails before MetricsLibrary::createMetricQuery reaches QueryCreate, subject to matching source/binary behavior.",
+        "The Paranoid-mode warning is not itself a failed check or proof of a denied Xe ioctl.",
+        "API activation bookkeeping, TBS bootstrap registration and selected event-group registration are separate stages.",
+        "The v3 trace records EACCES ioctls and missing fixed-GUID reads, but the ioctl decoder label cannot identify the Xe OA operation.",
+        "Version skew and ENOENT do not establish all-counter unavailability or a compatibility defect."
+      ],
+      "retrieval_brief": "Main can use this digest without reading the report. If the source detail becomes necessary, read only the listed sections and retain R911-C1/C2/C3.",
+      "preserve_caveats": [
+        "Do not attribute the EACCES ioctl to DRM_XE_OBSERVATION/ADD_CONFIG from strace's DRM_IOCTL_I915_CMDBUFFER label alone.",
+        "The two ENOENT results apply to the fixed GUID id path at those reads; they do not establish absence of every metric configuration or counter route.",
+        "No permission/policy change, installed-kernel source match, successful query, counter sample or all-counter survey is recorded.",
+        "The report's suggested one bounded syscall trace has already been attempted; its remaining sub-operation ambiguity does not justify another generic dossier while Main has stopped this detour."
+      ]
+    },
+    "correction_ids": [
+      "R911-C1",
+      "R911-C2",
+      "R911-C3"
+    ],
+    "next_scope_eligibility": {
+      "recommended_now": false,
+      "schedulable_now": false,
+      "prerequisites_rechecked": true,
+      "dispatch_performed": false,
+      "reason": "Main has supplied the owned v3 syscall trace and has stopped counter-pool plumbing to resume controlled hardware component comparisons. No fresh research question is currently authorized or needed. Reconsider only if a later concrete decision depends on the exact ioctl sub-operation or installed-kernel behavior; first identify the existing evidence gap and pin the relevant kernel/source provenance."
+    },
+    "next_scope_reason": "No additional research scope now. The available evidence narrows the failure boundary but does not warrant another generic permission/version/registration survey or a claim that all counters are unavailable."
   }
 }

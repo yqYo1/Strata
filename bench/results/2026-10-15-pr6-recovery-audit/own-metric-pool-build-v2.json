@@ -1,0 +1,250 @@
+{
+  "schema": "strata-metric-pool-main-host-build-v2",
+  "passed": true,
+  "complete": true,
+  "active": false,
+  "commands": [
+    {
+      "label": "host-build",
+      "argv": [
+        "/usr/bin/g++",
+        "-std=c++17",
+        "-O0",
+        "-g",
+        "-Wall",
+        "-Wextra",
+        "-Wpedantic",
+        "-Werror",
+        "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/level_zero",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-metric-pool-build-v2/metric_pool.cpp",
+        "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0",
+        "-ldl",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-metric-pool-build-v2/metric-pool"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-16T09:46:24.666308+00:00",
+      "wall_seconds": 60,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1543709,
+          "start_ticks": 49274878,
+          "sid": 1543709,
+          "pgid": 1543709
+        },
+        {
+          "pid": 1543710,
+          "start_ticks": 49274879,
+          "sid": 1543709,
+          "pgid": 1543709
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 492748.78785715,
+      "pid": 1543709,
+      "spawn_return_monotonic": 492748.789428138,
+      "direct_identity": {
+        "pid": 1543709,
+        "state": "R",
+        "ppid": 1543669,
+        "pgid": 1543709,
+        "sid": 1543709,
+        "start_ticks": 49274878,
+        "rss_bytes": 475136
+      },
+      "peak_live_owned_identities": 2,
+      "peak_session_rss_bytes": 114442240,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-16T09:46:25.480642+00:00",
+      "elapsed_seconds": 0.8140543099725619,
+      "logs": {
+        "host-build.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "host-build.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "host-elf-inspection",
+      "argv": [
+        "/usr/bin/readelf",
+        "-d",
+        "-l",
+        "-n",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-metric-pool-build-v2/metric-pool"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "started_utc": "2026-10-16T09:46:25.484407+00:00",
+      "wall_seconds": 30,
+      "errors": [],
+      "owners": [
+        {
+          "pid": 1543740,
+          "start_ticks": 49274960,
+          "sid": 1543740,
+          "pgid": 1543740
+        }
+      ],
+      "cleanup": [],
+      "observation_complete": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "session_anchored": true,
+      "spawn_begin_monotonic": 492749.606035345,
+      "pid": 1543740,
+      "spawn_return_monotonic": 492749.607633113,
+      "direct_identity": {
+        "pid": 1543740,
+        "state": "R",
+        "ppid": 1543669,
+        "pgid": 1543740,
+        "sid": 1543740,
+        "start_ticks": 49274960,
+        "rss_bytes": 401408
+      },
+      "peak_live_owned_identities": 1,
+      "peak_session_rss_bytes": 0,
+      "survivors": [],
+      "ownership_status": "observed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-16T09:46:25.593088+00:00",
+      "elapsed_seconds": 0.10837630502646789,
+      "logs": {
+        "host-elf-inspection.stdout": {
+          "bytes": 5139,
+          "sha256": "aa33a05a9f564e7f392c079fe450450eca59c564f87dd6b92c2887713d09e471"
+        },
+        "host-elf-inspection.stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "GPU_executed": false,
+  "source_package": {
+    "metric_pool.cpp": {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-metric-pool-diagnostic-v1/metric_pool.cpp",
+      "realpath": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-metric-pool-diagnostic-v1/metric_pool.cpp",
+      "bytes": 19090,
+      "sha256": "59de2713709f0f176b731ffb71c3405a8c44de5587d438fec8049d42015a4961"
+    },
+    "source-contract.json": {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-metric-pool-diagnostic-v1/source-contract.json",
+      "realpath": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-metric-pool-diagnostic-v1/source-contract.json",
+      "bytes": 23368,
+      "sha256": "505e40b62f957343904c051f275036165d49e770ca25c4911e384ab7390076ee"
+    },
+    "iu.config": {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-metric-pool-diagnostic-v1/iu.config",
+      "realpath": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-metric-pool-diagnostic-v1/iu.config",
+      "bytes": 87,
+      "sha256": "38751bb8a98925e0c39fc6fb0e68b45e16573d7a15876cfd2f8827608713236a"
+    },
+    "result_names.inc": {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-metric-pool-diagnostic-v1/result_names.inc",
+      "realpath": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-metric-pool-diagnostic-v1/result_names.inc",
+      "bytes": 2861,
+      "sha256": "2357c387c4e30434a5c9187f41cf4d0343852c2a389dc76460ac64fb58a19779"
+    },
+    "README.ja.md": {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-metric-pool-diagnostic-v1/README.ja.md",
+      "realpath": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-metric-pool-diagnostic-v1/README.ja.md",
+      "bytes": 10555,
+      "sha256": "4386a2d47e8d44b92316dc8620416ea2cd071c713c9d391a502c43b90e135c8a"
+    }
+  },
+  "original_source": {
+    "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-metric-pool-diagnostic-v1/metric_pool.cpp",
+    "realpath": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/own-metric-pool-diagnostic-v1/metric_pool.cpp",
+    "bytes": 19090,
+    "sha256": "59de2713709f0f176b731ffb71c3405a8c44de5587d438fec8049d42015a4961"
+  },
+  "actual_source": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-metric-pool-build-v2/metric_pool.cpp",
+    "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-metric-pool-build-v2/metric_pool.cpp",
+    "bytes": 19953,
+    "sha256": "7ab98f9b825a71ef062866e947c93bb457b617b42f1ffaa8a937934249214ecf"
+  },
+  "main_patch": {
+    "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/metric-pool-main-cleanup-v2.patch",
+    "realpath": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/metric-pool-main-cleanup-v2.patch",
+    "bytes": 2578,
+    "sha256": "90d5a310b92ee0d387c21d6b3ee7602ce040d15103c43c578d672c2d457ba468"
+  },
+  "config": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-metric-pool-build-v2/iu.config",
+    "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-metric-pool-build-v2/iu.config",
+    "bytes": 87,
+    "sha256": "38751bb8a98925e0c39fc6fb0e68b45e16573d7a15876cfd2f8827608713236a"
+  },
+  "result_names": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-metric-pool-build-v2/result_names.inc",
+    "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-metric-pool-build-v2/result_names.inc",
+    "bytes": 2861,
+    "sha256": "2357c387c4e30434a5c9187f41cf4d0343852c2a389dc76460ac64fb58a19779"
+  },
+  "inputs": [
+    {
+      "path": "/usr/bin/g++",
+      "realpath": "/usr/bin/x86_64-linux-gnu-g++-13",
+      "bytes": 1027128,
+      "sha256": "1353e9bdd29a7295c7226bf6c63abccce056d8cac31f112e5cdbecc3f28c2769"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/level_zero/ze_api.h",
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/level_zero/ze_api.h",
+      "bytes": 1160433,
+      "sha256": "095a0eb442ae21946f29147c209f270b93dd0eb5b12a2d0c67e5f4138b533712"
+    },
+    {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/level_zero/zet_api.h",
+      "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-primary-unitrace-build-root-v1/build/level_zero/zet_api.h",
+      "bytes": 229444,
+      "sha256": "14cd443591c430172aa1cea8e03d31b8049971f08f67b27722b8b99ea3b14b51"
+    },
+    {
+      "path": "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0",
+      "realpath": "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0",
+      "bytes": 777528,
+      "sha256": "b764efda507f173560fa6055d433dd5c76140180b4a7c532e1cea813cde67363"
+    }
+  ],
+  "main_review": "Main read complete original CPP/README, checked exact config flag/parser sources and copied enum names; only private cleanup correction applied. No query begin, command lists, queues, kernels or explicit GPU buffers. Parent teardown stops on unknown output/completion or failed child teardown.",
+  "retention": {
+    "owner": "Main",
+    "consumer": "One bounded pool diagnostic and actual dependency review",
+    "next_review": "At diagnostic result extraction or replacement"
+  },
+  "binary": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-metric-pool-build-v2/metric-pool",
+    "realpath": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-metric-pool-build-v2/metric-pool",
+    "bytes": 422624,
+    "sha256": "fbadcd96355a74d38649fb73fc25c64334dc39f4310da237fcd98ba9457a1974"
+  },
+  "elf_inspection": "\nElf file type is DYN (Position-Independent Executable file)\nEntry point 0x3940\nThere are 13 program headers, starting at offset 64\n\nProgram Headers:\n  Type           Offset             VirtAddr           PhysAddr\n                 FileSiz            MemSiz              Flags  Align\n  PHDR           0x0000000000000040 0x0000000000000040 0x0000000000000040\n                 0x00000000000002d8 0x00000000000002d8  R      0x8\n  INTERP         0x0000000000000318 0x0000000000000318 0x0000000000000318\n                 0x000000000000001c 0x000000000000001c  R      0x1\n      [Requesting program interpreter: /lib64/ld-linux-x86-64.so.2]\n  LOAD           0x0000000000000000 0x0000000000000000 0x0000000000000000\n                 0x0000000000002358 0x0000000000002358  R      0x1000\n  LOAD           0x0000000000003000 0x0000000000003000 0x0000000000003000\n                 0x0000000000011831 0x0000000000011831  R E    0x1000\n  LOAD           0x0000000000015000 0x0000000000015000 0x0000000000015000\n                 0x0000000000005abf 0x0000000000005abf  R      0x1000\n  LOAD           0x000000000001ab38 0x000000000001bb38 0x000000000001bb38\n                 0x0000000000000520 0x00000000000006a8  RW     0x1000\n  DYNAMIC        0x000000000001ab58 0x000000000001bb58 0x000000000001bb58\n                 0x0000000000000220 0x0000000000000220  RW     0x8\n  NOTE           0x0000000000000338 0x0000000000000338 0x0000000000000338\n                 0x0000000000000030 0x0000000000000030  R      0x8\n  NOTE           0x0000000000000368 0x0000000000000368 0x0000000000000368\n                 0x0000000000000044 0x0000000000000044  R      0x4\n  GNU_PROPERTY   0x0000000000000338 0x0000000000000338 0x0000000000000338\n                 0x0000000000000030 0x0000000000000030  R      0x8\n  GNU_EH_FRAME   0x00000000000168ec 0x00000000000168ec 0x00000000000168ec\n                 0x0000000000000a2c 0x0000000000000a2c  R      0x4\n  GNU_STACK      0x0000000000000000 0x0000000000000000 0x0000000000000000\n                 0x0000000000000000 0x0000000000000000  RW     0x10\n  GNU_RELRO      0x000000000001ab38 0x000000000001bb38 0x000000000001bb38\n                 0x00000000000004c8 0x00000000000004c8  R      0x1\n\n Section to Segment mapping:\n  Segment Sections...\n   00     \n   01     .interp \n   02     .interp .note.gnu.property .note.gnu.build-id .note.ABI-tag .gnu.hash .dynsym .dynstr .gnu.version .gnu.version_r .rela.dyn .rela.plt \n   03     .init .plt .plt.got .plt.sec .text .fini \n   04     .rodata .eh_frame_hdr .eh_frame .gcc_except_table \n   05     .init_array .fini_array .data.rel.ro .dynamic .got .data .bss \n   06     .dynamic \n   07     .note.gnu.property \n   08     .note.gnu.build-id .note.ABI-tag \n   09     .note.gnu.property \n   10     .eh_frame_hdr \n   11     \n   12     .init_array .fini_array .data.rel.ro .dynamic .got \n\nDynamic section at offset 0x1ab58 contains 30 entries:\n  Tag        Type                         Name/Value\n 0x0000000000000001 (NEEDED)             Shared library: [libze_loader.so.1]\n 0x0000000000000001 (NEEDED)             Shared library: [libstdc++.so.6]\n 0x0000000000000001 (NEEDED)             Shared library: [libgcc_s.so.1]\n 0x0000000000000001 (NEEDED)             Shared library: [libc.so.6]\n 0x000000000000000c (INIT)               0x3000\n 0x000000000000000d (FINI)               0x14824\n 0x0000000000000019 (INIT_ARRAY)         0x1bb38\n 0x000000000000001b (INIT_ARRAYSZ)       8 (bytes)\n 0x000000000000001a (FINI_ARRAY)         0x1bb40\n 0x000000000000001c (FINI_ARRAYSZ)       8 (bytes)\n 0x000000006ffffef5 (GNU_HASH)           0x3b0\n 0x0000000000000005 (STRTAB)             0xc10\n 0x0000000000000006 (SYMTAB)             0x3e8\n 0x000000000000000a (STRSZ)              3312 (bytes)\n 0x000000000000000b (SYMENT)             24 (bytes)\n 0x0000000000000015 (DEBUG)              0x0\n 0x0000000000000003 (PLTGOT)             0x1bd78\n 0x0000000000000002 (PLTRELSZ)           1728 (bytes)\n 0x0000000000000014 (PLTREL)             RELA\n 0x0000000000000017 (JMPREL)             0x1c98\n 0x0000000000000007 (RELA)               0x1aa0\n 0x0000000000000008 (RELASZ)             504 (bytes)\n 0x0000000000000009 (RELAENT)            24 (bytes)\n 0x000000000000001e (FLAGS)              BIND_NOW\n 0x000000006ffffffb (FLAGS_1)            Flags: NOW PIE\n 0x000000006ffffffe (VERNEED)            0x19b0\n 0x000000006fffffff (VERNEEDNUM)         3\n 0x000000006ffffff0 (VERSYM)             0x1900\n 0x000000006ffffff9 (RELACOUNT)          11\n 0x0000000000000000 (NULL)               0x0\n\nDisplaying notes found in: .note.gnu.property\n  Owner                Data size \tDescription\n  GNU                  0x00000020\tNT_GNU_PROPERTY_TYPE_0\n      Properties: x86 feature: IBT, SHSTK\n\tx86 ISA needed: x86-64-baseline\n\nDisplaying notes found in: .note.gnu.build-id\n  Owner                Data size \tDescription\n  GNU                  0x00000014\tNT_GNU_BUILD_ID (unique build ID bitstring)\n    Build ID: 90eb7a4f56fa1d42c575a8ba1e73af1e5f41d27a\n\nDisplaying notes found in: .note.ABI-tag\n  Owner                Data size \tDescription\n  GNU                  0x00000010\tNT_GNU_ABI_TAG (ABI version tag)\n    OS: Linux, ABI: 3.2.0\n",
+  "ownership_closed": true
+}
