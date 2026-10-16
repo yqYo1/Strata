@@ -1,0 +1,65 @@
+{
+  "schema": "strata-orca-ended-report-recovery-v1",
+  "task": "task_84ef68bac3ff",
+  "dispatch": "ctx_65811a02c42e",
+  "report": "bench/results/2026-10-15-pr6-recovery-audit/research-round929-v1.txt",
+  "sha256": "2ee52e869c739c9e968f7740bcf6a252ac25e79275298475156ae5cb30c6fc0b",
+  "source_identity": "ezFLIrrfwVGSgw0TK6QVAt2sqxXlBkW8",
+  "source_exact": true,
+  "transcript_tail": "ion and PLE forward boundaries\\\\n\\\\n**Purpose:** decision support; source-only algorithm audit. **Inputs:** the four supplied Strata SHA-256 pins matched exactly. I read the current `feature/sycl` layer-major path and its native16, GDN and PLE consumers; no Git command, build, test, process inspection, GPU work, profiler, product edit or XeStrata material was used. The SGLang and vLLM revision pins below are those supplied in the assignment; they are read-only implementation references, not code to copy. Both repositories identify Apache-2.0 provenance at the relevant repository/file boundary. No performance or numerical result was generated here.\\\\n\\\\n## Finding\\\\n\\\\nThe exact SGLang Qwen4-Exp layer is a Qwen3.5-backbone layer: `Qwen4ExpLinearDecoderLayer` inherits `Qwen3_5LinearDecoderLayer`, then adds Qwen4 HC and optional PLE around its linear-attention branch. The model-level order is PLE addition (on configured PLE layers), HC attention read, linear attention, HC combine, HC FFN read, MoE/MLP, then HC combine. The HC reads and write\u2026 (truncated)', 'callId': 'call_8c55df16dea942f7a210ac0408c943af'}], 'timestamp': 1792154679261, 'source': 'transcript'}, {'id': 'ctco_01a144be-3939-7ef3-9195-1d0e964fb033', 'role': 'tool', 'blocks': [{'type': 'tool-result', 'output': 'Script completed\\nWall time 0.3 seconds\\nOutput:\\n1529 bench/results/2026-10-15-pr6-recovery-audit/research-round929-v1.txt\\n2ee52e869c739c9e968f7740bcf6a252ac25e79275298475156ae5cb30c6fc0b  bench/results/2026-10-15-pr6-recovery-audit/research-round929-v1.txt'}], 'timestamp': 1792154679610, 'source': 'transcript'}, {'id': 'ctc_0fde5e6f9d3f24f0016ad21c469fdc81918b86a808857f62c9', 'role': 'assistant', 'blocks': [{'type': 'tool-call', 'name': 'exec', 'input': 'const r = await tools.exec_command({cmd:\"orca orchestration check --help\",workdir:\"/home/yayoi/orca/workspaces/Strata/sycl\",yield_time_ms:10000,max_output_tokens:1500}); text(r.output);\\n', 'callId': 'call_469d9888f3a34f12b00a1649e5ac016e'}], 'timestamp': 1792154695073, 'source': 'transcript'}, {'id': 'ctco_01a144be-7747-7bd2-b6c0-9d580385f737', 'role': 'tool', 'blocks': [{'type': 'tool-result', 'output': 'Script completed\\nWall time 0.4 seconds\\nOutput:\\norca orchestration check\\n\\nUsage: orca orchestration check [--terminal <handle>] [--run <run_id>] [--ack <delivery_id>] [--unread | --peek | --all] [--types <type,...>] [--format] [--wait] [--timeout-ms <n>] [--retry-request <id>] [--json]\\n  default: return the bound Run\\'s oldest unacknowledged FIFO batch.\\n  --ack: acknowledge the prior whole batch before checking/waiting.\\n  --peek: return only unread messages without marking them read.\\n  --all: return every message for the handle; does not mark read.\\n  --wait: block until a matching message arrives or --timeout-ms expires.\\n          Emits JSON keepalive lines to stderr every 15s so the caller can\\n          tell the process is alive. `_keepalive` is unrelated to heartbeat\\n          messages; `_heartbeat` remains as a deprecated compatibility alias.\\n          Filter with `jq \"select(._keepalive|not)\"` when merging streams.\\n\\nCheck this agent\\'s messages\\n\\nOptions:\\n  --help                 Show this help message\\n  --json                 Emit machine-readable JSON\\n  --pairing-code\\n  --environment\\n  --terminal <handle>  Runtime-issued terminal handle\\n  --run\\n  --ack\\n  --unread\\n  --peek\\n  --all\\n\u2026 (truncated)'}], 'timestamp': 1792154695495, 'source': 'transcript'}, {'id': 'ctc_0fde5e6f9d3f24f0016ad21c492b00819187022e73381237b2', 'role': 'assistant', 'blocks': [{'type': 'tool-call', 'name': 'exec', 'input': 'const r = await tools.exec_command({cmd:\"orca orchestration check --run run_c8f478972ec8 --peek --json\",workdir:\"/home/yayoi/orca/workspaces/Strata/sycl\",yield_time_ms:10000,max_output_tokens:2500}); text(r.output);\\n', 'callId': 'call_139b8274c5c6429084b26be6127f86c9'}], 'timestamp': 1792154697800, 'source': 'transcript'}, {'id': 'ctco_01a144be-82b1-7593-b7f9-028308bc3082', 'role': 'tool', 'blocks': [{'type': 'tool-result', 'output': 'Script completed\\nWall time 0.6 seconds\\nOutput:\\n{\\n  \"id\": \"cd08bcff-94c5-402b-a195-dd5cdeea2f1f\",\\n  \"ok\": false,\\n  \"error\": {\\n    \"code\": \"consumer_fenced\",\\n    \"message\": \"This coordinator terminal is no longer bound to Run run_c8f478972ec8.\"\\n  },\\n  \"_meta\": {\\n    \"runtimeId\": \"e9030fc3-f028-4352-a34d-eb9385c8d79e\"\\n  }\\n}'}], 'timestamp': 1792154698417, 'source': 'transcript'}, {'id': 'ctc_0fde5e6f9d3f24f0016ad21c586ac48191bcc424fe64f6fca4', 'role': 'assistant', 'blocks': [{'type': 'tool-call', 'name': 'exec', 'input': 'const r = await tools.exec_command({cmd:\"orca orchestration send --from term_512dd5e8-cf21-47ed-b367-cd10f10f3f81 --type worker_done --subject \\\\\"R929 source audit complete\\\\\" --body \\\\\"I completed a read-only audit of the supplied Strata sources against pinned SGLang Qwen4-Exp and the semantically matched vLLM GDN path, and wrote the 1,529-word decision-support report. Source shows native16 HC output formats and FP32 state boundaries are required, while same-layer HC store-to-norm and the PLE restore-pack are conditional launch and traffic candidates; current evidence does not rank their service. The report leaves three bounded candidates and one exact-output A/B gate for Main; it contains no build, GPU, performance or adoption result.\\\\\" --task-id task_84ef68bac3ff --dispatch-id ctx_65811a02c42e --outcome succeeded --report-path /home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-round929-v1.txt\",workdir:\"/home/yayoi/orca/workspaces/Strata/sycl\",yield_time_ms:10000,max_output_tokens:1500}); text(r.output);\\n', 'callId': 'call_ff967c9db7d24b4d9c025eec501bc51c'}], 'timestamp': 1792154714100, 'source': 'transcript'}, {'id': 'ctco_01a144be-c240-7972-aec7-fafe6d2b42ef', 'role': 'tool', 'blocks': [{'type': 'tool-result', 'output': \"Script completed\\nWall time 0.6 seconds\\nOutput:\\nThis terminal is a Dispatch worker and cannot report as term_512dd5e8-cf21-47ed-b367-cd10f10f3f81; run the command from the worker's own terminal. No effects were applied. Orchestration mutation request ID: 6d4c460e-d06b-4a40-8250-075f3967b773.\"}], 'timestamp': 1792154714688, 'source': 'transcript'}, {'id': 'msg_0fde5e6f9d3f24f0016ad21c66e68c8191bcb062620c4ba971', 'role': 'assistant', 'blocks': [{'type': 'text', 'text': '/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-round929-v1.txt  \\nSHA256: `2ee52e869c739c9e968f7740bcf6a252ac25e79275298475156ae5cb30c6fc0b`  \\nOperational notice: Report complete; Orca rejected `worker_done` because this terminal could not report as the dispatched handle; no effects applied.'}], 'timestamp': 1792154727857, 'source': 'transcript'}], 'nextCursor': 'owr1_eyJ2IjoxLCJkIjoiY3R4XzY1ODExYTAyYzQyZSIsInMiOiJ0cmFuc2NyaXB0IiwiaSI6ImV6RkxJcnJmd1ZHU2d3MFRLNlFWQXQyc3F4WGxCa1c4IiwicCI6MjI3NTIwNCwiYyI6IlFBcmxnX0Fxc29JcUVZYzdOYkNLcTlTRm1GNVdrZnJfIn0', 'limited': True, 'returnedMessageCount': 40}",
+  "reason": "Worker final turn ended after worker_done used a mistyped terminal handle and was rejected. Report exists and is pinned; do not claim an accepted success settlement. No active research turn is interrupted.",
+  "steering_performed": false,
+  "stop": {
+    "id": "715e422f-cecf-4aee-ba87-65bc630f2ad3",
+    "ok": true,
+    "result": {
+      "dispatchId": "ctx_65811a02c42e",
+      "state": "stop_unknown",
+      "alreadySettled": false,
+      "processAction": "none",
+      "lastError": "The worker terminal is user_owned; no terminal was closed.",
+      "mutation": {
+        "requestId": "f826bce3-ea1b-4b18-b17c-20599e0fe6ed",
+        "replayed": false
+      }
+    },
+    "_meta": {
+      "runtimeId": "e9030fc3-f028-4352-a34d-eb9385c8d79e"
+    }
+  },
+  "cli_exit_code": 1,
+  "stderr": "",
+  "abandon": {
+    "id": "9a0e251d-ec7d-4363-92aa-d8d5c2609dac",
+    "ok": true,
+    "result": {
+      "dispatchId": "ctx_65811a02c42e",
+      "state": "abandoned",
+      "alreadySettled": false,
+      "stale": false,
+      "processAction": "none",
+      "warning": "Possibly-live resources were retained; no process was stopped or deleted.",
+      "residualResources": [
+        {
+          "kind": "terminal",
+          "role": "agent",
+          "action": "created",
+          "id": "term_512dd5e8-cf21-47ed-b367-cd10f3f80f81",
+          "surface": "background",
+          "warning": "Terminal term_512dd5e8-cf21-47ed-b367-cd10f3f80f81 is running, but Orca could not make it discoverable. Run `orca terminal focus --terminal term_512dd5e8-cf21-47ed-b367-cd10f3f80f81` to reveal and focus it."
+        }
+      ],
+      "mutation": {
+        "requestId": "02564ebc-f4b5-4fa4-baa9-2f729f05482d",
+        "replayed": false
+      }
+    },
+    "_meta": {
+      "runtimeId": "e9030fc3-f028-4352-a34d-eb9385c8d79e"
+    }
+  },
+  "report_review_allowed": true,
+  "accepted_worker_done": false,
+  "process_closed": false,
+  "ownership_limit": "Orca reports user_owned terminal; fenced ended Dispatch only, no process/terminal closure claimed."
+}

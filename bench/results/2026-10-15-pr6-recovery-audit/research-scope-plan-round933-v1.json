@@ -1,0 +1,257 @@
+{
+  "schema": "strata-research-scope-plan-v1",
+  "plan_round": "R933",
+  "created_utc": "2026-10-16T13:31:03Z",
+  "index_snapshot": {
+    "path": "research-index.json",
+    "sha256": "39a52fb273de8df360c3611fa701a6e81983f42cc9c17560b4be86ee4ebc1ee6",
+    "indexed_report_count": 292,
+    "highest_indexed_report_round": 930
+  },
+  "reviewed_context": {
+    "R928": {
+      "report_path": "research-round928-v1.txt",
+      "report_sha256": "4b9f2c6f23c4d0802c8a58cc6a526bf1079c1a964d35b0446939d22d0b4f9a96",
+      "review_path": "research-review-round931-v1.json",
+      "review_sha256": "f47a834807bacc2ee12020e3c8e042f194d9f468b83f0aec5f2c637a5c748284",
+      "review_digest_path": "research-review-round931-v1.ja.md",
+      "review_digest_sha256": "ac0fe04eebabd3edf3dc0c429932f54e6824759b58e087bc641d23a211b9e42e",
+      "main_body_read": false,
+      "main_selective_sections_read": ["13-17", "21-29"],
+      "status": "Accepted with corrections; those are the only Main report sections retrieved. Actual SGLang QSA operand/online-state contract is a source-level reference. No configured runtime branch, output-quality adoption, or BF16 speed result was established."
+    },
+    "R929_R930": {
+      "R929_report_sha256": "2ee52e869c739c9e968f7740bcf6a252ac25e79275298475156ae5cb30c6fc0b",
+      "R930_report_sha256": "e3f13bcd7808cb19ee97df33c9650d8ef91878da2d24d7d50ec050c85a81b4fc",
+      "review_path": "research-review-round932-v1.json",
+      "review_sha256": "8293e5e42f07f4c4d02bb44b86fda01612564257a0ea9c4f31a7e9cfef671ba9",
+      "review_digest_path": "research-review-round932-v1.ja.md",
+      "review_digest_sha256": "39473236ca5a0d8b3d310fbda8179c136674ed5480fc8a141b123d412fe927d2",
+      "main_bodies_read": false,
+      "status": "R932 accepted content with corrections. R929 worker_done was rejected and dispatch abandoned/fenced; the user-owned terminal remains open. Do not claim worker success or process closure. R930 was released. HC/PLE/GDN phase evidence and MoE queue-retirement separation remain absent."
+    }
+  },
+  "new_main_evidence": [
+    {
+      "path": "own-qsa-bf16-operand-smoke-v1.json",
+      "sha256": "8b6a2cb5ea2e7a25e0df557a892408ec4f5871d809c723d44e4be4a9e393cab1",
+      "fields": {
+        "passed": true,
+        "complete": true,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "GPU_executed": true,
+        "scope": "BF16 matrix operands/FP32 online contract oracle; diagnostics, guards, and input integrity; not model quality or performance."
+      }
+    },
+    {
+      "path": "own-qsa-bf16-operand-component-v1.json",
+      "sha256": "7f845288ea7534cfebb0e25f9e9ed2d78e1067f989370e46853398ba5aafbb2b",
+      "fields": {
+        "passed": true,
+        "complete": true,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "GPU_executed": true,
+        "physical_context_case": "cells=262144, cap=2051, queries=1, BF16_operands_FP32_online, guards=PASS, inputs=PASS, status=PASS"
+      },
+      "limit": "This is a QSA component case, not whole-model 262144-context, RESTORE, quality, or speed qualification."
+    },
+    {
+      "path": "own-qsa-bf16-bench-build-v1.json",
+      "sha256": "74cb1eff01b9de16522219b5b7e2d1c5a97d7ef1a428bd19d4f15e63757679fe",
+      "fields": {
+        "passed": true,
+        "complete": true,
+        "ownership_closed": true,
+        "GPU_executed": false
+      },
+      "limit": "Fixture build only."
+    },
+    {
+      "paths": [
+        "own-qsa-bf16-bench-smoke-bf16-v1.json",
+        "own-qsa-bf16-bench-smoke-typed-v1.json",
+        "own-qsa-bf16-bench-smoke-fp32-v1.json"
+      ],
+      "sha256": [
+        "c2f9a7f675a9da7059b140fa329e5abcd4127c68707df106d47fe96af9cba8fa",
+        "20afa2a5be5214341ee222fe8acf09745b7980e1e6c7330b4084dda287f3f709",
+        "b54e4bbd58372ae55cf9803f6548e0372b8bcfa8af65701882d6a13e23a2d7b7"
+      ],
+      "fields": {
+        "passed": true,
+        "complete": true,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "nq": 3,
+        "repetitions": 1,
+        "traced": true
+      },
+      "limit": "Smoke only; not the full 8192-query matched timing cohort."
+    },
+    {
+      "paths_and_sha256": [
+        ["src/kernels/sycl/qsa_bf16_attention.cpp", "be7b070c7feb27a504643b450e30c40cfdc22d2f0d8190b88c1c2eacee8a1d06"],
+        ["tests/sycl/qsa_bf16_attention.cpp", "ab58460c906dac89e2013a0120c96984e8fb55412c054dd65650aeb4c0183817"],
+        ["tests/sycl/qsa_bf16_bench.cpp", "58b9d42336afc4d68bdb1a13bc8787da678c66f7a3451349ceba446b183889f8"]
+      ],
+      "provenance": "Main states that the matrix-operand QSA kernel and oracle are independently authored in this fork. This plan does not claim code review, integration, or adoption."
+    }
+  ],
+  "scope_recommendations": [
+    {
+      "id": "R933-KC1",
+      "priority": 1,
+      "classification": "knowledge_collection",
+      "model": "Orca gpt-6-luna",
+      "title": "Mergeable stable reductions across GPU and accelerator dataflows",
+      "schedulable_now": true,
+      "prerequisites_rechecked": true,
+      "prerequisites": [
+        {
+          "requirement": "No Strata timing prerequisite; answer a finite literature and primary-source question and hold the report for later retrieval.",
+          "evidence": "This is a knowledge collection, not a diagnosis of the active BF16 timing fixture or a recommendation to change the implementation."
+        }
+      ],
+      "finite_question": "Compare stable normalized-reduction algorithms that split work across independent tiles and merge partial states, focusing on online softmax/log-sum-exp state (maximum, normalizer, weighted accumulator), hierarchical or split-K variants, and associative weighted-average reductions used in at least one non-LLM GPU/ASIC workload. Explain operand and accumulator precision, where rounding occurs, empty/tail/tie handling, partial-state merge order, scratch/traffic and launch/synchronization costs, and counterexamples where the serial recurrence or local single-pass method is preferable. What evidence would justify considering such a design for Strata's selected-cell QSA, without claiming a B570 win?",
+      "scope_and_novelty": "Keep this at the algorithm/dataflow layer. R928 already maps SGLang Qwen4-Exp's current QSA source path and Strata counterpart; R605/R714/R732/R746 cover earlier attention tiling, gather, and service hypotheses; R924 covers SYCL subgroup/SLM/async staging. Do not repeat those surveys. Investigate whether independently computed stable summaries can be merged and what numerical/storage or extra-pass costs that transformation creates. Include alternatives, applicability, and negative/crossover evidence.",
+      "prior_reports": [
+        {
+          "round": 928,
+          "path": "research-round928-v1.txt",
+          "sha256": "4b9f2c6f23c4d0802c8a58cc6a526bf1079c1a964d35b0446939d22d0b4f9a96",
+          "retrieval": "Use only R931-reviewed sections if a narrow current-QSA contract reminder is needed; Main has already retrieved sections 13-17 and 21-29."
+        },
+        {
+          "round": 924,
+          "path": "research-round924-v1.txt",
+          "sha256": "90750a064865261faaa214a0456313b5990e124663ac1c1cda007e1523438245",
+          "retrieval": "R925 metadata is enough; leave this knowledge-collection body held. It covers subgroup roles, local staging, barriers, and async-copy contracts, not mergeable reduction algorithms."
+        },
+        {
+          "round": 873,
+          "path": "research-round873-v1.txt",
+          "sha256": "1ae234df104e5260955c71bb25c22ad26c6f51e3e76186ebf0460266119f755e",
+          "retrieval": "R874 metadata is enough; leave this held body unread. It covers stationary dense-layer ASIC dataflows, not stable normalized reductions."
+        },
+        {
+          "rounds": [605, 714, 732, 746],
+          "paths": [
+            "research-int8-attention-tiling-round605-v1.txt",
+            "research-prefill-attention-roofline-round714-v1.txt",
+            "research-measured-qsa-attention-round732-v1.txt",
+            "research-attention-roofline-round746-v1.txt"
+          ],
+          "hashes": [
+            "a86280b15503eedcac57fb52ae08a93d596a52e8875e0f191d8fbc10c6487be2",
+            "50c7fda4b6bc69fb41ad04f1bf6cc7de89b0dcc429ad95e3afb7db840e60b6a9",
+            "8d71ffe8da03ce9c703bcda5bb46cc3d1bd089f877ce69e4a5b3b660ab447bcd",
+            "cb63bf26f97fe9988bbfe0c96d05030c1053b3786cdb12562922652bc1c769b7"
+          ],
+          "retrieval": "Prior attention geometry and service results are coverage guardrails; do not reread or reproduce their kernel proposals."
+        }
+      ],
+      "applicability": "A later concrete question about splitting selected cells, changing a long per-query reduction, or reducing redundant passes could retrieve this report. Its use is conditional on Main-owned phase/scheduling evidence; the current report needs no such evidence and must not state that QSA is underoccupied or reduction-bound.",
+      "counterevidence_required": [
+        "Serial online recurrence may avoid partial-state traffic, an extra launch, and extra rounding while preserving the current work-group's data reuse.",
+        "A theoretically associative merge may still change floating-point results, increase scratch/lifetime pressure, or lose to the single-pass method at the actual tile count.",
+        "GPU and ASIC results are not direct evidence of SYCL/Intel B570 performance or of this model's service breakdown."
+      ],
+      "source_requirements": {
+        "maximum_substantive_sources": 8,
+        "preferred_sources": "Original research papers and original technical articles from the authors or hardware vendors; pin revision/date, exact algorithm, workload, precision, and hardware where available.",
+        "provenance": "No XeStrata material. Do not copy/adapt implementation code or introduce a source header/license."
+      },
+      "evidence_limits": [
+        "Do not claim a Strata speedup, B570 support, device utilization, or a current bottleneck.",
+        "Keep historical hardware-specific measurements separate from algorithmic analysis and identify when an accelerator result is modeled rather than measured.",
+        "Respect the current numerical policy: actual validated SGLang/vLLM execution is the precision reference; existing FP32 remains diagnostic."
+      ],
+      "report_budget_words": {
+        "target": 2700,
+        "minimum": 2200,
+        "maximum": 3200
+      },
+      "required_report_sections": [
+        "algorithm alternatives and merge equations",
+        "precision/rounding and boundary cases",
+        "launch, scratch, synchronization, and capacity tradeoffs",
+        "non-LLM GPU/ASIC case and evidence limits",
+        "conditional applicability and counterevidence"
+      ]
+    },
+    {
+      "id": "R933-DS1",
+      "priority": 2,
+      "classification": "decision_support",
+      "model": "Orca gpt-6-luna",
+      "title": "BF16 QSA operand candidate after the matched full component cohort",
+      "schedulable_now": false,
+      "prerequisites_rechecked": true,
+      "prerequisites": [
+        {
+          "requirement": "Close all nine clean full-cohort receipts generated by run_qsa_bf16_bench_v1.py: own-qsa-bf16-bench-{bf16,typed,fp32}-{0,1,2}-v1.json.",
+          "evidence": "Each receipt must have schema=strata-qsa-bf16-matched-bench-v1; matching mode/arm; nq=8192; repetitions=10; traced=false; GPU_executed=true; native_exit_code=0; passed=true; complete=true; ownership_closed=true; fresh_faults=[]; ten entries in samples; and one passing case with guards, inputs, full_finite, and repeat_bits all PASS. The frame must name the expected arm and nq. The currently indexed build and 3-query/1-repeat smoke receipts do not satisfy this requirement."
+        },
+        {
+          "requirement": "Main records the arm-wise individual-sample comparison and confirms a concrete unresolved progression question before dispatch.",
+          "evidence": "Use the nine receipts' samples fields (whole_wall_ms, enqueue_wall_ms, wait_wall_ms, whole_thread_cpu_ms and their enqueue/wait CPU fields), plus case/oracle and ownership/fault outcomes. The result must establish whether the apparent arm difference exceeds process/repetition variation; a PASS status or a favorable single sample is insufficient. If no stable BF16 lead or no unresolved source/next-gate question remains, do not launch this scope."
+        }
+      ],
+      "finite_question": "Given the closed matched 8192-query QSA component cohort, the independently authored BF16 matrix-operand kernel and its BF16-operands/FP32-online oracle, and the R931-corrected SGLang QSA contract, does the measured component evidence justify asking Main to run a full prefill candidate gate? Separate a stable component timing signal from host wait/submit effects; identify what the fixed selector IDs and component oracle prove and leave unproved; compare operand/scale/rounding locations with the reached framework contract; and name the first discriminating Main-owned model experiment plus its numerical, RESTORE/lifetime, fault, and whole-model 262144-context gates. Do not recommend production selection from this component result.",
+      "scope_and_novelty": "This is a narrow follow-up to the exact prerequisite R931 left open. It must use R931's reviewed QSA sections and the nine current Main receipts, not repeat the broad SGLang QSA source survey. It evaluates whether a source-level next step is warranted and how to interpret its evidence; it does not retest code, infer per-device arithmetic utilization, or investigate HC/PLE/GDN or MoE.",
+      "prior_reports": [
+        {
+          "round": 928,
+          "path": "research-round928-v1.txt",
+          "sha256": "4b9f2c6f23c4d0802c8a58cc6a526bf1079c1a964d35b0446939d22d0b4f9a96",
+          "review_path": "research-review-round931-v1.json",
+          "review_sha256": "f47a834807bacc2ee12020e3c8e042f194d9f468b83f0aec5f2c637a5c748284",
+          "retrieval": "Main already read only sections 13-17 and 21-29; the researcher may retrieve only those exact sections as needed and must apply R928-C1 through C6."
+        },
+        {
+          "round": 929,
+          "path": "research-round929-v1.txt",
+          "sha256": "2ee52e869c739c9e968f7740bcf6a252ac25e79275298475156ae5cb30c6fc0b",
+          "retrieval": "Not relevant to this QSA scope. R932 corrections and unsettled worker lifecycle are recorded for status accuracy; do not read its body."
+        },
+        {
+          "round": 930,
+          "path": "research-round930-v1.txt",
+          "sha256": "e3f13bcd7808cb19ee97df33c9650d8ef91878da2d24d7d50ec050c85a81b4fc",
+          "retrieval": "Not relevant to this QSA scope. R932 corrections are enough; do not read its body."
+        }
+      ],
+      "new_local_source_pins": [
+        ["src/kernels/sycl/qsa_bf16_attention.cpp", "be7b070c7feb27a504643b450e30c40cfdc22d2f0d8190b88c1c2eacee8a1d06"],
+        ["tests/sycl/qsa_bf16_attention.cpp", "ab58460c906dac89e2013a0120c96984e8fb55412c054dd65650aeb4c0183817"],
+        ["tests/sycl/qsa_bf16_bench.cpp", "58b9d42336afc4d68bdb1a13bc8787da678c66f7a3451349ceba446b183889f8"]
+      ],
+      "applicability": "Relevant only after the full Main-owned matched cohort closes and leaves a real decision. The component fixture fixes selection IDs and compares BF16-representable Q/K8V8 inputs; it does not test the live selector, whole-model numerics, model PP, RESTORE, production routing, or 262144-token whole-model execution.",
+      "counterevidence_required": [
+        "The timing harness measures host wall and thread CPU around a QSA component; wait time does not identify GPU service or arithmetic utilization.",
+        "The candidate is not integrated into the production path and may alter a precision boundary without improving full prefill.",
+        "R931 already establishes that FP32 accumulation alone does not require Q/P hi/lo operands; do not revive FP32-oracle parity as an additional adoption gate."
+      ],
+      "evidence_limits": [
+        "No claim that the configured SGLang runtime branch/dtype was reached on this PC; use the pinned source contract as reference only.",
+        "No model speed, quality, RESTORE, production-selection, device-utilization, physical-traffic, or full-model physical-context claim.",
+        "Preserve the original QSA and BF16 receipts byte-identically and do not alter their PASS/FAIL status."
+      ],
+      "report_budget_words": {
+        "target": 2300,
+        "minimum": 2000,
+        "maximum": 2800
+      },
+      "next_step_if_supported": "Recommend one Main-owned serialized full prefill candidate test with a fixed correctness comparison and separate clean-process performance samples, retaining RESTORE/fault/lifetime and physical 262144-context gates. Research worker runs no experiment."
+    }
+  ],
+  "global_dispatch_constraints": {
+    "research_workers": "Orca only, gpt-6-luna; no gpt-6.1-sol substitution.",
+    "source_and_license": "No XeStrata source, archived proposals, or derived helpers. Pin primary/original-author source revision and license/provenance. Do not copy code.",
+    "research_permissions": "Read-only research; may write only the named report. No Git commands, builds, tests, GPU jobs, profilers, process inspection, installations, cleanup, or product edits.",
+    "classification_policy": "Keep R933-KC1 body held after review and let Main retrieve by concrete question. Decision support may be read selectively after all recorded eligibility prerequisites are present.",
+    "measurement_policy": "Main owns measurements. Never turn host wait/submit CPU into GPU arithmetic attribution; keep numerical, full-model quality, fault, lifetime, RESTORE, and physical-context gates distinct."
+  }
+}

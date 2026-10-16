@@ -4040,6 +4040,164 @@
         ],
         "outcome": "Accepted as a held knowledge collection with explicit overlap boundaries, mutable-source and backend-lowering caveats, and no B570 support/resource/performance claim."
       }
+    },
+    {
+      "round": 928,
+      "model": "Orca gpt-6-luna",
+      "read_only": true,
+      "path": "research-round928-v1.txt",
+      "title": "QSA prefill in SGLang Qwen4-Exp versus Strata",
+      "status": "R931-reviewed decision support; apply current framework precision policy, active selector-width correction, top-k provenance/order correction, and conditional host-sync caveat. No performance adoption.",
+      "sha256": "4b9f2c6f23c4d0802c8a58cc6a526bf1079c1a964d35b0446939d22d0b4f9a96",
+      "classification": "decision_support",
+      "spec_path": "orca-research-round928-spec-v1.txt",
+      "spec_sha256": "2b1c01c9ba78f777589dc3bb88c25d076cbfb9ab69a6605d29dba410b823c603",
+      "review_round": "R931",
+      "review_path": "research-review-round931-v1.json",
+      "review_sha256": "f47a834807bacc2ee12020e3c8e042f194d9f468b83f0aec5f2c637a5c748284",
+      "operational_digest_path": "research-review-round931-v1.ja.md",
+      "operational_digest_sha256": "ac0fe04eebabd3edf3dc0c429932f54e6824759b58e087bc641d23a211b9e42e",
+      "main_body_read": false,
+      "reviewer_report_body_read": true,
+      "retrieval": {
+        "needed_now": true,
+        "hold_body": false,
+        "main_body_read": false,
+        "sections": [
+          "13–17: Qwen4-Exp call, indexer dtype/host-sync, block selection, prefix pack, and sparse-attention numerical contract; apply R928-C1–C4.",
+          "21–29: candidate ranking and next evidence; apply R928-C5/C6 and retain lifetime/context gates."
+        ],
+        "keys": [
+          "SGLang QSA attention uses query-dtype operands and FP32 online accumulation; FP32 accumulation does not require Strata Q/P hi/lo products.",
+          "SGLang selects 512 whole compressed blocks plus causal tail; Strata weighted-cell top-k can return different widths at n=2052–2054.",
+          "The k=512 SGLang top-k is JIT C++ CUDA with unspecified order; Triton handles expansion and sparse attention.",
+          "QSAIndexer has a conditional .item() cache-length synchronization; prefix sparse attention has a separate max_q .item() boundary.",
+          "Native-BF16 QSA is an unmeasured candidate under the current precision policy, with no speed/adoption result."
+        ],
+        "retrieve_when": "For the current Main-owned QSA numerical/selector decision, retrieve only the listed sections.",
+        "retrieval_brief": "Keep selector differences separate from attention arithmetic and speed; use the actual framework numerical contract prospectively.",
+        "preserve_caveats": [
+          "No SGLang runtime branch, configured dtype, or numerical parity was verified.",
+          "No native-BF16 QSA speed or model-quality adoption was established.",
+          "Profile-v1 attention envelope coverage is not arithmetic utilization.",
+          "The input profile is not the physical 262144-context test.",
+          "Hardware-resource-followup-v8 is synthetic and has no PMU/physical-traffic attribution.",
+          "No vLLM absence claim is made."
+        ]
+      },
+      "correction_ids": [
+        "R928-C1",
+        "R928-C2",
+        "R928-C3",
+        "R928-C4",
+        "R928-C5",
+        "R928-C6"
+      ],
+      "reviewer_retrieval_metadata": {
+        "review_round": "R931",
+        "review_path": "research-review-round931-v1.json",
+        "review_sha256": "f47a834807bacc2ee12020e3c8e042f194d9f468b83f0aec5f2c637a5c748284",
+        "operational_digest_path": "research-review-round931-v1.ja.md",
+        "operational_digest_sha256": "ac0fe04eebabd3edf3dc0c429932f54e6824759b58e087bc641d23a211b9e42e",
+        "main_original_needed_now": true,
+        "purpose_class": "decision_support",
+        "scope_depth_review": "1,566 words, 35 lines, one stage map, six SGLang source URLs. Adequate depth for the finite comparison.",
+        "provenance_limit": "Exact official SGLang source revision and file hashes are pinned. CUDA branch availability/prefix path and output parity were not runtime-tested; no speedup is established.",
+        "source_context_corrections": [
+          "R928-C1",
+          "R928-C2",
+          "R928-C3",
+          "R928-C4",
+          "R928-C5",
+          "R928-C6"
+        ],
+        "outcome": "Accepted as decision support with prospective numerical-policy and source-context corrections; only indexed sections are retrievable now."
+      },
+      "main_selective_sections_read": [
+        "13-17",
+        "21-29"
+      ],
+      "main_full_body_read": false
+    },
+    {
+      "round": 929,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-round929-v1.txt",
+      "sha256": "2ee52e869c739c9e968f7740bcf6a252ac25e79275298475156ae5cb30c6fc0b",
+      "classification": "decision_support",
+      "spec_path": "orca-research-round929-spec-v1.txt",
+      "spec_sha256": "9e8d502c86e0b284c2ac599e134606f348a37ebdb196c13402a85f1654bd84ab",
+      "review_round": 932,
+      "review_path": "research-review-round932-v1.json",
+      "main_body_read": false,
+      "retrieval": {
+        "needed_now": true,
+        "hold_body": false,
+        "sections": [
+          "7–9",
+          "13–16",
+          "20–26",
+          "28–33"
+        ],
+        "keys": [
+          "exact Qwen4-Exp GDN/HC/PLE order",
+          "related-model vLLM GDN analogy",
+          "FP32 state/reduction vs 16-bit tensor storage",
+          "HC store/norm and PLE restore/pack candidates"
+        ],
+        "preserve_caveats": [
+          "R585 is a divergence audit, not a GDN geometry study; R592 is an older unqualified candidate.",
+          "Exact FP32 scales are a same-operation diagnostic only when reduction order is preserved; adoption uses the validated SGLang/vLLM contract.",
+          "No component timing, speed, quality or physical-context qualification."
+        ]
+      },
+      "correction_ids": [
+        "R929-C1",
+        "R929-C2",
+        "R929-C3"
+      ],
+      "status": "R932 content review accepted with prospective corrections; report SHA verified. Lifecycle caveat: worker_done rejected, Dispatch abandoned, user-owned terminal not closed; no accepted worker success/process closure claim."
+    },
+    {
+      "round": 930,
+      "model": "gpt-6-luna",
+      "read_only": true,
+      "path": "research-round930-v1.txt",
+      "sha256": "e3f13bcd7808cb19ee97df33c9650d8ef91878da2d24d7d50ec050c85a81b4fc",
+      "classification": "decision_support",
+      "spec_path": "orca-research-round930-spec-v1.txt",
+      "spec_sha256": "66dd5b1f880c5f442e3ef7b15940390fcaac226ef5634c184310685ed645f415",
+      "review_round": 932,
+      "review_path": "research-review-round932-v1.json",
+      "main_body_read": false,
+      "retrieval": {
+        "needed_now": true,
+        "hold_body": false,
+        "sections": [
+          "7–11",
+          "15–17",
+          "23–27",
+          "29–38"
+        ],
+        "keys": [
+          "device route metadata and queue-retirement limit",
+          "direct current vLLM Qwen4-Exp inheritance path",
+          "actual Strata IQ/MoE stage mapping",
+          "grouping discriminator and evidence limits"
+        ],
+        "preserve_caveats": [
+          "Request input count is 39,262; batched count is 39,261 = four full chunks plus a 6,493-row tail.",
+          "The Qwen4-Exp compute-bound prefill comment is QSA-specific, not shared-expert MoE evidence.",
+          "Route-exchange wall time includes queue retirement; no MoE GEMM attribution or 262,144-context result."
+        ]
+      },
+      "correction_ids": [
+        "R930-C1",
+        "R930-C2",
+        "R930-C3"
+      ],
+      "status": "R932 content review accepted with prospective corrections; report SHA verified; no implementation/performance/adoption qualification."
     }
   ],
   "main_initial_findings": [
@@ -6087,7 +6245,7 @@
           "path": "orca-research-round928-launch-v1.json",
           "sha256": "73025a5510b2731f860384de269ecea321ec8d469f1e34515b888b82cccec5d0"
         },
-        "status": "Settled/released, SHA verified; native Luna-max review pending"
+        "status": "Native Luna-max R931 reviewed; settled/released; Main retrieved only decision sections 13-17/21-29 plus official source. New BF16 candidate component checks passed."
       },
       {
         "round": 929,
@@ -6099,7 +6257,7 @@
           "path": "orca-research-round929-launch-v1.json",
           "sha256": "4dae9c1c2b1c3cfdaafc43a852fbe9beeb7334934b1c6c90e58ea14096633289"
         },
-        "status": "Dispatched; completion pending"
+        "status": "Native Luna-max R932 content review accepted with corrections. worker_done rejected; dispatch abandoned/fenced; user-owned terminal not closed. See recovery-v1."
       },
       {
         "round": 930,
@@ -6111,7 +6269,7 @@
           "path": "orca-research-round930-launch-v1.json",
           "sha256": "4a7175a6669e057e62060bca489bc3b547f1ac52ffd3b116b0a5885ea7949416"
         },
-        "status": "Dispatched; completion pending"
+        "status": "Native Luna-max R932 reviewed with corrections; settled/released. Main report body held until concrete retrieval question."
       }
     ]
   },
@@ -6150,5 +6308,106 @@
       "path": "prefill-backend-dependency-audit-v1.ja.md",
       "sha256": "e7cd620558bcddaa1827c62a23b16664be1007e3047ebdad3d397641ae69f46c"
     }
-  }
+  },
+  "research_review_round931": {
+    "report_round": 928,
+    "report": "research-round928-v1.txt",
+    "report_sha256": "4b9f2c6f23c4d0802c8a58cc6a526bf1079c1a964d35b0446939d22d0b4f9a96",
+    "review": "research-review-round931-v1.json",
+    "review_sha256": "f47a834807bacc2ee12020e3c8e042f194d9f468b83f0aec5f2c637a5c748284",
+    "operational_digest": "research-review-round931-v1.ja.md",
+    "operational_digest_sha256": "ac0fe04eebabd3edf3dc0c429932f54e6824759b58e087bc641d23a211b9e42e",
+    "main_body_read": false,
+    "reviewer_report_body_read": true,
+    "retrieval_sections": [
+      "13–17",
+      "21–29"
+    ],
+    "correction_ids": [
+      "R928-C1",
+      "R928-C2",
+      "R928-C3",
+      "R928-C4",
+      "R928-C5",
+      "R928-C6"
+    ],
+    "next_scope_eligibility": {
+      "recommended_now": false,
+      "schedulable_now": false,
+      "dispatch_performed": false,
+      "reason": "Wait for Main-owned configured-dtype/branch evidence, selector-set fixture, and QSA stage breakdown; another source-only session cannot establish those prerequisites."
+    },
+    "status": "Accepted with prospective reference-policy and source corrections; no performance adoption."
+  },
+  "research_review_round932": {
+    "review_round": 932,
+    "reviewer": "native Codex gpt-6-luna max",
+    "path": "research-review-round932-v1.json",
+    "operational_digest_path": "research-review-round932-v1.ja.md",
+    "operational_digest_sha256": "39473236ca5a0d8b3d310fbda8179c136674ed5480fc8a141b123d412fe927d2",
+    "report_rounds": [
+      929,
+      930
+    ],
+    "main_body_read": false,
+    "reviewer_report_bodies_read": true,
+    "status": "Accepted with source/count/reference-policy corrections; no new research scope schedulable.",
+    "sha256": "8293e5e42f07f4c4d02bb44b86fda01612564257a0ea9c4f31a7e9cfef671ba9"
+  },
+  "research_scope_plan_round933": {
+    "plan": {
+      "path": "research-scope-plan-round933-v1.json",
+      "sha256": "861497b2e9578123ab4f48f285fdef9f302a94785ff22a3f93431c4274963cbb"
+    },
+    "digest": {
+      "path": "research-scope-plan-round933-v1.ja.md",
+      "sha256": "dde9827e2c54231d933005d0d1b4321f0145f8eda772bbcb61b26cbd8b88871a"
+    },
+    "scopes": [
+      {
+        "round": 934,
+        "classification": "knowledge_collection",
+        "spec": {
+          "path": "orca-research-round934-spec-v1.txt",
+          "sha256": "ae69b3d718fd5ce84f9932f8923215598e0c74425af38803839720178d5d203b"
+        },
+        "launch": {
+          "path": "orca-research-round934-launch-v1.json",
+          "sha256": "e71f0c762afb3d5e480c773c7741dd798829340a280ba30f4d2bd8588f5171d1"
+        },
+        "task": "task_07428d9ffccd",
+        "dispatch": "ctx_e4e7b1f391da",
+        "main_body_read": false,
+        "status": "Dispatched; no steering; Main continues tuning",
+        "schedulable_now_at_dispatch": true,
+        "eligibility": "R933-KC1 no measurement prerequisite"
+      },
+      {
+        "round": 935,
+        "classification": "decision_support",
+        "spec": {
+          "path": "orca-research-round935-spec-v1.txt",
+          "sha256": "ec3551f7fece0cba02b95a38e90119798c4ac6248f22b79eb6a319ecf7628689"
+        },
+        "launch": {
+          "path": "orca-research-round935-launch-v1.json",
+          "sha256": "8b94129914095d110f1a019594f7033e2335acd688b540602b986e620015f8d1"
+        },
+        "task": "task_f3bfd0264a7a",
+        "dispatch": "ctx_70419ba7ab85",
+        "main_body_read": false,
+        "status": "Dispatched; no steering; Main continues tuning",
+        "schedulable_now_at_dispatch": true,
+        "eligibility": "Nine closed clean receipts and qsa-bf16-matched-bench-summary-v1.json; stable component signal and full-model next-gate decision remains."
+      }
+    ]
+  },
+  "qsa_bf16_operand_current": {
+    "summary": "qsa-bf16-matched-bench-summary-v1.json",
+    "component_qualified": true,
+    "production_selected": false,
+    "model_PP_measured": false,
+    "next": "Main tests late diagnostic aggregation to reduce workgroup collectives without changing arithmetic; research supports later full-model gate and holds collection body."
+  },
+  "retention_qsa_bf16_v1": "qsa-bf16-success-raw-retirement-v1.json; 139 closed successful raw log/duplicate files, 2644910 logical bytes retired; original receipts unchanged."
 }
